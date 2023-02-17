@@ -121,7 +121,7 @@ class RelatedLocations extends EntityReferenceFieldItemList {
    */
   private function filterDescendantsByType(Node $entity, array $types, array $fields) {
     $location_id = $entity->id();
-    $query = \Drupal::entityQuery('node');
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
     $query->condition('type', $types, 'IN');
     $orCondition = $query->orConditionGroup();
     foreach ($fields as $field) {

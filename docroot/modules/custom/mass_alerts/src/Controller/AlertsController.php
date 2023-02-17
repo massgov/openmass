@@ -59,7 +59,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $query->condition('type', 'sitewide_alert');
     $query->condition('status', 1);
 
-    $sitewide = $query->execute();
+    $sitewide = $query->accessCheck(FALSE)->execute();
     // Last item.
     $sitewide = reset($sitewide);
     $results = ['emergencyAlerts' => []];
@@ -223,7 +223,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
       $query->condition($orCondition);
 
-      $nids = $query->execute();
+      $nids = $query->accessCheck(FALSE)->execute();
 
       $nodes = $nodeStorage->loadMultiple(array_values($nids));
 

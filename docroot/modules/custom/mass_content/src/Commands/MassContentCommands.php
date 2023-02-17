@@ -73,7 +73,7 @@ class MassContentCommands extends DrushCommands {
         $query->range(0, $limit);
       }
 
-      $nids = $query->execute();
+      $nids = $query->execute()->accessCheck(FALSE);
     }
     catch (\Exception $e) {
       $this->output()->writeln($e);
@@ -148,7 +148,7 @@ class MassContentCommands extends DrushCommands {
       $query->sort('nid');
       $query->range($offset, $limit);
 
-      $nids = $query->execute();
+      $nids = $query->execute()->accessCheck(FALSE);
     }
     catch (\Exception $e) {
       $this->output()->writeln($e);
@@ -156,7 +156,7 @@ class MassContentCommands extends DrushCommands {
     }
 
     $now = new DrupalDateTime('now');
-    $query = \Drupal::entityQuery('node')
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
       ->condition('type', 'event')
       ->exists('field_event_ref_parents')
       ->condition('field_event_date', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>=');

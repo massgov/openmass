@@ -18,7 +18,7 @@ use Drupal\taxonomy\Entity\Term;
 function mass_content_deploy_iframe_fields(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node')
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('status', 1)
     ->condition('type', 'info_details')
     ->condition('field_info_details_sections.entity:paragraph.field_section_long_form_content.entity:paragraph.field_iframe_admin_title.value', "", "!=");
@@ -84,7 +84,7 @@ function mass_content_deploy_iframe_fields(&$sandbox) {
 function mass_content_deploy_image_caption_fields(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node')
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('status', 1)
     ->condition('type', 'info_details')
     ->condition('field_info_details_sections.entity:paragraph.field_section_long_form_content.entity:paragraph.field_caption.value', "", "!=");
@@ -147,7 +147,7 @@ function mass_content_deploy_image_caption_fields(&$sandbox) {
 function mass_content_deploy_header_media_image_fields(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node')
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('status', 1)
     ->condition('type', 'info_details')
     ->condition('field_info_details_header_media.entity:paragraph.field_caption.value', "", "!=");
@@ -206,7 +206,7 @@ function mass_content_deploy_header_media_image_fields(&$sandbox) {
 function mass_content_deploy_image_section_fields_followup(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node')
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('status', 1)
     ->condition('type', 'info_details')
     ->condition('field_info_details_sections.entity:paragraph.field_section_long_form_content.entity:paragraph.field_image.target_id', "", "!=");
@@ -270,7 +270,7 @@ function mass_content_deploy_image_section_fields_followup(&$sandbox) {
 function mass_content_deploy_header_media_images_followup(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node')
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('type', 'info_details')
     ->condition('field_info_details_header_media.entity:paragraph.field_image.target_id', "", "!=");
 
@@ -335,7 +335,7 @@ function mass_content_deploy_header_media_images_all(&$sandbox) {
 function mass_content_deploy_how_to_headers(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node');
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $query->condition('type', 'how_to_page');
 
   if (empty($sandbox)) {
@@ -474,7 +474,7 @@ function mass_content_deploy_org_page_section_migration(&$sandbox) {
   // Include migration functions.
   require_once __DIR__ . '/includes/mass_content.org_migration.inc';
 
-  $query = \Drupal::entityQuery('node');
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $query->condition('type', 'org_page');
 
   if (empty($sandbox)) {
@@ -645,7 +645,7 @@ function mass_content_deploy_org_page_section_migration(&$sandbox) {
 function mass_content_deploy_event_updated_date(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node');
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $query->condition('type', 'event');
   // Only update public meeting events.
   $query->condition('field_event_type_list', 'public_meeting');
@@ -763,7 +763,7 @@ function mass_content_deploy_search_related_info(&$sandbox) {
 function mass_content_deploy_feedback_com(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node');
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $query->condition('type', 'org_page');
 
   if (empty($sandbox)) {
@@ -798,7 +798,7 @@ function mass_content_deploy_feedback_com(&$sandbox) {
     }
     if (!$node->isLatestRevision()) {
       $storage = \Drupal::entityTypeManager()->getStorage('node');
-      $query = $storage->getQuery();
+      $query = $storage->getQuery()->accessCheck(FALSE);
       $query->condition('nid', $node->id());
       $query->latestRevision();
       $rids = $query->execute();
