@@ -162,3 +162,27 @@ function mass_gin_toolbar() {
 
   return $items;
 }
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function mass_gin_theme_registry_alter(&$theme_registry) {
+  // Check if the 'media_reference_help' theme hook exists in the registry.
+  if (isset($theme_registry['media_reference_help'])) {
+    // Change the template path to use a custom template file.
+    $theme_registry['media_reference_help']['path'] = Drupal::service('extension.list.module')->getPath('mass_gin') . '/templates';
+    $theme_registry['media_reference_help']['template'] = 'mass-gin-media-reference-help';
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page_attachments.
+ */
+function mass_gin_page_attachments_alter(&$page) {
+  $route = \Drupal::routeMatch()->getRouteObject();
+  $is_admin = \Drupal::service('router.admin_context')->isAdminRoute($route);
+
+  if ($is_admin) {
+    $page['#attached']['library'][] = 'mass_gin/overrides';
+  }
+}

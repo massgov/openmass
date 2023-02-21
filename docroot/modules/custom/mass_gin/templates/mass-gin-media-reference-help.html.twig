@@ -1,0 +1,49 @@
+{#
+/**
+ * @file
+ * Theme override for media reference fields.
+ *
+ * @see template_preprocess_field_multiple_value_form()
+ * @see core/themes/classy/templates/form/fieldset.html.twig
+ */
+#}
+{%
+  set classes = [
+  'js-form-item',
+  'form-item',
+  'js-form-wrapper',
+  'form-wrapper',
+]
+%}
+<div{{ attributes.addClass(classes) }}>
+  {%
+    set legend_span_classes = [
+    'form-item__label',
+    required ? 'js-form-required',
+    required ? 'form-required',
+  ]
+  %}
+  <label{{ legend_span_attributes.addClass(legend_span_classes) }}>{{ original_label }}</label>
+
+  <div class="js-form-item form-item">
+    {% if media_add_help %}
+      <h4{{ header_attributes.addClass('label') }}>
+        {% trans %}
+          Create new media
+        {% endtrans %}
+      </h4><br />
+      <div class="description">
+        {{ media_add_help }}
+      </div>
+    {% endif %}
+
+    {% if multiple %}
+      {{ table }}
+    {% else %}
+      {% for element in elements %}
+        {{ element }}
+      {% endfor %}
+    {% endif %}
+
+  </div>
+</div>
