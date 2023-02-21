@@ -3980,7 +3980,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
   // This is a required icon field, but lets check.
   if (array_key_exists('0', $node->get('field_icon_term')->referencedEntities())) {
     $icon = $node->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-    $variables['icon_path'] = icon_path($icon);
+    $variables['icon_path'] = $icon;
   }
 
   if ($node->field_featured_image->entity) {
@@ -4023,7 +4023,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
     // Wrap up each section with links.
     if (isset($row->_entity->get('field_icon_term')->referencedEntities()[0])) {
       $icon = $row->_entity->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-      $icon_path = icon_path($icon);
+      $icon_path = $icon;
     }
     $sections[] = [
       'id' => $row->_entity->get('nid')->value,
@@ -5111,7 +5111,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
       // Topics have an icon field.
       if ($item->hasField('field_icon_term') && array_key_exists('0', $item->get('field_icon_term')->referencedEntities())) {
         $icon = $item->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-        $item->{'icon'} = icon_path($icon);
+        $item->{'icon'} = $icon;
       }
 
       // Topics don't have topic callouts, so we use common content for links.
@@ -5945,6 +5945,7 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   // Get collection terms matching the field_url_name
   $query = Drupal::entityQuery('taxonomy_term');
   $query
+    ->accessCheck(FALSE)
     ->condition('vid', 'collections')
     ->condition('field_url_name', $collection)
     ->range(0, 1);
