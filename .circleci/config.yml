@@ -556,9 +556,9 @@ jobs:
               --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
               --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
             LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
-            STALE_TIME=$(date -d "-25 hours" +%s)
+            STALE_TIME=$(date -d "-168 hours" +%s)
             if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
-              echo "Reference images are stale, please re-run the backstop_reference job"
+              echo "Reference images are stale, please re-run the backstop_reference job or run `drush ma:backstop-snapshot --target=prod` locally"
               exit 1
             fi
       - run:
