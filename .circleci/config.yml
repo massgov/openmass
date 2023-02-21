@@ -1186,7 +1186,7 @@ workflows:
     when:
       and:
         - equal: [ api, << pipeline.trigger_source >> ]
-        - equal: [ backstop_test, << pipeline.parameters.trigger_workflow >> ]
+        - equal: [ backstop_compare, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - backstop_test:
           target: << pipeline.parameters.target >>
