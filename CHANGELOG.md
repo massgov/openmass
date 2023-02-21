@@ -1,5 +1,18 @@
 
 
+## [0.352.0] - February 21, 2023
+
+### Changed
+  - DP-26763: Fix collection pagination icons.
+  - DP-27213: Upgrade Drupal Rector and related dependencies
+  - DP-27234: Upgrade Drush for more robust deployments
+  - DP-27264: Added bare mass.gov domain to entity usage config to increase tracking of URLs specified by authors with www.
+  
+### Fixed
+  - DP-27248: Corrected URL of backstop test page.
+  
+
+
 ## [0.351.0] - February 14, 2023
 
 ### Added
