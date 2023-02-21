@@ -507,6 +507,8 @@ jobs:
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
+      - store_test_results:
+          path: backstop/report
       - run:
           name: Save Build Number
           command: |
@@ -1177,6 +1179,20 @@ workflows:
     jobs:
       - backstop_reference:
           target: << pipeline.parameters.target >>
+          list: << pipeline.parameters.list >>
+          viewport: << pipeline.paramters.viewport >>
+
+  backstop_test:
+    when:
+      and:
+        - equal: [ api, << pipeline.trigger_source >> ]
+        - equal: [ backstop_test, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - backstop_reference:
+          target: << pipeline.parameters.target >>
+          list: << pipeline.parameters.list >>
+          viewport: << pipeline.parameters.viewport >>
+          tugboat: << pipeline.parameters.tugboat >>
 
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
