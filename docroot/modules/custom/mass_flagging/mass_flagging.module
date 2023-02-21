@@ -31,15 +31,6 @@ function mass_flagging_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Implements hook_toolbar().
- */
-function mass_flagging_toolbar() {
-  return \Drupal::service('class_resolver')
-    ->getInstanceFromDefinition(ToolbarHandler::class)
-    ->toolbar();
-}
-
-/**
  * Implements hook_node_update().
  */
 function mass_flagging_node_update(Node $node) {
