@@ -151,6 +151,10 @@ parameters:
   git-ref:
     type: string
     default: ""
+  # Used to manually trigger workflows via the API.
+  trigger_workflow:
+    type: string
+    default: ""
 jobs:
   build:
     working_directory: ~/project/code
@@ -500,7 +504,7 @@ jobs:
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
-          destination: backstop-<< parameters.target >>-latest
+          destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
       - run:
@@ -511,7 +515,7 @@ jobs:
               --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/envvar" \
               --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" \
               --header 'content-type: application/json' \
-              --data "{\"name\":\"BACKSTOP_REF_<< parameters.target >>\",\"value\":\"$CIRCLE_BUILD_NUM\"}"
+              --data "{\"name\":\"BACKSTOP_REF_<< parameters.target >>_<< parameters.list >>_<< parameters.viewport >>\",\"value\":\"$CIRCLE_BUILD_NUM\"}"
 
   backstop_test:
     parameters:
@@ -540,9 +544,9 @@ jobs:
           command: |
             apt-get update
             apt-get install jq -y
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>"
+            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
             if [ "${!BACKSTOP_REF}" == "" ]; then
-              echo "No artifacts found for << parameters.reference >>"
+              echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
               exit 1
             fi
             STOPPED_AT=$(curl --request GET \
@@ -558,11 +562,11 @@ jobs:
       - run:
           name: Restore Artifacts
           command: |
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>"
+            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
             URL=$(curl --request GET \
               --fail \
               --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-prod-latest") | .url')
+              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-latest") | .url')
             curl --fail --location --url $URL --output backstop_ref.zip
             unzip backstop_ref.zip
             rm backstop_ref.zip
@@ -1163,6 +1167,16 @@ workflows:
           filters:
             branches:
               only: develop
+
+  # See https://support.circleci.com/hc/en-us/articles/12419710425499-How-to-Manually-Trigger-a-Scheduled-Pipeline
+  backstop_snapshot:
+    when:
+      and:
+        - equal: [ api, << pipeline.trigger_source >> ]
+        - equal: [ backstop_snapshot, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - backstop_reference:
+          target: << pipeline.parameters.target >>
 
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
