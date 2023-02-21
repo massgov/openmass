@@ -18,6 +18,7 @@ use Prophecy\Argument;
 class DescendantManagerTest extends UnitTestCase {
 
   use ProphecyTrait;
+
   /**
    * Assert that we indexing removes existing relationships.
    */
