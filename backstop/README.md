@@ -80,8 +80,8 @@ See [DeployCommands.php](../drush/Commands/DeployCommands.php).
 `drush ma:backstop-snapshot` will run Backstop and store the screenshots to be
 used later by `drush ma:backstop-compare` e.g.
 ```
-drush ma:backstop-snapshot --target=prod
-drush ma:backstop-compare --reference=prod --target=test
+drush ma:ci:backstop-snapshot --target=prod
+drush ma:ci:backstop-compare --reference=prod --target=test
 ```
 
 You can also run the tests using CircleCi's [local CLI](https://circleci.com/docs/local-cli/).

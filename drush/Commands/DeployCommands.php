@@ -98,21 +98,21 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   /**
    * Run Backstop Snapshot at CircleCI and save the result for usage with ma:backstop-reference.
    *
-   * @command ma:backstop-snapshot
+   * @command ma:ci:backstop-snapshot
    *
    * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
-   * @usage drush ma:backstop-snapshot --target=prod
+   * @usage drush ma:ci:backstop-snapshot --target=prod
    *   Create a backstop snapshot from production.
-   * @aliases ma-backstop-snapshot
+   * @aliases ma-ci-backstop-snapshot
    * @validate-circleci-token
    *
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function backstop_snapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all']): void {
+  public function ci_backstop_snapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all']): void {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -141,23 +141,23 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   /**
    * Run Backstop Test at CircleCI against the stored screenshots from Backstop Snapshot.
    *
-   * @command ma:backstop-compare
+   * @command ma:ci:backstop-compare
    *
    * @option reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
-   * @usage drush ma:backstop-compare --reference=prod --target=test
+   * @usage drush ma:ci:backstop-compare --reference=prod --target=test
    *   Run backstop in the test environment against the latest production screenshots
    *   Create a backstop snapshot from production.
-   * @aliases ma-backstop-compare
+   * @aliases ma-ci-backstop-compare
    * @validate-circleci-token
    *
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function backstop_compare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all']): void {
+  public function ci_backstop_compare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all']): void {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
