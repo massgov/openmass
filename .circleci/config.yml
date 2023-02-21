@@ -558,7 +558,7 @@ jobs:
             LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
             STALE_TIME=$(date -d "-168 hours" +%s)
             if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
-              echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >` locally"
+              echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
               exit 1
             fi
       - run:
