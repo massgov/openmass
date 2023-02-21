@@ -77,6 +77,13 @@ were created for testing purposes.
 `drush ma:backstop` will run Backstop in the CircleCI infrastructure.
 See [DeployCommands.php](../drush/Commands/DeployCommands.php).
 
+`drush ma:backstop-snapshot` will run Backstop and store the screenshots to be
+used later by `drush ma:backstop-compare` e.g.
+```
+drush ma:backstop-snapshot --target=prod
+drush ma:backstop-compare --reference=prod --target=test
+```
+
 You can also run the tests using CircleCi's [local CLI](https://circleci.com/docs/local-cli/).
 
 > 🛑 Do not use the `snap` installer for Linux, use the alternative installation
