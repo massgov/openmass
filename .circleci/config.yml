@@ -568,7 +568,7 @@ jobs:
             URL=$(curl --request GET \
               --fail \
               --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
+              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
             curl --fail --location --url $URL --output backstop_ref.zip
             unzip backstop_ref.zip
             rm backstop_ref.zip
