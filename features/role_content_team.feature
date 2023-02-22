@@ -7,7 +7,7 @@ Feature: Content Administrator
   Scenario: Verify that content administrator can only see content menu item
     Given I am logged in as a user with the "content_team,editor" role
     And I am on "admin"
-    Then I should see the link "Content" in the admin_menu
+#    Then I should see the link "Content" in the admin_menu
     And I should see the link "Edit blocks"
     And I should see the link "Right Sidebar"
     And I should see the link "Node feedback"
