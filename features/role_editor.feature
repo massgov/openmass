@@ -8,6 +8,7 @@ Feature: Editor Role
   Scenario: Verify that editor can perform necessary actions
     Given I am logged in as a user with the "editor" role
     And I am on "/user"
+    Then I click "Edit"
     Then I should see the dashboard tabs
     Then I should have access to "/node/add"
     And I should have access to "/node/add/contact_information"
