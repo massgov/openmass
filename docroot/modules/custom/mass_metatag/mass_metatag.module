@@ -347,7 +347,7 @@ function mass_metatag_page_attachments(array &$attachments) {
   // admin theme is active (which could be both admin routes, and non-frontend
   // non-admin routes.
 
-  if (\Drupal::currentUser()->isAuthenticated() && (\Drupal::service('theme.manager')->getActiveTheme()->getName() == 'mass_admin_theme' || \Drupal::service('theme.manager')->getActiveTheme()->getName() == 'gin') ) {
+  if (\Drupal::currentUser()->isAuthenticated() && (\Drupal::service('theme.manager')->getActiveTheme()->getName() == 'mass_admin_theme' || \Drupal::service('theme.manager')->getActiveTheme()->getName() == 'gin')) {
     $user = Drupal::currentUser();
     $user_entity = User::load($user->id());
     $referenced_entities = $user_entity->getOrg()->referencedEntities();
