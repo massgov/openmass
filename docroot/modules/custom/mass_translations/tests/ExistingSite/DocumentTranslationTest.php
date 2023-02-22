@@ -86,7 +86,9 @@ class DocumentTranslationTest extends ExistingSiteBase {
     $page = $this->getSession()->getPage();
     $element = $page->find('css', '.ma__listing-table__container')->getText();
     $this->assertStringContainsString($entity->language()->getName(), $element, 'Language not found');
-    $tabs = $page->find('css', '.primary-tabs')->getText();
+
+    $this->drupalGet('media/' . $entity->id() . '/edit');
+    $tabs = $page->find('css', 'nav.tabs-wrapper')->getText();
     $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
   }
 

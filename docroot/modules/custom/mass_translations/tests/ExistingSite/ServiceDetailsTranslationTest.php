@@ -90,7 +90,8 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
     $page = $this->getSession()->getPage();
     $element = $page->find('css', 'link[hreflang="x-default"]')->getAttribute('href');
     $this->assertEquals($element, $entity->toUrl()->setOption('language', $entity->language())->setAbsolute()->toString());
-    $tabs = $page->find('css', '.primary-tabs')->getText();
+    $this->drupalGet('node/' . $translation->id() . '/edit');
+    $tabs = $page->find('css', 'nav.tabs-wrapper')->getText();
     $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
   }
 
@@ -106,7 +107,8 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
     $page = $this->getSession()->getPage();
     $element = $page->find('css', 'link[hreflang="' . $translation->language()->getId() . '"]');
     $this->assertNotEmpty($element, 'No hreflang value found for translation on the English page');
-    $tabs = $page->find('css', '.primary-tabs')->getText();
+    $this->drupalGet('node/' . $entity->id() . '/edit');
+    $tabs = $page->find('css', 'nav.tabs-wrapper')->getText();
     $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
   }
 

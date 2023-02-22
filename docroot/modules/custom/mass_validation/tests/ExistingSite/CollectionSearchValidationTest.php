@@ -55,7 +55,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->pressButton('edit-field-organization-sections-add-more-add-more-button-org-section-long-form');
     $page->pressButton('edit-field-organization-sections-0-subform-field-section-long-form-content-add-more-add-more-button-collection-search');
     $page->selectFieldOption('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-search-type', 'Collection');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
 
     $validation_text = 'The "Collection" field required.';
@@ -68,7 +68,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->pressButton('edit-field-organization-sections-add-more-add-more-button-org-section-long-form');
     $page->pressButton('edit-field-organization-sections-0-subform-field-section-long-form-content-add-more-add-more-button-collection-search');
     $page->selectFieldOption('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-search-type', 'External search destination (using query string)');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
 
     $validation_text = 'The "Search site URL" field is required.';
@@ -98,7 +98,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('field-sections-collection-search-add-more');
     $page->selectFieldOption('edit-field-sections-0-subform-field-search-type', 'Collection');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
 
     $validation_text = 'The "Collection" field required.';
@@ -110,7 +110,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('field-sections-collection-search-add-more');
     $page->selectFieldOption('edit-field-sections-0-subform-field-search-type', 'External search destination (using query string)');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
 
     $validation_text = 'The "Search site URL" field is required.';
@@ -141,7 +141,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->pressButton('edit-field-service-sections-add-more-add-more-button-service-section');
     $page->pressButton('edit-field-service-sections-0-subform-field-service-section-content-add-more-add-more-button-collection-search');
     $page->selectFieldOption('edit-field-service-sections-0-subform-field-service-section-content-0-subform-field-search-type', 'Collection');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
 
     $validation_text = 'The "Collection" field required.';
@@ -154,7 +154,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->pressButton('edit-field-service-sections-add-more-add-more-button-service-section');
     $page->pressButton('edit-field-service-sections-0-subform-field-service-section-content-add-more-add-more-button-collection-search');
     $page->selectFieldOption('edit-field-service-sections-0-subform-field-service-section-content-0-subform-field-search-type', 'External search destination (using query string)');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
 
     $validation_text = 'The "Search site URL" field is required.';
