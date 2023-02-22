@@ -22,7 +22,7 @@ Feature:
       | title            | Test      |
       | uid              | 936   |
       | moderation_state | published |
-    And I click "Edit"
+    And I click "EDIT"
     Then I should see the link "Contact the author"
 
 

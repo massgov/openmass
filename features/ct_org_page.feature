@@ -37,7 +37,7 @@ Feature: Organization Landing Page Content type
       | title                    | Some Nice Org Page 2   |
       | field-action-set-bg-wide | A header image         |
       | field-sub-title          | Some lede text.        |
-    And I follow "Edit"
+    And I follow "EDIT"
     And I fill in "moderation_state[0][state]" with "prepublished_draft"
     And I press "Save"
     Then I should see the text "field is required"
@@ -48,7 +48,7 @@ Feature: Organization Landing Page Content type
       | title                    | Some Nice Org Page 3   |
       | field-action-set-bg-wide | A header image         |
       | field-sub-title          | Some lede text.        |
-    And I follow "Edit"
+    And I follow "EDIT"
     And I fill in "edit-field-social-links-0-uri" with "http://www.some-incorrect-value.com"
     And I fill in "edit-field-social-links-0-title" with "Incorrect link text"
     And I fill in "moderation_state[0][state]" with "prepublished_draft"
