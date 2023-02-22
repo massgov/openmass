@@ -21,6 +21,7 @@ Feature: Author Role
   Scenario: Verify that the author can access key pages
     Given I am logged in as a user with the "author" role
     And I am on "/user"
+    Then I click "Edit"
     Then I should see the dashboard tabs
     Then I should have access to "/admin/content"
     And I should have access to "/node/add"
