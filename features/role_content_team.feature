@@ -23,6 +23,7 @@ Feature: Content Administrator
   Scenario: Verify content administrator can perform necessary actions
     Given I am logged in as a user with the "content_team,editor" role
     And I am on "/user"
+    Then I click "Edit"
     Then I should see the dashboard tabs
     Then I should have access to "/node/add"
     And I should have access to "/node/add/page"
