@@ -30,7 +30,7 @@
             activeInput.setAttribute('aria-expanded', true);
           }
 
-          if (!suggestionList) {
+          else {
             activeInput.setAttribute('aria-expanded', false);
           }
         }, 900);
