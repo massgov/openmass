@@ -248,12 +248,12 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     ];
 
     // Builds 'Watched pages only' input.
-      $form['watch_content'] = [
-        '#type' => 'checkboxes',
-        '#options' => ['watch_content' => $this->t('Watched pages only')],
-        '#title' => $this->t('Filter by watched pages only'),
-        '#default_value' => $feedback_api_params['watch_content'] ? ['watch_content'] : [],
-      ];
+    $form['watch_content'] = [
+      '#type' => 'checkboxes',
+      '#options' => ['watch_content' => $this->t('Watched pages only')],
+      '#title' => $this->t('Filter by watched pages only'),
+      '#default_value' => $feedback_api_params['watch_content'] ? ['watch_content'] : [],
+    ];
 
     // Hidden value used for tracking current page on pager in case of reload.
     $form['page'] = [
