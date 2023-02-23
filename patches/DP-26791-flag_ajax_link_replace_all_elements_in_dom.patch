@@ -1,0 +1,77 @@
+diff --git a/js/flag-action_link_flash.es6.js b/js/flag-action_link_flash.es6.js
+index 6dc8bf1..0df69b7 100644
+--- a/js/flag-action_link_flash.es6.js
++++ b/js/flag-action_link_flash.es6.js
+@@ -32,20 +32,24 @@
+   Drupal.AjaxCommands.prototype.actionLinkFlash = (ajax, response, status) => {
+     if (status === 'success') {
+       // Prepare a message element.
+-      const para = document.createElement('P');
+-      para.innerText = response.message;
+-      // Adding this class will initiate a CSS transition.
+-      para.setAttribute('class', 'js-flag-message');
+-      // As the transition ends delete the message from the DOM.
+-      para.addEventListener('animationend', event => event.target.remove(), false);
++      const links = [...document.querySelectAll(response.selector)];
++      links.forEach(link => {
++          const para = document.createElement('P');
++          para.innerText = response.message;
++          // Adding this class will initiate a CSS transition.
++          para.setAttribute('class', 'js-flag-message');
++          // As the transition ends delete the message from the DOM.
++          para.addEventListener('animationend', event => event.target.remove(), false);
++
++          // Add message element to the DOM.
++          link.appendChild(para);
++      });
+ 
+-      // Add message element to the DOM.
+-      document.querySelector(response.selector).appendChild(para);
+     }
+     else {
+       // If the XHR failed, assume the replace command that would normally make
+       // the styling disapear has also failed and remove the temporary styling.
+-      const links = [...document.querySelectAll('.flag-waiting')];
++      const links = [...document.querySelectorAll('.flag-waiting')];
+       links.forEach(link => link.classList.remove('flag-waiting'));
+     }
+   };
+diff --git a/js/flag-action_link_flash.js b/js/flag-action_link_flash.js
+index 45aea73..0014b90 100644
+--- a/js/flag-action_link_flash.js
++++ b/js/flag-action_link_flash.js
+@@ -20,21 +20,24 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
+ 
+   Drupal.AjaxCommands.prototype.actionLinkFlash = function (ajax, response, status) {
+     if (status === 'success') {
+-      var para = document.createElement('P');
+-      para.innerText = response.message;
++      var links = [].concat(_toConsumableArray(document.querySelectorAll(response.selector)));
++      links.forEach(function (link) {
++        var para = document.createElement('P');
++        para.innerText = response.message;
+ 
+-      para.setAttribute('class', 'js-flag-message');
++        para.setAttribute('class', 'js-flag-message');
+ 
+-      para.addEventListener('animationend', function (event) {
+-        return event.target.remove();
+-      }, false);
++        para.addEventListener('animationend', function (event) {
++          return event.target.remove();
++        }, false);
+ 
+-      document.querySelector(response.selector).appendChild(para);
++        link.appendChild(para);
++      });
+     } else {
+-      var links = [].concat(_toConsumableArray(document.querySelectAll('.flag-waiting')));
++      var links = [].concat(_toConsumableArray(document.querySelectorAll('.flag-waiting')));
+       links.forEach(function (link) {
+         return link.classList.remove('flag-waiting');
+       });
+     }
+   };
+-})(Drupal);
+\ No newline at end of file
++})(Drupal);

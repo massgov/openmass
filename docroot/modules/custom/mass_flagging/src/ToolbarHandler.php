@@ -115,14 +115,23 @@ class ToolbarHandler implements ContainerInjectionInterface {
               ->getLinkTypePlugin()
               ->getAsFlagLink($flag, $entity);
 
-            // @TODO - refacotr this add correct cache tags.
+            // @TODO - refactor this add correct cache tags.
             $flag_link['#cache']['max-age'] = 0;
 
             $items["mass_flagging"] = [
               '#type' => 'toolbar_item',
-              '#weight' => -100,
+              '#weight' => 9999,
+              '#wrapper_attributes' => [
+                'class' => [
+                  'toolbar-tab--toolbar-item-watcher',
+                  'toolbar-id--toolbar-icon-watcher',
+                ],
+              ],
               'tab' => [
                 $flag_link
+              ],
+              '#attached' => [
+                'library' => 'mass_gin/toolbar',
               ],
             ];
           }
