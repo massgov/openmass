@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_utility\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -39,7 +39,7 @@ class ErrorPageCachingSubscriber implements EventSubscriberInterface {
    * The tradeoff here is that we lose the ability to show different
    * 403/404 pages depending on the URL it's accessed on.
    */
-  public function manipulateResponse(FilterResponseEvent $event) {
+  public function manipulateResponse(ResponseEvent $event) {
     if ($this->eventIsHtmlExceptionResponse($event)) {
       $response = $event->getResponse();
       if ($response instanceof CacheableResponseInterface) {
@@ -59,7 +59,7 @@ class ErrorPageCachingSubscriber implements EventSubscriberInterface {
    * We care about events that are subrequests, originate from
    * an exception, and have an HTML request format.
    */
-  protected function eventIsHtmlExceptionResponse(FilterResponseEvent $event) {
+  protected function eventIsHtmlExceptionResponse(ResponseEvent $event) {
     return $event->getRequestType() === HttpKernelInterface::SUB_REQUEST
       && $event->getRequest()->attributes->has('exception')
       && in_array($event->getRequest()->query->getDigits('_exception_statuscode'), [403, 404])
