@@ -481,7 +481,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       ->condition('title', '\_QA%', 'NOT LIKE')
       ->sort('title', 'ASC');
 
-    $org_nids = $query->execute();
+    $org_nids = $query->accessCheck(FALSE)->execute();
     /** @var \Drupal\node\Entity\Node[] $entities */
     $entities = $node_storage->loadMultiple($org_nids);
     foreach ($entities as $key => $entity) {

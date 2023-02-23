@@ -59,7 +59,7 @@ class PageFlipperLink extends FieldItemList {
       $query->condition('type', 'binder')
         ->condition('status', 1)
         ->condition($group);
-      $results = $query->execute();
+      $results = $query->accessCheck(FALSE)->execute();
 
       if (empty($results)) {
         return $links[$entity->id()] = [

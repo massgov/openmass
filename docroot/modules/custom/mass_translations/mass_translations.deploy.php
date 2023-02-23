@@ -17,6 +17,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
   $english_target_id = 8876;
 
   $query = \Drupal::entityQuery('media')
+    ->accessCheck(FALSE)
     ->condition('bundle', 'document')
     ->condition('field_language.target_id', $english_target_id, '!=')
     ->condition('field_upload_file.target_id', '', '!=');
@@ -33,6 +34,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
   $mids = $query->condition('mid', $sandbox['current'], '>')
     ->sort('mid')
     ->range(0, $batch_size)
+    ->accessCheck(FALSE)
     ->execute();
 
   $memory_cache = \Drupal::service('entity.memory_cache');

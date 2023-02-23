@@ -41,7 +41,7 @@ class NewsController extends ControllerBase {
     $date_cutoff = $date_cutoff_raw->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
 
     // Get all published News nodes from within the last 48 hours.
-    $node_query = $node_storage->getQuery();
+    $node_query = $node_storage->getQuery()->accessCheck(FALSE);
     $nids = $node_query->condition('type', 'news')
       ->condition('status', 1)
       ->condition('title', '_QA%', 'NOT LIKE')

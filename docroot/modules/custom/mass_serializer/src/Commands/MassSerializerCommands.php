@@ -84,7 +84,7 @@ class MassSerializerCommands extends DrushCommands implements SiteAliasManagerAw
 
     $query = \Drupal::entityQuery('taxonomy_term');
     $query->condition('vid', "user_organization");
-    $tids = $query->execute();
+    $tids = $query->accessCheck(FALSE)->execute();
 
     $this->output()->writeln('Total number of Organizations to process: ' . ($limit != 0 ? $limit : count($tids)));
 

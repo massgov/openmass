@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_decision_tree\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Drupal\Core\Url;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -29,10 +29,10 @@ class MassDecisionTreeRedirectSubscriber implements EventSubscriberInterface {
   /**
    * Conditionally redirects when viewing a Decision Tree Branch or Conclusion.
    *
-   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
+   * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
    *   The request event.
    */
-  public function redirectTreeSteps(GetResponseEvent $event) {
+  public function redirectTreeSteps(RequestEvent $event) {
     $request = $event->getRequest();
 
     // Only redirect when directly viewing a node.

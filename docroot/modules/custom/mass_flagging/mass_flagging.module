@@ -19,7 +19,7 @@ const WATCH_FLAG = 'watch_content';
  * Implements hook_help().
  */
 function mass_flagging_help($route_name, RouteMatchInterface $route_match) {
-  module_load_include('inc', 'mass_flagging');
+  Drupal::moduleHandler()->loadInclude('mass_flagging', 'inc');
   switch ($route_name) {
     // Main module help for the mass_flagging module.
     case 'help.page.mass_flagging':

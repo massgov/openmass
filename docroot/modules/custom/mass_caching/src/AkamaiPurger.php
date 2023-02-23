@@ -35,7 +35,7 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
 
     // Instantiate event and alter tags with subscribers.
     $event = new AkamaiPurgeEvents($urls_to_clear);
-    $this->eventDispatcher->dispatch(AkamaiPurgeEvents::PURGE_CREATION, $event);
+    $this->eventDispatcher->dispatch($event, AkamaiPurgeEvents::PURGE_CREATION);
     $urls_to_clear = $event->data;
 
     // Mass: Added an array_unique() here as quick fix for dupes.

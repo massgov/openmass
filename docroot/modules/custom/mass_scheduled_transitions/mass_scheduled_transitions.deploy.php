@@ -29,7 +29,7 @@ function mass_scheduled_transitions_deploy_scheduled_transitions_nodes(&$sandbox
  */
 function mass_scheduled_transitions_do_migration(&$sandbox, $entity_type) {
   $now = (new DrupalDateTime())->getTimeStamp();
-  $query = \Drupal::entityQuery($entity_type)
+  $query = \Drupal::entityQuery($entity_type)->accessCheck(FALSE)
     ->condition('status', 1);
   $group = $query->orConditionGroup();
   $group->condition('unpublish_on', $now, '>');
@@ -46,7 +46,7 @@ function mass_scheduled_transitions_do_migration(&$sandbox, $entity_type) {
   $batch_size = 50;
   $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
   $idKey = $entity_type == 'node' ? 'nid' : 'mid';
-  $eids = $query->condition($idKey, $sandbox['current'], '>')
+  $eids = $query->accessCheck(FALSE)->condition($idKey, $sandbox['current'], '>')
     ->sort($idKey)
     ->range(0, $batch_size)
     ->execute();
