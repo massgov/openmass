@@ -2,8 +2,12 @@
 
 namespace Drush\Commands;
 
-use AcquiaCloudApi\CloudApi\Client;
-use AcquiaCloudApi\CloudApi\Connector;
+use AcquiaCloudApi\Connector\Client;
+use AcquiaCloudApi\Connector\Connector;
+use AcquiaCloudApi\Endpoints\Code;
+use AcquiaCloudApi\Endpoints\DatabaseBackups;
+use AcquiaCloudApi\Endpoints\Environments;
+use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
@@ -96,6 +100,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+
    * Run Backstop Snapshot at CircleCI and save the result for usage with ma:backstop-reference.
    *
    * @command ma:ci:backstop-snapshot
@@ -184,51 +189,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
-  /**
-   * Run Cloudflare deployment at CircleCI, for better reliability and logging.
-   *
-   * @command ma:cf-deploy
-   *
-   * @param string $target Target environment. Recognized values: cf, stage, prod, global
-   * @option ci-branch The branch that CircleCI should check out at start.
-   *
-   * @aliases ma-cf-deploy
-   * @validate-circleci-token
-   *
-   * @return string
-   *   A URL for viewing the build.
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
-   */
-  public function cf($target, array $options = ['ci-branch' => 'develop']) {
-    // For production deployments, prompt the user if they are sure. If they say no, exit.
-    if ($target === 'prod') {
-      $this->confirmProd();
-    }
-
-    $stack = $this->getStack();
-    $client = new \GuzzleHttp\Client(['handler' => $stack]);
-    $options = [
-      'auth' => [$this->getTokenCircle()],
-      'json' => [
-        'branch' => $options['ci-branch'],
-        'parameters' => [
-          'webhook' => FALSE,
-          'ma-cf-deploy' => TRUE,
-          'target' => $target,
-        ],
-      ],
-    ];
-    $response = $client->request('POST', self::CIRCLE_URI, $options);
-    $code = $response->getStatusCode();
-    if ($code >= 400) {
-      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
-    }
-
-    $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success($this->getSuccessMessage($body));
-  }
-
+  
   /**
    * Write the download link for the most recent database backup to stdout.
    *
@@ -244,11 +205,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function latestBackupUrl($target, $type = null) {
-    $cloudapi = $this->getClient();
-    $connector = $this->getConnector();
-
     $env = $this->siteAliasManager()->getAlias($target);
-    $backups = $cloudapi->databaseBackups($env->get('uuid'), 'massgov');
+    $cloudapi = $this->getClient();
+    $backup = new DatabaseBackups($cloudapi);
+    $backups = $backup->getAll($env->get('uuid'), 'massgov');
 
     // Ignore backups that are still in progress, and of wrong type.
     // The 'use' keyword is described at https://bryce.fisher-fleig.org/blog/php-what-does-function-use-syntax-mean/index.html.
@@ -260,12 +220,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $backup = reset($backups);
     if ($backup) {
       $url = $backup->links->download->href;
-      if(strpos($url, Connector::BASE_URI) !== 0) {
-        throw new Error('Backup URL is not hosted on Acquia API. We\'re not sure what to do here.');
+      if(!str_starts_with($url, Connector::BASE_URI)) {
+        throw new \Exception('Backup URL is not hosted on Acquia API. We\'re not sure what to do here.');
       }
-      $response = $connector->makeRequest('get', substr($url, strlen(Connector::BASE_URI)), [], [
-        'allow_redirects' => FALSE,
-      ]);
+      $response = $cloudapi->makeRequest('get', substr($url, strlen(Connector::BASE_URI)), ['allow_redirects' => FALSE]);
       return $response->getHeader('Location');
     }
     throw new \Exception('No usable backups were found.');
@@ -404,6 +362,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     if ($options['skip-maint'] == FALSE) {
       // Turn on Maint mode.
+      // @todo change to `drush maint:set` after Drush 11.5 is deployed to Prod.
       $args = array('system.maintenance_mode', 1);
       $state_options = array('input-format' => 'integer');
       $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
@@ -416,7 +375,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->setPhpVersion($targetRecord, self::PHP_VERSION);
 
     // Deploy the new code.
-    $operationResponse = $this->getClient()->switchCode($targetRecord->get('uuid'), $git_ref);
+    $operationResponse = (new Code($this->getClient()))->switch($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
     /** @noinspection PhpParamsInspection */
     $this->waitForTaskToComplete(basename($href));
@@ -425,44 +384,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
 
-    // Get a list of all an environment's domains.
-    // Note: This also returns load balancer URLs.
-    $domains = $this->getClient()->domains($targetRecord->get('uuid'));
-    foreach ($domains as $domain) {
-      // Skip Load Balancers.
-      if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain->hostname)) {
-        $domains_web[] = $domain->hostname;
-      }
-    }
-
-    if ($options['varnish']) {
-      // Clear the cache for the domains.
-      $this->getClient()->purgeVarnishCache($targetRecord->get('uuid'), $domains_web);
-      $this->logger()->success("Purged full Varnish cache for in $target environment.");
-    }
-    else {
-      // Enqueue purging of QAG pages.
-      $sql = "SELECT nid FROM node_field_data WHERE title LIKE '%_QAG%'";
-      $process = Drush::drush($targetRecord, 'sql:query', [$sql], ['verbose' => TRUE]);
-      $process->mustRun();
-      $out = $process->getOutput();
-      $nids = array_filter(explode("\n", $out));
-      foreach ($nids as $nid) {
-        $tags[] = "node:$nid";
-      }
-      $process = Drush::drush($targetRecord, 'cache:tags', [implode(',', $tags)], ['verbose' => TRUE]);
-      $process->mustRun();
-
-      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
-      // Empty path is the homepage
-      $paths = ['', '/orgs/office-of-the-governor', '/media/1268726'];
-      foreach ($paths as $path) {
-        $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
-        $process->mustRun();
-      }
-
-      $this->logger()->success("Selective Purge enqueued at $target.");
-    }
+    $this->purgeSelective($targetRecord);
+    $this->logger()->success("Selective Purge enqueued at $target.");
 
     // Perform a final cache rebuild just in case. Root cause is unknown.
     // @todo Explore removing this in future.
@@ -591,6 +514,28 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     return $return ?: NULL;
   }
 
+  public function purgeSelective(SiteAlias|bool $targetRecord) {
+    // Enqueue purging of QAG pages.
+    $sql = "SELECT nid FROM node_field_data WHERE title LIKE '%_QAG%'";
+    $process = Drush::drush($targetRecord, 'sql:query', [$sql], ['verbose' => TRUE]);
+    $process->mustRun();
+    $out = $process->getOutput();
+    $nids = array_filter(explode("\n", $out));
+    foreach ($nids as $nid) {
+      $tags[] = "node:$nid";
+    }
+    $process = Drush::drush($targetRecord, 'cache:tags', [implode(',', $tags)], ['verbose' => TRUE]);
+    $process->mustRun();
+
+    // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
+    // Empty path is the homepage
+    $paths = ['', '/orgs/office-of-the-governor', '/media/1268726'];
+    foreach ($paths as $path) {
+      $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
+      $process->mustRun();
+    }
+  }
+
   /**
    * Validate the presence of a CircleCI token
    *
@@ -624,11 +569,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function waitForTaskToComplete($uuid) {
-    $task_complete = FALSE;
-    $cloudapi = $this->getClient();
+    $client = $this->getClient();
 
-    while ($task_complete !== TRUE) {
-      $notification = $cloudapi->notification($uuid);
+    while (TRUE) {
+      $notification = (new Notifications($client))->get($uuid);
       if ($notification->status == 'completed') {
         $this->logger()->success(dt('!desc is complete: Notification !uuid.', ['!desc' => $notification->description, '!uuid' => $uuid]));
         break;
@@ -735,9 +679,9 @@ EOT;
    */
   private function setPhpVersion(SiteAlias $targetRecord, string $version): void {
     $environmentUuid = $targetRecord->get('uuid');
+    $client = $this->getClient();
 
-    $currentVersion = $this->getClient()
-      ->environment($environmentUuid)
+    $currentVersion = (new Environments($client))->get($environmentUuid)
       ->configuration
       ->php
       ->version;
@@ -752,10 +696,7 @@ EOT;
         'name' => $targetRecord->name(),
         'version'=> $version,
       ]);
-      $modifyResponse = $this->getClient()
-        ->modifyEnvironment($environmentUuid, [
-          'version' => $version,
-        ]);
+      $modifyResponse = (new Environments($this->getClient()))->update($environmentUuid, ['version' => $version]);
       /** @noinspection PhpParamsInspection */
       $this->waitForTaskToComplete(basename($modifyResponse->links->notification->href));
     }

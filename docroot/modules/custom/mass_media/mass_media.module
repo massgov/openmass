@@ -209,7 +209,7 @@ function mass_media_media_presave(MediaInterface $entity) {
         if (!\Drupal::service('file_system')->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
           throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
         }
-        if (!file_move($file, $file_destination)) {
+        if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
           throw new \RuntimeException("Unable to move file to '$file_destination'");
         }
       }
