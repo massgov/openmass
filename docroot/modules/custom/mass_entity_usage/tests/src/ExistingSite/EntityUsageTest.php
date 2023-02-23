@@ -120,7 +120,7 @@ class EntityUsageTest extends ExistingSiteBase {
     ]);
 
     // Get last created node.
-    $res = \Drupal::entityQuery('node')->sort('nid', 'DESC')->range(0, 1)->execute();
+    $res = \Drupal::entityQuery('node')->accessCheck(FALSE)->sort('nid', 'DESC')->range(0, 1)->execute();
     $nid = reset($res);
     $node_curated_list = Node::load($nid);
 
