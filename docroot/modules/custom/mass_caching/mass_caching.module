@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\mass_caching\AkamaiPurger;
 /**
  * @file
  * Module file for mass_caching.
@@ -25,7 +26,7 @@ function mass_caching_purge_purgers_alter(array &$definitions): void {
     // For now, we enable this purger via State. When disabled, the standard
     // Akamai purger is active.
     if (isset($definitions['akamai'])) {
-      $definitions['akamai']['class'] = \Drupal\mass_caching\AkamaiPurger::class;
+      $definitions['akamai']['class'] = AkamaiPurger::class;
     }
   }
 
@@ -69,8 +70,8 @@ function mass_caching_file_insert(FileInterface $file) {
   }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
-  $absolute = file_create_url($file->getFileUri());
-  $relative = file_url_transform_relative($absolute);
+  $absolute = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+  $relative = \Drupal::service('file_url_generator')->transformRelative($absolute);
   \Drupal::service('manual_purger')->purgePath($relative);
 }
 
@@ -85,8 +86,8 @@ function mass_caching_file_update(FileInterface $file) {
   }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
-  $absolute = file_create_url($file->getFileUri());
-  $relative = file_url_transform_relative($absolute);
+  $absolute = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+  $relative = \Drupal::service('file_url_generator')->transformRelative($absolute);
   \Drupal::service('manual_purger')->purgePath($relative);
 }
 
@@ -101,8 +102,8 @@ function mass_caching_file_delete(FileInterface $file) {
   }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
-  $absolute = file_create_url($file->getFileUri());
-  $relative = file_url_transform_relative($absolute);
+  $absolute = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+  $relative = \Drupal::service('file_url_generator')->transformRelative($absolute);
   \Drupal::service('manual_purger')->purgePath($relative);
 }
 
@@ -117,8 +118,8 @@ function mass_caching_file_move(FileInterface $file, FileInterface $source) {
   }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
-  $absolute = file_create_url($file->getFileUri());
-  $relative = file_url_transform_relative($absolute);
+  $absolute = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+  $relative = \Drupal::service('file_url_generator')->transformRelative($absolute);
   \Drupal::service('manual_purger')->purgePath($relative);
 }
 

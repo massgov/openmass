@@ -36,7 +36,7 @@ class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
       // Path to save files to.
       $directory = "documents" . "/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
 
-      file_move($file, 'private://' . $directory, FileSystemInterface::EXISTS_REPLACE);
+      \Drupal::service('file.repository')->move($file, 'private://' . $directory, FileSystemInterface::EXISTS_REPLACE);
     }
   }
 

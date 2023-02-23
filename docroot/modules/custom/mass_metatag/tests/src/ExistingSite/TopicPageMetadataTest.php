@@ -72,7 +72,7 @@ class TopicPageMetadataTest extends MetadataTestCase {
    */
   public function getExpectedMetadata(ContentEntityInterface $entity) {
     $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
-    $bare = file_create_url('public://test.jpg');
+    $bare = \Drupal::service('file_url_generator')->generateAbsoluteString('public://test.jpg');
     return array_merge(parent::getExpectedMetadata($entity), [
       $url . '#topic_page' => [
         '@context' => 'https://schema.org',

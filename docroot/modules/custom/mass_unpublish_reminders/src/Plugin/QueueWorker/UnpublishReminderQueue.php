@@ -34,6 +34,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
         if ($org = $author->getOrg()->getValue()) {
           $org_id = $org[0]['target_id'];
           $result = \Drupal::entityQuery('user')
+            ->accessCheck(FALSE)
             ->condition('uid', $author->id(), '!=')
             ->condition('status', 1)
             ->condition('field_user_org', $org_id);
