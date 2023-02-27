@@ -41,8 +41,8 @@ they look the same.
 
 ## Usage
 
-> 🛑 If you're using an M1 Mac, the ddev commands will not work. You can try the
-> local circleci runner as described below.
+> 🛑 If you're using an M1 Mac, the ddev commands may not work. You can try the
+> local circleci runner as described below, or [turn on Rosetta2 virtualization in Docker Desktop](https://levelup.gitconnected.com/docker-on-apple-silicon-mac-how-to-run-x86-containers-with-rosetta-2-4a679913a0d5)
 
 - If testing an Acquia environment, make sure the `LOWER_ENVIR_AUTH_USER` and
 `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
