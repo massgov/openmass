@@ -53,7 +53,7 @@ they look the same.
   reference screenshots will usually come from the production environment. Take
   screen captures of production pages with
   `ddev backstop reference --target=prod --list=all`
-  Reference screenshots can also be captued from a Tugboat environment with
+  Reference screenshots can also be captured from a Tugboat environment with
   `ddev backstop test -- --target=tugboat --viewport=desktop --tugboat=https://pr1109-3njbhyjchfr06gmuwiojlcdcxrimpaox.tugboat.qa/`
 - Take screen captures of local pages to compare
   `ddev backstop test --target=local --list=all`
