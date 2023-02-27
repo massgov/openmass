@@ -32,13 +32,14 @@
  */
 #}
 {# Hamburger menu only #}
-{% set ariaLabel = heading_id ?? 'main-navigation-heading' %}
-<nav class="ma__header__hamburger__nav" aria-labelledby="{{ ariaLabel }}"  id="main-navigation" role="navigation">
+{# {% set ariaLabel = heading_id ?? 'main-navigation-heading' %} #}
+<nav class="ma__header__hamburger__nav" id="main-navigation" role="navigation">
+  <span id="header-nav-label" class="ma__visually-hidden">Main navigation</span>
   <div class="ma__header__hamburger-wrapper">
 
     <div class="ma__header__hamburger__button-container js-sticky-header">
       <button type="button"
-              aria-label="Open the main menu for mass.gov"
+              aria-label="Main menu for mass.gov"
               aria-expanded="false"
               class="ma__header__hamburger__menu-button js-header-menu-button">
         <span class="ma__header__hamburger__menu-icon"></span>
@@ -67,12 +68,12 @@
     </div>
 
     {# Label. If not displayed, we still provide it for screen readers.#}
-    {% if not configuration.label_display %}
+    {# {% if not configuration.label_display %}
       {% set title_attributes = title_attributes.addClass('visually-hidden') %}
     {% endif %}
     {{ title_prefix }}
     <div{{ title_attributes.setAttribute('id', ariaLabel) }}>{{ configuration.label }}</div>
-    {{ title_suffix }}
+    {{ title_suffix }} #}
 
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
       <div class="ma__header__hamburger__logo ma__header__hamburger__logo--mobile">
