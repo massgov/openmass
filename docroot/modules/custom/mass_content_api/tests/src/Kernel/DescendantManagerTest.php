@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_content_api\Kernel;
 
+use Prophecy\PhpUnit\ProphecyTrait;
 use Drupal\mass_content_api\DescendantExtractor;
 use Drupal\mass_content_api\DescendantExtractorInterface;
 use Drupal\mass_content_api\DescendantManager;
@@ -15,6 +16,8 @@ use Prophecy\Argument;
  * Tests the descendant manager.
  */
 class DescendantManagerTest extends UnitTestCase {
+
+  use ProphecyTrait;
 
   /**
    * Assert that we indexing removes existing relationships.

@@ -43,7 +43,7 @@ function mass_tours_page_bottom(array &$page_bottom) {
     $tourid = str_replace("_", "-", $nodetype);
     $results = \Drupal::entityQuery('tour')
       ->condition('id', 'node-edit-' . $tourid)
-      ->execute();
+      ->accessCheck(FALSE)->execute();
 
     if (!empty($results) && $tours = Tour::loadMultiple(array_keys($results))) {
       if (!empty($tours)) {

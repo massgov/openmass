@@ -15,7 +15,7 @@ use Drupal\mayflower\Helper;
 function mass_decision_tree_post_update_answers(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node');
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $query->condition('type', 'decision_tree_branch');
   $group = $query->orConditionGroup();
   $group->exists('field_answers');
@@ -30,7 +30,7 @@ function mass_decision_tree_post_update_answers(&$sandbox) {
 
   $batch_size = 5;
 
-  $nids = $query->condition('nid', $sandbox['current'], '>')
+  $nids = $query->accessCheck(FALSE)->condition('nid', $sandbox['current'], '>')
     ->sort('nid')
     ->range(0, $batch_size)
     ->execute();

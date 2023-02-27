@@ -245,6 +245,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    */
   public function unPublishExistingSiteWideAlert() {
     $nids = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('type', 'sitewide_alert')
       ->condition('status', 1)
       ->execute();

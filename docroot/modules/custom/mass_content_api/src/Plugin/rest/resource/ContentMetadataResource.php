@@ -252,7 +252,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
     }
     $query->range($offset_num, $record_limit);
     $query->sort('nid', 'ASC');
-    $entity_ids = $query->execute();
+    $entity_ids = $query->accessCheck(FALSE)->execute();
 
     $nodes = $node_storage->loadMultiple($entity_ids);
     $results = [];

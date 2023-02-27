@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_utility\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
@@ -9,7 +10,6 @@ use Drupal\node\Entity\NodeType;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -72,7 +72,7 @@ class NewRelicTransactionSubscriber implements EventSubscriberInterface {
   /**
    * Check if a response came from the dynamic page cache and name the txn.
    */
-  public function onResponse(FilterResponseEvent $event) {
+  public function onResponse(ResponseEvent $event) {
     $response = $event->getResponse();
     // Capture data for transactions that would not otherwise be named because
     // they do not match a route.
