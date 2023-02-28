@@ -6,21 +6,24 @@
 #}
   {#{{ kint(searchFormId) }}#}
 {% block content %}
-<form class="ma__search-banner__form" action="https://search.mass.gov/">
+<form role="search" class="ma__search-banner__form" action="https://search.mass.gov/">
   <div class="ma__search-banner__input js-suggestions-container" role="search">
-    <div class="visually-hidden js-suggestions-help" role="status"  aria-live="assertive"></div>
+    <div id="autosuggest-info" class="ma__visually-hidden" aria-hidden="true">Suggestions are presented as an open option list only when they are available.</div>
+    <div class="ma__visually-hidden js-suggestions-help" role="status"  aria-live="assertive"></div>
     <label for="banner-search" class="ma__search-banner__label">Search terms</label>
     <input
-        id="banner-search"
-        name="q"
-        class="ma__header-search__input"
-        autocomplete="off"
-        aria-autocomplete="both"
-        role="combobox"
-        aria-own="suggestions-list"
-        placeholder="Search Mass.gov"
-        data-suggest=""
-        type="text" />
+      id="banner-search"
+      name="q"
+      class="ma__header-search__input"
+      type="search"
+      inputmode="search"
+      aria-autocomplete="list"
+      role="combobox"
+      aria-expanded="false"
+      aria-controls="suggestions-list"
+      placeholder="Search Mass.gov"
+      data-suggest=""
+      aria-describedby="autosuggest-info" />
     <div class="ma__suggestions" data-suggestions=""></div>
   </div>
   <button class="ma__search-banner__button" type="submit">
