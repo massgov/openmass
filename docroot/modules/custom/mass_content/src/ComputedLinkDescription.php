@@ -32,13 +32,15 @@ class ComputedLinkDescription extends StringData {
         'regulation' => 'field_regulation_listing_desc',
         'rules' => 'field_rules_listing_desc',
       ];
-      if (!empty($entity->{$desc_fields[$entity->bundle()]}->value)) {
-        return [
-          '#markup' => $entity->{$desc_fields[$entity->bundle()]}->value,
-          '#cache' => [
-            'tags' => $entity->getCacheTags(),
-          ],
-        ];
+      if (isset($desc_fields[$entity->bundle()])) {
+        if (!empty($entity->{$desc_fields[$entity->bundle()]}->value)) {
+          return [
+            '#markup' => $entity->{$desc_fields[$entity->bundle()]}->value,
+            '#cache' => [
+              'tags' => $entity->getCacheTags(),
+            ],
+          ];
+        }
       }
     }
     return '';
