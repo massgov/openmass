@@ -194,7 +194,7 @@ class ConfigForm extends ConfigFormBase {
       }
       // Check that email address matches a user in the system.
       $query = \Drupal::entityTypeManager()->getStorage('user')->getQuery();
-      $uids = $query->condition('mail', $email)
+      $uids = $query->accessCheck(FALSE)->condition('mail', $email)
         ->range(0, 1)
         ->execute();
       if (count($uids) <= 0) {

@@ -23,7 +23,9 @@ services:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
     volumes:
-      - ".:/mnt/ddev_config"
+      - ".:/mnt/ddev_config:ro"
+      - ddev-global-cache:/mnt/ddev-global-cache
+    shm_size: 2gb
 
   web:
     links:

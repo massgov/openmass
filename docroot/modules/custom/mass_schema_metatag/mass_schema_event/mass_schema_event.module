@@ -79,7 +79,7 @@ function mass_schema_event_tokens($type, $tokens, array $data, array $options, B
         $referenced_entities = $entity->get($name)->referencedEntities();
         foreach ($referenced_entities as $referenced_entity) {
           $file_uri = $referenced_entity->getFileUri();
-          $url = file_create_url($file_uri);
+          $url = \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
           if ($url && !in_array($url, $data)) {
             $data[] = $url;
           }

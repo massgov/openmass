@@ -24,17 +24,17 @@ function mass_admin_toolbar_preprocess_toolbar(&$variables) {
  */
 function mass_admin_toolbar_css_alter(&$css, $assets) {
   // Disable style sheets from core toolbar module.
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.icons.theme.css']);
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.module.css']);
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.menu.css']);
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.theme.css']);
+  unset($css[\Drupal::service('extension.list.module')->getPath('toolbar') . '/css/toolbar.icons.theme.css']);
+  unset($css[\Drupal::service('extension.list.module')->getPath('toolbar') . '/css/toolbar.module.css']);
+  unset($css[\Drupal::service('extension.list.module')->getPath('toolbar') . '/css/toolbar.menu.css']);
+  unset($css[\Drupal::service('extension.list.module')->getPath('toolbar') . '/css/toolbar.theme.css']);
   // Disable stylesheet from admin_toolbar module.
-  unset($css[drupal_get_path('module', 'admin_toolbar') . '/css/admin.toolbar.css']);
+  unset($css[\Drupal::service('extension.list.module')->getPath('admin_toolbar') . '/css/admin.toolbar.css']);
   // Disable styles coming from Stable because somehow they are getting into the admin theme.
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.icons.theme.css']);
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.module.css']);
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.menu.css']);
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.theme.css']);
+  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.icons.theme.css']);
+  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.module.css']);
+  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.menu.css']);
+  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.theme.css']);
 }
 
 /**

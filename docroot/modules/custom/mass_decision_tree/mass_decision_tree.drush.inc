@@ -25,7 +25,7 @@ function mass_decision_tree_drush_command() {
 function drush_mass_decision_tree_parent_populate() {
 
   // Get all Decision Tree nodes.
-  $query = Drupal::entityQuery('node')
+  $query = Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('type', 'decision_tree');
   $tree_ids = $query->execute();
 
