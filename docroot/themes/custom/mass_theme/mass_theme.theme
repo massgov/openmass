@@ -6722,7 +6722,12 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
       break;
 
     case 'collection':
-      $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+      // In some rare cases field_url_name might be missing, so we set
+      // default value to avoid warnings.
+      $collection_url = '/';
+      if ($p->field_collection->referencedEntities()[0]->field_url_name) {
+        $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+      }
       $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
       $variables['searchBoxWithLinks']['form']['inputName'] = t('title');
 
