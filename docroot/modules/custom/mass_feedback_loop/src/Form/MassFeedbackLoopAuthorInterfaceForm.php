@@ -252,7 +252,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#type' => 'checkboxes',
       '#options' => ['watch_content' => $this->t('Watched pages only')],
       '#title' => $this->t('Filter by watched pages only'),
-      '#default_value' => $feedback_api_params['watch_content'] ? ['watch_content'] : [],
+      '#default_value' => !empty($feedback_api_params['watch_content']) ? ['watch_content'] : [],
     ];
 
     // Hidden value used for tracking current page on pager in case of reload.
@@ -417,6 +417,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       }
 
       $filter_by_watched_param = $form_state->getValue('watch_content');
+
       if (isset($filter_by_watched_param['watch_content'])) {
         $watch_value = $filter_by_watched_param['watch_content'];
       }
