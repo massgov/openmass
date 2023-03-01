@@ -417,7 +417,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       }
 
       $filter_by_watched_param = $form_state->getValue('watch_content');
-
       if (isset($filter_by_watched_param['watch_content'])) {
         $watch_value = $filter_by_watched_param['watch_content'];
       }
