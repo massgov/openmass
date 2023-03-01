@@ -5865,7 +5865,12 @@ function mass_theme_preprocess_file_link(&$variables) {
   $variables['download']['filetype'] = $file_extension;
 
   // Set the icon name.
-  $variables['download']['iconName'] = 'doc-' . $file_extension;
+  $file_extension = strtoupper($file_info->getExtension());
+  $file_icon = 'doc-' . strtolower($file_extension);
+  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+    $file_icon = 'doc-generic';
+  }
+  $variables['download']['iconName'] = $file_icon;
 }
 
 /**
