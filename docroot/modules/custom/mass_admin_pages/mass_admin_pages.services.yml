@@ -5,11 +5,6 @@ services:
       - {name: event_subscriber}
     arguments: ['@datetime.time', '@router.admin_context']
 
-  mass_admin_pages.route_subscriber:
-    class: Drupal\mass_admin_pages\EventSubscriber\RouteSubscriber
-    tags:
-      - { name: event_subscriber }
-
   theme.negotiator.mass_admin_pages:
     class: Drupal\mass_admin_pages\Theme\ThemeNegotiator
     tags:

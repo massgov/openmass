@@ -15,31 +15,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 
 /**
- * Add icon to Mass menu item thats shown in admin toolbar.
- */
-function mass_admin_pages_preprocess_menu(&$variables) {
-  // A menu item to css class mapping.
-  $map = [
-    'mass_admin_pages.mass' => 'toolbar-icon-tmgmt-admin-tmgmt',
-    // 'mass_admin_pages.admin' => 'toolbar-icon-system-admin-config',
-    'mass_admin_pages.help' => 'toolbar-icon-help-main',
-    'mass_admin_pages.drupal' => 'toolbar-icon-system-modules-list',
-    'mass_admin_pages.all_collection' => 'toolbar-icon-entity-webform-collection',
-    'mass_admin_pages.trash_collection' => 'toolbar-icon-rebuild-cache-access',
-    'views_view:views.mass_dashboard_needs_review.page_1' => 'toolbar-icon-system-admin-structure',
-    'views_view:views.my_content.page_1' => 'toolbar-icon-entity-user-collection',
-    'mass_feedback_loop.mass_feedback_loop_author_interface_form' => 'toolbar-icon-system-admin-reports',
-  ];
-  foreach ($map as $link => $class) {
-    if (isset($variables['items'][$link])) {
-      $options = $variables['items'][$link]['url']->getOptions();
-      $options['attributes']['class'][] = $class;
-      $variables['items'][$link]['url']->setOptions($options);
-    }
-  }
-}
-
-/**
  * Implements hook_user_login().
  *
  * Redirect users to the admin home on successful login.
