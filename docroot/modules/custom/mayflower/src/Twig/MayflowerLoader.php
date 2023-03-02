@@ -2,10 +2,12 @@
 
 namespace Drupal\mayflower\Twig;
 
+use Twig\Loader\FilesystemLoader;
+
 /**
  * Twig loader to load Mayflower templates from the library.
  */
-class MayflowerLoader extends \Twig_Loader_Filesystem {
+class MayflowerLoader extends FilesystemLoader {
 
   const NAMESPACES = [
     'base' => '00-base',

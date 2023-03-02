@@ -90,7 +90,7 @@ class LocationMetadataTest extends MetadataTestCase {
         ],
         'photo' => [
           [
-            file_create_url('public://test.jpg'),
+            \Drupal::service('file_url_generator')->generateAbsoluteString('public://test.jpg'),
           ],
         ],
       ],

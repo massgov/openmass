@@ -79,11 +79,11 @@ function mayflower_js_settings_build(array &$settings, AttachedAssetsInterface $
 
     $artifacts = mayflower_get_path();
     foreach (MayflowerLoader::NAMESPACES as $namespace => $subdir) {
-      $namespacePaths["@$namespace"] = file_url_transform_relative(file_create_url(sprintf('%s/twig/%s/', $artifacts, $subdir)));
+      $namespacePaths["@$namespace"] = \Drupal::service('file_url_generator')->generateString(sprintf('%s/twig/%s/', $artifacts, $subdir));
     }
     $settings['mayflower'] = [
       'namespaces' => $namespacePaths,
-      'assets' => file_url_transform_relative(file_create_url(sprintf('%s/assets', $artifacts))),
+      'assets' => \Drupal::service('file_url_generator')->generateString(sprintf('%s/assets', $artifacts)),
     ];
   }
 }
@@ -190,7 +190,7 @@ function mayflower_theme_suggestions_menu_alter(array &$suggestions, array $vari
 function mayflower_preprocess_block(array &$variables) {
   if (!empty($variables['elements']['#id'])) {
     $variables['content']['#attributes']['data-block-id'] = $variables['elements']['#id'];
-    $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+    $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
   }
 }
 

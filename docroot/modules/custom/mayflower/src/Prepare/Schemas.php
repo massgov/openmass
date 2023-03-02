@@ -114,7 +114,7 @@ class Schemas {
       $schema['governmentOrganization']['logo'] = array_key_exists('image', $variables['pageHeader']['widgets'][0]['data']) ? Helper::sanitizeUrlCacheString($variables['pageHeader']['widgets'][0]['data']['image']['src'], "?itok=") : '';
     }
     elseif (isset($variables['node']->field_sub_brand->entity)) {
-      $schema['governmentOrganization']['logo'] = file_create_url($variables['node']->field_sub_brand->entity->getFileUri());
+      $schema['governmentOrganization']['logo'] = \Drupal::service('file_url_generator')->generateAbsoluteString($variables['node']->field_sub_brand->entity->getFileUri());
     }
 
     // Use the current host + path alias as URL.

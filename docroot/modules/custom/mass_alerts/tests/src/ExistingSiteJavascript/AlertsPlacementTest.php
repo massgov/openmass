@@ -21,6 +21,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
   private function unpublishAlerts() {
     // Unpublish any existing sitewide alerts so our slate is clean.
     $nids = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('type', 'sitewide_alert')
       ->condition('status', 1)
       ->execute();

@@ -100,7 +100,7 @@ class MassUtilityCommands extends DrushCommands {
 
     // Load nodes and save.
     foreach ($node_types as $node_type) {
-      $query = \Drupal::entityQuery('node');
+      $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
       $nids = $query->condition('type', $node_type)->execute();
       /** @var Drupal\node\Entity\Node[] $nodes */
       $nodes = Node::loadMultiple($nids);

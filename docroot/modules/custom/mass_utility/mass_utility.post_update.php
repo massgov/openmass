@@ -19,7 +19,7 @@ use Drupal\media\Entity\Media;
  * See https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Extension%21module.api.php/function/hook_post_update_NAME/8.3.x.
  */
 function mass_utility_post_update_address_field() {
-  $eq = \Drupal::entityQuery('node');
+  $eq = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $nids = $eq->condition('type', 'contact_information')->execute();
   /** @var Drupal\node\Entity\Node[] $nodes */
   $nodes = Node::loadMultiple($nids);
@@ -172,6 +172,7 @@ function mass_utility_post_update_curated_list_manual_sections(&$sandbox = NULL)
     $sandbox['progress'] = 0;
     $sandbox['current_index'] = 0;
     $sandbox['max'] = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('type', 'curated_list')
       ->count()
       ->execute();
@@ -179,6 +180,7 @@ function mass_utility_post_update_curated_list_manual_sections(&$sandbox = NULL)
 
   $batch_size = 50;
   $nids = \Drupal::entityQuery('node')
+    ->accessCheck(FALSE)
     ->condition('type', 'curated_list')
     ->condition('nid', $sandbox['current_index'], '>')
     ->sort('nid')
@@ -282,6 +284,7 @@ function mass_utility_post_update_curated_list_document_items(&$sandbox = NULL) 
     $sandbox['progress'] = 0;
     $sandbox['current_index'] = 0;
     $sandbox['max'] = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('type', 'curated_list')
       ->count()
       ->execute();
@@ -289,6 +292,7 @@ function mass_utility_post_update_curated_list_document_items(&$sandbox = NULL) 
 
   $batch_size = 50;
   $nids = \Drupal::entityQuery('node')
+    ->accessCheck(FALSE)
     ->condition('type', 'curated_list')
     ->condition('nid', $sandbox['current_index'], '>')
     ->sort('nid')
@@ -362,6 +366,7 @@ function mass_utility_post_update_enable_contact_forms_all_users() {
   // Enable all user accounts with the contact settings.
   /** @var \Drupal\user\UserInterface */
   $uids = \Drupal::entityQuery('user')
+    ->accessCheck(FALSE)
     ->condition('uid', 1, '>')
     ->execute();
 
@@ -388,7 +393,7 @@ function mass_utility_post_update_set_all_content_view_redirect(&$sandbox) {
  * DP-7740: Populate new Subtype field with default value.
  */
 function mass_utility_post_update_subtype_field() {
-  $eq = \Drupal::entityQuery('node');
+  $eq = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $nids = $eq->condition('type', 'org_page')->execute();
   /** @var Drupal\node\Entity\Node[] $nodes */
   $nodes = Node::loadMultiple($nids);
@@ -465,7 +470,7 @@ function mass_utility_post_update_archived_to_unpublished(&$sandbox) {
 
   // NOTE: We have only ~600 archived nodes of total 50,000.
   // So we can safely move them in a single go.
-  $query = \Drupal::entityQuery('node')
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('moderation_state', 'archived');
   $result = $query->execute();
 
@@ -534,7 +539,7 @@ function mass_utility_post_update_link_titles() {
 function mass_utility_post_update_person_url_alias() {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  $query = \Drupal::entityQuery('node')
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
     ->condition('type', 'person');
   $result = $query->execute();
   $entity_storage = \Drupal::entityTypeManager()->getStorage('node');
@@ -705,6 +710,7 @@ function mass_utility_post_update_clean_file_managed() {
  */
 function mass_utility_post_update_queue_person_org_sync() {
   $nids = \Drupal::entityQuery('node')
+    ->accessCheck(FALSE)
     ->condition('type', 'person')
     ->execute();
 
@@ -746,7 +752,7 @@ function mass_utility_post_update_queue_document_sync() {
  */
 function mass_utility_post_update_unpublished_document_files(&$sandbox) {
   $storage_manager = \Drupal::entityTypeManager()->getStorage('media');
-  $query = $storage_manager->getQuery();
+  $query = $storage_manager->getQuery()->accessCheck(FALSE);
   $query->condition('bundle', 'document')
     ->condition('status', 0);
   $mids = $query->execute();
@@ -1775,7 +1781,7 @@ function mass_utility_post_update_service_page_template(&$sandbox) {
   $batch_size = 50;
 
   $nodeStorage = \Drupal::entityTypeManager()->getStorage('node');
-  $query = $nodeStorage->getQuery();
+  $query = $nodeStorage->getQuery()->accessCheck(FALSE);
 
   $query->condition('type', 'service_page');
 

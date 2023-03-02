@@ -141,7 +141,7 @@ function mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateIn
     if ($entity->id()) {
       $query->condition('nid', $entity->id(), '!=');
     }
-    $existing = $query->execute();
+    $existing = $query->accessCheck(FALSE)->execute();
     if (count($existing) > 0) {
       if ($existingNode = Node::load(reset($existing))) {
         $link = $existingNode->toLink()->toString();

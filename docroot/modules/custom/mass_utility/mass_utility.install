@@ -627,8 +627,8 @@ function mass_utility_update_8024() {
  */
 function mass_utility_update_8025() {
   // Add an icon for File Browser.
-  $data = file_get_contents(drupal_get_path('theme', 'mass_admin_theme') . '/icons/embed_image.png');
-  $file = file_save_data($data, 'public://file_browser_icon.png', FileSystemInterface::EXISTS_REPLACE);
+  $data = file_get_contents(\Drupal::service('extension.list.theme')->getPath('mass_admin_theme') . '/icons/embed_image.png');
+  $file = \Drupal::service('file.repository')->writeData($data, 'public://file_browser_icon.png', FileSystemInterface::EXISTS_REPLACE);
   $configuration = \Drupal::configFactory()->get('embed.button.file_browser');
   $uuid = $configuration->get('icon_uuid');
 

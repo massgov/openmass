@@ -105,7 +105,7 @@ class DecisionMetadataTest extends MetadataTestCase {
         'about' => 'TestOverview',
         'releasedEvent' => 'Mon, 12/31/2012 - 12:00',
         'significantLink' => [
-          file_create_url('public://test.txt'),
+          \Drupal::service('file_url_generator')->generateAbsoluteString('public://test.txt'),
         ],
         'sourceOrganization' => 'Test Org Page',
         'name' => 'Test Decision',
