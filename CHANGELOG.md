@@ -1,7 +1,7 @@
 ## [0.352.1] - March 2, 2023
 
 ### Fixed
-- DP-27400: Fix php error in: drush ma:queue-revision-cleanup
+- DP-27400: Fix php error in: drush ma:queue-revision-cleanup.
 
 ## [0.352.0] - February 28, 2023
 
