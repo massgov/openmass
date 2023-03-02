@@ -24,7 +24,7 @@ class BatchService {
    * @param \DrushBatchContext $context
    *   Context for operations.
    */
-  public function populateRevisionsCleanupQueue(array $nids, $timestamp, $batch, DrushBatchContext &$context) {
+  public static function populateRevisionsCleanupQueue(array $nids, $timestamp, $batch, DrushBatchContext &$context) {
     if (empty($context['sandbox'])) {
       $context['sandbox']['progress'] = 0;
     }
@@ -83,7 +83,7 @@ class BatchService {
    * @param array $operations
    *   Array of operations.
    */
-  public function populateRevisionsCleanupQueueFinished($success, array $results, array $operations) {
+  public static function populateRevisionsCleanupQueueFinished($success, array $results, array $operations) {
     $messenger = \Drupal::service('messenger');
     if ($success) {
       $messenger->addMessage(
