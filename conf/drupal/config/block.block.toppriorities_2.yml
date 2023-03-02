@@ -1,0 +1,25 @@
+uuid: 29686d4e-85f0-4535-8109-567df1e80cda
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_superset
+    - system
+  theme:
+    - gin
+id: toppriorities_2
+theme: gin
+region: content
+weight: -2
+provider: null
+plugin: top_priorities_block
+settings:
+  id: top_priorities_block
+  label: 'Top Priorities'
+  label_display: '0'
+  provider: mass_superset
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: /admin

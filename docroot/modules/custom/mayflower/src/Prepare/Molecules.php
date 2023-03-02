@@ -430,7 +430,7 @@ class Molecules {
       'catIcon' => in_array($entity->getType(), isset($options['useIcon']) ? $options['useIcon'] : []) ? $icon : '',
       'title' => [
         'href' => $entity->toURL()->toString(),
-        // @TODO: check if title is being overridden
+        // @todo Check if title is being overridden.
         'text' => isset($options['title_override']) ? $options['title_override'] : $entity->getTitle(),
       ],
       'description' => !empty($entity->{$fields['text']}->value) ? Helper::fieldValue($entity, $fields['text']) : '',
@@ -873,7 +873,7 @@ class Molecules {
       'accordion' => isset($options['accordion']) ? $options['accordion'] : FALSE,
       'isExpanded' => isset($options['isExpanded']) ? $options['isExpanded'] : FALSE,
       'level' => isset($options['level']) ? $options['level'] : '',
-      // TODO: Needs validation if empty or not.
+      // @todo Needs validation if empty or not.
       'subTitle' => $title,
       'groups' => $groups,
     ];
@@ -1012,7 +1012,7 @@ class Molecules {
           $fax_number = Helper::fieldValue($faxEntity, 'field_fax');
         }
 
-        // @todo: This logic is broken.  It's supposed to load an e-mail value
+        // @todo This logic is broken. It's supposed to load an e-mail value.
         // from a paragraph's link field (I think), but it doesn't work. Instead,
         // it causes paragraph loads that don't do anything.
         // Get links.
@@ -1701,7 +1701,7 @@ class Molecules {
       'regulation',
       'event',
       'advisory',
-      'news'
+      'news',
     ];
 
     $map = [

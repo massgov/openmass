@@ -2,9 +2,6 @@
 
 namespace Drupal\mass_utility\Commands;
 
-use Drupal\Core\Entity\EntityStorageException;
-use Drupal\node\NodeInterface;
-use Drupal\redirect\Entity\Redirect;
 use Drush\Commands\DrushCommands;
 use Drupal\Core\Url;
 use Drupal\Core\Database\Connection;
@@ -249,7 +246,7 @@ class MassUtilityCommands extends DrushCommands {
       $pattern_config = \Drupal::configFactory()->getEditable($pattern_config_name);
       // Collect those patterns that have a constant string in first segment.
       // Eg: /how-to/[node-title]
-      // TODO Collect patterns with dynamic tokens in first segment.
+      // @todo Collect patterns with dynamic tokens in first segment.
       // Eg: /[node:field_advisory_type_tax]/[node:title].
       $first_segment = reset(array_filter(explode('/', $pattern_config->get('pattern'))));
       if (substr($first_segment, 0, 1) !== '[') {

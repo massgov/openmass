@@ -3,7 +3,6 @@
 namespace Drupal\mass_unpublish_reminders\Plugin\QueueWorker;
 
 use Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\Core\Queue\RequeueException;
 use Drupal\Core\Queue\SuspendQueueException;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;

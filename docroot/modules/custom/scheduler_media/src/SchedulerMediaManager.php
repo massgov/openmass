@@ -8,12 +8,10 @@ use Drupal\Core\Link;
 use Drupal\content_moderation\ModerationInformationInterface;
 use Drupal\scheduler\SchedulerEvents;
 use Drupal\media\Entity\MediaType;
-use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Datetime\DateFormatter;
 use Drupal\Core\Url;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\media\Entity\Media;
-use Drupal\media\MediaInterface;
 use Drupal\scheduler\Exception\SchedulerMissingDateException;
 use Drupal\scheduler\Exception\SchedulerNodeTypeNotEnabledException;
 use Psr\Log\LoggerInterface;
@@ -108,7 +106,7 @@ class SchedulerMediaManager {
    * @throws \Drupal\scheduler\Exception\SchedulerNodeTypeNotEnabledException
    */
   public function publish() {
-    // @TODO: \Drupal calls should be avoided in classes.
+    // @todo \Drupal calls should be avoided in classes.
     // Replace \Drupal::service with dependency injection?
     /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
     $dispatcher = \Drupal::service('event_dispatcher');
@@ -121,7 +119,7 @@ class SchedulerMediaManager {
     $mids = [];
     $scheduler_enabled_types = array_keys(_scheduler_media_get_scheduler_media_enabled_media_types($action));
     if (!empty($scheduler_enabled_types)) {
-      // @TODO: \Drupal calls should be avoided in classes.
+      // @todo \Drupal calls should be avoided in classes.
       // Replace \Drupal::entityQuery with dependency injection?
       $query = \Drupal::entityQuery('media')
         ->exists('publish_on')
@@ -147,7 +145,7 @@ class SchedulerMediaManager {
     // the list of node ids returned above may have some translations that need
     // processing now and others that do not.
     $media_entities = Media::loadMultiple($mids);
-    // @TODO: Media::loadMultiple calls should be avoided in classes.
+    // @todo Media::loadMultiple calls should be avoided in classes.
     // Replace with dependency injection?
     foreach ($media_entities as $media_multilingual) {
       $mm_bundle = \Drupal::entityTypeManager()->getStorage('media_type')
@@ -182,7 +180,7 @@ class SchedulerMediaManager {
         // $media->set('changed', $publish_on) will fail badly if an API call has
         // removed the date. Trap this as an exception here and give a
         // meaningful message.
-        // @TODO This will now never be thrown due to the emptpublish_on)
+        // @todo This will now never be thrown due to the emptpublish_on)
         // check above to cater for translations. Remove this exception?
         if (empty($media->publish_on->value)) {
           $field_definitions = $this->entityFieldManager->getFieldDefinitions('media', $media->getType());
@@ -206,7 +204,7 @@ class SchedulerMediaManager {
         if ($this->isDefaultSetting($media_bundle, 'publish_revision')) {
           $media->setNewRevision();
           // Use a core date format to guarantee a time is included.
-          // @TODO: 't' calls should be avoided in classes.
+          // @todo 't' calls should be avoided in classes.
           // Replace with dependency injection?
           $media->revision_log = t('Node published by Scheduler on @now. Previous creation date was @date.', [
             '@now' => $this->dateFormatter->format(\Drupal::time()->getRequestTime(), 'short'),
@@ -218,11 +216,10 @@ class SchedulerMediaManager {
         $media->publish_on->value = NULL;
 
         // Log the fact that a scheduled publication is about to take place.
-        // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
         // Please confirm that `$media` is an instance of `\Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
         $view_link = $media->toLink(t('View node'))->toString();
         $mediatype_url = Url::fromRoute('entity.media_type.edit_form', ['media_type' => $media->bundle()]);
-        // @TODO: \Drupal calls should be avoided in classes.
+        // @todo \Drupal calls should be avoided in classes.
         // Replace \Drupal::l with dependency injection?
         $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url)->toString();
         $logger_variables = [
@@ -283,7 +280,7 @@ class SchedulerMediaManager {
    * @throws \Drupal\scheduler\Exception\SchedulerNodeTypeNotEnabledException
    */
   public function unpublish() {
-    // @TODO: \Drupal calls should be avoided in classes.
+    // @todo \Drupal calls should be avoided in classes.
     // Replace \Drupal::service with dependency injection?
     /** @var \Symfony\Component\EventDispatcher\EventDispatcherInterface $dispatcher */
     $dispatcher = \Drupal::service('event_dispatcher');
@@ -296,7 +293,7 @@ class SchedulerMediaManager {
     $mids = [];
     $scheduler_enabled_types = array_keys(_scheduler_media_get_scheduler_media_enabled_media_types($action));
     if (!empty($scheduler_enabled_types)) {
-      // @TODO: \Drupal calls should be avoided in classes.
+      // @todo \Drupal calls should be avoided in classes.
       // Replace \Drupal::entityQuery with dependency injection?
       $query = \Drupal::entityQuery('media')
         ->exists('unpublish_on')
@@ -317,7 +314,7 @@ class SchedulerMediaManager {
     // Allow other modules to alter the list of nodes to be unpublished.
     $this->moduleHandler->alter('scheduler_mid_list', $mids, $action);
 
-    // @TODO: Media::loadMultiple calls should be avoided in classes.
+    // @todo Media::loadMultiple calls should be avoided in classes.
     // Replace with dependency injection?
     $media_entities = Media::loadMultiple($mids);
     foreach ($media_entities as $media_multilingual) {
@@ -360,7 +357,7 @@ class SchedulerMediaManager {
         // $media->set('changed', $unpublish_on) will fail badly if an API call
         // has removed the date. Trap this as an exception here and give a
         // meaningful message.
-        // @TODO This will now never be thrown due to the empty(unpublish_on)
+        // @todo This will now never be thrown due to the empty(unpublish_on)
         // check above to cater for translations. Remove this exception?
         if (empty($unpublish_on)) {
           $field_definitions = $this->entityFieldManager->getFieldDefinitions('media', $media->getType());
@@ -382,7 +379,7 @@ class SchedulerMediaManager {
         if ($create_unpublishing_revision) {
           $media->setNewRevision();
           // Use a core date format to guarantee a time is included.
-          // @TODO: 't' calls should be avoided in classes.
+          // @todo 't' calls should be avoided in classes.
           // Replace with dependency injection?
           $media->revision_log = t('Media unpublished by Scheduler on @now. Previous change date was @date.', [
             '@now' => $this->dateFormatter->format(\Drupal::time()->getRequestTime(), 'short'),
@@ -394,11 +391,10 @@ class SchedulerMediaManager {
         $media->unpublish_on->value = NULL;
 
         // Log the fact that a scheduled unpublication is about to take place.
-        // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
         // Please confirm that `$media` is an instance of `\Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
         $view_link = $media->toLink(t('View media'))->toString();
         $mediatype_url = Url::fromRoute('entity.media_type.edit_form', ['media_type' => $media->bundle()]);
-        // @TODO: \Drupal calls should be avoided in classes.
+        // @todo \Drupal calls should be avoided in classes.
         // Replace \Drupal::l with dependency injection?
         $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url)->toString();
         $logger_variables = [
@@ -527,7 +523,7 @@ class SchedulerMediaManager {
       }
     }
     if ($log) {
-      // @TODO: \Drupal calls should be avoided in classes.
+      // @todo \Drupal calls should be avoided in classes.
       // Replace \Drupal::l with dependency injection?
       $this->logger->notice('Lightweight cron run completed.', ['link' => Link::fromTextAndUrl(t('settings'), Url::fromRoute('scheduler.cron_form'))->toString()]);
     }

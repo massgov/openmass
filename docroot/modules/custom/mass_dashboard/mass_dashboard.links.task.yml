@@ -1,0 +1,70 @@
+mass_dashboard.my_content:
+  route_name: view.my_content.page_1
+  base_route: system.admin
+  title: 'My content'
+  weight: -5
+mass_dashboard.needs_review:
+  title: 'Needs review'
+  route_name: mass_dashboard.needs_review
+  base_route: system.admin
+  weight: 10
+mass_dashboard.feedback:
+  title: 'Feedback'
+  route_name: mass_feedback_loop.mass_feedback_loop_author_interface_form
+  base_route: system.admin
+  weight: 15
+#mass_dashboard.all_content:
+#  route_name: system.admin_content
+#  title: 'All content'
+#  menu_name: mass-dashboard
+#  weight: 15
+#mass_dashboard.service_content:
+#  route_name: mass_dashboard.service_content
+#  title: 'Content by service'
+#  base_route: system.admin
+#  weight: 25
+#mass_dashboard.all_documents:
+#  route_name: mass_dashboard.all_documents
+#  title: 'All documents'
+#  menu_name: mass-dashboard
+#  weight: 30
+#mass_dashboard.orphaned_service_details:
+#  route_name: mass_dashboard.orphaned_service_details
+#  title: 'Orphaned service details'
+#  base_route: system.admin
+#  weight: 35
+mass_dashboard.trash:
+  title: 'Trash'
+  route_name: mass_dashboard.trash_collection
+  base_route: system.admin
+  weight: 40
+ma_dashboard.trash_content:
+  title: 'Trash (content)'
+  route_name: mass_dashboard.trash
+  parent_id: mass_dashboard.trash
+  base_route: mass_dashboard.trash_collection
+  weight: 40
+ma_dashboard.trash_docs:
+  title: 'Trash (docs)'
+  route_name: view.trash_media.page_1
+  parent_id: mass_dashboard.trash
+  base_route: mass_dashboard.trash_collection
+  weight: 40
+
+mass_dashboard.all:
+  title: 'All'
+  route_name: mass_dashboard.all_collection
+  base_route: system.admin
+  weight: 35
+ma_dashboard.all_content:
+  title: 'All (content)'
+  route_name: mass_dashboard.all_collection
+  parent_id: mass_dashboard.all
+  base_route: mass_dashboard.all_collection
+  weight: 32
+ma_dashboard.all_docs:
+  title: 'All (docs)'
+  route_name: view.all_documents.page_1
+  parent_id: mass_dashboard.all
+  base_route: mass_dashboard.all_collection
+  weight: 34

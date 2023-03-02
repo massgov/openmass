@@ -76,13 +76,11 @@ function mass_utility_post_update_location_text_fields() {
       $revision_copy_columns = array_diff($mapping->getAllColumns($to_revision_table), [$format_column, 'deleted']);
 
       // Copy base table data (field_deleted_data_X -> node__field_X)
-      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
       // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
       $base_table_select = \Drupal::database()->select($deleted_base_table, 's')
         ->fields('s', $base_columns);
       $base_table_select->addExpression("'basic_html'", $format_column);
       $base_table_select->addExpression('0', 'deleted');
-      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
       // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
       \Drupal::database()->insert($to_base_table)
         ->from($base_table_select)
@@ -90,14 +88,12 @@ function mass_utility_post_update_location_text_fields() {
 
       // Copy revision table data
       // (field_deleted_revision_X -> node_revision__field_X)
-      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
       // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
       $revision_table_select = \Drupal::database()->select($deleted_revision_table, 's')
         ->fields('s', $revision_copy_columns);
       // Default text format to basic_html.
       $revision_table_select->addExpression("'basic_html'", $format_column);
       $revision_table_select->addExpression('0', 'deleted');
-      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
       // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
       \Drupal::database()->insert($to_revision_table)
         ->from($revision_table_select)
@@ -368,13 +364,13 @@ function mass_utility_post_update_enable_contact_forms_all_users() {
   }
 
   // Enable all user accounts with the contact settings.
-  /* @var \Drupal\user\UserInterface */
+  /** @var \Drupal\user\UserInterface */
   $uids = \Drupal::entityQuery('user')
     ->accessCheck(FALSE)
     ->condition('uid', 1, '>')
     ->execute();
 
-  /* @var \Drupal\user\UserDataInterface $userData */
+  /** @var \Drupal\user\UserDataInterface $userData */
   $userData = \Drupal::service('user.data');
   foreach ($uids as $uid) {
     $userData->set('contact', $uid, 'enabled', TRUE);
@@ -1973,7 +1969,6 @@ function mass_utility_post_update_document_moderation_drafts(&$sandbox) {
 function mass_utility_post_update_tfa_real_aes(array &$sandbox) {
   // DBTNG does not support expressions in delete queries.
   $sql = "DELETE FROM users_data WHERE LEFT(name, 4) = 'tfa_'";
-  // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
   // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
   \Drupal::database()->query($sql);
 }

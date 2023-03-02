@@ -4,7 +4,6 @@ namespace Drupal\mass_site_map\Plugin\simple_sitemap\UrlGenerator;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
-use Drupal\media\MediaInterface;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGenerator;
 
 /**

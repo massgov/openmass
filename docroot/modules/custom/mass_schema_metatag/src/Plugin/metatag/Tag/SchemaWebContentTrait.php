@@ -3,7 +3,6 @@
 namespace Drupal\mass_schema_metatag\Plugin\metatag\Tag;
 
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaCreativeWorkTrait;
-use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
  * Schema.org WebContent trait.

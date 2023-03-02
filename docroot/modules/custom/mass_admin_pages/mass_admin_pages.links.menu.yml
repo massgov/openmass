@@ -1,8 +1,61 @@
+#A top level item containing Mass specific links below it.
+mass_admin_pages.mass:
+  title: "Edit.mass.gov"
+  route_name: system.admin
+  parent: system.admin
+  description: "Mass.gov admin home"
+  weight: -150
+
+mass_admin_pages.dashboard:
+  title: "Dashboard"
+  route_name: system.admin
+  parent: mass_admin_pages.mass
+  description: "Mass.gov author dashboard"
+  weight: -150
+
+#A top level item containing Drupal admin links below it.
+mass_admin_pages.drupal:
+  title: "Drupal"
+  route_name: system.admin_index
+  parent: system.admin
+  description: "Drupal administration index page"
+  weight: -10
+
+#A top level item containing Mass specific links below it.
+mass_admin_pages.help:
+  title: "Help"
+  url: 'internal:##'
+  parent: system.admin
+  description: "Help links"
+  weight: 50
+
+mass_admin_pages.all_collection:
+  title: "All"
+  route_name: mass_dashboard.all_collection
+  parent: system.admin
+  description: "All docs and content"
+  weight: -40
+
+mass_admin_pages.trash_collection:
+  title: "Trash"
+  route_name: mass_dashboard.trash_collection
+  parent: system.admin
+  description: "Trashed docs and content"
+  weight: -38
+
+mass_admin_pages.taxonomy:
+  title: "Taxonomy"
+  # @todo use built in route_name for taxonomy
+  route_name: entity.taxonomy_vocabulary.collection
+  parent: mass_admin_pages.mass
+  description: "Taxonomy administration"
+  weight: 30
+
 #Config for a parent link that provides access to selected block forms for content admins and developers.
 mass_admin_pages.edit_blocks:
   title: "Edit blocks"
-  url: 'internal:##'
-  parent: system.admin
+  route_name: mass_admin_pages.right_sidebar_block_form
+  parent: mass_admin_pages.mass
   description: "A placeholder parent link to allow access to selected block forms."
   weight: 10
 
@@ -21,7 +74,7 @@ mass_admin_pages.right_sidebar_block_form:
 mass_admin_pages.reports_menu:
   title: 'Reports'
   route_name: mass_admin_pages.reports
-  menu_name: mass-dashboard
+  parent: mass_admin_pages.mass
   description: 'Reports for Authors'
   weight: -1
 

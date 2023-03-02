@@ -5,7 +5,6 @@ namespace Drupal\mass_utility\Plugin\QueueWorker;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\Driver\Exception\Exception;
 use Drupal\file\Entity\File;
-use Drupal\Core\Render\Element;
 
 /**
  * Saves unpublished documents that have public files so the files become private.

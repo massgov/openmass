@@ -67,7 +67,7 @@ class ReportsAuthor extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'mass_admin_pages.reports_author_block_settings'
+      'mass_admin_pages.reports_author_block_settings',
     ];
   }
 

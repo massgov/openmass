@@ -31,7 +31,7 @@ class NewRelicTransactionSubscriber implements EventSubscriberInterface {
         // Run after authentication (300), but before everything else.
         ['earlyRequest', 299],
         // Run after controller is determined, and after page cache.
-        ['onRequest', 24]
+        ['onRequest', 24],
       ],
       // Run after dynamic page cache.
       KernelEvents::RESPONSE => ['onResponse', 99],
