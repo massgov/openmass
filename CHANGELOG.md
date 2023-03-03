@@ -1,3 +1,8 @@
+## [0.352.2] - March 3, 2023
+
+### Fixed
+- DP-27400: Stop storing entity and render caches in Memcache.
+
 ## [0.352.1] - March 2, 2023
 
 ### Fixed
