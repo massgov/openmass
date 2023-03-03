@@ -97,7 +97,7 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
           }
           $matches[] = [
             'value' => $key,
-            'label' => $entity_type_labels[$bundle] . ': ' . $label,
+            'label' => isset($entity_type_labels[$bundle]) ? $entity_type_labels[$bundle] . ': ' . $label : $label,
           ];
         }
       }

@@ -43,29 +43,15 @@ class SchemaEventPotentialAction extends SchemaNameBase {
   public function output() {
     $element = parent::output();
 
-    // Since there could be multiple values, explode the string value.
-    $content = explode(', ', $this->value());
+    // There could not be multiple values.
+    $content = json_decode($this->value(), TRUE);
 
     $element['#attributes']['content'] = [];
     foreach ($content as $link_values) {
-      // Decode the link values.
-      $link_values = json_decode($link_values, TRUE);
-      if (is_array($link_values)) {
-        // For each link item, append the values of the 'name' and 'url' to the
-        // 'content' key. This will be the value outputted on the markup.
-        foreach ($link_values as $item) {
-          $element['#attributes']['content'][] = [
-            'name' => $item['name'],
-            'url' => $item['url'],
-          ];
-        }
-      }
-      else {
-        $element['#attributes']['content'][] = [
-          'name' => $link_values['name'],
-          'url' => $link_values['url'],
-        ];
-      }
+      $element['#attributes']['content'][] = [
+        'name' => $link_values['name'],
+        'url' => $link_values['url'],
+      ];
     }
 
     return $element;
