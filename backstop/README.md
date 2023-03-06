@@ -23,12 +23,14 @@ they look the same.
 ## Options
 
 ```
---target=local   # Choose an enviornment to target(feature#, test, or prod)
-                 # `local` is default
+--target=local  # Choose an enviornment to target(feature#, test, or prod)
+                # `local` is default
 --list=all	    # Choose a json page to run with backstop (all or post-release)
                 # `all` is default
                 # `post-release` runs fewer scenarios, and is run automatically after a release
---viewport=all   # Options are desktop, tablet, phone, or all (default)
+--viewport=all  # Options are desktop, tablet, phone, or all (default)
+
+--cachebuster   # Appends a cache busting query string to URLs of pages to be tested.
 ```
 
 - `pages.json` is the list pages that are tested when Backstop is run. This is
@@ -82,6 +84,12 @@ used later by `drush ma:backstop-compare` e.g.
 ```
 drush ma:ci:backstop-snapshot --target=prod
 drush ma:ci:backstop-compare --reference=prod --target=test
+```
+
+If you want to run a specific branch you're working on to test changes, you can
+use the `--ci-branch` parameter.
+```
+drush ma:ci:backstop-snapshot --target=prod --ci-branch=dp-26913-run-backstop-js-locally
 ```
 
 You can also run the tests using CircleCi's [local CLI](https://circleci.com/docs/local-cli/).

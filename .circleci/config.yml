@@ -454,21 +454,21 @@ jobs:
       - run:
           name: Backstop reference
           working_directory: backstop
-          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --cachebuster
       - when:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> --cachebuster
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (non Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --cachebuster
                 no_output_timeout: 300m
       - store_test_results:
           path: backstop/report

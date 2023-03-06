@@ -1,6 +1,7 @@
 // Determine the list of urls to use with backstop
 const opt = process.argv.filter(arg=>arg.match(/^--list=/));
 const file = opt.length ? opt[0].replace('--list=', '') : 'all';
+const withCache = process.argv.filter(arg=>arg.match(/^--cachebuster/)).length > 0;
 
 let pages;
 
@@ -86,8 +87,7 @@ const scenarios = pages.map(function(page) {
   }
   return {
     ...page,
-    //url: `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}`,
-    url: `${base}${page.url}`,
+    url: withCache ? `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}` : `${base}${page.url}`,
     misMatchThreshold: 0.1,
     auth,
   }
