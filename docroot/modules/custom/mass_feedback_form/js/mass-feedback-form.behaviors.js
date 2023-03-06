@@ -26,7 +26,7 @@
           }
           $('input[name="' + UNIQUE_ID_FIELD + '"]').val(localStorage.getItem('feedbackSubmitSession'));
         }
-      })
+      });
 
       // For certain form inputs, use a value from the data layer.
       $('.data-layer-substitute', context).each(function (index) {
