@@ -21,10 +21,10 @@
 
       $('input[name="' + YES_NO_FIELD + '"]').click(function () {
         if (window.crypto) {
-          var uuid = window.crypto.randomUUID();
           if (localStorage.getItem('feedbackSubmitSession') === null) {
-            localStorage.setItem('feedbackSubmitSession', uuid);
+            localStorage.setItem('feedbackSubmitSession', window.crypto.randomUUID());
           }
+          $('input[name="' + UNIQUE_ID_FIELD + '"]').val(localStorage.getItem('feedbackSubmitSession'));
         }
       })
 
