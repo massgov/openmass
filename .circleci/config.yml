@@ -133,6 +133,9 @@ parameters:
   viewport:
     type: string
     default: "all"
+  cachebuster:
+    type: boolean
+    default: false
 
   # These params for currently used in drush ma:release
   ma-release:
@@ -446,29 +449,38 @@ jobs:
       tugboat:
         type: string
         default: ""
+      cachebuster:
+        type: boolean
+        default: true
     resource_class: xlarge
     docker:
       - image: backstopjs/backstopjs
     steps:
       - checkout
       - run:
+          name: "Setup environment variables"
+          command: |
+            if [ "<< parameters.cachebuster >>" = "true" ]; then
+              echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
+            fi
+      - run:
           name: Backstop reference
           working_directory: backstop
-          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --cachebuster
+          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
       - when:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> --cachebuster
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (non Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --cachebuster
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
                 no_output_timeout: 300m
       - store_test_results:
           path: backstop/report
@@ -486,16 +498,25 @@ jobs:
       viewport:
         type: string
         default: all
+      cachebuster:
+        type: boolean
+        default: false
     resource_class: xlarge
     docker:
       - image: backstopjs/backstopjs
     steps:
       - checkout
       - run:
+          name: "Setup environment variables"
+          command: |
+            if [ "<< parameters.cachebuster >>" = "true" ]; then
+              echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
+            fi
+      - run:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+            backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
       - run:
           name: Archive Reference Screenshots
           command: |
@@ -536,11 +557,20 @@ jobs:
       tugboat:
         type: string
         default: ""
+      cachebuster:
+        type: boolean
+        default: false
     resource_class: xlarge
     docker:
       - image: backstopjs/backstopjs
     steps:
       - checkout
+      - run:
+          name: "Setup environment variables"
+          command: |
+            if [ "<< parameters.cachebuster >>" = "true" ]; then
+              echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
+            fi
       - run:
           name: Verify Artifacts
           command: |
@@ -578,14 +608,14 @@ jobs:
             - run:
                 name: Backstop test (Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (non Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
                 no_output_timeout: 300m
       - store_test_results:
           path: backstop/report
@@ -1141,6 +1171,7 @@ workflows:
           list: << pipeline.parameters.list >>
           viewport: << pipeline.parameters.viewport >>
           tugboat: << pipeline.parameters.tugboat >>
+          cachebuster: << pipeline.parameters.cachebuster >>
 
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
@@ -1181,6 +1212,7 @@ workflows:
           target: << pipeline.parameters.target >>
           list: << pipeline.parameters.list >>
           viewport: << pipeline.parameters.viewport >>
+          cachebuster: << pipeline.parameters.cachebuster >>
 
   backstop_compare:
     when:
@@ -1193,6 +1225,7 @@ workflows:
           list: << pipeline.parameters.list >>
           viewport: << pipeline.parameters.viewport >>
           tugboat: << pipeline.parameters.tugboat >>
+          cachebuster: << pipeline.parameters.cachebuster >>
 
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
