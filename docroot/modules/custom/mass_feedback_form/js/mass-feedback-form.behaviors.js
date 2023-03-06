@@ -21,10 +21,10 @@
 
       $('input[name="' + YES_NO_FIELD + '"]').click(function () {
         if (window.crypto) {
-          if (localStorage.getItem('feedbackSubmitSession') === null) {
-            localStorage.setItem('feedbackSubmitSession', window.crypto.randomUUID());
+          if (localStorage.getItem('feedbackSubmitterId') === null) {
+            localStorage.setItem('feedbackSubmitterId', window.crypto.randomUUID());
           }
-          $('input[name="' + UNIQUE_ID_FIELD + '"]').val(localStorage.getItem('feedbackSubmitSession'));
+          $('input[name="' + UNIQUE_ID_FIELD + '"]').val(localStorage.getItem('feedbackSubmitterId'));
         }
       });
 
