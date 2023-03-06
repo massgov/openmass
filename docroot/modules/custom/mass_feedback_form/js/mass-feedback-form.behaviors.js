@@ -16,6 +16,16 @@
 
       // This field is used by the feedback manager to join the survey (second) with the first submission
       var MG_FEEDBACK_ID = 'field68557708';
+      var YES_NO_FIELD = 'field47054416';
+
+      $('input[name="' + YES_NO_FIELD + '"]').click(function () {
+        if (window.crypto) {
+          const uuid = window.crypto.randomUUID();
+          if (localStorage.getItem('feedbackSubmitSession') === null) {
+            localStorage.setItem('feedbackSubmitSession', uuid);
+          }
+        }
+      })
 
       // For certain form inputs, use a value from the data layer.
       $('.data-layer-substitute', context).each(function (index) {
