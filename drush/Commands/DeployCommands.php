@@ -193,7 +193,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
-  
+
   /**
    * Write the download link for the most recent database backup to stdout.
    *
