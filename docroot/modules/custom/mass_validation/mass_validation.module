@@ -1071,7 +1071,7 @@ function _mass_validation_form_node_event_form_validate(array &$form, FormStateI
     }
   }
 
-  if ($assc_pages[0]['target_id'] == NULL) {
+  if (!isset($assc_pages[0]) || $assc_pages[0]['target_id'] == NULL) {
     $form_state->setErrorByName('field_event_ref_parents', t('The associated pages field must be filled out.'));
   }
 
