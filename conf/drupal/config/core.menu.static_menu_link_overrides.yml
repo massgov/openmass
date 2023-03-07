@@ -152,21 +152,21 @@ definitions:
     expanded: false
     enabled: true
   system__admin_content:
+    weight: -68
     menu_name: admin
-    parent: mass_admin_pages.all_collection
-    weight: -10
+    parent: 'menu_link_content:e667301a-501e-4be9-b088-ffb0f3d38e11'
     expanded: false
-    enabled: true
+    enabled: false
   mass_admin_pages__help:
+    weight: -62
     menu_name: admin
     parent: system.admin
-    weight: 50
     expanded: false
     enabled: true
   help__main:
+    weight: -64
     menu_name: admin
     parent: system.admin
-    weight: 9
     expanded: false
     enabled: false
   entity__menu__collection:
@@ -176,17 +176,17 @@ definitions:
     expanded: false
     enabled: true
   admin_toolbar_tools__help:
-    menu_name: admin
-    parent: system.admin
+    menu_name: tools
+    parent: mass_admin_pages.drupal
     weight: -100
     expanded: false
     enabled: false
   'admin_toolbar_tools__extra_links:node__add':
+    weight: -68
+    parent: 'menu_link_content:ae1e51cd-f423-42c6-9aab-40e5af47773b'
     menu_name: admin
-    parent: system.admin_content
-    weight: 0
+    enabled: true
     expanded: false
-    enabled: false
   'admin_toolbar_tools__extra_links:view__files':
     menu_name: admin
     parent: system.admin_content
@@ -199,3 +199,63 @@ definitions:
     weight: 0
     expanded: false
     enabled: false
+  entity__node_type__collection:
+    menu_name: admin
+    parent: system.admin_structure
+    weight: -47
+    expanded: false
+    enabled: true
+  mass_admin_pages__mass:
+    menu_name: tools
+    parent: ''
+    weight: -150
+    expanded: false
+    enabled: false
+  system__admin_index:
+    menu_name: tools
+    parent: ''
+    weight: -100
+    expanded: false
+    enabled: true
+  mass_admin_pages__drupal:
+    menu_name: tools
+    parent: ''
+    weight: -10
+    expanded: false
+    enabled: true
+  mass_admin_pages__all_collection:
+    weight: -64
+    parent: 'menu_link_content:e667301a-501e-4be9-b088-ffb0f3d38e11'
+    enabled: false
+    menu_name: admin
+    expanded: false
+  mass_admin_pages__trash_collection:
+    weight: -67
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: false
+  mass_feedback_loop__mass_feedback_loop_author_interface_form:
+    weight: -65
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true
+  'admin_toolbar_tools__extra_links:add_media':
+    enabled: false
+    menu_name: admin
+    parent: 'admin_toolbar_tools.extra_links:media_page'
+    weight: 0
+    expanded: false
+  'admin_toolbar_tools__extra_links:media__add__document':
+    enabled: false
+    menu_name: admin
+    parent: 'admin_toolbar_tools.extra_links:add_media'
+    weight: 0
+    expanded: false
+  'admin_toolbar_tools__extra_links:media__add__media_video':
+    enabled: false
+    menu_name: admin
+    parent: 'admin_toolbar_tools.extra_links:add_media'
+    weight: 0
+    expanded: false
