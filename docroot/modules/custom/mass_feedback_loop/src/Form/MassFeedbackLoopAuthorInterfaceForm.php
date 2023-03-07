@@ -248,22 +248,12 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     ];
 
     // Builds 'Watched pages only' input.
-    if (!isset($feedback_api_params['watch_content']) || $feedback_api_params['watch_content'] == 1) {
-      $form['watch_content'] = [
-        '#type' => 'checkboxes',
-        '#options' => ['watch_content' => $this->t('Watched pages only')],
-        '#title' => $this->t('Filter by watched pages only'),
-        '#default_value' => ['watch_content'],
-      ];
-      $feedback_api_params['watch_content'] = 1;
-    }
-    else {
-      $form['watch_content'] = [
-        '#type' => 'checkboxes',
-        '#options' => ['watch_content' => $this->t('Watched pages only')],
-        '#title' => $this->t('Filter by watched pages only'),
-      ];
-    }
+    $form['watch_content'] = [
+      '#type' => 'checkboxes',
+      '#options' => ['watch_content' => $this->t('Watched pages only')],
+      '#title' => $this->t('Filter by watched pages only'),
+      '#default_value' => !empty($feedback_api_params['watch_content']) ? ['watch_content'] : [],
+    ];
 
     // Hidden value used for tracking current page on pager in case of reload.
     $form['page'] = [
@@ -295,6 +285,17 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#prefix' => '<div id="table-wrapper">',
       '#suffix' => '</div>',
     ];
+    // Attaches necessary JS library to run single-page app.
+    $form['#attached']['library'][] = 'mass_feedback_loop/mass-feedback-author-interface';
+
+    // Adds sorting information to drupalSettings.
+    $form['#attached']['drupalSettings']['massFeedbackLoop']['sortingVariants'] = MassFeedbackLoopContentFetcher::SORTING_VARIANTS;
+
+    // Early return if form has not yet been submitted.
+    if (!\Drupal::request()->getQueryString()) {
+      return $form;
+    }
+
     // Fetches feedback.
     $response = $this->contentFetcher->fetchFeedback($feedback_api_params);
     // Builds table and pager.
@@ -322,12 +323,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       ];
       // @codingStandardsIgnoreEnd
     }
-
-    // Attaches necessary JS library to run single-page app.
-    $form['#attached']['library'][] = 'mass_feedback_loop/mass-feedback-author-interface';
-
-    // Adds sorting information to drupalSettings.
-    $form['#attached']['drupalSettings']['massFeedbackLoop']['sortingVariants'] = MassFeedbackLoopContentFetcher::SORTING_VARIANTS;
 
     return $form;
   }
