@@ -1055,6 +1055,9 @@ function mass_theme_preprocess_node_location(&$variables) {
 
       foreach ($more_locations as $location) {
         $more_node = Node::load($location['target_id']);
+        if (!$more_node->isPublished()) {
+          continue;
+        }
         if ($more_node->hasField('field_related_organization_type')) {
           $nearby = $nearby || $more_node->field_related_organization_type->value;
         }
@@ -1062,6 +1065,7 @@ function mass_theme_preprocess_node_location(&$variables) {
           'href' => Url::fromRoute('view.locations.page', ['node' => $more_node->id()]),
           'text' => $more_node->label() . ' Locations',
         ];
+        $cache_tags = Cache::mergeTags($cache_tags, $more_node->getCacheTags());
       }
     }
 
