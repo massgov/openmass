@@ -16,17 +16,9 @@
 
       // This field is used by the feedback manager to join the survey (second) with the first submission
       var MG_FEEDBACK_ID = 'field68557708';
-      var YES_NO_FIELD = 'field47054416';
-      var UNIQUE_ID_FIELD = 'field68798989';
 
-      $('input[name="' + YES_NO_FIELD + '"]').click(function () {
-        if (window.crypto) {
-          if (localStorage.getItem('feedbackSubmitterId') === null) {
-            localStorage.setItem('feedbackSubmitterId', window.crypto.randomUUID());
-          }
-          $('input[name="' + UNIQUE_ID_FIELD + '"]').val(localStorage.getItem('feedbackSubmitterId'));
-        }
-      });
+      // This field is used to set a unique device ID to form submissions.
+      var UNIQUE_ID_FIELD = 'field68798989';
 
       // For certain form inputs, use a value from the data layer.
       $('.data-layer-substitute', context).each(function (index) {
@@ -64,6 +56,11 @@
         var $success = $self.find('#success-screen');
         // This is to stop a double click submitting the form twice
         var $submitBtn = $('input[type="submit"]', $form);
+
+        // Use device ID set in docroot/themes/custom/mass_theme/overrides/js/device.js.
+        var massgovDeviceId = localStorage.getItem('massgovDeviceId') ?? "";
+        $form.find('input[name="' + UNIQUE_ID_FIELD + '"]').val(massgovDeviceId);
+
         $form.submit(function () {
           $submitBtn.prop('disabled', true);
         });
