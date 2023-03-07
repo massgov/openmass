@@ -1,3 +1,15 @@
+
+
+## [0.353.0] - March 7, 2023
+
+### Changed
+  - DP-27022: Adjust feedback manager report in Drupal
+  - DP-27225: Increase quantity shown on feedback page from 10 to 20.
+  - DP-27435: Dont list an unpublished Locations page
+  
+### Fixed
+  - DP-27257: Investigate and fix errors in Drupal.
+  
 ## [0.352.2] - March 3, 2023
 
 ### Fixed
