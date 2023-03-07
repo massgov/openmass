@@ -46,7 +46,7 @@ module.exports = async function (page, scenario, vp) {
   }
 
   await require('./clickAndHoverHelper')(page, scenario);
-  
+
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
     jQuery.fx.off = true;
@@ -126,6 +126,16 @@ module.exports = async function (page, scenario, vp) {
 
   if (scenario.label === 'InfoDetails1') {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
+  }
+
+  // Wait for Papa.parse in the csv_field module to complete.
+  try {
+    await page.waitForFunction("jQuery('.csv-table').length === 0", {
+      timeout: 60 * 1000,
+    });
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for jQuery('.csv-table').length === 0 on this page: ${page.url()}.`)
   }
 
   let leafletMapInitialized = await page.evaluate(async function () {
