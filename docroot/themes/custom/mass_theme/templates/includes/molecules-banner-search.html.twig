@@ -8,7 +8,6 @@
 {% block content %}
 <form class="ma__search-banner__form" action="https://search.mass.gov/" role="search">
   <div class="ma__search-banner__input js-suggestions-container">
-    <label for="banner-search" class="ma__search-banner__label">Search terms</label>
     <input
         id="banner-search"
         name="q"
@@ -17,6 +16,7 @@
         placeholder="Search Mass.gov"
         type="search" 
         inputmode="search"
+        aria-label="search the site"
     />
   </div>
   <button class="ma__search-banner__button" type="submit">
