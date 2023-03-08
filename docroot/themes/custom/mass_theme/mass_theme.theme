@@ -1490,6 +1490,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
       $variables['bgImage'] = Helper::getFieldImageUrl($node, 'action_banner_large_focal_point', 'field_banner_image');
+      $variables['bgPosition'] = Helper::getFieldImageFocalPoint($node, 'field_banner_image');
     }
 
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
