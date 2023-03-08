@@ -170,8 +170,9 @@ class Helper {
     $file = $fields->referencedEntities();
     if (!empty($image)) {
       $crop_type = \Drupal::config('focal_point.settings')->get('crop_type');
-      if (Crop::cropExists($file->getFileUri(), $crop_type)) {
-        $crop = Crop::findCrop($file[$delta]->getFileUri(), $crop_type);
+      $file_uri = $file[$delta]->getFileUri();
+      if (Crop::cropExists($file_uri, $crop_type)) {
+        $crop = Crop::findCrop($file_uri, $crop_type);
         if (!empty($crop) && !empty($crop->position() && is_array($crop->position()))) {
           $crop_position = $crop->position();
           if (isset($crop_position['x']) && isset($crop_position['y'])) {
