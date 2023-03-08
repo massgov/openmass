@@ -149,8 +149,9 @@ class Helper {
   }
 
   /**
-   * Provide the focal point of an image as a percentage. If no focal point
-   * exists then 50% / 50% is provided.
+   * Provide the focal point of an image as a percentage.
+   *
+   * If no focal point exists then 50% / 50% is provided.
    *
    * @param object $entity
    *   The node with the field on it.
@@ -182,7 +183,7 @@ class Helper {
       }
     }
 
-    return ['x' => '50%', 'y' => '50%' ];
+    return ['x' => '50%', 'y' => '50%'];
   }
 
   /**
