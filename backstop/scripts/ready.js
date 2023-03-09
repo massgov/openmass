@@ -46,7 +46,7 @@ module.exports = async function (page, scenario, vp) {
   }
 
   await require('./clickAndHoverHelper')(page, scenario);
-  
+
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
     jQuery.fx.off = true;
@@ -124,8 +124,30 @@ module.exports = async function (page, scenario, vp) {
     throw new Error(`${e.constructor.name}: Failed waiting for "jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0" on this page: ${page.url()}.`)
   }
 
-  if (scenario.label === 'InfoDetails1') {
-    await page.waitForSelector('.cbFormErrorMarker', {visible: true})
+  // Wait for Papa.parse in the csv_field module to complete.
+  try {
+    await page.waitForFunction("document.querySelectorAll('.csv-table').length == 0", {
+      timeout: 5000,
+    });
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for document.querySelectorAll('.csv-table').length == 0 on this page: ${page.url()}.`)
+  }
+
+  // Wait for Caspio embeds to finish loading.
+  try {
+    await page.waitForFunction("document.querySelectorAll('.ma__caspio form#caspioform').length == document.querySelectorAll('.ma__caspio').length", {
+      timeout: 5000,
+    });
+    // The form loading in causes the layout to shift.
+    await page.waitForTimeout(3000);
+    await page.waitForSelector('.ma__footer-new', {
+      visible: true,
+      timeout: 5000,
+    });
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for Caspio forms to load on this page: ${page.url()}.`)
   }
 
   let leafletMapInitialized = await page.evaluate(async function () {
@@ -237,29 +259,6 @@ module.exports = async function (page, scenario, vp) {
         jQuery(".ma__header__hamburger__utility-nav .ma__utility-nav__items li.ma__utility-nav__item:last-child button.ma__utility-nav__link").click();
         document.querySelector(".ma__header__hamburger__nav-container").scrollTo(0, 500);
       })
-      break;
-    case "InfoDetails1":
-      await page.waitForSelector('.ma__figure--large.ma__csvtable table.dataTable', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('.ma__figure--x-large.ma__csvtable table.dataTable', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('.ma__figure--large.ma__csvtable div.dataTables_info', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('.ma__figure--x-large.ma__csvtable div.dataTables_info', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('footer#footer .ma__footer-new__container', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForTimeout(3000);
       break;
     case "Service1":
     case "ExpansionOfAccordions1_toggle":
