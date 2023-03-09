@@ -109,6 +109,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
+   * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
    * @usage drush ma:ci:backstop-snapshot --target=prod
    *   Create a backstop snapshot from production.
    * @aliases ma-ci-backstop-snapshot
@@ -117,7 +118,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function ci_backstop_snapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all']): void {
+  public function ci_backstop_snapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false]): void {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -130,6 +131,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'target' => $options['target'],
           'list' => $options['list'],
           'viewport' => $options['viewport'],
+          'cachebuster' => $options['cachebuster'],
         ],
       ],
     ];
@@ -153,6 +155,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
+   * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
    * @usage drush ma:ci:backstop-compare --reference=prod --target=test
    *   Run backstop in the test environment against the latest production screenshots
    *   Create a backstop snapshot from production.
@@ -162,7 +165,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function ci_backstop_compare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all']): void {
+  public function ci_backstop_compare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false]): void {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -176,6 +179,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'target' => $options['target'],
           'list' => $options['list'],
           'viewport' => $options['viewport'],
+          'cachebuster' => $options['cachebuster']
         ],
       ],
     ];
@@ -189,7 +193,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
-  
+
   /**
    * Write the download link for the most recent database backup to stdout.
    *
