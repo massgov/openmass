@@ -141,7 +141,14 @@ class DocumentTranslationTest extends ExistingSiteBase {
     // from referenced media.
     $node = $this->createCuratedListNode('linked');
     $this->drupalGet($node->toUrl());
+    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Node page was loadable');
     $page = $this->getSession()->getPage();
+    $element = $page->find('css', 'a.lang-toggle')->getText();
+    $this->assertStringContainsString('Translate labels', $element, 'Translate labels link not found');
+
+    $translation_label = $page->find('css', '.ma__inline-links__container > li.ma__inline-links__item > a')->getText();
+    $this->assertStringContainsString('English', $translation_label, 'Translation links not found');
+
     $description = $page->find('css', '.ma__download-link__description .ma__rich-text ')->getText();
     $this->assertStringContainsString('Translated Document description', $description, 'Document description not found');
   }
@@ -155,7 +162,14 @@ class DocumentTranslationTest extends ExistingSiteBase {
     // from the field_listitemdoc_desc_manual field.
     $node = $this->createCuratedListNode('manual');
     $this->drupalGet($node->toUrl());
+    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Node page was loadable');
     $page = $this->getSession()->getPage();
+    $element = $page->find('css', 'a.lang-toggle')->getText();
+    $this->assertStringContainsString('Translate labels', $element, 'Translate labels link not found');
+
+    $translation_label = $page->find('css', '.ma__inline-links__container > li.ma__inline-links__item > a')->getText();
+    $this->assertStringContainsString('English', $translation_label, 'Translation links not found');
+
     $description = $page->find('css', '.ma__download-link__description .ma__rich-text ')->getText();
     $this->assertStringContainsString('List item manual description', $description, 'Document description not found');
   }
