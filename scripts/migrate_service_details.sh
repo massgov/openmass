@@ -28,10 +28,6 @@ drush migrate:import flaggings
 #Delete all service details nodes.
 drush entity:delete node --bundle=service_details
 
-# Enable entity hierarchy and rebuild the tree.
-drush sset entity_hierarchy_disable_writes 0
-drush entity-hierarchy-rebuild-tree field_primary_parent node
-
 # Entity usage updates are queued up. Just let cron process them.
 
 #Regenerate sitemap (optional - we can just wait for next run)
