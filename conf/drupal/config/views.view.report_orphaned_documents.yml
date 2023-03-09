@@ -431,73 +431,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        status:
-          id: status
-          table: media_field_data
-          field: status
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: media
-          entity_field: status
-          plugin_id: field
-          label: 'Published?'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: boolean
-          settings:
-            format: custom
-            format_custom_false: Unpublished
-            format_custom_true: Published
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
         field_start_date:
           id: field_start_date
           table: media__field_start_date
@@ -1069,9 +1002,9 @@ display:
           entity_field: status
           plugin_id: boolean
           operator: '='
-          value: All
+          value: '1'
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: ''
             label: 'Published?'
@@ -1564,7 +1497,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: "<p>This report shows documents that aren't linked from other published pages. </p>\r\n\r\n<p>If you see items in this report, you could either unpublish the page if it is not needed or add a link to the page from another published page. Look at the parent page to see if that is where the orphan page should be linked, or if another parent page is more appropriate. </p>\r\n\r\n<p>If a document is redirected, in some cases it may show up on this report as an orphan even if it is linked from another page. </p>\r\n\r\n<p>Documents that are not linked can still be found by the public through search because published documents are in a sitemap that is made available to search engines. </p>"
+            value: "<p>This report shows published documents that aren't linked from other published pages. </p>\r\n\r\n<p>If you see documents in this report, you could either unpublish the document if it is not needed or add a link to the document from another published page. To verify that a document is not linked, you can search for the link in SiteImprove's link inventory, or look for a link in Google.</p>\r\n\r\n<p>Documents that are not linked but published can still be found by the public through search because published documents are in a sitemap that is made available to search engines. </p>"
             format: basic_html
           tokenize: false
       footer: {  }
