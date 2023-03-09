@@ -1912,10 +1912,32 @@ display:
         pager: false
         style: false
         row: false
+        relationships: false
         fields: false
         filters: false
         filter_groups: false
         header: false
+      relationships:
+        uid:
+          id: uid
+          table: media_field_data
+          field: uid
+          relationship: none
+          group_type: group
+          admin_label: User
+          entity_type: media
+          entity_field: uid
+          plugin_id: standard
+          required: false
+        field_upload_file_target_id:
+          id: field_upload_file_target_id
+          table: media__field_upload_file
+          field: field_upload_file_target_id
+          relationship: none
+          group_type: group
+          admin_label: 'file from field_upload_file'
+          plugin_id: standard
+          required: false
       use_ajax: true
       display_description: 'List Media Bundles to be used in Entity Browsers'
       header:

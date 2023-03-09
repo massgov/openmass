@@ -2,9 +2,9 @@
 
 namespace Drupal\mass_caching\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Drupal\Core\PageCache\ResponsePolicyInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -17,7 +17,7 @@ class StaleResponseSubscriber implements EventSubscriberInterface {
   /**
    * Add stale http headers.
    */
-  public function onKernelResponse(FilterResponseEvent $event) {
+  public function onKernelResponse(ResponseEvent $event) {
     $response = $event->getResponse();
     if (!$response->headers->hasCacheControlDirective('private')) {
       $response->headers->addCacheControlDirective('stale-if-error', self::DURATION);

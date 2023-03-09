@@ -68,6 +68,7 @@ class TranslationsController extends ControllerBase {
 
     $non_english_language_ids = $storage->getQuery()
       ->condition($english_field_name, $english_id)
+      ->accessCheck(FALSE)
       ->execute();
 
     foreach ($non_english_language_ids as $non_english_language_id) {

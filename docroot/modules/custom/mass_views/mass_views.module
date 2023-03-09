@@ -20,12 +20,12 @@ function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$ar
   if ($view->id() == 'content_reports' && $display_id == 'page_orgs') {
     $nids = [];
     // Get nids where field_organizations is empty.
-    $query = \Drupal::entityQuery('node')
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
       ->notExists('field_organizations');
     $nids_empty = $query->execute();
 
     // Get nids where field_organizations status is unpublished.
-    $query = \Drupal::entityQuery('node')
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
       ->exists('field_organizations')
       ->condition('field_organizations.%delta.entity:node.status', '0', '=');
     $nids_to_check = $query->execute();
@@ -34,7 +34,7 @@ function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$ar
 
       // Uses above query to filter out results where one
       // of the organisations in published.
-      $query = \Drupal::entityQuery('node')
+      $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
         ->exists('field_organizations')
         ->condition('nid', array_values($nids_to_check), 'IN')
         ->condition('field_organizations.%delta.entity:node.status', '1', '=');

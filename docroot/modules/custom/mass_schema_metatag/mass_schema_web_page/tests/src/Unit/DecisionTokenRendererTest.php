@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
@@ -57,7 +59,7 @@ class DecisionTokenRendererTest extends TestCase {
    */
   public function testMediaHasBeenDeleted(): void {
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
-    $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
     $entityTypeManager->method('getStorage')->willReturn($storage);
     $storage->expects($this->once())->method('load')
       ->willReturn(FALSE);
@@ -70,7 +72,7 @@ class DecisionTokenRendererTest extends TestCase {
    */
   public function testFileHasBeenDeleted(): void {
     $entityTypeManager = $this->createMock(EntityTypeManagerInterface::class);
-    $storage = $this->createMock(\Drupal\Core\Entity\EntityStorageInterface::class);
+    $storage = $this->createMock(EntityStorageInterface::class);
     $entityTypeManager->method('getStorage')->willReturn($storage);
     $media = $this->createMock(MediaInterface::class);
     $ref = $this->createMock(EntityReferenceFieldItemListInterface::class);
@@ -98,7 +100,7 @@ class DecisionTokenRendererTest extends TestCase {
     $ref->method('getValue')
       ->willReturn([['target_id' => 1234]]);
 
-    $mockFieldDefinition = $this->createMock(\Drupal\Core\Field\FieldDefinitionInterface::class);
+    $mockFieldDefinition = $this->createMock(FieldDefinitionInterface::class);
     $mockFieldDefinition->expects($this->exactly(2))
       ->method('getSetting')
       ->willReturnOnConsecutiveCalls('media', ['target_bundles' => ['document' => 'Document']]);

@@ -6,22 +6,18 @@
 #}
   {#{{ kint(searchFormId) }}#}
 {% block content %}
-<form class="ma__search-banner__form" action="https://search.mass.gov/">
-  <div class="ma__search-banner__input js-suggestions-container" role="search">
-    <div class="visually-hidden js-suggestions-help" role="status"  aria-live="assertive"></div>
-    <label for="banner-search" class="ma__search-banner__label">Search terms</label>
+<form class="ma__search-banner__form" action="https://search.mass.gov/" role="search">
+  <div class="ma__search-banner__input js-suggestions-container">
     <input
         id="banner-search"
         name="q"
         class="ma__header-search__input"
         autocomplete="off"
-        aria-autocomplete="both"
-        role="combobox"
-        aria-own="suggestions-list"
         placeholder="Search Mass.gov"
-        data-suggest=""
-        type="text" />
-    <div class="ma__suggestions" data-suggestions=""></div>
+        type="search" 
+        inputmode="search"
+        aria-label="search the site"
+    />
   </div>
   <button class="ma__search-banner__button" type="submit">
     <span>Search</span>

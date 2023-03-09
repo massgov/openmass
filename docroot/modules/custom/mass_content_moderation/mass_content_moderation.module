@@ -32,11 +32,11 @@ function mass_content_moderation_log_state_change(ContentEntityInterface $entity
   $originalState = $entity->original->getModerationState()->getString();
   $currentState = $entity->getModerationState()->getString();
   if ($originalState !== $currentState) {
-    $message = 'Entity !url changed moderation state from !originalState to !currentState';
+    $message = 'Entity @url changed moderation state from @originalState to @currentState';
     $variables = [
-      '!url' => $entity->toUrl()->toString(),
-      '!originalState' => $originalState,
-      '!currentState' => $currentState,
+      '@url' => $entity->toUrl()->toString(),
+      '@originalState' => $originalState,
+      '@currentState' => $currentState,
     ];
     \Drupal::logger('mass_content_moderation')->log(RfcLogLevel::NOTICE, $message, $variables);
   }

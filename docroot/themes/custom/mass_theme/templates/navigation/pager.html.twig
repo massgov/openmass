@@ -37,17 +37,17 @@
       <h4 id="pagination-heading" class="visually-hidden">{{ 'Pagination'|t }}</h4>
       {# Print previous item if we are not on the first page. #}
       {% if items.previous %}
-        <a href="{{ items.previous.href }}"     
-        class="ma__pagination__prev js-pagination-prev {% if pagination.prev.disabled %}disabled{% endif %}" 
-        aria-label="Go to {{ items.previous.text|default('Previous'|t) }} page" 
+        <a href="{{ items.previous.href }}"
+        class="ma__pagination__prev js-pagination-prev {% if pagination.prev.disabled %}disabled{% endif %}"
+        aria-label="Go to {{ items.previous.text|default('Previous'|t) }} page"
         rel="prev"{{ items.previous.attributes|without('href', 'title', 'rel') }}>
           {{ items.previous.text|default('‹ Previous'|t) }}
         </a>
       {% endif %}
-      {# Add an ellipsis if there are further previous pages. #}
-      {% if ellipses.previous %}
-        <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span>
-      {% endif %}
+{#      #}{# Add an ellipsis if there are further previous pages. #}
+{#      {% if ellipses.previous %}#}
+{#        <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span>#}
+{#      {% endif %}#}
       {# Now generate the actual pager piece. #}
       {% for key, item in items.pages %}
         {% if current == key %}
@@ -61,13 +61,13 @@
         </a>
       {% endfor %}
       {# Add an ellipsis if there are further next pages. #}
-      {% if ellipses.next %}
-        <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span>
-      {% endif %}
+{#      {% if ellipses.next %}#}
+{#        <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span>#}
+{#      {% endif %}#}
       {# Print next item if we are not on the last page. #}
       {% if items.next %}
-       <a href="{{ items.next.href }}" 
-        class="ma__pagination__next js-pagination-next {% if pagination.next.disabled %}disabled{% endif %}" 
+       <a href="{{ items.next.href }}"
+        class="ma__pagination__next js-pagination-next {% if pagination.next.disabled %}disabled{% endif %}"
         aria-label="Go to {{ items.next.text|default('Next'|t) }} page"
         rel="next"{{ items.next.attributes|without('href', 'title', 'rel') }}>
         {{ items.next.text|default('Next ›'|t) }}
