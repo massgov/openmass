@@ -3,9 +3,7 @@
  * Adds a localStorage item that provides a unique identifier for the user's device while on the site.
  */
 
-(function ($) {
-  'use strict';
-
+(function (Drupal, once) {
   Drupal.behaviors.massgovDevice = {
     attach: function (context) {
       once('massgovDeviceId', 'html', context).forEach(function() {
@@ -15,4 +13,4 @@
       });
     }
   };
-})(jQuery);
+})(Drupal, once);
