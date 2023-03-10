@@ -58,7 +58,7 @@
         var $submitBtn = $('input[type="submit"]', $form);
 
         // Use device ID set in docroot/themes/custom/mass_theme/overrides/js/device.js.
-        var massgovDeviceId = localStorage.getItem('massgovDeviceId') ?? "";
+        var massgovDeviceId = localStorage.getItem('massgovDeviceId') || '';
         $form.find('input[name="' + UNIQUE_ID_FIELD + '"]').val(massgovDeviceId);
 
         $form.submit(function () {

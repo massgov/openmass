@@ -4,9 +4,11 @@
  */
 
 (function (Drupal, once) {
+  'use strict';
+
   Drupal.behaviors.massgovDevice = {
     attach: function (context) {
-      once('massgovDeviceId', 'html', context).forEach(function() {
+      once('massgovDeviceId', 'html', context).forEach(function () {
         if (window.crypto && localStorage.getItem('massgovDeviceId') === null) {
           localStorage.setItem('massgovDeviceId', window.crypto.randomUUID());
         }
