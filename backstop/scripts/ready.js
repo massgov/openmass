@@ -150,33 +150,19 @@ module.exports = async function (page, scenario, vp) {
     throw new Error(`${e.constructor.name}: Failed waiting for Caspio forms to load on this page: ${page.url()}.`)
   }
 
-  let leafletMapInitialized = await page.evaluate(async function () {
-    let initialized = undefined;
-    const containers = document.querySelectorAll(".js-leaflet-map");
-    if (containers.length) {
-      containers.forEach(function (e) {
-        const container = L.DomUtil.get(e);
-        if (container != null) {
-          if (container._leaflet_id == null) {
-            initialized = false;
-          }
-          else {
-            initialized = true;
-          }
-        }
-      });
-    }
-  })
-
-  if (leafletMapInitialized == false) {
-    await page.waitForSelector('.js-leaflet-map .leaflet-tile-container', {
-      visible: true,
+  // Wait for leaflet map to load.
+  try {
+    // Wait for all image tiles to load.
+    await page.waitForFunction("Array.from(document.querySelectorAll('img.leaflet-tile')).filter(img => !img.complete).length == 0", {
       timeout: 10000,
-    })
-    await page.waitForTimeout(3000);
+    });
+    // Wait for all markers to load.
+    await page.waitForFunction("Array.from(document.querySelectorAll('img.leaflet-marker-icon.leaflet-interactive')).filter(img => !img.complete).length == 0", {
+      timeout: 3000,
+    });
   }
-  else if (leafletMapInitialized == true) {
-    await page.waitForTimeout(5000);
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for leaflet map to load on this page: ${page.url()}.`)
   }
 
   if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
