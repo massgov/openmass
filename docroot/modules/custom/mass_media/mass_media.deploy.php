@@ -8,7 +8,7 @@ function mass_media_deploy_update_documents_usage(&$sandbox) {
 
   $query = \Drupal::entityQuery('media')->accessCheck(FALSE);
   $query->condition('bundle', 'document');
-  $query->condition('field_document_label', '','IS NOT NULL');
+  $query->condition('field_document_label', '', 'IS NOT NULL');
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
