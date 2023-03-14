@@ -149,6 +149,9 @@ module.exports = {
     "engine": "puppeteer",
     "engineFlags": [],
     "engineOptions": {
+        "gotoParameters": {
+          "waitUntil": "domcontentloaded",
+        },
         "ignoreHTTPSErrors": true,
         "args": [
           "--no-sandbox",

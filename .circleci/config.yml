@@ -514,9 +514,6 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Patch Backstop
-          command: ./backstop/patchBackstop.sh
-      - run:
           name: "Setup environment variables"
           command: |
             if [ "<< parameters.cachebuster >>" = "true" ]; then
@@ -577,9 +574,6 @@ jobs:
       - image: backstopjs/backstopjs
     steps:
       - checkout
-      - run:
-          name: Patch Backstop
-          command: ./backstop/patchBackstop.sh
       - run:
           name: "Setup environment variables"
           command: |
