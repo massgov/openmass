@@ -83,8 +83,12 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
 
       $fieldName = $fieldDefinition->getName();
       $entityTypeId = $fieldDefinition->getTargetEntityTypeId();
-      $this->lockTree($fieldName, $entityTypeId);
-
+      try {
+        $this->lockTree($fieldName, $entityTypeId);
+      }
+      catch (\Exception $exception) {
+        throw new \Exception("Unable to acquire lock to update tree. with the $fieldName with entity ID: $entityTypeId");
+      }
       // Get the parent/child entities and their node-keys in the nested set.
       $parentEntity = $this->fieldItem->get('entity')->getValue();
       if (!$parentEntity) {
