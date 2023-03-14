@@ -176,6 +176,13 @@ function mass_gin_theme_registry_alter(&$theme_registry) {
 }
 
 /**
+ * Implements hook_preprocess().
+ */
+function mass_gin_preprocess_flag(&$variables) {
+  $variables['attributes']['class'] = array_merge(['toolbar-icon', 'toolbar-icon-watcher', 'toolbar-item'], $variables['attributes']['class']);
+}
+
+/**
  * Implements hook_preprocess_HOOK() for page_attachments.
  */
 function mass_gin_page_attachments_alter(&$page) {

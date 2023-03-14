@@ -1,0 +1,41 @@
+.toolbar .toolbar-bar .toolbar-icon-watcher:before,
+.toolbar .toolbar-bar .toolbar-icon-watcher:hover:before,
+.toolbar .toolbar-bar .toolbar-icon-watcher.active:before {
+  background: url("../../../../themes/contrib/gin/dist/media/sprite.svg#search-view") no-repeat rgba(255,255,255,.75);
+}
+
+.toolbar .toolbar-bar .toolbar-icon.toolbar-icon-watcher:before,
+.toolbar .toolbar-bar .responsive-preview-icon.toolbar-icon-watcher:before {
+  -webkit-mask-image: url("../../../../themes/contrib/gin/dist/media/sprite.svg#search-view");
+  mask-image: url("../../../../themes/contrib/gin/dist/media/sprite.svg#search-view");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  mask-position: center center;
+  -webkit-mask-position: center center;
+  mask-size: var(--gin-icon-size-toolbar-secondary) var(--gin-icon-size-toolbar-secondary);
+  -webkit-mask-size: var(--gin-icon-size-toolbar-secondary) var(--gin-icon-size-toolbar-secondary);
+  background: rgba(255,255,255,.75);
+}
+
+.toolbar .toolbar-bar .js-flag-message {
+  color: black;
+  position: absolute;
+  font-size: 1rem;
+  background: white;
+  padding: 7px;
+  border: 1px solid black;
+  width: 100%;
+}
+
+@media (min-width: 80em) {
+  [dir="ltr"] .gin-secondary-toolbar .toolbar-secondary .toolbar-bar .toolbar-tab.toolbar-tab--toolbar-item-watcher {
+    margin-left: 0.25em;
+  }
+}
+
+@media (min-width: 61em) {
+  .toolbar .toolbar-bar .toolbar-icon.toolbar-icon-watcher:before,
+  .toolbar .toolbar-bar .responsive-preview-icon.toolbar-icon-watcher:before {
+    background: url("../../../../themes/contrib/gin/dist/media/sprite.svg#search-view") no-repeat rgba(0,0,0,.75);
+  }
+}
