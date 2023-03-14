@@ -18,7 +18,7 @@ function mass_media_deploy_update_documents_usage(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 50;
+  $batch_size = 5000;
 
   // Turn off entity_hierarchy writes while processing the item.
   \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
