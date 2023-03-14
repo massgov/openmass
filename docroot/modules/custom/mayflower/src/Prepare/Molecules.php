@@ -1345,7 +1345,7 @@ class Molecules {
         case 'pdf':
         case 'docx':
         case 'xlsx':
-          $icon = 'doc-' . $file_extension;
+          $icon = 'doc-' . strtolower($file_extension);
           break;
 
         default:

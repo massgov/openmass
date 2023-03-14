@@ -290,7 +290,7 @@ class MassUtilityCommands extends DrushCommands {
    * @option offset
    *   Determines how many records to skip. Defaults to 0.
    * @option timestamp
-   *   The timestamp to use when processing revisions. Defaults to 14 months ago.
+   *   The unix timestamp to use when processing revisions. Defaults to a timestamp that is 14 months ago.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Exception
