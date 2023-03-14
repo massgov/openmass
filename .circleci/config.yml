@@ -136,6 +136,9 @@ parameters:
   cachebuster:
     type: boolean
     default: false
+  save-build:
+    type: boolean
+    default: true
 
   # These params for currently used in drush ma:release
   ma-release:
@@ -502,6 +505,9 @@ jobs:
       cachebuster:
         type: boolean
         default: false
+      save-build:
+        type: boolean
+        default: true
     resource_class: xlarge
     docker:
       - image: backstopjs/backstopjs
@@ -534,12 +540,14 @@ jobs:
       - run:
           name: Save Build Number
           command: |
-            curl --request POST \
-              --fail \
-              --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/envvar" \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" \
-              --header 'content-type: application/json' \
-              --data "{\"name\":\"BACKSTOP_REF_<< parameters.target >>_<< parameters.list >>_<< parameters.viewport >>\",\"value\":\"$CIRCLE_BUILD_NUM\"}"
+            if [ "<< parameters.save-build >>" = "true" ]; then
+              curl --request POST \
+                --fail \
+                --url "https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/envvar" \
+                --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" \
+                --header 'content-type: application/json' \
+                --data "{\"name\":\"BACKSTOP_REF_<< parameters.target >>_<< parameters.list >>_<< parameters.viewport >>\",\"value\":\"$CIRCLE_BUILD_NUM\"}"
+            fi
 
   backstop_test:
     parameters:
@@ -713,6 +721,15 @@ workflows:
           name: test-behat
           command: behat
           requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+
+      - backstop_snapshot:
+          name: backstop-snapshot
+          command: backstop_reference
+          target: prod
+          save-build: false
           filters:
             branches:
               <<: *branch_ignore

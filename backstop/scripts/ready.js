@@ -116,12 +116,15 @@ module.exports = async function (page, scenario, vp) {
 
   // All the alerts on the page must be processed.
   try {
-    await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0", {
-      timeout: 60 * 1000,
+    await page.waitForFunction("document.querySelectorAll('.mass-alerts-block').length == document.querySelectorAll('.mass-alerts-block[data-alert-processed]').length", {
+      timeout: 6000,
     });
+    // Alerts with content are all visible.
+    await page.waitForFunction("Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
   }
   catch (e) {
-    throw new Error(`${e.constructor.name}: Failed waiting for "jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0" on this page: ${page.url()}.`)
+    console.error(e);
+    throw new Error(`${e.constructor.name}: Failed waiting for alerts on this page: ${page.url()}.`)
   }
 
   // Wait for Papa.parse in the csv_field module to complete.
@@ -136,15 +139,18 @@ module.exports = async function (page, scenario, vp) {
 
   // Wait for Caspio embeds to finish loading.
   try {
-    await page.waitForFunction("document.querySelectorAll('.ma__caspio form#caspioform').length == document.querySelectorAll('.ma__caspio').length", {
-      timeout: 5000,
-    });
-    // The form loading in causes the layout to shift.
-    await page.waitForTimeout(3000);
-    await page.waitForSelector('.ma__footer-new', {
-      visible: true,
-      timeout: 5000,
-    });
+    let caspioForms = await page.evaluate(() => Array.from(document.querySelectorAll('.ma__caspio')));
+    if (caspioForms.length) {
+      await page.waitForFunction("document.querySelectorAll('.ma__caspio form').length == document.querySelectorAll('.ma__caspio').length", {
+        timeout: 5000,
+      });
+      // The form loading in causes the layout to shift.
+      await page.waitForTimeout(3000);
+      await page.waitForSelector('.ma__footer-new', {
+        visible: true,
+        timeout: 5000,
+      });
+    }
   }
   catch (e) {
     throw new Error(`${e.constructor.name}: Failed waiting for Caspio forms to load on this page: ${page.url()}.`)
