@@ -46,15 +46,9 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   Entity type manager service.
-   * @param \Drupal\entity_usage\EntityUpdateManager $entity_usage_update_manager
-   *   Entity usage update manager.
-   * @param \Drupal\Core\Database\Connection $database_service
-   *   The Drupal Database service.
-   * @param \Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory
+   * @param \Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory $node_key_factory
    *   The factory.
-   * @param \Drupal\entity_hierarchy\Storage\
+   * @param \Drupal\entity_hierarchy\Storage\NestedSetStorageFactory $nested_set_storage_factory
    *   The storage factory.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, NestedSetNodeKeyFactory $node_key_factory, NestedSetStorageFactory $nested_set_storage_factory) {
@@ -112,7 +106,8 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
       $isNewNode = FALSE;
       if (!$childNode = $storage->getNode($childKey)) {
         $isNewNode = TRUE;
-        // As we're going to be adding instead of moving, a key is all we require.
+        // As we're going to be adding instead of
+        // moving, a key is all we require.
         $childNode = $childKey;
       }
 
@@ -121,8 +116,8 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
         // If there are no siblings, we simply insert/move below.
         $insertPosition = new InsertPosition($existingParent, $isNewNode, InsertPosition::DIRECTION_BELOW);
 
-        // But if there are siblings, we need to ascertain the correct position in
-        // the order.
+        // But if there are siblings, we need to
+        // ascertain the correct position in the order.
         if ($siblingEntities = $this->getSiblingEntityWeights($storage, $existingParent, $childNode)) {
           // Group the siblings by their weight.
           $weightOrderedSiblings = $this->fieldItem->groupSiblingsByWeight($siblingEntities, $fieldName);
@@ -197,7 +192,7 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
       ->condition($key, $ids, 'IN')
       ->execute();
     $weightSeparator = $fieldDefinition instanceof BaseFieldDefinition ? '__' : '_';
-    $entities = array_combine(array_column($entities, $key), array_column($entities, $parentField . $weightSeparator. 'weight'));
+    $entities = array_combine(array_column($entities, $key), array_column($entities, $parentField . $weightSeparator . 'weight'));
     foreach ($siblings as $node) {
       if (!isset($entities[$node->getRevisionId()])) {
         continue;
