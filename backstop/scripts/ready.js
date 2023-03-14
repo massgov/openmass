@@ -252,21 +252,41 @@ module.exports = async function (page, scenario, vp) {
         document.querySelector(".ma__header__hamburger__nav-container").scrollTo(0, 500);
       })
       break;
-    case "Service1":
+    // Emergency alert.
     case "ExpansionOfAccordions1_toggle":
-    case "ExpansionOfAccordions2_toggle":
       try {
-        await page.waitForFunction("document.readyState === 'complete'", {
-          timeout: 60 * 1000,
+        await page.waitForSelector('.ma__emergency-alerts .ma__emergency-header__toggle', {
+          visible: true,
+          timeout: 10000,
+        });
+        await page.click('.ma__emergency-alerts .ma__emergency-header__toggle');
+        await page.waitForSelector('.ma__emergency-alerts__content', {
+          visible: true,
+          timeout: 60000,
         });
       }
       catch (e) {
-        throw new Error(`${e.constructor.name}: Failed waiting for document.readyState === 'complete' on this page: ${page.url()}.`)
+        console.error(e);
+        throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
       }
-      await page.evaluate(async function () {
-        jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
-      });
-      await page.waitForTimeout(1000);
+      break;
+    // Standard alert.
+    case "ExpansionOfAccordions2_toggle":
+      try {
+        await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__header__toggle', {
+          visible: true,
+          timeout: 10000,
+        });
+        await page.click('.pre-content .mass-alerts-block .ma__action-step__header__toggle');
+        await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__content', {
+          visible: true,
+          timeout: 60000,
+        });
+      }
+      catch (e) {
+        console.error(e);
+        throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
+      }
       break;
   }
 
