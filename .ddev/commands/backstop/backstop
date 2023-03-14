@@ -4,4 +4,8 @@
 ## Usage: backstop [flags] [args]
 ## Example: ddev backstop test --target=local --list=all
 
+set -x
+set -e
+
+/src/patchBackstop.sh
 backstop --config=/src/backstop.js "$@"
