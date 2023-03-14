@@ -127,8 +127,8 @@ if (viewportArg !== 'desktop') {
 }
 
 // We need parseInt() as environment variables are strings.
-const asyncCaptureLimit = parseInt(process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT ? process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT : 4);
-const asyncCompareLimit = asyncCaptureLimit * 25;
+const asyncCaptureLimit = parseInt(process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT ? process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT : 3);
+const asyncCompareLimit = asyncCaptureLimit * 15;
 
 console.log(`Will capture with ${asyncCaptureLimit} browsers and compare with ${asyncCompareLimit} threads.`)
 
@@ -151,10 +151,12 @@ module.exports = {
     "engineOptions": {
         "ignoreHTTPSErrors": true,
         "args": [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--enable-features=NetworkService",
-            "--ignore-certificate-errors"
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-gpu",
+          "--force-device-scale-factor=1",
+          "--disable-infobars=true",
+          "--hide-scrollbars"
         ]
     },
     "asyncCaptureLimit": asyncCaptureLimit,
