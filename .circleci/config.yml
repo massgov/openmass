@@ -725,9 +725,7 @@ workflows:
             branches:
               <<: *branch_ignore
 
-      - backstop_snapshot:
-          name: backstop-snapshot
-          command: backstop_reference
+      - backstop_reference:
           target: prod
           save-build: false
           filters:
