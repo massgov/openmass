@@ -78,9 +78,18 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
       $this->fieldItem = $data['field_item'];
       // Get the field name.
       $fieldDefinition = $this->fieldItem->getFieldDefinition();
-      $storage = $this->nestedSetStorageFactory->get($fieldDefinition->getName(), $fieldDefinition->getTargetEntityTypeId());
-      $fieldName = $fieldDefinition->getName();
 
+      $storage = $this->nestedSetStorageFactory->get($fieldDefinition->getName(), $fieldDefinition->getTargetEntityTypeId());
+
+      $fieldName = $fieldDefinition->getName();
+      $entityTypeId = $fieldDefinition->getTargetEntityTypeId();
+      try {
+        $this->lockTree($fieldName, $entityTypeId);
+      }
+      catch (\Exception $exception) {
+        $id = $this->fieldItem->getEntity()->id();
+        throw new \Exception("Unable to acquire lock to update tree. with the $fieldName with entity ID: $id");
+      }
       // Get the parent/child entities and their node-keys in the nested set.
       $parentEntity = $this->fieldItem->get('entity')->getValue();
       if (!$parentEntity) {
@@ -90,6 +99,7 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
         if (($existingNode = $storage->getNode($stubNode)) && $existingNode->getDepth() > 0) {
           $storage->moveSubTreeToRoot($existingNode);
         }
+        $this->releaseLock($fieldName, $entityTypeId);
         Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
         return;
       }
@@ -120,12 +130,14 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
           $insertPosition = $this->fieldItem->getInsertPosition($weightOrderedSiblings, $weight, $isNewNode) ?: $insertPosition;
         }
         $insertPosition->performInsert($storage, $childNode);
+        $this->releaseLock($fieldName, $entityTypeId);
         Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
         return;
       }
       // We need to create a node for the parent in the tree.
       $parentNode = $storage->addRootNode($parentKey);
       (new InsertPosition($parentNode, $isNewNode, InsertPosition::DIRECTION_BELOW))->performInsert($storage, $childNode);
+      $this->releaseLock($fieldName, $entityTypeId);
       Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
     }
   }
