@@ -78,7 +78,7 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
       $this->fieldItem = $data['field_item'];
       // Get the field name.
       $fieldDefinition = $this->fieldItem->getFieldDefinition();
-
+      $id = $this->fieldItem->getEntity()->id();
       $storage = $this->nestedSetStorageFactory->get($fieldDefinition->getName(), $fieldDefinition->getTargetEntityTypeId());
 
       $fieldName = $fieldDefinition->getName();
@@ -87,7 +87,10 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
         $this->lockTree($fieldName, $entityTypeId);
       }
       catch (\Exception $exception) {
-        $id = $this->fieldItem->getEntity()->id();
+        // Re-adding to the queue to try again later.
+        \Drupal::queue('entity_hierarchy_tracker')->createItem([
+          'field_item' => $this->fieldItem,
+        ]);
         throw new \Exception("Unable to acquire lock to update tree. with the $fieldName with entity ID: $id");
       }
       // Get the parent/child entities and their node-keys in the nested set.
@@ -129,14 +132,32 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
           $weight = $this->fieldItem->get('weight')->getValue();
           $insertPosition = $this->fieldItem->getInsertPosition($weightOrderedSiblings, $weight, $isNewNode) ?: $insertPosition;
         }
-        $insertPosition->performInsert($storage, $childNode);
+        try {
+          $insertPosition->performInsert($storage, $childNode);
+        }
+        catch (\Exception $exception) {
+          // Re-adding to the queue to try again later.
+          \Drupal::queue('entity_hierarchy_tracker')->createItem([
+            'field_item' => $this->fieldItem,
+          ]);
+          throw new \Exception("Unable to perform insert to the hierarchy, field name: $fieldName with entity ID: $id");
+        }
         $this->releaseLock($fieldName, $entityTypeId);
         Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
         return;
       }
       // We need to create a node for the parent in the tree.
       $parentNode = $storage->addRootNode($parentKey);
-      (new InsertPosition($parentNode, $isNewNode, InsertPosition::DIRECTION_BELOW))->performInsert($storage, $childNode);
+      try {
+        (new InsertPosition($parentNode, $isNewNode, InsertPosition::DIRECTION_BELOW))->performInsert($storage, $childNode);
+      }
+      catch (\Exception $exception) {
+        // Re-adding to the queue to try again later.
+        \Drupal::queue('entity_hierarchy_tracker')->createItem([
+          'field_item' => $this->fieldItem,
+        ]);
+        throw new \Exception("Unable to perform insert to the hierarchy, field name: $fieldName with entity ID: $id");
+      }
       $this->releaseLock($fieldName, $entityTypeId);
       Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
     }
