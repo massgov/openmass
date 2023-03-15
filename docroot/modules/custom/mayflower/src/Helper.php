@@ -4,6 +4,8 @@ namespace Drupal\mayflower;
 
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\crop\Entity\Crop;
+use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
@@ -144,6 +146,45 @@ class Helper {
       }
     }
     return $url;
+  }
+
+  /**
+   * Provide the focal point of an image as a percentage.
+   *
+   * If no focal point exists then 50% / 50% is provided.
+   *
+   * @param object $entity
+   *   The node with the field on it.
+   * @param string $field
+   *   The name of an the image field.
+   * @param int $delta
+   *   (Optional) the delta of the image field to display, defaults to 0.
+   *
+   * @return array
+   *   Array with two keys (x, y) with coordinates as string values e.g.
+   *   ['x' => '50%', 'y' => '50%']
+   */
+  public static function getFieldImageFocalPoint($entity, $field = NULL, $delta = 0) {
+    $fields = $entity->get($field);
+    $image = $fields->get($delta);
+    $file = $fields->referencedEntities();
+    if (!empty($image)) {
+      $crop_type = \Drupal::config('focal_point.settings')->get('crop_type');
+      $file_uri = $file[$delta]->getFileUri();
+      if (Crop::cropExists($file_uri, $crop_type)) {
+        $crop = Crop::findCrop($file_uri, $crop_type);
+        if (!empty($crop) && !empty($crop->position() && is_array($crop->position()))) {
+          $crop_position = $crop->position();
+          if (isset($crop_position['x']) && isset($crop_position['y'])) {
+            $width = round(($crop_position['x'] / $fields->get($delta)->width) * 100, 2);
+            $height = round(($crop_position['y'] / $fields->get($delta)->height) * 100, 2);
+            return ['x' => "$width%", 'y' => "$height%"];
+          }
+        }
+      }
+    }
+
+    return ['x' => '50%', 'y' => '50%'];
   }
 
   /**
