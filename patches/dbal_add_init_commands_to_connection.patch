@@ -1,0 +1,14 @@
+diff --git a/src/ConnectionFactory.php b/src/ConnectionFactory.php
+index 07680b3..1c72c5c 100644
+--- a/src/ConnectionFactory.php
++++ b/src/ConnectionFactory.php
+@@ -66,6 +66,9 @@ class ConnectionFactory {
+       if (isset($info['host'])) {
+         $options['host'] = $info['host'];
+       }
++      if (isset($info['init_commands'])) {
++        $options['init_commands'] = $info['init_commands'];
++      }
+       if (isset($info['unix_socket'])) {
+         $options['unix_socket'] = $info['unix_socket'];
+       }
