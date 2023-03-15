@@ -14,7 +14,7 @@ module.exports = async function (page, scenario, vp) {
   if (oneMinute > os.cpus().length) {
     console.log(`One minute load average is ${oneMinute}. Consider reducing the number of capture processes.`)
   }
-  await page.setDefaultNavigationTimeout(60000);
+  await page.setDefaultNavigationTimeout(300000);
 
   // DO NOT put anything that modifies a mass.gov page before this point.
   // Otherwise, if a Tugboat preview is suspended and needs to resume, we may
@@ -116,12 +116,15 @@ module.exports = async function (page, scenario, vp) {
 
   // All the alerts on the page must be processed.
   try {
-    await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0", {
-      timeout: 60 * 1000,
+    await page.waitForFunction("document.querySelectorAll('.mass-alerts-block').length == document.querySelectorAll('.mass-alerts-block[data-alert-processed]').length", {
+      timeout: 6000,
     });
+    // Alerts with content are all visible.
+    await page.waitForFunction("Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
   }
   catch (e) {
-    throw new Error(`${e.constructor.name}: Failed waiting for "jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0" on this page: ${page.url()}.`)
+    console.error(e);
+    throw new Error(`${e.constructor.name}: Failed waiting for alerts on this page: ${page.url()}.`)
   }
 
   // Wait for Papa.parse in the csv_field module to complete.
@@ -136,15 +139,18 @@ module.exports = async function (page, scenario, vp) {
 
   // Wait for Caspio embeds to finish loading.
   try {
-    await page.waitForFunction("document.querySelectorAll('.ma__caspio form#caspioform').length == document.querySelectorAll('.ma__caspio').length", {
-      timeout: 5000,
-    });
-    // The form loading in causes the layout to shift.
-    await page.waitForTimeout(3000);
-    await page.waitForSelector('.ma__footer-new', {
-      visible: true,
-      timeout: 5000,
-    });
+    let caspioForms = await page.evaluate(() => Array.from(document.querySelectorAll('.ma__caspio')));
+    if (caspioForms.length) {
+      await page.waitForFunction("document.querySelectorAll('.ma__caspio form').length == document.querySelectorAll('.ma__caspio').length", {
+        timeout: 5000,
+      });
+      // The form loading in causes the layout to shift.
+      await page.waitForTimeout(3000);
+      await page.waitForSelector('.ma__footer-new', {
+        visible: true,
+        timeout: 5000,
+      });
+    }
   }
   catch (e) {
     throw new Error(`${e.constructor.name}: Failed waiting for Caspio forms to load on this page: ${page.url()}.`)
@@ -246,21 +252,41 @@ module.exports = async function (page, scenario, vp) {
         document.querySelector(".ma__header__hamburger__nav-container").scrollTo(0, 500);
       })
       break;
-    case "Service1":
+    // Emergency alert.
     case "ExpansionOfAccordions1_toggle":
-    case "ExpansionOfAccordions2_toggle":
       try {
-        await page.waitForFunction("document.readyState === 'complete'", {
-          timeout: 60 * 1000,
+        await page.waitForSelector('.ma__emergency-alerts .ma__emergency-header__toggle', {
+          visible: true,
+          timeout: 10000,
+        });
+        await page.click('.ma__emergency-alerts .ma__emergency-header__toggle');
+        await page.waitForSelector('.ma__emergency-alerts__content', {
+          visible: true,
+          timeout: 60000,
         });
       }
       catch (e) {
-        throw new Error(`${e.constructor.name}: Failed waiting for document.readyState === 'complete' on this page: ${page.url()}.`)
+        console.error(e);
+        throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
       }
-      await page.evaluate(async function () {
-        jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
-      });
-      await page.waitForTimeout(1000);
+      break;
+    // Standard alert.
+    case "ExpansionOfAccordions2_toggle":
+      try {
+        await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__header__toggle', {
+          visible: true,
+          timeout: 10000,
+        });
+        await page.click('.pre-content .mass-alerts-block .ma__action-step__header__toggle');
+        await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__content', {
+          visible: true,
+          timeout: 60000,
+        });
+      }
+      catch (e) {
+        console.error(e);
+        throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
+      }
       break;
   }
 
