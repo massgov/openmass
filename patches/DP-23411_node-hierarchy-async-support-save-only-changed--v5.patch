@@ -1,32 +1,16 @@
 diff --git a/src/Form/HierarchyChildrenForm.php b/src/Form/HierarchyChildrenForm.php
-index fc94005..a9ffe09 100644
+index e3ff5d0..2efd468 100644
 --- a/src/Form/HierarchyChildrenForm.php
 +++ b/src/Form/HierarchyChildrenForm.php
-@@ -4,14 +4,9 @@ namespace Drupal\entity_hierarchy\Form;
- 
- use Drupal\Core\Cache\CacheableMetadata;
- use Drupal\Core\Entity\ContentEntityInterface;
--use Drupal\Core\Entity\EntityManagerInterface;
- use Drupal\Core\Form\FormStateInterface;
- use Drupal\Core\Render\Element;
- use Drupal\Core\StringTranslation\TranslatableMarkup;
--use Drupal\entity_hierarchy\Information\ParentCandidateInterface;
--use Drupal\entity_hierarchy\Storage\EntityTreeNodeMapperInterface;
--use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
--use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
- use Drupal\Core\Entity\ContentEntityForm;
- use Symfony\Component\DependencyInjection\ContainerInterface;
- use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-@@ -20,8 +15,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+@@ -15,7 +15,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
   * Defines a form for re-ordering children.
   */
  class HierarchyChildrenForm extends ContentEntityForm {
 -  const CHILD_ENTITIES_STORAGE = 'child_entities';
--
+ 
    /**
     * The hierarchy being displayed.
-    *
-@@ -84,6 +77,8 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -79,6 +78,8 @@ class HierarchyChildrenForm extends ContentEntityForm {
    public function form(array $form, FormStateInterface $form_state) {
      $cache = (new CacheableMetadata())->addCacheableDependency($this->entity);
  
@@ -35,7 +19,7 @@ index fc94005..a9ffe09 100644
      /** @var \Drupal\Core\Field\FieldDefinitionInterface[] $fields */
      $fields = $this->parentCandidate->getCandidateFields($this->entity);
      if (!$fields) {
-@@ -118,22 +113,47 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -113,21 +114,46 @@ class HierarchyChildrenForm extends ContentEntityForm {
          '#submit' => ['::updateField'],
        ];
      }
@@ -60,11 +44,11 @@ index fc94005..a9ffe09 100644
        '#type' => 'table',
 -      '#header' => [t('Child'), t('Type'), t('Weight'), t('Operations')],
 +      '#header' => [
-+        t('Child'),
-+        t('Type'),
-+        t('Weight'),
++        $this->t('Child'),
++        $this->t('Type'),
++        $this->t('Weight'),
 +        [
-+          'data' => t('Operations'),
++          'data' => $this->t('Operations'),
 +          'colspan' => 3,
 +        ],
 +      ],
@@ -82,19 +66,15 @@ index fc94005..a9ffe09 100644
            'action' => 'order',
            'relationship' => 'sibling',
 -          'group' => 'children-order-weight',
--        ],
 +          'group' => 'child-weight',
-+        ]
+         ],
        ],
        '#empty' => $this->t('There are no children to reorder'),
-     ];
-@@ -152,14 +172,41 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -147,10 +173,31 @@ class HierarchyChildrenForm extends ContentEntityForm {
          continue;
        }
        $child = $node->getId();
-+
 +      $level = $node->getDepth() - $baseDepth;
-+
 +      if ($level > 1) {
 +        continue;
 +      }
@@ -104,7 +84,6 @@ index fc94005..a9ffe09 100644
 +      while ($nextElem && !$childEntities->contains($nextElem)) {
 +        $nextElem = $children[$weight + $inc++] ?? FALSE;
 +      }
-+
 +      !$nextElem || ($nextElem->getDepth() <= $node->getDepth())
 +        ?: $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--parent';
 +
@@ -114,7 +93,6 @@ index fc94005..a9ffe09 100644
        $form['children'][$child]['#weight'] = $weight;
 -      $form['children'][$child]['title'] = $childEntity->toLink()
 -        ->toRenderable();
-+
 +      $form['children'][$child]['title'] = [
 +        [
 +          '#theme' => 'indentation',
@@ -126,13 +104,7 @@ index fc94005..a9ffe09 100644
        if (!$bundles) {
          $bundles = $this->entityTypeBundleInfo->getBundleInfo($childEntity->getEntityTypeId());
        }
-+
-       $form['children'][$child]['type'] = ['#markup' => $bundles[$childEntity->bundle()]['label']];
-+
-       $form['children'][$child]['weight'] = [
-         '#type' => 'weight',
-         '#delta' => 50,
-@@ -167,7 +214,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -162,7 +209,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
          '#title_display' => 'invisible',
          '#default_value' => $childEntity->{$fieldName}->weight,
          // Classify the weight element for #tabledrag.
@@ -141,8 +113,8 @@ index fc94005..a9ffe09 100644
        ];
        // Operations column.
        $form['children'][$child]['operations'] = [
-@@ -186,9 +233,19 @@ class HierarchyChildrenForm extends ContentEntityForm {
-           'url' => $childEntity->toUrl('delete-form'),
+@@ -175,9 +222,18 @@ class HierarchyChildrenForm extends ContentEntityForm {
+           'url' => $childEntity->toUrl('edit-form'),
          ];
        }
 -    }
@@ -153,7 +125,6 @@ index fc94005..a9ffe09 100644
 +        '#value' => $node->getNodeKey()->getId(),
 +        '#attributes' => ['class' => ['child-id']],
 +      ];
-+
 +      $form['children'][$child]['parent'] = [
 +        '#type' => 'hidden',
 +        '#default_value' => $storage->findParent($node->getNodeKey())->getNodeKey()->getId(),
@@ -163,7 +134,7 @@ index fc94005..a9ffe09 100644
  
      return $form;
    }
-@@ -210,7 +267,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -199,7 +255,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
     */
    protected function actions(array $form, FormStateInterface $form_state) {
      $actions = parent::actions($form, $form_state);
@@ -172,7 +143,7 @@ index fc94005..a9ffe09 100644
      // Don't perform field validation.
      $actions['submit']['#limit_validation_errors'] = [['children'], ['fieldname']];
      unset($actions['delete']);
-@@ -221,7 +278,9 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -210,7 +266,9 @@ class HierarchyChildrenForm extends ContentEntityForm {
      $fields = $this->parentCandidate->getCandidateFields($this->entity);
      $fieldName = $form_state->getValue('fieldname') ?: reset($fields);
      $entityType = $this->entity->getEntityType();
@@ -183,7 +154,7 @@ index fc94005..a9ffe09 100644
        $handlerClass = $entityType->getHandlerClass('entity_hierarchy');
        /** @var \Drupal\entity_hierarchy\Handler\EntityHierarchyHandlerInterface $handler */
        $handler = new $handlerClass();
-@@ -264,30 +323,26 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -253,22 +311,19 @@ class HierarchyChildrenForm extends ContentEntityForm {
     */
    public function save(array $form, FormStateInterface $form_state) {
      $children = $form_state->getValue('children');
@@ -211,9 +182,9 @@ index fc94005..a9ffe09 100644
 +        [static::class, 'rebuildTree'],
 +        [$fieldName, $entity, $child['parent'], $child['weight']],
        ];
--
+ 
      }
-     batch_set($batch);
+@@ -276,7 +331,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
    }
  
    /**
@@ -222,13 +193,14 @@ index fc94005..a9ffe09 100644
     *
     * @param string $fieldName
     *   Field name.
-@@ -296,16 +351,45 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -285,16 +340,45 @@ class HierarchyChildrenForm extends ContentEntityForm {
     * @param int $weight
     *   New weight.
     */
 -  public static function reorder($fieldName, ContentEntityInterface $childEntity, $weight) {
 -    $childEntity->{$fieldName}->weight = $weight;
 -    $childEntity->save();
+-  }
 +  public static function rebuildTree($fieldName, ContentEntityInterface $entity, $parent, $weight) {
 +    if ($entity->{$fieldName}->target_id == $parent) {
 +      return;
@@ -261,7 +233,7 @@ index fc94005..a9ffe09 100644
 +      $node_latest->save();
 +    }
 +
-   }
++   }
  
    /**
     * Batch finished callback.
@@ -286,7 +258,7 @@ index bc8bd8a..e065096 100644
          'weight' => 30,
        ] + $base_plugin_definition;
 diff --git a/src/Routing/EntityHierarchyRouteProvider.php b/src/Routing/EntityHierarchyRouteProvider.php
-index c2174e1..e1b7b43 100644
+index 44f05ff..3dc55a5 100644
 --- a/src/Routing/EntityHierarchyRouteProvider.php
 +++ b/src/Routing/EntityHierarchyRouteProvider.php
 @@ -73,7 +73,7 @@ class EntityHierarchyRouteProvider implements EntityRouteProviderInterface, Enti
