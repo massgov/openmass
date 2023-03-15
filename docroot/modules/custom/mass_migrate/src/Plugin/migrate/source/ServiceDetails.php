@@ -57,6 +57,7 @@ class ServiceDetails extends SqlBase {
   public function prepareRow(Row $row) {
     /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node */
     $node = Node::load($row->getSourceProperty('nid'));
+    dump($row->getSourceProperty('nid'));
     // @todo migrate rabbit hole ?
     $map_destination = [
       'title' => $node->getTitle(),
