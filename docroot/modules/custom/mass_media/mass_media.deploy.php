@@ -11,7 +11,6 @@ function mass_media_deploy_update_documents_usage(&$sandbox) {
   $query->condition('field_document_label', '', 'IS NOT NULL');
 
   if (empty($sandbox)) {
-    // Get a list of all nodes of type event.
     $sandbox['progress'] = 0;
     $sandbox['current'] = 0;
     $count = clone $query;
