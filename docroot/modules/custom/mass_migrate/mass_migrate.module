@@ -4,7 +4,7 @@ function mass_migrate_field_info_alter(&$info) {
   // Overrides core EntityReferenceHierarchy class for all Link fields.
   // This will only work during migration import command and can be run
   // separately with queue:run
-  if (\Drupal::state()->get('entity_hierarchy_disable_writes', FALSE)) {
+  if (\Drupal::state()->get('entity_hierarchy_disable_writes', FALSE) && \Drupal::state()->get('mass_migrate_service_details', FALSE)) {
     $info['entity_reference_hierarchy']['class'] = 'Drupal\mass_migrate\Plugin\Field\FieldType\EntityHierarchyOverriddenItem';
   }
 }
