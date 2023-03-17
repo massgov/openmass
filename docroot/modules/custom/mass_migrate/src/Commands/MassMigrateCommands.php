@@ -37,13 +37,10 @@ class MassMigrateCommands extends DrushCommands {
    *
    * @hook post-command migrate:import
    */
-  public function overrideMigrateImportPostCommand(CommandData $commandData) {
+  public function overrideMigrateImportPostCommand() {
     // Disable entity_hierarchy writes for service_details migration.
-    if (isset($commandData->getArgsAndOptions()['migrationIds'])) {
-      if ($commandData->getArgsAndOptions()['migrationIds'] == 'service_details') {
-        \Drupal::state()->set('mass_migrate_service_details', FALSE);
-      }
-    }
+    \Drupal::state()->set('mass_migrate_service_details', FALSE);
+
     // Turn on entity_hierarchy writes after processing the items.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     \Drupal::service('cache.discovery')->deleteAll();
