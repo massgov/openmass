@@ -77,7 +77,6 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
       // \Drupal\Core\Render\HtmlResponseAttachmentsProcessor::processAttachments)
       try {
         $response = $this->renderPlaceholders($response);
-        dump($response->getAttachments());
       }
       catch (EnforcedResponseException $e) {
         return $e->getResponse();
