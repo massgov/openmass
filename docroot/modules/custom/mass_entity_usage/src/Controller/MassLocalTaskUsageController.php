@@ -93,16 +93,18 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
         }
         $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
         $default_key = count($records) - 1;
-        // If the source is a paragraph, get the parent node.
-        if ($source_entity->getEntityTypeId() == 'paragraph') {
-          /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
-          $source_entity = Helper::getParentNode($source_entity);
-        }
+
         $link = $this->getSourceEntityLink($source_entity);
         // If the label is empty it means this usage shouldn't be shown
         // on the UI, just skip this row. Also, only show Default sources.
         if (empty($link)) {
           continue;
+        }
+
+        // If the source is a paragraph, get the parent node.
+        if ($source_entity->getEntityTypeId() == 'paragraph') {
+          /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
+          $source_entity = Helper::getParentNode($source_entity);
         }
         // Get the moderation state label of the parent node.
         $state_label = '';
