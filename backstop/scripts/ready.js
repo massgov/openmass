@@ -215,12 +215,12 @@ module.exports = async function (page, scenario, vp) {
     case "ExpansionOfAccordions1_toggle":
       try {
         if (scenario.showHeaderAlerts) {
-          await page.waitForSelector('.ma__emergency-alerts .ma__emergency-header__toggle', {
+          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__header__toggle', {
             visible: true,
             timeout: 10000,
           });
-          await page.click('.ma__emergency-alerts .ma__emergency-header__toggle');
-          await page.waitForSelector('.ma__emergency-alerts__content', {
+          await page.click('.pre-content .mass-alerts-block .ma__action-step__header__toggle');
+          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__content', {
             visible: true,
             timeout: 60000,
           });
@@ -235,12 +235,12 @@ module.exports = async function (page, scenario, vp) {
     case "ExpansionOfAccordions2_toggle":
       try {
         if (scenario.showGlobalAlerts) {
-          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__header__toggle', {
+          await page.waitForSelector('.ma__emergency-alerts .ma__emergency-header__toggle', {
             visible: true,
             timeout: 10000,
           });
-          await page.click('.pre-content .mass-alerts-block .ma__action-step__header__toggle');
-          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__content', {
+          await page.click('.ma__emergency-alerts .ma__emergency-header__toggle');
+          await page.waitForSelector('.ma__emergency-alerts__content', {
             visible: true,
             timeout: 60000,
           });
