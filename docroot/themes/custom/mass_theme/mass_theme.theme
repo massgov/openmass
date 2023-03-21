@@ -1055,6 +1055,9 @@ function mass_theme_preprocess_node_location(&$variables) {
 
       foreach ($more_locations as $location) {
         $more_node = Node::load($location['target_id']);
+        if (!$more_node->isPublished()) {
+          continue;
+        }
         if ($more_node->hasField('field_related_organization_type')) {
           $nearby = $nearby || $more_node->field_related_organization_type->value;
         }
@@ -1062,6 +1065,7 @@ function mass_theme_preprocess_node_location(&$variables) {
           'href' => Url::fromRoute('view.locations.page', ['node' => $more_node->id()]),
           'text' => $more_node->label() . ' Locations',
         ];
+        $cache_tags = Cache::mergeTags($cache_tags, $more_node->getCacheTags());
       }
     }
 
@@ -1486,6 +1490,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
       $variables['bgImage'] = Helper::getFieldImageUrl($node, 'action_banner_large_focal_point', 'field_banner_image');
+      $variables['bgPosition'] = Helper::getFieldImageFocalPoint($node, 'field_banner_image');
     }
 
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
@@ -4938,7 +4943,9 @@ function mass_theme_preprocess_paragraph(&$variables) {
  */
 function mass_theme_preprocess_paragraph__iframe(&$variables) {
   if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
-    $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    if (!$variables['paragraph']->get('field_height')->isEmpty()) {
+      $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    }
     if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
       $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       $variables['iframe_height'] = 'auto';
@@ -5863,7 +5870,12 @@ function mass_theme_preprocess_file_link(&$variables) {
   $variables['download']['filetype'] = $file_extension;
 
   // Set the icon name.
-  $variables['download']['iconName'] = 'doc-' . $file_extension;
+  $file_extension = strtoupper($file_info->getExtension());
+  $file_icon = 'doc-' . strtolower($file_extension);
+  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+    $file_icon = 'doc-generic';
+  }
+  $variables['download']['iconName'] = $file_icon;
 }
 
 /**
@@ -6715,7 +6727,12 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
       break;
 
     case 'collection':
-      $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+      // In some rare cases field_url_name might be missing, so we set
+      // default value to avoid warnings.
+      $collection_url = '/';
+      if ($p->field_collection->referencedEntities()[0]->field_url_name) {
+        $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+      }
       $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
       $variables['searchBoxWithLinks']['form']['inputName'] = t('title');
 
