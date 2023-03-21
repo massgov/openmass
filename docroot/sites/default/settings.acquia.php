@@ -82,7 +82,7 @@ $settings = $configureMemcache($settings);
  *
  * @see https://docs.acquia.com/articles/password-protect-your-non-production-environments-acquia-hosting#phpfpm
  */
-if (!$cli && !$is_prod && !in_array($_SERVER['SERVER_NAME'], ['feature1.edit.mass.gov', 'wwwcf.digital.mass.gov', 'editcf.digital.mass.gov', 'stage.mass.gov', 'edit.stage.mass.gov'])) {
+if (!$cli && !$is_prod && !in_array($_SERVER['SERVER_NAME'], ['massgovfeature5.prod.acquia-sites.com', 'wwwcf.digital.mass.gov', 'editcf.digital.mass.gov', 'stage.mass.gov', 'edit.stage.mass.gov'])) {
   $username = getenv('LOWER_ENVIR_AUTH_USER');
   $password = getenv('LOWER_ENVIR_AUTH_PASS');
   $is_testing_page = strpos($_SERVER['REQUEST_URI'], '/topics/hunting-fishing') !== FALSE;
