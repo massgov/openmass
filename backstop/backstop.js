@@ -90,7 +90,7 @@ const scenarios = pages.map(function(page) {
     removeSelectors.push('.pre-content .mass-alerts-block');
   }
   if (!page.showGlobalAlerts) {
-    removeSelectors.push('.ma__emergency-alerts');
+    removeSelectors.push('.mass-alerts-block[data-alerts-path="/alerts/sitewide"]');
   }
   return {
     ...page,

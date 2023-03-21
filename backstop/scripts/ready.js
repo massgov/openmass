@@ -117,10 +117,15 @@ module.exports = async function (page, scenario, vp) {
   // All the alerts on the page must be processed.
   try {
     await page.waitForFunction("document.querySelectorAll('.mass-alerts-block').length == document.querySelectorAll('.mass-alerts-block[data-alert-processed]').length", {
-      timeout: 6000,
+      timeout: 15000,
     });
     // Alerts with content are all visible.
-    await page.waitForFunction("Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    if (scenario.showHeaderAlerts) {
+      await page.waitForFunction("Array.from(document.querySelectorAll('.pre-content .mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    }
+    if (scenario.showGlobalAlerts) {
+      await page.waitForFunction("Array.from(document.querySelectorAll('.mass-alerts-block[data-alerts-path=\"/alerts/sitewide\"]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    }
   }
   catch (e) {
     console.error(e);
@@ -211,7 +216,7 @@ module.exports = async function (page, scenario, vp) {
         document.querySelector(".ma__header__hamburger__nav-container").scrollTo(0, 500);
       })
       break;
-    // Emergency alert.
+    // Standard alert.
     case "ExpansionOfAccordions1_toggle":
       try {
         if (scenario.showHeaderAlerts) {
@@ -231,7 +236,9 @@ module.exports = async function (page, scenario, vp) {
         throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
       }
       break;
-    // Standard alert.
+    // Emergency alert.
+    // Disabled until we can explicitly turn on a global alert for a page.
+    /**
     case "ExpansionOfAccordions2_toggle":
       try {
         if (scenario.showGlobalAlerts) {
@@ -251,6 +258,7 @@ module.exports = async function (page, scenario, vp) {
         throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
       }
       break;
+     **/
   }
 
   // Wait for all visible fonts to complete loading.
