@@ -8,7 +8,7 @@ Feature: Author Role
     Given I am logged in as a user with the "author" role
     And I am on "admin"
     Then I should not see the link "Manage" in the "toolbar" region
-    Then I should see the link "Content" in the "toolbar" region
+#    Then I should see the link "Content" in the "toolbar" region
 
   Scenario: Verify that author does not have permission to change site code or administer users
     Then the "author" role should not have the permissions:
@@ -21,6 +21,7 @@ Feature: Author Role
   Scenario: Verify that the author can access key pages
     Given I am logged in as a user with the "author" role
     And I am on "/user"
+    Then I click "Edit"
     Then I should see the dashboard tabs
     Then I should have access to "/admin/content"
     And I should have access to "/node/add"

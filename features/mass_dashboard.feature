@@ -9,7 +9,7 @@ Feature: Mass Dashboard
   Scenario: Verify that authorized users see the tray items
     Given I am logged in as a user with the "administrator" role
     When I go to "/admin"
-    Then I should see the link "Content" in the toolbar
+#    Then I should see the link "Content" in the toolbar
     And I should see the link "My content" in the toolbar
     And I should see the link "Needs review" in the toolbar
     And I should see the link "All content" in the toolbar

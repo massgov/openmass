@@ -365,15 +365,18 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->assertStringContainsString('Test Curated List', $page, 'Test Curated List not found on usage page.');
     $table_caption = '<caption>The list below shows pages that include a link to this page in structured and rich text fields. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here">Learn how to use Linking Pages.</a></caption>';
     $this->assertStringContainsString($table_caption, $page, 'Table caption not found on usage page.');
-    $table_headers = '<thead>
-      <tr>
-                            <th>Entity</th>
-                            <th>Content Type</th>
-                            <th>Field name</th>
-                            <th>Status</th>
-              </tr>
-    </thead>';
-    $this->assertStringContainsString($table_headers, $page, 'Usage page table headers are not found.');
+
+    $entity_text = $this->getSession()->getPage()->find('css', 'thead > tr > th.th__entity')->getText();
+    $this->assertStringContainsString('Entity', $entity_text, 'Entity table header not found');
+
+    $content_type_text = $this->getSession()->getPage()->find('css', 'thead > tr > th.th__content-type')->getText();
+    $this->assertStringContainsString('Content Type', $content_type_text, 'Content Type table header not found');
+
+    $field_name_text = $this->getSession()->getPage()->find('css', 'thead > tr > th.th__field-name')->getText();
+    $this->assertStringContainsString('Field name', $field_name_text, 'Field name table header not found');
+
+    $status_text = $this->getSession()->getPage()->find('css', 'thead > tr > th.th__status')->getText();
+    $this->assertStringContainsString('Status', $status_text, 'Status table header not found');
   }
 
 }

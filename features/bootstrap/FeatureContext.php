@@ -1996,7 +1996,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
    * @Then I should see the dashboard tabs
    */
   public function assertDashboardTabs() {
-    $this->assertSession()->elementExists('css','.mass-dashboard-tabs__tabs');
+    $this->assertSession()->elementExists('css','nav.tabs-wrapper');
   }
 
   /**

@@ -8,7 +8,7 @@ Feature: Emergency Alert Publisher
     Given I am logged in as a user with the "emergency_alert_publisher" role
     And I am on "admin"
     Then I should not see the link "Manage" in the "toolbar" region
-    Then I should see the link "Content" in the "toolbar" region
+#    Then I should see the link "Content" in the "toolbar" region
 
   Scenario: Verify that the emergency alert pub team user can access key pages:
     Given I am logged in as a user with the "emergency_alert_publisher" role

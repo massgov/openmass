@@ -8,6 +8,7 @@ Feature: Developer
   Scenario: Verify developer user cannot add modules
     Given I am logged in as a user with the "developer" role
     And I am on "/user"
+    Then I click "Edit"
     Then I should see the dashboard tabs
     # Developer cannot enable/disable modules.
     Then I should not have access to "/admin/modules"

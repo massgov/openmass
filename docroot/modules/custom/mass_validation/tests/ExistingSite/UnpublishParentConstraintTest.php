@@ -72,7 +72,7 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
 
     $validation_text = 'This content cannot be unpublished or trashed because it is a parent of 1 published child:';
@@ -89,7 +89,7 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
     $this->visit($node_parent_org->toUrl()->toString() . '/edit');
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Trash');
-    $page->pressButton('edit-submit');
+    $page->pressButton('Save');
     $page_contents = $page->getContent();
     $validation_text = 'This content cannot be unpublished or trashed because it is a parent of 2 published children:';
     $this->assertStringContainsString($validation_text, $page_contents, 'Validation message not found.');

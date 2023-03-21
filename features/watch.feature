@@ -16,7 +16,7 @@ Feature: Mass Flagging
     Then the config "flag.flag.watch_content" "unflag_message" should equal "Successfully removed from watchers."
 
   Scenario: Verify Authenticated user can see watch link and watch a node
-    Given I am logged in as a user with the "authenticated" role
+    Given I am logged in as a user with the "author" role
     When I go to "/"
     Then I click "Watch"
     Then I should see the text "Unwatch"

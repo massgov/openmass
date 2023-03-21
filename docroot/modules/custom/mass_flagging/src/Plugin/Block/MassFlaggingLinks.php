@@ -10,6 +10,7 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\flag\FlagServiceInterface;
 use Drupal\mass_flagging\Service\MassFlaggingFlagContentLinkBuilder;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,9 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id="mass_flagging",
  *   admin_label="Content Flags",
  *   category = @Translation("Flags"),
- *   context_definitions = {
- *     "node" = @ContextDefinition("entity:node", label = @Translation("Node"))
- *   }
  * )
  */
 class MassFlaggingLinks extends BlockBase implements ContainerFactoryPluginInterface {
@@ -101,32 +99,36 @@ class MassFlaggingLinks extends BlockBase implements ContainerFactoryPluginInter
   public function build() {
     $build = [];
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
-    $entity = $this->getContext('node')->getContextValue();
+    if ($this->routeMatch->getRouteName() == 'entity.node.canonical') {
+      $entity = $this->routeMatch->getParameter('node');
+      if ($entity instanceof NodeInterface) {
 
-    $build['#attached']['library'][] = 'mass_flagging/flag-link';
+        $build['#attached']['library'][] = 'mass_flagging/flag-link';
 
-    $flags = $this->flagService->getAllFlags($entity->getEntityTypeId(), $entity->bundle());
-    // Add flags to the toolbar.  This duplicates the logic in flag_entity_view,
-    // using a placeholder-ed lazy_builder so the links are not stored in the
-    // dynamic page cache.
-    foreach ($flags as $flag) {
-      $build['#cache']['tags'] = $flag->getCacheTags();
+        $flags = $this->flagService->getAllFlags($entity->getEntityTypeId(), $entity->bundle());
+        // Add flags to the toolbar.  This duplicates the logic in flag_entity_view,
+        // using a placeholder-ed lazy_builder so the links are not stored in the
+        // dynamic page cache.
+        foreach ($flags as $flag) {
+          $build['#cache']['tags'] = $flag->getCacheTags();
 
-      // Do not display the flag if disabled.
-      if (!$flag->status()) {
-        continue;
+          // Do not display the flag if disabled.
+          if (!$flag->status()) {
+            continue;
+          }
+
+          $build['flag_' . $flag->id()] = [
+            '#lazy_builder' => [
+              'flag.link_builder:build', [
+                $entity->getEntityTypeId(),
+                $entity->id(),
+                $flag->id(),
+              ],
+            ],
+            '#create_placeholder' => TRUE,
+          ];
+        }
       }
-
-      $build['flag_' . $flag->id()] = [
-        '#lazy_builder' => [
-          'flag.link_builder:build', [
-            $entity->getEntityTypeId(),
-            $entity->id(),
-            $flag->id(),
-          ],
-        ],
-        '#create_placeholder' => TRUE,
-      ];
     }
 
     return $build;
