@@ -108,6 +108,9 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
           /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
           $source_entity = Helper::getParentNode($source_entity);
         }
+
+        $text = explode('>', $link->getText())[0];
+        $link->setText($text);
         // Get the moderation state label of the parent node.
         $state_label = '';
         if ($source_entity instanceof Node) {
