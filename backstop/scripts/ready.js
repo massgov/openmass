@@ -117,10 +117,15 @@ module.exports = async function (page, scenario, vp) {
   // All the alerts on the page must be processed.
   try {
     await page.waitForFunction("document.querySelectorAll('.mass-alerts-block').length == document.querySelectorAll('.mass-alerts-block[data-alert-processed]').length", {
-      timeout: 6000,
+      timeout: 15000,
     });
     // Alerts with content are all visible.
-    await page.waitForFunction("Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    if (scenario.showHeaderAlerts) {
+      await page.waitForFunction("Array.from(document.querySelectorAll('.pre-content .mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    }
+    if (scenario.showGlobalAlerts) {
+      await page.waitForFunction("Array.from(document.querySelectorAll('.mass-alerts-block[data-alerts-path=\"/alerts/sitewide\"]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    }
   }
   catch (e) {
     console.error(e);
@@ -171,47 +176,6 @@ module.exports = async function (page, scenario, vp) {
     throw new Error(`${e.constructor.name}: Failed waiting for leaflet map to load on this page: ${page.url()}.`)
   }
 
-  if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
-    // Wait for a selector to become visible.
-    let expanded = await page.evaluate(async function () {
-      let result = undefined;
-      var el = document.querySelector( '.ma__emergency-header__toggle');
-      if (el !== null) {
-        if (el.getAttribute('aria-expanded') == true) {
-          result = true;
-        }
-        else {
-          result = false;
-        }
-      }
-      return result;
-    });
-    if (expanded == true) {
-      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.evaluate(async function () {
-        document.querySelector('.ma__emergency-alert__time-stamp').innerText = 'May. 24th, 2021, 5:00 pm';
-        document.querySelector('.ma__emergency-alert__link a.ma__content-link span:first-child').innerText = 'Everyone age 5+ should get a COVID-19 booster. Anyone age 50+ may get a second booster. See the latest updates as of ';
-      });
-    }
-    else if (expanded == false) {
-      await page.waitForSelector('.ma__emergency-header__toggle', {
-        visible: true,
-        timeout: 10000,
-      })
-    }
-
-    await page.waitForTimeout(1000);
-  }
-  else {
-    await page.evaluate(async function () {
-      var el = document.querySelector('.mass-alerts-block');
-      el.parentNode.removeChild(el);
-    })
-  }
-
   // Wait for iframes to be resized at least once.
   // Avoid iframes with fixed height.
   try {
@@ -252,42 +216,49 @@ module.exports = async function (page, scenario, vp) {
         document.querySelector(".ma__header__hamburger__nav-container").scrollTo(0, 500);
       })
       break;
-    // Emergency alert.
+    // Standard alert.
     case "ExpansionOfAccordions1_toggle":
       try {
-        await page.waitForSelector('.ma__emergency-alerts .ma__emergency-header__toggle', {
-          visible: true,
-          timeout: 10000,
-        });
-        await page.click('.ma__emergency-alerts .ma__emergency-header__toggle');
-        await page.waitForSelector('.ma__emergency-alerts__content', {
-          visible: true,
-          timeout: 60000,
-        });
+        if (scenario.showHeaderAlerts) {
+          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__header__toggle', {
+            visible: true,
+            timeout: 10000,
+          });
+          await page.click('.pre-content .mass-alerts-block .ma__action-step__header__toggle');
+          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__content', {
+            visible: true,
+            timeout: 60000,
+          });
+        }
       }
       catch (e) {
         console.error(e);
         throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
       }
       break;
-    // Standard alert.
+    // Emergency alert.
+    // Disabled until we can explicitly turn on a global alert for a page.
+    /**
     case "ExpansionOfAccordions2_toggle":
       try {
-        await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__header__toggle', {
-          visible: true,
-          timeout: 10000,
-        });
-        await page.click('.pre-content .mass-alerts-block .ma__action-step__header__toggle');
-        await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__content', {
-          visible: true,
-          timeout: 60000,
-        });
+        if (scenario.showGlobalAlerts) {
+          await page.waitForSelector('.ma__emergency-alerts .ma__emergency-header__toggle', {
+            visible: true,
+            timeout: 10000,
+          });
+          await page.click('.ma__emergency-alerts .ma__emergency-header__toggle');
+          await page.waitForSelector('.ma__emergency-alerts__content', {
+            visible: true,
+            timeout: 60000,
+          });
+        }
       }
       catch (e) {
         console.error(e);
         throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
       }
       break;
+     **/
   }
 
   // Wait for all visible fonts to complete loading.
