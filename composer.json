@@ -167,13 +167,15 @@
         "drupal/better_exposed_filters": "^5.0@beta",
         "drupal/cache_metrics": "^2",
         "drupal/ckeditor_liststyle": "^1.4",
+        "drupal/coffee": "^1",
+        "drupal/color": "^1",
         "drupal/components": "^2.4",
         "drupal/composer_deploy": "^1.4",
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_ignore": "3.x-dev",
-        "drupal/core-composer-scaffold": "~9.4.10",
-        "drupal/core-project-message": "~9.4.10",
-        "drupal/core-recommended": "~9.4.10",
+        "drupal/core-composer-scaffold": "^9.5",
+        "drupal/core-project-message": "^9.5",
+        "drupal/core-recommended": "^9.5",
         "drupal/csv_field": "^1.0@beta",
         "drupal/csv_serialization": "^2.1",
         "drupal/datalayer": "^1",
@@ -202,6 +204,8 @@
         "drupal/ga_login": "^1.0.0-alpha6",
         "drupal/geocoder": "^3",
         "drupal/geofield": "^1",
+        "drupal/gin": "^3",
+        "drupal/gin_toolbar": "^1",
         "drupal/google_map_field": "^1",
         "drupal/google_tag": "^1.4",
         "drupal/http_response_headers": "^2",
@@ -273,12 +277,12 @@
         "monolog/monolog": "^2.6",
         "phlak/semver": "^2.0",
         "symfony/dom-crawler": "^3.4 || ^4",
-        "typhonius/acquia-php-sdk-v2": "~1.1"
+        "typhonius/acquia-php-sdk-v2": "^2"
     },
     "require-dev": {
         "behat/behat": "^3",
         "behat/mink-extension": "^2.2",
-        "drupal/core-dev": "~9.4.10",
+        "drupal/core-dev": "^9.5",
         "drupal/drupal-extension": "^4.0.0beta1",
         "drupaltest/queue-runner-trait": "^1",
         "friends-of-behat/mink-debug-extension": "^2",
@@ -368,7 +372,7 @@
             },
 
             "drupal/flag": {
-                "VBO support (3301754)": "https://www.drupal.org/files/issues/2022-08-04/flag_store_info_plugin_definition_3301754_4.patch"
+                "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
             },
 
             "ckeditor/liststyle": {
@@ -396,7 +400,8 @@
             "drupal/entity_usage": {
                 "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-25.patch",
                 "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
-                "2954973 - Track absolute URLs in link fields" : "patches/2954973-68.patch"
+                "2954973 - Track absolute URLs in link fields" : "patches/2954973-68.patch",
+                "3098733 - Fatal error after saving the page not have a reuse entity (https://www.drupal.org/project/entity_usage/issues/3098733)": "https://www.drupal.org/files/issues/2021-09-03/3098733-fatal-error-13.patch"
             },
             "drupal/field_group": {
                 "Provide page level error messaging when publishing validation is not met": "https://www.drupal.org/files/issues/2021-02-21/2787179-highlight-html5-validation-60.patch",
@@ -411,6 +416,9 @@
             },
             "drupal/imagick": {
                 "Error: Call to a member function getImageFormat() on null (https://www.drupal.org/project/imagick/issues/3175684)": "https://www.drupal.org/files/issues/2020-10-08/imagick-3175684-2.patch"
+            },
+            "drupal/gin": {
+                "3281343 - Use Gin's edit form for Media Entries": "https://www.drupal.org/files/issues/2023-02-23/edit-form-media-3281343-9.patch"
             },
             "drupal/inline_entity_form": {
                 "Add a setting to enable/disable inline editing of existing entities (https://www.drupal.org/project/inline_entity_form/issues/2913571#comment-12811088)": "https://www.drupal.org/files/issues/2018-10-11/ief_edit_existing_2913571_7.patch"

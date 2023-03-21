@@ -59,7 +59,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $query->condition('type', 'sitewide_alert');
     $query->condition('status', 1);
 
-    $sitewide = $query->execute();
+    $sitewide = $query->accessCheck(FALSE)->execute();
     // Last item.
     $sitewide = reset($sitewide);
     $results = ['emergencyAlerts' => []];
@@ -223,7 +223,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
       $query->condition($orCondition);
 
-      $nids = $query->execute();
+      $nids = $query->accessCheck(FALSE)->execute();
 
       $nodes = $nodeStorage->loadMultiple(array_values($nids));
 
@@ -410,8 +410,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
    * @throws \Exception
    */
   public function addRevalidateHeaders(CacheableResponse $response) {
-    $response->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, REQUEST_TIME)));
-    $response->setEtag(REQUEST_TIME);
+    $response->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, \Drupal::time()->getRequestTime())));
+    $response->setEtag(\Drupal::time()->getRequestTime());
   }
 
 }

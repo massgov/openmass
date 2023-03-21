@@ -24,7 +24,7 @@ use Drupal\Core\Entity\EntityInterface;
  */
 function mass_translations_preprocess_media(&$variables) {
   $media = $variables['media'];
-  if ($variables["view_mode"] == 'media_download_link' && $media->hasField('field_media_english_version')) {
+  if (($variables["view_mode"] == 'media_download_link' || $variables["view_mode"] == 'linked_desc' || $variables["view_mode"] == 'manual_desc') && $media->hasField('field_media_english_version')) {
     $cache_tags[] = 'media-list:document';
     $languageManager = Drupal::languageManager();
     $lang_default = $languageManager->getCurrentLanguage();
@@ -97,6 +97,7 @@ function mass_translations_preprocess_node(&$variables) {
 
   // Generate translation links variables.
   if ($variables["view_mode"] == "full" && $node->hasField('field_english_version')) {
+    $cache_tags = [];
     $languageManager = Drupal::languageManager();
     $lang_default = $languageManager->getCurrentLanguage();
     $languages = NULL;
@@ -122,25 +123,34 @@ function mass_translations_preprocess_node(&$variables) {
         }
 
         $name = NULL;
+
         $predefined = $languageManager->getStandardLanguageList();
         // Get the native name for each language.
         if (isset($predefined[$language_id])) {
           $name = $predefined[$language_id][1];
-          // Build the translation link.
-          $url = $translation->toUrl('canonical')
-            ->setOption('language', $lang_default)
-            ->setAbsolute()
-            ->toString();
-
-          $languages[] = ["title" => $name, "url" => ($url != $current_url) ? $url : NULL];
+          $name_en = $predefined[$language_id][0];
         }
+        else {
+          $name = $name_en = $lang_codes[$language_id]->getName();
+        }
+        // Build the translation link.
+        $url = Url::fromRoute('entity.node.canonical', ['node' => $translation->id()])
+          ->setOption('node', $lang_default)
+          ->setAbsolute()
+          ->toString();
+        $cache_tags = array_merge($cache_tags, $translation->getCacheTags(), $access->getCacheTags());
+        $languages[] = ["title" => $name, "lang_label" => $name_en, "url" => ($url != $current_url) ? $url : NULL];
       }
     }
 
     if (count($languages) > 1) {
-      $inlineLinks = Organisms::prepareInlineLinks($languages, ["ariaLabel" => "Available Translations"]);
+      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
       $variables += ["translationLinks" => $inlineLinks];
     }
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    (new CacheableMetadata())->addCacheTags($cache_tags)
+      ->applyTo($variables);
   }
 }
 

@@ -14,7 +14,7 @@ module.exports = async function (page, scenario, vp) {
   if (oneMinute > os.cpus().length) {
     console.log(`One minute load average is ${oneMinute}. Consider reducing the number of capture processes.`)
   }
-  await page.setDefaultNavigationTimeout(60000);
+  await page.setDefaultNavigationTimeout(300000);
 
   // DO NOT put anything that modifies a mass.gov page before this point.
   // Otherwise, if a Tugboat preview is suspended and needs to resume, we may
@@ -46,7 +46,7 @@ module.exports = async function (page, scenario, vp) {
   }
 
   await require('./clickAndHoverHelper')(page, scenario);
-  
+
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
     jQuery.fx.off = true;
@@ -116,86 +116,64 @@ module.exports = async function (page, scenario, vp) {
 
   // All the alerts on the page must be processed.
   try {
-    await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0", {
-      timeout: 60 * 1000,
+    await page.waitForFunction("document.querySelectorAll('.mass-alerts-block').length == document.querySelectorAll('.mass-alerts-block[data-alert-processed]').length", {
+      timeout: 15000,
+    });
+    // Alerts with content are all visible.
+    if (scenario.showHeaderAlerts) {
+      await page.waitForFunction("Array.from(document.querySelectorAll('.pre-content .mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    }
+    if (scenario.showGlobalAlerts) {
+      await page.waitForFunction("Array.from(document.querySelectorAll('.mass-alerts-block[data-alerts-path=\"/alerts/sitewide\"]')).filter(item => item.childElementCount).length == Array.from(document.querySelectorAll('.mass-alerts-block[data-alert-processed]')).filter(item => item.childElementCount).filter(item => item.offsetWidth > 0 || item.offsetHeight > 0).length")
+    }
+  }
+  catch (e) {
+    console.error(e);
+    throw new Error(`${e.constructor.name}: Failed waiting for alerts on this page: ${page.url()}.`)
+  }
+
+  // Wait for Papa.parse in the csv_field module to complete.
+  try {
+    await page.waitForFunction("document.querySelectorAll('.csv-table').length == 0", {
+      timeout: 5000,
     });
   }
   catch (e) {
-    throw new Error(`${e.constructor.name}: Failed waiting for "jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0" on this page: ${page.url()}.`)
+    throw new Error(`${e.constructor.name}: Failed waiting for document.querySelectorAll('.csv-table').length == 0 on this page: ${page.url()}.`)
   }
 
-  if (scenario.label === 'InfoDetails1') {
-    await page.waitForSelector('.cbFormErrorMarker', {visible: true})
-  }
-
-  let leafletMapInitialized = await page.evaluate(async function () {
-    let initialized = undefined;
-    const containers = document.querySelectorAll(".js-leaflet-map");
-    if (containers.length) {
-      containers.forEach(function (e) {
-        const container = L.DomUtil.get(e);
-        if (container != null) {
-          if (container._leaflet_id == null) {
-            initialized = false;
-          }
-          else {
-            initialized = true;
-          }
-        }
+  // Wait for Caspio embeds to finish loading.
+  try {
+    let caspioForms = await page.evaluate(() => Array.from(document.querySelectorAll('.ma__caspio')));
+    if (caspioForms.length) {
+      await page.waitForFunction("document.querySelectorAll('.ma__caspio form').length == document.querySelectorAll('.ma__caspio').length", {
+        timeout: 5000,
+      });
+      // The form loading in causes the layout to shift.
+      await page.waitForTimeout(3000);
+      await page.waitForSelector('.ma__footer-new', {
+        visible: true,
+        timeout: 5000,
       });
     }
-  })
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for Caspio forms to load on this page: ${page.url()}.`)
+  }
 
-  if (leafletMapInitialized == false) {
-    await page.waitForSelector('.js-leaflet-map .leaflet-tile-container', {
-      visible: true,
+  // Wait for leaflet map to load.
+  try {
+    // Wait for all image tiles to load.
+    await page.waitForFunction("Array.from(document.querySelectorAll('img.leaflet-tile')).filter(img => !img.complete).length == 0", {
       timeout: 10000,
-    })
-    await page.waitForTimeout(3000);
-  }
-  else if (leafletMapInitialized == true) {
-    await page.waitForTimeout(5000);
-  }
-
-  if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
-    // Wait for a selector to become visible.
-    let expanded = await page.evaluate(async function () {
-      let result = undefined;
-      var el = document.querySelector( '.ma__emergency-header__toggle');
-      if (el !== null) {
-        if (el.getAttribute('aria-expanded') == true) {
-          result = true;
-        }
-        else {
-          result = false;
-        }
-      }
-      return result;
     });
-    if (expanded == true) {
-      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.evaluate(async function () {
-        document.querySelector('.ma__emergency-alert__time-stamp').innerText = 'May. 24th, 2021, 5:00 pm';
-        document.querySelector('.ma__emergency-alert__link a.ma__content-link span:first-child').innerText = 'Everyone age 5+ should get a COVID-19 booster. Anyone age 50+ may get a second booster. See the latest updates as of ';
-      });
-    }
-    else if (expanded == false) {
-      await page.waitForSelector('.ma__emergency-header__toggle', {
-        visible: true,
-        timeout: 10000,
-      })
-    }
-
-    await page.waitForTimeout(1000);
+    // Wait for all markers to load.
+    await page.waitForFunction("Array.from(document.querySelectorAll('img.leaflet-marker-icon.leaflet-interactive')).filter(img => !img.complete).length == 0", {
+      timeout: 3000,
+    });
   }
-  else {
-    await page.evaluate(async function () {
-      var el = document.querySelector('.mass-alerts-block');
-      el.parentNode.removeChild(el);
-    })
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for leaflet map to load on this page: ${page.url()}.`)
   }
 
   // Wait for iframes to be resized at least once.
@@ -238,45 +216,49 @@ module.exports = async function (page, scenario, vp) {
         document.querySelector(".ma__header__hamburger__nav-container").scrollTo(0, 500);
       })
       break;
-    case "InfoDetails1":
-      await page.waitForSelector('.ma__figure--large.ma__csvtable table.dataTable', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('.ma__figure--x-large.ma__csvtable table.dataTable', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('.ma__figure--large.ma__csvtable div.dataTables_info', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('.ma__figure--x-large.ma__csvtable div.dataTables_info', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForSelector('footer#footer .ma__footer-new__container', {
-        visible: true,
-        timeout: 10000,
-      })
-      await page.waitForTimeout(3000);
-      break;
-    case "Service1":
+    // Standard alert.
     case "ExpansionOfAccordions1_toggle":
-    case "ExpansionOfAccordions2_toggle":
       try {
-        await page.waitForFunction("document.readyState === 'complete'", {
-          timeout: 60 * 1000,
-        });
+        if (scenario.showHeaderAlerts) {
+          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__header__toggle', {
+            visible: true,
+            timeout: 10000,
+          });
+          await page.click('.pre-content .mass-alerts-block .ma__action-step__header__toggle');
+          await page.waitForSelector('.pre-content .mass-alerts-block .ma__action-step__content', {
+            visible: true,
+            timeout: 60000,
+          });
+        }
       }
       catch (e) {
-        throw new Error(`${e.constructor.name}: Failed waiting for document.readyState === 'complete' on this page: ${page.url()}.`)
+        console.error(e);
+        throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
       }
-      await page.evaluate(async function () {
-        jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
-      });
-      await page.waitForTimeout(1000);
       break;
+    // Emergency alert.
+    // Disabled until we can explicitly turn on a global alert for a page.
+    /**
+    case "ExpansionOfAccordions2_toggle":
+      try {
+        if (scenario.showGlobalAlerts) {
+          await page.waitForSelector('.ma__emergency-alerts .ma__emergency-header__toggle', {
+            visible: true,
+            timeout: 10000,
+          });
+          await page.click('.ma__emergency-alerts .ma__emergency-header__toggle');
+          await page.waitForSelector('.ma__emergency-alerts__content', {
+            visible: true,
+            timeout: 60000,
+          });
+        }
+      }
+      catch (e) {
+        console.error(e);
+        throw new Error(`${e.constructor.name}: Failed waiting to toggle accordions on this page: ${page.url()}.`)
+      }
+      break;
+     **/
   }
 
   // Wait for all visible fonts to complete loading.

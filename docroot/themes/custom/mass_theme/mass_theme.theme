@@ -1055,6 +1055,9 @@ function mass_theme_preprocess_node_location(&$variables) {
 
       foreach ($more_locations as $location) {
         $more_node = Node::load($location['target_id']);
+        if (!$more_node->isPublished()) {
+          continue;
+        }
         if ($more_node->hasField('field_related_organization_type')) {
           $nearby = $nearby || $more_node->field_related_organization_type->value;
         }
@@ -1062,6 +1065,7 @@ function mass_theme_preprocess_node_location(&$variables) {
           'href' => Url::fromRoute('view.locations.page', ['node' => $more_node->id()]),
           'text' => $more_node->label() . ' Locations',
         ];
+        $cache_tags = Cache::mergeTags($cache_tags, $more_node->getCacheTags());
       }
     }
 
@@ -1486,6 +1490,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
       $variables['bgImage'] = Helper::getFieldImageUrl($node, 'action_banner_large_focal_point', 'field_banner_image');
+      $variables['bgPosition'] = Helper::getFieldImageFocalPoint($node, 'field_banner_image');
     }
 
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
@@ -1530,7 +1535,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
  * Implements hook_preprocess_node().
  */
 function mass_theme_preprocess_node_error_page(&$variables) {
-  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
 }
 
 /**
@@ -3980,7 +3985,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
   // This is a required icon field, but lets check.
   if (array_key_exists('0', $node->get('field_icon_term')->referencedEntities())) {
     $icon = $node->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-    $variables['icon_path'] = icon_path($icon);
+    $variables['icon_path'] = $icon;
   }
 
   if ($node->field_featured_image->entity) {
@@ -4023,7 +4028,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
     // Wrap up each section with links.
     if (isset($row->_entity->get('field_icon_term')->referencedEntities()[0])) {
       $icon = $row->_entity->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-      $icon_path = icon_path($icon);
+      $icon_path = $icon;
     }
     $sections[] = [
       'id' => $row->_entity->get('nid')->value,
@@ -4349,7 +4354,7 @@ function mass_theme_preprocess_html(&$variables) {
 
   // The colored state seal to be used by search engines.
   // Normally we would use theme_get_setting('logo.url')
-  $logo = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal-color.png');
+  $logo = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-color.png');
   $hostname = \Drupal::request()->getSchemeAndHttpHost();
   // Pass Schema.org markup data to page-meta.html.twig.
   $metadata = [
@@ -4386,7 +4391,7 @@ function mass_theme_preprocess_page(&$variables) {
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
-  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
 
   if ($node = \Drupal::routeMatch()->getParameter('node')) {
     $node = $variables['node'];
@@ -4938,7 +4943,9 @@ function mass_theme_preprocess_paragraph(&$variables) {
  */
 function mass_theme_preprocess_paragraph__iframe(&$variables) {
   if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
-    $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    if (!$variables['paragraph']->get('field_height')->isEmpty()) {
+      $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    }
     if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
       $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       $variables['iframe_height'] = 'auto';
@@ -5111,7 +5118,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
       // Topics have an icon field.
       if ($item->hasField('field_icon_term') && array_key_exists('0', $item->get('field_icon_term')->referencedEntities())) {
         $icon = $item->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-        $item->{'icon'} = icon_path($icon);
+        $item->{'icon'} = $icon;
       }
 
       // Topics don't have topic callouts, so we use common content for links.
@@ -5343,7 +5350,7 @@ function mass_theme_preprocess_paragraph__3_up_content(&$variables) {
     foreach ($items as $id => $item) {
       $field_content = $item->get('field_content')->view('full');
       // Break out our paragraphs and render the field - it might have an image.
-      $paragraph_tags = explode("<p>", str_replace("</p>", "", render($field_content)));
+      $paragraph_tags = explode("<p>", str_replace("</p>", "", \Drupal::service('renderer')->render($field_content)));
 
       // Reset our array.
       $paragraphs = [];
@@ -5852,7 +5859,7 @@ function mass_theme_preprocess_file_link(&$variables) {
   }
 
   // Set the file link variable.
-  $variables['download']['link'] = file_create_url($file_entity->getFileUri());
+  $variables['download']['link'] = \Drupal::service('file_url_generator')->generateAbsoluteString($file_entity->getFileUri());
 
   // Get the file extension.
   // see: http://php.net/manual/en/splfileinfo.getextension.php
@@ -5863,7 +5870,12 @@ function mass_theme_preprocess_file_link(&$variables) {
   $variables['download']['filetype'] = $file_extension;
 
   // Set the icon name.
-  $variables['download']['iconName'] = 'doc-' . $file_extension;
+  $file_extension = strtoupper($file_info->getExtension());
+  $file_icon = 'doc-' . strtolower($file_extension);
+  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+    $file_icon = 'doc-generic';
+  }
+  $variables['download']['iconName'] = $file_icon;
 }
 
 /**
@@ -5945,6 +5957,7 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   // Get collection terms matching the field_url_name
   $query = Drupal::entityQuery('taxonomy_term');
   $query
+    ->accessCheck(FALSE)
     ->condition('vid', 'collections')
     ->condition('field_url_name', $collection)
     ->range(0, 1);
@@ -6714,7 +6727,12 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
       break;
 
     case 'collection':
-      $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+      // In some rare cases field_url_name might be missing, so we set
+      // default value to avoid warnings.
+      $collection_url = '/';
+      if ($p->field_collection->referencedEntities()[0]->field_url_name) {
+        $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+      }
       $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
       $variables['searchBoxWithLinks']['form']['inputName'] = t('title');
 

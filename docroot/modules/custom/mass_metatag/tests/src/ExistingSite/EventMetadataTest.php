@@ -87,7 +87,7 @@ class EventMetadataTest extends MetadataTestCase {
         'image' => [
           [
             '@type' => 'ImageObject',
-            'url' => [file_create_url('public://test.jpg')],
+            'url' => [\Drupal::service('file_url_generator')->generateAbsoluteString('public://test.jpg')],
           ],
         ],
         'maximumAttendeeCapacity' => 'a lot of people',

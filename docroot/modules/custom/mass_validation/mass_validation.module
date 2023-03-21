@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\media\Entity\Media;
 /**
  * @file
  * Contains mass_validation.module.
@@ -487,9 +488,11 @@ function _mass_validation_form_node_curated_list_form_validate(array &$form, For
           elseif (isset($field['subform']['field_liststaticdoc_item']) && is_array($field['subform']['field_liststaticdoc_item'])) {
             $docs = $field['subform']['field_liststaticdoc_item'];
             // This only applies to manual description types.
-            if ($field['subform']['field_listitemdoc_desc_type'][0]['value'] == 'manual' && !empty($docs['entities'])
-              && count($docs['entities']) > 1) {
-              $form_state->setErrorByName('field_curatedlist_list_section][' . $key . '][subform][field_liststatic_items][' . $field_key . '][subform][field_liststaticdoc_item', t('Manual description can only be used when there is one document in a List item group. If you want manual descriptions for each document, you should remove all but the first document in a list of documents and add them one at a time using the "Add list item document(s)" button.'));
+            if (isset($field['subform']['field_listitemdoc_desc_type'][0])) {
+              if ($field['subform']['field_listitemdoc_desc_type'][0]['value'] == 'manual' && !empty($docs['entities'])
+                && count($docs['entities']) > 1) {
+                $form_state->setErrorByName('field_curatedlist_list_section][' . $key . '][subform][field_liststatic_items][' . $field_key . '][subform][field_liststaticdoc_item', t('Manual description can only be used when there is one document in a List item group. If you want manual descriptions for each document, you should remove all but the first document in a list of documents and add them one at a time using the "Add list item document(s)" button.'));
+              }
             }
           }
         }
@@ -898,6 +901,7 @@ function _mass_validation_form_node_regulation_form_validate(array &$form, FormS
   // Get Regulation type taxonomy terms that make field optional: "Draft",
   // "Working Draft" and "Proposed".
   $regulation_type_term_ids = \Drupal::entityQuery('taxonomy_term')
+    ->accessCheck(FALSE)
     ->condition('vid', 'advisory_publish_state')
     ->condition('name', 'Future Effective Date', '!=')
     ->execute();
@@ -1069,7 +1073,7 @@ function _mass_validation_form_node_event_form_validate(array &$form, FormStateI
     }
   }
 
-  if ($assc_pages[0]['target_id'] == NULL) {
+  if (!isset($assc_pages[0]) || $assc_pages[0]['target_id'] == NULL) {
     $form_state->setErrorByName('field_event_ref_parents', t('The associated pages field must be filled out.'));
   }
 
@@ -1579,7 +1583,7 @@ function mass_validation_form_alter(&$form, FormStateInterface $form_state, $for
 
   if ($form_state->getFormObject() instanceof EntityForm) {
     if ($entity = $form_state->getFormObject()->getEntity()) {
-      if ($entity instanceof \Drupal\media\Entity\Media || $entity instanceof Node) {
+      if ($entity instanceof Media || $entity instanceof Node) {
         if (!$entity->isNew() && $entity->get('moderation_state')->getString() == MassModeration::DRAFT) {
           $entity_label = $entity->getEntityTypeId();
           $route_name = "entity." . $entity_label . ".version_history";

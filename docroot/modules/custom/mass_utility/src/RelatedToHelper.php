@@ -28,11 +28,11 @@ class RelatedToHelper {
    */
   public static function getRelatedTopicsByCardLinks($nid) {
     $route = sprintf('entity:node/%d', $nid);
-    $paragraphQuery = \Drupal::entityQuery('paragraph');
+    $paragraphQuery = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
     $paragraphQuery->condition('field_content_card_link_cards.uri', $route);
 
     if ($pids = $paragraphQuery->execute()) {
-      $topicQuery = \Drupal::entityQuery('node');
+      $topicQuery = \Drupal::entityQuery('node')->accessCheck(FALSE);
       $topicQuery->condition('field_topic_content_cards.target_id', $pids, 'IN');
       $topicQuery->sort('created', 'DESC');
       $topicQuery->condition('status', 1);
@@ -54,7 +54,7 @@ class RelatedToHelper {
    *   An array of related nodes.
    */
   public static function getRelatedServicePagesByGuideLinks($nid) {
-    $query = \Drupal::entityQuery('node');
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
     $query->condition('field_service_ref_guide_page_1.target_id', $nid);
     $query->condition('status', 1);
     $nids = $query->execute();
@@ -72,7 +72,7 @@ class RelatedToHelper {
    *   An array of related nodes.
    */
   public static function getRelatedLocationByLocationDetail($nid) {
-    $paragraphQuery = \Drupal::entityQuery('paragraph');
+    $paragraphQuery = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
     $paragraphQuery->condition('field_ref_location_details_page.target_id', $nid);
 
     if ($pids = $paragraphQuery->execute()) {
@@ -99,7 +99,7 @@ class RelatedToHelper {
    *   An array of related nodes.
    */
   public static function getRelatedServicesByEligibility($nid) {
-    $query = \Drupal::entityQuery('node');
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
     $query->condition('field_service_eligibility_info.target_id', $nid);
     $query->condition('status', 1);
     $nids = $query->execute();

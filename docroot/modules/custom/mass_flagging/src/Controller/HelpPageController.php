@@ -16,7 +16,7 @@ class HelpPageController extends ControllerBase {
    *   Array to get rendered.
    */
   public function content() {
-    module_load_include('inc', 'mass_flagging');
+    \Drupal::moduleHandler()->loadInclude('mass_flagging', 'inc');
     return [
       '#type' => 'markup',
       '#markup' => get_mass_flagging_help_text(),

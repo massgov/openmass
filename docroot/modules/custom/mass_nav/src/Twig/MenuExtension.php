@@ -2,17 +2,20 @@
 
 namespace Drupal\mass_nav\Twig;
 
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+
 /**
  * My menu extension.
  */
-class MenuExtension extends \Twig_Extension {
+class MenuExtension extends AbstractExtension {
 
   /**
    * In this function we can declare the extension function.
    */
   public function getFunctions() {
     return [
-      new \Twig_SimpleFunction('render_menu', [$this, 'renderMenu'], ['is_safe' => ['html']]),
+      new TwigFunction('render_menu', [$this, 'renderMenu'], ['is_safe' => ['html']]),
     ];
   }
 

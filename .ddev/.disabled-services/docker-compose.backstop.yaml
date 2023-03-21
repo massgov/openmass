@@ -14,7 +14,9 @@ services:
     entrypoint: top -b
     volumes:
       - ../backstop:/src
-    shm_size: 1gb
+      - ".:/mnt/ddev_config:ro"
+      - ddev-global-cache:/mnt/ddev-global-cache
+    shm_size: 2gb
 #    entrypoint: [ backstop, --config=/src/backstop.js ]
     environment:
       # Pass auth variables to container.
