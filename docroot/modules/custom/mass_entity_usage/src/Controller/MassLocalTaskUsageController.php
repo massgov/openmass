@@ -55,7 +55,8 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
     ];
 
     $this->loadEntity($entity_type, $entity_id);
-    $total = $this->getSubQueryRowsCount();
+
+    $total = count($this->prepareRows($this->entityUsage->listSources($this->entity)));
     if (!$total) {
       return $build;
     }
@@ -79,6 +80,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
    * {@inheritdoc}
    */
   public function prepareRows($usages) {
+
     $rows = [];
     foreach ($usages as $source_type => $ids) {
       $type_storage = $this->entityTypeManager->getStorage($source_type);
