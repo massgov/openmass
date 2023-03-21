@@ -21,7 +21,7 @@
       '}'
     );
     $(this).append(
-      '<div class="ma__banner-credit">' +
+      '<div class="ma__banner-credit" aria-hidden="true">' +
       '  <dl class="ma__banner-credit__container">' +
       '    <dt class="ma__banner-credit__icon">' +
       '      <span class="ma__visually-hidden">Credit for the banner image</span>' +
