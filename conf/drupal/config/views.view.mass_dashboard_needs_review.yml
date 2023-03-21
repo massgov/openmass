@@ -37,6 +37,7 @@ dependencies:
     - node.type.stacked_layout
     - node.type.topic_page
     - node.type.utility_drawer
+    - system.menu.admin
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
@@ -1682,6 +1683,15 @@ display:
     display_options:
       display_extenders: {  }
       path: admin/ma-dash/needs-review
+      menu:
+        type: normal
+        title: 'Needs review'
+        description: 'These are pages awaiting review'
+        weight: -66
+        expanded: false
+        menu_name: admin
+        parent: 'menu_link_content:e667301a-501e-4be9-b088-ffb0f3d38e11'
+        context: '0'
     cache_metadata:
       max-age: 0
       contexts:

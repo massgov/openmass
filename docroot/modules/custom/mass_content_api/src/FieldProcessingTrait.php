@@ -228,7 +228,6 @@ trait FieldProcessingTrait {
     foreach ($matches[1] as $match) {
       $parsed_match = parse_url($match);
       // Relative urls have no host set, external links need filtered.
-
       if (!isset($parsed_match['path']) || (isset($parsed_match['host']) && !str_contains($parsed_match['host'], 'mass.gov'))) {
         return;
       }
@@ -255,7 +254,7 @@ trait FieldProcessingTrait {
       elseif ($url->getRouteName() === 'media_entity_download.download') {
         $params = $url->getRouteParameters();
         $id = $params['media'];
-        // @TODO the undefined need below needs to be fixed.
+        // @todo the undefined need below needs to be fixed.
         $collected[$id] = [
           'id' => $id,
           'entity' => 'media',

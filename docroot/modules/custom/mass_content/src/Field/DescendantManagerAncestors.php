@@ -17,7 +17,7 @@ class DescendantManagerAncestors extends EntityReferenceFieldItemList {
   public function computeValue() {
     $entity = $this->getEntity();
     if (!$entity->isNew()) {
-      /* @var \Drupal\mass_content_api\DescendantManagerInterface $descendantManager */
+      /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendantManager */
       $descendantManager = \Drupal::service('descendant_manager');
       $limit = $this->getSetting('limit') ?? FALSE;
       $level_limit = $this->getSetting('level_limit') ?? FALSE;

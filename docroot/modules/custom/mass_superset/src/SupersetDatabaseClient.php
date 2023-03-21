@@ -40,7 +40,7 @@ class SupersetDatabaseClient {
             'username' => $options['username'],
             'password' => $options['password'],
             'csrf_token' => $this->csrfToken,
-          ]
+          ],
         ]);
       }
     }
@@ -80,7 +80,7 @@ class SupersetDatabaseClient {
         'runAsync' => FALSE,
         'sql' => $query,
         'template_params' => "{}",
-      ]
+      ],
     ]);
     return json_decode($response->getBody()->getContents(), TRUE);
   }

@@ -6,7 +6,6 @@ use Prophecy\PhpUnit\ProphecyTrait;
 use Drupal\mass_content_api\DescendantExtractor;
 use Drupal\mass_content_api\DescendantExtractorInterface;
 use Drupal\mass_content_api\DescendantManager;
-use Drupal\mass_content_api\DescendantStorage;
 use Drupal\mass_content_api\DescendantStorageInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Tests\UnitTestCase;
@@ -54,18 +53,18 @@ class DescendantManagerTest extends UnitTestCase {
       'parents' => [
         'field_something' => [
           ['entity' => 'node', 'id' => 2],
-        ]
+        ],
       ],
       'children' => [
         'field_something_else' => [
           ['entity' => 'node', 'id' => 3],
-        ]
+        ],
       ],
       'linking_pages' => [
         'field_link' => [
-          ['entity' => 'node', 'id' => 4]
-        ]
-      ]
+          ['entity' => 'node', 'id' => 4],
+        ],
+      ],
     ]);
 
     $storage->removeRelationships('node', 1)

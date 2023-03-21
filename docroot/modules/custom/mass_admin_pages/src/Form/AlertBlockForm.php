@@ -69,7 +69,7 @@ class AlertBlockForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'mass_admin_pages.updates_block_settings'
+      'mass_admin_pages.updates_block_settings',
     ];
   }
 

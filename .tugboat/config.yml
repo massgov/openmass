@@ -122,6 +122,7 @@ services:
         - composer install --no-interaction --optimize-autoloader --no-cache
         - yarn install
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
+        - export DRUSH_OPTIONS_URI={TUGBOAT_SERVICE_URL}
 
   # This 'mysql' key acts as the hostname to access the service by from the php service.
   mysql:

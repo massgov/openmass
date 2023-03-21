@@ -69,7 +69,7 @@ class RightSidebarBlockForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'mass_admin_pages.right_sidebar_block_settings'
+      'mass_admin_pages.right_sidebar_block_settings',
     ];
   }
 

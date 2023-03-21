@@ -9,17 +9,43 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\NodeType;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 
 /**
+ * Add icon to Mass menu item thats shown in admin toolbar.
+ */
+function mass_admin_pages_preprocess_menu(&$variables) {
+  // A menu item to css class mapping.
+  $map = [
+    'mass_admin_pages.mass' => 'toolbar-icon-tmgmt-admin-tmgmt',
+    // 'mass_admin_pages.admin' => 'toolbar-icon-system-admin-config',
+    'mass_admin_pages.help' => 'toolbar-icon-help-main',
+    'mass_admin_pages.drupal' => 'toolbar-icon-system-modules-list',
+    'mass_admin_pages.all_collection' => 'toolbar-icon-entity-webform-collection',
+    'mass_admin_pages.trash_collection' => 'toolbar-icon-rebuild-cache-access',
+    'views_view:views.mass_dashboard_needs_review.page_1' => 'toolbar-icon-system-admin-structure',
+    'views_view:views.my_content.page_1' => 'toolbar-icon-entity-user-collection',
+    'mass_feedback_loop.mass_feedback_loop_author_interface_form' => 'toolbar-icon-system-admin-reports',
+  ];
+  foreach ($map as $link => $class) {
+    if (isset($variables['items'][$link])) {
+      $options = $variables['items'][$link]['url']->getOptions();
+      $options['attributes']['class'][] = $class;
+      $variables['items'][$link]['url']->setOptions($options);
+    }
+  }
+}
+
+/**
  * Implements hook_user_login().
  *
- * Redirect users to the my-work page on successful login.
+ * Redirect users to the admin home on successful login.
  */
 function mass_admin_pages_user_login(AccountInterface $account) {
-  $url = Url::fromRoute('mass_admin_pages.author_home')->toString();
+  $url = Url::fromRoute('system.admin')->toString();
 
   // If there are no password reset parameters in the URL, then bypass the user edit
   // page and go straight to my-work.
@@ -44,7 +70,7 @@ function mass_admin_pages_form_user_form_alter(&$form, FormStateInterface $form_
 function _mass_admin_pages_user_redirect(&$form, FormStateInterface $form_state) {
   // Redirect from user form on save only when user first logs in.
   if (\Drupal::request()->query->has('pass-reset-token')) {
-    $form_state->setRedirect('mass_admin_pages.author_home');
+    $form_state->setRedirect('system.admin');
   }
 }
 
@@ -54,7 +80,7 @@ function _mass_admin_pages_user_redirect(&$form, FormStateInterface $form_state)
 function mass_admin_pages_preprocess_html(&$variables) {
   $current_route = \Drupal::routeMatch()->getRouteName();
 
-  if ($current_route == 'mass_admin_pages.author_home') {
+  if ($current_route == 'mass_admin_pages.author_home' || $current_route == 'system.admin') {
     $variables['attributes']['class'][] = 'author-home';
   }
 }
@@ -88,10 +114,28 @@ function mass_admin_pages_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
+ * Implements hook_menu_links_discovered_alter().
+ */
+function mass_admin_pages_menu_links_discovered_alter(&$links) {
+  $links['system.admin_content']['title'] = new TranslatableMarkup('All (content)');
+}
+
+/**
  * Implements hook_page_attachments().
  */
 function mass_admin_pages_page_attachments(array &$page) {
   $page['#attached']['library'][] = 'mass_admin_pages/mass_admin_pages.node-add';
+}
+
+/**
+ * Implements hook_theme_suggestions_node_add_list.
+ *
+ * @see https://drupal.stackexchange.com/a/269258/549
+ */
+function mass_admin_pages_theme_suggestions_node_add_list(array $variables) {
+  $suggestions = [];
+  $suggestions[] = 'node_add_list__custom';
+  return $suggestions;
 }
 
 /**
@@ -107,7 +151,27 @@ function mass_admin_pages_theme($existing, $type, $theme, $path) {
       'template' => 'block--alerts-block',
       'base hook' => 'block',
     ],
+    // https://drupal.stackexchange.com/a/269258/549
+    'node_add_list__custom' => [
+      'base hook' => 'node_add_list',
+    ],
   ];
+}
+
+/**
+ * Use our template for breadcrumb in Gin secondary toolbar.
+ */
+function mass_admin_pages_theme_registry_alter(&$theme_registry) {
+  $templates_path = \Drupal::service('extension.list.module')->getPath('mass_admin_pages') . '/templates';
+  $theme_registry['toolbar']['path'] = $templates_path;
+}
+
+function mass_admin_pages_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'theme_registry_alter') {
+    $group = $implementations['mass_admin_pages'];
+    unset($implementations['mass_admin_pages']);
+    $implementations['mass_admin_pages'] = $group;
+  }
 }
 
 /**
@@ -213,6 +277,8 @@ function mass_admin_pages_preprocess_node_add_list(&$variables) {
   if (!empty($variables['content'])) {
     foreach ($variables['content'] as $type) {
       $cat_id = $type->getThirdPartySetting('mass_admin_pages', 'node_type_category');
+      $variables['types'][$type->id()]['label'] = $type->label();
+      $variables['types'][$type->id()]['url'] = Url::fromRoute('node.add', ['node_type' => $type->id()])->toString();
       $variables['types'][$type->id()]['node_type_category'] = (!empty($cat_id)) ? MASS_CT_CATEGORIES[$cat_id] : '';
       $variables['types'][$type->id()]['node_type_url'] = UrlHelper::filterBadProtocol($type->getThirdPartySetting('mass_admin_pages', 'node_type_url'));
       $variables['types'][$type->id()]['node_type_long_description'] = Xss::filterAdmin($type->getThirdPartySetting('mass_admin_pages', 'node_type_long_description'));
@@ -220,17 +286,6 @@ function mass_admin_pages_preprocess_node_add_list(&$variables) {
     }
   }
   $variables['categories'] = _mass_admin_pages_get_used_categories();
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function mass_admin_pages_preprocess_page(&$variables) {
-  $current_route = \Drupal::routeMatch()->getRouteName();
-
-  if ($current_route == 'system.admin_content') {
-    unset($variables['page']['content']['mass_admin_theme_local_actions']);
-  }
 }
 
 /**

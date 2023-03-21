@@ -1,0 +1,188 @@
+<?php
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_form_alter().
+ */
+function mass_gin_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if (isset($form['revision'])) {
+    $form['revision']['#access'] = FALSE;
+  }
+}
+
+function mass_gin_toolbar_alter(&$items) {
+  unset($items['acquia_connector']);
+
+  // Change the label+class of the local tasks toolbar item from admin_toolbar_tools module.
+  // Technique borrowed from moderation_sidebar module.
+  $item_name = 'admin_toolbar_local_tasks';
+  if (!isset($items[$item_name])) {
+    return;
+  }
+
+  $cacheability = (new CacheableMetadata())
+    ->addCacheContexts(['route'])
+    ->addCacheContexts(['user.permissions']);
+
+  if (!\Drupal::currentUser()->hasPermission('use mass dashboard')) {
+    $cacheability->applyTo($items[$item_name]);
+    return $items;
+  }
+
+  /** @var \Drupal\Core\Routing\AdminContext $admin_context */
+  $admin_context = \Drupal::service('router.admin_context');
+
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $current_route = \Drupal::routeMatch();
+  $entity = NULL;
+  foreach ($current_route->getParameters() as $param) {
+    if ($param instanceof ContentEntityInterface) {
+      $entity = $param;
+      // Stop at the first found instance.
+      break;
+    }
+  }
+
+  if (!($entity instanceof ContentEntityInterface) || !($entity->getEntityType()->isRevisionable()) || $admin_context->isAdminRoute()) {
+    $cacheability->applyTo($items[$item_name]);
+    return $items;
+  }
+
+  if ($entity->isNew()) {
+    return $items;
+  }
+
+  $cacheability->addCacheableDependency($entity);
+
+  /** @var \Drupal\content_moderation\ModerationInformation $moderation_information */
+  $moderation_information = \Drupal::service('content_moderation.moderation_information');
+
+  $params = [
+    'entity' => $entity->id(),
+    'entity_type' => $entity->getEntityTypeId(),
+  ];
+
+  // Grab the state label for the quick hover feature.
+  $is_published = TRUE;
+  if ($entity instanceof EntityPublishedInterface) {
+    $is_published = $entity->isPublished();
+  }
+
+  if ($moderation_information->isModeratedEntity($entity)) {
+    $state_label = $moderation_information
+      ->getWorkflowForEntity($entity)
+      ->getTypePlugin()
+      ->getState($entity->moderation_state->value)
+      ->label();
+  }
+  else {
+    $state_label = $is_published ? t('Published') : t('Draft');
+  }
+
+  if ($moderation_information->hasPendingRevision($entity) && $entity->isDefaultRevision()) {
+    $state_label = t('Draft available');
+    $label_class = 'moderation-label-draft-available';
+  }
+  else {
+    $label_class = 'moderation-label-' . ($is_published ? 'published' : 'draft');
+  }
+
+  $items[$item_name]['tab']['#title'] = $state_label;
+  $items[$item_name]['tab']['#attributes']['class'][] = $label_class;
+  $items[$item_name]['tab']['#attributes']['data-label'] = $state_label;
+  $items[$item_name]['#attached']['library'][] = 'mass_admin_pages/toolbar';
+  $cacheability->applyTo($items[$item_name]);
+
+  // Also add link for Watch/Unwatch.
+  $watch_flag = Drupal::service('flag')->getFlagById('watch_content');
+  $items['admin_toolbar_local_tasks']['tray']['mass_flag'] = [
+    '#lazy_builder' => [
+      'flag.link_builder:build', [
+        $entity->getEntityTypeId(),
+        $entity->id(),
+        $watch_flag->id(),
+      ],
+    ],
+    '#create_placeholder' => TRUE,
+  ];
+}
+
+/**
+ * Implements hook_toolbar().
+ *
+ * Adds a dashboard link to the admin toolbar.
+ *
+ * Adds an add new content and an add new documents button to the admin toolbar.
+ */
+function mass_gin_toolbar() {
+  $items = [];
+
+  $items['add_content_link'] = [
+    '#type' => 'toolbar_item',
+    'tab' => [
+      '#type' => 'link',
+      '#title' => t('Add content'),
+      '#url' => Url::fromRoute('node.add_page'),
+      '#attributes' => [
+        'class' => ['toolbar-icon', 'toolbar-icon-system-admin-content'],
+      ],
+    ],
+    '#weight' => 5,
+    '#wrapper_attributes' => [
+      'class' => [
+        // 'add-content-toolbar-tab'.
+      ],
+    ],
+  ];
+
+  $items['add_document_link'] = [
+    '#type' => 'toolbar_item',
+    'tab' => [
+      '#type' => 'link',
+      '#title' => t('Add document'),
+      '#url' => Url::fromRoute('entity.media.add_form', [
+        'media_type' => 'document',
+      ]),
+      '#attributes' => [
+        'class' => ['toolbar-icon', 'toolbar-icon-system-admin-content'],
+      ],
+    ],
+    '#weight' => 5,
+    '#wrapper_attributes' => [
+      'class' => [
+        // 'add-content-toolbar-tab'.
+      ],
+    ],
+  ];
+
+  return $items;
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function mass_gin_theme_registry_alter(&$theme_registry) {
+  // Check if the 'media_reference_help' theme hook exists in the registry.
+  if (isset($theme_registry['media_reference_help'])) {
+    // Change the template path to use a custom template file.
+    $theme_registry['media_reference_help']['path'] = Drupal::service('extension.list.module')->getPath('mass_gin') . '/templates';
+    $theme_registry['media_reference_help']['template'] = 'mass-gin-media-reference-help';
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for page_attachments.
+ */
+function mass_gin_page_attachments_alter(&$page) {
+  $route = \Drupal::routeMatch()->getRouteObject();
+  $is_admin = \Drupal::service('router.admin_context')->isAdminRoute($route);
+
+  if ($is_admin) {
+    $page['#attached']['library'][] = 'mass_gin/overrides';
+  }
+}

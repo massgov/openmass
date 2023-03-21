@@ -12,6 +12,7 @@ dependencies:
     - field.storage.media.field_start_date
     - field.storage.media.field_title
     - media.type.document
+    - system.menu.admin
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
     - workflows.workflow.media_states
@@ -4057,13 +4058,14 @@ display:
       display_extenders: {  }
       path: admin/ma-dash/documents
       menu:
-        type: none
-        title: 'All Documents'
+        type: normal
+        title: Documents
         description: ''
-        weight: 0
+        weight: -68
+        enabled: true
         expanded: false
-        menu_name: mass-dashboard
-        parent: ''
+        menu_name: admin
+        parent: system.admin
         context: '0'
       tab_options:
         type: none

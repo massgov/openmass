@@ -5,7 +5,6 @@ namespace Drupal\mass_content\Plugin\Field\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
-use Drupal\mayflower\Helper;
 
 /**
  * Plugin implementation of the 'tableau_embed' formatter.

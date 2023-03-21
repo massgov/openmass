@@ -2,11 +2,8 @@
 
 namespace Drupal\mass_admin_pages\Plugin\Block;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Url;
 
 /**
  * Provides a block for the rigth sidebar text.
@@ -25,6 +22,7 @@ class RightSidebarBlock extends BlockBase {
     $text_field = \Drupal::state()->get('mass_admin_pages.right_sidebar_block_settings.text_field');
     $buildInfo = [];
     if (!empty($text_field)) {
+      $buildInfo['#attached']['library'][] = 'mass_admin_pages/right_sidebar';
       $buildInfo['text_field'] = [
         '#markup' => Xss::filterAdmin($text_field),
       ];

@@ -210,7 +210,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
         '#start_minimized' => TRUE,
         '#title' => $this->t('New Collection'),
         '#required' => TRUE,
-        '#attributes' => ['class' => ['field--widget-term-reference-tree']]
+        '#attributes' => ['class' => ['field--widget-term-reference-tree']],
       ];
     }
     return $form;

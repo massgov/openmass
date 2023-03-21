@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
-use weitzman\DrupalTestTraits\ScreenShotTrait;
 use weitzman\LoginTrait\LoginTrait;
 
 /**

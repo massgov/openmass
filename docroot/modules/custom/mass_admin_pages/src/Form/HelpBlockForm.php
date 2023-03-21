@@ -52,7 +52,7 @@ class HelpBlockForm extends ConfigFormBase {
       '#wrapper_attributes' => [
         'class' => [
           'help-support-block-link-field-wrapper',
-        ]
+        ],
       ],
     ];
 
@@ -102,7 +102,7 @@ class HelpBlockForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'mass_admin_pages.help_block_settings'
+      'mass_admin_pages.help_block_settings',
     ];
   }
 

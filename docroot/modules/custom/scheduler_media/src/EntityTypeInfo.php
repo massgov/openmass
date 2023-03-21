@@ -2,14 +2,9 @@
 
 namespace Drupal\scheduler_media;
 
-use Drupal\Core\Entity\BundleEntityFormBase;
-use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\media\Entity\MediaType;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\media\MediaTypeForm;
 use Drupal\media\MediaForm;
