@@ -26,6 +26,7 @@ const target = opts.length ? opts[0].replace('--target=', '') : 'prod';
 const scenarios = pages.map(function(page) {
   let base = process.env.BASE_URL;
   let auth = false;
+  let removeSelectors = [];
 
   switch (target) {
     case 'prod':
@@ -85,11 +86,18 @@ const scenarios = pages.map(function(page) {
       });
     }
   }
+  if (!page.showHeaderAlerts) {
+    removeSelectors.push('.pre-content .mass-alerts-block');
+  }
+  if (!page.showGlobalAlerts) {
+    removeSelectors.push('.mass-alerts-block[data-alerts-path="/alerts/sitewide"]');
+  }
   return {
     ...page,
     url: withCache ? `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}` : `${base}${page.url}`,
     misMatchThreshold: 0.1,
     auth,
+    removeSelectors,
   }
 });
 
