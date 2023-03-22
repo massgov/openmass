@@ -489,6 +489,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
       // Get Regulation type taxonomy terms that make field optional: "Draft",
       // "Working Draft" and "Proposed".
       $regulation_type_term_ids = \Drupal::entityQuery('taxonomy_term')
+        ->accessCheck(FALSE)
         ->condition('vid', 'advisory_publish_state')
         ->condition('name', 'Future Effective Date', '!=')
         ->execute();
@@ -631,7 +632,7 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
   foreach ($form['field_news_signees']['widget'] as $delta => $widget) {
     if (is_numeric($delta) && !empty($form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'])) {
       if ($original_path = $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['value']['#default_value']) {
-        $image_path = file_create_url($original_path);
+        $image_path = \Drupal::service('file_url_generator')->generateAbsoluteString($original_path);
         $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['#prefix'] = '<p><div class="photo-preview"><img src=' . $image_path . '/></div></p>';
       }
     }
@@ -777,7 +778,7 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
     ]);
     $file = File::load($fid);
     $image_path = $file->getFileUri();
-    $image = '<img src="' . file_create_url($image_path) . '"/>';
+    $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
     $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
     $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
     return $response;
@@ -800,7 +801,7 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
       $description = $node->field_sub_title->value;
       if (!empty($node->field_sub_brand->entity->uri->value)) {
         $image_path = $node->field_sub_brand->entity->uri->value;
-        $image = '<img src="' . file_create_url($image_path) . '"/>';
+        $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
         $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
         $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
       }
@@ -1164,12 +1165,14 @@ function mass_utility_post_update_events_event_type(&$sandbox = NULL) {
     $sandbox['progress'] = 0;
     $sandbox['current_index'] = 0;
     $sandbox['max'] = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('type', 'event')
       ->count()
       ->execute();
   }
   $batch_size = 50;
   $nids = \Drupal::entityQuery('node')
+    ->accessCheck(FALSE)
     ->condition('type', 'event')
     ->condition('nid', $sandbox['current_index'], '>')
     ->sort('nid')

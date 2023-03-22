@@ -103,7 +103,7 @@ class MassUtilityCommands extends DrushCommands {
 
     // Load nodes and save.
     foreach ($node_types as $node_type) {
-      $query = \Drupal::entityQuery('node');
+      $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
       $nids = $query->condition('type', $node_type)->execute();
       /** @var Drupal\node\Entity\Node[] $nodes */
       $nodes = Node::loadMultiple($nids);
@@ -293,7 +293,7 @@ class MassUtilityCommands extends DrushCommands {
    * @option offset
    *   Determines how many records to skip. Defaults to 0.
    * @option timestamp
-   *   The timestamp to use when processing revisions. Defaults to 14 months ago.
+   *   The unix timestamp to use when processing revisions. Defaults to a timestamp that is 14 months ago.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Exception

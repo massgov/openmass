@@ -49,6 +49,7 @@ function _mass_unpublish_reminders_cron_helper() {
     $week_ago = strtotime('-7 days midnight');
     $end_timestamp = strtotime('+8 days midnight') - 1;
     $nid_candidates = \Drupal::entityQuery('node')
+      ->accessCheck(FALSE)
       ->condition('status', 1)
       ->condition('type', ['alert', 'campaign_landing'], 'IN')
       ->condition('changed', [

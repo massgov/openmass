@@ -2,8 +2,8 @@
 
 namespace Drupal\scheduler_media;
 
+use Symfony\Contracts\EventDispatcher\Event;
 use Drupal\Core\Entity\EntityInterface;
-use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Wraps a scheduler event for event listeners.

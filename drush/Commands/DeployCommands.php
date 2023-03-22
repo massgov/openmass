@@ -100,6 +100,101 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+
+   * Run Backstop Snapshot at CircleCI and save the result for usage with ma:backstop-reference.
+   *
+   * @command ma:ci:backstop-snapshot
+   *
+   * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
+   * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
+   * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
+   * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
+   * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
+   * @usage drush ma:ci:backstop-snapshot --target=prod
+   *   Create a backstop snapshot from production.
+   * @aliases ma-ci-backstop-snapshot
+   * @validate-circleci-token
+   *
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function ci_backstop_snapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false]): void {
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle(), ''],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'webhook' => FALSE,
+          'trigger_workflow' => 'backstop_snapshot',
+          'target' => $options['target'],
+          'list' => $options['list'],
+          'viewport' => $options['viewport'],
+          'cachebuster' => $options['cachebuster'],
+        ],
+      ],
+    ];
+    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success($this->getSuccessMessage($body));
+  }
+
+  /**
+   * Run Backstop Test at CircleCI against the stored screenshots from Backstop Snapshot.
+   *
+   * @command ma:ci:backstop-compare
+   *
+   * @option reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
+   * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
+   * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
+   * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
+   * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
+   * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
+   * @usage drush ma:ci:backstop-compare --reference=prod --target=test
+   *   Run backstop in the test environment against the latest production screenshots
+   *   Create a backstop snapshot from production.
+   * @aliases ma-ci-backstop-compare
+   * @validate-circleci-token
+   *
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function ci_backstop_compare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false]): void {
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle(), ''],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'webhook' => FALSE,
+          'trigger_workflow' => 'backstop_compare',
+          'reference' => $options['reference'],
+          'target' => $options['target'],
+          'list' => $options['list'],
+          'viewport' => $options['viewport'],
+          'cachebuster' => $options['cachebuster']
+        ],
+      ],
+    ];
+    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success($this->getSuccessMessage($body));
+  }
+
+
+  /**
    * Write the download link for the most recent database backup to stdout.
    *
    * @param string $target Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod.

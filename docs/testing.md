@@ -49,26 +49,8 @@ More information about setup or running Nightcrawler can be found in the [Nightc
 
 ### Backstop
 
-#### Options
-  - `pages.json` is the list pages that are tested when Backstop is run. This is the default option. There are currently 39 pages, which is about as many pages as we want the default option to include. If there are too many pages included, the risk of failed test runs increases.
-  - `all.json` has additional pages to test a larger number of pages -- for example, additional displays for some content types. There are currently 57 total (this includes the default pages). To use this option, add `--list=all`
-
-### Enable the Backstop docker image for local running.
-`ddev service enable backstop`
-
-### Take screen captures of production pages
-`ahoy  backstop reference --target=prod --list=all`
-
-#### Take screen captures of local pages to compare
-`ahoy backstop test --target=local --list=all`
-
-#### Open the report from the comparison
-`open backstop/report/index.html`
-
-#### Run backstop at CircleCI
-`drush ma:backstop`
-
-More information about setup or running Backstop can be found in the [Backstop documentation](https://github.com/massgov/openmass/blob/develop/backstop/README.md).
+More information about setup or running Backstop can be found in the
+[Backstop documentation](https://github.com/massgov/openmass/blob/develop/backstop/README.md).
 
 ## Good tests
 

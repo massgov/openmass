@@ -250,7 +250,7 @@ class CacheEndpoint {
 
     $preview = $view->preview($display, $args);
 
-    $file = file_save_data(strval($preview['#markup']), $filename, FileSystemInterface::EXISTS_REPLACE);
+    $file = \Drupal::service('file.repository')->writeData(strval($preview['#markup']), $filename, FileSystemInterface::EXISTS_REPLACE);
     $this->logger->success('Saving partial ' . $filename);
   }
 
@@ -272,7 +272,7 @@ class CacheEndpoint {
     }
     $result->dataset = $data;
 
-    file_save_data(json_encode($result), $cachename, FileSystemInterface::EXISTS_REPLACE);
+    \Drupal::service('file.repository')->writeData(json_encode($result), $cachename, FileSystemInterface::EXISTS_REPLACE);
     $this->logger->info('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
   }
 
