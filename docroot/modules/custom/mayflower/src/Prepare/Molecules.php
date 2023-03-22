@@ -154,7 +154,7 @@ class Molecules {
 
         if (Helper::fieldValue($entity, $fields['image'])) {
           $src = Helper::fieldValue($entity, $fields['image']);
-          $src = file_create_url($src);
+          $src = \Drupal::service('file_url_generator')->generateAbsoluteString($src);
         }
         else {
           $src = Helper::getFieldImageUrl($entity, 'activities_image', $fields['image']);
@@ -1345,7 +1345,7 @@ class Molecules {
         case 'pdf':
         case 'docx':
         case 'xlsx':
-          $icon = 'doc-' . $file_extension;
+          $icon = 'doc-' . strtolower($file_extension);
           break;
 
         default:

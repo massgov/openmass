@@ -1,20 +1,181 @@
 
 
+## [0.354.0] - March 21, 2023
+
+### Fixed
+  - DP-25389: Wait for Papa.parse to finish manipulating csv tables and Caspio to load forms before taking a screenshot with Backstop
+  - DP-25829: Fixes Backstop ready code to wait for leaflet map tiles and markers to load before taking a screenshot
+  - DP-26574: Passes focal point information to illustrated header background images
+  - DP-27438: Fixed the issue with orphan paragraphs being shown in the "Pages linking here" tab.
+  - DP-27447: Document language bar not showing when document description is shown.
+  - DP-27471: Backstop Reliability Fixes
+
+- Waits for alerts to have content before taking a screenshot
+- Fixes Caspio Form selector on pages which don't have a footer (i.e. the 404 page)
+- Splits the expansions of accordion toggle tests into emergency alerts and regular alerts
+- Refactor the logic for checking if accordions expand as expected
+- Tweaks engine options and passes an option to tell Puppeteer to wait for domcontentloaded before proceeding
+- Adds a backstop reference test to each pull request to verify that backstop can collect reference images successfully
+
+  - DP-27478: Organization report (view) for authors re-enabled.
+  - DP-27545.yml: Removes the accordion test in Backstop for global alerts as they aren't always present
+Hides all alerts by default
+Refactors the mechanism in Backstop to hide alerts
+
+  
+### Changed
+  - DP-26086: Update dependencies for Gin PR.
+  - DP-27421: Remove cache busting string from URLs fetched by Backstop for references
+in the new job which only collects reference images. Also adds a
+`--cachebuster` parameter to the relevant drush jobs.
+
+  
+### Added
+  - DP-26786: Add Composer dependencies for Gin theme
+  - DP-27259: Added local storage value to associate with site feedback submissions.
+  
+### Security
+  - DP-27543: Drupal core - Moderately critical - Access bypass - SA-CORE-2023-004.
+  
+
+
+## [0.353.0] - March 7, 2023
+
+### Changed
+  - DP-27022: Adjust feedback manager report in Drupal
+  - DP-27225: Increase quantity shown on feedback page from 10 to 20.
+  - DP-27435: Dont list an unpublished Locations page
+  
+### Fixed
+  - DP-27257: Investigate and fix errors in Drupal.
+  - DP-27426: Cleanup Banner Search and Header Search templates after removing autocomplete.
+  
+## [0.352.2] - March 3, 2023
+
+### Fixed
+- DP-27400: Stop storing entity and render caches in Memcache.
+
+## [0.352.1] - March 2, 2023
+
+### Fixed
+- DP-27400: Fix php error in: drush ma:queue-revision-cleanup.
+
+## [0.352.0] - February 28, 2023
+
+### Changed
+  - DP-25212: Upgrade custom code for Drupal 10
+  - DP-26079: Accessibility adjustment for search component.
+  - DP-26251: Remove an empty list from section link and correct semantics for its accordion button.
+  - DP-26763: Fix collection pagination icons.
+  - DP-26913: Adds a DDEV command to allow BackstopJS to be run locally
+  - DP-26913: Increases shm_size to 2gb to avoid the browser crashing inside a docker container. See https://bugs.chromium.org/p/chromium/issues/detail?id=519952 and https://github.com/SeleniumHQ/docker-selenium#--shm-size2g
+  - DP-26913: Switches CircleCI to using backstop's provided image
+  - DP-26913: Updated the documentation and adds instructions for running the backstop job using CircleCI's local CLI
+  - DP-26913: Adds a CircleCI job which collects Backstop reference images nightly and stores them as an artifact
+  - DP-26913: Adds an additional backstop test during the deploy_cd CirlceCI job which uses reference images from the above job
+  - DP-27213: Upgrade Drupal Rector and related dependencies
+  - DP-27234: Upgrade Drush for more robust deployments
+  - DP-27264: Added bare mass.gov domain to entity usage config to increase tracking of URLs specified by authors with www.
+
+### Added
+  - DP-26079: Add suggestion list state to search input.
+
+### Fixed
+  - DP-27248: Corrected URL of backstop test page.
+
+
+
+## [0.351.0] - February 14, 2023
+
+### Added
+  - DP-24435: Add option to toggle language bar labels.
+
+### Fixed
+  - DP-26967: Style issue with header iframe on visual story info detail page.
+
+### Security
+  - DP-27215: Drupal core major version (9.5.3) and DangerJS update.
+
+### Changed
+  - DP-27227: Added default settings for entity usage queue tracking that can be overridden.
+
+
+
+## [0.350.0] - February 7, 2023
+
+### Changed
+  - DP-26237: Correct invalid markup, cleaned up confusing aria-label, add context for screenr reader users for collapsible headers.
+  - DP-26696: Change location of 'Associated pages' field on Events.
+  - DP-27088: Active cache invalidation for language link list.
+  - DP-27097.yml: Remove and block non-Azure logins for Drupal
+  - DP-27143: Disallow bot traffic from Semrush.
+  - DP-27176: More fields added to CSV export files for the All Content view.
+
+### Fixed
+  - DP-27002: Fix form display for Collection selection on External link for Collections
+  - DP-27163: Fix style issue with press release view.
+  - DP-27164: Fix Google Translate styles caused by a classname change by Google.
+
+### Removed
+  - DP-27049: Removed real pages from Backstop
+  - DP-27157: Remove the background image from the form requirements section in form pages.
+
+
+
+## [0.349.0] - January 31, 2023
+
+### Removed
+  - DP-25783: Remove feedback survey UI from edit.mass.gov.
+
+### Changed
+  - DP-26177: Update Purge, Acquia purge, Akamai modules
+
+### Added
+  - DP-26735: New view showing recent press releases. Not linked at this time.
+  - DP-26959: Add bulk edit to the "All documents" view for administrators.
+  - DP-27072: New administrative view showing who has flagged what content to watch it. This will help testing of content migrations.
+
+### Fixed
+  - DP-27000: Fix radio button and checkbox sizes in collection view.
+  - DP-27077: Remove config warnings for Azure AD
+
+
+
+## [0.348.0] - January 24, 2023
+
+### Changed
+  - DP-26309: Remove empty more link for related guides section.
+  - DP-26328: Updated Collections view to use active cache invalidation.
+  - DP-26840: Updated the Entity Usage Queue Tracking module with improvements to the cleaning command.
+  - DP-26854: Fixed small bugs and removed unused code related to CircleCI jobs
+
+### Added
+  - DP-26736: Updates to orphan view.
+
+### Fixed
+  - DP-26999: Reset feedback form text area validation on radio button change.
+  - DP-27003: Bug - not seeing all document language links shown.
+
+### Security
+  - DP-27004: Drupal core and Entity Browser module security update.
+
+
+
 ## [0.347.0] - January 17, 2023
 
 ### Added
   - DP-24550: Display link to document in multiple languages.
   - DP-26806: Add apple site icons.
-  
+
 ### Changed
   - DP-26327: Backend changes to org feedback options.
   - DP-26864: Change views to not show any results until there are filters added by user and user pushes button.
   - DP-26965: Related links not showing on News pages with 'news' subtype when there is no contact defined.
-  
+
 ### Fixed
   - DP-26649: Fix org nav being cut off at the bottom of the screen on mobile.
   - DP-26973: Fixed Behat XSS test failures for link fields.
-  
+
 
 
 ## [0.346.0] - January 10, 2023
@@ -27,15 +188,15 @@
   - DP-26612: Add help text paragraph below H1 on page based feedback for authors.
   - DP-26766: Remove legacy "Pages Linking Here" tab and show new tab for all authors.
   - DP-26750: Modifications to the user view used by administrators, including downloadable CSV.
-  
+
 ### Fixed
   - DP-26222: A11y - Popular searches fix.
   - DP-26715: Bug - error in bulk job to add items to collection.
-  
+
 ### Security
   - DP-26767: Bump decode-uri-component from 0.2.0 to 0.2.2.
   - DP-26805: Dependabot - Multiple vulnerabilities.
-  
+
 
 
 ## [0.345.0] - December 13, 2022
@@ -43,17 +204,17 @@
 ### Changed
   - DP-25839: Removed the second set of <main> with its duplilcate ID from guide page.
   - DP-26300: Hide Offered By on Executive Order content.
-  
+
 ### Added
   - DP-26013: Added Azure AD integration.
-  
+
 ### Fixed
   - DP-26312: Fixed issue with referencing nodes with long titles via the Redirects tab.
   - DP-26642: Fixed missing validation for custom search components on service pages.
-  
+
 ### Removed
   - DP-26700: Eliminate author message to setup 2 factor auth that users see when logging in.
-  
+
 
 
 ## [0.344.0] - December 6, 2022
@@ -61,7 +222,7 @@
 ### Added
   - DP-25357: Added entity usage queue tracking module, and improved entity usage performance.
   - DP-26467: Report showing non-English documents and their English relatives.
-  
+
 ### Changed
   - DP-25587: Set up the correct heading level to pass on to the MF template for collection page listing items.
   - DP-25901: Changed Collection Search to a general search component for either collections or custom searches.
@@ -72,11 +233,11 @@
   - DP-26593: Advanced search report - Added org and parent fields to results, default order for pageviews changed to descending
   - DP-26593: All documents view - added filter for search status, any org filter will be remembered for future searches
   - DP-26593: All documents CSV export - added fields - extension, file size, created date, english version, search status, language.
-  
+
 ### Fixed
   - DP-26284: Un-install jsonapi_page_limit module to fix jsonapi page limit and offset query parameters.
   - DP-26492: Unpublished pages with maps still have published location listing pages, follow-up fix of breadcrumb rendering.
-  
+
 
 
 ## [0.343.0] - November 29, 2022

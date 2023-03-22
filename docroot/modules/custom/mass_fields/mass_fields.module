@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Entity\EntityTypeInterface;
 /**
  * @file
  * Contains mass_fields.module.
@@ -257,7 +258,7 @@ function mass_fields_entity_extra_field_info() {
 /**
  * Implements hook_entity_base_field_info().
  */
-function mass_fields_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+function mass_fields_entity_base_field_info(EntityTypeInterface $entity_type) {
   $options = [
     'type' => 'boolean_checkbox',
     'weight' => 99,
@@ -738,7 +739,7 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
  * Implements hook_theme().
  */
 function mass_fields_theme() {
-  $base_theme = drupal_get_path('theme', 'mass_theme');
+  $base_theme = \Drupal::service('extension.list.theme')->getPath('mass_theme');
   return [
     'extra_node_pager' => [
       'path' => $base_theme . '/templates/field',
@@ -946,21 +947,21 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
 /**
  * Implements hook_field_widget_WIDGET_TYPE_form_alter().
  */
-function mass_fields_field_widget_entity_reference_paragraphs_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+function mass_fields_field_widget_entity_reference_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
 }
 
 /**
  * Implements hook_field_widget_WIDGET_TYPE_form_alter().
  */
-function mass_fields_field_widget_paragraphs_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+function mass_fields_field_widget_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
 }
 
 /**
  * Helper function to define conditional logic for paragraphs.
  */
-function _mass_fields_conditions_for_paragraphs(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $form_state, $context) {
   /** @var \Drupal\field\Entity\FieldConfig $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();

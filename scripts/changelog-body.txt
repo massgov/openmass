@@ -1,17 +1,39 @@
 
 
-## [0.347.0] - January 17, 2023
+## [0.354.0] - March 21, 2023
 
-### Added
-  - DP-24550: Display link to document in multiple languages.
-  - DP-26806: Add apple site icons.
+### Fixed
+  - DP-25389: Wait for Papa.parse to finish manipulating csv tables and Caspio to load forms before taking a screenshot with Backstop
+  - DP-25829: Fixes Backstop ready code to wait for leaflet map tiles and markers to load before taking a screenshot
+  - DP-26574: Passes focal point information to illustrated header background images
+  - DP-27438: Fixed the issue with orphan paragraphs being shown in the "Pages linking here" tab.
+  - DP-27447: Document language bar not showing when document description is shown.
+  - DP-27471: Backstop Reliability Fixes
+
+- Waits for alerts to have content before taking a screenshot
+- Fixes Caspio Form selector on pages which don't have a footer (i.e. the 404 page)
+- Splits the expansions of accordion toggle tests into emergency alerts and regular alerts
+- Refactor the logic for checking if accordions expand as expected
+- Tweaks engine options and passes an option to tell Puppeteer to wait for domcontentloaded before proceeding
+- Adds a backstop reference test to each pull request to verify that backstop can collect reference images successfully
+
+  - DP-27478: Organization report (view) for authors re-enabled.
+  - DP-27545.yml: Removes the accordion test in Backstop for global alerts as they aren't always present
+Hides all alerts by default
+Refactors the mechanism in Backstop to hide alerts
+
   
 ### Changed
-  - DP-26327: Backend changes to org feedback options.
-  - DP-26864: Change views to not show any results until there are filters added by user and user pushes button.
-  - DP-26965: Related links not showing on News pages with 'news' subtype when there is no contact defined.
+  - DP-26086: Update dependencies for Gin PR.
+  - DP-27421: Remove cache busting string from URLs fetched by Backstop for references
+in the new job which only collects reference images. Also adds a
+`--cachebuster` parameter to the relevant drush jobs.
+
   
-### Fixed
-  - DP-26649: Fix org nav being cut off at the bottom of the screen on mobile.
-  - DP-26973: Fixed Behat XSS test failures for link fields.
+### Added
+  - DP-26786: Add Composer dependencies for Gin theme
+  - DP-27259: Added local storage value to associate with site feedback submissions.
+  
+### Security
+  - DP-27543: Drupal core - Moderately critical - Access bypass - SA-CORE-2023-004.
   

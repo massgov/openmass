@@ -48,7 +48,7 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 
 ###### Notes
 - The site is browseable at https://mass.local
-- It takes a few minutes for the `dbmass` container start up.
+- It takes a a minute for the `dbmass` container start up.
 - [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). create a `.ddev/config.personal.yml` file and add whatever you need.
 - Similarly, rename [.ddev/.env.example](https://github.com/massgov/openmass/blob/develop/.ddev/.env.example) to `.env` in order to use ARM containers suitable for the Apple M1 Macs. This is also how you specify the less sanitized variant of our database.
 - Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
@@ -118,10 +118,6 @@ View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Wi
 ```
 127.0.0.1 mass.local
 ```
-
-### `SQLSTATE[HY000][2002]` Connection refused
-
-This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open Portainer and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
 
 ### Debug
 

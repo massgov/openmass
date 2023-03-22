@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_alerts\ExistingSite;
 
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\PrivateStream;
-use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
