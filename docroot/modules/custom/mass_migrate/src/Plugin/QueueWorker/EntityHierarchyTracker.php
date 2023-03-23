@@ -87,7 +87,8 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
         $entityTypeId = $fieldDefinition->getTargetEntityTypeId();
         try {
           $this->lockTree($fieldName, $entityTypeId);
-        } catch (\Exception $exception) {
+        }
+        catch (\Exception $exception) {
           // Re-adding to the queue to try again later.
           \Drupal::queue('entity_hierarchy_tracker')->createItem([
             'operation' => 'insert',
@@ -136,7 +137,8 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
           }
           try {
             $insertPosition->performInsert($storage, $childNode);
-          } catch (\Exception $exception) {
+          }
+          catch (\Exception $exception) {
             // Re-adding to the queue to try again later.
             \Drupal::queue('entity_hierarchy_tracker')->createItem([
               'operation' => 'insert',
@@ -152,7 +154,8 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
         $parentNode = $storage->addRootNode($parentKey);
         try {
           (new InsertPosition($parentNode, $isNewNode, InsertPosition::DIRECTION_BELOW))->performInsert($storage, $childNode);
-        } catch (\Exception $exception) {
+        }
+        catch (\Exception $exception) {
           // Re-adding to the queue to try again later.
           \Drupal::queue('entity_hierarchy_tracker')->createItem([
             'operation' => 'insert',
