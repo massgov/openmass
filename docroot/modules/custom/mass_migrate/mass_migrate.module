@@ -31,7 +31,8 @@ function mass_migrate_entity_delete(EntityInterface $entity) {
   }
   if (\Drupal::state()->get('entity_hierarchy_disable_writes', FALSE) && \Drupal::state()->get('mass_migrate_service_details_delete', FALSE)) {
     // Add the item to the queue to process later.
-    \Drupal::queue('entity_hierarchy_delete')->createItem([
+    \Drupal::queue('entity_hierarchy_tracker')->createItem([
+      'operation' => 'delete',
       'entity' => $entity,
     ]);
   }

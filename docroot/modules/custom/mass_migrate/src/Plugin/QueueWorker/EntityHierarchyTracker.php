@@ -10,6 +10,7 @@ use Drupal\entity_hierarchy\Storage\InsertPosition;
 use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
 use Drupal\entity_hierarchy\Storage\NestedSetStorage;
 use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
+use Drupal\entity_hierarchy\Storage\ParentEntityDeleteUpdater;
 use Drupal\entity_hierarchy\Storage\TreeLockTrait;
 use PNX\NestedSet\Node;
 use PNX\NestedSet\NodeKey;
@@ -74,92 +75,112 @@ class EntityHierarchyTracker extends QueueWorkerBase implements ContainerFactory
    * {@inheritdoc}
    */
   public function processItem($data) {
-    if (isset($data['field_item'])) {
-      $this->fieldItem = $data['field_item'];
-      // Get the field name.
-      $fieldDefinition = $this->fieldItem->getFieldDefinition();
-      $id = $this->fieldItem->getEntity()->id();
-      $storage = $this->nestedSetStorageFactory->get($fieldDefinition->getName(), $fieldDefinition->getTargetEntityTypeId());
+    if ($data['operation'] == 'insert') {
+      if (isset($data['field_item'])) {
+        $this->fieldItem = $data['field_item'];
+        // Get the field name.
+        $fieldDefinition = $this->fieldItem->getFieldDefinition();
+        $id = $this->fieldItem->getEntity()->id();
+        $storage = $this->nestedSetStorageFactory->get($fieldDefinition->getName(), $fieldDefinition->getTargetEntityTypeId());
 
-      $fieldName = $fieldDefinition->getName();
-      $entityTypeId = $fieldDefinition->getTargetEntityTypeId();
-      try {
-        $this->lockTree($fieldName, $entityTypeId);
-      }
-      catch (\Exception $exception) {
-        // Re-adding to the queue to try again later.
-        \Drupal::queue('entity_hierarchy_tracker')->createItem([
-          'field_item' => $this->fieldItem,
-        ]);
-        throw new \Exception("Unable to acquire lock to update tree. with the $fieldName with entity ID: $id");
-      }
-      // Get the parent/child entities and their node-keys in the nested set.
-      $parentEntity = $this->fieldItem->get('entity')->getValue();
-      if (!$parentEntity) {
-        // Parent entity has been deleted.
-        // If this node was in the tree, it needs to be moved to a root node.
-        $stubNode = $this->nodeKeyFactory->fromEntity($this->fieldItem->getEntity());
-        if (($existingNode = $storage->getNode($stubNode)) && $existingNode->getDepth() > 0) {
-          $storage->moveSubTreeToRoot($existingNode);
-        }
-        $this->releaseLock($fieldName, $entityTypeId);
-        Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
-        return;
-      }
-      $parentKey = $this->nodeKeyFactory->fromEntity($parentEntity);
-      $childEntity = $this->fieldItem->getEntity();
-      $childKey = $this->nodeKeyFactory->fromEntity($childEntity);
-
-      // Determine if this is a new node in the tree.
-      $isNewNode = FALSE;
-      if (!$childNode = $storage->getNode($childKey)) {
-        $isNewNode = TRUE;
-        // As we're going to be adding instead of
-        // moving, a key is all we require.
-        $childNode = $childKey;
-      }
-
-      // Does the parent already exist in the tree.
-      if ($existingParent = $storage->getNode($parentKey)) {
-        // If there are no siblings, we simply insert/move below.
-        $insertPosition = new InsertPosition($existingParent, $isNewNode, InsertPosition::DIRECTION_BELOW);
-
-        // But if there are siblings, we need to
-        // ascertain the correct position in the order.
-        if ($siblingEntities = $this->getSiblingEntityWeights($storage, $existingParent, $childNode)) {
-          // Group the siblings by their weight.
-          $weightOrderedSiblings = $this->fieldItem->groupSiblingsByWeight($siblingEntities, $fieldName);
-          $weight = $this->fieldItem->get('weight')->getValue();
-          $insertPosition = $this->fieldItem->getInsertPosition($weightOrderedSiblings, $weight, $isNewNode) ?: $insertPosition;
-        }
+        $fieldName = $fieldDefinition->getName();
+        $entityTypeId = $fieldDefinition->getTargetEntityTypeId();
         try {
-          $insertPosition->performInsert($storage, $childNode);
-        }
-        catch (\Exception $exception) {
+          $this->lockTree($fieldName, $entityTypeId);
+        } catch (\Exception $exception) {
           // Re-adding to the queue to try again later.
           \Drupal::queue('entity_hierarchy_tracker')->createItem([
+            'operation' => 'insert',
+            'field_item' => $this->fieldItem,
+          ]);
+          throw new \Exception("Unable to acquire lock to update tree. with the $fieldName with entity ID: $id");
+        }
+        // Get the parent/child entities and their node-keys in the nested set.
+        $parentEntity = $this->fieldItem->get('entity')->getValue();
+        if (!$parentEntity) {
+          // Parent entity has been deleted.
+          // If this node was in the tree, it needs to be moved to a root node.
+          $stubNode = $this->nodeKeyFactory->fromEntity($this->fieldItem->getEntity());
+          if (($existingNode = $storage->getNode($stubNode)) && $existingNode->getDepth() > 0) {
+            $storage->moveSubTreeToRoot($existingNode);
+          }
+          $this->releaseLock($fieldName, $entityTypeId);
+          Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
+          return;
+        }
+        $parentKey = $this->nodeKeyFactory->fromEntity($parentEntity);
+        $childEntity = $this->fieldItem->getEntity();
+        $childKey = $this->nodeKeyFactory->fromEntity($childEntity);
+
+        // Determine if this is a new node in the tree.
+        $isNewNode = FALSE;
+        if (!$childNode = $storage->getNode($childKey)) {
+          $isNewNode = TRUE;
+          // As we're going to be adding instead of
+          // moving, a key is all we require.
+          $childNode = $childKey;
+        }
+
+        // Does the parent already exist in the tree.
+        if ($existingParent = $storage->getNode($parentKey)) {
+          // If there are no siblings, we simply insert/move below.
+          $insertPosition = new InsertPosition($existingParent, $isNewNode, InsertPosition::DIRECTION_BELOW);
+
+          // But if there are siblings, we need to
+          // ascertain the correct position in the order.
+          if ($siblingEntities = $this->getSiblingEntityWeights($storage, $existingParent, $childNode)) {
+            // Group the siblings by their weight.
+            $weightOrderedSiblings = $this->fieldItem->groupSiblingsByWeight($siblingEntities, $fieldName);
+            $weight = $this->fieldItem->get('weight')->getValue();
+            $insertPosition = $this->fieldItem->getInsertPosition($weightOrderedSiblings, $weight, $isNewNode) ?: $insertPosition;
+          }
+          try {
+            $insertPosition->performInsert($storage, $childNode);
+          } catch (\Exception $exception) {
+            // Re-adding to the queue to try again later.
+            \Drupal::queue('entity_hierarchy_tracker')->createItem([
+              'operation' => 'insert',
+              'field_item' => $this->fieldItem,
+            ]);
+            throw new \Exception("Unable to perform insert to the hierarchy, field name: $fieldName with entity ID: $id");
+          }
+          $this->releaseLock($fieldName, $entityTypeId);
+          Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
+          return;
+        }
+        // We need to create a node for the parent in the tree.
+        $parentNode = $storage->addRootNode($parentKey);
+        try {
+          (new InsertPosition($parentNode, $isNewNode, InsertPosition::DIRECTION_BELOW))->performInsert($storage, $childNode);
+        } catch (\Exception $exception) {
+          // Re-adding to the queue to try again later.
+          \Drupal::queue('entity_hierarchy_tracker')->createItem([
+            'operation' => 'insert',
             'field_item' => $this->fieldItem,
           ]);
           throw new \Exception("Unable to perform insert to the hierarchy, field name: $fieldName with entity ID: $id");
         }
         $this->releaseLock($fieldName, $entityTypeId);
         Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
-        return;
       }
-      // We need to create a node for the parent in the tree.
-      $parentNode = $storage->addRootNode($parentKey);
-      try {
-        (new InsertPosition($parentNode, $isNewNode, InsertPosition::DIRECTION_BELOW))->performInsert($storage, $childNode);
+    }
+    elseif ($data['operation'] == 'delete') {
+      if (isset($data['entity'])) {
+        $entity = $data['entity'];
+        try {
+          \Drupal::service('class_resolver')->getInstanceFromDefinition(ParentEntityDeleteUpdater::class)
+            ->moveChildren($entity);
+        }
+        catch (\Exception $exception) {
+          // Re-adding to the queue to try again later.
+          \Drupal::queue('entity_hierarchy_tracker')->createItem([
+            'operation' => 'delete',
+            'entity' => $entity,
+          ]);
+          $id = $entity->id();
+          throw new \Exception("Unable to move children for entity: $id");
+        }
       }
-      catch (\Exception $exception) {
-        // Re-adding to the queue to try again later.
-        \Drupal::queue('entity_hierarchy_tracker')->createItem([
-          'field_item' => $this->fieldItem,
-        ]);
-        throw new \Exception("Unable to perform insert to the hierarchy, field name: $fieldName with entity ID: $id");
-      }
-      $this->releaseLock($fieldName, $entityTypeId);
-      Cache::invalidateTags($this->fieldItem->getEntity()->getCacheTags());
     }
   }
 

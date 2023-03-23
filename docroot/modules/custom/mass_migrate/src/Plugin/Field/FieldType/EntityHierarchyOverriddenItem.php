@@ -9,6 +9,7 @@ class EntityHierarchyOverriddenItem extends EntityReferenceHierarchy {
   public function postSave($update) {
     // Add the item to the queue to process later.
     \Drupal::queue('entity_hierarchy_tracker')->createItem([
+      'operation' => 'insert',
       'field_item' => $this,
     ]);
   }
