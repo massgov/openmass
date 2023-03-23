@@ -1,10 +1,38 @@
 <?php
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+
 function mass_migrate_field_info_alter(&$info) {
   // Overrides core EntityReferenceHierarchy class for all Link fields.
   // This will only work during migration import command and can be run
   // separately with queue:run
   if (\Drupal::state()->get('entity_hierarchy_disable_writes', FALSE) && \Drupal::state()->get('mass_migrate_service_details', FALSE)) {
     $info['entity_reference_hierarchy']['class'] = 'Drupal\mass_migrate\Plugin\Field\FieldType\EntityHierarchyOverriddenItem';
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function mass_migrate_module_implements_alter(&$implementations, $hook) {
+  // Completely take over entity_hierarchy delete hook.
+  if ($hook == 'entity_delete' && \Drupal::state()->get('entity_hierarchy_disable_writes', FALSE) && \Drupal::state()->get('mass_migrate_service_details_delete', FALSE)) {
+    unset($implementations['entity_hierarchy']);
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function mass_migrate_entity_delete(EntityInterface $entity) {
+  if (!$entity instanceof ContentEntityInterface) {
+    return;
+  }
+  if (\Drupal::state()->get('entity_hierarchy_disable_writes', FALSE) && \Drupal::state()->get('mass_migrate_service_details_delete', FALSE)) {
+    // Add the item to the queue to process later.
+    \Drupal::queue('entity_hierarchy_delete')->createItem([
+      'entity' => $entity,
+    ]);
   }
 }
