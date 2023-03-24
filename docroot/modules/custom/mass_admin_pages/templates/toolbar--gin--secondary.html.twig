@@ -1,0 +1,77 @@
+{#
+/**
+ * @file
+ * Theme override for the administrative toolbar.
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the wrapper.
+ * - toolbar_attributes: HTML attributes to apply to the toolbar.
+ * - toolbar_heading: The heading or label for the toolbar.
+ * - tabs: List of tabs for the toolbar.
+ *   - attributes: HTML attributes for the tab container.
+ *   - link: Link or button for the menu tab.
+ * - trays: Toolbar tray list, each associated with a tab. Each tray in trays
+ *   contains:
+ *   - attributes: HTML attributes to apply to the tray.
+ *   - label: The tray's label.
+ *   - links: The tray menu links.
+ * - remainder: Any non-tray, non-tab elements left to be rendered.
+ *
+ * @see template_preprocess_toolbar()
+ */
+#}
+<div{{ attributes.addClass('toolbar', 'toolbar-secondary').setAttribute('id', 'toolbar-administration-secondary') }}>
+  <nav{{ toolbar_attributes.addClass('toolbar-bar', 'clearfix').setAttribute('id', 'toolbar-bar') }}>
+    <h2 class="visually-hidden">{{ toolbar_heading }}</h2>
+    {% set local_tasks = '' %}
+
+    {% for key, tab in tabs %}
+      {% set tray = trays[key] %}
+      {% set user_menu = tray.links['user_links'] ? 'user-menu' : false %}
+      {% set item_id = [] %}
+
+      {% for key, item in tab.link['#attributes']['class'] %}
+        {% if 'icon-' in item %}
+          {% set item_id = item_id|merge(['toolbar-id--' ~ item]) %}
+        {% endif %}
+      {% endfor %}
+
+      {% set tab_id = tab.link['#id'] ? 'toolbar-tab--' ~ tab.link['#id'] %}
+      {% set tab_classes = item_id|merge(['toolbar-tab', user_menu, tab_id]) %}
+
+      {% set denylist_items = [
+        'toolbar-id--toolbar-icon-menu',
+        'toolbar-id--toolbar-icon-local-tasks',
+      ] %}
+
+      {# All items except main nav #}
+      {% if item_id[0] not in denylist_items %}
+        <div{{ tab.attributes.addClass(tab_classes) }}>
+          {% if item_id[0] == 'toolbar-id--toolbar-icon-user' %}
+            {{ user_picture }}
+          {% else %}
+            {{ tab.link }}
+          {% endif %}
+          <div{{ tray.attributes }}>
+            {% if tray.label %}
+              <nav class="toolbar-lining clearfix" role="navigation" aria-label="{{ tray.label }}">
+                <h3 class="toolbar-tray-name visually-hidden">{{ tray.label }}</h3>
+            {% else %}
+              <nav class="toolbar-lining clearfix" role="navigation">
+            {% endif %}
+            {{ tray.links }}
+            </nav>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </nav>
+  {{ remainder }}
+</div>
+
+{# Local Tasks #}
+<nav id="mass--toolbar-local-tasks" class="mass--toolbar-local-tasks">
+  {{ attach_library('mass_admin_pages/secondary_toolbar') }}
+  {{ attach_library('gin/tabs') }}
+  {{ drupal_block('local_tasks_block') }}
+</nav>

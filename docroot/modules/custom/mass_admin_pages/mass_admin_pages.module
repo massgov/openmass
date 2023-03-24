@@ -13,6 +13,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\NodeType;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Render\Element;
 
 /**
  * Add icon to Mass menu item thats shown in admin toolbar.
@@ -36,6 +37,55 @@ function mass_admin_pages_preprocess_menu(&$variables) {
       $options['attributes']['class'][] = $class;
       $variables['items'][$link]['url']->setOptions($options);
     }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for menu-local-tasks templates.
+ *
+ * Use preprocess hook to set #attached to child elements because they will be
+ * processed by Twig and \Drupal::service('renderer')->render() will be invoked.
+ */
+function mass_admin_pages_preprocess_menu_local_tasks(&$variables) {
+  if (!empty($variables['primary'])) {
+    $variables['primary']['#attached'] = [
+      'library' => [
+        'claro/drupal.nav-tabs',
+      ],
+    ];
+  }
+  elseif (!empty($variables['secondary'])) {
+    $variables['secondary']['#attached'] = [
+      'library' => [
+        'claro/drupal.nav-tabs',
+      ],
+    ];
+  }
+
+  foreach (Element::children($variables['primary']) as $key) {
+    $variables['primary'][$key]['#level'] = 'primary';
+  }
+  foreach (Element::children($variables['secondary']) as $key) {
+    $variables['secondary'][$key]['#level'] = 'secondary';
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for menu-local-task templates.
+ */
+function mass_admin_pages_preprocess_menu_local_task(&$variables) {
+  $variables['link']['#options']['attributes']['class'][] = 'tabs__link';
+  $variables['link']['#options']['attributes']['class'][] = 'js-tabs-link';
+
+  // Ensure is-active class is set when the tab is active. The generic active
+  // link handler applies stricter comparison rules than what is necessary for
+  // tabs.
+  if (isset($variables['is_active']) && $variables['is_active'] === TRUE) {
+    $variables['link']['#options']['attributes']['class'][] = 'is-active';
+  }
+
+  if (isset($variables['element']['#level'])) {
+    $variables['level'] = $variables['element']['#level'];
   }
 }
 
@@ -162,8 +212,12 @@ function mass_admin_pages_theme($existing, $type, $theme, $path) {
  * Use our template for breadcrumb in Gin secondary toolbar.
  */
 function mass_admin_pages_theme_registry_alter(&$theme_registry) {
-  $templates_path = \Drupal::service('extension.list.module')->getPath('mass_admin_pages') . '/templates';
-  $theme_registry['toolbar']['path'] = $templates_path;
+  $mass_admin_templates_path = \Drupal::service('extension.list.module')->getPath('mass_admin_pages') . '/templates';
+  $claro_templates_path = \Drupal::service('extension.list.theme')->getPath('claro') . '/templates';
+  $theme_registry['toolbar']['path'] = $mass_admin_templates_path;
+  $theme_registry['toolbar__gin__secondary']['path'] = $mass_admin_templates_path;
+  $theme_registry['menu_local_tasks']['path'] = $claro_templates_path;
+  $theme_registry['menu_local_task']['path'] = $claro_templates_path . '/navigation';
 }
 
 function mass_admin_pages_module_implements_alter(&$implementations, $hook) {
