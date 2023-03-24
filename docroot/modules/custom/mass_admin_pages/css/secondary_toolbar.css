@@ -1,0 +1,32 @@
+.gin-secondary-toolbar.layout-container,
+.gin-secondary-toolbar.gin-secondary-toolbar--frontend,
+.gin-secondary-toolbar__layout-container {
+  height: calc(var(--gin-toolbar-secondary-height) * 2);
+  flex-wrap: wrap;
+  padding: 10px 0;
+  z-index: 9999;
+}
+
+#mass--toolbar-local-tasks {
+  width: 100%;
+}
+
+#mass--toolbar-local-tasks ul.tabs--primary {
+  margin: 0 0 10px 0;
+  padding: 0;
+}
+
+@media (min-width: 48em) {
+  #mass--toolbar-local-tasks .block-local-tasks-block {
+    margin-right: 0;
+  }
+
+  #mass--toolbar-local-tasks .tabs--primary {
+    justify-content: flex-end;
+  }
+
+  #mass--toolbar-local-tasks .tabs__tab:last-child a.tabs__link {
+    margin-right: 0;
+    padding-right: 0;
+  }
+}
