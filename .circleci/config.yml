@@ -520,10 +520,13 @@ jobs:
               echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
             fi
       - run:
+          name: Install Retry Script
+          command: npm install -g backstop-retry-failed-scenarios
+      - run:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
+            backstop-retry-failed-scenarios --retry 5 --command 'backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}' --config backstop.js
       - run:
           name: Archive Reference Screenshots
           command: |
