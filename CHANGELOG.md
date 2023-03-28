@@ -1,5 +1,24 @@
 
 
+## [0.355.0] - March 28, 2023
+
+### Added
+  - DP-24499: Enable key auth module
+  
+### Changed
+  - DP-25653: Superset integration changed to also pull data for unpublished content.
+  - DP-26304: Remove empty aria-label from the span with a backgroud image for the press teaser component.
+  - DP-27348: Entity Usage Queue Tracking  - upgrade for Drupal 10
+  - DP-27578: Use git tag in env indicator when available
+  - DP-27591: Store render cache in Memcache
+  
+### Fixed
+  - DP-26258: A11y - Empty heading with social media links.
+  - DP-27476: Fixed taxonomy term 500 error.
+  - DP-27487: Pages linking here fixes to show all pages for documents.
+  
+
+
 ## [0.354.0] - March 21, 2023
 
 ### Fixed
