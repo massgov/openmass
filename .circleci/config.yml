@@ -534,7 +534,7 @@ jobs:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            backstop-retry-failed-scenarios --retry 5 --command 'backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}' --config backstop.js
+            backstop-retry-failed-scenarios --config backstop.js --retry 5 --command 'backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js'
       - run:
           name: Archive Reference Screenshots
           command: |
