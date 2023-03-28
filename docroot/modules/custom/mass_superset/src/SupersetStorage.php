@@ -105,7 +105,6 @@ class SupersetStorage implements SupersetStorageInterface {
     do {
       $query = $this->entityQuery
         ->condition('type', $types, 'IN')
-        ->condition('status', 1)
         ->range($start, $batch);
       $ids = $query->execute();
       if (!empty($ids)) {
