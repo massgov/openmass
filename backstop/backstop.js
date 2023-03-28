@@ -151,10 +151,10 @@ module.exports = {
         "html_report": `${__dirname}/report`,
         "ci_report": `${__dirname}/report`,
     },
-    "onBeforeScript": "before.js",
-    "onReadyScript": "ready.js",
+    //"onBeforeScript": "before.js",
+    //"onReadyScript": "ready.js",
     "report": ["browser", "CI"],
-    "engine": "puppeteer",
+    "engine": "playwright",
     "engineFlags": [],
     "engineOptions": {
         "gotoParameters": {
