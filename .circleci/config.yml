@@ -524,8 +524,8 @@ jobs:
           command: |
             mkdir ~/.npm-global
             npm config set prefix '~/.npm-global'
-            export PATH=~/.npm-global/bin:$PATH
-            source ~/.profile
+            echo 'export PATH=~/.npm-global/bin:"$PATH"' >> "$BASH_ENV"
+            source "$BASH_ENV"
       - run:
           name: Install Backstop retry script
           command: npm install -g backstop-retry-failed-scenarios
