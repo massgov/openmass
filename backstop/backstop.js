@@ -157,6 +157,7 @@ module.exports = {
     "engine": "playwright",
     "engineFlags": [],
     "engineOptions": {
+        "browser": "chromium",
         "gotoParameters": {
           "waitUntil": "domcontentloaded",
         },
