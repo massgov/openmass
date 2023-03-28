@@ -36,7 +36,7 @@ const scenarios = pages.map(function(page) {
       base = 'http://mass-web';
       break;
     case 'test':
-      base = 'https://massgovstg.prod.acquia-sites.com';
+      base = 'https://edit.stage.mass.gov';
       auth = getAuth();
       break;
     case 'tugboat':
@@ -47,7 +47,7 @@ const scenarios = pages.map(function(page) {
       base = opts[0].replace('--tugboat=', '');
       break;
     default:
-      base = `https://massgov${target}.prod.acquia-sites.com`;
+      base = `https://${target}.edit.mass.gov`;
       auth = getAuth();
   }
   const url = new URL(`${base}${page.url}`);
