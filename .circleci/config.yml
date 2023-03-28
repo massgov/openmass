@@ -520,8 +520,16 @@ jobs:
               echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
             fi
       - run:
-          name: Install Retry Script
+          name: Setup npm
+          command: |
+            mkdir ~/.npm-global
+            npm config set prefix '~/.npm-global'
+            export PATH=~/.npm-global/bin:$PATH
+            source ~/.profile
+      - run:
+          name: Install Backstop retry script
           command: npm install -g backstop-retry-failed-scenarios
+
       - run:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
