@@ -19,7 +19,6 @@ class MassMigrateCommands extends DrushCommands {
     if (isset($commandData->getArgsAndOptions()['entity_type']) && isset($commandData->getArgsAndOptions()['options']['bundle'])) {
       if ($commandData->getArgsAndOptions()['entity_type'] == 'node' && $commandData->getArgsAndOptions()['options']['bundle'] == 'service_details') {
         // Set variables to process entity_hierarchy items with a queue
-        \Drupal::state()->set('mass_migrate_service_details_delete', TRUE);
         \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
       }
     }
@@ -32,7 +31,6 @@ class MassMigrateCommands extends DrushCommands {
    */
   public function overrideEntityDeletePostCommand() {
     // Unset variables after running the command.
-    \Drupal::state()->set('mass_migrate_service_details_delete', FALSE);
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
   }
 
@@ -42,13 +40,6 @@ class MassMigrateCommands extends DrushCommands {
    * @hook pre-command migrate:import
    */
   public function overrideMigratImportPreCommand(CommandData $commandData) {
-
-    // Enable entity_hierarchy writes for service_details migration.
-    if (isset($commandData->getArgsAndOptions()['migrationIds'])) {
-      if ($commandData->getArgsAndOptions()['migrationIds'] == 'service_details') {
-        \Drupal::state()->set('mass_migrate_service_details', TRUE);
-      }
-    }
 
     // Usage updates now gfo into a queue which we will process at end of migration.
     $GLOBALS['config']['entity_usage.settings']['track_enabled_source_entity_types'] = ['placeholder', 'another'];
