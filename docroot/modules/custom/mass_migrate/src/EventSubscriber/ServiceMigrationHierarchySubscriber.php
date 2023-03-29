@@ -28,17 +28,21 @@ class ServiceMigrationHierarchySubscriber implements EventSubscriberInterface {
    *   The row import event.
    */
   public function afterRowImport(MigratePostRowSaveEvent $event) {
-    $old_nid = $event->getRow()->getSourceIdValues()['nid'];
-    $migrated_nid = $event->getDestinationIdValues()[0];
-    $migrated_vid = \Drupal::entityTypeManager()->getStorage('node')->getLatestRevisionId($migrated_nid);
-    $database = \Drupal::database();
-    $query = $database->update('nested_set_field_primary_parent_node');
-    $query->fields([
-      'id' => (int) $migrated_nid,
-      'revision_id' => (int) $migrated_vid,
-    ]);
-    $query->condition('id', $old_nid);
-    $query->execute();
+    if ($event->getMigration()->id() == 'service_details') {
+      $old_nid = $event->getRow()->getSourceIdValues()['nid'];
+      $migrated_nid = $event->getDestinationIdValues()[0];
+      $migrated_vid = \Drupal::entityTypeManager()
+        ->getStorage('node')
+        ->getLatestRevisionId($migrated_nid);
+      $database = \Drupal::database();
+      $query = $database->update('nested_set_field_primary_parent_node');
+      $query->fields([
+        'id' => (int) $migrated_nid,
+        'revision_id' => (int) $migrated_vid,
+      ]);
+      $query->condition('id', $old_nid);
+      $query->execute();
+    }
   }
 
 }
