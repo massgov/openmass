@@ -112,6 +112,9 @@ module.exports = async (page, scenario, viewport) => {
       await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
       await page.locator('.ma__sticky-nav');
       break;
+    case 'OrgElectedOfficial':
+      await page.locator('.ma__organization-navigation').waitFor();
+      break;
   }
 
 
