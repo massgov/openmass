@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.storage.media.field_organizations
     - field.storage.media.field_start_date
+    - field.storage.media.field_title
     - media.type.document
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
@@ -611,125 +612,6 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: false
-        filename_1:
-          id: filename_1
-          table: file_managed
-          field: filename
-          relationship: field_upload_file_target_id
-          group_type: group
-          admin_label: ''
-          entity_type: file
-          entity_field: filename
-          plugin_id: field
-          label: 'Check SiteImprove'
-          exclude: false
-          alter:
-            alter_text: true
-            text: 'Check SiteImprove'
-            make_link: true
-            path: 'https://my2.siteimprove.com/QualityAssurance/560832/Inventory/Links/1?Query={{ view_media }}'
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: file_link
-          settings:
-            relationship: field_upload_file_target_id
-            fieldsets:
-              - more
-              - admin_label
-            custom_label: 1
-            label: 'Check SiteImprove'
-            element_label_colon: 1
-            exclude: 0
-            element_type_enable: 0
-            element_type: ''
-            element_class_enable: 0
-            element_class: ''
-            element_label_type_enable: 0
-            element_label_type: ''
-            element_label_class_enable: 0
-            element_label_class: ''
-            element_wrapper_type_enable: 0
-            element_wrapper_type: ''
-            element_wrapper_class_enable: 0
-            element_wrapper_class: ''
-            element_default_classes: 1
-            alter:
-              alter_text: 1
-              text: 'Check SiteImprove'
-              make_link: 1
-              path: 'https://my2.siteimprove.com/QualityAssurance/560832/Inventory/Links/1?Query={{ view_media }}'
-              absolute: 0
-              replace_spaces: 0
-              external: 0
-              path_case: none
-              link_class: ''
-              alt: ''
-              rel: ''
-              prefix: ''
-              suffix: ''
-              target: _blank
-              trim: 0
-              max_length: '0'
-              word_boundary: 1
-              ellipsis: 1
-              more_link: 0
-              more_link_text: ''
-              more_link_path: ''
-              html: 0
-              strip_tags: 0
-              preserve_tags: ''
-              trim_whitespace: 0
-              nl2br: 0
-            empty: ''
-            empty_zero: 0
-            hide_empty: 0
-            hide_alter_empty: 1
-            click_sort_column: value
-            type: file_link
-            field_api_classes: 0
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
       pager:
         type: mini
         options:
@@ -1631,6 +1513,7 @@ display:
       tags:
         - 'config:field.storage.media.field_organizations'
         - 'config:field.storage.media.field_start_date'
+        - 'config:field.storage.media.field_title'
   page_1:
     id: page_1
     display_title: Page
@@ -1651,3 +1534,4 @@ display:
       tags:
         - 'config:field.storage.media.field_organizations'
         - 'config:field.storage.media.field_start_date'
+        - 'config:field.storage.media.field_title'
