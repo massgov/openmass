@@ -1,30 +1,49 @@
 module.exports = async (page, scenario, viewport) => {
   console.log(`SCENARIO > ${scenario.label}: ${viewport.label}`);
 
-  // Disable animations.
   await page.addStyleTag({
     content: `
+      /* Disable animations. */
       *, *::before, *::after {
         animation-duration: 0s !important;
         transition-duration: 0s !important;
       }
-    `,
-  });
 
-  // Mask random homepage image.
-  await page.addStyleTag({
-    content: `
+      /* Mask random homepage image. */
       body.is-front .ma__search-banner {
         background: none !important;
       }
-    `,
-  });
 
-  // Temporarily hide the feedback button and table of contents
-  await page.addStyleTag({
-    content: `
-      .ma__fixed-feedback-button, .ma__sticky-toc stuck {
+      /* Hide the focus-visible border around the mobile menu */
+      .ma__header__hamburger__menu-button {
+        outline: none !important;
+      }
+
+      /* Hide the sticky toc */
+      #sticky-toc {
         display: none !important;
+      }
+
+      /* Make sure sticky nav stays at the top */
+      .ma__sticky-nav[data-sticky="middle"],
+       .ma__sticky-nav[data-sticky="bottom"] {
+        top: auto !important;
+        bottom: auto !important;
+        position: absolute !important;
+        z-index: 80;
+      }
+
+      .ma__organization-navigation.stuck {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        width: auto !important;
+        margin-top: -20px !important;
+        z-index: auto !important;
+      }
+
+      .ma__org-page .pre-content {
+        padding-top: 0 !important;
       }
     `,
   });
@@ -88,6 +107,7 @@ module.exports = async (page, scenario, viewport) => {
     await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-tile')).filter(img => !img.complete).length === 0);
     // Wait for all markers to load.
     await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-marker-icon.leaflet-interactive')).filter(img => !img.complete).length === 0);
+    await page.wait('.leaflet-marker-icon');
     // Force checks - see https://playwright.dev/docs/actionability
     await page.locator('.ma__leaflet-map__map .leaflet-pane').hover();
     await page.locator('.ma__leaflet-map__map .leaflet-control-zoom').hover();
@@ -115,8 +135,10 @@ module.exports = async (page, scenario, viewport) => {
     case 'OrgElectedOfficial':
       await page.locator('.ma__organization-navigation').waitFor();
       break;
+    case 'LocationDetails':
+      await page.frameLocator('.ma__iframe__container iframe').locator('#mapDiv').waitFor();
+      break;
   }
-
 
   // Wait for any layout shift that nudges the footer.
   if (scenario.label !== '404') {
@@ -124,9 +146,17 @@ module.exports = async (page, scenario, viewport) => {
     await page.locator('.ma__footer-new__navlinks');
     await page.locator('.ma__footer-new__copyright');
     await page.locator('.ma__footer-new__logo');
-    await page.locator('.ma__footer-new__container').hover();
+    await page.locator('.ma__footer-new__container').waitFor();
     await page.locator('.ma__footer-new__copyright--bold').hover();
   }
 
-  await page.waitForTimeout(3 * 1000);
+  // Wait for sticky nav to shift.
+  const hasStickyNav = await page.locator('.ma__sticky-nav').is_visible;
+  if (hasStickyNav) {
+    // Remove active class.
+    await page.evaluate(() => { for (link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
+    await page.locator('.ma__sticky-nav').waitFor();
+  }
+
+  await page.waitForTimeout(4 * 1000);
 }
