@@ -488,8 +488,6 @@ jobs:
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
-      - store_test_results:
-          path: backstop/report
       - run:
           name: Save Build Number
           command: |
