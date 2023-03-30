@@ -967,10 +967,6 @@ workflows:
           filters:
             branches:
               only: master
-      - push_acquia:
-          filters:
-            branches:
-              only: master
       - test:
           name: test-phpunit
           command: phpunit
@@ -1010,7 +1006,15 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
+      - push_acquia:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
       - tagging_acquia:
+          requires:
+            - push_acquia
           filters:
             branches:
               ignore: /.*/
