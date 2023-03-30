@@ -458,7 +458,7 @@ jobs:
         default: true
     resource_class: xlarge
     docker:
-      - image: backstopjs/backstopjs
+      - image: backstopjs/backstopjs:6.2.0
     steps:
       - checkout
       - run:
@@ -510,7 +510,7 @@ jobs:
         default: true
     resource_class: xlarge
     docker:
-      - image: backstopjs/backstopjs
+      - image: backstopjs/backstopjs:6.1.4
     steps:
       - checkout
       - run:
@@ -523,12 +523,21 @@ jobs:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
+            EXIT_CODE=0
+            backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+            # Retry
+            if [ "$EXIT_CODE" != "0" ]; then
+              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+            fi
+            # Retry
+            if [ "$EXIT_CODE" != "0" ]; then
+              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+            fi
       - run:
           name: Archive Reference Screenshots
           command: |
-            apt-get update
-            apt-get install zip -y
+            sudo apt-get update
+            sudo apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
