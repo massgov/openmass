@@ -133,7 +133,9 @@
     } %}
       {% block featuredItems %}
         {# Pass through the level setting with Drupal render array values. #}
-        {{ content.field_related_links|merge({'#level': level }) }}
+        {% if content.field_related_links is not empty %}
+          {{ content.field_related_links|merge({'#level': level }) }}
+        {% endif %}
       {% endblock %}
     {% endembed %}
   {% endif %}

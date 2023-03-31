@@ -26,6 +26,7 @@ const target = opts.length ? opts[0].replace('--target=', '') : 'prod';
 const scenarios = pages.map(function(page) {
   let base = process.env.BASE_URL;
   let auth = false;
+  let removeSelectors = [];
 
   switch (target) {
     case 'prod':
@@ -85,11 +86,18 @@ const scenarios = pages.map(function(page) {
       });
     }
   }
+  if (!page.showHeaderAlerts) {
+    removeSelectors.push('.pre-content .mass-alerts-block');
+  }
+  if (!page.showGlobalAlerts) {
+    removeSelectors.push('.mass-alerts-block[data-alerts-path="/alerts/sitewide"]');
+  }
   return {
     ...page,
     url: withCache ? `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}` : `${base}${page.url}`,
     misMatchThreshold: 0.1,
     auth,
+    removeSelectors,
   }
 });
 
@@ -126,12 +134,6 @@ if (viewportArg !== 'desktop') {
   );
 }
 
-// We need parseInt() as environment variables are strings.
-const asyncCaptureLimit = parseInt(process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT ? process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT : 3);
-const asyncCompareLimit = asyncCaptureLimit * 15;
-
-console.log(`Will capture with ${asyncCaptureLimit} browsers and compare with ${asyncCompareLimit} threads.`)
-
 module.exports = {
     id: 'regression',
     viewports,
@@ -145,10 +147,13 @@ module.exports = {
     },
     "onBeforeScript": "before.js",
     "onReadyScript": "ready.js",
+    "readyTimeout": "90000",
+    "asyncCaptureLimit": 3,
     "report": ["browser", "CI"],
-    "engine": "puppeteer",
+    "engine": "playwright",
     "engineFlags": [],
     "engineOptions": {
+        "browser": "chromium",
         "gotoParameters": {
           "waitUntil": "domcontentloaded",
         },
@@ -162,8 +167,6 @@ module.exports = {
           "--hide-scrollbars"
         ]
     },
-    "asyncCaptureLimit": asyncCaptureLimit,
-    "asyncCompareLimit": asyncCompareLimit,
     "debug": false,
     "debugWindow": false
 }

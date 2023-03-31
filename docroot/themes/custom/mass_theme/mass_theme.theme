@@ -26,6 +26,7 @@ use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Prepare\Schemas;
 use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DomCrawler\Crawler;
@@ -1490,6 +1491,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
       $variables['bgImage'] = Helper::getFieldImageUrl($node, 'action_banner_large_focal_point', 'field_banner_image');
+      $variables['bgPosition'] = Helper::getFieldImageFocalPoint($node, 'field_banner_image');
     }
 
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
@@ -7059,11 +7061,20 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
  * Fetch social links from parent org node.
  */
 function mass_theme_preprocess_paragraph__social_media(&$variables) {
+  $level = "2";
   $paragraph = $variables['paragraph'];
+  if ($paragraph->parent_field_name->value == 'field_service_section_content') {
+    if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
+      if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
+        $level = "3";
+      }
+    }
+  }
   $node = Helper::getParentNode($paragraph);
   $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
   $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
     $node->$social_field_name->view() : [];
+  $variables['level'] = $level;
 }
 
 /**

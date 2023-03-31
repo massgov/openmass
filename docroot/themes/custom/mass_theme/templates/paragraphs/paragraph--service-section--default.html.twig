@@ -14,36 +14,38 @@
 
 <div class="service-section {{ section_style_class }} {{ hide_title_class }}">
 
-  {% embed "@organisms/by-author/stacked-row-section.twig" with {
-    "stackedRowSection": heading,
-    "stackedRow": {
-      "borderless": true,
-      "modifier" : "no-sidebar"
-    },
-    "externalSidebar": true
-  } %}
+    {% embed "@organisms/by-author/stacked-row-section.twig" with {
+      "stackedRowSection": heading,
+      "stackedRow": {
+        "borderless": true,
+        "modifier" : "no-sidebar"
+      },
+      "externalSidebar": true
+    } %}
 
     {% block stackRowTitle %}
-      {% if section_style == 'enhanced' %}
-        {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
-          "coloredHeadingFromLeft": {
-            "bgColor": "blue",
-            "title": (content.field_service_section_heading|field_value)
-          }}
-        %}
-      {% else %}
-        <div class="ma__stacked-row__container">
-          <div class="ma__stacked-row__title">
-            {% set compHeading = {
-                "title": stackedRowSection.title,
-                "sub": "",
-                "color": "",
-                "id": stackedRowSection.id
-              }
-            %}
-            {% include "@atoms/04-headings/comp-heading.twig" %}
+      {% if heading %}
+        {% if section_style == 'enhanced' %}
+          {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
+            "coloredHeadingFromLeft": {
+              "bgColor": "blue",
+              "title": (content.field_service_section_heading|field_value)
+            }}
+          %}
+        {% else %}
+          <div class="ma__stacked-row__container">
+            <div class="ma__stacked-row__title">
+              {% set compHeading = {
+                  "title": stackedRowSection.title,
+                  "sub": "",
+                  "color": "",
+                  "id": stackedRowSection.id
+                }
+              %}
+              {% include "@atoms/04-headings/comp-heading.twig" %}
+            </div>
           </div>
-        </div>
+        {% endif %}
       {% endif %}
     {% endblock %}
 
