@@ -36,8 +36,8 @@ const scenarios = pages.map(function(page) {
       base = 'http://mass-web';
       break;
     case 'test':
-      base = 'https://massgovstg.prod.acquia-sites.com';
       auth = getAuth();
+      base = `https://${auth.username}:${auth.password}@massgovstg.prod.acquia-sites.com`;
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
@@ -47,8 +47,8 @@ const scenarios = pages.map(function(page) {
       base = opts[0].replace('--tugboat=', '');
       break;
     default:
-      base = `https://massgov${target}.prod.acquia-sites.com`;
       auth = getAuth();
+      base = `https://${auth.username}:${auth.password}@massgov${target}.prod.acquia-sites.com`;
   }
   const url = new URL(`${base}${page.url}`);
   let separator = "?";
@@ -96,7 +96,6 @@ const scenarios = pages.map(function(page) {
     ...page,
     url: withCache ? `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}` : `${base}${page.url}`,
     misMatchThreshold: 0.1,
-    auth,
     removeSelectors,
   }
 });
