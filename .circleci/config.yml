@@ -136,6 +136,9 @@ parameters:
   save-build:
     type: boolean
     default: true
+  force-reference:
+    type: boolean
+    default: false
 
   # These params for currently used in drush ma:release
   ma-release:
@@ -521,6 +524,9 @@ jobs:
       cachebuster:
         type: boolean
         default: false
+      force-reference:
+        type: boolean
+        default: false
     resource_class: xlarge
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
@@ -534,37 +540,57 @@ jobs:
             if [ "<< parameters.cachebuster >>" = "true" ]; then
               echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
             fi
-      - run:
-          name: Verify Artifacts
-          command: |
-            apt-get update
-            apt-get install jq -y
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-            if [ "${!BACKSTOP_REF}" == "" ]; then
-              echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-              exit 1
-            fi
-            STOPPED_AT=$(curl --request GET \
-              --fail \
-              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
-            LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
-            STALE_TIME=$(date -d "-168 hours" +%s)
-            if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
-              echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
-              exit 1
-            fi
-      - run:
-          name: Restore Artifacts
-          command: |
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-            URL=$(curl --request GET \
-              --fail \
-              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
-            curl --fail --location --url $URL --output backstop_ref.zip
-            unzip backstop_ref.zip
-            rm backstop_ref.zip
+      - when:
+          condition: << parameters.force-reference >>
+          steps:
+            - run:
+                name: Capture Backstop Reference Screenshots
+                working_directory: backstop
+                command: |
+                  EXIT_CODE=0
+                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+                  # Retry
+                  if [ "$EXIT_CODE" != "0" ]; then
+                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+                  fi
+                  # Retry
+                  if [ "$EXIT_CODE" != "0" ]; then
+                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+                  fi
+      - unless:
+          condition: << parameters.force-reference >>
+          steps:
+            - run:
+                name: Verify Artifacts
+                command: |
+                  apt-get update
+                  apt-get install jq -y
+                  BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                  if [ "${!BACKSTOP_REF}" == "" ]; then
+                    echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                    exit 1
+                  fi
+                  STOPPED_AT=$(curl --request GET \
+                    --fail \
+                    --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
+                  LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
+                  STALE_TIME=$(date -d "-168 hours" +%s)
+                  if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
+                    echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
+                    exit 1
+                  fi
+            - run:
+                name: Restore Artifacts
+                command: |
+                  BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                  URL=$(curl --request GET \
+                    --fail \
+                    --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
+                  curl --fail --location --url $URL --output backstop_ref.zip
+                  unzip backstop_ref.zip
+                  rm backstop_ref.zip
       - when:
           condition: << parameters.tugboat >>
           steps:
@@ -681,6 +707,7 @@ workflows:
 
       - backstop_test:
           target: prod
+          force-reference: true
           filters:
             branches:
               <<: *branch_ignore
