@@ -36,6 +36,7 @@ const scenarios = pages.map(function(page) {
       base = 'http://mass-web';
       break;
     case 'test':
+      base = 'https://edit.stage.mass.gov';
       auth = getAuth();
       base = `https://${auth.username}:${auth.password}@massgovstg.prod.acquia-sites.com`;
       break;
@@ -47,6 +48,7 @@ const scenarios = pages.map(function(page) {
       base = opts[0].replace('--tugboat=', '');
       break;
     default:
+      base = `https://${target}.edit.mass.gov`;
       auth = getAuth();
       base = `https://${auth.username}:${auth.password}@massgov${target}.prod.acquia-sites.com`;
   }

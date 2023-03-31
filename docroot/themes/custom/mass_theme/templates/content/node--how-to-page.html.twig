@@ -216,7 +216,7 @@
       <aside class="sidebar sidebar--colored">
         {# Decrease heading number by 1 from the items under the Details. #}
         {% set level = level - 1 %}
-        {% if sidebar.contactList %}
+        {% if sidebar.contactList.contacts %}
           <div class="ma__details__sidebar-contact">
             {% set contactList = sidebar.contactList %}
             {% set contactList = contactList|merge({'compHeading': {
