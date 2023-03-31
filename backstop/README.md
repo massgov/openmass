@@ -47,7 +47,7 @@ they look the same.
 > local circleci runner as described below, or [turn on Rosetta2 virtualization in Docker Desktop](https://levelup.gitconnected.com/docker-on-apple-silicon-mac-how-to-run-x86-containers-with-rosetta-2-4a679913a0d5)
 
 - If testing an Acquia environment, make sure the `LOWER_ENVIR_AUTH_USER` and
-`LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
+  `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
 - Enable the Backstop docker image for local running.
   `ddev service enable backstop`
 - Before doing any testing, you will need to capture the "reference" screenshots,
@@ -75,9 +75,6 @@ the `pages.json`. The `all.json` file includes a few more of the QAG pages that
 were created for testing purposes.
 
 ## Runing Backstop in CircleCI
-
-`drush ma:backstop` will run Backstop in the CircleCI infrastructure.
-See [DeployCommands.php](../drush/Commands/DeployCommands.php).
 
 `drush ma:backstop-snapshot` will run Backstop and store the screenshots to be
 used later by `drush ma:backstop-compare` e.g.
