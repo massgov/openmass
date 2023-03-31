@@ -584,6 +584,8 @@ jobs:
         default: false
     resource_class: xlarge
     docker:
+      # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
+      # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
       - image: backstopjs/backstopjs
     steps:
       - checkout
