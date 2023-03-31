@@ -25,10 +25,10 @@ module.exports = async (page, scenario, viewport) => {
       }
 
       /* Make sure sticky nav stays at the top */
-      /* @todo it'd be better to have add a class which disables this *.
+      /* @todo it'd be better to add a class to this which disables to functionality */
       .ma__sticky-nav {
         top: auto !important;
-        bottom: auto !important;
+        bottom: -15px !important;
         position: absolute !important;
         z-index: 80;
       }
@@ -130,7 +130,8 @@ module.exports = async (page, scenario, viewport) => {
     case 'OrgElectedOfficial':
       await page.waitForSelector('.ma__organization-navigation');
       break;
-    case 'LocationDetails':
+    case 'ServiceDetails':
+      await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
   }
 

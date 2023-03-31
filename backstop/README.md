@@ -89,6 +89,13 @@ use the `--ci-branch` parameter.
 drush ma:ci:backstop-snapshot --target=prod --ci-branch=dp-26913-run-backstop-js-locally
 ```
 
+To create new references and test them in the same job, you can force new reference
+images to be created by adding `--force-reference` e.g. to test changes you've been
+making to backstop related code:
+```
+drush ma:ci:backstop-compare --reference=prod --target=prod --force-reference --ci-branch=dp-26913-run-backstop-js-locally
+```
+
 You can also run the tests using CircleCi's [local CLI](https://circleci.com/docs/local-cli/).
 
 > 🛑 Do not use the `snap` installer for Linux, use the alternative installation
