@@ -118,9 +118,6 @@ parameters:
     type: boolean
     default: false
   # These params for currently used in drush ma:backstop. target is declared later.
-  ma-backstop:
-    type: boolean
-    default: false
   reference:
     type: string
     default: ""
@@ -437,60 +434,6 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
-  backstop:
-    parameters:
-      reference:
-        type: string
-      target:
-        type: string
-      list:
-        type: string
-        default: all
-      viewport:
-        type: string
-        default: all
-      tugboat:
-        type: string
-        default: ""
-      # Set this to true by default to not change any existing behaviour.
-      cachebuster:
-        type: boolean
-        default: true
-    resource_class: xlarge
-    docker:
-      - image: backstopjs/backstopjs:6.2.0
-    steps:
-      - checkout
-      - run:
-          name: "Setup environment variables"
-          command: |
-            if [ "<< parameters.cachebuster >>" = "true" ]; then
-              echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
-            fi
-      - run:
-          name: Backstop reference
-          working_directory: backstop
-          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
-      - when:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
-      - unless:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (non Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
-                no_output_timeout: 300m
-      - store_test_results:
-          path: backstop/report
-      - store_artifacts:
-          path: backstop
-
   backstop_reference:
     parameters:
       target:
@@ -510,6 +453,7 @@ jobs:
         default: true
     resource_class: xlarge
     docker:
+      # Update this after https://github.com/garris/BackstopJS/issues/1468
       - image: backstopjs/backstopjs:6.1.4
     steps:
       - checkout
@@ -544,8 +488,6 @@ jobs:
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
-      - store_test_results:
-          path: backstop/report
       - run:
           name: Save Build Number
           command: |
@@ -580,7 +522,8 @@ jobs:
         default: false
     resource_class: xlarge
     docker:
-      - image: backstopjs/backstopjs
+      # Update this after https://github.com/garris/BackstopJS/issues/1468
+      - image: backstopjs/backstopjs:6.1.4
     steps:
       - checkout
       - run:
@@ -734,9 +677,8 @@ workflows:
             branches:
               <<: *branch_ignore
 
-      - backstop_reference:
+      - backstop_test:
           target: prod
-          save-build: false
           filters:
             branches:
               <<: *branch_ignore
@@ -807,7 +749,7 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - backstop:
+      - backstop_test:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
@@ -873,7 +815,7 @@ workflows:
             filters:
               branches:
                 only: /^hotfix\/.*$/
-      - backstop:
+      - backstop_test:
             name: backstop-test
             requires: [deploy-test-no-refresh-db]
             target: test
@@ -950,7 +892,7 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - backstop:
+      - backstop_test:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
@@ -1086,7 +1028,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop:
+      - backstop_test:
           name: backstop-prod-maint
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
@@ -1098,7 +1040,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop:
+      - backstop_test:
           name: backstop-prod-no-maint
           requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
@@ -1184,20 +1126,6 @@ workflows:
               only:
                 - develop
 
-  # Usually triggered by drush ma:backstop.
-  backstop_ad_hoc:
-    when: << pipeline.parameters.ma-backstop >>
-    jobs:
-      - build
-      - backstop:
-          requires: [build]
-          target: << pipeline.parameters.target >>
-          reference: << pipeline.parameters.reference >>
-          list: << pipeline.parameters.list >>
-          viewport: << pipeline.parameters.viewport >>
-          tugboat: << pipeline.parameters.tugboat >>
-          cachebuster: << pipeline.parameters.cachebuster >>
-
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
     when: << pipeline.parameters.ma-release >>
@@ -1267,10 +1195,6 @@ workflows:
           requires: [deploy-cd-refresh-db]
           target: cd
           samples: 900
-      - backstop:
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          reference: prod
       - backstop_test:
           reference: prod
           target: cd
