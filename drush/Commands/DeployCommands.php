@@ -41,65 +41,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
 
   /**
-   * Run Backstop at CircleCI, for better reliability and logging.
-   *
-   * @command ma:backstop
-   *
-   * @param string $target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
-   * @param string $reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
-   *
-   * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
-   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
-   * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
-   * @option ci-branch The branch that CircleCI should check out at start.
-   * @usage drush ma:backstop feature5 prod
-   *   Run backstop against feature5 and compare against Production.
-   * @usage drush ma:backstop tugboat prod
-   *   Run backstop against the current's branch's preview at Tugboat and compare against Production.
-   * @usage drush ma:backstop tugboat prod --ci-branch=feature/XYZ
-   *   Run backstop against feature/XYZ's preview at Tugboat and compare against Production.
-   * @usage drush ma:backstop tugboat prod --tugboat=https://pr1111-zswa06zr1auucl5hkruj76bdcprszykl.tugboat.qa/
-   *   Run backstop against the specified preview at Tugboat and compare against Production.
-   * @aliases ma-backstop
-   * @validate-circleci-token
-   *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
-   */
-  public function backstop(string $target, string $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]): void {
-    // If --tugboat is specified without a specific URL, or --tugboat is
-    // omitted, automatically determine the preview for the branch.
-    if ($target === 'tugboat') {
-      $tugboat_url = $this->getTugboatUrl($options['tugboat'], $options['ci-branch']);
-    }
-    $stack = $this->getStack();
-    $client = new \GuzzleHttp\Client(['handler' => $stack]);
-    $options = [
-      'auth' => [$this->getTokenCircle(), ''],
-      'json' => [
-        'branch' => $options['ci-branch'],
-        'parameters' => [
-          'webhook' => FALSE,
-          'ma-backstop' => TRUE,
-          'target' => $target,
-          'reference' => $reference,
-          'list' => $options['list'],
-          'viewport' => $options['viewport'],
-          'tugboat' => !empty($tugboat_url) ? $tugboat_url : '',
-        ],
-      ],
-    ];
-    $response = $client->request('POST', self::CIRCLE_URI, $options);
-    $code = $response->getStatusCode();
-    if ($code >= 400) {
-      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
-    }
-
-    $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success($this->getSuccessMessage($body));
-  }
-
-  /**
 
    * Run Backstop Snapshot at CircleCI and save the result for usage with ma:backstop-reference.
    *
