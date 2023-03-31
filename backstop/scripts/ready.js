@@ -25,8 +25,8 @@ module.exports = async (page, scenario, viewport) => {
       }
 
       /* Make sure sticky nav stays at the top */
-      .ma__sticky-nav[data-sticky="middle"],
-       .ma__sticky-nav[data-sticky="bottom"] {
+      /* @todo it'd be better to have add a class which disables this *.
+      .ma__sticky-nav {
         top: auto !important;
         bottom: auto !important;
         position: absolute !important;
@@ -100,17 +100,12 @@ module.exports = async (page, scenario, viewport) => {
   // Wait for Papa.parse in the csv_field module to complete.
   await page.waitForFunction(() => document.querySelectorAll('.csv-table').length === 0);
 
-  // Wait for leaflet map to load.
-  const hasMap = await page.locator('.ma__leaflet-map').is_visible;
-  if (hasMap) {
-    // Wait for all image tiles to load.
-    await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-tile')).filter(img => !img.complete).length === 0);
-    // Wait for all markers to load.
-    await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-marker-icon.leaflet-interactive')).filter(img => !img.complete).length === 0);
-    await page.wait('.leaflet-marker-icon');
-    // Force checks - see https://playwright.dev/docs/actionability
-    await page.locator('.ma__leaflet-map__map .leaflet-pane').hover();
-    await page.locator('.ma__leaflet-map__map .leaflet-control-zoom').hover();
+  // Wait for Tableaus to load.
+  // The screenshot won't show all the tableaus https://github.com/microsoft/playwright/issues/17904
+  let tableaus = await page.locator('.ma_tableau_container');
+  let tableausCount = await tableaus.count();
+  for (let i = 0; i < tableausCount; i++) {
+    await page.frameLocator('.ma_tableau_container iframe').nth(i).locator('#initializing_thin_client').waitFor({ 'state': 'hidden' });
   }
 
   // Wait for iFrame resizer.
@@ -126,19 +121,20 @@ module.exports = async (page, scenario, viewport) => {
     case 'InfoDetailsImageNoWrapRight':
     case 'InfoDetailsImageLeftAlign':
     case 'InfoDetailsImageRightAlign':
-      await page.locator('.ma__fixed-feedback-button');
+      await page.waitForSelector('.ma__fixed-feedback-button');
       break;
     case 'ExpansionOfAccordions1':
       await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
-      await page.locator('.ma__sticky-nav');
+      await page.waitForSelector('.ma__sticky-nav');
       break;
     case 'OrgElectedOfficial':
-      await page.locator('.ma__organization-navigation').waitFor();
+      await page.waitForSelector('.ma__organization-navigation');
       break;
     case 'LocationDetails':
-      await page.frameLocator('.ma__iframe__container iframe').locator('#mapDiv').waitFor();
       break;
   }
+
+  await page.waitForTimeout(2 * 1000);
 
   // Wait for any layout shift that nudges the footer.
   if (scenario.label !== '404') {
@@ -151,11 +147,11 @@ module.exports = async (page, scenario, viewport) => {
   }
 
   // Wait for sticky nav to shift.
-  const hasStickyNav = await page.locator('.ma__sticky-nav').is_visible;
-  if (hasStickyNav) {
+  const stickyNavs = await page.locator('.ma__sticky-nav').count();
+  if (stickyNavs > 0) {
     // Remove active class.
     await page.evaluate(() => { for (link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
-    await page.locator('.ma__sticky-nav').waitFor();
+    await page.waitForSelector('.ma__sticky-nav');
   }
 
   await page.waitForTimeout(4 * 1000);
