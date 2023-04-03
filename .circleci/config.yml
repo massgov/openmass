@@ -118,9 +118,6 @@ parameters:
     type: boolean
     default: false
   # These params for currently used in drush ma:backstop. target is declared later.
-  ma-backstop:
-    type: boolean
-    default: false
   reference:
     type: string
     default: ""
@@ -139,6 +136,9 @@ parameters:
   save-build:
     type: boolean
     default: true
+  force-reference:
+    type: boolean
+    default: false
 
   # These params for currently used in drush ma:release
   ma-release:
@@ -437,60 +437,6 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
-  backstop:
-    parameters:
-      reference:
-        type: string
-      target:
-        type: string
-      list:
-        type: string
-        default: all
-      viewport:
-        type: string
-        default: all
-      tugboat:
-        type: string
-        default: ""
-      # Set this to true by default to not change any existing behaviour.
-      cachebuster:
-        type: boolean
-        default: true
-    resource_class: xlarge
-    docker:
-      - image: backstopjs/backstopjs:6.2.0
-    steps:
-      - checkout
-      - run:
-          name: "Setup environment variables"
-          command: |
-            if [ "<< parameters.cachebuster >>" = "true" ]; then
-              echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
-            fi
-      - run:
-          name: Backstop reference
-          working_directory: backstop
-          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
-      - when:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
-      - unless:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (non Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
-                no_output_timeout: 300m
-      - store_test_results:
-          path: backstop/report
-      - store_artifacts:
-          path: backstop
-
   backstop_reference:
     parameters:
       target:
@@ -510,6 +456,8 @@ jobs:
         default: true
     resource_class: xlarge
     docker:
+      # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
+      # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
       - image: backstopjs/backstopjs:6.1.4
     steps:
       - checkout
@@ -544,8 +492,6 @@ jobs:
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
-      - store_test_results:
-          path: backstop/report
       - run:
           name: Save Build Number
           command: |
@@ -578,9 +524,14 @@ jobs:
       cachebuster:
         type: boolean
         default: false
+      force-reference:
+        type: boolean
+        default: false
     resource_class: xlarge
     docker:
-      - image: backstopjs/backstopjs
+      # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
+      # Update this after https://github.com/garris/BackstopJS/issues/1468
+      - image: backstopjs/backstopjs:6.1.4
     steps:
       - checkout
       - run:
@@ -589,37 +540,57 @@ jobs:
             if [ "<< parameters.cachebuster >>" = "true" ]; then
               echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
             fi
-      - run:
-          name: Verify Artifacts
-          command: |
-            apt-get update
-            apt-get install jq -y
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-            if [ "${!BACKSTOP_REF}" == "" ]; then
-              echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-              exit 1
-            fi
-            STOPPED_AT=$(curl --request GET \
-              --fail \
-              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
-            LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
-            STALE_TIME=$(date -d "-168 hours" +%s)
-            if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
-              echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
-              exit 1
-            fi
-      - run:
-          name: Restore Artifacts
-          command: |
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-            URL=$(curl --request GET \
-              --fail \
-              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
-            curl --fail --location --url $URL --output backstop_ref.zip
-            unzip backstop_ref.zip
-            rm backstop_ref.zip
+      - when:
+          condition: << parameters.force-reference >>
+          steps:
+            - run:
+                name: Capture Backstop Reference Screenshots
+                working_directory: backstop
+                command: |
+                  EXIT_CODE=0
+                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+                  # Retry
+                  if [ "$EXIT_CODE" != "0" ]; then
+                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+                  fi
+                  # Retry
+                  if [ "$EXIT_CODE" != "0" ]; then
+                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+                  fi
+      - unless:
+          condition: << parameters.force-reference >>
+          steps:
+            - run:
+                name: Verify Artifacts
+                command: |
+                  apt-get update
+                  apt-get install jq -y
+                  BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                  if [ "${!BACKSTOP_REF}" == "" ]; then
+                    echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                    exit 1
+                  fi
+                  STOPPED_AT=$(curl --request GET \
+                    --fail \
+                    --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
+                  LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
+                  STALE_TIME=$(date -d "-168 hours" +%s)
+                  if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
+                    echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
+                    exit 1
+                  fi
+            - run:
+                name: Restore Artifacts
+                command: |
+                  BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                  URL=$(curl --request GET \
+                    --fail \
+                    --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
+                  curl --fail --location --url $URL --output backstop_ref.zip
+                  unzip backstop_ref.zip
+                  rm backstop_ref.zip
       - when:
           condition: << parameters.tugboat >>
           steps:
@@ -734,9 +705,9 @@ workflows:
             branches:
               <<: *branch_ignore
 
-      - backstop_reference:
+      - backstop_test:
           target: prod
-          save-build: false
+          force-reference: true
           filters:
             branches:
               <<: *branch_ignore
@@ -807,7 +778,7 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - backstop:
+      - backstop_test:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
@@ -873,7 +844,7 @@ workflows:
             filters:
               branches:
                 only: /^hotfix\/.*$/
-      - backstop:
+      - backstop_test:
             name: backstop-test
             requires: [deploy-test-no-refresh-db]
             target: test
@@ -950,7 +921,7 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - backstop:
+      - backstop_test:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
@@ -964,10 +935,6 @@ workflows:
     when: << pipeline.parameters.webhook >>
     jobs:
       - build:
-          filters:
-            branches:
-              only: master
-      - push_acquia:
           filters:
             branches:
               only: master
@@ -989,7 +956,6 @@ workflows:
           type: approval
           requires:
             - build
-            - push_acquia
           filters:
             branches:
               only: master
@@ -1010,7 +976,15 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
+      - push_acquia:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
       - tagging_acquia:
+          requires:
+            - push_acquia
           filters:
             branches:
               ignore: /.*/
@@ -1086,7 +1060,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop:
+      - backstop_test:
           name: backstop-prod-maint
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
@@ -1098,7 +1072,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop:
+      - backstop_test:
           name: backstop-prod-no-maint
           requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
@@ -1184,20 +1158,6 @@ workflows:
               only:
                 - develop
 
-  # Usually triggered by drush ma:backstop.
-  backstop_ad_hoc:
-    when: << pipeline.parameters.ma-backstop >>
-    jobs:
-      - build
-      - backstop:
-          requires: [build]
-          target: << pipeline.parameters.target >>
-          reference: << pipeline.parameters.reference >>
-          list: << pipeline.parameters.list >>
-          viewport: << pipeline.parameters.viewport >>
-          tugboat: << pipeline.parameters.tugboat >>
-          cachebuster: << pipeline.parameters.cachebuster >>
-
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
     when: << pipeline.parameters.ma-release >>
@@ -1267,10 +1227,6 @@ workflows:
           requires: [deploy-cd-refresh-db]
           target: cd
           samples: 900
-      - backstop:
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          reference: prod
       - backstop_test:
           reference: prod
           target: cd

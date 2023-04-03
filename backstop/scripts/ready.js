@@ -1,30 +1,49 @@
 module.exports = async (page, scenario, viewport) => {
   console.log(`SCENARIO > ${scenario.label}: ${viewport.label}`);
 
-  // Disable animations.
   await page.addStyleTag({
     content: `
+      /* Disable animations. */
       *, *::before, *::after {
         animation-duration: 0s !important;
         transition-duration: 0s !important;
       }
-    `,
-  });
 
-  // Mask random homepage image.
-  await page.addStyleTag({
-    content: `
+      /* Mask random homepage image. */
       body.is-front .ma__search-banner {
         background: none !important;
       }
-    `,
-  });
 
-  // Temporarily hide the feedback button and table of contents
-  await page.addStyleTag({
-    content: `
-      .ma__fixed-feedback-button, .ma__sticky-toc stuck {
+      /* Hide the focus-visible border around the mobile menu */
+      .ma__header__hamburger__menu-button {
+        outline: none !important;
+      }
+
+      /* Hide the sticky toc */
+      #sticky-toc {
         display: none !important;
+      }
+
+      /* Make sure sticky nav stays at the top */
+      /* @todo it'd be better to add a class to this which disables to functionality */
+      .ma__sticky-nav {
+        top: auto !important;
+        bottom: -15px !important;
+        position: absolute !important;
+        z-index: 80;
+      }
+
+      .ma__organization-navigation.stuck {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        width: auto !important;
+        margin-top: -20px !important;
+        z-index: auto !important;
+      }
+
+      .ma__org-page .pre-content {
+        padding-top: 0 !important;
       }
     `,
   });
@@ -81,16 +100,12 @@ module.exports = async (page, scenario, viewport) => {
   // Wait for Papa.parse in the csv_field module to complete.
   await page.waitForFunction(() => document.querySelectorAll('.csv-table').length === 0);
 
-  // Wait for leaflet map to load.
-  const hasMap = await page.locator('.ma__leaflet-map').is_visible;
-  if (hasMap) {
-    // Wait for all image tiles to load.
-    await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-tile')).filter(img => !img.complete).length === 0);
-    // Wait for all markers to load.
-    await page.waitForFunction(() => Array.from(document.querySelectorAll('img.leaflet-marker-icon.leaflet-interactive')).filter(img => !img.complete).length === 0);
-    // Force checks - see https://playwright.dev/docs/actionability
-    await page.locator('.ma__leaflet-map__map .leaflet-pane').hover();
-    await page.locator('.ma__leaflet-map__map .leaflet-control-zoom').hover();
+  // Wait for Tableaus to load.
+  // The screenshot won't show all the tableaus https://github.com/microsoft/playwright/issues/17904
+  let tableaus = await page.locator('.ma_tableau_container');
+  let tableausCount = await tableaus.count();
+  for (let i = 0; i < tableausCount; i++) {
+    await page.frameLocator('.ma_tableau_container iframe').nth(i).locator('#initializing_thin_client').waitFor({ 'state': 'hidden' });
   }
 
   // Wait for iFrame resizer.
@@ -106,17 +121,21 @@ module.exports = async (page, scenario, viewport) => {
     case 'InfoDetailsImageNoWrapRight':
     case 'InfoDetailsImageLeftAlign':
     case 'InfoDetailsImageRightAlign':
-      await page.locator('.ma__fixed-feedback-button');
+      await page.waitForSelector('.ma__fixed-feedback-button');
       break;
     case 'ExpansionOfAccordions1':
       await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
-      await page.locator('.ma__sticky-nav');
+      await page.waitForSelector('.ma__sticky-nav');
       break;
     case 'OrgElectedOfficial':
-      await page.locator('.ma__organization-navigation').waitFor();
+      await page.waitForSelector('.ma__organization-navigation');
+      break;
+    case 'ServiceDetails':
+      await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
   }
 
+  await page.waitForTimeout(2 * 1000);
 
   // Wait for any layout shift that nudges the footer.
   if (scenario.label !== '404') {
@@ -124,9 +143,17 @@ module.exports = async (page, scenario, viewport) => {
     await page.locator('.ma__footer-new__navlinks');
     await page.locator('.ma__footer-new__copyright');
     await page.locator('.ma__footer-new__logo');
-    await page.locator('.ma__footer-new__container').hover();
+    await page.locator('.ma__footer-new__container').waitFor();
     await page.locator('.ma__footer-new__copyright--bold').hover();
   }
 
-  await page.waitForTimeout(3 * 1000);
+  // Wait for sticky nav to shift.
+  const stickyNavs = await page.locator('.ma__sticky-nav').count();
+  if (stickyNavs > 0) {
+    // Remove active class.
+    await page.evaluate(() => { for (link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
+    await page.waitForSelector('.ma__sticky-nav');
+  }
+
+  await page.waitForTimeout(4 * 1000);
 }
