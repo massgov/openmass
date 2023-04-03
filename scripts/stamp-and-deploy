@@ -8,5 +8,5 @@ git commit -m "Update deployment identifier"
 # Add Acquia repo as an additional remote.
 git remote add acquia massgov@svn-20994.prod.hosting.acquia.com:massgov.git
 
-# Push the branch. name comes from an environment variable.
-git push --force acquia $CIRCLE_BRANCH
+# Push the branch. Name comes from an environment variable.
+git push --force acquia ${CIRCLE_BRANCH:-master}
