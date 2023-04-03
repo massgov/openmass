@@ -38,7 +38,6 @@ const scenarios = pages.map(function(page) {
     case 'test':
       base = 'https://edit.stage.mass.gov';
       auth = getAuth();
-      base = `https://${auth.username}:${auth.password}@massgovstg.prod.acquia-sites.com`;
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
@@ -50,7 +49,6 @@ const scenarios = pages.map(function(page) {
     default:
       base = `https://${target}.edit.mass.gov`;
       auth = getAuth();
-      base = `https://${auth.username}:${auth.password}@massgov${target}.prod.acquia-sites.com`;
   }
   const url = new URL(`${base}${page.url}`);
   let separator = "?";
