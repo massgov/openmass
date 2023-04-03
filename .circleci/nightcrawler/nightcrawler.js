@@ -42,7 +42,7 @@ switch(target) {
     auth = getAuth();
     break;
   default:
-    base = `https://massgov${target}.prod.acquia-sites.com`;
+    base = `https://${target}.edit.mass.gov`;
     alias = `@${target}`
     auth = getAuth();
 }
