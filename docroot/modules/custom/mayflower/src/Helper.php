@@ -12,6 +12,7 @@ use Drupal\mayflower\Prepare\Molecules;
 use Drupal\Core\Link;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
@@ -1831,14 +1832,8 @@ class Helper {
 
   /**
    * Helper for retrieving parent node from nested paragraphs.
-   *
-   * @param \Drupal\paragraphs\Entity\Paragraph $paragraph
-   *   The paragraph entity.
-   *
-   * @return \Drupal\node\Entity\Node
-   *   The parent node.
    */
-  public static function getParentNode(Paragraph $paragraph) {
+  public static function getParentNode(Paragraph $paragraph): ?NodeInterface {
     $parent_entity = $paragraph->getParentEntity();
     if ($parent_entity && $parent_entity->getEntityTypeId() === 'paragraph') {
       $parent_entity = self::getParentNode($parent_entity);
