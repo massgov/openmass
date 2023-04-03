@@ -51,6 +51,11 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
     'BackstopTools have been installed'
   ];
   console.log = (message) => {
-    ignoredMessages.some(ignore => message.includes(ignore)) ? undefined : process.stdout.write(`${message}\n`);
+    if (typeof message === 'string' || message instanceof String) {
+      ignoredMessages.some(ignore => message.includes(ignore)) ? undefined : process.stdout.write(`${message}\n`);
+    }
+    else {
+      process.stdout.write(`${message}\n`);
+    }
   };
 }
