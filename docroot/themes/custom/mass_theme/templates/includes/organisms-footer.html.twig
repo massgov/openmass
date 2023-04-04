@@ -1,4 +1,7 @@
 {% set floatingAction = true %}
+{% if is_front %}
+  {% set floatingAction = false %}
+{% endif %}
 {% set feedbackButton = {
   "href": "#feedback",
   "text": "Feedback"
