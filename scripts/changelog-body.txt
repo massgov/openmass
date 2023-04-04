@@ -1,19 +1,26 @@
 
 
-## [0.355.0] - March 28, 2023
+## [0.355.0] - April 4, 2023
 
-### Added
-  - DP-24499: Enable key auth module
-  
 ### Changed
-  - DP-25653: Superset integration changed to also pull data for unpublished content.
-  - DP-26304: Remove empty aria-label from the span with a backgroud image for the press teaser component.
-  - DP-27348: Entity Usage Queue Tracking  - upgrade for Drupal 10
-  - DP-27578: Use git tag in env indicator when available
-  - DP-27591: Store render cache in Memcache
+  - DP-26227: Restructure banner image credit component for semantics and screen reader users.
+  - DP-27423: Replaces the old backstop job in CircleCI with the new split test
+  - DP-27472: Fix layout shifts before taking backstop screenshots
+  - DP-27498: Use new Akamai domains for Acquia envs
+  - DP-27690: Pins backstop image to a fixed version
+Switches from puppeteer to playwright
+Disables some flaky tests temporarily
+Make the references capture try 3 times
+
   
 ### Fixed
-  - DP-26258: A11y - Empty heading with social media links.
-  - DP-27476: Fixed taxonomy term 500 error.
-  - DP-27487: Pages linking here fixes to show all pages for documents.
+  - DP-26259: A11y - Empty heading for video in promo page.
+  - DP-26302: A11y - Empty Contact list.
+  - DP-26314: A11y - Empty read more link.
+  - DP-27578: Move push_acquia CI job to build_tag workflow
+  - DP-27679: Fix 500 error in EventsRendererOrgPages
+  - DP-27679: Fix 500 error in InfoDetails focal_point preview.
+  - DP-27694: A11y - Eliminate duplicate IDs for main navigation and search elements.
+  - DP-27697: Fixed Leaflet map A11y.
+  - DP-27728: Removed old hosts from Backstop.
   
