@@ -1,6 +1,6 @@
 
 
-## [0.355.0] - April 4, 2023
+## [0.356.0] - April 4, 2023
 
 ### Changed
   - DP-26227: Restructure banner image credit component for semantics and screen reader users.
@@ -12,7 +12,7 @@ Switches from puppeteer to playwright
 Disables some flaky tests temporarily
 Make the references capture try 3 times
 
-  
+
 ### Fixed
   - DP-26259: A11y - Empty heading for video in promo page.
   - DP-26302: A11y - Empty Contact list.
@@ -23,26 +23,26 @@ Make the references capture try 3 times
   - DP-27694: A11y - Eliminate duplicate IDs for main navigation and search elements.
   - DP-27697: Fixed Leaflet map A11y.
   - DP-27728: Removed old hosts from Backstop.
-  
+
 
 
 ## [0.355.0] - March 28, 2023
 
 ### Added
   - DP-24499: Enable key auth module
-  
+
 ### Changed
   - DP-25653: Superset integration changed to also pull data for unpublished content.
   - DP-26304: Remove empty aria-label from the span with a backgroud image for the press teaser component.
   - DP-27348: Entity Usage Queue Tracking  - upgrade for Drupal 10
   - DP-27578: Use git tag in env indicator when available
   - DP-27591: Store render cache in Memcache
-  
+
 ### Fixed
   - DP-26258: A11y - Empty heading with social media links.
   - DP-27476: Fixed taxonomy term 500 error.
   - DP-27487: Pages linking here fixes to show all pages for documents.
-  
+
 
 
 ## [0.354.0] - March 21, 2023
@@ -67,21 +67,21 @@ Make the references capture try 3 times
 Hides all alerts by default
 Refactors the mechanism in Backstop to hide alerts
 
-  
+
 ### Changed
   - DP-26086: Update dependencies for Gin PR.
   - DP-27421: Remove cache busting string from URLs fetched by Backstop for references
 in the new job which only collects reference images. Also adds a
 `--cachebuster` parameter to the relevant drush jobs.
 
-  
+
 ### Added
   - DP-26786: Add Composer dependencies for Gin theme
   - DP-27259: Added local storage value to associate with site feedback submissions.
-  
+
 ### Security
   - DP-27543: Drupal core - Moderately critical - Access bypass - SA-CORE-2023-004.
-  
+
 
 
 ## [0.353.0] - March 7, 2023
@@ -90,11 +90,11 @@ in the new job which only collects reference images. Also adds a
   - DP-27022: Adjust feedback manager report in Drupal
   - DP-27225: Increase quantity shown on feedback page from 10 to 20.
   - DP-27435: Dont list an unpublished Locations page
-  
+
 ### Fixed
   - DP-27257: Investigate and fix errors in Drupal.
   - DP-27426: Cleanup Banner Search and Header Search templates after removing autocomplete.
-  
+
 ## [0.352.2] - March 3, 2023
 
 ### Fixed
