@@ -20,10 +20,12 @@ class MassChildEntityWarningBuilder extends ChildEntityWarningBuilder {
     foreach ($children as $key => $child) {
       $nid = $child->getId();
       $node = Node::load($nid);
-      $state = $node->moderation_state[0]->value;
+      if ($node) {
+        $state = $node->moderation_state[0]->value;
 
-      if ($state != MassModeration::PUBLISHED) {
-        unset($children[$key]);
+        if ($state != MassModeration::PUBLISHED) {
+          unset($children[$key]);
+        }
       }
     }
     return $children;
