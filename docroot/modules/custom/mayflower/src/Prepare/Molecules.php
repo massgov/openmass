@@ -1037,7 +1037,7 @@ class Molecules {
         }
         $markers[] = [
           'position' => [
-            'alt' => $location->label(),
+            'alt' => $location_link ? $location_link->getText() : Helper::fieldValue($addressEntity, 'field_label'),
             'lat' => $addressEntity->field_geofield->lat,
             'lng' => $addressEntity->field_geofield->lon,
           ],
