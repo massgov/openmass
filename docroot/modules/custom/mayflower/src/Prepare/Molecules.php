@@ -1037,6 +1037,7 @@ class Molecules {
         }
         $markers[] = [
           'position' => [
+            'alt' => $location->label(),
             'lat' => $addressEntity->field_geofield->lat,
             'lng' => $addressEntity->field_geofield->lon,
           ],
