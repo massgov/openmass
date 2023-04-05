@@ -3,6 +3,8 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.user.user.field_approval_notes
+    - field.field.user.user.field_approved
     - field.field.user.user.field_user_intern
     - field.field.user.user.field_user_org
     - field.field.user.user.user_picture
@@ -17,6 +19,23 @@ targetEntityType: user
 bundle: user
 mode: default
 content:
+  field_approval_notes:
+    type: basic_string
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_approved:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 5
+    region: content
   field_user_intern:
     type: boolean
     label: above
