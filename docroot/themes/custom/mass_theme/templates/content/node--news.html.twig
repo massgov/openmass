@@ -84,25 +84,27 @@
           {% set richText = pageContent.richText %}
           {% include "@organisms/by-author/rich-text.twig" %}
         {% endif %}
-        {% for i in range(1, numOfSections) %}
-          {% if pageContent[i]['title'] %}
-            {% include "@atoms/04-headings/comp-heading.twig" with {
-              'compHeading': pageContent[i]['title']['compHeading']
-            } %}
-          {% endif %}
-          {% if pageContent[i]['richText'] %}
-            {% set richText = pageContent[i]['richText'] %}
-            {% include "@organisms/by-author/rich-text.twig" %}
-          {% endif %}
-          {% if pageContent[i]['keyActions'] %}
-            {% set keyActions = pageContent[i]['keyActions'] %}
-            {% include "@organisms/by-author/key-actions.twig" %}
-          {% endif %}
-          {% if pageContent[i]['formDownloads'] %}
-            {% set formDownloads = pageContent[i]['formDownloads'] %}
-            {% include "@organisms/by-author/form-downloads.twig" %}
-          {% endif %}
-        {% endfor %}
+        {% if numOfSections %}
+          {% for i in range(1, numOfSections) %}
+            {% if pageContent[i]['title'] %}
+              {% include "@atoms/04-headings/comp-heading.twig" with {
+                'compHeading': pageContent[i]['title']['compHeading']
+              } %}
+            {% endif %}
+            {% if pageContent[i]['richText'] %}
+              {% set richText = pageContent[i]['richText'] %}
+              {% include "@organisms/by-author/rich-text.twig" %}
+            {% endif %}
+            {% if pageContent[i]['keyActions'] %}
+              {% set keyActions = pageContent[i]['keyActions'] %}
+              {% include "@organisms/by-author/key-actions.twig" %}
+            {% endif %}
+            {% if pageContent[i]['formDownloads'] %}
+              {% set formDownloads = pageContent[i]['formDownloads'] %}
+              {% include "@organisms/by-author/form-downloads.twig" %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
       {% endblock %}
       {% if not is_blog_post %}
         {% if pageContent.contactList %}
