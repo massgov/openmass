@@ -37,7 +37,7 @@ const scenarios = pages.map(function(page) {
       break;
     case 'test':
       auth = getAuth();
-      base = `https://${auth.username}:${auth.password}@edit.stage.mass.gov`;
+      base = `https://${auth.username}:${auth.password}@stage.mass.gov`;
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
