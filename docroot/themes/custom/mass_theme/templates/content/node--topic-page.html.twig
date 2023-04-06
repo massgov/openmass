@@ -93,14 +93,16 @@
     }
   } %}
     {% block stackedRowContentOverride %}
-      {% for i in range(1, numOfSections) %}
-        {% if pageContent[i]['expandableContent'] %}
+      {% if numOfSections %}
+        {% for i in range(1, numOfSections) %}
+          {% if pageContent[i]['expandableContent'] %}
 
-          {% set tableOfContentsHierarchy = pageContent[i]['expandableContent']['content'] %}
-          {% include "@organisms/by-template/table-of-contents-hierarchy.twig" %}
+            {% set tableOfContentsHierarchy = pageContent[i]['expandableContent']['content'] %}
+            {% include "@organisms/by-template/table-of-contents-hierarchy.twig" %}
 
-        {% endif %}
-      {% endfor %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
     {% endblock %}
   {% endembed %}
 

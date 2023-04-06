@@ -12,6 +12,7 @@ use Drupal\mayflower\Prepare\Molecules;
 use Drupal\Core\Link;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
@@ -176,8 +177,18 @@ class Helper {
         if (!empty($crop) && !empty($crop->position() && is_array($crop->position()))) {
           $crop_position = $crop->position();
           if (isset($crop_position['x']) && isset($crop_position['y'])) {
-            $width = round(($crop_position['x'] / $fields->get($delta)->width) * 100, 2);
-            $height = round(($crop_position['y'] / $fields->get($delta)->height) * 100, 2);
+
+            if (isset($fields->get($delta)->width) && isset($fields->get($delta)->height)) {
+              $width = round(($crop_position['x'] / $fields->get($delta)->width) * 100, 2);
+              $height = round(($crop_position['y'] / $fields->get($delta)->height) * 100, 2);
+            }
+            else {
+              $img = \Drupal::service('image.factory')->get($image->entity->getFileUri());
+              if ($img->isValid()) {
+                $width = round(($crop_position['x'] / $img->getWidth()) * 100, 2);
+                $height = round(($crop_position['y'] / $img->getHeight()) * 100, 2);
+              }
+            }
             return ['x' => "$width%", 'y' => "$height%"];
           }
         }
@@ -1831,14 +1842,8 @@ class Helper {
 
   /**
    * Helper for retrieving parent node from nested paragraphs.
-   *
-   * @param \Drupal\paragraphs\Entity\Paragraph $paragraph
-   *   The paragraph entity.
-   *
-   * @return \Drupal\node\Entity\Node
-   *   The parent node.
    */
-  public static function getParentNode(Paragraph $paragraph) {
+  public static function getParentNode(Paragraph $paragraph): ?NodeInterface {
     $parent_entity = $paragraph->getParentEntity();
     if ($parent_entity && $parent_entity->getEntityTypeId() === 'paragraph') {
       $parent_entity = self::getParentNode($parent_entity);
