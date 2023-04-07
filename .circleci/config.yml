@@ -1215,7 +1215,8 @@ workflows:
   # Nightly pm:security and composer audit. See https://app.circleci.com/settings/project/github/massgov/openmass/triggers.
   nightly_pending_security:
     when:
-      - equal: [ nightly_pending_security, << pipeline.parameters.trigger_workflow >> ]
+      and:
+        - equal: [ nightly_pending_security, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - pending_security:
