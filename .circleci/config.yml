@@ -651,7 +651,7 @@ jobs:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
       - run: "drush pm:security"
-      - run: "drush pm:security-php"
+      - run: "composer audit"
 
 workflows:
   version: 2
@@ -1212,16 +1212,12 @@ workflows:
               only:
                 - develop
 
-  # Nightly pm:security and pm:security-php.
+  # Nightly pm:security and composer audit. See https://app.circleci.com/settings/project/github/massgov/openmass/triggers.
   nightly_pending_security:
+    when:
+      and:
+        - equal: [ nightly_pending_security, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - pending_security:
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "05 07 * * *"
-          filters:
-              branches:
-                  only:
-                      - develop
