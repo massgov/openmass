@@ -2865,26 +2865,26 @@
         },
         {
             "name": "drupal/asset_cache_bust",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/asset_cache_bust.git",
-                "reference": "1.0.3"
+                "reference": "1.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/asset_cache_bust-1.0.3.zip",
-                "reference": "1.0.3",
-                "shasum": "817e195d6e2169b12e9681ccf1e5b1aff911c91d"
+                "url": "https://ftp.drupal.org/files/projects/asset_cache_bust-1.0.4.zip",
+                "reference": "1.0.4",
+                "shasum": "d34b9363a23dcc9965b7a588289f4f361a3046c5"
             },
             "require": {
-                "drupal/core": "^8.7.7 || ^9"
+                "drupal/core": "^8.7.7 || ^9 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "1.0.3",
-                    "datestamp": "1616486837",
+                    "version": "1.0.4",
+                    "datestamp": "1665990743",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -3147,105 +3147,33 @@
         },
         {
             "name": "drupal/cache_metrics",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/cache_metrics.git",
-                "reference": "2.0.0"
+                "reference": "2.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/cache_metrics-2.0.0.zip",
-                "reference": "2.0.0",
-                "shasum": "5333c1cd57012b7c7908567060d4acd872433662"
+                "url": "https://ftp.drupal.org/files/projects/cache_metrics-2.0.1.zip",
+                "reference": "2.0.1",
+                "shasum": "501a920812dc67a99d5d094b3f0673f02b6eb269"
             },
             "require": {
-                "drupal/core": "^8.7.7 || ^9"
-            },
-            "require-dev": {
-                "composer/installers": "^1",
-                "cweagans/composer-patches": "~1.0",
-                "drupal/core-composer-scaffold": "^8.0",
-                "drupal/core-dev": "^8.0",
-                "drupal/core-recommended": "^8.0",
-                "drush/drush": "^10",
-                "mglaman/phpstan-drupal": "^0.12",
-                "php-parallel-lint/php-parallel-lint": "^1.2",
-                "phpstan/phpstan-deprecation-rules": "^0.12",
-                "zaporylie/composer-drupal-optimizations": "^1.0"
+                "drupal/core": "^8.7.7 || ^9 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.0",
-                    "datestamp": "1592855316",
+                    "version": "2.0.1",
+                    "datestamp": "1677091469",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
                     }
-                },
-                "installer-paths": {
-                    "web/core": [
-                        "type:drupal-core"
-                    ],
-                    "web/libraries/{$name}": [
-                        "type:drupal-library"
-                    ],
-                    "web/modules/{$name}": [
-                        "type:drupal-module"
-                    ],
-                    "web/profiles/{$name}": [
-                        "type:drupal-profile"
-                    ],
-                    "web/themes/{$name}": [
-                        "type:drupal-theme"
-                    ],
-                    "drush/{$name}": [
-                        "type:drupal-drush"
-                    ]
-                },
-                "drupal-scaffold": {
-                    "locations": {
-                        "web-root": "web/"
-                    }
-                },
-                "drush": {
-                    "services": {
-                        "drush.services.yml": "^9 || ^10"
-                    }
                 }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
-            "scripts": {
-                "si": [
-                    "drush si -v --db-url=${SIMPLETEST_DB:-mysql://root:password@mariadb/db} testing"
-                ],
-                "phpcs": [
-                    "PWD=$(pwd) && phpcs --runtime-set ignore_warnings_on_exit 1 --runtime-set ignore_errors_on_exit 1 --ignore=$PWD/web/,$PWD/vendor/"
-                ],
-                "lint": [
-                    "parallel-lint --exclude web --exclude vendor ."
-                ],
-                "runserver": [
-                    "drush runserver 0.0.0.0"
-                ],
-                "chromedriver": [
-                    "chromedriver --port=9515 --verbose --whitelisted-ips --log-path=/tmp/chromedriver.log --no-sandbox"
-                ],
-                "create-symlinks": [
-                    "cd web/modules/project && find ../../.. -maxdepth 1 ! -name .git ! -name web ! -name vendor -print | while read file; do ln -s $file .; done"
-                ],
-                "unit": [
-                    "phpunit --verbose web/modules/project"
-                ],
-                "phpstan": [
-                    "phpstan analyse web/modules/project"
-                ],
-                "post-update-cmd": [
-                    "rm -rf web/modules/project && mkdir -p web/modules/project",
-                    "@create-symlinks"
-                ]
-            },
             "license": [
                 "GPL-2.0-or-later"
             ],
@@ -3259,11 +3187,10 @@
                     "homepage": "https://www.drupal.org/user/23"
                 }
             ],
-            "description": "Record cache hits/misses and invalidations.",
+            "description": "Log and measure cache performance over time",
             "homepage": "https://www.drupal.org/project/cache_metrics",
             "support": {
-                "source": "https://gitlab.com/drupalspoons/cache_metrics",
-                "issues": "https://gitlab.com/drupalspoons/cache_metrics/-/issues"
+                "source": "https://git.drupalcode.org/project/cache_metrics"
             }
         },
         {
@@ -3583,27 +3510,27 @@
         },
         {
             "name": "drupal/composer_deploy",
-            "version": "1.5.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/composer_deploy.git",
-                "reference": "8.x-1.5"
+                "reference": "8.x-1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/composer_deploy-8.x-1.5.zip",
-                "reference": "8.x-1.5",
-                "shasum": "1a057e2937f6ac710e89b1dcc7b94b988ecc8c40"
+                "url": "https://ftp.drupal.org/files/projects/composer_deploy-8.x-1.7.zip",
+                "reference": "8.x-1.7",
+                "shasum": "545cb7d83c701fb68f4d95522f24d7270332ce8a"
             },
             "require": {
-                "drupal/core": "^8.8 || ^9",
+                "drupal/core": "^8.8 || ^9 || ^10",
                 "webflo/drupal-finder": "^1.2"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.5",
-                    "datestamp": "1604709740",
+                    "version": "8.x-1.7",
+                    "datestamp": "1660818349",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7562,26 +7489,26 @@
         },
         {
             "name": "drupal/memcache",
-            "version": "2.3.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/memcache.git",
-                "reference": "8.x-2.3"
+                "reference": "8.x-2.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/memcache-8.x-2.3.zip",
-                "reference": "8.x-2.3",
-                "shasum": "b2f9715612be74f9ce55daaf838f6f17a9eb2f5a"
+                "url": "https://ftp.drupal.org/files/projects/memcache-8.x-2.5.zip",
+                "reference": "8.x-2.5",
+                "shasum": "a01db2a9b7122a397c4f4ad66e0a380d1148a157"
             },
             "require": {
-                "drupal/core": "^8.9 || ^9"
+                "drupal/core": "^9.1 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-2.3",
-                    "datestamp": "1614802365",
+                    "version": "8.x-2.5",
+                    "datestamp": "1661188440",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
