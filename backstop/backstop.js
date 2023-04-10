@@ -36,8 +36,8 @@ const scenarios = pages.map(function(page) {
       base = 'http://mass-web';
       break;
     case 'test':
-      base = 'https://edit.stage.mass.gov';
       auth = getAuth();
+      base = `https://${auth.username}:${auth.password}@stage.mass.gov`;
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
@@ -47,8 +47,8 @@ const scenarios = pages.map(function(page) {
       base = opts[0].replace('--tugboat=', '');
       break;
     default:
-      base = `https://${target}.edit.mass.gov`;
       auth = getAuth();
+      base = `https://${auth.username}:${auth.password}@${target}.edit.mass.gov`;
   }
   const url = new URL(`${base}${page.url}`);
   let separator = "?";

@@ -4460,6 +4460,13 @@ function mass_theme_preprocess_page(&$variables) {
     $allowed_regions = ['post_content'];
     mass_theme_add_regions_to_node($allowed_regions, $variables);
   }
+
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+  $variables['footerFloatingAction'] = TRUE;
+  if ($is_front_page || $route_name != 'entity.node.canonical') {
+    $variables['footerFloatingAction'] = FALSE;
+  }
 }
 
 /**
