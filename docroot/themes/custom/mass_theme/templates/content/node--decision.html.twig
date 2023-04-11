@@ -70,6 +70,7 @@
   } %}
   <div class="main-content main-content--two">
     <div class="page-content">
+      {% if numOfSections %}
         {% for i in range(1, numOfSections) %}
           {% if sections[i]['title'] %}
             <div class="ma__rich-text">
@@ -83,40 +84,41 @@
             {% include "@organisms/by-author/rich-text.twig" %}
           {% endif %}
         {% endfor %}
-        {% if content.field_decision_download|render is not empty %}
-          {# Using the field_decision_download view mode to display the URL for doucments in this section. #}
-          {%  embed "@organisms/by-author/form-downloads.twig" with {
-            "formDownloads": {
-              "compHeading": {
-                "title": "Downloads",
-                "id": "downloads",
-                "level": level,
-                "titleContext": "for " ~ node.title.value
-              }
+      {% endif %}
+      {% if content.field_decision_download|render is not empty %}
+        {# Using the field_decision_download view mode to display the URL for doucments in this section. #}
+        {%  embed "@organisms/by-author/form-downloads.twig" with {
+          "formDownloads": {
+            "compHeading": {
+              "title": "Downloads",
+              "id": "downloads",
+              "level": level,
+              "titleContext": "for " ~ node.title.value
             }
-          } %}
-            {% block formDownloadLinks %}
-              {{ content.field_decision_download }}
-            {% endblock %}
-          {% endembed %}
-        {% endif %}
-        {% if mainContent.contactList %}
-          {% set contactList = mainContent.contactList %}
-          {% set contactList = contactList|merge({'compHeading': {
-            'title': contactList.compHeading.title,
-            'titleContext': contactList.compHeading.titleContext,
-            'level': level,
-            'id': contactList.compHeading.id }}) %}
-          {% include "@organisms/by-author/contact-list.twig" %}
-        {% endif %}
-        {% if mainContent.footnoteList %}
-          {% set footnoteList = mainContent.footnoteList %}
-          {% include "@organisms/by-author/footnote-list.twig" %}
-        {% endif %}
-        {% if mainContent.references %}
-          {% set headerTags = mainContent.references %}
-          {% include "@molecules/header-tags.twig" %}
-        {% endif %}
+          }
+        } %}
+          {% block formDownloadLinks %}
+            {{ content.field_decision_download }}
+          {% endblock %}
+        {% endembed %}
+      {% endif %}
+      {% if mainContent.contactList %}
+        {% set contactList = mainContent.contactList %}
+        {% set contactList = contactList|merge({'compHeading': {
+          'title': contactList.compHeading.title,
+          'titleContext': contactList.compHeading.titleContext,
+          'level': level,
+          'id': contactList.compHeading.id }}) %}
+        {% include "@organisms/by-author/contact-list.twig" %}
+      {% endif %}
+      {% if mainContent.footnoteList %}
+        {% set footnoteList = mainContent.footnoteList %}
+        {% include "@organisms/by-author/footnote-list.twig" %}
+      {% endif %}
+      {% if mainContent.references %}
+        {% set headerTags = mainContent.references %}
+        {% include "@molecules/header-tags.twig" %}
+      {% endif %}
     </div>
     <aside class="sidebar">
       {% if sideContent.contactList %}
