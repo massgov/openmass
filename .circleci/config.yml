@@ -739,6 +739,7 @@ workflows:
               only: /^release\/.*$/
       - deploy:
           name: deploy-test-refresh-db
+          requires: [push_acquia]
           target: test
           refresh-db: "--refresh-db"
           filters:
