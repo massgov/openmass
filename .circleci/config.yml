@@ -7,15 +7,6 @@ orbs:
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
 # - https://github.com/circleci/frontend/blob/master/.circleci/config.yml
 references:
-  container_config: &container_config
-    working_directory: /var/www/code
-    docker:
-      # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.20-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          AWS_REGION: us-east-1
-
   # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
   no_host_check: &no_host_check
     run: {name: 'Disable StrictHostKeyChecking', command: 'mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config'}
@@ -705,13 +696,6 @@ workflows:
             branches:
               <<: *branch_ignore
 
-      - backstop_test:
-          target: prod
-          force-reference: true
-          filters:
-            branches:
-              <<: *branch_ignore
-
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
@@ -753,18 +737,8 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - hold - Release manager only:
-          type: approval
-          requires:
-            - build
-            - push_acquia
-          filters:
-            branches:
-              only: /^release\/.*$/
       - deploy:
           name: deploy-test-refresh-db
-          requires:
-            - hold - Release manager only
           target: test
           refresh-db: "--refresh-db"
           filters:
@@ -1240,14 +1214,10 @@ workflows:
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
+    when:
+      and:
+        - equal: [ nightly_pending_security, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - pending_security:
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "05 07 * * *"
-          filters:
-              branches:
-                  only:
-                      - develop
