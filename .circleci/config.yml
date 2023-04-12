@@ -91,7 +91,7 @@ commands:
         type: string
         default: "./drush/sites/self.site.yml"
     steps:
-      - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
+      - run: "curl --create-dirs -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
   enable_cacheability_headers:
     steps:
       - run:
@@ -739,6 +739,9 @@ workflows:
               only: /^release\/.*$/
       - deploy:
           name: deploy-test-refresh-db
+          requires:
+            - build
+            - push_acquia
           target: test
           refresh-db: "--refresh-db"
           filters:
