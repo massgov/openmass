@@ -1,3 +1,7 @@
+## [0.357.2] - April 12, 2023
+
+- No changes. Deploying just to help Acquia debug our open case.
+
 ## [0.357.1] - April 12, 2023
 
 - Hotfix to run updatedb and config:import which were skipped by Acquia support when they redeployed.
