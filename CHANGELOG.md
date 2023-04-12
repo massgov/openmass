@@ -1,5 +1,16 @@
 
 
+## [0.357.0] - April 11, 2023
+
+### Changed
+  - DP-26625: Increase visual prominence of links below search on home page.
+  - DP-27686: Immediately deploy release branch (and related CircleCI updates)
+  
+### Added
+  - DP-27723: Add approval fields to User entity
+  
+
+
 ## [0.356.0] - April 6, 2023
 
 ### Removed
