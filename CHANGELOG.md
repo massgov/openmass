@@ -1,10 +1,26 @@
+## [0.357.2] - April 12, 2023
+
+- No changes. Deploying just to help Acquia debug our open case.
+
+## [0.357.1] - April 12, 2023
+
+- Hotfix to run updatedb and config:import which were skipped by Acquia support when they redeployed.
+
+## [0.357.0] - April 11, 2023
+
+### Changed
+  - DP-26625: Increase visual prominence of links below search on home page.
+  - DP-27686: Immediately deploy release branch (and related CircleCI updates)
+
+### Added
+  - DP-27723: Add approval fields to User entity
 
 
-## [0.356.0] - April 6, 2023
+## [0.356.0] - April 6, 2023 (not released)
 
 ### Removed
   - DP-26220: Removed feedback button markup from pages that do not have feedback forms.
-  
+
 ### Changed
   - DP-26227: Restructure banner image credit component for semantics and screen reader users.
   - DP-27423: Replaces the old backstop job in CircleCI with the new split test
@@ -16,7 +32,7 @@ Disables some flaky tests temporarily
 Make the references capture try 3 times
 
   - DP-27793: Change backstop "test" to use stage.mass.gov
-  
+
 ### Fixed
   - DP-26259: A11y - Empty heading for video in promo page.
   - DP-26302: A11y - Empty Contact list.
@@ -29,26 +45,26 @@ Make the references capture try 3 times
   - DP-27697: Fixed Leaflet map A11y.
   - DP-27728: Removed old hosts from Backstop.
   - DP-27734: A11y - Malformed TOC links.
-  
+
 
 
 ## [0.355.0] - March 28, 2023
 
 ### Added
   - DP-24499: Enable key auth module
-  
+
 ### Changed
   - DP-25653: Superset integration changed to also pull data for unpublished content.
   - DP-26304: Remove empty aria-label from the span with a backgroud image for the press teaser component.
   - DP-27348: Entity Usage Queue Tracking  - upgrade for Drupal 10
   - DP-27578: Use git tag in env indicator when available
   - DP-27591: Store render cache in Memcache
-  
+
 ### Fixed
   - DP-26258: A11y - Empty heading with social media links.
   - DP-27476: Fixed taxonomy term 500 error.
   - DP-27487: Pages linking here fixes to show all pages for documents.
-  
+
 
 
 ## [0.354.0] - March 21, 2023
@@ -73,21 +89,21 @@ Make the references capture try 3 times
 Hides all alerts by default
 Refactors the mechanism in Backstop to hide alerts
 
-  
+
 ### Changed
   - DP-26086: Update dependencies for Gin PR.
   - DP-27421: Remove cache busting string from URLs fetched by Backstop for references
 in the new job which only collects reference images. Also adds a
 `--cachebuster` parameter to the relevant drush jobs.
 
-  
+
 ### Added
   - DP-26786: Add Composer dependencies for Gin theme
   - DP-27259: Added local storage value to associate with site feedback submissions.
-  
+
 ### Security
   - DP-27543: Drupal core - Moderately critical - Access bypass - SA-CORE-2023-004.
-  
+
 
 
 ## [0.353.0] - March 7, 2023
@@ -96,11 +112,11 @@ in the new job which only collects reference images. Also adds a
   - DP-27022: Adjust feedback manager report in Drupal
   - DP-27225: Increase quantity shown on feedback page from 10 to 20.
   - DP-27435: Dont list an unpublished Locations page
-  
+
 ### Fixed
   - DP-27257: Investigate and fix errors in Drupal.
   - DP-27426: Cleanup Banner Search and Header Search templates after removing autocomplete.
-  
+
 ## [0.352.2] - March 3, 2023
 
 ### Fixed
