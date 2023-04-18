@@ -1,3 +1,22 @@
+
+
+## [0.358.0] - April 18, 2023
+
+### Changed
+  - DP-26232: Place the utility nav panel close button to the bottom of the panel conatiner to be the last item to get focus.
+  - DP-27209: Update media related modules to Drupal 10
+  - DP-27212: D10 upgrade packages - Peformance
+  
+### Removed
+  - DP-26232: Remove focus on the utility nav close button when the utility panel opens.
+  
+### Added
+  - DP-27413: Create view showing documents that have no pages linking here.
+  - DP-27736: Added an HTTP header to Backstop pages to bypass Akamai.
+  
+### Fixed
+  - DP-27921: Correct spelling for aria attribute on sticky TOC show more button.
+  
 ## [0.357.2] - April 12, 2023
 
 - No changes. Deploying just to help Acquia debug our open case.
