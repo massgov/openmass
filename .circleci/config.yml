@@ -656,7 +656,10 @@ jobs:
 workflows:
   version: 2
   build_test:
-    when: << pipeline.parameters.webhook >>
+    when:
+      and:
+        - << pipeline.parameters.webhook >>
+        - not: << pipeline.parameters.trigger_workflow >>
     jobs:
       - build:
           filters:
