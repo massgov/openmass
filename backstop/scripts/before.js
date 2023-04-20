@@ -19,6 +19,10 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
     return matches.length ? route.abort() : route.continue();
   });
 
+  await browserContext.setExtraHTTPHeaders(
+    {'MASS_BYPASS_RATE_LIMIT': process.env.MASS_BYPASS_RATE_LIMIT}
+  );
+
   let cookies = [
     {
       "expirationDate": 1798790400,
