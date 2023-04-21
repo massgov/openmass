@@ -30,7 +30,7 @@ class SupersetDatabaseClient {
       ]);
       $response = $this->client->get('/api/v1/security/csrf_token/');
       $response_object = json_decode($response->getBody()->getContents());
-      $this->csrfToken = $response_object->csrf_token;
+      $this->csrfToken = $response_object->result;
 
       if (!empty($options['username']) && !empty($options['password'])) {
         // Perform login.
