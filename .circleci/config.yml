@@ -701,18 +701,13 @@ workflows:
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
+    when:
+      and:
+        - equal: [ release_branch, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - cut_release_branch:
           requires: [build]
-    triggers:
-      - schedule:
-          # UTC time-zone
-          cron: "00 17 * * 2"
-          filters:
-            branches:
-              only:
-                - develop
 
   # This is to automate the release branch only.
   release:
@@ -1082,6 +1077,9 @@ workflows:
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
+    when:
+      and:
+        - equal: [ build_test_super, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - test:
@@ -1094,17 +1092,13 @@ workflows:
           command: behat
           instance: massgov/mysql-sanitized:super
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "49 20 * * *"
-          filters:
-            branches:
-              only:
-                - develop
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
+    when:
+      and:
+        - equal: [ mysql_rebuild, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - populate:
@@ -1129,13 +1123,6 @@ workflows:
           sanitizeOption: --super-sanitize
           instance: massgov/mysql-sanitized:super.arm
           resource_class: arm.large
-    triggers:
-      - schedule:
-          cron: "20 00 * * *"
-          filters:
-            branches:
-              only:
-                - develop
 
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
@@ -1151,13 +1138,9 @@ workflows:
 
   # Nightly Backstop image references.
   nightly_backstop_snapshot:
-    triggers:
-      - schedule:
-          cron: "03 00 * * *"
-          filters:
-            branches:
-              only:
-                - develop
+    when:
+      and:
+        - equal: [ nightly_backstop_snapshot, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - backstop_reference:
           target: prod
@@ -1194,6 +1177,9 @@ workflows:
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
+    when:
+      and:
+        - equal: [ deploy_cd, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build_with_latest_mayflower
       - deploy:
@@ -1209,13 +1195,6 @@ workflows:
       - backstop_test:
           reference: prod
           target: cd
-    triggers:
-      - schedule:
-          cron: "00 04 * * *"
-          filters:
-            branches:
-              only:
-                - develop
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
