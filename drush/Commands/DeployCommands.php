@@ -48,6 +48,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
+   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
    * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
@@ -60,6 +61,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
   public function ci_backstop_snapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false]): void {
+    // If --tugboat is specified without a specific URL, or --tugboat is
+    // omitted, automatically determine the preview for the branch.
+    if ($options['target'] === 'tugboat') {
+      $tugboat_url = $this->getTugboatUrl($options['tugboat'], $options['ci-branch']);
+    }
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -72,6 +78,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'target' => $options['target'],
           'list' => $options['list'],
           'viewport' => $options['viewport'],
+          'tugboat' => !empty($tugboat_url) ? $tugboat_url : '',
           'cachebuster' => $options['cachebuster'],
         ],
       ],
@@ -94,20 +101,25 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @option reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
+   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
    * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
    * @option force-reference Forces new reference images to be taken instead of using ones in CircleCI's saved artifacts.
    * @usage drush ma:ci:backstop-compare --reference=prod --target=test
    *   Run backstop in the test environment against the latest production screenshots
-   *   Create a backstop snapshot from production.
    * @aliases ma-ci-backstop-compare
    * @validate-circleci-token
    *
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function ci_backstop_compare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false, 'force-reference' => false]): void {
+  public function ciBackstopCompare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false, 'tugboat' => self::OPT, 'force-reference' => false]): void {
+    // If --tugboat is specified without a specific URL, or --tugboat is
+    // omitted, automatically determine the preview for the branch.
+    if ($options['target'] === 'tugboat') {
+      $tugboat_url = $this->getTugboatUrl($options['tugboat'], $options['ci-branch']);
+    }
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -121,6 +133,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'target' => $options['target'],
           'list' => $options['list'],
           'viewport' => $options['viewport'],
+          'tugboat' => !empty($tugboat_url) ? $tugboat_url : '',
           'cachebuster' => $options['cachebuster'],
           'force-reference' => $options['force-reference'],
         ],
