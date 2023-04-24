@@ -651,7 +651,7 @@ jobs:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
       - run: "drush pm:security"
-      - run: "drush pm:security-php"
+      - run: "composer audit"
 
 workflows:
   version: 2
