@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
   jira: circleci/jira@1.3.1
-  node: circleci/node@4.7.0
+  node: circleci/node@4.9.0
 
 # YAML anchors/aliases. See;
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
@@ -649,12 +649,11 @@ jobs:
       - image: cimg/php:8.0-node
     steps:
       - attach_workspace: {at: /tmp}
+      - run: "composer audit --no-interaction --no-dev"
       - *vendor_bin_add_path
       - run: "drush pm:security"
-      - run: "composer audit"
 
 workflows:
-  version: 2
   build_test:
     when:
       and:
