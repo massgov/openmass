@@ -7,26 +7,9 @@
 
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\Entity\NodeType;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
-
-/**
- * Implements hook_user_login().
- *
- * Redirect users to the my-work page on successful login.
- */
-function mass_admin_pages_user_login(AccountInterface $account) {
-  $url = Url::fromRoute('mass_admin_pages.author_home')->toString();
-
-  // If there are no password reset parameters in the URL, then bypass the user edit
-  // page and go straight to my-work.
-  if (\Drupal::service('current_route_match')->getRouteName() !== 'user.reset.login') {
-    return \Drupal::requestStack()->getCurrentRequest()->query->set('destination', $url);
-  }
-}
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
