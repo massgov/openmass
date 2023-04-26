@@ -1000,7 +1000,7 @@ function mass_utility_tokens($type, $tokens, array $data, array $options, Bubble
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'contact_name':
-          $replacements[$original] = mass_utility_process_name_title($data) ?? 'No contact found';
+          $replacements[$original] = mass_utility_process_name_title($data) ?: 'No contact found';
           break;
       }
     }
