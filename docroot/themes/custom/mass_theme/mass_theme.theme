@@ -5375,27 +5375,30 @@ function mass_theme_preprocess_paragraph__3_up_content(&$variables) {
         }
       }
 
-      $list[] = [
-        'items' => [
-          [
-            'path' => '@atoms/04-headings/column-heading.twig',
-            'data' => [
-              'columnHeading' => [
-                'text' => $item->get('field_heading')->value,
-                'href' => '',
-                'info' => '',
-              ],
+      $list_items = [];
+      if ($item->get('field_heading')->value) {
+        $list_items[] = [
+          'path' => '@atoms/04-headings/column-heading.twig',
+          'data' => [
+            'columnHeading' => [
+              'text' => $item->get('field_heading')->value,
+              'href' => '',
+              'info' => '',
             ],
           ],
-          [
-            'path' => '@organisms/by-author/rich-text.twig',
-            'data' => [
-              'richText' => [
-                'rteElements' => $paragraphs,
-              ],
-            ],
+        ];
+      }
+      $list_items[] = [
+        'path' => '@organisms/by-author/rich-text.twig',
+        'data' => [
+          'richText' => [
+            'rteElements' => $paragraphs,
           ],
         ],
+      ];
+
+      $list[] = [
+        'items' => $list_items,
       ];
     }
   }
@@ -6346,6 +6349,7 @@ function mass_theme_theme_suggestions_page_alter(array &$suggestions, array $var
       'binder',
       'info_details',
       'guide_page',
+      'service_page'
     ];
     if (in_array($node->getType(), $without_main)) {
       array_splice($suggestions, 1, 0, 'page__node__without_main');
