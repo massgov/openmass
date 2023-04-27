@@ -38,6 +38,10 @@
  * @ingroup themeable
  */
 #}
+{#  NOTE FOR SEARCH
+
+
+#}
 {% set search_id = "SECTION_" ~ paragraph.id() %}
 {% set search_input_id = search_id ~ "_searchfield" %}
 {% include "@organisms/by-author/search-banner.twig" with {
@@ -56,8 +60,10 @@
         "required": false,
         "id": search_input_id,
         "name": paragraph.field_search_querystring.value,
-        "type": "text",
-        "placeholder": "Search..."
+        "type": "search",
+        "placeholder": "Search Mass.gov",
+        "mode": "search",
+        "autocomplete": "off"
       },
       "buttonText": paragraph.field_search_button_label.value
     }
