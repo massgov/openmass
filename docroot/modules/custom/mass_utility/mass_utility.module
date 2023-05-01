@@ -931,30 +931,12 @@ function mass_utility_entity_view(array &$build, EntityInterface $entity, Entity
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
-function mass_utility_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Add a new validation function to unset field validation.
-  $form['#validate'][] = 'mass_utility_remove_login_validation';
-  // Hide the inline form error message.
-  $form['name']['#error_no_message'] = TRUE;
-}
-
-/**
- * Moves username inline form errors on login page to the top of the page.
- *
- * @param array $form
- *   The form.
- * @param Drupal\Core\Form\FormStateInterface $form_state
- *   The form state.
- */
-function mass_utility_remove_login_validation(array &$form, FormStateInterface $form_state) {
-  $errors = $form_state->getErrors();
-  if (isset($errors['name'])) {
-    $error = $errors['name'];
-    // Rebuild translated error message for displaying link.
-    \Drupal::messenger()->addError($error);
-  }
+function mass_utility_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['account']['pass']['#required'] = FALSE;
+  $form['account']['pass']['#access'] = FALSE;
+  $form['account']['notify']['#default_value'] = TRUE;
 }
 
 /**
