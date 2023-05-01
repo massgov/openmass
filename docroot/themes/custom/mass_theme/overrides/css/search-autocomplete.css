@@ -482,7 +482,7 @@ button.ma__input-number__minus {
 }
 
 /* --------------------- */
-.fsSaveIncomplete {
+div.fsSaveIncomplete {
   /* text-align: center; */
   /* button */
   cursor: pointer;
@@ -517,7 +517,7 @@ button.ma__input-number__minus {
   color: #14558f;
 }
 
-.fsSaveIncomplete:hover {
+div.fsSaveIncomplete:hover {
   /* SET UP HOVER STATE STYLE */
   color: #fff;
   background-color: #14558f;
@@ -525,10 +525,14 @@ button.ma__input-number__minus {
 
 .fsSaveIncomplete a {
   display: block;
-  padding: 0.4em 1em;
+  /* padding: 0.4em 1em; */
   text-decoration: none;
 }
 
+.fsPagination .fsPreviousButton,
+.fsPagination .fsNextButton {
+  float: none !important;
+}
 
 /*
 .fsPagination * {
@@ -548,14 +552,20 @@ button.ma__input-number__minus {
 
 
 /* .fsProgress prorgress bar container */
+.fsProgress {
+  display: flex;
+  margin: 0;
+}
 .fsProgress .fsProgressBarContainer,
 .fsProgress .fsProgressBar {
   height: 1.5em;
 }
 
 .fsProgress .fsProgressText {
-  margin-top: -30px;
+  /* margin-top: -30px; */
   font-size: 1.25rem;
   font-weight: 500;
+
+  order: 1;
 }
 
