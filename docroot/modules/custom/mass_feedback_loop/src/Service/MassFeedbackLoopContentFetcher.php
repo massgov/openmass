@@ -361,9 +361,10 @@ class MassFeedbackLoopContentFetcher {
         'label_id',
         'author_id',
         'watch_content',
-        'search'
+        'search',
+        'flagged_inappropriate',
       ])) {
-        if (($key == 'watch_content') || !empty($param)) {
+        if (in_array($key, ['watch_content', 'flagged_inappropriate']) || !empty($param)) {
           $feedback_api_params[$key] = $param;
           if (is_array($param) && strpos($param[0], ',') !== FALSE) {
             $feedback_api_params[$key] = explode(',', $param[0]);
