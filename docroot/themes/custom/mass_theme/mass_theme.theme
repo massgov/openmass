@@ -5994,7 +5994,7 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
     ];
     $variables['#attached']['html_head'][] = [$tag, 'mg_labels'];
   }
-  
+
   /** @var \Drupal\Core\Entity\EntityViewBuilder $view_builder */
   $view_builder = \Drupal::entityTypeManager()->getViewBuilder('taxonomy_term');
   $build = $view_builder->build($view_builder->view($term));
