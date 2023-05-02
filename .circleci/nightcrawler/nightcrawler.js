@@ -69,6 +69,11 @@ function getAuth() {
 
 var driver = new RequestDriver({
   strictSSL: false,
+  headers: {
+    'MASS_BYPASS_RATE_LIMIT': process.env.MASS_BYPASS_RATE_LIMIT,
+    'custom_header1': 'val1',
+    'customheader2': 'val2'
+  },
   // This number is arbitrary - we report performance statistics during
   // the crawl - we just want to avoid a failure here due to timeout, which
   // occurs for the first pageview on a cold cache.
