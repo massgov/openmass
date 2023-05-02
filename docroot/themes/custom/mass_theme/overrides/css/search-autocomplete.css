@@ -245,14 +245,13 @@
 .fsPagination .fsPreviousButton,
 .fsPagination .fsNextButton {
   /* clear fs styles */
-  border: none;
   font-size: 1.25rem;
 
-
+  /* MF .button */
   line-height: 1.4;
   font-weight: 550;
   border: 3px solid;
-  background-color: #14558f;
+  border-color: transparent;
   box-shadow: 0 0.25rem 0.5rem rgba(1, 1, 1, .25);
   display: inline-flex;
   align-items: center;
@@ -502,7 +501,12 @@ button.ma__input-number__minus {
 
 /* --------------------- */
 div.fsSaveIncomplete {
-  /* text-align: center; */
+  /* override sf styles */
+  background: none;
+  padding: 1em 0;
+}
+
+div.fsSaveIncomplete a {
   /* button */
   cursor: pointer;
   font-family: "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif;
