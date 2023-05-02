@@ -5982,6 +5982,19 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $tid = reset($res);
   $term = Term::load($tid);
 
+  // Attach mg_labels metatag, if it's available.
+  $labels = \Drupal::service('token')->replace("[term:mass_term_labels]", ['term' => $term]);
+  if ($labels) {
+    $tag = [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'mg_labels',
+        'content' => $labels,
+      ],
+    ];
+    $variables['#attached']['html_head'][] = [$tag, 'mg_labels'];
+  }
+  
   /** @var \Drupal\Core\Entity\EntityViewBuilder $view_builder */
   $view_builder = \Drupal::entityTypeManager()->getViewBuilder('taxonomy_term');
   $build = $view_builder->build($view_builder->view($term));
