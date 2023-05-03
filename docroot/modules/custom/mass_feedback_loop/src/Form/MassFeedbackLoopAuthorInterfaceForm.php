@@ -255,13 +255,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => !empty($feedback_api_params['watch_content']) ? ['watch_content'] : [],
     ];
 
-    $form['flagged_inappropriate'] = [
-      '#type' => 'checkboxes',
-      '#options' => ['flagged_inappropriate' => $this->t('Include flagged inappropriate')],
-      '#title' => $this->t('Filter by inappropriate feedback flag'),
-      '#default_value' => !empty($feedback_api_params['flagged_inappropriate']) ? ['flagged_inappropriate'] : [],
-    ];
-
     // Hidden value used for tracking current page on pager in case of reload.
     $form['page'] = [
       '#type' => 'hidden',
