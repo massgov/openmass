@@ -427,17 +427,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
         $feedback_api_params['watch_content'] = 1;
       }
 
-      $filter_by_flagged_inappropriate = $form_state->getValue('flagged_inappropriate');
-      if (isset($filter_by_flagged_inappropriate['flagged_inappropriate'])) {
-        $flagged_inappropriate_value = $filter_by_flagged_inappropriate['flagged_inappropriate'];
-      }
-      if (!isset($flagged_inappropriate_value) || $flagged_inappropriate_value !== 'flagged_inappropriate') {
-        $feedback_api_params['flagged_inappropriate'] = 0;
-      }
-      else {
-        $feedback_api_params['flagged_inappropriate'] = 1;
-      }
-
       $url = Url::fromRoute('mass_feedback_loop.mass_feedback_loop_author_interface_form', [], ['query' => $feedback_api_params]);
       $form_state->setRedirectUrl($url);
     }
