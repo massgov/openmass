@@ -20,7 +20,7 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
   });
 
   await browserContext.setExtraHTTPHeaders(
-    {'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT}
+    {'Mass-Bypass-Rate-Limit': process.env.MASS_BYPASS_RATE_LIMIT}
   );
 
   let cookies = [
