@@ -70,7 +70,7 @@ function getAuth() {
 var driver = new RequestDriver({
   strictSSL: false,
   headers: {
-    "Mass-Bypass-Rate-Limit": process.env.MASS_BYPASS_RATE_LIMIT,
+    "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT,
   },
   // This number is arbitrary - we report performance statistics during
   // the crawl - we just want to avoid a failure here due to timeout, which
