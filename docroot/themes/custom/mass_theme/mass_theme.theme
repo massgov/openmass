@@ -5097,11 +5097,11 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
 function mass_theme_preprocess_paragraph__related_content(&$variables) {
   $paragraph = $variables['paragraph'];
 
-  $field_related_content_items = $paragraph->get('field_related_content');
+  $field_related_content_items = $paragraph->get('field_related_content_link');
 
   // Get Related items.
   if ($field_related_content_items->count() > 0) {
-    $related_items = $field_related_content_items->referencedEntities();
+    $related_items = $field_related_content_items->getValue();
   }
 
   if (!empty($related_items)) {
@@ -5109,71 +5109,97 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
     $types = [];
     $total_count = count($related_items);
 
-    foreach ($related_items as $id => $item) {
-      /** @var Drupal\node\Entity\Node $item */
-      // Default icon for content without icons but using the Topic card.
-      $item->{'icon'} = 'marker';
-      $item->{'node_path'} = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $item->get('nid')->value);
-      $item->{'image_thumbnail_url'} = $item->hasField('field_photo') ? Helper::getFieldImageUrl($item, 'thumbnail_130x160', 'field_photo') : '';
+    foreach ($related_items as $related_item) {
 
-      // For Stacked Layout, if label or acronym is Guide then the label
-      // should be "Guide:".
-      if ($item->getType() == 'stacked_layout') {
-        $label = $item->get('field_label')->isEmpty() ? '' : $item->get('field_label')->value;
-        $item->{'label_text'} = $label == 'Guide' ? 'Guide:' : '';
-      }
+      // Get the URL object from the link field.
+      $url = Url::fromUri($related_item['uri']);
+      if (!$url->isExternal()) {
+        $route_parameters = $url->getRouteParameters();
+        if (isset($route_parameters['node'])) {
+          $node = Node::load($route_parameters['node']);
+          if ($node) {
+            /** @var Drupal\node\Entity\Node $node */
+            // Default icon for content without icons but using the Topic card.
+            $node->{'icon'} = 'marker';
+            $node->{'node_path'} = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->get('nid')->value);
+            $node->{'image_thumbnail_url'} = $node->hasField('field_photo') ? Helper::getFieldImageUrl($node, 'thumbnail_130x160', 'field_photo') : '';
 
-      // Grab our icon.
-      // Topics have an icon field.
-      if ($item->hasField('field_icon_term') && array_key_exists('0', $item->get('field_icon_term')->referencedEntities())) {
-        $icon = $item->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-        $item->{'icon'} = $icon;
-      }
-
-      // Topics don't have topic callouts, so we use common content for links.
-      if ($item->hasField('field_common_content')) {
-        $links = [];
-        foreach ($item->get('field_common_content')->referencedEntities() as $link) {
-          // Get aliased path.
-          $link_path = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $link->get('nid')->value);
-          if ($link && $link->hasField('field_external_url')) {
-            $external_link = $link->get('field_external_url')->uri;
-            // Check the external url field value is not empty.
-            if (!empty($external_link)) {
-              $link_path = $external_link;
+            // For Stacked Layout, if label or acronym is Guide then the label
+            // should be "Guide:".
+            if ($node->getType() == 'stacked_layout') {
+              $label = $node->get('field_label')->isEmpty() ? '' : $node->get('field_label')->value;
+              $node->{'label_text'} = $label == 'Guide' ? 'Guide:' : '';
             }
-          }
-          $links[] = ['text' => $link->getTitle(), 'href' => $link_path];
-        }
-        // Get links for our topic cards.
-        $item->{'links'} = $links;
-      }
 
-      // Subtopics have topic callout links.
-      if ($item->hasField('field_topic_callout_links')) {
-        $links = [];
-        foreach ($item->get('field_topic_callout_links') as $link) {
-          $link_path = Url::fromUri($link->uri);
-          if (mb_strpos($link->uri, 'entity:node/') !== FALSE) {
-            $nid = explode('/', $link->uri)[1];
-            $linked_node = Node::load($nid);
-            // Check that we have a node and that it has an external_url field.
-            if ($linked_node && $linked_node->hasField('field_external_url')) {
-              $external_link = $linked_node->get('field_external_url')->uri;
-              // Check the external url field value is not empty.
-              if (!empty($external_link)) {
-                $link_path = $external_link;
+            // Grab our icon.
+            // Topics have an icon field.
+            if ($node->hasField('field_icon_term') && array_key_exists('0', $node->get('field_icon_term')->referencedEntities())) {
+              $icon = $node->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
+              $node->{'icon'} = $icon;
+            }
+
+            // Topics don't have topic callouts, so we use common content for links.
+            if ($node->hasField('field_common_content')) {
+              $links = [];
+              foreach ($node->get('field_common_content')->referencedEntities() as $link) {
+                // Get aliased path.
+                $link_path = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $link->get('nid')->value);
+                if ($link && $link->hasField('field_external_url')) {
+                  $external_link = $link->get('field_external_url')->uri;
+                  // Check the external url field value is not empty.
+                  if (!empty($external_link)) {
+                    $link_path = $external_link;
+                  }
+                }
+                $links[] = ['text' => $link->getTitle(), 'href' => $link_path];
               }
+              // Get links for our topic cards.
+              $node->{'links'} = $links;
             }
-          }
-          $links[] = ['text' => $link->computed_title, 'href' => $link_path];
-        }
-        // Get links for our topic cards.
-        $item->{'links'} = $links;
-      }
 
-      $nodes[] = $item;
-      $types[] = $item->getType();
+            // Subtopics have topic callout links.
+            if ($node->hasField('field_topic_callout_links')) {
+              $links = [];
+              foreach ($node->get('field_topic_callout_links') as $link) {
+                $link_path = Url::fromUri($link->uri);
+                if (mb_strpos($link->uri, 'entity:node/') !== FALSE) {
+                  $nid = explode('/', $link->uri)[1];
+                  $linked_node = Node::load($nid);
+                  // Check that we have a node and that it has an external_url field.
+                  if ($linked_node && $linked_node->hasField('field_external_url')) {
+                    $external_link = $linked_node->get('field_external_url')->uri;
+                    // Check the external url field value is not empty.
+                    if (!empty($external_link)) {
+                      $link_path = $external_link;
+                    }
+                  }
+                }
+                $links[] = ['text' => $link->computed_title, 'href' => $link_path];
+              }
+              // Get links for our topic cards.
+              $node->{'links'} = $links;
+            }
+
+            if (!empty($related_item['title'])) {
+              $node->{'label'} = $related_item['title'];
+            }
+
+            $nodes[] = $node;
+            $types[] = $node->getType();
+          }
+        }
+      }
+      else {
+        $item = new stdClass();
+        if (!empty($related_item['title'])) {
+          $item->{'label'} = $related_item['title'];
+        }
+        else {
+          $item->{'label'} = $related_item['uri'];
+        }
+        $item->{'node_path'} = $related_item['uri'];
+        $nodes[] = $item;
+      }
     }
   }
 

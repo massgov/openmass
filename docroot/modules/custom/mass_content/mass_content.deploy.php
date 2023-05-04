@@ -847,3 +847,53 @@ function mass_content_set_feedback_fields($node) {
   $node->setSyncing(TRUE);
   $node->save();
 }
+
+/**
+ * Migrate "Related content" paragraph data between fields.
+ */
+function mass_content_deploy_related_content(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
+  $query->condition('type', 'related_content');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type event.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $pids = $query->condition('id', $sandbox['current'], '>')
+    ->sort('id')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+
+  $paragraphs = $storage->loadMultiple($pids);
+
+  foreach ($paragraphs as $paragraph) {
+    $sandbox['current'] = $paragraph->id();
+    if (!$paragraph->field_related_content->isEmpty()) {
+      $new_values = [];
+      $old_values = $paragraph->field_related_content->getValue();
+      foreach ($old_values as $index => $old_value) {
+        $new_values[$index] = 'entity:node/' . $old_value['target_id'];
+
+      }
+      $paragraph->set('field_related_content_link', $new_values);
+      $paragraph->save();
+    }
+    $sandbox['progress']++;
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Migrated "Related content" paragraph data between fields. Processed @total items.', ['@total' => $sandbox['progress']]);
+  }
+  return "Processed {$sandbox['progress']} items.";
+}
