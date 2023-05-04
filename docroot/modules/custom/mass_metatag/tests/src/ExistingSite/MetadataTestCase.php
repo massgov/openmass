@@ -139,7 +139,7 @@ abstract class MetadataTestCase extends ExistingSiteBase {
   /**
    * Discover all metatags on the page.
    */
-  private function getActualMetatags(DocumentElement $page) {
+  protected function getActualMetatags(DocumentElement $page) {
     $tags = [];
     /** @var \Behat\Mink\Element\NodeElement $tag */
     foreach ($page->findAll('css', 'meta[name]') as $tag) {
