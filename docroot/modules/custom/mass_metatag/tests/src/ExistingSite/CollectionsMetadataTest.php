@@ -17,7 +17,7 @@ class CollectionsMetadataTest extends MetadataTestCase {
   /**
    * {@inheritdoc}
    */
-  public function createContent(): ContentEntityInterface {
+  public function getContent(): ContentEntityInterface {
     $label_term = $this->createTerm(Vocabulary::load('label'), [
       'name' => 'TestTermLabel',
     ]);
@@ -34,7 +34,7 @@ class CollectionsMetadataTest extends MetadataTestCase {
    * Asserts that a collections page produces the metadata we expect.
    */
   public function testHasExpectedMetadata() {
-    $entity = $this->createContent();
+    $entity = $this->getContent();
     $this->drupalGet('collections/' . $entity->field_url_name->value);
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Collection page was loadable');
     $page = $this->getSession()->getPage();
