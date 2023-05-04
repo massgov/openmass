@@ -17,7 +17,7 @@ class CollectionsMetadataTest extends MetadataTestCase {
   /**
    * {@inheritdoc}
    */
-  public function getContent(): ContentEntityInterface {
+  public function createContent(): ContentEntityInterface {
     $label_term = $this->createTerm(Vocabulary::load('label'), [
       'name' => 'TestTermLabel',
     ]);
