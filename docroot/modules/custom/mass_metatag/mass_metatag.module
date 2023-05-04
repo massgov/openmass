@@ -14,6 +14,7 @@ use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\schema_metatag\SchemaMetatagManager;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
 
 /**
@@ -94,16 +95,34 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           $metatag_utils = \Drupal::service('mass_metatag.utilities');
           if (isset($data['term'])) {
             if ($data['term'] instanceof ContentEntityInterface) {
-              $labels = $metatag_utils->getAllLabelsFromEntity($data['term']);
-              // Remove hyphens from the labels...
-              $label_names = [];
-              foreach ($labels as $key => $value) {
-                $label_names[$key] = str_replace("-", "", $value);
-              }
-
-              // Separate the labels with a comma.
-              $replacements[$original] = implode(',', $label_names);
+              $term = $data['term'];
             }
+          }
+          elseif ($collection = \Drupal::routeMatch()->getParameter('collection')) {
+            // Get collection terms matching the field_url_name
+            $query = Drupal::entityQuery('taxonomy_term');
+            $query
+              ->accessCheck(FALSE)
+              ->condition('vid', 'collections')
+              ->condition('field_url_name', $collection)
+              ->range(0, 1);
+
+            $res = $query->execute();
+            if ($res) {
+              $tid = reset($res);
+              $term = Term::load($tid);
+            }
+          }
+          if ($term) {
+            $labels = $metatag_utils->getAllLabelsFromEntity($term);
+            // Remove hyphens from the labels...
+            $label_names = [];
+            foreach ($labels as $key => $value) {
+              $label_names[$key] = str_replace("-", "", $value);
+            }
+
+            // Separate the labels with a comma.
+            $replacements[$original] = implode(',', $label_names);
           }
           break;
       }
