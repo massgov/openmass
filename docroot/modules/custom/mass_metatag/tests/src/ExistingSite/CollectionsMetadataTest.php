@@ -34,7 +34,7 @@ class CollectionsMetadataTest extends MetadataTestCase {
    * Asserts that a collections page produces the metadata we expect.
    */
   public function testHasExpectedMetadata() {
-    $entity = $this->getContent();
+    $entity = $this->createContent();
     $this->drupalGet('collections/' . $entity->field_url_name->value);
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Collection page was loadable');
     $page = $this->getSession()->getPage();
