@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_metatag\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\node\Entity\Node;
 
 /**
@@ -84,18 +85,18 @@ class MassMetatagUtilities {
   /**
    * Gets all Labels for the passed node, including all parent Orgs.
    *
-   * @param \Drupal\node\Entity\Node $node
+   * @param ContentEntityInterface $entity
    *   The node to get Labels from.
    *
    * @return string[]
    *   The array of slugified Labels names related to this node.
    */
-  public function getAllLabelsFromNode(Node $node) {
+  public function getAllLabelsFromEntity(ContentEntityInterface $entity) {
     $result = [];
 
-    if (!empty($node)) {
-      if ($node->hasField('field_reusable_label')) {
-        $labels = $node->field_reusable_label->referencedEntities();
+    if (!empty($entity)) {
+      if ($entity->hasField('field_reusable_label')) {
+        $labels = $entity->field_reusable_label->referencedEntities();
         foreach ($labels as $label) {
           $result[] = $this->slugify(trim($label->label()));
         }
