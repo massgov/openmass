@@ -1,5 +1,21 @@
 
 
+## [0.359.0] - May 2, 2023
+
+### Fixed
+  - DP-25705: A11y - Fixed hamburger main nav keyboard navigations to 1) use the correct arrow directions in the submenus and 2) fixed the skipping of google translate on the top.
+  
+### Added
+  - DP-27287: Added key auth support to the Content Metadata API
+  
+### Changed
+  - DP-27859: A11y - Rules of court pages do not start with a level 1 heading.
+  - DP-27895: A11y - Incorrect heading levels.
+  - DP-27934: Modify page sub title's line height to 1.5.
+  - DP-28038: Darken font color for .ma__arrow-nav__title and .ma__page-flipper__context-label by adjusting their alpha level to meet the minimum required color contrast.
+  
+
+
 ## [0.358.0] - April 25, 2023
 
 ### Fixed
