@@ -138,7 +138,8 @@ class AddressFullLinkFormatter extends AddressPlainFormatter {
       // Remember the original value so that it can be used for $parents.
       $original_values[$field] = $values[$field];
       // Replace the value with the expected code.
-      if (Locale::match($address->getLocale(), $subdivision->getLocale())) {
+      $locale = $subdivision->getLocale();
+      if ($locale && Locale::match($address->getLocale(), $locale)) {
         $values[$field] = [
           'code' => $subdivision->getLocalCode(),
           'name' => $subdivision->getLocalName(),
