@@ -36,14 +36,14 @@ class FormEmbedWidget extends WidgetBase {
 
     $element['type'] = [
       '#type' => 'select',
-      '#title' => $this->t('Form Embed Type'),
+      '#title' => $this->t('Form success message'),
       '#default_value' => $type,
       '#options' => [
         'formstack' => 'Formstack with success message on same page',
-        'formstack_reload' => 'Formstack with success message on different page',
+        'formstack_reload' => 'Formstack with success message on separate page',
       ],
       '#required' => TRUE,
-      '#description' => 'By default, the form success message is on the same page as the form. But, <strong>if your form includes file uploads or has text fields that could collect as much as 1000 characters combined, they MUST use a separate success page</strong> to avoid errors. In those cases, change the embed type here to "Formstack with success message on different page." Next, publish a information detail page that contains the message users should see if the form is submitted successfully. In the right column of that page under "Search Status", check the option to exclude the success page from search. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the public URL of the success page you published (starting with http://www.mass.gov).',
+      '#description' => 'By default, the form success message is on the same page as the form. But, <strong>if your form includes file uploads or has text fields that could collect as many as 1000 characters combined, you MUST use a separate success page</strong> to avoid errors. In those cases, choose "Formstack with success message on separate page" from the dropdown menu below. Next, publish an Information Details page that contains the message users should see if the form is submitted successfully. In the right column of that page under "Search Status," check the option to exclude the success page from search. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the public URL of the success page you published (starting with http://www.mass.gov).',
     ];
     $element['#element_validate'] = [[get_called_class(), 'validate']];
 
