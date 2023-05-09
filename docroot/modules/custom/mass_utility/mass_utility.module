@@ -1008,6 +1008,11 @@ function mass_utility_process_name_title(array $data) {
   }
   $node = $data['node'];
 
+  if (empty($node->field_person_first_name->value) && empty($node->field_person_last_name->value)) {
+    // 'We need a placeholder title for tests so this is as good as any.
+    return 'No contact found';
+  }
+
   // Setup the basic title as fname lname.
   $title = $node->field_person_first_name->value . ' ' . $node->field_person_last_name->value;
 
