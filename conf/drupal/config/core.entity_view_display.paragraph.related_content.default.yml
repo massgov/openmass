@@ -4,20 +4,28 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.related_content.field_related_content
+    - field.field.paragraph.related_content.field_related_content_link
     - paragraphs.paragraphs_type.related_content
+  module:
+    - mass_content
 id: paragraph.related_content.default
 targetEntityType: paragraph
 bundle: related_content
 mode: default
 content:
-  field_related_content:
-    type: entity_reference_label
+  field_related_content_link:
+    type: dynamic_link_separate
     label: above
     settings:
-      link: true
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
     third_party_settings: {  }
     weight: 0
     region: content
 hidden:
   created: true
+  field_related_content: true
   uid: true
