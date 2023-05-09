@@ -5205,22 +5205,21 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
         $nodes[] = $item;
       }
     }
+    $contentTypes = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
+
+    $contentTypesList = [];
+
+    // Get our content types list.
+    foreach ($contentTypes as $contentType) {
+      $contentTypesList[$contentType->id()] = 0;
+    }
+
+    // Merge in our content types with totals so we don't have to check indexs.
+    $total_type_with_count = array_merge($contentTypesList, array_count_values($types));
+
+    $variables['layout'] = _get_layout($total_type_with_count, $total_count);
+    $variables['items'] = $nodes;
   }
-
-  $contentTypes = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
-
-  $contentTypesList = [];
-
-  // Get our content types list.
-  foreach ($contentTypes as $contentType) {
-    $contentTypesList[$contentType->id()] = 0;
-  }
-
-  // Merge in our content types with totals so we don't have to check indexs.
-  $total_type_with_count = array_merge($contentTypesList, array_count_values($types));
-
-  $variables['layout'] = _get_layout($total_type_with_count, $total_count);
-  $variables['items'] = $nodes;
 }
 
 /**
