@@ -4476,6 +4476,10 @@ function mass_theme_preprocess_page(&$variables) {
 function mass_theme_preprocess_field(&$variables, $hook) {
   $element = $variables['element'];
 
+  if ($element['#field_name'] == 'field_binder_pages') {
+    $variables['host_entity'] = $variables['element']['#object'];
+  }
+
   if ($element['#field_name'] == 'field_curatedlist_list_section') {
     if (count($element['#items']) == 1) {
       $paragraph = $variables['element'][0]['#paragraph'];
