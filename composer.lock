@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bc9491a699ced944a62bd945f2a2956",
+    "content-hash": "55df1e505dd1bd9b1b9756e2b2a1a89b",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -5626,13 +5626,56 @@
         },
         {
             "name": "drupal/entity_usage_queue_tracking",
-            "version": "9.1.x-dev",
+            "version": "dev-9.1.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/entity_usage_queue_tracking.git",
-                "reference": "52bd83522df26f62385fd535277516b34cf91c73"
+                "reference": "aac128124141df93634fb9ceaa181883673c99b8"
             },
-            "type": "drupal-module"
+            "require": {
+                "drupal/core": "^8 || ^9 || ^10",
+                "drupal/entity_usage": "^2.0.0-beta7"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-9.1.x": "9.1.x-dev"
+                },
+                "drupal": {
+                    "version": "9.1.x-dev",
+                    "datestamp": "1683647243",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9 || ^10 || ^11"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Thomas Fleming (thomas.fleming)",
+                    "homepage": "https://www.drupal.org/u/thomas.fleming",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Luis Aveiga (BetoAveiga)",
+                    "homepage": "https://www.drupal.org/u/betoaveiga"
+                }
+            ],
+            "description": "Entity Usage Queue Tracking adds support to Entity Usage for tracking via a queue",
+            "homepage": "https://drupal.org/project/entity_usage_queue_tracking",
+            "support": {
+                "source": "https://git.drupalcode.org/project/entity_usage_queue_tracking",
+                "issues": "https://drupal.org/project/issues/entity_usage_queue_tracking"
+            }
         },
         {
             "name": "drupal/entityreference_filter",
@@ -23235,5 +23278,5 @@
     "platform-overrides": {
         "php": "8.0"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
