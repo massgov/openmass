@@ -1,5 +1,29 @@
 
 
+## [0.360.0] - May 9, 2023
+
+### Changed
+  - DP-25180: A11y - Identify 2 sets of TOCs.
+  - DP-27204: D10 upgrade packages - authoring/fields
+  - DP-28037: A11y - Color contrast for link text on map.
+  - DP-28067: Updated entity_usage_queue_tracking.
+  - DP-28134: Modify "Related content" paragraph to allow external links and custom link labels.
+  - DP-28145: Footer site policies link updated to new target page.
+  - DP-28226: Options for form submission relabeled and help text improved to clarify that submissions with >1000 characters of text should use success message on different page.
+  - DP-28706: Changed format of bypass header and added to Nightcrawler
+  
+### Added
+  - DP-28044: Make it possible for the chatbot to show up on Collections.
+  
+### Fixed
+  - DP-28078: aria label for binder previous button corrected.
+  - DP-28134: Related content paragraph follow up fix to avoid 500 errors.
+  
+### Removed
+  - DP-28155: Allow all authors to add callout link and card group to info details pages.
+  
+
+
 ## [0.359.0] - May 2, 2023
 
 ### Fixed
