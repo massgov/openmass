@@ -177,8 +177,18 @@ class Helper {
         if (!empty($crop) && !empty($crop->position() && is_array($crop->position()))) {
           $crop_position = $crop->position();
           if (isset($crop_position['x']) && isset($crop_position['y'])) {
-            $width = round(($crop_position['x'] / $fields->get($delta)->width) * 100, 2);
-            $height = round(($crop_position['y'] / $fields->get($delta)->height) * 100, 2);
+
+            if (isset($fields->get($delta)->width) && isset($fields->get($delta)->height)) {
+              $width = round(($crop_position['x'] / $fields->get($delta)->width) * 100, 2);
+              $height = round(($crop_position['y'] / $fields->get($delta)->height) * 100, 2);
+            }
+            else {
+              $img = \Drupal::service('image.factory')->get($image->entity->getFileUri());
+              if ($img->isValid()) {
+                $width = round(($crop_position['x'] / $img->getWidth()) * 100, 2);
+                $height = round(($crop_position['y'] / $img->getHeight()) * 100, 2);
+              }
+            }
             return ['x' => "$width%", 'y' => "$height%"];
           }
         }

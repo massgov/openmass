@@ -1,21 +1,12 @@
 version: 2.1
 orbs:
   jira: circleci/jira@1.3.1
-  node: circleci/node@4.7.0
+  node: circleci/node@4.9.0
 
 # YAML anchors/aliases. See;
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
 # - https://github.com/circleci/frontend/blob/master/.circleci/config.yml
 references:
-  container_config: &container_config
-    working_directory: /var/www/code
-    docker:
-      # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.20-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          AWS_REGION: us-east-1
-
   # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
   no_host_check: &no_host_check
     run: {name: 'Disable StrictHostKeyChecking', command: 'mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config'}
@@ -100,7 +91,7 @@ commands:
         type: string
         default: "./drush/sites/self.site.yml"
     steps:
-      - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
+      - run: "curl --create-dirs -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
   enable_cacheability_headers:
     steps:
       - run:
@@ -658,14 +649,16 @@ jobs:
       - image: cimg/php:8.0-node
     steps:
       - attach_workspace: {at: /tmp}
+      - run: "composer audit --no-interaction --no-dev"
       - *vendor_bin_add_path
       - run: "drush pm:security"
-      - run: "drush pm:security-php"
 
 workflows:
-  version: 2
   build_test:
-    when: << pipeline.parameters.webhook >>
+    when:
+      and:
+        - << pipeline.parameters.webhook >>
+        - not: << pipeline.parameters.trigger_workflow >>
     jobs:
       - build:
           filters:
@@ -705,28 +698,16 @@ workflows:
             branches:
               <<: *branch_ignore
 
-      - backstop_test:
-          target: prod
-          force-reference: true
-          filters:
-            branches:
-              <<: *branch_ignore
-
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
+    when:
+      and:
+        - equal: [ release_branch, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - cut_release_branch:
           requires: [build]
-    triggers:
-      - schedule:
-          # UTC time-zone
-          cron: "00 17 * * 2"
-          filters:
-            branches:
-              only:
-                - develop
 
   # This is to automate the release branch only.
   release:
@@ -753,18 +734,11 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - hold - Release manager only:
-          type: approval
-          requires:
-            - build
-            - push_acquia
-          filters:
-            branches:
-              only: /^release\/.*$/
       - deploy:
           name: deploy-test-refresh-db
           requires:
-            - hold - Release manager only
+            - build
+            - push_acquia
           target: test
           refresh-db: "--refresh-db"
           filters:
@@ -1103,6 +1077,9 @@ workflows:
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
+    when:
+      and:
+        - equal: [ build_test_super, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - test:
@@ -1115,17 +1092,13 @@ workflows:
           command: behat
           instance: massgov/mysql-sanitized:super
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "49 20 * * *"
-          filters:
-            branches:
-              only:
-                - develop
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
+    when:
+      and:
+        - equal: [ mysql_rebuild, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - populate:
@@ -1150,13 +1123,6 @@ workflows:
           sanitizeOption: --super-sanitize
           instance: massgov/mysql-sanitized:super.arm
           resource_class: arm.large
-    triggers:
-      - schedule:
-          cron: "20 00 * * *"
-          filters:
-            branches:
-              only:
-                - develop
 
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
@@ -1172,13 +1138,9 @@ workflows:
 
   # Nightly Backstop image references.
   nightly_backstop_snapshot:
-    triggers:
-      - schedule:
-          cron: "03 00 * * *"
-          filters:
-            branches:
-              only:
-                - develop
+    when:
+      and:
+        - equal: [ nightly_backstop_snapshot, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - backstop_reference:
           target: prod
@@ -1215,6 +1177,9 @@ workflows:
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
+    when:
+      and:
+        - equal: [ deploy_cd, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build_with_latest_mayflower
       - deploy:
@@ -1230,24 +1195,13 @@ workflows:
       - backstop_test:
           reference: prod
           target: cd
-    triggers:
-      - schedule:
-          cron: "00 04 * * *"
-          filters:
-            branches:
-              only:
-                - develop
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
+    when:
+      and:
+        - equal: [ nightly_pending_security, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - pending_security:
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "05 07 * * *"
-          filters:
-              branches:
-                  only:
-                      - develop
