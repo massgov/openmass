@@ -255,6 +255,14 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => !empty($feedback_api_params['watch_content']) ? ['watch_content'] : [],
     ];
 
+    // Builds 'Flagged inappropriate' input.
+    $form['flagged_inappropriate'] = [
+      '#type' => 'checkboxes',
+      '#options' => ['flagged_inappropriate' => $this->t('Filter to show low quality feedback')],
+      '#title' => $this->t('Filter by inappropriate feedback'),
+      '#default_value' => !empty($feedback_api_params['flagged_inappropriate']) ? ['flagged_inappropriate'] : [],
+    ];
+
     // Hidden value used for tracking current page on pager in case of reload.
     $form['page'] = [
       '#type' => 'hidden',
@@ -425,6 +433,17 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       }
       else {
         $feedback_api_params['watch_content'] = 1;
+      }
+
+      $filter_by_flagged_inappropriate = $form_state->getValue('flagged_inappropriate');
+      if (isset($filter_by_flagged_inappropriate['flagged_inappropriate'])) {
+        $flagged_inappropriate_value = $filter_by_flagged_inappropriate['flagged_inappropriate'];
+      }
+      if (!isset($flagged_inappropriate_value) || $flagged_inappropriate_value !== 'flagged_inappropriate') {
+        $feedback_api_params['flagged_inappropriate'] = 0;
+      }
+      else {
+        $feedback_api_params['flagged_inappropriate'] = 1;
       }
 
       $url = Url::fromRoute('mass_feedback_loop.mass_feedback_loop_author_interface_form', [], ['query' => $feedback_api_params]);
