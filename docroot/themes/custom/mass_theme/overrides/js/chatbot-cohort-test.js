@@ -6,7 +6,7 @@ function loadChatbot(labelsIncluded = [], cohortsIncluded = [], totalCohorts = 1
   if (localStorage.getItem('massgovChatbotCohort') === null) {
     localStorage.setItem('massgovChatbotCohort', Math.floor(Math.random() * totalCohorts) + 1);
   }
-  const assignedCohort = parseInt(localStorage.getItem('mds-chatbot-cohort'));
+  const assignedCohort = parseInt(localStorage.getItem('massgovChatbotCohort'));
   const mgLabels = document.querySelector(`meta[name="mg_labels"]`);
   const labelsFound = mgLabels !== null ? mgLabels.getAttribute('content'): '';
   let labelMatches = [];
