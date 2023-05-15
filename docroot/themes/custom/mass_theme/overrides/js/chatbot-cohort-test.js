@@ -7,7 +7,7 @@ function loadChatbot(labelsIncluded = [], cohortsIncluded = [], totalCohorts = 1
     localStorage.setItem('massgovChatbotCohort', Math.floor(Math.random() * totalCohorts) + 1);
   }
   const assignedCohort = parseInt(localStorage.getItem('mds-chatbot-cohort'));
-  const labelsFound = document.querySelector(`meta[name="mg_labels"]`).content;
+  const labelsFound = document.querySelector(`meta[name="mg_labels"]`).getAttribute('content');
   let labelMatches = [];
   labelsIncluded.forEach((label) => {
     if (labelsFound.includes(label)) {
