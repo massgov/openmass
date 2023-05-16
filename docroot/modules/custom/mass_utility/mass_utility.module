@@ -779,7 +779,7 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
     $file = File::load($fid);
     $image_path = $file->getFileUri();
     $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
-    $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"]', 'val', [$image_path]));
     $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
     return $response;
   }
@@ -802,11 +802,11 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
       if (!empty($node->field_sub_brand->entity->uri->value)) {
         $image_path = $node->field_sub_brand->entity->uri->value;
         $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
-        $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+        $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"]', 'val', [$image_path]));
         $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
       }
-      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"', 'val', [$name]));
-      $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"', 'val', [$description]));
+      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"]', 'val', [$name]));
+      $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"]', 'val', [$description]));
     }
     return $response;
   }
@@ -872,9 +872,9 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
 
     }
 
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_name][0][value]"', 'val', [$name]));
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_email][0][value]"', 'val', [$email]));
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_phone][0][value]"', 'val', [$phone]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_name][0][value]"]', 'val', [$name]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_email][0][value]"]', 'val', [$email]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_phone][0][value]"]', 'val', [$phone]));
     return $response;
   }
 
@@ -931,30 +931,12 @@ function mass_utility_entity_view(array &$build, EntityInterface $entity, Entity
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
-function mass_utility_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Add a new validation function to unset field validation.
-  $form['#validate'][] = 'mass_utility_remove_login_validation';
-  // Hide the inline form error message.
-  $form['name']['#error_no_message'] = TRUE;
-}
-
-/**
- * Moves username inline form errors on login page to the top of the page.
- *
- * @param array $form
- *   The form.
- * @param Drupal\Core\Form\FormStateInterface $form_state
- *   The form state.
- */
-function mass_utility_remove_login_validation(array &$form, FormStateInterface $form_state) {
-  $errors = $form_state->getErrors();
-  if (isset($errors['name'])) {
-    $error = $errors['name'];
-    // Rebuild translated error message for displaying link.
-    \Drupal::messenger()->addError($error);
-  }
+function mass_utility_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['account']['pass']['#required'] = FALSE;
+  $form['account']['pass']['#access'] = FALSE;
+  $form['account']['notify']['#default_value'] = TRUE;
 }
 
 /**
