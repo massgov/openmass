@@ -779,7 +779,7 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
     $file = File::load($fid);
     $image_path = $file->getFileUri();
     $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
-    $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"]', 'val', [$image_path]));
     $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
     return $response;
   }
@@ -802,11 +802,11 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
       if (!empty($node->field_sub_brand->entity->uri->value)) {
         $image_path = $node->field_sub_brand->entity->uri->value;
         $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
-        $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+        $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"]', 'val', [$image_path]));
         $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
       }
-      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"', 'val', [$name]));
-      $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"', 'val', [$description]));
+      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"]', 'val', [$name]));
+      $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"]', 'val', [$description]));
     }
     return $response;
   }
