@@ -872,9 +872,9 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
 
     }
 
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_name][0][value]"', 'val', [$name]));
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_email][0][value]"', 'val', [$email]));
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_phone][0][value]"', 'val', [$phone]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_name][0][value]"]', 'val', [$name]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_email][0][value]"]', 'val', [$email]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_phone][0][value]"]', 'val', [$phone]));
     return $response;
   }
 
