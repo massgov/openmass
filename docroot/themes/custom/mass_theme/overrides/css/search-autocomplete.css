@@ -502,15 +502,15 @@ button.ma__input-number__minus {
 /* --------------------- */
 form.sfForm div.fsSaveIncomplete {
   /* override sf styles */
-  background: none;
+  background: none !important;
   padding: 1em 0;
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
-form.sfForm div.fsSaveIncomplete:hover {
+/* form.sfForm div.fsSaveIncomplete:hover {
   background: none;
   color: inherit;
-}
+} */
 
 div.fsSaveIncomplete a {
   /* override sf styles */
@@ -549,11 +549,16 @@ div.fsSaveIncomplete a {
   color: #14558f;
 }
 
-div.fsSaveIncomplete:hover {
-  /* SET UP HOVER STATE STYLE */
+div.fsSaveIncomplete a:hover,
+div.fsSaveIncomplete a:focus {
   color: #fff;
   background-color: #14558f;
 }
+
+/* div.fsSaveIncomplete:hover {
+  color: #fff;
+  background-color: #14558f;
+} */
 
 .fsSaveIncomplete a {
   display: block;
