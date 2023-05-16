@@ -1,7 +1,8 @@
- {% embed "@organisms/by-template/table-of-contents-hierarchy.twig" with {
+{% embed "@organisms/by-template/table-of-contents-hierarchy.twig" with {
   "tableOfContentsHierarchy": {
     "title": {
-      "text": "Table of Contents"
+      "text": "Table of Contents",
+      "titleContext": "for the " ~ (host_entity.field_binder_binder_type ? host_entity.field_binder_binder_type.entity.name.value|lower) ~ ", " ~ host_entity.label
     }
   }
 } %}
@@ -11,5 +12,4 @@
       {{ item.content }}
     {% endfor %}
   {% endblock %}
-
 {% endembed %}
