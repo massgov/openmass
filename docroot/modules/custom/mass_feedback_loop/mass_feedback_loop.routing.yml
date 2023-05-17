@@ -38,7 +38,7 @@ mass_feedback_loop.per_node_feedback_form:
   path: '/node/{node}/feedback'
   defaults:
     _form: '\Drupal\mass_feedback_loop\Form\MassFeedbackLoopPerNodeForm'
-    _title: 'Feedback submitted by constituents for this content<p>Also see: <a href="/admin/content/pages_with_negative_feedback">Pages with high negative feedback</a> and <a href=”/admin/ma-dash/feedback”>Feedback Manager</a> where you can view, filter and sort feedback submissions.</p>'
+    _title_callback: '\Drupal\mass_feedback_loop\Form\MassFeedbackLoopPerNodeForm::getTitle'
   options:
     _node_operation_route: TRUE
   requirements:

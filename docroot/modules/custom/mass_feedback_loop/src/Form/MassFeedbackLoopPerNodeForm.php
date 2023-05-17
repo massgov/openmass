@@ -4,10 +4,13 @@ namespace Drupal\mass_feedback_loop\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
+
 
 /**
  * Class MassFeedbackLoopPerNodeController.
@@ -48,6 +51,23 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
    */
   public function getFormId() {
     return 'mass_feedback_loop_per_node_form';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTitle() {
+    $negative_feedback_url = Url::fromRoute('view.pages_with_high_negative_feedback.page_2')->toString();
+    $feedback_manager_url = Url::fromRoute('mass_feedback_loop.mass_feedback_loop_author_interface_form')->toString();
+    $message = 'Feedback submitted by constituents for this content<p>Also see: <a href="@negative_feedback_url">Pages with high negative feedback</a> and <a href="@feedback_manager_url">Feedback Manager</a> where you can view, filter and sort feedback submissions.</p>';
+    $markup = Markup::create($this->t($message, [
+      '@negative_feedback_url' => $negative_feedback_url,
+      '@feedback_manager_url' => $feedback_manager_url,
+    ]));
+
+    return [
+      '#markup' => $markup,
+    ];
   }
 
   /**
