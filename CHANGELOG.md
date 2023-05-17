@@ -1,5 +1,20 @@
 
 
+## [0.361.0] - May 16, 2023
+
+### Fixed
+  - DP-28020: Fix Malformed TOC links (Follow-up).
+  - DP-28159: A11y - Admin menu color contrast.
+  - DP-28275: Fixed error when populating Internal Signees for news items.
+  
+### Added
+  - DP-28042: Hide password and check notify box during user creation
+  
+### Changed
+  - DP-28149: A11y Feedback - Text not included in an ARIA landmark.
+  
+
+
 ## [0.360.0] - May 9, 2023
 
 ### Changed
