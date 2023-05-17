@@ -57,22 +57,21 @@ class MassRouteIframeController extends ControllerBase {
    *
    * @param \Drupal\node\NodeInterface $node
    *   The upcasted node object.
-
+   *
    * @return array
    *   The iframe render array or a no match message render array.
    */
   public function build(NodeInterface $node) {
 
     $config_url = $this->token->replace('//lookerstudio.google.com/embed/reporting/7c31eece-2eb6-446b-a4f0-185ba8b8f398/page/A63OD?params=%7B"nodeId":[node:nid]%7D', ['node' => $node]);
-      return [
-        '#theme' => 'route_iframe',
-        '#config' => $config_url,
-        '#iframe_height' => 2200,
-        '#cache' => [
-          'max-age' => 0,
-        ],
-      ];
-
+    return [
+      '#theme' => 'route_iframe',
+      '#config' => $config_url,
+      '#iframe_height' => 2200,
+      '#cache' => [
+        'max-age' => 0,
+      ],
+    ];
   }
 
   /**
@@ -90,4 +89,5 @@ class MassRouteIframeController extends ControllerBase {
     }
     return AccessResult::allowedIf($access);
   }
+
 }
