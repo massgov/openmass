@@ -80,6 +80,7 @@ class MassRouteIframeController extends ControllerBase {
    * @param \Drupal\node\NodeInterface $node
    *
    * @return \Drupal\Core\Access\AccessResult
+   *   Return true if the node is one of the list.
    */
   public function access(NodeInterface $node) {
     $access = FALSE;
