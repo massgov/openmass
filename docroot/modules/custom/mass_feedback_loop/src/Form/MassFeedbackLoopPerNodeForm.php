@@ -10,7 +10,6 @@ use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 
-
 /**
  * Class MassFeedbackLoopPerNodeController.
  *
