@@ -37,6 +37,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
    */
   public function listUsagePageSubQuery($entity_type, $entity_id) {
     $build = [];
+    $page_rows = [];
     // Link needed for the caption.
     $help_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here');
     $help_text = Link::fromTextAndUrl('Learn how to use Linking Pages.', $help_url)->toString();
@@ -67,8 +68,10 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
       $all_translations = $translations_controller->getTranslationLanguages($this->entity, $media_storage, 'field_media_english_version');
       foreach ($all_translations as $translation) {
         if ($translation == $this->entity) {
+          // We already have the info for the original media.
           continue;
         }
+        // Get sources from the translations.
         $host = $this->entityUsage->listSources($translation);
         $source = array_replace_recursive($source, $host);
       }
@@ -81,6 +84,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
       return $build;
     }
 
+    // If this is not a media (document) we will show with a pager.
     if ($total == $original_count) {
       $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
       $page = $pager->getCurrentPage();
