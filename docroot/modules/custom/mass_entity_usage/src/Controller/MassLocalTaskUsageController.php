@@ -76,7 +76,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
       $page_rows = $this->prepareRows($usages);
       $total = count($page_rows);
     }
-    
+
     if (!$total) {
       return $build;
     }
@@ -92,8 +92,6 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
     }
     $build['results']['#prefix'] = $this->t($total . ' total records.');
     $build['results']['#rows'] = $page_rows;
-
-
 
     return $build;
   }
