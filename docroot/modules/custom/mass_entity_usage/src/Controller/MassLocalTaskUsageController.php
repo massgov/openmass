@@ -9,6 +9,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\entity_usage\Controller\LocalTaskUsageSubQueryController;
+use Drupal\mass_translations\Controller\TranslationsController;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
@@ -55,23 +56,44 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
     ];
 
     $this->loadEntity($entity_type, $entity_id);
+    $source = $this->entityUsage->listSources($this->entity);
+    $total = $original_count = count($this->prepareRows($source));
 
-    $total = count($this->prepareRows($this->entityUsage->listSources($this->entity)));
+    if ($this->entity->getEntityTypeId() == 'media' && $this->entity->bundle() == 'document') {
+      $media_storage = \Drupal::service('entity_type.manager')
+        ->getStorage('media');
+      $translations_controller = new TranslationsController();
+      // Get all the translations for this media.
+      $all_translations = $translations_controller->getTranslationLanguages($this->entity, $media_storage, 'field_media_english_version');
+      foreach ($all_translations as $translation) {
+        if ($translation == $this->entity) {
+          continue;
+        }
+        $host = $this->entityUsage->listSources($translation);
+        $source = array_replace_recursive($source, $host);
+      }
+      $usages = $source;
+      $page_rows = $this->prepareRows($usages);
+      $total = count($page_rows);
+    }
+    
     if (!$total) {
       return $build;
     }
 
-    $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
-    $page = $pager->getCurrentPage();
-    $page_rows = $this->getSubQueryRows($page, $this->itemsPerPage);
-
+    if ($total == $original_count) {
+      $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
+      $page = $pager->getCurrentPage();
+      $page_rows = $this->getSubQueryRows($page, $this->itemsPerPage);
+      $build['pager'] = [
+        '#type' => 'pager',
+        '#route_name' => '<current>',
+      ];
+    }
     $build['results']['#prefix'] = $this->t($total . ' total records.');
     $build['results']['#rows'] = $page_rows;
 
-    $build['pager'] = [
-      '#type' => 'pager',
-      '#route_name' => '<current>',
-    ];
+
 
     return $build;
   }
