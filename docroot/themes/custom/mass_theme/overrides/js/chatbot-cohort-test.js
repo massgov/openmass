@@ -17,17 +17,36 @@ function loadChatbot(labelsIncluded = [], cohortsIncluded = [], totalCohorts = 1
       labelMatches.push(false);
     }
   });
-  const hasLabels = labelsIncluded.length > 0 && labelMatches.indexOf(false) === -1;
+  const hasLabels = labelsIncluded.length > 0 && labelMatches.indexOf(true) != -1;
   const inCohort = cohortsIncluded.indexOf(assignedCohort) != -1;
   const successMessage = `CHATBOT LOADED\r\n\r\nAvailable cohorts are ${cohortsIncluded}. Your cohort is ${assignedCohort}.\r\n\r\nLabels included are ${labelsIncluded}. This page's labels are ${labelsFound}.\r\n\r\nChange your mds-chatbot-cohort local storage value to one not available and load a page that does not match all included labels to see failure message.`;
   const failureMessage = `NO CHATBOT\r\n\r\nAvailable cohorts are ${cohortsIncluded}. Your cohort is ${assignedCohort}.\r\n\r\nLabels included are ${labelsIncluded}. This page's labels are ${labelsFound}.\r\n\r\nChange your mds-chatbot-cohort local storage value to one available and load a page that matches all included labels to see success message.`;
   if (hasLabels && inCohort) {
     console.log(successMessage);
-  } else {
-    console.log(failureMessage);
+    return true;
   }
+  console.log(failureMessage);
+  return false;
 }
 
-window.addEventListener("load", (event) => {
-  loadChatbot(['massgovchatbot', 'rmvorgchatbot'], [1,9,3,8]);
+async function getCohortTargets() {
+  const response = await fetch(window.location.origin + "/themes/custom/mass_theme/overrides/js/cohorts.json");
+  const json = await response.json();
+
+  return json;
+}
+
+window.addEventListener('load', (event) => {
+  const alreadyLoadedMessage = 'CHATBOT ALREADY LOADED';
+  let chatbotLoaded = false;
+  getCohortTargets().then((targets) => {
+    targets.every((target) => {
+      if (chatbotLoaded == true) {
+        console.log(alreadyLoadedMessage);
+        return false;
+      }
+      chatbotLoaded = loadChatbot(target.labels, target.cohorts);
+      return true;
+    });
+  });
 });
