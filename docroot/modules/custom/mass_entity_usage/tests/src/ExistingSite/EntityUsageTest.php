@@ -41,7 +41,7 @@ class EntityUsageTest extends ExistingSiteBase {
     // to avoid long cleaning times that break this test.
     // Note this avoids triggering events on bulk deletes, such as at
     // \Drupal\entity_usage\EntityUsage::bulkDeleteTargets().
-    \Drupal::service('database')->delete('entity_usage')->execute();
+    \Drupal::service('database')->truncate('entity_usage')->execute();
 
     $this->emptyEntityUsageQueues();
     $user = User::create(['name' => $this->randomMachineName()]);
