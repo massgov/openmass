@@ -30,6 +30,7 @@ function loadChatbot(labelsIncluded = [], cohortsIncluded = [], totalCohorts = 1
 }
 
 async function getCohortTargets() {
+  // @todo Compile JSON into the same file on build.
   const response = await fetch(window.location.origin + "/themes/custom/mass_theme/overrides/js/cohorts.json");
   const json = await response.json();
 
