@@ -92,11 +92,6 @@
         $parentRow.toggleClass('expanded');
         $targetRow.toggleClass('open');
 
-        // If feedback text is open, trigger click to close
-        // closes div and switches link text
-        if ($parentRow.find('.survey-response.open').length) {
-          $parentRow.find('.feedback-text-toggle').click();
-        }
       });
 
       // Open / close survey text cells
@@ -110,10 +105,8 @@
         var $cell = $(this);
         var charCount = $cell.text().length;
         var $td = $cell.closest('.survey-response');
-        var $toggle = $td.find('.feedback-text-toggle');
 
         if (charCount >= feedbackCount) {
-          $td.addClass('truncated');
           if (charCount >= medium && charCount < long) {
             $td.addClass('text-medium');
           }
@@ -124,44 +117,9 @@
             $td.addClass('text-very-long');
           }
         }
-        else {
-          $toggle.remove();
-        }
-
-        $toggle.on('click', function () {
-          $td.toggleClass('open');
-
-          $toggle.text(function (i, text) {
-            return text === 'Show More' ? 'Show Less' : 'Show More';
-          });
-        });
-      });
-
-      // Open / close survey user text
-      var $surveyTextCell = $('#feedback-table .survey-results__column .user-text', context);
-      var surveyCharCount = 530;
-
-      $surveyTextCell.each(function () {
-        var $surveyCell = $(this);
-        var $surveyResponse = $surveyCell.find('.survey-data-value');
-        var $toggle = $surveyCell.find('.feedback-text-toggle');
-
-        if ($surveyResponse.text().length >= surveyCharCount) {
-          $surveyCell.addClass('truncated');
-        }
-        else {
-          $toggle.remove();
-        }
-
-        $toggle.on('click', function () {
-          $surveyCell.toggleClass('open');
-
-          $toggle.text(function (i, text) {
-            return text === 'Show More' ? 'Show Less' : 'Show More';
-          });
-        });
 
       });
+
     }
   };
 })(jQuery, Drupal);
