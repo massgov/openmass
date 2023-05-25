@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * Enlarge 'target_id_string' and 'source_id_string' columns to 255 (#3335488).
+ * This is duplicate of the entity_usage_update_8206 to avoid schema changes.
+ */
+function mass_entity_usage_update_8206(): void {
+  // In early alpha versions of the module, the "target_id_string" column was
+  // nullable. We will update the column definition to NOT NULL, so make sure no
+  // NULL values are present.
+  $database = \Drupal::database();
+  $database->update('entity_usage')
+    ->fields(['target_id_string' => ''])
+    ->condition('target_id_string', NULL, 'IS NULL')
+    ->execute();
+
+  // Drop all indices involving columns we want to change.
+  $schema = $database->schema();
+  $schema->dropPrimaryKey('entity_usage');
+  $schema->dropIndex('entity_usage', 'target_entity_string');
+  $schema->dropIndex('entity_usage', 'source_entity_string');
+
+  $specs = [
+    'target_id_string' => [
+      'description' => 'The target ID, when the entity uses string IDs.',
+      'type' => 'varchar_ascii',
+      'length' => 255,
+      'not null' => TRUE,
+      'default' => '',
+    ],
+    'source_id_string' => [
+      'description' => 'The source ID, when the entity uses string IDs.',
+      'type' => 'varchar_ascii',
+      'length' => 255,
+      'not null' => FALSE,
+    ],
+  ];
+
+  // Change columns max length.
+  foreach ($specs as $field => $spec) {
+    $schema->changeField('entity_usage', $field, $field, $spec);
+  }
+
+  // Add back the removed primary key index.
+  $schema->addPrimaryKey('entity_usage', [
+    'target_id',
+    'target_id_string',
+    'target_type',
+    'source_id',
+    'source_type',
+    'source_langcode',
+    'source_vid',
+    'method',
+    'field_name',
+  ]);
+
+  // Add back the removed indexes.
+  $schema->addIndex('entity_usage', 'target_entity_string', [
+    'target_type',
+    'target_id_string',
+  ], [
+    'fields' => [
+      'target_id_string' => [
+        'description' => 'The target ID, when the entity uses string IDs.',
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'target_type' => [
+        'description' => 'The target entity type.',
+        'type' => 'varchar_ascii',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'indexes' => [
+      'target_entity_string' => ['target_type', 'target_id_string'],
+    ],
+  ]);
+  $schema->addIndex('entity_usage', 'source_entity_string', [
+    'source_type',
+    'source_id_string',
+  ], [
+    'fields' => [
+      'source_id_string' => [
+        'description' => 'The source ID, when the entity uses string IDs.',
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'not null' => FALSE,
+      ],
+      'source_type' => [
+        'description' => 'The source entity type.',
+        'type' => 'varchar_ascii',
+        'length' => 128,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'indexes' => [
+      'source_entity_string' => ['source_type', 'source_id_string'],
+    ],
+  ]);
+}
