@@ -1,0 +1,17 @@
+mass_analytics.analytics_new:
+  path: '/node/{node}/analytics-new'
+  defaults:
+    _controller: '\Drupal\mass_analytics\Controller\MassAnalyticsController::build'
+    _title: 'Analytics NEW'
+  requirements:
+    _permission: 'view analytics pages'
+    _custom_access: '\Drupal\mass_analytics\Controller\MassAnalyticsController::access'
+  options:
+    _admin_route: TRUE
+mass_analytics.config:
+  path: '/admin/config/mass/analytics'
+  defaults:
+    _form: 'Drupal\mass_analytics\Form\ConfigForm'
+    _title: 'Analytics configuration'
+  requirements:
+    _permission: 'administer analytics configuration'

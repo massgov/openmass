@@ -1,19 +1,21 @@
 <?php
 
-namespace Drupal\mass_route_iframes\Controller;
+namespace Drupal\mass_analytics\Controller;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\token\Token;
 
 /**
- * Class MassRouteIframeController.
+ * Class MassAnalyticsController.
  *
- * @package Drupal\mass_route_iframes\Controller
+ * @package Drupal\mass_analytics\Controller
  */
-class MassRouteIframeController extends ControllerBase {
+class MassAnalyticsController extends ControllerBase {
 
   const SCOPE = [
     'binder',
@@ -37,10 +39,18 @@ class MassRouteIframeController extends ControllerBase {
   protected $token;
 
   /**
+   * State service object.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
    * Constructs a new MassRouteIframeController object.
    */
-  public function __construct(Token $token) {
+  public function __construct(Token $token, StateInterface $state) {
     $this->token = $token;
+    $this->state = $state;
   }
 
   /**
@@ -49,6 +59,7 @@ class MassRouteIframeController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('token'),
+      $container->get('state')
     );
   }
 
@@ -62,8 +73,8 @@ class MassRouteIframeController extends ControllerBase {
    *   The iframe render array or a no match message render array.
    */
   public function build(NodeInterface $node) {
-
-    $config_url = $this->token->replace('//lookerstudio.google.com/embed/reporting/7c31eece-2eb6-446b-a4f0-185ba8b8f398/page/A63OD?params=%7B"nodeId":[node:nid]%7D', ['node' => $node]);
+    $looker_studio_url = $this->state->get('mass_analytics.looker_studio_url', '') . '?params=%7B"nodeId":[node:nid]%7D';
+    $config_url = $this->token->replace($looker_studio_url, ['node' => $node]);
     return [
       '#theme' => 'route_iframe',
       '#config' => $config_url,
