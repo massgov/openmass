@@ -150,6 +150,8 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
 
   if ($view->id() == 'content_reports' && $view->getDisplay()->display['id'] == 'page_orgs') {
     $nids = [];
+    $nids_to_check = [];
+    $deleted_nids = [];
     // Get nids where field_organizations is empty.
     $sub_query = \Drupal::entityQuery('node')->accessCheck(FALSE)
       ->notExists('field_organizations');
@@ -160,6 +162,14 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
       ->exists('field_organizations')
       ->condition('field_organizations.%delta.entity:node.status', '0', '=');
     $nids_to_check = $sub_query->execute();
+
+    // Get the nodes which has the value for the field,
+    // but the actual entity is deleted..
+    $sub_query = \Drupal::entityQuery('node')->accessCheck(FALSE)
+      ->exists('field_organizations')
+      ->condition('field_organizations.%delta.entity:node.nid',NULL, 'IS NULL');
+    $deleted_nids = $sub_query->execute();
+    $nids_to_check = array_merge($nids_to_check, $deleted_nids);
 
     if (!empty($nids_to_check)) {
 
