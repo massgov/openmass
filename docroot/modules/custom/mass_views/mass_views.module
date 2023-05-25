@@ -167,7 +167,7 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     // but the actual entity is deleted..
     $sub_query = \Drupal::entityQuery('node')->accessCheck(FALSE)
       ->exists('field_organizations')
-      ->condition('field_organizations.%delta.entity:node.nid',NULL, 'IS NULL');
+      ->condition('field_organizations.%delta.entity:node.nid', NULL, 'IS NULL');
     $deleted_nids = $sub_query->execute();
     $nids_to_check = array_merge($nids_to_check, $deleted_nids);
 
