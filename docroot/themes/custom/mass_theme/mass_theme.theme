@@ -3735,7 +3735,7 @@ function mass_theme_library_info_alter(&$libraries) {
 
   $chatbot_env = theme_get_setting('chatbot_env');
   $chatbot_url = !empty($chatbot_env) && $chatbot_env == 'dev' ? 'https://chatbot-dev.digital.mass.gov' : 'https://chatbot.digital.mass.gov';
-  $libraries['global-styling']['js'][$chatbot_url . '/cohort-deployments/chatbot-cohort-test.js'] = [
+  $libraries['global-styling']['js'][$chatbot_url . '/cohort-deployments/main-bundle.js'] = [
     'type' => 'external',
     'minified' => false,
   ];
