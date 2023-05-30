@@ -1,5 +1,19 @@
 
 
+## [0.363.0] - May 30, 2023
+
+### Changed
+  - DP-27345: Update Geo modules and misc modules to Drupal 10
+  - DP-27941: Banner image on info details added to Twitter and OG image metadata
+  - DP-28252: D10 module updates - ctools, dbal, key, entity_reference_tree, entity_heirarchy, purge
+  - DP-28334: Fix 500 error in KeyAuth module
+  - DP-28340: D10 upgrade path modules
+  
+### Added
+  - DP-28300: Add CSV export functionality to orphan reports.
+  
+
+
 ## [0.362.0] - May 23, 2023
 
 ### Fixed
