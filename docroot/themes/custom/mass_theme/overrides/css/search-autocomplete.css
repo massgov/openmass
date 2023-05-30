@@ -607,7 +607,7 @@ div.fsSaveIncomplete a:focus {
 }
 */
 
-.fsPagination .fsPreviousButton span.fsFull:after,
+/* .fsPagination .fsPreviousButton span.fsFull:after,
 .fsPagination .fsNextButton span.fsFull:after {
   content: "";
   display: inline-block;
@@ -620,13 +620,13 @@ div.fsSaveIncomplete a:focus {
   margin: 0;
   position: absolute;
   top: 50%;
-  left: 45%;
+  left: 20%;
 
   transform-origin: 50% 50%;
   transform: translate(-50%, -50%) rotate(-45deg);
   transition: all .2s;
   vertical-align: middle;
-}
+} */
 
 /* .fsPagination .fsPreviousButton:after {
 
@@ -641,13 +641,20 @@ div.fsSaveIncomplete a:focus {
 
 
 /* .fsProgress prorgress bar container */
-.fsProgress {
-  display: flex;
-  margin: 0;
+.fsSubmit.fsPagination .fsProgress {
+  margin: 9px 0;
 }
+
+.fsProgressBarContainer {
+  display: flex;
+  flex-direction: row;
+}
+
 .fsProgress .fsProgressBarContainer,
 .fsProgress .fsProgressBar {
-  height: 1.5em;
+  height: 2em; /* 1.5em; */
+
+  order: 2;
 }
 
 .fsProgress .fsProgressText {
