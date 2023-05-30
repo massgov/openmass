@@ -93,7 +93,7 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
     // Builds 'Flagged inappropriate' input.
     $form['flagged_inappropriate'] = [
       '#type' => 'checkboxes',
-      '#options' => ['flagged_inappropriate' => $this->t('Hide feedback flagged as low quality')],
+      '#options' => ['flagged_inappropriate' => $this->t('Show feedback flagged as low quality')],
       '#title' => $this->t('Filter by feedback quality'),
       '#default_value' => !empty($feedback_api_params['flagged_inappropriate']) ? ['flagged_inappropriate'] : [],
     ];
