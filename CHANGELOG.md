@@ -1,5 +1,21 @@
 
 
+## [0.362.0] - May 23, 2023
+
+### Fixed
+  - DP-26364: Map is included in the link.
+  
+### Changed
+  - DP-28136: Changes to feedback manager user interface.
+  - DP-28203: Increase resources for Backstop test job
+  - DP-28265: Add a space between the file size and the fiel title to be rendered in Firefox.
+  
+### Added
+  - DP-28202: Add new language to Mass.gov - Hmong
+  - DP-28301: Make report of visitor help pages.
+  
+
+
 ## [0.361.0] - May 16, 2023
 
 ### Fixed

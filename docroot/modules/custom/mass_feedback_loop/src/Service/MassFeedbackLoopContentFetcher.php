@@ -441,14 +441,7 @@ class MassFeedbackLoopContentFetcher {
         'class' => ['feedback-wide'],
       ];
     }
-    if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Requires Response'),
-        ],
-        'class' => ['feedback-medium'],
-      ];
-    }
+
     if (empty($limit_fields) || in_array('tags', $limit_fields)) {
       $table['#header'][] = [
         'data' => [
@@ -504,7 +497,7 @@ class MassFeedbackLoopContentFetcher {
             }
             else {
               $row['source_page'] = [
-                '#markup' => $node_check->title,
+                '#markup' => $node_check->title ?? '',
               ];
             }
           }
@@ -512,35 +505,8 @@ class MassFeedbackLoopContentFetcher {
             // Builds "Feedback Text".
             $feedback_text = (!empty($feedback['text'])) ? $feedback['text'] : '';
             $row['text'] = [
-              '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span><span class="feedback-text-toggle">Show More</span>',
+              '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span>',
               '#wrapper_attributes' => ['class' => 'survey-response'],
-            ];
-          }
-          if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
-            $response_info = 'N/A';
-            if (!empty($feedback['requested_response'])) {
-              if ($feedback['requested_response'] === 'Yes') {
-                $response_info = '<span class="feedback-bold">Yes</span>';
-                if (!empty($feedback['first_name'])) {
-                  $response_info .= $feedback['first_name'] . ' ';
-                }
-                if (!empty($feedback['last_name'])) {
-                  $response_info .= $feedback['last_name'] . '<br />';
-                }
-                if (!empty($feedback['email'])) {
-                  $response_info .= $feedback['email'] . '<br />';
-                }
-                if (!empty($feedback['phone'])) {
-                  $response_info .= $feedback['phone'];
-                }
-              }
-              else {
-                $response_info = 'No';
-              }
-            }
-
-            $row['requires_response'] = [
-              '#markup' => $response_info,
             ];
           }
 

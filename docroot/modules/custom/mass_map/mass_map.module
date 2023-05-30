@@ -116,6 +116,9 @@ function mass_map_node_view(array &$build, EntityInterface $entity, EntityViewDi
 function mass_map_preprocess_node(&$variables) {
   $node = $variables['node'];
   if ($node->bundle() === 'contact_information' && !empty($variables['elements']['#view_mode']) && $variables['elements']['#view_mode'] === 'map') {
+    if ($current_page = \Drupal::routeMatch()->getParameter('node')) {
+      $variables['parent_label'] = $current_page->label();
+    }
     $address = $node->field_ref_address->entity;
     $massMap = \Drupal::service('mass_map');
     $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);
