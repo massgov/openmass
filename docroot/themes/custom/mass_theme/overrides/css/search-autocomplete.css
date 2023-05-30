@@ -573,6 +573,7 @@ div.fsSaveIncomplete a:focus {
 
 .fsForm.fsSingleColumn div.fsSaveIncomplete a:hover,
 .fsForm.fsSingleColumn div.fsSaveIncomplete a:focus {
+  color: #fff;
   background-color: #14558f;
 }
 
@@ -605,6 +606,38 @@ div.fsSaveIncomplete a:focus {
   background-color: #14558f !important;
 }
 */
+
+.fsPagination .fsPreviousButton:after,
+.fsPagination .fsNextButton:after {
+  content: "";
+  display: inline-block;
+  border-color: #fff;
+  border-width: 5px;
+  border-right: 4px solid;
+  border-bottom: 4px solid;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 45%;
+
+  transform-origin: 50% 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transition: all .2s;
+  vertical-align: middle;
+}
+
+/* .fsPagination .fsPreviousButton:after {
+
+
+
+}
+
+.fsPagination .fsNextButton:after {
+
+  transform: translate(-50%, -50%) rotate(-45deg);
+} */
 
 
 /* .fsProgress prorgress bar container */
