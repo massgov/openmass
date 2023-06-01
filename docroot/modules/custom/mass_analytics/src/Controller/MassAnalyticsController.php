@@ -89,11 +89,7 @@ class MassAnalyticsController extends ControllerBase {
    *   Return true if the node is one of the list.
    */
   public function access(NodeInterface $node) {
-    $access = FALSE;
-    if (in_array($node->bundle(), self::SCOPE)) {
-      $access = TRUE;
-    }
-    return AccessResult::allowedIf($access);
+    return AccessResult::allowedIf(in_array($node->bundle(), self::SCOPE));
   }
 
 }
