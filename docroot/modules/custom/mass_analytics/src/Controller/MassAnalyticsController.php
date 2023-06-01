@@ -90,7 +90,6 @@ class MassAnalyticsController extends ControllerBase {
    */
   public function access(NodeInterface $node) {
     $access = FALSE;
-    $node->bundle();
     if (in_array($node->bundle(), self::SCOPE)) {
       $access = TRUE;
     }
