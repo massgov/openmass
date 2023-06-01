@@ -74,10 +74,10 @@ class MassAnalyticsController extends ControllerBase {
    */
   public function build(NodeInterface $node) {
     $looker_studio_url = $this->state->get('mass_analytics.looker_studio_url', '') . '?params=%7B"nodeId":[node:nid]%7D';
-    $config_url = $this->token->replace($looker_studio_url, ['node' => $node]);
+    $iframe_url = $this->token->replace($looker_studio_url, ['node' => $node]);
     return [
       '#theme' => 'route_iframe',
-      '#config' => $config_url,
+      '#config' => $iframe_url,
       '#iframe_height' => 2200,
       '#cache' => [
         'max-age' => 0,
