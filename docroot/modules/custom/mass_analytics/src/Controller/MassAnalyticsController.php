@@ -17,7 +17,7 @@ use Drupal\token\Token;
  */
 class MassAnalyticsController extends ControllerBase {
 
-  const SCOPE = [
+  const BUNDLES = [
     'binder',
     'curated_list',
     'org_page',
@@ -89,7 +89,7 @@ class MassAnalyticsController extends ControllerBase {
    *   Return true if the node is one of the list.
    */
   public function access(NodeInterface $node) {
-    return AccessResult::allowedIf(in_array($node->bundle(), self::SCOPE));
+    return AccessResult::allowedIf(in_array($node->bundle(), self::BUNDLES));
   }
 
 }
