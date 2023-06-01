@@ -57,12 +57,11 @@ class MassEntityUsageCommands extends DrushCommands {
    * @command mass-content:usage-regenerate
    * @aliases maur,mass-usage-regenerate
    * @option batch-size
-   *   When --use-queue is used, the queue will be populated in a batch process
-   *   to avoid memory issues. The --batch-size flag can be optionally used to
+   *   The --batch-size flag can be optionally used to
    *   specify the batch size, for example --batch-size=500.
    */
   public function recreate($options = ['batch-size' => 1000]) {
-    $this->database->delete('queue')->condition('name', 'entity_usage_tracker')->execute();
+    $this->database->delete('queue_unique')->condition('name', 'entity_usage_tracker')->execute();
     $this->queueBatchManager->populateQueue($options['batch-size']);
     drush_backend_batch_process();
   }
