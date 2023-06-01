@@ -39,18 +39,10 @@ class MassAnalyticsController extends ControllerBase {
   protected $token;
 
   /**
-   * State service object.
-   *
-   * @var \Drupal\Core\State\StateInterface
-   */
-  protected $state;
-
-  /**
    * Constructs a new MassRouteIframeController object.
    */
-  public function __construct(Token $token, StateInterface $state) {
+  public function __construct(Token $token) {
     $this->token = $token;
-    $this->state = $state;
   }
 
   /**
@@ -58,8 +50,7 @@ class MassAnalyticsController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('token'),
-      $container->get('state')
+      $container->get('token')
     );
   }
 
@@ -73,16 +64,20 @@ class MassAnalyticsController extends ControllerBase {
    *   The iframe render array or a no match message render array.
    */
   public function build(NodeInterface $node) {
-    $looker_studio_url = $this->state->get('mass_analytics.looker_studio_url', '') . '?params=%7B"nodeId":[node:nid]%7D';
-    $iframe_url = $this->token->replace($looker_studio_url, ['node' => $node]);
-    return [
-      '#theme' => 'route_iframe',
-      '#config' => $iframe_url,
-      '#iframe_height' => 2200,
-      '#cache' => [
-        'max-age' => 0,
-      ],
-    ];
+    $config = $this->config('mass_analytics.settings');
+    if (!empty($config->get('looker_studio_url'))) {
+      $looker_studio_url = $config->get('looker_studio_url') . '?params=%7B"nodeId":[node:nid]%7D';
+      $iframe_url = $this->token->replace($looker_studio_url, ['node' => $node]);
+      return [
+        '#theme' => 'route_iframe',
+        '#config' => $iframe_url,
+        '#iframe_height' => 2200,
+        '#cache' => [
+          'max-age' => 0,
+        ],
+      ];
+    }
+    return [];
   }
 
   /**
