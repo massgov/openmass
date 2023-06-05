@@ -577,13 +577,22 @@ div.fsSaveIncomplete a {
 .fsPagination .fsPreviousButton,
 .fsPagination .fsNextButton {
   float: none !important;
-  margin-right: 2em;
-
   position: relative;
+  margin: 0.5em 0;
+}
+
+.fsPagination .fsPreviousButton {
+  margin-right: 2em;
+}
+
+@media (max-width: 480px) {
+  .fsPagination .fsPreviousButton {
+      margin-right: 1em;
+  }
 }
 
 .fsPagination .fsPreviousButton span.fsFull {
-  margin-left: 1em; /* 10%; */
+  margin-left: 1em;
 }
 
 .fsPagination .fsNextButton span.fsFull {
