@@ -540,7 +540,7 @@ div.fsSaveIncomplete a {
   -ms-flex-pack: center;
   justify-content: center;
   letter-spacing: .1em;
-  padding: 0.4em 1em;
+  padding: 0.4em 1.5em; /* 1em; */
   text-decoration: none;
   text-transform: uppercase;
   -webkit-transition: all .4s ease;
@@ -578,29 +578,53 @@ div.fsSaveIncomplete a {
 .fsPagination .fsNextButton {
   float: none !important;
   margin-right: 2em;
+
+  position: relative;
+}
+
+.fsPagination .fsPreviousButton {
+  margin-left: 10%;
+}
+
+.fsPagination .fsNextButton {
+  margin-left: 10%;
 }
 
 /* pagination button arrows */
-.fsPagination .fsPreviousButton span.fsFull:before {
+.fsPagination .fsPreviousButton span.fsFull:before,
+.fsPagination .fsNextButton span.fsFull:before {
   display: inline-block;
   content: "";
 
-  border-right: 4px solid;
-  border-bottom: 4px solid;
+  border-right: 2px solid;
+  border-bottom: 2px solid;
   transition: all .2s;
   vertical-align: middle;
 
   border-color: #fff;
-  border-width: 5px;
-  height: 15px;
+  border-width: 3px;
+  width: 10px;
+  height: 10px;
   margin: 0;
+
   position: absolute;
   top: 50%;
-  left: 45%;
-  transform: translate(-50%, -50%) rotate(-45deg);
-  transform-origin: 50% 50%;
-  width: 15px;
 
+  transform-origin: 50% 50%;
+}
+
+.fsPagination .fsPreviousButton span.fsFull:before {
+  margin-right: 0.5em;
+  left: 15%;
+  transform: translate(-50%, -50%) rotate(-225deg);
+  /* transform-origin: 50% 50%; */
+}
+
+.fsPagination .fsPreviousButton span.fsFull:before {
+  margin-left: 0.5em;
+  right: 15%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  /* transform-origin: 50% 50%; */
 }
 
 /* .fsProgress prorgress bar container */
