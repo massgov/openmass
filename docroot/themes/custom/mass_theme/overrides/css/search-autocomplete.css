@@ -623,23 +623,27 @@ div.fsSaveIncomplete a {
 }
 
 .fsPagination .fsPreviousButton span.fsFull:before {
-  /* margin-right: 0.5em; */
   left: 15%;
-  transform-origin: 50% 50%;
   transform: translate(-50%, -50%) rotate(-225deg);
 }
 
 .fsPagination .fsNextButton span.fsFull:after {
-  /* margin-left: 0.5em; */
   right: 15%;
-  transform-origin: 50% 50%;
   transform: translate(0%, -50%) rotate(-45deg);
 }
 
 /* .fsProgress prorgress bar container */
 .fsSubmit.fsPagination .fsProgress {
   margin: 0;
-  padding-top: 3em;
+  padding-top: 1.5em;
+}
+
+.fsSubmit.fsPagination .fsProgress:after {
+  content: ":";
+}
+
+.fsProgress .fsProgressBarContainer {
+  margin-left: 5em;
 }
 
 .fsProgress .fsProgressBarContainer,
@@ -648,10 +652,9 @@ div.fsSaveIncomplete a {
 }
 
 .fsProgress .fsProgressText {
-  margin-top: -4.5em;
+  margin-top: -2.5em;
   padding-top: 1.2em;
   font-size: 1.25rem;
   font-weight: 500;
   text-align: left;
 }
-
