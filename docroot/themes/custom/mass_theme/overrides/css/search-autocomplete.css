@@ -519,17 +519,9 @@ button.ma__input-number__minus {
   box-shadow: none !important;
 }
 
-.page-content .sfForm.fsSingleColumn .fsSaveIncomplete {
-  /* background: none !important;
-  background-color: red;
-  box-shadow: none !important; */
-}
-
 div.fsSaveIncomplete a {
   /* override sf styles */
-  margin: 2em 2em 2em 0;
-  /* margin-top: 2em; */
-  /* margin-bottom: 1em; */
+  margin: 2em 0;
   /* button */
   cursor: pointer;
   font-family: "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif;
@@ -560,14 +552,7 @@ div.fsSaveIncomplete a {
   font-weight: 550;
   background-color: #fff;
   border-color: rgba(20, 85, 143, .5);
-  /* color: #14558f; */
 }
-
-/* div.fsSaveIncomplete a:hover,
-div.fsSaveIncomplete a:focus {
-  color: #fff;
-  background-color: #14558f;
-} */
 
 .fsForm.fsSingleColumn div.fsSaveIncomplete a {
   color: #14558f;
@@ -581,10 +566,10 @@ div.fsSaveIncomplete a:focus {
 
 .fsSaveIncomplete a {
   display: block;
-  /* padding: 0.4em 1em; */
   text-decoration: none;
 }
 
+/* pagination component */
 .fsPagination {
   width: 100%;
 }
@@ -592,12 +577,36 @@ div.fsSaveIncomplete a:focus {
 .fsPagination .fsPreviousButton,
 .fsPagination .fsNextButton {
   float: none !important;
+  margin-right: 2em;
+}
+
+/* pagination button arrows */
+.fsPagination .fsPreviousButton span.fsFull:before {
+  display: inline-block;
+  content: "";
+
+  border-right: 4px solid;
+  border-bottom: 4px solid;
+  transition: all .2s;
+  vertical-align: middle;
+
+  border-color: #fff;
+  border-width: 5px;
+  height: 15px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 45%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  transform-origin: 50% 50%;
+  width: 15px;
+
 }
 
 /* .fsProgress prorgress bar container */
 .fsSubmit.fsPagination .fsProgress {
-  margin: 9px 0;
-  padding-top: 2em;
+  margin: 0;
+  padding-top: 3em;
 }
 
 .fsProgress .fsProgressBarContainer,
@@ -606,8 +615,8 @@ div.fsSaveIncomplete a:focus {
 }
 
 .fsProgress .fsProgressText {
-  margin-top: -3.5em;
-  padding-top: 0.3em;
+  margin-top: -4.5em;
+  padding-top: 1.2em;
   font-size: 1.25rem;
   font-weight: 500;
   text-align: left;
