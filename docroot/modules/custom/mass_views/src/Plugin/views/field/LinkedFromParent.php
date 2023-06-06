@@ -72,7 +72,7 @@ class LinkedFromParent extends FieldPluginBase {
   public function query() {
     // Do nothing -- to override the parent query.
   }
-  
+
   /**
    * {@inheritdoc}
    */
