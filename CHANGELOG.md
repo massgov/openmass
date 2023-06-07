@@ -2,6 +2,9 @@
 
 ## [0.363.0] - June 6, 2023
 
+### Fixed
+  - DP-28447: Fix Twig integer filter errors on image promos.
+
 ### Changed
   - DP-22494: Upgrade Mayflower PHP version to v8.
   - DP-27345: Update Geo modules and misc modules to Drupal 10
