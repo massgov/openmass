@@ -74,7 +74,11 @@
       {% set logInButtons = logInButtons|merge([button]) %}
     {% endfor %}
   {% endif %}
-
+  {% if translationLinks %}
+    {% include "@organisms/by-author/inline-links-language.twig" with {
+      "inlineLinks": translationLinks
+    } %}
+  {% endif %}
   {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
       "layout": bannerImageWide ? "overlay" : "",
