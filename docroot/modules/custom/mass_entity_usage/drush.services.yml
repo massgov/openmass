@@ -1,0 +1,6 @@
+services:
+  mass_entity_usage.commands:
+    class: \Drupal\mass_entity_usage\Commands\MassEntityUsageCommands
+    arguments: ['@mass_entity_usage.queue_batch_manager', '@entity_type.manager', '@config.factory', '@database']
+    tags:
+      - { name: drush.command }
