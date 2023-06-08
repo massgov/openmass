@@ -37,7 +37,7 @@ switch(target) {
     alias = '@self';
     break;
   case 'test':
-    base = 'https://edit.stage.mass.gov';
+    base = 'https://stage.mass.gov';
     alias = '@test';
     auth = getAuth();
     break;
