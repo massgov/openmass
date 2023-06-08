@@ -102,12 +102,11 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             // Get collection terms matching the field_url_name
             $query = Drupal::entityQuery('taxonomy_term');
             $query
-              ->accessCheck(FALSE)
               ->condition('vid', 'collections')
               ->condition('field_url_name', $collection)
               ->range(0, 1);
 
-            $res = $query->execute();
+            $res = $query->accessCheck(FALSE)->execute();
             if ($res) {
               $tid = reset($res);
               $term = Term::load($tid);
