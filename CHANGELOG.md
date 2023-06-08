@@ -1,3 +1,8 @@
+## [0.363.1] - June 8, 2023
+
+### Fixed
+- DP-28467: Updated google_tag to address config bug.
+
 
 
 ## [0.363.0] - June 6, 2023
