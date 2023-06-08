@@ -1,5 +1,30 @@
 
 
+## [0.363.0] - June 6, 2023
+
+### Fixed
+  - DP-28447: Fix Twig integer filter errors on image promos.
+
+### Changed
+  - DP-22494: Upgrade Mayflower PHP version to v8.
+  - DP-27345: Update Geo modules and misc modules to Drupal 10
+  - DP-27941: Banner image on info details added to Twitter and OG image metadata
+  - DP-27983: D10 - update redirect module
+  - DP-28133: Modify report of pages with no parents not to show executive orders.
+  - DP-28252: D10 module updates - ctools, dbal, key, entity_reference_tree, entity_heirarchy, purge
+  - DP-28334: Fix 500 error in KeyAuth module
+  - DP-28340: D10 upgrade path modules
+  - DP-28411: Eliminate truncation of titles in table of contents on binder.
+  
+### Added
+  - DP-28139: Add a linked from parent field to Children and Parents report.
+  - DP-28274: Add Analytics NEW tab for authors when editing.
+  - DP-28300: Add CSV export functionality to orphan reports.
+  - DP-28303: Added Entity usage regenerate new custom command.
+  - DP-28370: Add language functionality to service page.
+  
+
+
 ## [0.362.0] - May 23, 2023
 
 ### Fixed
