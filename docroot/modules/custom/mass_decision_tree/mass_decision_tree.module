@@ -57,7 +57,7 @@ function mass_decision_tree_preprocess_node(&$variables) {
     $query = Drupal::entityQuery('node')
       ->condition('type', $allowed_bundles, 'IN')
       ->condition('field_decision_root_ref', $root_nid);
-    $descendant_ids = $query->accessCheck(FALSE)->execute();
+    $descendant_ids = $query->execute();
 
     // Find all descendants which are reachable from the root node.
     /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */

@@ -131,12 +131,11 @@
 {% if node.field_info_details_header_media.isempty == false %}
   {% set preContentMedia = true %}
 {% endif %}
-
-{% block preContentMedia %}
-  {% if preContentMedia %}
-   {{ content.field_info_details_header_media }}
-  {% endif %}
-{% endblock %}
+{% if preContentMedia %}
+  {% block preContentMedia %}
+    {{ content.field_info_details_header_media }}
+  {% endblock %}
+{% endif %}
 
 {% block pageContent %}
 
