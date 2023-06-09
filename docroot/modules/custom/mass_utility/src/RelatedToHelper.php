@@ -81,7 +81,7 @@ class RelatedToHelper {
       $query->condition('status', 1);
       $query->sort('created', 'DESC');
 
-      $nids = $query->accessCheck(FALSE)->execute();
+      $nids = $query->execute();
       return \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     }
     else {
