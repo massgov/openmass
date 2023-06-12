@@ -867,6 +867,13 @@ function mass_content_views_query_alter(ViewExecutable $view, QueryPluginBase $q
 /**
  * Implements hook_query_TAG_alter().
  */
+function mass_content_query_sort_by_random_alter(AlterableInterface $query) {
+  $query->orderRandom();
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
 function mass_content_query_collection_all_alter(AlterableInterface $query) {
   /** @var Drupal\Core\Database\Query\Select $query */
   // To identify later this result is from a node.
