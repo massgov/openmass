@@ -3,7 +3,6 @@
 namespace Drupal\mayflower\Twig;
 
 use Twig\Loader\FilesystemLoader;
-use Twig\Error\LoaderError;
 
 /**
  * Twig loader to load Mayflower templates from the library.
@@ -32,8 +31,8 @@ class MayflowerLoader extends FilesystemLoader {
         $this->setPaths([$path], $namespace);
       }
       // Throw a more friendly error message.
-      catch (LoaderError $e) {
-        throw new LoaderError(sprintf('It looks like a Mayflower directory is not properly configured: %s', $e->getMessage()), -1, $e);
+      catch (\Twig_Error_Loader $e) {
+        throw new \Twig_Error_Loader(sprintf('It looks like a Mayflower directory is not properly configured: %s', $e->getMessage()), -1, $e);
       }
     }
   }

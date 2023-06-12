@@ -142,11 +142,9 @@
   ] %}
 
   {% set itemsWithContent = 0 %}
-  {% for item in orgNavTabs %}
-    {% if itemsWithContent < 2 %}
-      {% if item %}
-        {% set itemsWithContent = itemsWithContent + 1 %}
-      {% endif %}
+  {% for item in orgNavTabs if itemsWithContent < 2 %}
+    {% if item %}
+      {% set itemsWithContent = itemsWithContent + 1 %}
     {% endif %}
   {% endfor %}
 

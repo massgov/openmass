@@ -862,7 +862,7 @@ function mass_content_deploy_related_content(&$sandbox) {
     $sandbox['progress'] = 0;
     $sandbox['current'] = 0;
     $count = clone $query;
-    $sandbox['max'] = $count->count()->accessCheck(FALSE)->execute();
+    $sandbox['max'] = $count->count()->execute();
   }
 
   $batch_size = 50;
