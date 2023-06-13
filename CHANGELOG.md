@@ -9,7 +9,6 @@
   - DP-27296: Fix deprecation warnings in our custom code (frontend).
   
 ### Changed
-  - DP-28302: Have contact and related links on info details to right of overview if there is no TOC shown, eliminate related links at bottom on desktop.
   - DP-28410: Limit autocomplete for visitor help text to exclude certain content types that are not appropriate.
   - DP-28460: Move config overrides later in settings.php. Fixes analytics new tab
   
