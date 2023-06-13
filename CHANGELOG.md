@@ -1,3 +1,21 @@
+
+
+## [0.364.0] - June 13, 2023
+
+### Added
+  - DP-26782: Added filtering for low quality feedback.
+  
+### Fixed
+  - DP-27296: Fix deprecation warnings in our custom code (frontend).
+  
+### Changed
+  - DP-28302: Have contact and related links on info details to right of overview if there is no TOC shown, eliminate related links at bottom on desktop.
+  - DP-28410: Limit autocomplete for visitor help text to exclude certain content types that are not appropriate.
+  - DP-28460: Move config overrides later in settings.php. Fixes analytics new tab
+  
+### Removed
+  - DP-28479: Removed default config from old version of the Google Tag module.
+  
 ## [0.363.1] - June 8, 2023
 
 ### Fixed
