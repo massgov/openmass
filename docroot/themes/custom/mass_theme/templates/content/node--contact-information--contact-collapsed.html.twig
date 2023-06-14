@@ -94,8 +94,9 @@
       {{ content.field_ref_phone_number|merge({'#level': level }) }}
     {% endif %}
   {% endblock %}
-  {% if secondaryItems %}
-    {% block secondaryContactGroups %}
+
+  {% block secondaryContactGroups %}
+    {% if secondaryItems %}
       {% if node.field_ref_links is not empty %}
         {{ content.field_ref_links|merge({'#level': level }) }}
       {% endif %}
@@ -113,6 +114,6 @@
           } %}
         </div>
       {% endif %}
-    {% endblock %}
-  {% endif %}
+    {% endif %}
+  {% endblock %}
 {% endembed %}

@@ -287,7 +287,33 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
-      conditional_fields: {  }
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - action
+          - alert
+          - contact_information
+          - decision
+          - decision_tree
+          - decision_tree_branch
+          - decision_tree_conclusion
+          - error_page
+          - event
+          - executive_order
+          - external_data_resource
+          - fee
+          - interstitial
+          - news
+          - page
+          - person
+          - regulation
+          - rules
+          - sitewide_alert
+          - stacked_layout
+          - utility_drawer
+      maxlength:
+        maxlength_js: null
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: false
   field_get_updates_links:
     type: link_default
     weight: 126
