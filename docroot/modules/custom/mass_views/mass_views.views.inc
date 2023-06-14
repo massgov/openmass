@@ -114,6 +114,15 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds a linked from Parent field.
+  $data['node_field_data']['linked_from_parent'] = [
+    'title' => t('Linked from parent'),
+    'field' => [
+      'title' => t('Linked from Parent'),
+      'id' => 'linked_from_parent',
+    ],
+  ];
+
   // Adds an org filter for media.
   $data['media_field_data']['media_org_filter'] = [
     'title' => 'Organization Filter',

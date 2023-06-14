@@ -1487,6 +1487,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
 
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
+    $variables['sectionCount'] = $node->field_info_details_sections->count();
 
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
@@ -6005,12 +6006,11 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   // Get collection terms matching the field_url_name
   $query = Drupal::entityQuery('taxonomy_term');
   $query
-    ->accessCheck(FALSE)
     ->condition('vid', 'collections')
     ->condition('field_url_name', $collection)
     ->range(0, 1);
 
-  $res = $query->execute();
+  $res = $query->accessCheck(FALSE)->execute();
   if (!$res) {
     return;
   }
@@ -6477,6 +6477,7 @@ function mass_theme_googletranslate_options_languages() {
     'ha' => 'Hausa',
     'hi' => 'Hindi',
     'hr' => 'Croatian',
+    'hmn' => 'Hmong',
     'hu' => 'Hungarian',
     'ht' => 'Haitian Creole',
     'hy' => 'Armenian',
