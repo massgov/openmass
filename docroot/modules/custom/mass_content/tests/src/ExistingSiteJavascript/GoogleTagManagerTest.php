@@ -32,7 +32,6 @@ class GoogleTagManagerTest extends ExistingSiteSelenium2DriverTestBase {
       'title' => $this->randomMachineName(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    var_dump($node->toUrl()->toString());
     $this->drupalGet($node->toUrl()->toString());
     $this->assertSession()->elementExists('css', 'script[src="https://www.googletagmanager.com/gtm.js?id=GTM-MPHNMQ"]');
     $data_layer = $this->getSession()->evaluateScript('window.dataLayer.length > 0');
