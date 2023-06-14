@@ -200,9 +200,10 @@
     }%}
   {% endif %}
 
+  {% set relatedClass = not no_sidebar ? 'hidden-desktop' %}
   {% if sideContent and sideContent.linkList %}
     {% set linkList = sideContent.linkList %}
-    {% set linkList = linkList|merge({'sidebarHeading': {
+    {% set linkList = linkList|merge({'sectionClass': relatedClass,'sidebarHeading': {
       'title': linkList.sidebarHeading.title,
       'titleContext': linkList.sidebarHeading.titleContext,
       'level': level
