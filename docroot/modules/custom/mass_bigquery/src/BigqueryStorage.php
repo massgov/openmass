@@ -118,10 +118,8 @@ class BigqueryStorage implements BigqueryStorageInterface {
    * {@inheritdoc}
    */
   public function updateRecords(array $ids): bool {
-
-    // TODO is there any way to fail early if key is not set up? getenv?
-    if (FALSE) {
-      $this->logger->warning('Could not find settings for Bigquery connection.');
+    if (getenv('GOOGLE_APPLICATION_CREDENTIALS') === FALSE) {
+      $this->logger->warning('Could not find credentials for BigQuery connection.');
       return FALSE;
     }
     // Delete any previously existing records for these IDs.
