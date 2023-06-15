@@ -127,8 +127,8 @@ class BigqueryStorage implements BigqueryStorageInterface {
     $time = \Drupal::time()->getRequestTime();
     // Fetch data from Bigquery.
     $query =
-        'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys FROM `winged-verbena-220618.MassgovGA4_testing.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
-    $queryResults = $this->bigqueryClient->runQuery('winged-verbena-220618', $query);
+        'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys FROM `MassgovGA4_testing.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
+    $queryResults = $this->bigqueryClient->runQuery($query);
     foreach ($queryResults as $row) {
       $this->database->merge($this->table)
         ->key('nid', $row['nodeId'])

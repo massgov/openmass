@@ -20,11 +20,9 @@ class BigqueryClient {
    * @return \Google\Cloud\BigQuery\BigQueryClient
    *   A client that allows us to query bigquery.
    */
-  private function getClient(string $projectId) {
+  private function getClient() {
     if (!$this->client) {
-      $this->client = new GoogleBigQueryClient([
-        'projectId' => $projectId,
-      ]);
+      $this->client = new GoogleBigQueryClient();
     }
     return $this->client;
   }
@@ -35,8 +33,6 @@ class BigqueryClient {
    * This method may throw an exception if it is unable to reach Superset,
    * or if the query generates an error.
    *
-   * @param string $projectId
-   *   The project Id of your Google Cloud Project.
    * @param string $query
    *   The query to send.
    *
@@ -46,8 +42,8 @@ class BigqueryClient {
    * @throws \Exception
    *   An error from GuzzleHttp.
    */
-  public function runQuery(string $projectId, string $query) {
-    $client = $this->getClient($projectId);
+  public function runQuery(string $query) {
+    $client = $this->getClient();
     $jobConfig = $client->query($query);
     $jobConfig->useQueryCache(FALSE);
     $queryResults = $client->runQuery($jobConfig);
