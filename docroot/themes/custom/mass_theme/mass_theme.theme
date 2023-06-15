@@ -99,14 +99,9 @@ function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, arra
   /** @var \Drupal\views\ViewExecutable $view */
   $view = $variables['view'];
 
-  // Allow all data listing views pages to use the same template file.
-  if (strpos($view->id(), 'data_listing') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
-    $suggestions[] = 'views_view__data_listing';
-  }
-
   // Allow all collection views pages to use the same template file.
   if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
-    $suggestions[] = 'views_view__data_listing';
+    $suggestions[] = 'views_view__collections';
   }
 }
 
@@ -5988,7 +5983,7 @@ function _mass_theme_populate_collection_image_from_collection($collection_term,
 }
 
 /**
- * Adds variables to views-view--data-listing.html.
+ * Adds variables to views-view--collections.html.
  */
 function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $collection = \Drupal::routeMatch()->getParameter('collection');
