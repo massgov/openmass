@@ -6,91 +6,55 @@
  */
 
 /**
- * Implements hook_install().
- */
-function mass_bigquery_install() {
-  \Drupal::messenger()->addStatus(__FUNCTION__);
-}
-
-/**
- * Implements hook_uninstall().
- */
-function mass_bigquery_uninstall() {
-  \Drupal::messenger()->addStatus(__FUNCTION__);
-}
-
-/**
  * Implements hook_schema().
  */
 function mass_bigquery_schema() {
-  $schema['mass_bigquery_example'] = [
+  $schema['mass_bigquery_data'] = [
     'description' => 'Table description.',
     'fields' => [
-      'id' => [
-        'type' => 'serial',
-        'not null' => TRUE,
-        'description' => 'Primary Key: Unique record ID.',
-      ],
-      'uid' => [
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'description' => 'The {users}.uid of the user who created the record.',
-      ],
-      'status' => [
-        'description' => 'Boolean indicating whether this record is active.',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0,
-        'size' => 'tiny',
-      ],
-      'type' => [
-        'type' => 'varchar_ascii',
-        'length' => 64,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => 'Type of the record.',
-      ],
-      'created' => [
+      'nid' => [
         'type' => 'int',
         'not null' => TRUE,
-        'default' => 0,
-        'description' => 'Timestamp when the record was created.',
+        'description' => 'The node ID.',
       ],
-      'data' => [
-        'type' => 'blob',
+      'pageviews' => [
+        'type' => 'int',
+        'description' => 'The pageviews of the node.',
+      ],
+      'last_updated' => [
+        'type' => 'int',
         'not null' => TRUE,
-        'size' => 'big',
-        'description' => 'The arbitrary data for the item.',
+        'description' => 'The UNIX time stamp representing when the node was last updated.',
+      ],
+      'nos_per_1000' => [
+        'type' => 'float',
+        'description' => 'The number of No responses per 1000.',
+      ],
+      'eject_rate' => [
+        'type' => 'float',
+        'description' => 'The eject rate.',
+      ],
+      'total_no' => [
+        'type' => 'int',
+        'description' => 'The total no.',
+      ],
+      'total_yes' => [
+        'type' => 'int',
+        'description' => 'The total yes.',
+      ],
+      'total_feedback' => [
+        'type' => 'int',
+        'description' => 'The total feedback.',
       ],
     ],
-    'primary key' => ['id'],
     'indexes' => [
-      'type' => ['type'],
-      'uid' => ['uid'],
-      'status' => ['status'],
+      'nid' => ['nid'],
+      'last_updated' => ['last_updated'],
+    ],
+    'unique_keys' => [
+      'unique_nid' => ['nid'],
     ],
   ];
 
   return $schema;
-}
-
-/**
- * Implements hook_requirements().
- */
-function mass_bigquery_requirements($phase) {
-  $requirements = [];
-
-  if ($phase == 'runtime') {
-    $value = mt_rand(0, 100);
-    $requirements['mass_bigquery_status'] = [
-      'title' => t('mass_bigquery status'),
-      'value' => t('mass_bigquery value: @value', ['@value' => $value]),
-      'severity' => $value > 50 ? REQUIREMENT_INFO : REQUIREMENT_WARNING,
-    ];
-  }
-
-  return $requirements;
 }
