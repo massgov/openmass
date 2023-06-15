@@ -94,6 +94,7 @@ The ideal case is that Product Owners and developers jointly describe new featur
 ## Tips
 
 - Robust tests create and delete their own content. Relying on production content is brittle.
+- Randomness in tests is non-desireable, as it can cause a situation where a failing test will pass on re-run.
 - Do not break up your tests in to too many classes and methods. Each one has a startup cost and contributes to long test times for the whole suite.
 - Do not change a test that is failing for an unknown reason. Tests are supposed to fail when new work has a negative impact. Don't change a test until you have investigated and understood what purpose the test serves and are confident your new work and any test changes are an improvement.
 - Scheduled tests are managed on the [CircleCI triggers page](https://app.circleci.com/settings/project/github/massgov/openmass/triggers).
