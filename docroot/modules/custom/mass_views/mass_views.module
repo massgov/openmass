@@ -31,7 +31,7 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
     }
   }
 
-  if (in_array($view['view']->id(), ['data_listing_all', 'press_releases']) && $view['view']->getDisplay()->getPluginId() == 'page') {
+  if ($view['view']->id() == 'press_releases' && $view['view']->getDisplay()->getPluginId() == 'page') {
     // Remove sub topics from the data topic filter.
     if (isset($form['topicid'])) {
       // Loop through the field options.
