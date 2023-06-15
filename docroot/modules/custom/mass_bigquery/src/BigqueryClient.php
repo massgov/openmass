@@ -14,9 +14,6 @@ class BigqueryClient {
   /**
    * Setup the client to connect to.
    *
-   * @param string $projectId
-   *   The project Id of your Google Cloud Project.
-   *
    * @return \Google\Cloud\BigQuery\BigQueryClient
    *   A client that allows us to query bigquery.
    */
