@@ -34,7 +34,7 @@
  */
 #}
 
-{{ attach_library('mass_theme/views-view--data-listing') }}
+{{ attach_library('mass_theme/views-view--collections') }}
 
 {% set banner_style = collection is not empty and (collection.description|render is not empty or collection.bg_color != "#FFF") %}
 
@@ -70,7 +70,7 @@
     dom_id ? 'js-view-dom-id-' ~ dom_id,
     'main-content',
     'main-content--two main-content--reversed',
-    'data-listing-wrapper'
+    'collections-wrapper'
   ]
 %}
 
