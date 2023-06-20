@@ -226,6 +226,11 @@
 }
 
 
+/* pagination component container */
+.fsPagination {
+  width: 100%;
+}
+
 /* Previous and Next Button */
 .fsPagination .fsPreviousButton,
 .fsPagination .fsNextButton,
@@ -251,6 +256,9 @@
 .fsForm .fsPagination .fsNextButton {
   /* clear fs styles */
   font-size: 1.25rem;
+  float: none !important;
+  position: relative;
+  margin: 0.5em 0;
 
   /* MF .button */
   line-height: 1.4;
@@ -264,7 +272,7 @@
   line-height: 1.4;
   font-weight: 550;
 
-  font-size: 1.25rem;
+  /* font-size: 1.25rem; */
 }
 
 .fsPreviousButton .fsSlim,
@@ -274,6 +282,14 @@
 
 .fsPagination .fsPreviousButton {
   background-color: #535353 !important;
+
+  margin-right: 2em;
+}
+
+@media (max-width: 480px) {
+  .fsPagination .fsPreviousButton {
+    margin-right: 1em;
+  }
 }
 
 .fsPagination .fsNextButton {
@@ -281,12 +297,55 @@
 }
 
 .fsPagination .fsPreviousButton:hover {
-  background-color: #53535399 !important;
+  background-color: #535353 !important;
 }
 
 .fsPagination .fsNextButton:hover {
   background-color: rgba(20, 85, 143, 0.75) !important;
 }
+
+.fsPagination .fsPreviousButton span.fsFull {
+  margin-left: 1em;
+}
+
+.fsPagination .fsNextButton span.fsFull {
+  margin-right: 1em;
+}
+
+/* pagination button arrows */
+.fsPagination .fsPreviousButton span.fsFull:before,
+.fsPagination .fsNextButton span.fsFull:after {
+  display: inline-block;
+  content: "";
+
+  border-right: 2px solid;
+  border-bottom: 2px solid;
+  transition: all .2s;
+  vertical-align: middle;
+
+  border-color: #fff;
+  border-width: 3px;
+  width: 10px;
+  height: 10px;
+  margin: 0;
+
+  position: absolute;
+  top: 50%;
+
+  transform-origin: 50% 50%;
+}
+
+.fsPagination .fsPreviousButton span.fsFull:before {
+  left: 15%;
+  transform: translate(-50%, -50%) rotate(-225deg);
+}
+
+.fsPagination .fsNextButton span.fsFull:after {
+  right: 15%;
+  transform: translate(0%, -50%) rotate(-45deg);
+}
+
+
 
 .fsBody .fsFieldRow {
   margin-bottom: 3.5rem !important;
@@ -628,28 +687,28 @@ button.ma__input-number__minus {
 } */
 
 /* pagination component */
-.fsPagination {
+/* .fsPagination {
   width: 100%;
-}
+} */
 
-.fsPagination .fsPreviousButton,
+/* .fsPagination .fsPreviousButton,
 .fsPagination .fsNextButton {
   float: none !important;
   position: relative;
   margin: 0.5em 0;
-}
+} */
 
-.fsPagination .fsPreviousButton {
+/* .fsPagination .fsPreviousButton {
   margin-right: 2em;
-}
+} */
 
-@media (max-width: 480px) {
+/* @media (max-width: 480px) {
   .fsPagination .fsPreviousButton {
       margin-right: 1em;
   }
-}
+} */
 
-.fsPagination .fsPreviousButton span.fsFull {
+/* .fsPagination .fsPreviousButton span.fsFull {
   margin-left: 1em;
 }
 
@@ -657,7 +716,7 @@ button.ma__input-number__minus {
   margin-right: 1em;
 }
 
-/* pagination button arrows */
+/* pagination button arrows *//*
 .fsPagination .fsPreviousButton span.fsFull:before,
 .fsPagination .fsNextButton span.fsFull:after {
   display: inline-block;
@@ -688,7 +747,7 @@ button.ma__input-number__minus {
 .fsPagination .fsNextButton span.fsFull:after {
   right: 15%;
   transform: translate(0%, -50%) rotate(-45deg);
-}
+} */
 
 /* .fsProgress prorgress bar container */
 .fsSubmit.fsPagination .fsProgress {
