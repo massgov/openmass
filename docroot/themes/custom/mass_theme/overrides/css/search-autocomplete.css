@@ -226,6 +226,7 @@
 }
 
 
+/* Pagination component */
 /* pagination component container */
 .fsPagination {
   width: 100%;
@@ -271,8 +272,6 @@
   padding: 0.4em 1em;
   line-height: 1.4;
   font-weight: 550;
-
-  /* font-size: 1.25rem; */
 }
 
 .fsPreviousButton .fsSlim,
@@ -282,7 +281,6 @@
 
 .fsForm .fsPagination .fsPreviousButton {
   background-color: #535353 !important;
-
   margin-right: 2em;
 }
 
@@ -296,15 +294,12 @@
   background-color: #14558F !important;
 }
 
-.fsForm .fsPagination .fsPreviousButton:hover {
-  /* background-color: #535353 !important; */
+.fsForm .fsPagination .fsPreviousButton:hover,
+.fsForm .fsPagination .fsNextButton:hover {
   opacity: 0.75;
 }
 
-.fsPagination .fsNextButton:hover {
-  background-color: rgba(20, 85, 143, 0.75) !important;
-}
-
+/* pagination button text label */
 .fsPagination .fsPreviousButton span.fsFull {
   margin-left: 1em;
 }
@@ -347,7 +342,6 @@
 }
 
 
-
 .fsBody .fsFieldRow {
   margin-bottom: 3.5rem !important;
 }
@@ -363,14 +357,13 @@
   margin: 0 !important;
 }
 
-/* .page-content .sfFormfs.fsSingleColumn > .fsSaveIncomplete, */
+
+/* Save Incomplete button component */
 .fsForm.fsSingleColumn>div.fsSaveIncomplete {
   background: none !important;
   box-shadow: none !important;
-  /* padding: 1em 0; */
 }
 
-/* div.fsSaveIncomplete a, */
 .fsForm.fsSingleColumn div.fsSaveIncomplete a {
   /* override sf styles */
   margin: 2em 0;
@@ -380,38 +373,26 @@
 
   /* ma__button */
   border: 3px solid;
-  /* -webkit-box-shadow: 0 0.25rem 0.5rem rgba(1, 1, 1, .25); */
   box-shadow: 0 0.25rem 0.5rem rgba(1, 1, 1, .25);
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  /* -webkit-box-align: center;
-  -ms-flex-align: center; */
   align-items: center;
-  /* -webkit-box-pack: center;
-  -ms-flex-pack: center; */
   justify-content: center;
   letter-spacing: .1em;
   padding: 0.4em 1.5em;
-  /* 1em; */
   text-decoration: none;
   text-transform: uppercase;
-  /* -webkit-transition: all .4s ease;
-  -o-transition: all .4s ease; */
   transition: all .4s ease;
   font-size: 1.25rem;
   line-height: 1.4;
+
   /* ma__button--secondary */
   font-weight: 550;
   background-color: #fff;
   border-color: rgba(20, 85, 143, .5);
-/* }
 
-.fsForm.fsSingleColumn div.fsSaveIncomplete a { */
   color: #14558f;
-
-  /* display: block; */
-  text-decoration: none;
 }
 
 .fsForm.fsSingleColumn div.fsSaveIncomplete a:hover,
@@ -420,10 +401,34 @@
   background-color: #14558f;
 }
 
-/* .fsSaveIncomplete a {
-  display: block;
-  text-decoration: none;
-} */
+
+/* .fsProgress prorgress bar container */
+.fsSubmit.fsPagination .fsProgress {
+  margin: 0;
+  padding-top: 1.5em;
+}
+
+.fsProgress .fsProgressBarContainer {
+  margin-left: 5em;
+}
+
+.fsProgress .fsProgressBarContainer,
+.fsProgress .fsProgressBar {
+  height: 1.5em;
+}
+
+.fsProgress .fsProgressText {
+  margin-top: -2.5em;
+  margin-left: -5em;
+  padding-top: 1.2em;
+  font-size: 1.375rem;
+  font-weight: 500;
+  text-align: left;
+}
+
+.fsProgress .fsProgressText:after {
+  content: ":";
+}
 
 
 .fsForm,
@@ -626,154 +631,4 @@ button.ma__input-number__minus {
 .fieldset-content:last-child div.horizontal input[type="text"] {
   border: 2px solid rgb(220, 220, 220);
   width: 100%;
-}
-
-
-/* Save Incompoete button and Pagination component */
-/* .page-content .sfFormfs.fsSingleColumn > .fsSaveIncomplete {
-  /* override sf styles
-  background: none !important;
-  padding: 1em 0;
-  box-shadow: none !important;
-} */
-
-/* div.fsSaveIncomplete a { */
-  /* override sf styles */
-  /* margin: 2em 0; */
-  /* button */
-  /* cursor: pointer;
-  font-family: "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif; */
-
-  /* ma__button */
-  /* border: 3px solid;
-  -webkit-box-shadow: 0 0.25rem 0.5rem rgba(1, 1, 1, .25);
-  box-shadow: 0 0.25rem 0.5rem rgba(1, 1, 1, .25);
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  letter-spacing: .1em;
-  padding: 0.4em 1.5em; 1em; */
-  /* text-decoration: none;
-  text-transform: uppercase;
-  -webkit-transition: all .4s ease;
-  -o-transition: all .4s ease;
-  transition: all .4s ease;
-  font-size: 1.25rem;
-  line-height: 1.4; */
-  /* ma__button--secondary */
-  /* font-weight: 550;
-  background-color: #fff;
-  border-color: rgba(20, 85, 143, .5);
-}
-
-.fsForm.fsSingleColumn div.fsSaveIncomplete a {
-  color: #14558f;
-}
-
-.fsForm.fsSingleColumn div.fsSaveIncomplete a:hover,
-.fsForm.fsSingleColumn div.fsSaveIncomplete a:focus {
-  color: #fff;
-  background-color: #14558f;
-}
-
-.fsSaveIncomplete a {
-  display: block;
-  text-decoration: none;
-} */
-
-/* pagination component */
-/* .fsPagination {
-  width: 100%;
-} */
-
-/* .fsPagination .fsPreviousButton,
-.fsPagination .fsNextButton {
-  float: none !important;
-  position: relative;
-  margin: 0.5em 0;
-} */
-
-/* .fsPagination .fsPreviousButton {
-  margin-right: 2em;
-} */
-
-/* @media (max-width: 480px) {
-  .fsPagination .fsPreviousButton {
-      margin-right: 1em;
-  }
-} */
-
-/* .fsPagination .fsPreviousButton span.fsFull {
-  margin-left: 1em;
-}
-
-.fsPagination .fsNextButton span.fsFull {
-  margin-right: 1em;
-}
-
-/* pagination button arrows *//*
-.fsPagination .fsPreviousButton span.fsFull:before,
-.fsPagination .fsNextButton span.fsFull:after {
-  display: inline-block;
-  content: "";
-
-  border-right: 2px solid;
-  border-bottom: 2px solid;
-  transition: all .2s;
-  vertical-align: middle;
-
-  border-color: #fff;
-  border-width: 3px;
-  width: 10px;
-  height: 10px;
-  margin: 0;
-
-  position: absolute;
-  top: 50%;
-
-  transform-origin: 50% 50%;
-}
-
-.fsPagination .fsPreviousButton span.fsFull:before {
-  left: 15%;
-  transform: translate(-50%, -50%) rotate(-225deg);
-}
-
-.fsPagination .fsNextButton span.fsFull:after {
-  right: 15%;
-  transform: translate(0%, -50%) rotate(-45deg);
-} */
-
-/* .fsProgress prorgress bar container */
-.fsSubmit.fsPagination .fsProgress {
-  margin: 0;
-  padding-top: 1.5em;
-}
-
-.fsProgress .fsProgressBarContainer {
-  margin-left: 5em;
-}
-
-.fsProgress .fsProgressBarContainer,
-.fsProgress .fsProgressBar {
-  height: 1.5em;
-}
-
-.fsProgress .fsProgressText {
-  margin-top: -2.5em;
-  margin-left: -5em;
-  padding-top: 1.2em;
-  font-size: 1.375rem;
-  font-weight: 500;
-  text-align: left;
-}
-
-.fsProgress .fsProgressText:after {
-  content: ":";
 }
