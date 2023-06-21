@@ -4,7 +4,9 @@ namespace Drupal\mass_redirects\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Driver\Exception\Exception;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
 use Drupal\redirect\RedirectRepository;
 use Drush\Commands\DrushCommands;
@@ -61,24 +63,45 @@ EOD;
           if ($url->isExternal()) {
             continue;
           }
+
+          try {
+            $usage = $this->entityTypeManager->getStorage($record->source_type)->load($record->source_id);
+            if (in_array(EntityPublishedInterface::class, class_implements($usage)) && !$usage->isPublished()) {
+              // Usage is unpublished so don't bother fixing.
+              continue;
+            }
+          }
+          catch (Exception) {
+            continue;
+          }
+
           $parameters = $url->getRouteParameters();
           if ($parameters['node'] == $entity->id()) {
             // This is a self-redirect.
             continue;
           }
-          else {
-            // We can re-point this usage.
-            $rows[] = [
-              'usage_id' => $record->source_id,
-              'usage_type' => $record->source_type,
-              'field' => $record->field_name,
-              'method' => $record->method,
-              'from_id' => $record->target_id,
-              'from_type' => $record->target_type,
-              'to_id' => $parameters['node'],
-              'to_type' => 'node',
-            ];
+          try {
+            $to = $this->entityTypeManager->getStorage('node')->load($parameters['node']);
+            if (in_array(EntityPublishedInterface::class, class_implements($to)) && !$to->isPublished()) {
+              // Don't re-point to unpublished.
+              continue;
+            }
           }
+          catch (\Exception) {
+            continue;
+          }
+
+          // We can re-point this usage.
+          $rows[] = [
+            'usage_id' => $record->source_id,
+            'usage_type' => $record->source_type,
+            'field' => $record->field_name,
+            'method' => $record->method,
+            'from_id' => $record->target_id,
+            'from_type' => $record->target_type,
+            'to_id' => $parameters['node'],
+            'to_type' => 'node',
+          ];
         }
         // $repoints[$entity->getEntityTypeId()][$entity->id()] = $parameters;
       }
