@@ -1,5 +1,25 @@
 
 
+## [0.365.0] - June 20, 2023
+
+### Removed
+  - DP-27052: Cleanup Drupal data listing views and assets.
+  - DP-28333: Remove the temp fix override css for map component z-index setting as it's replaced with the Mayflower content.
+  
+### Changed
+  - DP-28302: Have contact and related links on info details to right of overview if there is no TOC shown, eliminate related links at bottom on desktop.
+  
+### Fixed
+  - DP-28373: Fix filter bug for collections.
+  - DP-28478: A11y - Duplicate 'main navigation' labels in screen reader.
+  - DP-28497: A11y Eliminate duplicate IDs for header search input.
+  
+### Added
+  - DP-28432: Add components from Guide content type to Information details content type.
+  - DP-28475: Add testing so that we validate that Google Tag Manager code is actually inserted onto the pages.
+  
+
+
 ## [0.364.0] - June 13, 2023
 
 ### Added
