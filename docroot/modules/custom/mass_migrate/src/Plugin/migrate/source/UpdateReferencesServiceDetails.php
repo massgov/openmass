@@ -31,6 +31,7 @@ class UpdateReferencesServiceDetails extends SqlBase {
       ->condition('eu.target_type', 'node')
       ->groupBy('eu.source_id')
       ->groupBy('eu.source_type');
+    $query->addField('mmsd', 'destid1');
     $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
     // @todo Limit to just the most revision in the entity_usage table
     // $query->innerJoin('node', 'nt', 'eu.target_id=nt.nid');
@@ -64,6 +65,10 @@ class UpdateReferencesServiceDetails extends SqlBase {
       'source_type' => [
         'type' => 'string',
         'alias' => 'eu',
+      ],
+      'destid1' => [
+        'type' => 'integer',
+        'alias' => 'mmsd',
       ],
     ];
   }
@@ -155,7 +160,6 @@ class UpdateReferencesServiceDetails extends SqlBase {
       // we need to update the migrated version.
       $field_name = ($field_name == 'field_service_detail_links_5') ? 'field_info_details_related' : $field_name;
       $row->setDestinationProperty($field_name, $values);
-      $row->setDestinationProperty('nid', $values);
     }
     else {
       // We don't need to process further since we already
