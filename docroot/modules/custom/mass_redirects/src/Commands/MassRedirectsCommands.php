@@ -28,6 +28,8 @@ class MassRedirectsCommands extends DrushCommands {
    *
    * @command ma:heal
    * @field-labels
+   *   parent_id: Parent id
+   *   parent_type: Parent type
    *   usage_id: Usage Id
    *   usage_type: Usage type
    *   field: Field
@@ -36,12 +38,13 @@ class MassRedirectsCommands extends DrushCommands {
    *   from_type: From type
    *   to_id: To Id
    *   to_type: To Type
-   * @default-fields usage_id,usage_type,field,method,from_id,from_type,to_id,to_type
+   * @default-fields parent_id,parent_type,usage_id,usage_type,field,method,from_id,from_type,to_id,to_type
    * @aliases pml,pm-list
    * @filter-default-field from_id
    */
   public function heal($options = ['format' => 'table']): RowsOfFields {
     $rows = [];
+
     // Get all usages that point to a trashed node.
     $sql = <<<EOD
 SELECT * FROM entity_usage eu
@@ -70,6 +73,19 @@ EOD;
               // Usage is unpublished so don't bother fixing.
               continue;
             }
+            if (str_starts_with($record->field_name, 'computed')) {
+              // We can't edit computed fields.
+              continue;
+            }
+
+            $parent = $usage;
+            // Climb up to find a non-paragraph parent.
+            while (method_exists($parent, 'getParentEntity')) {
+              $parent = $parent->getParentEntity();
+              if (!$parent->isPublished()) {
+                continue 2;
+              }
+            }
           }
           catch (Exception) {
             continue;
@@ -93,6 +109,8 @@ EOD;
 
           // We can re-point this usage.
           $rows[] = [
+            'parent_id' => $parent->id(),
+            'parent_type' => $parent->getEntityTypeId(),
             'usage_id' => $record->source_id,
             'usage_type' => $record->source_type,
             'field' => $record->field_name,
