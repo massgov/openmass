@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mass_bigquery module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function mass_bigquery_schema() {
+  $schema['mass_bigquery_data'] = [
+    'description' => 'Table description.',
+    'fields' => [
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The node ID.',
+      ],
+      'pageviews' => [
+        'type' => 'int',
+        'description' => 'The pageviews of the node.',
+      ],
+      'last_updated' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The UNIX time stamp representing when the node was last updated.',
+      ],
+      'nos_per_1000' => [
+        'type' => 'float',
+        'description' => 'The number of No responses per 1000.',
+      ],
+      'eject_rate' => [
+        'type' => 'float',
+        'description' => 'The eject rate.',
+      ],
+      'total_no' => [
+        'type' => 'int',
+        'description' => 'The total no.',
+      ],
+      'total_yes' => [
+        'type' => 'int',
+        'description' => 'The total yes.',
+      ],
+      'total_feedback' => [
+        'type' => 'int',
+        'description' => 'The total feedback.',
+      ],
+    ],
+    'indexes' => [
+      'nid' => ['nid'],
+      'last_updated' => ['last_updated'],
+    ],
+    'unique_keys' => [
+      'unique_nid' => ['nid'],
+    ],
+  ];
+
+  return $schema;
+}
