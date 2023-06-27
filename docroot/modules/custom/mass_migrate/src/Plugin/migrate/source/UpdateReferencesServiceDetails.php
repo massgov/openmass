@@ -70,10 +70,6 @@ class UpdateReferencesServiceDetails extends SqlBase {
         'type' => 'string',
         'alias' => 'eu',
       ],
-      'destid1' => [
-        'type' => 'integer',
-        'alias' => 'mmsd',
-      ],
     ];
   }
 
