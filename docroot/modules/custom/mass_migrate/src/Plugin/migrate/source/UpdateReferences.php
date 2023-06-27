@@ -83,12 +83,12 @@ class UpdateReferences extends SqlBase {
     // Get all the Fields that we need to change in this source entity.
     $ref_query = $this->baseQuery();
     $ref_query->addField('eu','field_name');
-    $ref_query->addField('eu', 'target_id');
-    $ref_query->addField('mmsd', 'destid1');
+    $ref_query->addField('eu', 'target_id', 'reference_value_old');
+    $ref_query->addField('mmsd', 'destid1', 'reference_value_new');
     $ref_query->condition('eu.source_id', $row->getSourceProperty('source_id'));
     $ref_query->groupBy('eu.field_name');
-    $ref_query->groupBy('eu.target_id');
-    $ref_query->groupBy('mmsd.destid1');
+    $ref_query->groupBy('reference_value_old');
+    $ref_query->groupBy('reference_value_new');
 
     $refs = $ref_query->execute()->fetchAll();
 
@@ -98,8 +98,8 @@ class UpdateReferences extends SqlBase {
       $values = [];
       $field_name = $ref['field_name'];
       $list = $entity->get($field_name);
-      $uri_old = 'entity:node/' . $ref['target_id'];
-      $uri_new = 'entity:node/' . $ref['destid1'];
+      $uri_old = 'entity:node/' . $ref['reference_value_old'];
+      $uri_new = 'entity:node/' . $ref['reference_value_new'];
       foreach ($list as $delta => $item) {
         switch (get_class($item)) {
           case DynamicLinkItem::class:
