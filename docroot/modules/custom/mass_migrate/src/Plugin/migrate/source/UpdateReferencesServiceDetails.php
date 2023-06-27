@@ -41,7 +41,6 @@ class UpdateReferencesServiceDetails extends SqlBase {
    */
   public function query(): SelectInterface {
     $query = $this->baseQuery();
-    $query->addField('mmsd', 'destid1');
     $query->addExpression('COUNT(eu.field_name)', 'count');
     $query->addExpression('MAX(eu.source_vid)', 'source_vid_max');
 
