@@ -83,7 +83,7 @@ class UpdateReferences extends SqlBase {
 
     // Get all the Fields that we need to change in this source entity.
     $ref_query = $this->baseQuery();
-    $ref_query->fields('eu', ['source_id', 'source_type', 'method', 'field_name']);
+    $ref_query->fields('eu', ['source_id', 'source_type', 'field_name']);
     $ref_query->fields('mmsd', ['sourceid1']);
     $ref_query->addField('eu', 'target_id', 'reference_value_old');
     $ref_query->addField('mmsd', 'destid1', 'reference_value_new');
