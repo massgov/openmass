@@ -21,12 +21,12 @@ class UpdateReferences extends SqlBase {
     $op_service_details = static::SOURCE_BUNDLE == 'service_details' ? '=' : '!=';
 
     $query = $this->select('entity_usage', 'eu');
+    $query->fields('eu', ['source_id', 'source_type']);
     $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
     $query->condition('eu.source_type', static::SOURCE_TYPE);
     $query->condition('eu.target_type', 'node');
     $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
     $query->condition('ns.type', 'service_details', $op_service_details);
-    $query->fields('ns', ['type']);
     $query->groupBy('eu.source_id');
     $query->groupBy('eu.source_type');
 
@@ -38,7 +38,6 @@ class UpdateReferences extends SqlBase {
    */
   public function query(): SelectInterface {
     $query = $this->baseQuery();
-    $query->fields('eu', ['source_id', 'source_type']);
     $query->addExpression('COUNT(eu.field_name)', 'count');
     $query->addExpression('MAX(eu.source_vid)', 'source_vid_max');
     return $query;
@@ -83,13 +82,13 @@ class UpdateReferences extends SqlBase {
 
     // Get all the Fields that we need to change in this source entity.
     $ref_query = $this->baseQuery();
-    $ref_query->fields('eu', ['source_id', 'source_type', 'field_name']);
-    $ref_query->fields('mmsd', ['sourceid1']);
-    $ref_query->addField('eu', 'target_id', 'reference_value_old');
-    $ref_query->addField('mmsd', 'destid1', 'reference_value_new');
-    // If the source ID is a new info details, we need to fake it from service details. So, we need to get the mapped ID to match.
-
+    $ref_query->addField('eu','field_name');
+    $ref_query->addField('eu', 'target_id');
+    $ref_query->addField('mmsd', 'destid1');
     $ref_query->condition('eu.source_id', $row->getSourceProperty('source_id'));
+    $ref_query->groupBy('eu.field_name');
+    $ref_query->groupBy('eu.target_id');
+    $ref_query->groupBy('mmsd.destid1');
 
     $refs = $ref_query->execute()->fetchAll();
 
@@ -99,8 +98,8 @@ class UpdateReferences extends SqlBase {
       $values = [];
       $field_name = $ref['field_name'];
       $list = $entity->get($field_name);
-      $uri_old = 'entity:node/' . $ref['reference_value_old'];
-      $uri_new = 'entity:node/' . $ref['reference_value_new'];
+      $uri_old = 'entity:node/' . $ref['target_id'];
+      $uri_new = 'entity:node/' . $ref['destid1'];
       foreach ($list as $delta => $item) {
         switch (get_class($item)) {
           case DynamicLinkItem::class:
