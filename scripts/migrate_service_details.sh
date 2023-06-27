@@ -10,6 +10,9 @@ drush migrate:status
 #This is the long migration that creates info_details nodes.
 drush migrate:import service_details
 
+#This updates migrated info detail nodes with updated targets for entity refs, link fields, other usages based on the service_details migration.
+drush migrate:import update_references_service_details
+
 #This updates entity refs and link fields and other usages of the old service_detail nodes
 drush migrate:import update_references_node
 
