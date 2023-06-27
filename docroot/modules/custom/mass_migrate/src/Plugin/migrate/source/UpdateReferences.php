@@ -21,6 +21,9 @@ class UpdateReferences extends SqlBase {
     $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
     $query->condition('eu.source_type', static::SOURCE_TYPE);
     $query->condition('eu.target_type', 'node');
+    $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
+    $query->condition('ns.type', 'service_details', '!=');
+    $query->fields('ns', ['type']);
     $query->groupBy('eu.source_id');
     $query->groupBy('eu.source_type');
 
@@ -33,6 +36,7 @@ class UpdateReferences extends SqlBase {
   public function query(): SelectInterface {
     $query = $this->baseQuery();
     $query->fields('eu', ['source_id', 'source_type']);
+    $query->fields('mmsd', ['sourceid1', 'destid1']);
     $query->addExpression('COUNT(eu.field_name)', 'count');
     $query->addExpression('MAX(eu.source_vid)', 'source_vid_max');
     return $query;
@@ -78,7 +82,7 @@ class UpdateReferences extends SqlBase {
     // Get all the Fields that we need to change in this source entity.
     $ref_query = $this->baseQuery();
     $ref_query->fields('eu', ['source_id', 'source_type', 'method', 'field_name']);
-    $ref_query->fields('mmsd', ['sourceid1']);
+    $ref_query->fields('mmsd', ['sourceid1', 'destid1']);
     $ref_query->addField('eu', 'target_id', 'reference_value_old');
     $ref_query->addField('mmsd', 'destid1', 'reference_value_new');
     // If the source ID is a new info details, we need to fake it from service details. So, we need to get the mapped ID to match.

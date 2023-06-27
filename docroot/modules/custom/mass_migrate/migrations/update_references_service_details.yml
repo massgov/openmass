@@ -5,8 +5,12 @@ source:
 destination:
 #  Perhaps separate into node and paragraph with real ids
   plugin: entity:node
+  default_bundle: info_details
 process:
-  nid: destid1
+  nid:
+    plugin: migration_lookup
+    migration: service_details
+    source: source_id
 migration_dependencies:
   required:
     - service_details

@@ -21,26 +21,30 @@ use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
  */
 class UpdateReferencesServiceDetails extends SqlBase {
 
+  private function baseQuery(): SelectInterface {
+    $query = $this->select('entity_usage', 'eu');
+    $query->fields('eu', ['source_id', 'source_type']);
+    $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
+    $query->condition('eu.source_type', 'node');
+    $query->condition('eu.target_type', 'node');
+    $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
+    $query->condition('ns.type', 'service_details');
+    $query->fields('ns', ['type']);
+    $query->groupBy('eu.source_id');
+    $query->groupBy('eu.source_type');
+
+    return $query;
+  }
+
   /**
    * Use entity usage to get all nodes that reference a service_detail page.
    */
   public function query(): SelectInterface {
-    $query = $this->select('entity_usage', 'eu')
-      ->fields('eu', ['source_id', 'source_type'])
-      ->condition('eu.source_type', 'node')
-      ->condition('eu.target_type', 'node')
-      ->groupBy('eu.source_id')
-      ->groupBy('eu.source_type');
+    $query = $this->baseQuery();
     $query->addField('mmsd', 'destid1');
-    $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
-    // @todo Limit to just the most revision in the entity_usage table
-    // $query->innerJoin('node', 'nt', 'eu.target_id=nt.nid');
-    $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
-    $query->condition('ns.type', 'service_details');
-    $query->fields('ns', ['type']);
-
     $query->addExpression('COUNT(eu.field_name)', 'count');
     $query->addExpression('MAX(eu.source_vid)', 'source_vid_max');
+
     return $query;
   }
 
@@ -84,20 +88,16 @@ class UpdateReferencesServiceDetails extends SqlBase {
       $this->migration->getIdMap()->saveMessage(['source_id' => $row->getSourceProperty('source_type'), 'sourceid2' => $row->getSourceProperty('source_type')], 'Cannot load, so skipping ');
       return FALSE;
     }
+
     // Get all the Fields that we need to change in this source entity.
-    $query = $this->select('entity_usage', 'eu')
-      ->fields('eu', ['method', 'field_name', 'source_type'])
-      ->fields('mmsd', ['sourceid1'])
-      ->condition('eu.target_type', 'node')
-      ->condition('eu.source_id', $row->getSourceProperty('source_id'))
-      ->condition('eu.source_type', 'node');
-    // MW: This is eliminating entities that we want to update.
-    // ->condition('eu.source_vid', $entity->getLoadedRevisionId());
+    $query = $this->baseQuery();
+    $query->fields('eu', ['method', 'field_name']);
+    $query->fields('mmsd', ['sourceid1']);
     $query->addField('eu', 'target_id', 'reference_value_old');
     $query->addField('mmsd', 'destid1', 'reference_value_new');
-    // $query->addField('n', 'type', 'content_type');
-    $query->innerJoin('migrate_map_service_details', 'mmsd', "eu.target_id=mmsd.sourceid1 AND eu.target_type = 'node'");
-    // $query->innerJoin('node', 'n', 'mmsd.sourceid1=n.nid');
+
+    $query->condition('eu.source_id', $row->getSourceProperty('source_id'));
+
     $refs = $query->execute()->fetchAll();
 
     // Now update those fields. Different field types have
