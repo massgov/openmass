@@ -15,14 +15,17 @@ use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 class UpdateReferences extends SqlBase {
 
   const SOURCE_TYPE = '';
+  const SOURCE_BUNDLE = '';
 
   private function baseQuery(): SelectInterface {
+    $op_service_details = static::SOURCE_BUNDLE == 'service_details' ? '=' : '!=';
+
     $query = $this->select('entity_usage', 'eu');
     $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
     $query->condition('eu.source_type', static::SOURCE_TYPE);
     $query->condition('eu.target_type', 'node');
     $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
-    $query->condition('ns.type', 'service_details', '!=');
+    $query->condition('ns.type', 'service_details', $op_service_details);
     $query->fields('ns', ['type']);
     $query->groupBy('eu.source_id');
     $query->groupBy('eu.source_type');
@@ -146,6 +149,11 @@ class UpdateReferences extends SqlBase {
       }
     }
     if ($changed) {
+      // In case this is a service_details node,
+      // we need to update the migrated version.
+      if (static::SOURCE_BUNDLE == 'service_details') {
+        $field_name = ($field_name == 'field_service_detail_links_5') ? 'field_info_details_related' : $field_name;
+      }
       $row->setDestinationProperty($field_name, $values);
     }
     else {
