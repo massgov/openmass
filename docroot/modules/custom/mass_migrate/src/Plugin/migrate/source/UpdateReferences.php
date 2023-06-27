@@ -22,10 +22,10 @@ class UpdateReferences extends SqlBase {
     $query->fields('eu', ['source_id', 'source_type']);
     $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
     $query->condition('eu.source_type', static::SOURCE_TYPE);
+    $query->condition('eu.target_type', 'node');
 
     if (static::SOURCE_TYPE == 'node') {
       $op_service_details = static::SOURCE_BUNDLE == 'service_details' ? '=' : '!=';
-      $query->condition('eu.target_type', 'node');
       $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
       $query->condition('ns.type', 'service_details', $op_service_details);
     }
