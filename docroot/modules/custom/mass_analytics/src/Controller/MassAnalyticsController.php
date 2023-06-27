@@ -20,6 +20,14 @@ class MassAnalyticsController extends ControllerBase {
     'location',
     'location_details',
     'service_details',
+    'form_page',
+    'advisory',
+    'news',
+    'event',
+    'campaign_landing',
+    'decision',
+    'executive_order',
+    'regulation'
   ];
 
   /**
