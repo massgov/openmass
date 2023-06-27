@@ -1,0 +1,10 @@
+services:
+  bigquery.storage:
+    class: Drupal\mass_bigquery\BigqueryStorage
+    arguments: ['@database', '@bigquery.client', '@config.factory', '@entity_type.manager', '@queue', '@settings', '@logger.factory']
+  bigquery.client:
+    class: Drupal\mass_bigquery\BigqueryClient
+  bigquery.database:
+    class: Drupal\Core\Database\Connection
+    factory: 'Drupal\Core\Database\Database::getConnection'
+    arguments: ['default']
