@@ -8,6 +8,8 @@ use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Driver\Exception\Exception;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
+use Drupal\mayflower\Helper;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\redirect\RedirectRepository;
 use Drush\Commands\DrushCommands;
 
@@ -68,7 +70,15 @@ EOD;
           }
 
           try {
+
             $usage = $this->entityTypeManager->getStorage($record->source_type)->load($record->source_id);
+
+            if ($record->source_type == 'paragraph') {
+              if (Helper::isParagraphOrphan($usage)) {
+                continue;
+              }
+            }
+
             if (in_array(EntityPublishedInterface::class, class_implements($usage)) && !$usage->isPublished()) {
               // Usage is unpublished so don't bother fixing.
               continue;
@@ -123,6 +133,7 @@ EOD;
         }
         // $repoints[$entity->getEntityTypeId()][$entity->id()] = $parameters;
       }
+
     }
     return new RowsOfFields($rows);
   }
@@ -157,4 +168,5 @@ EOD;
     }
     return new RowsOfFields($rows);
   }
+
 }
