@@ -117,8 +117,7 @@ EOD;
             continue;
           }
 
-          // We can re-point this usage.
-          $rows[] = [
+          $result = [
             'parent_id' => $parent->id(),
             'parent_type' => $parent->getEntityTypeId(),
             'usage_id' => $record->source_id,
@@ -130,8 +129,10 @@ EOD;
             'to_id' => $parameters['node'],
             'to_type' => 'node',
           ];
+          // We can re-point this usage.
+          $rows[] = $result;
+          \Drupal::queue('mass_redirects_repoint')->createItem($result);
         }
-        // $repoints[$entity->getEntityTypeId()][$entity->id()] = $parameters;
       }
 
     }
