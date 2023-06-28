@@ -58,7 +58,7 @@ function mass_bigquery_views_data() {
     'filter' => [
       'title' => t('Nos per 1000 cleaned'),
       'help' => t('Specify the range of values to show.'),
-      'field' => 'nos_per_1000_cleaned.',
+      'field' => 'nos_per_1000_cleaned',
       'id' => 'numeric',
     ],
   ];
