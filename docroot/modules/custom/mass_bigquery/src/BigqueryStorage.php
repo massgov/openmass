@@ -127,24 +127,40 @@ class BigqueryStorage implements BigqueryStorageInterface {
     $time = \Drupal::time()->getRequestTime();
     // Fetch data from Bigquery.
     $query =
-        'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys FROM `MassgovGA4_testing.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
+        'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_testing.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
     $queryResults = $this->bigqueryClient->runQuery($query);
     foreach ($queryResults as $row) {
+      $nos_per_1000 = $row['nosPerKUniquePageViews'];
+      $pageviews = $row['totalPageViews'];
+      $total_no = $row['negativeSurveys'];
       $this->database->merge($this->table)
         ->key('nid', $row['nodeId'])
         ->fields([
           'nid' => $row['nodeId'],
-          'pageviews' => $row['totalPageViews'],
+          'pageviews' => $pageviews,
           'last_updated' => $time,
-          'nos_per_1000' => $row['nosPerKUniquePageViews'],
+          'nos_per_1000' => $nos_per_1000,
           'eject_rate' => $row['ejectRate'],
-          'total_no' => $row['negativeSurveys'],
+          'total_no' => $total_no,
           'total_yes' => $row['positiveSurveys'],
-          'total_feedback' => $row['negativeSurveys'] + $row['positiveSurveys']
+          'total_feedback' => $row['negativeSurveys'] + $row['positiveSurveys'],
+          'broken_links' => $row['brokenLinks'],
+          'grade_level' => $row['gradeLevel'],
+          'nos_per_1000_cleaned' => $this->calculateNosPer1000Cleaned($nos_per_1000, $pageviews, $total_no),
         ])
         ->execute();
     }
     return TRUE;
+  }
+
+  /**
+   * Set if there are 500 or more pageviews or 5 or more nos/negative responses.
+   */
+  private function calculateNosPer1000Cleaned(float $nos_per_1000, int $pageviews, int $total_no): ?float {
+    if (($pageviews >= 500) || $total_no >= 5) {
+      return $nos_per_1000;
+    }
+    return NULL;
   }
 
 }
