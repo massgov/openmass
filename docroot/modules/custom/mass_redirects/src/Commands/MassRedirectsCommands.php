@@ -9,7 +9,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Driver\Exception\Exception;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
 use Drupal\mayflower\Helper;
-use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\redirect\RedirectRepository;
 use Drush\Commands\DrushCommands;
 
@@ -142,7 +141,9 @@ EOD;
   /**
    * An example of the table output format.
    *
-   * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
+   * @param array $options
+   *   An associative array of options whose values
+   *   come from cli, aliases, config, etc.
    *
    * @field-labels
    *   group: Group
@@ -154,7 +155,9 @@ EOD;
    * @aliases token
    *
    * @filter-default-field name
+   *
    * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
+   *   Returns table formatted output.
    */
   public function token($options = ['format' => 'table']) {
     $all = \Drupal::token()->getInfo();
