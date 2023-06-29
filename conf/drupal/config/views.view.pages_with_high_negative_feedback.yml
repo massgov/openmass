@@ -10,6 +10,7 @@ dependencies:
     - workflows.workflow.topic_page
   module:
     - content_moderation
+    - mass_bigquery
     - mass_superset
     - mass_views
     - node
@@ -2843,7 +2844,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -2898,10 +2899,10 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
@@ -2957,7 +2958,7 @@ display:
           suffix: ''
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: group
@@ -3014,7 +3015,7 @@ display:
           suffix: ''
         total_yes:
           id: total_yes
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_yes
           relationship: nid
           group_type: group
@@ -3559,302 +3560,6 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        pageviews:
-          id: pageviews
-          table: mass_superset_data
-          field: pageviews
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: '20'
-          group: 1
-          exposed: true
-          expose:
-            operator_id: pageviews_op
-            label: 'Page views'
-            description: ''
-            use_operator: true
-            operator: pageviews_op
-            operator_limit_selection: true
-            operator_list:
-              '<=': '<='
-              '>=': '>='
-              between: between
-            identifier: pageviews
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: nos_per_1000_op
-            label: 'No’s per 1K page views'
-            description: ''
-            use_operator: true
-            operator: nos_per_1000_op
-            operator_limit_selection: true
-            operator_list:
-              '<=': '<='
-              '>=': '>='
-              between: between
-            identifier: nos_per_1000
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        total_feedback:
-          id: total_feedback
-          table: mass_superset_data
-          field: total_feedback
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: total_feedback_op
-            label: 'Minimum # of Feedback responses'
-            description: ''
-            use_operator: false
-            operator: total_feedback_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: total_feedback
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        total_no:
-          id: total_no
-          table: mass_superset_data
-          field: total_no
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: '3'
-          group: 1
-          exposed: true
-          expose:
-            operator_id: total_no_op
-            label: 'Minimum # of No''s'
-            description: ''
-            use_operator: false
-            operator: total_no_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: total_no
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        total_yes:
-          id: total_yes
-          table: mass_superset_data
-          field: total_yes
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: total_yes_op
-            label: 'Minimum # of Yeses'
-            description: ''
-            use_operator: false
-            operator: total_yes_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: total_yes
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
       filter_groups:
         operator: AND
         groups:
