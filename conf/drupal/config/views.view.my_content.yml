@@ -47,6 +47,7 @@ dependencies:
   module:
     - content_moderation
     - flag
+    - mass_bigquery
     - mass_superset
     - mass_views
     - node
@@ -2704,15 +2705,15 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          label: Score
+          label: 'Nos per 1000'
           exclude: false
           alter:
             alter_text: false
@@ -2763,7 +2764,7 @@ display:
           suffix: ''
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -3340,15 +3341,15 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          operator: '<='
+          operator: '>='
           value:
             min: ''
             max: ''
@@ -3356,14 +3357,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
+            operator_id: nos_per_1000_cleaned_op
+            label: 'Nos per 1000 is greater than or equal to'
             description: ''
             use_operator: false
-            operator: score_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: score
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -3380,6 +3381,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
