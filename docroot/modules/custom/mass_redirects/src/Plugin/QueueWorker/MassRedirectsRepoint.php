@@ -123,6 +123,7 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
             $changed = TRUE;
           }
           break;
+
         case EntityReferenceItem::class:
           $values[$delta] = $item->getValue();
           if ($item->get('target_id')->getString() == $data['from_id']) {
@@ -130,6 +131,7 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
             $changed = TRUE;
           }
           break;
+
         case TextLongItem::class:
         case TextWithSummaryItem::class:
           $values[$delta] = $item->getValue();
