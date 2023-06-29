@@ -106,10 +106,8 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
     $uri_old = 'entity:' . $data['from_type'] . '/' . $data['from_id'];
     $uri_new = 'entity:' . $data['from_type'] . '/' . $data['to_id'];
     foreach ($list as $delta => $item) {
-      dump(get_class($item));
       switch (get_class($item)) {
         case DynamicLinkItem::class:
-
           $values[$delta] = $item->getValue();
           $item_uri = $item->get('uri')->getString();
           $item_uri_path = parse_url($item_uri, PHP_URL_PATH);
