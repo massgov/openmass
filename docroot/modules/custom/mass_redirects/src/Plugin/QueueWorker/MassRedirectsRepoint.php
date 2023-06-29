@@ -19,7 +19,6 @@ use Drupal\Core\Database\Connection;
  * @QueueWorker(
  *   id = "mass_redirects_repoint",
  *   title = @Translation("Mass redirects repoint"),
- *   cron = {"time" = 300}
  * )
  */
 class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPluginInterface {
