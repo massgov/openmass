@@ -12,6 +12,7 @@ use Drupal\text\Plugin\Field\FieldType\TextLongItem;
 use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\Component\Utility\Html;
 
 /**
  * Processes mass_redirects_repoint queue.
