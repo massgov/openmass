@@ -131,63 +131,64 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
 
         case TextLongItem::class:
         case TextWithSummaryItem::class:
-        $values[$delta] = $item->getValue();
-        $value = $item->getValue()['value'];
-        // First check for the entity ID
-        if (str_contains($value, $data['from_id'])) {
-          $replaced = str_replace($data['from_id'], $data['to_id'], $value);
-          $values[$delta]['value'] = $replaced;
-          $changed = TRUE;
-        }
-        // Next check for the link. We want relative links not
-        // absolute so domain mismatch isn't an issue.
-        if (str_contains($value, Url::fromUri($uri_old)->toString())) {
-          $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $value);
-          $values[$delta]['value'] = $replaced;
-          $changed = TRUE;
-        }
+          $values[$delta] = $item->getValue();
+          $value = $item->getValue()['value'];
+          // First check for the entity ID
+          if (str_contains($value, $data['from_id'])) {
+            $replaced = str_replace($data['from_id'], $data['to_id'], $value);
+            $values[$delta]['value'] = $replaced;
+            $changed = TRUE;
+          }
+          // Next check for the link. We want relative links not
+          // absolute so domain mismatch isn't an issue.
+          if (str_contains($value, Url::fromUri($uri_old)->toString())) {
+            $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $value);
+            $values[$delta]['value'] = $replaced;
+            $changed = TRUE;
+          }
 
-        // Check for the linkit values.
-        if (str_contains($value, 'data-entity-uuid')) {
+          // Check for the linkit values.
+          if (str_contains($value, 'data-entity-uuid')) {
 
-          $storage_old = $this->entityTypeManager->getStorage($data['from_type']);
+            $storage_old = $this->entityTypeManager->getStorage($data['from_type']);
 
-          if ($storage_old) {
-            $entity_old = $storage_old->load($data['from_id']);
-            if ($entity_old) {
-              if (str_contains($value, $entity_old->uuid())) {
-                $dom = Html::load($value);
-                $xpath = new \DOMXPath($dom);
-                foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $element) {
-                  if ($element->getAttribute('data-entity-uuid') == $entity_old->uuid()) {
-                    // Parse link href as url, extract query and fragment from it.
-                    $href_url = parse_url($element->getAttribute('href'));
-                    $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
-                    $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+            if ($storage_old) {
+              $entity_old = $storage_old->load($data['from_id']);
+              if ($entity_old) {
+                if (str_contains($value, $entity_old->uuid())) {
+                  $dom = Html::load($value);
+                  $xpath = new \DOMXPath($dom);
+                  foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $element) {
+                    if ($element->getAttribute('data-entity-uuid') == $entity_old->uuid()) {
+                      // Parse link href as url,
+                      // extract query and fragment from it.
+                      $href_url = parse_url($element->getAttribute('href'));
+                      $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                      $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
 
-                    $storage_new = $this->entityTypeManager->getStorage($data['to_type']);
-                    if ($storage_new) {
-                      $entity_new = $storage_new->load($data['to_id']);
-                      if ($entity_new) {
-                        $substitution = \Drupal::service('plugin.manager.linkit.substitution');
-                        $url = $substitution
-                          ->createInstance('canonical')
-                          ->getUrl($entity_new);
-                        $element->setAttribute('data-entity-uuid', $entity_new->uuid());
-                        $element->setAttribute('href', $url->getGeneratedUrl() . $query . $anchor);
-                        $changed = TRUE;
+                      $storage_new = $this->entityTypeManager->getStorage($data['to_type']);
+                      if ($storage_new) {
+                        $entity_new = $storage_new->load($data['to_id']);
+                        if ($entity_new) {
+                          $substitution = \Drupal::service('plugin.manager.linkit.substitution');
+                          $url = $substitution
+                            ->createInstance('canonical')
+                            ->getUrl($entity_new);
+                          $element->setAttribute('data-entity-uuid', $entity_new->uuid());
+                          $element->setAttribute('href', $url->getGeneratedUrl() . $query . $anchor);
+                          $changed = TRUE;
+                        }
                       }
                     }
                   }
-                }
-                if ($changed) {
-                  $values[$delta]['value'] = Html::serialize($dom);
+                  if ($changed) {
+                    $values[$delta]['value'] = Html::serialize($dom);
+                  }
                 }
               }
             }
           }
-        }
-        break;
+          break;
       }
 
       // Update the field values if any changes were made.
