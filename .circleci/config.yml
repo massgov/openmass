@@ -697,24 +697,6 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - build_with_latest_mayflower:
-          requires: [build]
-      - deploy:
-          name: deploy-cd-refresh-db
-          requires: [ build_with_latest_mayflower ]
-          target: cd
-          refresh-db: "--refresh-db"
-      - backstop_test:
-          name: backstop-test-cd
-          requires: [ deploy-cd-refresh-db ]
-          reference: prod
-          target: cd
-      - crawl:
-          name: crawl-deploy-450
-          requires: [ deploy-cd-refresh-db ]
-          target: cd
-          samples: 450
-
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -1202,18 +1184,18 @@ workflows:
       - build_with_latest_mayflower
       - deploy:
           name: deploy-cd-refresh-db
-          requires: [build_with_latest_mayflower]
+          requires: [ build_with_latest_mayflower ]
           target: cd
           refresh-db: "--refresh-db"
-      - crawl:
-          name: crawl-deploy-450
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          samples: 450
       - backstop_test:
-          requires: [crawl-deploy-450]
+          requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
+      - crawl:
+          name: crawl-deploy-450
+          requires: [ deploy-cd-refresh-db ]
+          target: cd
+          samples: 450
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
