@@ -706,11 +706,12 @@ workflows:
           refresh-db: "--refresh-db"
       - crawl:
           name: crawl-deploy-450
-          requires: [ deploy-cd-refresh-db ]
+          requires: [ backstop-test-cd ]
           target: cd
           samples: 450
       - backstop_test:
-          requires: [ crawl-deploy-450 ]
+          name: backstop-test-cd
+          requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
 
