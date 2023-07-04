@@ -123,16 +123,17 @@ class UpdateReferences extends SqlBase {
           case TextLongItem::class:
           case TextWithSummaryItem::class:
             $values[$delta] = $item->getValue();
+            $value = $item->getValue()['value'];
             // First check for the entity ID
-            if (str_contains($item->getString(), $ref['reference_value_old'])) {
-              $replaced = str_replace($ref['reference_value_old'], $ref['reference_value_new'], $item->getString());
+            if (str_contains($value, $ref['reference_value_old'])) {
+              $replaced = str_replace($ref['reference_value_old'], $ref['reference_value_new'], $value);
               $values[$delta]['value'] = $replaced;
               $changed = TRUE;
             }
             // Next check for the link. We want relative links not
             // absolute so domain mismatch isn't an issue.
-            if (str_contains($item->getString(), Url::fromUri($uri_old)->toString())) {
-              $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $item->getString());
+            if (str_contains($value, Url::fromUri($uri_old)->toString())) {
+              $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $value);
               $values[$delta]['value'] = $replaced;
               $changed = TRUE;
             }
