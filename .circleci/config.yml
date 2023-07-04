@@ -673,12 +673,12 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - danger:
-          requires: [build]
-          filters:
-            branches:
-              ignore:
-                - develop
+#      - danger:
+#          requires: [build]
+#          filters:
+#            branches:
+#              ignore:
+#                - develop
       - push_acquia:
           filters:
             branches:
