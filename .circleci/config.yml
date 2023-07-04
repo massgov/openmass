@@ -703,7 +703,7 @@ workflows:
           name: deploy-cd-refresh-db
           requires: [ build_with_latest_mayflower ]
           target: cd
-#          refresh-db: "--refresh-db"
+          refresh-db: "--refresh-db"
       - backstop_test:
           name: backstop-test-cd
           requires: [ deploy-cd-refresh-db ]
