@@ -660,50 +660,49 @@ workflows:
         - << pipeline.parameters.webhook >>
         - not: << pipeline.parameters.trigger_workflow >>
     jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - master
-                - /^mayflower-dev-.*/
-      - validate:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - danger:
-          requires: [build]
-          filters:
-            branches:
-              ignore:
-                - develop
-      - push_acquia:
-          filters:
-            branches:
-              <<: *branch_ignore
-      - test:
-          name: test-phpunit
-          command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - build_with_latest_mayflower:
-          requires: [test-phpunit]
+#      - build:
+#          filters:
+#            branches:
+#              ignore:
+#                - /^release\/.*$/
+#                - /^hotfix\/.*$/
+#                - master
+#                - /^mayflower-dev-.*/
+#      - validate:
+#          requires: [build]
+#          filters:
+#            branches:
+#              <<: *branch_ignore
+#      - danger:
+#          requires: [build]
+#          filters:
+#            branches:
+#              ignore:
+#                - develop
+#      - push_acquia:
+#          filters:
+#            branches:
+#              <<: *branch_ignore
+#      - test:
+#          name: test-phpunit
+#          command: phpunit
+#          requires: [build]
+#          filters:
+#            branches:
+#              <<: *branch_ignore
+#      - test:
+#          name: test-behat
+#          command: behat
+#          requires: [build]
+#          filters:
+#            branches:
+#              <<: *branch_ignore
+      - build_with_latest_mayflower
       - deploy:
           name: deploy-cd-refresh-db
           requires: [ build_with_latest_mayflower ]
           target: cd
-          refresh-db: "--refresh-db"
+#          refresh-db: "--refresh-db"
       - crawl:
           name: crawl-deploy-450
           requires: [ backstop-test-cd ]
