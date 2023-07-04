@@ -711,7 +711,7 @@ workflows:
           target: cd
       - crawl:
           name: crawl-deploy-450
-          requires: [ backstop-test-cd ]
+          requires: [ deploy-cd-refresh-db ]
           target: cd
           samples: 450
 
