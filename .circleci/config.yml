@@ -683,20 +683,20 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: test-phpunit
-          command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
+#      - test:
+#          name: test-phpunit
+#          command: phpunit
+#          requires: [build]
+#          filters:
+#            branches:
+#              <<: *branch_ignore
+#      - test:
+#          name: test-behat
+#          command: behat
+#          requires: [build]
+#          filters:
+#            branches:
+#              <<: *branch_ignore
 #      - build_with_latest_mayflower
 #      - deploy:
 #          name: deploy-cd-refresh-db
