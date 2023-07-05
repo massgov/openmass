@@ -12,6 +12,7 @@ dependencies:
     - workflows.workflow.topic_page
   module:
     - content_moderation
+    - mass_bigquery
     - mass_superset
     - mass_views
     - node
@@ -2534,7 +2535,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: sum
@@ -2591,7 +2592,7 @@ display:
           suffix: ''
         nos_per_1000:
           id: nos_per_1000
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: nos_per_1000
           relationship: vid
           group_type: avg
@@ -2704,6 +2705,7 @@ display:
               title: 0
               field_parent: 0
             formula: '@total_no/@pageviews*1000'
+          mute_logs: false
           set_precision: 1
           precision: '1'
           decimal: .
@@ -2849,7 +2851,7 @@ display:
           field_api_classes: false
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: sum
@@ -3271,70 +3273,9 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: sum
@@ -3395,7 +3336,7 @@ display:
             group_items: {  }
         nos_per_1000:
           id: nos_per_1000
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: nos_per_1000
           relationship: nid
           group_type: avg
