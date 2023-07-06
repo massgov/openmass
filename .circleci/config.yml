@@ -1184,17 +1184,18 @@ workflows:
       - build_with_latest_mayflower
       - deploy:
           name: deploy-cd-refresh-db
-          requires: [build_with_latest_mayflower]
+          requires: [ build_with_latest_mayflower ]
           target: cd
           refresh-db: "--refresh-db"
-      - crawl:
-          name: crawl-deploy-450
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          samples: 450
       - backstop_test:
+          requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
+      - crawl:
+          name: crawl-deploy-450
+          requires: [ deploy-cd-refresh-db ]
+          target: cd
+          samples: 450
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
