@@ -201,7 +201,7 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
             $values[$delta]['value'] = $replaced;
             $changed = TRUE;
           }
-        break;
+          break;
       }
 
       // Update the field values if any changes were made.
