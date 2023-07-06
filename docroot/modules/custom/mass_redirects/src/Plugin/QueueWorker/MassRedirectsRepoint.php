@@ -137,6 +137,7 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
           // First check for the entity ID
           if (str_contains($value, $data['from_id'])) {
             $replaced = str_replace($data['from_id'], $data['to_id'], $value);
+            $value = $replaced;
             $values[$delta]['value'] = $replaced;
             $changed = TRUE;
           }
@@ -144,6 +145,7 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
           // absolute so domain mismatch isn't an issue.
           if (str_contains($value, Url::fromUri($uri_old)->toString())) {
             $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $value);
+            $value = $replaced;
             $values[$delta]['value'] = $replaced;
             $changed = TRUE;
           }
@@ -183,7 +185,9 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
                     }
                   }
                   if ($changed) {
-                    $values[$delta]['value'] = Html::serialize($dom);
+                    $replaced = Html::serialize($dom);
+                    $value = $replaced;
+                    $values[$delta]['value'] = $replaced;
                   }
                 }
               }
@@ -197,7 +201,7 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
             $values[$delta]['value'] = $replaced;
             $changed = TRUE;
           }
-          break;
+        break;
       }
 
       // Update the field values if any changes were made.
