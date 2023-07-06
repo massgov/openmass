@@ -148,14 +148,6 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
             $changed = TRUE;
           }
 
-          // Check if there are manually entered html links.
-          $old_url = str_replace('---unpublished', '', Url::fromUri($uri_old)->toString());
-          if (str_contains($value, $old_url)) {
-            $replaced = str_replace($old_url, Url::fromUri($uri_new)->toString(), $value);
-            $values[$delta]['value'] = $replaced;
-            $changed = TRUE;
-          }
-
           // Check for the linkit values.
           if (str_contains($value, 'data-entity-uuid')) {
 
@@ -196,6 +188,14 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
                 }
               }
             }
+          }
+
+          // Check if there are manually entered html links.
+          $old_url = str_replace('---unpublished', '', Url::fromUri($uri_old)->toString());
+          if (str_contains($value, $old_url)) {
+            $replaced = str_replace($old_url, Url::fromUri($uri_new)->toString(), $value);
+            $values[$delta]['value'] = $replaced;
+            $changed = TRUE;
           }
           break;
       }
