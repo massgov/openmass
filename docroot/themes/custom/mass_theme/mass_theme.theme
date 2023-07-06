@@ -18,6 +18,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\mass_content\EventsRendererOrgPages;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
@@ -118,8 +119,11 @@ function mass_theme_preprocess_callout_links(&$variables) {
     'calloutLinks' => Molecules::prepareCalloutLinks($paragraph),
   ];
 
-  if (Helper::getParentNode($paragraph)->bundle() == "org_page") {
-    $variables["useWrapper"] = TRUE;
+  $parent = Helper::getParentNode($paragraph);
+  if ($parent instanceof NodeInterface) {
+    if ($parent->bundle() == "org_page") {
+      $variables["useWrapper"] = TRUE;
+    }
   }
 }
 

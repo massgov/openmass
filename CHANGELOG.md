@@ -1,5 +1,20 @@
 
 
+## [0.366.0] - June 27, 2023
+
+### Added
+  - DP-28177: Added new drupal module to get nightly data from BigQuery instead of Superset
+  
+### Changed
+  - DP-28558: Reduce number of pages tested in 500 tests.
+  - DP-28572: Backport of a production change to prevent unpublished pages from being redirected to login page on www.mass.gov.
+  
+### Fixed
+  - DP-28592: Resolve 500 errors on edit.mass.gov.
+  - DP-28606: Analytics NEW tab now showing for all appropriate content types.
+  
+
+
 ## [0.365.0] - June 20, 2023
 
 ### Removed
