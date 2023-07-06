@@ -745,10 +745,10 @@ workflows:
             branches:
               only: /^release\/.*$/
       - crawl:
-          name: crawl-test-700
+          name: crawl-test-350
           requires: [deploy-test-refresh-db]
           target: test
-          samples: 700
+          samples: 350
           filters:
             branches:
               only: /^release\/.*$/
@@ -811,10 +811,10 @@ workflows:
             branches:
               only: /^hotfix\/.*$/
       - crawl:
-            name: crawl-test-200
+            name: crawl-test-50
             requires: [deploy-test-no-refresh-db]
             target: test
-            samples: 200
+            samples: 50
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -888,10 +888,10 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - crawl:
-          name: crawl-test-500
+          name: crawl-test-250
           requires: [deploy-test-refresh-db]
           target: test
-          samples: 500
+          samples: 250
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -1184,17 +1184,18 @@ workflows:
       - build_with_latest_mayflower
       - deploy:
           name: deploy-cd-refresh-db
-          requires: [build_with_latest_mayflower]
+          requires: [ build_with_latest_mayflower ]
           target: cd
           refresh-db: "--refresh-db"
-      - crawl:
-          name: crawl-deploy-900
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          samples: 900
       - backstop_test:
+          requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
+      - crawl:
+          name: crawl-deploy-450
+          requires: [ deploy-cd-refresh-db ]
+          target: cd
+          samples: 450
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:

@@ -33,8 +33,7 @@ drush entity:delete node --bundle=service_details
 
 # Entity usage updates are queued up. Just let cron process them.
 
-# No need to rebuild the entire hierarchy tree. The hierarchy is being handled during the migration.
-# In case of rollback the hierarchy rebuild tree command should be executed.
+# We need to rebuild the entire hierarchy tree.
 
 #Regenerate sitemap (optional - we can just wait for next run)
 drush simple-sitemap:rebuild-queue
