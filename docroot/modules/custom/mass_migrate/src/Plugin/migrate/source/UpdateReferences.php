@@ -103,10 +103,10 @@ class UpdateReferences extends SqlBase {
       if (!isset($values[$field_name])) {
         $values[$field_name] = [];
       }
-      $list = $entity->get($field_name);
+      $field_items = $entity->get($field_name);
       $uri_old = 'entity:node/' . $ref['reference_value_old'];
       $uri_new = 'entity:node/' . $ref['reference_value_new'];
-      foreach ($list as $delta => $item) {
+      foreach ($field_items as $delta => $item) {
         if (!isset($values[$field_name][$delta])) {
           $values[$field_name][$delta] = $item->getValue();
         }
