@@ -15,12 +15,21 @@ use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 class UpdateReferences extends SqlBase {
 
   const SOURCE_TYPE = '';
+  const SOURCE_BUNDLE = '';
 
   private function baseQuery(): SelectInterface {
     $query = $this->select('entity_usage', 'eu');
+    $query->fields('eu', ['source_id', 'source_type']);
     $query->innerJoin('migrate_map_service_details', 'mmsd', 'eu.target_id=mmsd.sourceid1');
     $query->condition('eu.source_type', static::SOURCE_TYPE);
     $query->condition('eu.target_type', 'node');
+
+    if (static::SOURCE_TYPE == 'node') {
+      $op_service_details = static::SOURCE_BUNDLE == 'service_details' ? '=' : '!=';
+      $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
+      $query->condition('ns.type', 'service_details', $op_service_details);
+    }
+
     $query->groupBy('eu.source_id');
     $query->groupBy('eu.source_type');
 
@@ -32,7 +41,6 @@ class UpdateReferences extends SqlBase {
    */
   public function query(): SelectInterface {
     $query = $this->baseQuery();
-    $query->fields('eu', ['source_id', 'source_type']);
     $query->addExpression('COUNT(eu.field_name)', 'count');
     $query->addExpression('MAX(eu.source_vid)', 'source_vid_max');
     return $query;
@@ -77,64 +85,67 @@ class UpdateReferences extends SqlBase {
 
     // Get all the Fields that we need to change in this source entity.
     $ref_query = $this->baseQuery();
-    $ref_query->fields('eu', ['source_id', 'source_type', 'method', 'field_name']);
-    $ref_query->fields('mmsd', ['sourceid1']);
+    $ref_query->addField('eu', 'field_name');
     $ref_query->addField('eu', 'target_id', 'reference_value_old');
     $ref_query->addField('mmsd', 'destid1', 'reference_value_new');
-    // If the source ID is a new info details, we need to fake it from service details. So, we need to get the mapped ID to match.
-
     $ref_query->condition('eu.source_id', $row->getSourceProperty('source_id'));
+    $ref_query->groupBy('eu.field_name');
+    $ref_query->groupBy('reference_value_old');
+    $ref_query->groupBy('reference_value_new');
 
     $refs = $ref_query->execute()->fetchAll();
 
     // Now update those fields. Different field types have
     // different approach for updating.
+    $values = [];
     foreach ($refs as $ref) {
-      $values = [];
       $field_name = $ref['field_name'];
-      $list = $entity->get($field_name);
+      if (!isset($values[$field_name])) {
+        $values[$field_name] = [];
+      }
+      $field_items = $entity->get($field_name);
       $uri_old = 'entity:node/' . $ref['reference_value_old'];
       $uri_new = 'entity:node/' . $ref['reference_value_new'];
-      foreach ($list as $delta => $item) {
+      foreach ($field_items as $delta => $item) {
+        if (!isset($values[$field_name][$delta])) {
+          $values[$field_name][$delta] = $item->getValue();
+        }
         switch (get_class($item)) {
           case DynamicLinkItem::class:
-            $values[$delta] = $item->getValue();
             // Only update the delta that was migrated
             // (when there are multiple values).
             // Each if() is a different type of DynamicLinkItem
             $item_uri = $item->get('uri')->getString();
             $item_uri_path = parse_url($item_uri, PHP_URL_PATH);
             if ($item_uri == $uri_old) {
-              $values[$delta]['uri'] = $uri_new;
+              $values[$field_name][$delta]['uri'] = $uri_new;
               $changed = TRUE;
             }
             elseif ($item_uri_path == Url::fromUri($uri_old)->toString()) {
-              $values[$delta]['uri'] = Url::fromUri($uri_new, $options)->toString();
+              $values[$field_name][$delta]['uri'] = Url::fromUri($uri_new, $options)->toString();
               $changed = TRUE;
             }
             break;
           case EntityReferenceItem::class:
-            $values[$delta] = $item->getValue();
             if ($item->get('target_id')->getString() == $ref['reference_value_old']) {
-              $values[$delta]['target_id'] = $ref['reference_value_new'];
+              $values[$field_name][$delta]['target_id'] = $ref['reference_value_new'];
               $changed = TRUE;
             }
             break;
           case TextLongItem::class:
           case TextWithSummaryItem::class:
-            $values[$delta] = $item->getValue();
             $value = $item->getValue()['value'];
             // First check for the entity ID
             if (str_contains($value, $ref['reference_value_old'])) {
               $replaced = str_replace($ref['reference_value_old'], $ref['reference_value_new'], $value);
-              $values[$delta]['value'] = $replaced;
+              $values[$field_name][$delta]['value'] = $replaced;
               $changed = TRUE;
             }
             // Next check for the link. We want relative links not
             // absolute so domain mismatch isn't an issue.
             if (str_contains($value, Url::fromUri($uri_old)->toString())) {
               $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $value);
-              $values[$delta]['value'] = $replaced;
+              $values[$field_name][$delta]['value'] = $replaced;
               $changed = TRUE;
             }
             break;
@@ -144,7 +155,14 @@ class UpdateReferences extends SqlBase {
       }
     }
     if ($changed) {
-      $row->setDestinationProperty($field_name, $values);
+      foreach ($values as $field_name => $field_values) {
+        // In case this is a service_details node,
+        // we need to update the migrated version.
+        if (static::SOURCE_TYPE == 'node' && static::SOURCE_BUNDLE == 'service_details') {
+          $field_name = ($field_name == 'field_service_detail_links_5') ? 'field_info_details_related' : $field_name;
+        }
+        $row->setDestinationProperty($field_name, $field_values);
+      }
     }
     else {
       // We don't need to process further since we already
