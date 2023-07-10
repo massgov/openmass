@@ -4989,7 +4989,7 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
         'href' => $link[0]['href'],
         'text' => 'more',
       ];
-      $sectionLinks[] = [
+      $values = [
         'title' => [
           'href' => $link[0]['href'],
           'text' => $link[0]['text'],
@@ -5000,6 +5000,16 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
         'links' => '',
         'seeAll' => $seeAll,
       ];
+      $terms = Helper::getReferencedEntitiesFromField($p, 'field_ref_icon');
+      $icon_path = (!empty($terms)) ? Helper::getIconPathFromIconTerm(reset($terms)) : '';
+      if ($icon_path) {
+        $icon['catIcon'] = [
+          'icon' => $icon_path,
+          'small' => 'true',
+        ];
+        $values = array_merge($icon, $values);
+      }
+      $sectionLinks[] = $values;
       $sections = ['sections' => $sectionLinks];
     }
     $variables['sectionContent'][$numOfSections]['sectionThreeUp'] = $sections;

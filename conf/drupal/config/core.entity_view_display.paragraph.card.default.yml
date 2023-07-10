@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.paragraph.card.field_card_link
     - field.field.paragraph.card.field_content
+    - field.field.paragraph.card.field_ref_icon
     - paragraphs.paragraphs_type.card
   module:
     - link
@@ -32,6 +33,14 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 1
+    region: content
+  field_ref_icon:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 2
     region: content
 hidden:
   paragraphs_type_help__default: true

@@ -613,7 +613,7 @@ class Helper {
    *   The path to the icon twig file.
    */
   public static function getIconPathFromIconTerm(Term $term) {
-    if ($term->bundle() == 'icon') {
+    if ($term->bundle() == 'icons') {
       $icon_name = $term->get('field_sprite_name');
       if ($icon_name->count() > 0) {
         $icon = $icon_name->getValue();
