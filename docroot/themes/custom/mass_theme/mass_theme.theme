@@ -4389,6 +4389,12 @@ function mass_theme_preprocess_html(&$variables) {
  * Remove page search if we're using our search band in stacked layout.
  */
 function mass_theme_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+  $variables['footerFloatingAction'] = TRUE;
+  if ($is_front_page || $route_name != 'entity.node.canonical') {
+    $variables['footerFloatingAction'] = FALSE;
+  }
   // Get Theme settings languages if available.
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
@@ -4440,6 +4446,12 @@ function mass_theme_preprocess_page(&$variables) {
           }
         }
       }
+
+      if ($node->hasField('field_hide_feedback_component')) {
+        if ($node->field_hide_feedback_component->value == 1) {
+          $variables['footerFloatingAction'] = FALSE;
+        }
+      }
     }
   }
 
@@ -4460,13 +4472,6 @@ function mass_theme_preprocess_page(&$variables) {
   if (!isset($variables['node'])) {
     $allowed_regions = ['post_content'];
     mass_theme_add_regions_to_node($allowed_regions, $variables);
-  }
-
-  $route_name = \Drupal::routeMatch()->getRouteName();
-  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
-  $variables['footerFloatingAction'] = TRUE;
-  if ($is_front_page || $route_name != 'entity.node.canonical') {
-    $variables['footerFloatingAction'] = FALSE;
   }
 }
 
