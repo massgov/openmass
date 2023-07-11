@@ -2013,118 +2013,118 @@ display:
         options:
           row_class: ''
           default_row_class: true
-          override: 1
-          sticky: 0
-          caption: ''
-          summary: ''
-          description: ''
           columns:
             field_organizations: field_organizations
             pageviews: pageviews
-            nos_per_1000: nos_per_1000
+            nos_per_1000_cleaned: nos_per_1000_cleaned
             field_views_simple_math_field: field_views_simple_math_field
             title: title
             field_parent: field_parent
             total_no: total_no
+          default: nos_per_1000_cleaned
           info:
             field_organizations:
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             pageviews:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-            nos_per_1000:
-              sortable: 1
+            nos_per_1000_cleaned:
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             field_views_simple_math_field:
-              sortable: 0
+              sortable: false
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             title:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             field_parent:
-              sortable: 0
+              sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             total_no:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-          default: nos_per_1000
-          empty_table: 0
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
           group_aggregation:
             group_aggregation_results: '0'
             grouping_field_class: ''
@@ -2133,7 +2133,7 @@ display:
             grouping_row_class: ''
           column_aggregation:
             totals_row_position:
-              2: '2'
+              2: 2
               1: 0
               3: 0
             totals_per_page: '1'
@@ -2364,11 +2364,11 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        nos_per_1000:
-          id: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
           table: mass_bigquery_data
-          field: nos_per_1000
-          relationship: vid
+          field: nos_per_1000_cleaned
+          relationship: nid
           group_type: avg
           admin_label: ''
           plugin_id: numeric
@@ -2410,7 +2410,7 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: false
+          hide_empty: true
           empty_zero: false
           hide_alter_empty: true
           set_precision: true
@@ -2475,7 +2475,7 @@ display:
               pageviews: pageviews
               total_no: total_no
               field_organizations: 0
-              nos_per_1000: 0
+              nos_per_1000_cleaned: 0
               title: 0
               field_parent: 0
             formula: '@total_no/@pageviews*1000'
@@ -3108,10 +3108,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
           table: mass_bigquery_data
-          field: nos_per_1000
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: avg
           admin_label: ''
@@ -3124,17 +3124,17 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: nos_per_1000_op
+            operator_id: nos_per_1000_cleaned_op
             label: 'Avg No''s per 1000 Pageviews'
             description: ''
             use_operator: true
-            operator: nos_per_1000_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: true
             operator_list:
               '<=': '<='
               '>=': '>='
               between: between
-            identifier: nos_per_1000
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
