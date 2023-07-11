@@ -99,6 +99,19 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
       return;
     }
 
+    $vid = $storage->getLatestRevisionId($entity->id());
+    $modify_draft = $vid != $entity->getRevisionId();
+    $this->heal($entity, $data);
+
+    if ($modify_draft) {
+      $entity_latest = $storage->loadRevision($vid);
+      $this->heal($entity_latest, $data);
+      dump($entity_latest->id());
+      dump($entity_latest->bundle());
+    }
+  }
+
+  public function heal($entity, array $data) {
     $changed = FALSE;
     $options = ['absolute' => TRUE];
 
@@ -206,6 +219,11 @@ class MassRedirectsRepoint extends QueueWorkerBase implements ContainerFactoryPl
 
       // Update the field values if any changes were made.
       if ($changed) {
+        if (method_exists($entity, 'setRevisionLogMessage')) {
+          $entity->setNewRevision();
+          $entity->setRevisionLogMessage('Revision created to fix redirects.');
+          $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+        }
         $entity->set($field_name, $values);
         $entity->save();
       }

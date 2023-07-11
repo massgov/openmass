@@ -31,6 +31,8 @@ class MassRedirectsCommands extends DrushCommands {
    * @field-labels
    *   parent_id: Parent id
    *   parent_type: Parent type
+   *   parent_bundle: Parent Bundle
+   *   parent_published: Parent Published
    *   usage_id: Usage Id
    *   usage_type: Usage type
    *   field: Field
@@ -39,8 +41,8 @@ class MassRedirectsCommands extends DrushCommands {
    *   from_type: From type
    *   to_id: To Id
    *   to_type: To Type
-   * @default-fields parent_id,parent_type,usage_id,usage_type,field,method,from_id,from_type,to_id,to_type
-   * @aliases pml,pm-list
+   * @default-fields parent_id,parent_type,parent_bundle,parent_published,usage_id,usage_type,field,method,from_id,from_type,to_id,to_type
+   * @aliases mah
    * @filter-default-field from_id
    */
   public function heal($options = ['format' => 'table']): RowsOfFields {
@@ -119,6 +121,8 @@ EOD;
           $result = [
             'parent_id' => $parent->id(),
             'parent_type' => $parent->getEntityTypeId(),
+            'parent_bundle' => $parent->bundle(),
+            'parent_published' => $parent->isPublished() ? 'TRUE' : 'FALSE',
             'usage_id' => $record->source_id,
             'usage_type' => $record->source_type,
             'field' => $record->field_name,
