@@ -52,7 +52,6 @@ class MassRedirectsCommands extends DrushCommands {
     $sql = <<<EOD
 SELECT * FROM entity_usage eu
 INNER JOIN content_moderation_state_field_data cmsfd ON eu.`target_id` = cmsfd.content_entity_id AND eu.`target_type` = cmsfd.content_entity_type_id
--- INNER JOIN redirect r ON eu.`target_id` = cmsfd.content_entity_id AND eu.`target_type` = cmsfd.content_entity_type_id
 WHERE cmsfd.moderation_state = 'trash' AND cmsfd.content_entity_type_id = 'node'
 ORDER BY 'eu.source_id DESC'
 EOD;
