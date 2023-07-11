@@ -596,7 +596,22 @@ display:
       defaults:
         filters: false
         filter_groups: false
+        header: false
       display_description: ''
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: '<p>This report is using the first organization for each organization only to avoid double counting.  If you want to count documents by any of the organizations associated with them, you can see a version of this report that looks at <a href="/admin/report/report-of-documents-by-org-all">all the organizations for each document</a>.</p>'
+            format: basic_html
+          tokenize: false
       display_extenders:
         metatag_display_extender: {  }
       path: admin/report/report-of-documents-by-org-first
@@ -664,7 +679,7 @@ display:
           plugin_id: text
           empty: false
           content:
-            value: '<p>This report is using ALL organizations included for each document which WILL results in DOUBLE COUNTING if a document has multiple organizations associated with it.</p>'
+            value: '<p>This report is using ALL organizations included for each document which WILL results in DOUBLE COUNTING if a document has multiple organizations associated with it. If you want documents counted only once, you can see a version of this report that looks only at the <a href="/admin/report/report-of-documents-by-org-first">first organization for each document</a>.</p>'
             format: basic_html
           tokenize: false
       display_extenders:

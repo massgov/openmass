@@ -37,7 +37,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'Organization parent'
+          label: 'Organization parent (used by search)'
           exclude: false
           alter:
             alter_text: false
@@ -100,7 +100,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'Org Parent Page'
+          label: 'Org Parent Page (used by breadcrumb)'
           exclude: false
           alter:
             alter_text: false
@@ -296,7 +296,7 @@ display:
         type: mini
         options:
           offset: 0
-          items_per_page: 50
+          items_per_page: 100
           total_pages: null
           id: 0
           tags:
@@ -361,6 +361,51 @@ display:
             operator_list: {  }
       style:
         type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            field_parent: field_parent
+            field_primary_parent: field_primary_parent
+            title: title
+            nid: nid
+          default: nid
+          info:
+            field_parent:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_primary_parent:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            title:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            nid:
+              sortable: true
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
       row:
         type: fields
       query:
@@ -551,7 +596,22 @@ display:
         title: false
         filters: false
         filter_groups: false
+        header: false
       display_description: ''
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: '<p>If a page has multiple organizations, only the FIRST organization is used in this report. This ensures that we don''t double count pages. A separate report will look at <a href="/admin/reports/pages-by-organization-report/all_org">all the organizations for each page</a>.</p>'
+            format: basic_html
+          tokenize: false
       rendering_language: '***LANGUAGE_entity_default***'
       display_extenders:
         metatag_display_extender: {  }
@@ -586,13 +646,13 @@ display:
           plugin_id: text
           empty: false
           content:
-            value: '<p>If a page has multiple organizations, ALL organizations are used in this report. This report will DOUBLE COUNT any pages that have multiple organizations. A separate report will look at only the first organization for each page.</p>'
+            value: '<p>If a page has multiple organizations, ALL organizations are used in this report. This report will DOUBLE COUNT any pages that have multiple organizations. A separate report will look at only the <a href="/admin/reports/pages-by-organization-report/first_org">first organization for each page</a>.</p>'
             format: basic_html
           tokenize: false
       rendering_language: '***LANGUAGE_entity_default***'
       display_extenders:
         metatag_display_extender: {  }
-      path: admin/reports/pages-by-organization-report/first_org
+      path: admin/reports/pages-by-organization-report/all_org
     cache_metadata:
       max-age: -1
       contexts:
