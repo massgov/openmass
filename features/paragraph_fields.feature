@@ -8,7 +8,7 @@ Feature: Paragraph type definitions
     Given I am logged in as a user with the "administrator" role
     Then the "action_area" paragraph has the fields:
       | field                 | widget             |
-      | field-area-action-ref | Paragraphs Classic |
+      | field-area-action-ref | Paragraphs Legacy |
 
     Then the "action_step" paragraph has the fields:
       | field                 | widget                    |
