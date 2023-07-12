@@ -1,5 +1,19 @@
 
 
+## [0.367.0] - July 11, 2023
+
+### Added
+  - DP-26725: Add option to hide 'Did you find' component on form content type.
+  - DP-28507: Heal orphan references via redirect inspection
+  - DP-28604: Add Siteimprove data to bigquery module
+  - DP-28649: Drupal view made for internal report of how-to pages. Will not be visible to authors
+  
+### Changed
+  - DP-27207: D10 - upgrade Views related modules
+  - DP-28570: Changed deploy_cd CI workflow.
+  
+
+
 ## [0.366.0] - June 27, 2023
 
 ### Added

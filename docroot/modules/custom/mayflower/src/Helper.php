@@ -2,6 +2,7 @@
 
 namespace Drupal\mayflower;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\crop\Entity\Crop;
@@ -1849,6 +1850,39 @@ class Helper {
       $parent_entity = self::getParentNode($parent_entity);
     }
     return $parent_entity;
+  }
+
+  /**
+   * Helper to check if paragraph is orphan.
+   */
+  public static function isParagraphOrphan(EntityInterface $entity) {
+    if ($entity instanceof Paragraph) {
+      $parent_field_name = $entity->parent_field_name->value;
+      $parent = $entity->getParentEntity();
+      if ($parent) {
+        if ($parent->hasField($parent_field_name)) {
+          if ($parent->get($parent_field_name)->isEmpty()) {
+            return TRUE;
+          }
+          else {
+            $values = [
+              'target_id' => $entity->id(),
+              'target_revision_id' => $entity->getRevisionId(),
+            ];
+            if (in_array($values, $parent->get($parent_field_name)->getValue())) {
+              return self::isParagraphOrphan($parent);
+            }
+            else {
+              return TRUE;
+            }
+          }
+        }
+      }
+      else {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }
