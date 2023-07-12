@@ -5,7 +5,6 @@ dependencies:
   config:
     - taxonomy.vocabulary.icons
   module:
-    - options
     - taxonomy
     - user
 id: icons_entity_reference
@@ -150,17 +149,16 @@ display:
           expose:
             operator_limit_selection: false
             operator_list: {  }
-        field_sprite_type_value:
-          id: field_sprite_type_value
-          table: taxonomy_term__field_sprite_type
-          field: field_sprite_type_value
+        field_sprite_card_value:
+          id: field_sprite_card_value
+          table: taxonomy_term__field_sprite_card
+          field: field_sprite_card_value
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: list_field
-          operator: or
-          value:
-            card: card
+          plugin_id: boolean
+          operator: '='
+          value: '1'
           group: 1
           exposed: false
           expose:
@@ -177,7 +175,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -190,7 +187,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          reduce_duplicates: false
       style:
         type: default
         options:

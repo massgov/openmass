@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.icons.field_sprite_card
     - field.field.taxonomy_term.icons.field_sprite_name
     - field.field.taxonomy_term.icons.field_sprite_type
     - taxonomy.vocabulary.icons
@@ -13,6 +14,16 @@ targetEntityType: taxonomy_term
 bundle: icons
 mode: default
 content:
+  field_sprite_card:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
   field_sprite_name:
     type: string
     label: hidden
