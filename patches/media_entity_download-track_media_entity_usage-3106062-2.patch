@@ -1,20 +1,6 @@
-diff --git a/composer.json b/composer.json
-index 38cc2c7312c3f4c570a28df96a0b6638f6733cc7..355d32fb4e81d4373832f37eb3745268fa1298dc 100644
---- a/composer.json
-+++ b/composer.json
-@@ -10,5 +10,8 @@
-     "issues": "https://www.drupal.org/project/issues/media_entity_download",
-     "source": "http://cgit.drupalcode.org/media_entity_download"
-   },
--  "require": { }
-+  "require": { },
-+  "require-dev": {
-+    "drupal/entity_usage": "^2@beta"
-+  }
- }
 diff --git a/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php b/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php
 new file mode 100644
-index 0000000000000000000000000000000000000000..866ba115d9aa05d74de2f93f0c3474155fb2e8d5
+index 0000000..866ba11
 --- /dev/null
 +++ b/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php
 @@ -0,0 +1,74 @@
@@ -94,7 +80,7 @@ index 0000000000000000000000000000000000000000..866ba115d9aa05d74de2f93f0c347415
 +}
 diff --git a/tests/src/Functional/MediaEntityDownloadHtmlLinkTest.php b/tests/src/Functional/MediaEntityDownloadHtmlLinkTest.php
 new file mode 100644
-index 0000000000000000000000000000000000000000..79359346ce85474042c4b3ff56f67a07739d16e6
+index 0000000..7935934
 --- /dev/null
 +++ b/tests/src/Functional/MediaEntityDownloadHtmlLinkTest.php
 @@ -0,0 +1,259 @@
