@@ -5,7 +5,6 @@ dependencies:
   config:
     - field.storage.paragraph.field_ref_icon
     - paragraphs.paragraphs_type.card
-    - taxonomy.vocabulary.icons
 id: paragraph.card.field_ref_icon
 field_name: field_ref_icon
 entity_type: paragraph
@@ -17,13 +16,10 @@ translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: views
   handler_settings:
-    target_bundles:
-      icons: icons
-    sort:
-      field: name
-      direction: asc
-    auto_create: false
-    auto_create_bundle: ''
+    view:
+      view_name: icons_entity_reference
+      display_name: entity_reference_1
+      arguments: {  }
 field_type: entity_reference
