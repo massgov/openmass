@@ -150,17 +150,16 @@
 {#    {% endif %}#}
 {#  {% endfor %}#}
 
-  {# Only show org sub nav if there are at least 2 items with content. #}
-    {% embed "@organisms/by-template/organization-navigation.twig" with {
-      organizationNavigation: {
-        orgNavTitle: node.label,
-        orgNavAbbrev: '',
-        orgId: slugified_title,
-        orgSearch: true,
-        orgNav: org_nav
-      },
-    } %}
-    {% endembed %}
+  {% embed "@organisms/by-template/organization-navigation.twig" with {
+    organizationNavigation: {
+      orgNavTitle: node.label,
+      orgNavAbbrev: '',
+      orgId: slugified_title,
+      orgSearch: true,
+      orgNav: org_nav
+    },
+  } %}
+  {% endembed %}
 
 {% endblock %}
 
