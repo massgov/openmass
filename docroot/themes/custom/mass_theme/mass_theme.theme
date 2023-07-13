@@ -624,6 +624,27 @@ function mass_theme_preprocess_node_form_page(&$variables) {
 function mass_theme_preprocess_node_org_page(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     $node = $variables['node'];
+    if ($sections = $node->get('field_organization_sections')->referencedEntities()) {
+      $utility_service = \Drupal::service('mass_metatag.utilities');
+      $org_nav = [];
+      foreach ($sections as $section) {
+        if ($section->field_show_in_org_navigation->value == TRUE && $section->field_hide_heading->value != TRUE) {
+          if (!empty($section->field_org_navigation_jump_link_t->value)) {
+            $text = $section->field_org_navigation_jump_link_t->value;
+            $id = 'org-nav-' . $utility_service->slugify($text);
+          }
+          else {
+            $text = $section->field_section_long_form_heading->value;
+            $id = 'org-nav-' . $utility_service->slugify($text);
+          }
+          $org_nav[] = [
+            'text' => $text,
+            'id' => $id,
+          ];
+        }
+      }
+      $variables['org_nav'] = $org_nav;
+    }
     $cache_tags = [];
 
     // Get the page title for title context.
@@ -7219,6 +7240,16 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
  * Groups different components together when necessary.
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+  $paragraph = $variables['paragraph'];
+
+  $utility_service = \Drupal::service('mass_metatag.utilities');
+  if (!$paragraph->get('field_org_navigation_jump_link_t')->isEmpty()) {
+    $id = 'org-nav-' . $utility_service->slugify($paragraph->field_org_navigation_jump_link_t->value);
+  }
+  else {
+    $id = 'org-nav-' . $utility_service->slugify($paragraph->field_section_long_form_heading->value);
+  }
+  $variables['heading_id'] = $id;
   $variables["org_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
 }

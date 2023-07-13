@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.org_section_long_form.field_hide_heading
+    - field.field.paragraph.org_section_long_form.field_org_navigation_jump_link_t
     - field.field.paragraph.org_section_long_form.field_section_long_form_content
     - field.field.paragraph.org_section_long_form.field_section_long_form_heading
+    - field.field.paragraph.org_section_long_form.field_show_in_org_navigation
     - paragraphs.paragraphs_type.org_section_long_form
   module:
     - field_group
@@ -18,7 +20,7 @@ third_party_settings:
       label: 'Section Content'
       region: content
       parent_name: ''
-      weight: 2
+      weight: 4
       format_type: details
       format_settings:
         classes: section-content
@@ -31,7 +33,7 @@ third_party_settings:
       label: 'Additional Resources'
       region: content
       parent_name: ''
-      weight: 3
+      weight: 5
       format_type: details
       format_settings:
         classes: ''
@@ -46,11 +48,36 @@ mode: default
 content:
   field_hide_heading:
     type: boolean_checkbox
-    weight: 1
+    weight: 3
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
+  field_org_navigation_jump_link_t:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        6aeb01e2-c4bf-42a2-a7eb-1df948e10cb5:
+          entity_type: paragraph
+          bundle: org_section_long_form
+          dependee: field_show_in_org_navigation
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: 1
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_section_long_form_content:
     type: entity_reference_paragraphs
     weight: 3
@@ -70,6 +97,13 @@ content:
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_show_in_org_navigation:
+    type: boolean_checkbox
+    weight: 1
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
 hidden:
   created: true
