@@ -54,7 +54,7 @@ class MassMigrateCommands extends DrushCommands {
   public function overrideMigrateImportPostCommand() {
     // Usage updates now gfo into a queue which we will process at end of migration.
     $GLOBALS['config']['entity_usage.settings']['track_enabled_source_entity_types'] = ['placeholder', 'another'];
-    
+
     // Disable entity_hierarchy writes for service_details migration.
     \Drupal::state()->set('mass_migrate_service_details', FALSE);
 

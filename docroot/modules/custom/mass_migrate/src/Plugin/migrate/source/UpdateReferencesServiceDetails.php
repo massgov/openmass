@@ -12,4 +12,5 @@ namespace Drupal\mass_migrate\Plugin\migrate\source;
 class UpdateReferencesServiceDetails extends UpdateReferences {
   const SOURCE_TYPE = 'node';
   const SOURCE_BUNDLE = 'service_details';
+
 }
