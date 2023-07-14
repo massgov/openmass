@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @QueueWorker(
  *   id = "mass_bigquery_node_queue",
  *   title = @Translation("BigQuery node queue"),
- *   cron = {"time" = 60}
  * )
  */
 class BigQueryNodeQueueWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
