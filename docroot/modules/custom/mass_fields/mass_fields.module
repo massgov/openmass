@@ -299,15 +299,9 @@ function mass_fields_entity_base_field_info(EntityTypeInterface $entity_type) {
  * @see https://chromatichq.com/insights/dynamic-default-and-allowed-values-list-fields-drupal-8/
  */
 function mass_fields_search_default_value(ContentEntityInterface $entity) {
-  $settings = \Drupal::service('simple_sitemap.generator')->entityManager()->getBundleSettings();
-  $default = FALSE;
-  if (!$settings[$entity->getEntityTypeId()][$entity->bundle()]['index']) {
-    // Bundle is not part of the sitemap so turn on 'Exclude from content'.
-    $default = TRUE;
-  }
-
+  $is_indexed = \Drupal::service('simple_sitemap.generator')->entityManager()->bundleIsIndexed($entity->getEntityTypeId(), $entity->bundle());
   return [
-    ['value' => $default],
+    ['value' => $is_indexed],
   ];
 }
 
@@ -790,14 +784,14 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
 
   /** @var ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
-  $settings = \Drupal::service('simple_sitemap.generator')->entityManager()->getBundleSettings();
+  $is_indexed = \Drupal::service('simple_sitemap.generator')->entityManager()->bundleIsIndexed($entity->getEntityTypeId(), $entity->bundle() );
   $form['search_status'] = [
     '#type' => 'details',
     '#group' => 'advanced',
     '#open' => FALSE,
     '#title' => t('Search status'),
     '#weight' => 55,
-    '#access' => $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
+    '#access' => $is_indexed,
   ];
   // Copy the checkbox field into the advanced group.
   $form['search_status']['search'] = $form['search'];

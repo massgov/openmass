@@ -19,8 +19,7 @@ class NodeHasPageAccessChecker implements AccessInterface {
   }
 
   public function access(Route $route, NodeInterface $node): AccessResultInterface {
-    $settings = $this->sitemap->entityManager()->getBundleSettings($node->getEntityTypeId(), $node->bundle());
-    $has_page = $settings['index'];
+    $has_page = $this->sitemap->entityManager()->bundleIsIndexed($node->getEntityTypeId(), $node->bundle());
     return AccessResult::allowedIf($has_page);
   }
 
