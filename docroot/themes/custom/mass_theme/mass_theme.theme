@@ -18,6 +18,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\mass_content\EventsRendererOrgPages;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
@@ -118,8 +119,11 @@ function mass_theme_preprocess_callout_links(&$variables) {
     'calloutLinks' => Molecules::prepareCalloutLinks($paragraph),
   ];
 
-  if (Helper::getParentNode($paragraph)->bundle() == "org_page") {
-    $variables["useWrapper"] = TRUE;
+  $parent = Helper::getParentNode($paragraph);
+  if ($parent instanceof NodeInterface) {
+    if ($parent->bundle() == "org_page") {
+      $variables["useWrapper"] = TRUE;
+    }
   }
 }
 
@@ -4385,6 +4389,12 @@ function mass_theme_preprocess_html(&$variables) {
  * Remove page search if we're using our search band in stacked layout.
  */
 function mass_theme_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+  $variables['footerFloatingAction'] = TRUE;
+  if ($is_front_page || $route_name != 'entity.node.canonical') {
+    $variables['footerFloatingAction'] = FALSE;
+  }
   // Get Theme settings languages if available.
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
@@ -4436,6 +4446,12 @@ function mass_theme_preprocess_page(&$variables) {
           }
         }
       }
+
+      if ($node->hasField('field_hide_feedback_component')) {
+        if ($node->field_hide_feedback_component->value == 1) {
+          $variables['footerFloatingAction'] = FALSE;
+        }
+      }
     }
   }
 
@@ -4456,13 +4472,6 @@ function mass_theme_preprocess_page(&$variables) {
   if (!isset($variables['node'])) {
     $allowed_regions = ['post_content'];
     mass_theme_add_regions_to_node($allowed_regions, $variables);
-  }
-
-  $route_name = \Drupal::routeMatch()->getRouteName();
-  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
-  $variables['footerFloatingAction'] = TRUE;
-  if ($is_front_page || $route_name != 'entity.node.canonical') {
-    $variables['footerFloatingAction'] = FALSE;
   }
 }
 

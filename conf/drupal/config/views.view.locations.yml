@@ -16,6 +16,7 @@ dependencies:
     - paragraphs
     - taxonomy
     - views_autocomplete_filters
+    - views_custom_cache_tag
     - views_porter_stemmer
 id: locations
 label: Locations
@@ -140,8 +141,9 @@ display:
         type: mass_views_node_argument_access
         options: {  }
       cache:
-        type: tag
-        options: {  }
+        type: custom_tag
+        options:
+          custom_tag: 'node_list:location'
       empty: {  }
       sorts:
         field_geofield_proximity:
@@ -469,6 +471,7 @@ display:
     position: 1
     display_options:
       display_extenders:
+        metatag_display_extender: {  }
         ajax_history:
           enable_history: true
       path: node/%node/locations

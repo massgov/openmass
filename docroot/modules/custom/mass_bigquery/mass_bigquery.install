@@ -5,6 +5,8 @@
  * Install, update and uninstall functions for the mass_bigquery module.
  */
 
+use Drupal\Core\Database\Database;
+
 /**
  * Implements hook_schema().
  */
@@ -46,6 +48,18 @@ function mass_bigquery_schema() {
         'type' => 'int',
         'description' => 'The total feedback.',
       ],
+      'broken_links' => [
+        'type' => 'int',
+        'description' => 'The number of broken links.',
+      ],
+      'grade_level' => [
+        'type' => 'int',
+        'description' => 'The grade level.',
+      ],
+      'nos_per_1000_cleaned' => [
+        'type' => 'float',
+        'description' => 'Populated if the node has 500 or more page views or 5 or more nos',
+      ],
     ],
     'indexes' => [
       'nid' => ['nid'],
@@ -57,4 +71,25 @@ function mass_bigquery_schema() {
   ];
 
   return $schema;
+}
+
+/**
+ * Implements hook_update_n().
+ *
+ * Add siteimprove fields and a cleaned nos_per_1000 field.
+ */
+function mass_bigquery_update_9001() {
+  $fields_to_add = [
+    'nos_per_1000_cleaned',
+    'broken_links',
+    'grade_level'
+  ];
+
+  $schema = Database::getConnection()->schema();
+  $table = 'mass_bigquery_data';
+  $spec = mass_bigquery_schema();
+
+  foreach ($fields_to_add as $field_to_add) {
+    $schema->addField($table, $field_to_add, $spec[$table]['fields'][$field_to_add]);
+  }
 }
