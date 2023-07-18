@@ -1,5 +1,19 @@
 
 
+## [0.368.0] - July 18, 2023
+
+### Added
+  - DP-28439: New views to show the amount of content by organization.
+  
+### Fixed
+  - DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
+  
+### Changed
+  - DP-28783: A11y - aria-label on alert icon.
+  - DP-28890: Process BigQuery queue outside of cron
+  
+
+
 ## [0.367.0] - July 11, 2023
 
 ### Added
