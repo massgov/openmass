@@ -172,7 +172,16 @@
 
   {{ content.field_info_details_sections }}
 
-  {{ content.field_contact }}
+  {% if mainContent.contactList %}
+    {% set contactList = mainContent.contactList %}
+    {% set contactList = contactList|merge({'compHeading': {
+      'title': contactList.compHeading.title,
+      'titleContext': contactList.compHeading.titleContext,
+      'level': level + 1,
+      'id': contactList.compHeading.id
+    }}) %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
 
   {% if node.field_footnotes[0].value %}
     {% include "@organisms/by-author/footnote-list.twig" with {

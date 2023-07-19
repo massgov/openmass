@@ -1483,6 +1483,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
+    $page_title = $node->getTitle();
 
     // Create the map of all possible field names to use.
     $map = [
@@ -1535,7 +1536,37 @@ function mass_theme_preprocess_node_info_details(&$variables) {
 
     // Build contact section, if field is populated.
     if (!empty($fields['contact']) && Helper::isFieldPopulated($node, $fields['contact'])) {
+      // Set up options for contact list.
 
+      $contacts_title = t("Contact");
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+
+      // Set up options for contact list.
+      $contactList_options = [
+        'heading' => [
+          'type' => 'compHeading',
+          'title' => $contacts_title,
+          'titleContext' => $titleContext,
+          'sub' => TRUE,
+        ],
+        'groups' => [
+          'accordion' => TRUE,
+          'isExpanded' => FALSE,
+        ],
+      ];
+
+      $contactList_options = [
+        'heading' => [
+          'title' => t("Contact"),
+          'sub' => TRUE,
+        ],
+        'groups' => [
+          'accordion' => TRUE,
+          'isExpanded' => FALSE,
+        ],
+      ];
+
+      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options);
       // Build sidebar.contactList, which is a subset of pageContent.ContactList.
       $sidebarContacts_options = [
         'groups' => [
@@ -1549,6 +1580,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
       $sideContent['contactList']['viewSpecific'] = FALSE;
       $variables['sideContent'] = $sideContent;
+      $variables['mainContent'] = $mainContent;
     }
 
     // Hide sidebar when 'visual_story' is select from the field_page_template field.
