@@ -1484,6 +1484,14 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
 
+    // Create the map of all possible field names to use.
+    $map = [
+      'contact' => ['field_contact'],
+    ];
+
+    // Determines which field names to use from the map.
+    $fields = Helper::getMappedFields($node, $map);
+
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
     $variables['sectionCount'] = $node->field_info_details_sections->count();
@@ -1522,6 +1530,24 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         'stacked' => TRUE,
       ];
       $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_info_details_related', $linkList_options);
+      $variables['sideContent'] = $sideContent;
+    }
+
+    // Build contact section, if field is populated.
+    if (!empty($fields['contact']) && Helper::isFieldPopulated($node, $fields['contact'])) {
+
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+        ],
+      ];
+      // Prepare the sidebarContact data object cache tags do not need to be sent.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['viewSpecific'] = FALSE;
       $variables['sideContent'] = $sideContent;
     }
 

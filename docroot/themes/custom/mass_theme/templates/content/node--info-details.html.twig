@@ -219,13 +219,18 @@
 {% endblock %}
 
 {% if not no_sidebar %}
-  {% if (content.extra_sidebar_contact|render|trim is not empty) or (sideContent.linkList) %}
+  {% if sideContent.contactList or (sideContent.linkList) %}
     {% set sidebar = true %}
   {% endif %}
 {% endif %}
 
 {% block sidebar %}
-  {{ content.extra_sidebar_contact }}
+  {% if sideContent.contactList %}
+    {% set contactList = sideContent.contactList %}
+    {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
+    {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
   {% if sideContent.linkList %}
     {% set linkList = sideContent.linkList %}
     {% set linkList = linkList|merge({'compHeading': {
