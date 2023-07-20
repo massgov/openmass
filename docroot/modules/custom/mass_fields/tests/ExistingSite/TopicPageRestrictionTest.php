@@ -27,7 +27,6 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
     return [
       '#edit-title-0-value',
       '#edit-field-topic-lede-0-value',
-      '#edit-field-topic-ref-icon',
       '#edit-field-topic-ref-related-topics-0-target-id',
     ];
   }
