@@ -301,7 +301,7 @@ function mass_fields_entity_base_field_info(EntityTypeInterface $entity_type) {
 function mass_fields_search_default_value(ContentEntityInterface $entity) {
   $is_indexed = \Drupal::service('simple_sitemap.generator')->entityManager()->bundleIsIndexed($entity->getEntityTypeId(), $entity->bundle());
   return [
-    ['value' => $is_indexed],
+    ['value' => !$is_indexed],
   ];
 }
 
