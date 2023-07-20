@@ -1072,11 +1072,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'content-card-group',
           ),
           array (
-            'field' => 'field-topic-ref-icon',
-            'tag' => 'select',
-            'type' => '',
-          ),
-          array (
             'field' => 'field-topic-ref-related-topics',
             'tag' => 'input',
             'type' => 'text',
