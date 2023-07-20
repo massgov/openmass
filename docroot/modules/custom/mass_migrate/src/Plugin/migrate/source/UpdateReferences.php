@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_migrate\Plugin\migrate\source;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
 use Drupal\Core\Url;
@@ -141,6 +142,43 @@ class UpdateReferences extends SqlBase {
               $values[$field_name][$delta]['value'] = $replaced;
               $changed = TRUE;
             }
+
+            // Check for the linkit values.
+            if (str_contains($value, 'data-entity-uuid')) {
+              $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+              $entity_old = $node_storage->load($ref['reference_value_old']);
+              if ($entity_old) {
+                if (str_contains($value, $entity_old->uuid())) {
+                  $dom = Html::load($value);
+                  $xpath = new \DOMXPath($dom);
+                  foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $element) {
+                    if ($element->getAttribute('data-entity-uuid') == $entity_old->uuid()) {
+                      // Parse link href as url,
+                      // extract query and fragment from it.
+                      $href_url = parse_url($element->getAttribute('href'));
+                      $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                      $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                      $entity_new = $node_storage->load($ref['reference_value_new']);
+                      if ($entity_new) {
+                        $substitution = \Drupal::service('plugin.manager.linkit.substitution');
+                        $url = $substitution
+                          ->createInstance('canonical')
+                          ->getUrl($entity_new);
+                        $element->setAttribute('data-entity-uuid', $entity_new->uuid());
+                        $element->setAttribute('href', $url->getGeneratedUrl() . $query . $anchor);
+                        $changed = TRUE;
+                      }
+                    }
+                  }
+                  if ($changed) {
+                    $replaced = Html::serialize($dom);
+                    $value = $replaced;
+                    $values[$delta]['value'] = $replaced;
+                  }
+                }
+              }
+            }
+
             // Next check for the link. We want relative links not
             // absolute so domain mismatch isn't an issue.
             if (str_contains($value, Url::fromUri($uri_old)->toString())) {
@@ -159,7 +197,12 @@ class UpdateReferences extends SqlBase {
         // In case this is a service_details node,
         // we need to update the migrated version.
         if (static::SOURCE_TYPE == 'node' && static::SOURCE_BUNDLE == 'service_details') {
-          $field_name = ($field_name == 'field_service_detail_links_5') ? 'field_info_details_related' : $field_name;
+          if ($field_name == "field_service_detail_overview") {
+            $field_name = "field_info_detail_overview";
+          }
+          elseif ($field_name == 'field_service_detail_links_5') {
+            $field_name = "field_info_details_related";
+          }
         }
         $row->setDestinationProperty($field_name, $field_values);
       }
