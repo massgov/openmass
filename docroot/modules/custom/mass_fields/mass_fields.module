@@ -784,14 +784,14 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
 
   /** @var ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
-  $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
+  $is_indexed = \Drupal::service('simple_sitemap.generator')->entityManager()->bundleIsIndexed($entity->getEntityTypeId(), $entity->bundle());
   $form['search_status'] = [
     '#type' => 'details',
     '#group' => 'advanced',
     '#open' => FALSE,
     '#title' => t('Search status'),
     '#weight' => 55,
-    '#access' => $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
+    '#access' => $is_indexed,
   ];
   // Copy the checkbox field into the advanced group.
   $form['search_status']['search'] = $form['search'];
