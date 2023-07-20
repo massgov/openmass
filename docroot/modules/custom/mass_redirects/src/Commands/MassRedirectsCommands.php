@@ -160,9 +160,6 @@ EOD;
     $options = ['absolute' => TRUE];
 
     $field_name = $data['field'];
-    if (!$entity->hasField($field_name)) {
-      $a=1;
-    }
     $list = $entity->get($field_name);
     $uri_old = 'entity:' . $data['from_type'] . '/' . $data['from_id'];
     $uri_new = 'entity:' . $data['from_type'] . '/' . $data['to_id'];
