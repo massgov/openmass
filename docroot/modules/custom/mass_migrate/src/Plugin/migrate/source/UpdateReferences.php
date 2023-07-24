@@ -135,10 +135,11 @@ class UpdateReferences extends SqlBase {
             break;
           case TextLongItem::class:
           case TextWithSummaryItem::class:
-            $value = $item->getValue()['value'];
+            $value = $values[$field_name][$delta]['value'];
             // First check for the entity ID
             if (str_contains($value, $ref['reference_value_old'])) {
               $replaced = str_replace($ref['reference_value_old'], $ref['reference_value_new'], $value);
+              $value = $replaced;
               $values[$field_name][$delta]['value'] = $replaced;
               $changed = TRUE;
             }
@@ -173,7 +174,7 @@ class UpdateReferences extends SqlBase {
                   if ($changed) {
                     $replaced = Html::serialize($dom);
                     $value = $replaced;
-                    $values[$delta]['value'] = $replaced;
+                    $values[$field_name][$delta]['value'] = $replaced;
                   }
                 }
               }
