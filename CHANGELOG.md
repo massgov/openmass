@@ -1,5 +1,26 @@
 
 
+## [0.368.0] - July 25, 2023
+
+### Added
+  - DP-28439: New views to show the amount of content by organization.
+  
+### Removed
+  - DP-28600: Removed Icon from Topic pages.
+  
+### Fixed
+  - DP-28600: Fixed Info details accordion styling on mobile issue.
+  - DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
+  
+### Changed
+  - DP-28735: Update Paragraphs, Entity Reference Revision, misc
+  - DP-28783: A11y - aria-label on alert icon.
+  - DP-28854: Remove Google Optimize - it is unused
+  - DP-28890: Process BigQuery queue outside of cron
+  - DP-28963: More info link missing from contact component on info details pages.
+  
+
+
 ## [0.367.0] - July 11, 2023
 
 ### Added
