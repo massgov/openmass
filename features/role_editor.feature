@@ -16,7 +16,6 @@ Feature: Editor Role
     And I should have access to "/node/add/location"
     And I should have access to "/node/add/org_page"
     And I should have access to "/node/add/service_page"
-    And I should have access to "/node/add/service_details"
     And I should not have access to "/admin/reports"
     And I should not have access to "/node/add/error_page"
     And I should not have access to "/node/add/interstitial"
