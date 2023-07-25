@@ -374,7 +374,6 @@ class Molecules {
       ],
       'icon' => [
         'field_icon_term',
-        'field_topic_ref_icon',
       ],
       'links' => [
         'field_topic_content_cards',
