@@ -10,8 +10,8 @@ drush migrate:status
 #This is the long migration that creates info_details nodes.
 drush migrate:import service_details
 
-#This updates migrated info detail nodes with updated targets for entity refs, link fields, other usages based on the service_details migration.
-drush migrate:import update_references_service_details
+# After service details migration make sure that the new usage data is populated before running the other ones.
+drush queue:run entity_usage_tracker
 
 #This updates entity refs and link fields and other usages of the old service_detail nodes
 drush migrate:import update_references_node
@@ -32,8 +32,11 @@ drush migrate:import flaggings
 drush entity:delete node --bundle=service_details
 
 # Entity usage updates are queued up. Just let cron process them.
+# or manually run the command below
+# drush queue:run entity_usage_tracker
 
 # We need to rebuild the entire hierarchy tree.
+drush entity-hierarchy-rebuild-tree field_primary_parent node
 
 #Regenerate sitemap (optional - we can just wait for next run)
 drush simple-sitemap:rebuild-queue

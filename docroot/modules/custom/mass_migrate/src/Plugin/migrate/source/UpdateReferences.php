@@ -26,9 +26,8 @@ class UpdateReferences extends SqlBase {
     $query->condition('eu.target_type', 'node');
 
     if (static::SOURCE_TYPE == 'node') {
-      $op_service_details = static::SOURCE_BUNDLE == 'service_details' ? '=' : '!=';
       $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
-      $query->condition('ns.type', 'service_details', $op_service_details);
+      $query->condition('ns.type', 'service_details', '!=');
     }
 
     $query->groupBy('eu.source_id');
@@ -195,16 +194,6 @@ class UpdateReferences extends SqlBase {
     }
     if ($changed) {
       foreach ($values as $field_name => $field_values) {
-        // In case this is a service_details node,
-        // we need to update the migrated version.
-        if (static::SOURCE_TYPE == 'node' && static::SOURCE_BUNDLE == 'service_details') {
-          if ($field_name == "field_service_detail_overview") {
-            $field_name = "field_info_detail_overview";
-          }
-          elseif ($field_name == 'field_service_detail_links_5') {
-            $field_name = "field_info_details_related";
-          }
-        }
         $row->setDestinationProperty($field_name, $field_values);
       }
     }
