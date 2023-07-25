@@ -181,6 +181,7 @@ class Organisms {
         'field_service_detail_contact',
         'field_rules_ref_contact',
         'field_ref_contact_info',
+        'field_contact',
       ],
     ];
 
@@ -562,7 +563,9 @@ class Organisms {
     }
 
     // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
-    $pageBanner['icon'] = $options['icon'];
+    if (isset($options['icon'])) {
+      $pageBanner['icon'] = $options['icon'];
+    }
     $pageBanner['color'] = array_key_exists('color', $options) ? $options['color'] : '';
     $pageBanner['underline'] = array_key_exists('underline', $options) ? $options['underline'] : FALSE;
 
