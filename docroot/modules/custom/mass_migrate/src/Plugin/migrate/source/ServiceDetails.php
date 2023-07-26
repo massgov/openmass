@@ -72,6 +72,7 @@ class ServiceDetails extends SqlBase {
       'search_nosnippet' => $node->getSearchNoSnippet()->getValue(),
       'field_contact' => $node->get('field_service_detail_contact')->getValue(),
       'field_intended_audience' => $node->get('field_intended_audience')->getValue(),
+      'field_migrated_node_id' => $node->id(),
       'field_organizations' => $node->get('field_organizations')->getValue(),
       'field_primary_parent' => $node->get('field_primary_parent')->getValue(),
       'field_reusable_label' => $node->get('field_reusable_label')->getValue(),
