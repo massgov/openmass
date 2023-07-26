@@ -563,7 +563,9 @@ class Organisms {
     }
 
     // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
-    $pageBanner['icon'] = $options['icon'];
+    if (isset($options['icon'])) {
+      $pageBanner['icon'] = $options['icon'];
+    }
     $pageBanner['color'] = array_key_exists('color', $options) ? $options['color'] : '';
     $pageBanner['underline'] = array_key_exists('underline', $options) ? $options['underline'] : FALSE;
 

@@ -80,7 +80,6 @@ services:
         # Prep secrets file
         # https://www.baeldung.com/linux/insert-new-line-script-output#using-printf
         - printf "<?php \n\n" >> "${DOCROOT}/sites/default/secrets.settings.php"
-        - echo "${SECRETS_GLOBAL}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_GOOGLE_MAPS}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
 
