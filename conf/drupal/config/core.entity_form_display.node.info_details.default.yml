@@ -25,6 +25,7 @@ dependencies:
     - field.field.node.info_details.field_info_details_sections
     - field.field.node.info_details.field_infodetails_metatags
     - field.field.node.info_details.field_intended_audience
+    - field.field.node.info_details.field_migrated_node_id
     - field.field.node.info_details.field_organizations
     - field.field.node.info_details.field_page_template
     - field.field.node.info_details.field_primary_parent
@@ -71,7 +72,6 @@ third_party_settings:
         - title
         - field_short_title
         - field_short_desc
-        - field_details_enable_fields
         - field_banner_image
         - field_info_detail_overview
         - group_header_media
@@ -519,7 +519,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -537,14 +537,14 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
@@ -584,13 +584,14 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
   field_info_details_date_publishe: true
+  field_migrated_node_id: true
   path: true
   promote: true
   status: true
