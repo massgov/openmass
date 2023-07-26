@@ -1578,7 +1578,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
       unset($sideContent['contactList']['compHeading']);
       $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-      $sideContent['contactList']['viewSpecific'] = FALSE;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
       $variables['sideContent'] = $sideContent;
       $variables['mainContent'] = $mainContent;
     }
