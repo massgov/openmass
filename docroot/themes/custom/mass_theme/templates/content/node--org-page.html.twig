@@ -364,6 +364,55 @@
       {% endif %}
       {% block pageContent %}
         {{ content.field_organization_sections }}
+
+        {% set accordionContent %}
+          {{ content.field_more_about_agency_link }}
+          {{ content.extra_org_nav_more_agency_link }}
+          {{ content.field_more_about_leadership }}
+          {{ content.field_org_directory_page }}
+          {{ content.field_career_opportunities }}
+
+          {% if node.field_get_updates_links is not empty %}
+            {% for key,value in node.field_get_updates_links.value %}
+              <li class="ma__link-list__item">
+                {{ content.field_get_updates_links[key] }}
+              </li>
+            {% endfor %}
+          {% endif %}
+
+
+          {% if node.field_public_records_link is not empty %}
+            {% for key,value in node.field_public_records_link.value %}
+              <li class="ma__link-list__item">
+                {{ content.field_public_records_link[key] }}
+              </li>
+            {% endfor %}
+
+          {% endif %}
+        {% endset %}
+
+        {% set accordionElements = [{
+          "expanded": true,
+          "collapsibleHeader": {
+            "title": node.title.value ~ ' information'
+          },
+          "includes": [{
+            "path": "@atoms/11-text/raw-html.twig",
+            "data": {
+              "rawHtml": {
+                "content" : '<ul>' ~ accordionContent ~ '<ul>'
+              }
+            }
+          }]
+        }] %}
+
+        {% embed "@organisms/by-author/collapsible-content.twig" with {
+          "collapsibleContent": {
+            "extended": true,
+            "items": accordionElements
+          }
+        } %}
+        {% endembed %}
       {% endblock %}
     </div>
   </div>
