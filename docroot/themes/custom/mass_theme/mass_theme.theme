@@ -1555,23 +1555,13 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         ],
       ];
 
-      $contactList_options = [
-        'heading' => [
-          'title' => t("Contact"),
-          'sub' => TRUE,
-        ],
-        'groups' => [
-          'accordion' => TRUE,
-          'isExpanded' => FALSE,
-        ],
-      ];
-
       $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options);
       // Build sidebar.contactList, which is a subset of pageContent.ContactList.
       $sidebarContacts_options = [
         'groups' => [
           'accordion' => FALSE,
           'isExpanded' => FALSE,
+          'order' => ['email', 'phone', 'fax', 'address', 'online'],
         ],
       ];
       // Prepare the sidebarContact data object cache tags do not need to be sent.

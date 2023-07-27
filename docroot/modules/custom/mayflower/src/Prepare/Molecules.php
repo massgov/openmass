@@ -856,12 +856,29 @@ class Molecules {
       }
     }
 
+
     // Check our groups for value.
     foreach ($groups as $index => $group) {
       // If we have an empty group, do not display.
       if (empty($group['items'][0]['value'])) {
         unset($groups[$index]);
       }
+    }
+
+
+    if (isset($options['order'])) {
+      $reordered_groups = [];
+      foreach ($options['order'] as $order) {
+        foreach ($groups as $group) {
+          foreach ($group['items'] as $item) {
+            if ($item['type'] == $order) {
+              $reordered_groups[] = $group;
+              break 2;
+            }
+          }
+        }
+      }
+      $groups = $reordered_groups;
     }
 
     return [
