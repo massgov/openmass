@@ -1369,23 +1369,8 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Make relationshipIndicatorPrimary data structure available in twig template.
     $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
-    // Create the map of all possible field names to use.
-    $map = [
-      'icon' => ['field_topic_ref_icon'],
-    ];
-
-    // Determines which field names to use from the map.
-    $fields = Helper::getMappedFields($node, $map);
-
-    $icon = Helper::getReferenceField($node->{$fields['icon']}, 'field_sprite_name');
-
-    if ($icon) {
-      $icon = Helper::getIconPath($icon);
-    }
-
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
-      'icon' => $icon,
       'color' => 'white',
       'underline' => TRUE,
     ];
