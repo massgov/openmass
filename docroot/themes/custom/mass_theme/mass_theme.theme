@@ -1537,6 +1537,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         'groups' => [
           'accordion' => TRUE,
           'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
         ],
       ];
 
@@ -1546,7 +1547,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         'groups' => [
           'accordion' => FALSE,
           'isExpanded' => FALSE,
-          'order' => ['email', 'phone', 'fax', 'address', 'online'],
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
         ],
       ];
       // Prepare the sidebarContact data object cache tags do not need to be sent.

@@ -866,11 +866,25 @@ class Molecules {
     if (isset($options['order'])) {
       $reordered_groups = [];
       foreach ($options['order'] as $order) {
-        foreach ($groups as $group) {
-          foreach ($group['items'] as $item) {
-            if ($item['type'] == $order) {
-              $reordered_groups[] = $group;
-              break 2;
+        foreach ($groups as $index => $group) {
+          if (!empty($group['name'])) {
+            foreach ($group['items'] as $item) {
+              if ($item['type'] == $order) {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+                break 2;
+              }
+              if ($item['type'] == 'email' && $order == 'online') {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+                break 2;
+              }
+            }
+          }
+          if ($order == 'more_info' && $options['is_more_info'] == TRUE) {
+            if (empty($group['name'])) {
+              $extracted_group = array_slice($groups, $index, 1);
+              $reordered_groups[] = reset($extracted_group);
             }
           }
         }
