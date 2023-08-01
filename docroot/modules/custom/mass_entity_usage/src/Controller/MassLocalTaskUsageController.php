@@ -109,6 +109,11 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
           $source_entity = Helper::getParentNode($source_entity);
         }
 
+        if (!$source_entity) {
+          // If for some reason this record is broken, just skip it.
+          continue;
+        }
+        
         if (method_exists($link, 'getText')) {
           $text = explode('>', $link->getText())[0];
           $link->setText($text);
