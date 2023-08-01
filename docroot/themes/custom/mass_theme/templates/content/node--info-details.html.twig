@@ -172,16 +172,7 @@
 
   {{ content.field_info_details_sections }}
 
-  {% if mainContent.contactList %}
-    {% set contactList = mainContent.contactList %}
-    {% set contactList = contactList|merge({'compHeading': {
-      'title': contactList.compHeading.title,
-      'titleContext': contactList.compHeading.titleContext,
-      'level': level + 1,
-      'id': contactList.compHeading.id
-    }}) %}
-    {% include "@organisms/by-author/contact-list.twig" %}
-  {% endif %}
+  {{ content.field_contact }}
 
   {% if node.field_footnotes[0].value %}
     {% include "@organisms/by-author/footnote-list.twig" with {
@@ -228,18 +219,13 @@
 {% endblock %}
 
 {% if not no_sidebar %}
-  {% if sideContent.contactList or (sideContent.linkList) %}
+  {% if (content.extra_sidebar_contact|render|trim is not empty) or (sideContent.linkList) %}
     {% set sidebar = true %}
   {% endif %}
 {% endif %}
 
 {% block sidebar %}
-  {% if sideContent.contactList %}
-    {% set contactList = sideContent.contactList %}
-    {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
-    {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
-    {% include "@organisms/by-author/contact-list.twig" %}
-  {% endif %}
+  {{ content.extra_sidebar_contact }}
   {% if sideContent.linkList %}
     {% set linkList = sideContent.linkList %}
     {% set linkList = linkList|merge({'compHeading': {
