@@ -7204,6 +7204,9 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
  * Groups different components together when necessary.
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+
+  $container = $variables['paragraph'];
+  $variables['section_style'] = $container->field_section_style->value;
   $variables["org_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
 }
