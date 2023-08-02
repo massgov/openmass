@@ -1020,7 +1020,7 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
 /**
  * Helper function to call during migration.
  */
-function mass_content_org_wwyltd_flexible_links_helper ($node, $parent, $paragraph) {
+function mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph) {
   $node_field_name = $parent->parent_field_name->value;
 
   $items = $node->get($node_field_name)->getValue();
@@ -1047,7 +1047,6 @@ function mass_content_org_wwyltd_flexible_links_helper ($node, $parent, $paragra
       $link_group_link->save();
       $link_group_links[] = $link_group_link;
     }
-
 
     // Create a new flexible_link_group paragraph.
     $flexible_link_group = Paragraph::create([
