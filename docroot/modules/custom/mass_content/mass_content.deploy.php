@@ -1120,6 +1120,8 @@ function mass_content_org_wwyltd_flexible_links_helper ($node, $parent, $paragra
     // Save without updating the last modified date. This requires a core patch
     // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
     $node->setSyncing(TRUE);
+    $node->revision_log = "Bulk automated change of ‘what would you like to do’ component to ‘flexible link group’";
+    $node->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
     $node->save();
     $paragraph->delete();
   }
