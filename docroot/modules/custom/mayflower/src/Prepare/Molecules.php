@@ -881,10 +881,12 @@ class Molecules {
               }
             }
           }
-          if ($order == 'more_info' && $options['is_more_info'] == TRUE) {
-            if (empty($group['name'])) {
-              $extracted_group = array_slice($groups, $index, 1);
-              $reordered_groups[] = reset($extracted_group);
+          if ($order == 'more_info') {
+            if (isset($options['is_more_info'])) {
+              if ($options['is_more_info'] == TRUE && empty($group['name'])) {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+              }
             }
           }
         }
