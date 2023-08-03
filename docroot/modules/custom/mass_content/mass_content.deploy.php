@@ -969,11 +969,12 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
   // Turn off entity_hierarchy writes while processing the item.
   \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
-  $paragraphs = $storage->loadMultiple($pids);
+  $memory_cache = \Drupal::service('entity.memory_cache');
 
+  $paragraphs = $storage->loadMultiple($pids);
   foreach ($paragraphs as $paragraph) {
+    $sandbox['current'] = $paragraph->id();
     if ($paragraph) {
-      $parent_field_name = $paragraph->parent_field_name->value;
       if ($parent = $paragraph->getParentEntity()) {
         if ($parent instanceof \Drupal\paragraphs\Entity\Paragraph && $parent->bundle() == 'org_section_long_form') {
           if ($parent->getParentEntity() instanceof \Drupal\node\Entity\Node) {
@@ -1009,6 +1010,8 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
     $sandbox['progress']++;
   }
 
+  $memory_cache->deleteAll();
+
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
@@ -1022,6 +1025,18 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
  */
 function mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph) {
   $node_field_name = $parent->parent_field_name->value;
+  $parent_field_name = $paragraph->parent_field_name->value;
+  if ($parent = $paragraph->getParentEntity()) {
+    $content_items = $parent->get($parent_field_name)->getValue();
+    if ($parent->get($parent_field_name)->count() > 1) {
+      foreach ($content_items as $i => $content_item) {
+        if ($content_item['target_id'] == $paragraph->id() && $content_item['target_revision_id'] == $paragraph->getRevisionId()) {
+          $content_index = $i;
+          break;
+        }
+      }
+    }
+  }
 
   $items = $node->get($node_field_name)->getValue();
   foreach ($items as $index => $item) {
@@ -1093,7 +1108,23 @@ function mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragrap
     $new_org_section_long_form_paragraph = Paragraph::create([
       'type' => 'org_section_long_form',
     ]);
-    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $flexible_link_groups);
+    if (isset($content_index)) {
+      $result = [];
+      foreach ($content_items as $index => $content_item) {
+        if ($index == $content_index) {
+          foreach ($flexible_link_groups as $flexible_link_group) {
+            $result[] = $flexible_link_group;
+          }
+        }
+        else {
+          $result[] = $content_item;
+        }
+      }
+      $new_org_section_long_form_paragraph->set('field_section_long_form_content', $result);
+    }
+    else {
+      $new_org_section_long_form_paragraph->set('field_section_long_form_content', $flexible_link_groups);
+    }
     if (!$paragraph->get('field_wwyltd_heading')->isEmpty()) {
       $heading = $paragraph->get('field_wwyltd_heading')->value;
       $new_org_section_long_form_paragraph->set('field_section_long_form_heading', $heading);
