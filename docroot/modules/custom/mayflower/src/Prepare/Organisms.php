@@ -181,6 +181,7 @@ class Organisms {
         'field_service_detail_contact',
         'field_rules_ref_contact',
         'field_ref_contact_info',
+        'field_contact',
       ],
     ];
 
