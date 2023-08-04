@@ -858,7 +858,7 @@ class Molecules {
     // Check our groups for value.
     foreach ($groups as $index => $group) {
 
-      // If the value is empty but the link is inplace,
+      // If the value is empty, but the link is in place,
       // we are setting the value to be the same as link.
       if (!empty($group['items'][0]['link']) && empty($group['items'][0]['value'])) {
         $groups[$index]['items'][0]['value'] = $group['items'][0]['link'];
