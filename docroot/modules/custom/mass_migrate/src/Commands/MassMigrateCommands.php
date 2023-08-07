@@ -29,9 +29,14 @@ class MassMigrateCommands extends DrushCommands {
    *
    * @hook post-command entity:delete
    */
-  public function overrideEntityDeletePostCommand() {
+  public function overrideEntityDeletePostCommand(CommandData $commandData) {
     // Unset variables after running the command.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    if (isset($commandData->getArgsAndOptions()['entity_type']) && isset($commandData->getArgsAndOptions()['options']['bundle'])) {
+      if ($commandData->getArgsAndOptions()['entity_type'] == 'node' && $commandData->getArgsAndOptions()['options']['bundle'] == 'service_details') {
+        // Set variables to process entity_hierarchy items with a queue
+        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+      }
+    }
   }
 
   /**
