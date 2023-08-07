@@ -857,10 +857,47 @@ class Molecules {
 
     // Check our groups for value.
     foreach ($groups as $index => $group) {
+
+      // If the value is empty, but the link is in place,
+      // we are setting the value to be the same as link.
+      if (!empty($group['items'][0]['link']) && empty($group['items'][0]['value'])) {
+        $groups[$index]['items'][0]['value'] = $group['items'][0]['link'];
+      }
       // If we have an empty group, do not display.
-      if (empty($group['items'][0]['value'])) {
+      elseif (empty($group['items'][0]['value'])) {
         unset($groups[$index]);
       }
+    }
+
+    if (isset($options['order'])) {
+      $reordered_groups = [];
+      foreach ($options['order'] as $order) {
+        foreach ($groups as $index => $group) {
+          if (!empty($group['name'])) {
+            foreach ($group['items'] as $item) {
+              if ($item['type'] == $order) {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+                break 2;
+              }
+              if ($item['type'] == 'email' && $order == 'online') {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+                break 2;
+              }
+            }
+          }
+          if ($order == 'more_info') {
+            if (isset($options['is_more_info'])) {
+              if ($options['is_more_info'] == TRUE && empty($group['name'])) {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+              }
+            }
+          }
+        }
+      }
+      $groups = $reordered_groups;
     }
 
     return [
