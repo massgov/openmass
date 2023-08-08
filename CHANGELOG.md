@@ -1,5 +1,13 @@
 
 
+## [0.369.0] - August 1, 2023
+
+### Changed
+  - DP-27828: Updated Media Entity Download to latest version.
+  - DP-28825: D10 upgrade - Simple Sitemap.
+  
+
+
 ## [0.368.0] - July 25, 2023
 
 ### Added
