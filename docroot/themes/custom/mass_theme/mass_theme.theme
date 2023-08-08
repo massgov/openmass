@@ -1537,17 +1537,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         'groups' => [
           'accordion' => TRUE,
           'isExpanded' => FALSE,
-        ],
-      ];
-
-      $contactList_options = [
-        'heading' => [
-          'title' => t("Contact"),
-          'sub' => TRUE,
-        ],
-        'groups' => [
-          'accordion' => TRUE,
-          'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
         ],
       ];
 
@@ -1557,13 +1547,14 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         'groups' => [
           'accordion' => FALSE,
           'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
         ],
       ];
       // Prepare the sidebarContact data object cache tags do not need to be sent.
       $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
       unset($sideContent['contactList']['compHeading']);
       $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-      $sideContent['contactList']['viewSpecific'] = FALSE;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
       $variables['sideContent'] = $sideContent;
       $variables['mainContent'] = $mainContent;
     }
