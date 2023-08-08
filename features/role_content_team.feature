@@ -34,7 +34,6 @@ Feature: Content Administrator
     And I should have access to "/node/add/location"
     And I should have access to "/node/add/org_page"
     And I should have access to "/node/add/service_page"
-    And I should have access to "/node/add/service_details"
     And I should have access to "/admin/structure/menu"
     And I should have access to "/admin/structure/taxonomy/manage/icons/overview"
     And I should not have access to "/admin/reports"
