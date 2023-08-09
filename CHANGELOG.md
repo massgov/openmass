@@ -3,7 +3,7 @@
 ## [0.370.1] - August 9, 2023
 
 ### Fixed
-- DP-20609: Eliminated forced 100% width on images and figures in rich text.
+- DP-29284: Fixed issue with feedback not displaying for info details pages.
 
 
 
