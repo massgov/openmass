@@ -1,5 +1,12 @@
 
 
+## [0.370.1] - August 9, 2023
+
+### Fixed
+- DP-20609: Eliminated forced 100% width on images and figures in rich text.
+
+
+
 ## [0.370.0] - August 8, 2023
 
 ### Fixed
