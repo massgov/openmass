@@ -1,5 +1,48 @@
 
 
+## [0.370.0] - August 8, 2023
+
+### Fixed
+  - DP-20609: Eliminated forced 100% width on images and figures in rich text.
+  
+### Changed
+  - DP-26154: Migrate service details pages to info details
+  - DP-28963: More info link missing from contact component on info details pages.
+  
+### Added
+  - DP-29018: Add 5 languages, including Twi custom language
+  - DP-29229: Added lazy loading to iframes.
+  
+
+
+## [0.369.0] - August 1, 2023
+
+### Changed
+  - DP-27828: Updated Media Entity Download to latest version.
+  - DP-28825: D10 upgrade - Simple Sitemap.
+  
+
+
+## [0.368.0] - July 25, 2023
+
+### Added
+  - DP-28439: New views to show the amount of content by organization.
+  
+### Removed
+  - DP-28600: Removed Icon from Topic pages.
+  
+### Fixed
+  - DP-28600: Fixed Info details accordion styling on mobile issue.
+  - DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
+  
+### Changed
+  - DP-28735: Update Paragraphs, Entity Reference Revision, misc
+  - DP-28783: A11y - aria-label on alert icon.
+  - DP-28854: Remove Google Optimize - it is unused
+  - DP-28890: Process BigQuery queue outside of cron
+  
+
+
 ## [0.367.0] - July 11, 2023
 
 ### Added
