@@ -1,5 +1,12 @@
 
 
+## [0.370.1] - August 9, 2023
+
+### Fixed
+- DP-29284: Fixed issue with feedback not displaying for info details pages.
+
+
+
 ## [0.370.0] - August 8, 2023
 
 ### Fixed
