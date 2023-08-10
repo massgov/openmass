@@ -1,5 +1,35 @@
 
 
+## [0.370.1] - August 9, 2023
+
+### Fixed
+- DP-29284: Fixed issue with feedback not displaying for info details pages.
+
+
+
+## [0.370.0] - August 8, 2023
+
+### Fixed
+  - DP-20609: Eliminated forced 100% width on images and figures in rich text.
+  
+### Changed
+  - DP-26154: Migrate service details pages to info details
+  - DP-28963: More info link missing from contact component on info details pages.
+  
+### Added
+  - DP-29018: Add 5 languages, including Twi custom language
+  - DP-29229: Added lazy loading to iframes.
+  
+
+
+## [0.369.0] - August 1, 2023
+
+### Changed
+  - DP-27828: Updated Media Entity Download to latest version.
+  - DP-28825: D10 upgrade - Simple Sitemap.
+  
+
+
 ## [0.368.0] - July 25, 2023
 
 ### Added

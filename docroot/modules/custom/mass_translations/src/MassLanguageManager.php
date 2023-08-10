@@ -14,6 +14,7 @@ class MassLanguageManager extends ConfigurableLanguageManager {
       'pst' => ['Pashto', 'پښتو'],
       'prs' => ['Dari', 'دری'],
       'so' => ['Somali', 'Soomaali'],
+      'tw' => ['Twi', 'Twi'],
     ];
     $list = array_merge($extra, $standard);
     ksort($list);
