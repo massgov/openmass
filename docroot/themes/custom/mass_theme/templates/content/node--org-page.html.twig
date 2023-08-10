@@ -398,6 +398,15 @@
                       </li>
                     {% endfor %}
                   {% endif %}
+
+                  {% if node.field_public_records_link is not empty %}
+                    {% for key,value in node.field_public_records_link.value %}
+                      <li class="ma__link-list__item">
+                        {{ content.field_public_records_link[key] }}
+                      </li>
+                    {% endfor %}
+
+                  {% endif %}
                 </ul>
               </div>
             </section>
