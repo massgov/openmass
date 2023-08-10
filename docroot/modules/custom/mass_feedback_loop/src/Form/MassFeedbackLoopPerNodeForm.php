@@ -76,7 +76,7 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
     $feedback_api_params = $this->contentFetcher->formatQueryParams($params);
     $feedback_api_params['node_id'] = [];
     $feedback_api_params['node_id'][] = $node->id();
-    if ($node->hasField('field_migrated_node_id')) {
+    if ($node->hasField('field_migrated_node_id') && !empty($node->get('field_migrated_node_id')->value)) {
       $feedback_api_params['node_id'][] = $node->get('field_migrated_node_id')->value;
     }
 
