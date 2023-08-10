@@ -1,7 +1,7 @@
 #Pre-migration checklist
 # - Ensure you have a backup before running on Prod.
 
-# Disable entity hierarchy. Not needed as the migration does ther disable itself.
+# Disable entity hierarchy.
 drush sset entity_hierarchy_disable_writes 1 && drush cr
 
 #Show migration status. Re-run anytime to see the current status.
