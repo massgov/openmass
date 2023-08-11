@@ -1,0 +1,5 @@
+services:
+  migration_subscriber:
+    class: Drupal\mass_migrate\EventSubscriber\MassMigrateMigrationSubscriber
+    tags:
+      - { name: 'event_subscriber' }
