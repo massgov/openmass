@@ -8,7 +8,7 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class MassMigrateMigrationSubscriber
+ * Class MassMigrateMigrationSubscriber.
  *
  * @package Drupal\mass_migrate
  */
