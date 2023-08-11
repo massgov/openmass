@@ -8,9 +8,7 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class PreMigrationSubscriber.
- *
- * Run a test to validate that the server is available.
+ * Class MassMigrateMigrationSubscriber
  *
  * @package Drupal\mass_migrate
  */
@@ -27,10 +25,10 @@ class MassMigrateMigrationSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Check for our specified last node migration and run our flagging mechanisms.
+   * Update primary parent fields that match the source ID.
    *
    * @param \Drupal\migrate\Event\MigratePostRowSaveEvent $event
-   *   The import event object.
+   *   The event object.
    */
   public function onMigratePostRowSave(MigratePostRowSaveEvent $event) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
