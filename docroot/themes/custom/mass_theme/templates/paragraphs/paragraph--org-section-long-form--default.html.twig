@@ -7,9 +7,10 @@
   } %}
 {% endif %}
 
-{% set section_style_class = section_style == 'enhanced' ? 'service-section--enhanced' : 'service-section--simple' %}
+{% set section_style_class = section_style == 'enhanced' ? 'org-section--enhanced' : 'org-section--simple' %}
+{% set hide_title_class = hide_heading ? 'org-section--hidden-title' : '' %}
 
-<div class="service-section {{ section_style_class }}">
+<div class="org-section {{ section_style_class }} {{ hide_title_class }}">
   {% embed "@organisms/by-author/stacked-row-section.twig" with {
     "stackedRowSection": heading,
     "stackedRow": {
