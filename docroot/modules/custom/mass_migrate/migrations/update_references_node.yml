@@ -1,0 +1,12 @@
+id: update_references_node
+label: Update References Node
+source:
+  plugin: update_references_node
+destination:
+#  Perhaps separate into node and paragraph with real ids
+  plugin: entity:node
+process:
+  nid: source_id
+migration_dependencies:
+  required:
+    - service_details
