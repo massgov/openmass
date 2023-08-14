@@ -31,18 +31,21 @@ class MassMigrateMigrationSubscriber implements EventSubscriberInterface {
    *   The event object.
    */
   public function onMigratePostRowSave(MigratePostRowSaveEvent $event) {
-    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-    $destination_id_values = $event->getDestinationIdValues();
-    $source_id_values = $event->getRow()->getSourceIdValues();
-    $query = \Drupal::entityQuery('node')
-      ->condition('field_primary_parent', $source_id_values['nid'])
-      ->accessCheck(FALSE);
-    $results = $query->execute();
-    $nodes = Node::loadMultiple($results);
-    if (!empty($nodes)) {
-      foreach ($nodes as $node) {
-        $node->set('field_primary_parent', $destination_id_values[0]);
-        $node->save();
+    $migration_id = $event->getMigration()->getBaseId();
+    if ($migration_id == 'service_details') {
+      $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+      $destination_id_values = $event->getDestinationIdValues();
+      $source_id_values = $event->getRow()->getSourceIdValues();
+      $query = \Drupal::entityQuery('node')
+        ->condition('field_primary_parent', $source_id_values['nid'])
+        ->accessCheck(FALSE);
+      $results = $query->execute();
+      $nodes = Node::loadMultiple($results);
+      if (!empty($nodes)) {
+        foreach ($nodes as $node) {
+          $node->set('field_primary_parent', $destination_id_values[0]);
+          $node->save();
+        }
       }
     }
   }
