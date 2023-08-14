@@ -1129,6 +1129,7 @@ function mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragrap
       $heading = $paragraph->get('field_wwyltd_heading')->value;
       $new_org_section_long_form_paragraph->set('field_section_long_form_heading', $heading);
     }
+    $new_org_section_long_form_paragraph->set('field_section_style', 'enhanced');
     $new_org_section_long_form_paragraph->set('field_hide_heading', 0);
 
     // Save the new paragraph.
