@@ -541,6 +541,17 @@ function mass_metatag_datalayer_meta() {
  * Change the output of entityField_organizations to include title.
  */
 function mass_metatag_datalayer_alter(&$data_layer) {
+  if (isset($data_layer['entityIdentifier'])) {
+    $node = Node::load($data_layer['entityIdentifier']);
+    if ($node) {
+      $metatag_utils = \Drupal::service('mass_metatag.utilities');
+      $parent_orgs = $metatag_utils->getAllOrgsFromNode($node, TRUE, TRUE);
+      if ($parent_orgs) {
+        $data_layer['entityField_org_parent'] = $parent_orgs;
+      }
+    }
+  }
+
   if (isset($data_layer['entityField_organizations'])) {
     $ids = explode(', ', $data_layer['entityField_organizations']);
     $organizations = [];

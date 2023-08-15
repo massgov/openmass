@@ -35,12 +35,14 @@ class MassMetatagUtilities {
    * @param \Drupal\node\Entity\Node $node
    *   The node to get Orgs and parent Orgs from.
    * @param bool $parent_only
-   *   If the flag is specified only parents will be returned.
+   *   If the flag is specified only parents slugified titles will be returned.
+   * @param bool $parent_meta
+   *    If the flag is specified only parents metadata will be returned.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
    */
-  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE) {
+  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE) {
     $result = [];
 
     // The array that will hold all the orgs to check for parents.
@@ -65,7 +67,15 @@ class MassMetatagUtilities {
         if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
           $orgs[] = $node->field_parent->entity;
           if ($parent_only) {
-            $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+            if ($parent_meta) {
+              $result[$node->field_parent->entity->id()] = [
+                'title' => $node->field_parent->entity->getTitle(),
+                'uuid' => $node->field_parent->entity->uuid(),
+              ];
+            }
+            else {
+              $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+            }
           }
         }
       }
@@ -86,7 +96,7 @@ class MassMetatagUtilities {
       $checked_orgs[] = $node->id();
     }
 
-    return array_unique($result);
+    return $result;
   }
 
   /**
