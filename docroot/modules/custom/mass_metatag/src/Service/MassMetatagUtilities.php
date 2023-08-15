@@ -34,6 +34,8 @@ class MassMetatagUtilities {
    *
    * @param \Drupal\node\Entity\Node $node
    *   The node to get Orgs and parent Orgs from.
+   * @param bool $parent_only
+   *   If the flag is specified only parents will be returned.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
