@@ -10,6 +10,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
+use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -977,31 +978,32 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
   $paragraphs = $storage->loadMultiple($pids);
   foreach ($paragraphs as $paragraph) {
     $sandbox['current'] = $paragraph->id();
-    if ($paragraph && !Helper::isParagraphOrphan($paragraph)) {
-      if ($parent = $paragraph->getParentEntity()) {
-        if ($parent instanceof Paragraph && $parent->bundle() == 'org_section_long_form') {
-          if ($parent->getParentEntity() instanceof Node) {
-            $node = $parent->getParentEntity();
-            try {
-              mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph);
-            }
-            catch (\Exception $e) {
-              \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-            }
-            if (!$node->isLatestRevision()) {
-              $storage = \Drupal::entityTypeManager()->getStorage('node');
-              $query = $storage->getQuery()->accessCheck(FALSE);
-              $query->condition('nid', $node->id());
-              $query->latestRevision();
-              $rids = $query->execute();
-              foreach ($rids as $rid) {
-                $latest_revision = $storage->loadRevision($rid);
-                if (isset($latest_revision)) {
-                  try {
-                    mass_content_org_wwyltd_flexible_links_helper($latest_revision, $parent, $paragraph);
-                  }
-                  catch (\Exception $e) {
-                    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    if ($paragraph instanceof Paragraph) {
+      if (!Helper::isParagraphOrphan($paragraph)) {
+        if ($parent = $paragraph->getParentEntity()) {
+          if ($parent instanceof Paragraph && $parent->bundle() == 'org_section_long_form') {
+            if ($parent->getParentEntity() instanceof Node) {
+              $node = $parent->getParentEntity();
+              try {
+                mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph);
+              } catch (\Exception $e) {
+                \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+              }
+              if (!$node->isLatestRevision()) {
+                $storage = \Drupal::entityTypeManager()->getStorage('node');
+                $query = $storage->getQuery()->accessCheck(FALSE);
+                $query->condition('nid', $node->id());
+                $query->latestRevision();
+                $rids = $query->execute();
+                foreach ($rids as $rid) {
+                  $latest_revision = $storage->loadRevision($rid);
+                  if (isset($latest_revision)) {
+                    try {
+                      mass_content_org_wwyltd_flexible_links_helper($latest_revision, $parent, $paragraph);
+                    } catch (\Exception $e) {
+                      \Drupal::state()
+                        ->set('entity_hierarchy_disable_writes', FALSE);
+                    }
                   }
                 }
               }
