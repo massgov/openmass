@@ -1,5 +1,16 @@
 
 
+## [0.371.0] - August 15, 2023
+
+### Changed
+  - DP-26359: Remove a link from an image in a image promo and a suggested page units. |- Exclude a redundant "more" link from keyboad and AT users from a image promo unit. |- Expand the clickable area to the antire image promo and suggesnted page unit containers. |- Restructure the image promos and the suggested pages with a list for better semantics.
+  - DP-28827: D10 upgrade - "Collab with maintainers" modules
+  
+### Added
+  - DP-29328: Added service details post-migration step for primary parent fields.
+  
+
+
 ## [0.370.1] - August 9, 2023
 
 ### Fixed
