@@ -986,7 +986,8 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
               $node = $parent->getParentEntity();
               try {
                 mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph);
-              } catch (\Exception $e) {
+              }
+              catch (\Exception $e) {
                 \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
               }
               if (!$node->isLatestRevision()) {
@@ -1000,7 +1001,8 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
                   if (isset($latest_revision)) {
                     try {
                       mass_content_org_wwyltd_flexible_links_helper($latest_revision, $parent, $paragraph);
-                    } catch (\Exception $e) {
+                    }
+                    catch (\Exception $e) {
                       \Drupal::state()
                         ->set('entity_hierarchy_disable_writes', FALSE);
                     }
