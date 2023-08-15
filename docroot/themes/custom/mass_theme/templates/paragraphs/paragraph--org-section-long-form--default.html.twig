@@ -10,7 +10,7 @@
 {% set section_style_class = section_style == 'enhanced' ? 'org-section--enhanced' : 'org-section--simple' %}
 {% set hide_title_class = hide_heading ? 'org-section--hidden-title' : '' %}
 
-<div class="org-section {{ section_style_class }} {{ hide_title_class }}">
+<section class="org-section {{ section_style_class }} {{ hide_title_class }}">
   {% embed "@organisms/by-author/stacked-row-section.twig" with {
     "stackedRowSection": heading,
     "stackedRow": {
@@ -74,4 +74,4 @@
   {% endembed %}
 
   {{ content.field_section_long_form_addition }}
-</div>
+</section>
