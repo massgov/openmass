@@ -9,6 +9,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -928,8 +929,10 @@ function mass_content_deploy_org_section_style(&$sandbox) {
 
   foreach ($paragraphs as $paragraph) {
     $sandbox['current'] = $paragraph->id();
-    $paragraph->set('field_section_style', 'simple');
-    $paragraph->save();
+    if (!Helper::isParagraphOrphan($paragraph)) {
+      $paragraph->set('field_section_style', 'simple');
+      $paragraph->save();
+    }
     $sandbox['progress']++;
   }
 
@@ -974,10 +977,10 @@ function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
   $paragraphs = $storage->loadMultiple($pids);
   foreach ($paragraphs as $paragraph) {
     $sandbox['current'] = $paragraph->id();
-    if ($paragraph) {
+    if ($paragraph && !Helper::isParagraphOrphan($paragraph)) {
       if ($parent = $paragraph->getParentEntity()) {
-        if ($parent instanceof \Drupal\paragraphs\Entity\Paragraph && $parent->bundle() == 'org_section_long_form') {
-          if ($parent->getParentEntity() instanceof \Drupal\node\Entity\Node) {
+        if ($parent instanceof Paragraph && $parent->bundle() == 'org_section_long_form') {
+          if ($parent->getParentEntity() instanceof Node) {
             $node = $parent->getParentEntity();
             try {
               mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph);

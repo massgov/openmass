@@ -7255,7 +7255,9 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 
   $container = $variables['paragraph'];
-  $variables['section_style'] = $container->field_section_style->value;
+  if (!$container->field_section_style->isEmpty()) {
+    $variables['section_style'] = $container->field_section_style->value;
+  }
   $variables['hide_heading'] = $container->field_hide_heading->value;
   $variables["org_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
