@@ -37,7 +37,7 @@ class MassMetatagUtilities {
    * @param bool $parent_only
    *   If the flag is specified only parents slugified titles will be returned.
    * @param bool $parent_meta
-   *    If the flag is specified only parents metadata will be returned.
+   *   If the flag is specified only parents metadata will be returned.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
