@@ -1097,7 +1097,13 @@ function mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragrap
 
         $flexible_link_group->set('field_featured', 0);
         $flexible_link_group->set('field_display_type', 'links');
-        $flexible_link_group->set('field_group_expanded', 1);
+        $flexible_link_group->set('field_group_expanded', $more_paragraph->get('field_group_expanded')->value);
+        if (!$more_paragraph->get('field_group_expanded')->isEmpty()) {
+          $flexible_link_group->set('field_group_expanded', $more_paragraph->get('field_group_expanded')->value);
+        }
+        else {
+          $flexible_link_group->set('field_group_expanded', 1);
+        }
         if (!$more_paragraph->get('field_section_title')->isEmpty()) {
           $title = $more_paragraph->get('field_section_title')->value;
           $flexible_link_group->set('field_flexible_link_group_title', $title);
