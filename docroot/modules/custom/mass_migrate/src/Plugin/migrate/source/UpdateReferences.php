@@ -99,6 +99,7 @@ class UpdateReferences extends SqlBase {
     // different approach for updating.
     $values = [];
     foreach ($refs as $ref) {
+      var_dump($ref);
       $field_name = $ref['field_name'];
       if (!isset($values[$field_name])) {
         $values[$field_name] = [];
