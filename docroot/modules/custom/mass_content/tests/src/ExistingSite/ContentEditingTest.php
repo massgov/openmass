@@ -35,7 +35,6 @@ class ContentEditingTest extends ExistingSiteBase {
     "/regulations/900-CMR-2-qag-regulation-title",
     "/person/qag-person-boardmember-role",
     "/trial-court-rules/qag-rulesofcourt",
-    "/service-details/qag-servicedetails",
     "/qag-service1",
     "/topics/qag-topicpage1",
   ];

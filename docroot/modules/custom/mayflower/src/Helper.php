@@ -467,13 +467,17 @@ class Helper {
     if ($entity->hasField($sections_field)) {
       $sections_field_list = $entity->get($sections_field);
       foreach ($sections_field_list as $section_field_value) {
-        $section_field_entity = $section_field_value->entity;
+        if (!$section_field_entity = $section_field_value->entity) {
+          continue;
+        }
         if ($section_field_entity->hasField($sections_field_content)) {
           $sections_field_content_list = $section_field_entity->get($sections_field_content);
           foreach ($sections_field_content_list as $sections_field_content_value) {
             $sections_field_content_entity = $sections_field_content_value->entity;
-            if ($sections_field_content_entity && $sections_field_content_entity->hasField($reference_field)) {
-              return self::getReferencedEntitiesFromField($sections_field_content_entity, $reference_field);
+            if ($sections_field_content_entity) {
+              if ($sections_field_content_entity->hasField($reference_field)) {
+                return self::getReferencedEntitiesFromField($sections_field_content_entity, $reference_field);
+              }
             }
           }
         }

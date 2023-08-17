@@ -1369,23 +1369,8 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Make relationshipIndicatorPrimary data structure available in twig template.
     $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
-    // Create the map of all possible field names to use.
-    $map = [
-      'icon' => ['field_topic_ref_icon'],
-    ];
-
-    // Determines which field names to use from the map.
-    $fields = Helper::getMappedFields($node, $map);
-
-    $icon = Helper::getReferenceField($node->{$fields['icon']}, 'field_sprite_name');
-
-    if ($icon) {
-      $icon = Helper::getIconPath($icon);
-    }
-
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
-      'icon' => $icon,
       'color' => 'white',
       'underline' => TRUE,
     ];
@@ -1483,6 +1468,15 @@ function mass_theme_preprocess_node_info_details(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
+    $page_title = $node->getTitle();
+
+    // Create the map of all possible field names to use.
+    $map = [
+      'contact' => ['field_contact'],
+    ];
+
+    // Determines which field names to use from the map.
+    $fields = Helper::getMappedFields($node, $map);
 
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
@@ -1523,6 +1517,46 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       ];
       $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_info_details_related', $linkList_options);
       $variables['sideContent'] = $sideContent;
+    }
+
+    // Build contact section, if field is populated.
+    if (!empty($fields['contact']) && Helper::isFieldPopulated($node, $fields['contact'])) {
+      // Set up options for contact list.
+
+      $contacts_title = t("Contact");
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+
+      // Set up options for contact list.
+      $contactList_options = [
+        'heading' => [
+          'type' => 'compHeading',
+          'title' => $contacts_title,
+          'titleContext' => $titleContext,
+          'sub' => TRUE,
+        ],
+        'groups' => [
+          'accordion' => TRUE,
+          'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+        ],
+      ];
+
+      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options);
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+        ],
+      ];
+      // Prepare the sidebarContact data object cache tags do not need to be sent.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+      $variables['sideContent'] = $sideContent;
+      $variables['mainContent'] = $mainContent;
     }
 
     // Hide sidebar when 'visual_story' is select from the field_page_template field.
