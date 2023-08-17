@@ -10,6 +10,7 @@ use Drupal\mass_content\Field\FieldType\DynamicLinkItem;
 use Drupal\migrate\MigrateSkipRowException;
 use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Row;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\text\Plugin\Field\FieldType\TextLongItem;
 use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 
@@ -99,7 +100,12 @@ class UpdateReferences extends SqlBase {
     // different approach for updating.
     $values = [];
     foreach ($refs as $ref) {
-      var_dump($ref);
+      if ($ref['reference_value_new'] == NULL) {
+        $p = Paragraph::load($ref['source_id']);
+        dump($p->toArray());
+        var_dump($p->toArray());
+        exit;
+      }
       $field_name = $ref['field_name'];
       if (!isset($values[$field_name])) {
         $values[$field_name] = [];
