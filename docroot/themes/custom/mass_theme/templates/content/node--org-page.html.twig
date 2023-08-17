@@ -365,53 +365,63 @@
       {% block pageContent %}
         {{ content.field_organization_sections }}
 
-        {% set heading = {
-          "title": node.title.value ~ ' information',
-          "id": "",
-          "borderless": true
-        } %}
-        {% embed "@organisms/by-author/stacked-row-section.twig" with {
-          "stackedRowSection": heading,
-          "stackedRow": {
-            "borderless": true,
-            "modifier" : "no-sidebar"
-          },
-          "externalSidebar": true
-        } %}
-          {% block stackedRowContentOverride %}
-            <section class="ma__link-list">
-              <div class="ma__link-list__container">
-                <ul class="ma__link-list__items ma__link-list__items">
-                  {{ content.field_more_about_agency_link }}
-                  {{ content.extra_org_nav_more_agency_link }}
-                  {{ content.field_more_about_leadership }}
-                  {{ content.field_org_directory_page }}
+        {% if node.field_more_about_agency_link is not empty
+          or node.field_more_about_leadership is not empty
+          or node.field_org_directory_page is not empty
+          or node.field_career_opportunities is not empty
+          or node.field_get_updates_links is not empty
+          or node.field_public_records_link is not empty
+        %}
+          {% set heading = {
+            "title": node.title.value ~ ' information',
+            "id": "",
+            "borderless": true
+          } %}
+          {% embed "@organisms/by-author/stacked-row-section.twig" with {
+            "stackedRowSection": heading,
+            "stackedRow": {
+              "borderless": true,
+              "modifier" : "no-sidebar"
+            },
+            "externalSidebar": true
+          } %}
+            {% block stackedRowContentOverride %}
+              <section class="ma__link-list">
+                <div class="ma__link-list__container">
+                  <ul class="ma__link-list__items ma__link-list__items">
+                    {{ content.field_more_about_agency_link }}
+                    {{ content.field_more_about_leadership }}
+                    {{ content.field_org_directory_page }}
 
-                  <li class="ma__link-list__item">
-                    {{ content.field_career_opportunities }}
-                  </li>
-
-                  {% if node.field_get_updates_links is not empty %}
-                    {% for key,value in node.field_get_updates_links.value %}
+                    {% if node.field_career_opportunities is not empty %}
                       <li class="ma__link-list__item">
-                        {{ content.field_get_updates_links[key] }}
+                        {{ content.field_career_opportunities }}
                       </li>
-                    {% endfor %}
-                  {% endif %}
+                    {% endif %}
 
-                  {% if node.field_public_records_link is not empty %}
-                    {% for key,value in node.field_public_records_link.value %}
-                      <li class="ma__link-list__item">
-                        {{ content.field_public_records_link[key] }}
-                      </li>
-                    {% endfor %}
+                    {% if node.field_get_updates_links is not empty %}
+                      {% for key,value in node.field_get_updates_links.value %}
+                        <li class="ma__link-list__item">
+                          {{ content.field_get_updates_links[key] }}
+                        </li>
+                      {% endfor %}
+                    {% endif %}
 
-                  {% endif %}
-                </ul>
-              </div>
-            </section>
-          {% endblock %}
-        {% endembed %}
+                    {% if node.field_public_records_link is not empty %}
+                      {% for key,value in node.field_public_records_link.value %}
+                        <li class="ma__link-list__item">
+                          {{ content.field_public_records_link[key] }}
+                        </li>
+                      {% endfor %}
+
+                    {% endif %}
+                  </ul>
+                </div>
+              </section>
+            {% endblock %}
+          {% endembed %}
+        {% endif %}
+
       {% endblock %}
     </div>
   </div>
