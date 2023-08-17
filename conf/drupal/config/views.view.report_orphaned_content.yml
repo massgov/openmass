@@ -4,9 +4,7 @@ status: true
 dependencies:
   config:
     - field.storage.node.field_organizations
-    - node.type.action
     - node.type.advisory
-    - node.type.alert
     - node.type.binder
     - node.type.campaign_landing
     - node.type.contact_information
@@ -15,30 +13,20 @@ dependencies:
     - node.type.decision_tree
     - node.type.decision_tree_branch
     - node.type.decision_tree_conclusion
-    - node.type.error_page
-    - node.type.event
     - node.type.executive_order
-    - node.type.external_data_resource
     - node.type.fee
     - node.type.form_page
     - node.type.guide_page
     - node.type.how_to_page
     - node.type.info_details
-    - node.type.interstitial
     - node.type.location
     - node.type.location_details
-    - node.type.news
     - node.type.org_page
-    - node.type.page
     - node.type.person
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
-    - node.type.sitewide_alert
-    - node.type.stacked_layout
     - node.type.topic_page
-    - node.type.utility_drawer
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
@@ -2368,9 +2356,6 @@ display:
           operator: in
           value:
             advisory: advisory
-            alert: alert
-            sitewide_alert: sitewide_alert
-            page: page
             binder: binder
             contact_information: contact_information
             curated_list: curated_list
@@ -2378,28 +2363,21 @@ display:
             decision_tree: decision_tree
             decision_tree_branch: decision_tree_branch
             decision_tree_conclusion: decision_tree_conclusion
-            error_page: error_page
-            event: event
             executive_order: executive_order
             fee: fee
             form_page: form_page
             guide_page: guide_page
             how_to_page: how_to_page
             info_details: info_details
-            interstitial: interstitial
             location: location
             location_details: location_details
-            news: news
             org_page: org_page
             person: person
+            campaign_landing: campaign_landing
             regulation: regulation
-            action: action
             rules: rules
             service_page: service_page
-            service_details: service_details
-            stacked_layout: stacked_layout
             topic_page: topic_page
-            utility_drawer: utility_drawer
           group: 1
           exposed: true
           expose:
@@ -2811,6 +2789,110 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: vid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: in
+          value:
+            advisory: advisory
+            binder: binder
+            contact_information: contact_information
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            decision_tree_branch: decision_tree_branch
+            decision_tree_conclusion: decision_tree_conclusion
+            executive_order: executive_order
+            fee: fee
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            location: location
+            location_details: location_details
+            org_page: org_page
+            person: person
+            campaign_landing: campaign_landing
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+            topic_page: topic_page
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -3711,9 +3793,6 @@ display:
           operator: in
           value:
             advisory: advisory
-            alert: alert
-            sitewide_alert: sitewide_alert
-            page: page
             binder: binder
             contact_information: contact_information
             curated_list: curated_list
@@ -3721,28 +3800,21 @@ display:
             decision_tree: decision_tree
             decision_tree_branch: decision_tree_branch
             decision_tree_conclusion: decision_tree_conclusion
-            error_page: error_page
-            event: event
             executive_order: executive_order
-            external_data_resource: external_data_resource
             fee: fee
             form_page: form_page
             guide_page: guide_page
             how_to_page: how_to_page
             info_details: info_details
-            interstitial: interstitial
             location: location
             location_details: location_details
-            news: news
             org_page: org_page
             person: person
             campaign_landing: campaign_landing
             regulation: regulation
-            action: action
             rules: rules
             service_page: service_page
             topic_page: topic_page
-            utility_drawer: utility_drawer
           group: 1
           exposed: true
           expose:
@@ -4168,6 +4240,110 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: vid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: in
+          value:
+            advisory: advisory
+            binder: binder
+            contact_information: contact_information
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            decision_tree_branch: decision_tree_branch
+            decision_tree_conclusion: decision_tree_conclusion
+            executive_order: executive_order
+            fee: fee
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            location: location
+            location_details: location_details
+            org_page: org_page
+            person: person
+            campaign_landing: campaign_landing
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+            topic_page: topic_page
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -4190,7 +4366,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<p>Search for content using any of the filters below. </p>'
+            value: "<p>This report shows published pages that aren't linked from other published pages. News, events, and items that are in collections aren’t included in the report. The report is sorted by page views (descending). </p>\r\n\r\n<p>If you see items in this report, you should either unpublish the page if it is not needed or add a link to the page from another published page. Look at the parent page to see if that is where the orphan page should be linked, or if another parent page is more appropriate. </p>\r\n\r\n<p>If a page is redirected, in some cases it may show up on this report as an orphan even if it is linked from another page. On the orphan page, go to the Analytics tab and check the Audience statistics. If most of the traffic is from Mass.gov, check the top previous page URL to see if the orphan is linked on that page. </p>\r\n\r\n<p>Pages that are not linked can still be found by the public through search because published pages are in a sitemap that is made available to search engines. </p>"
             format: basic_html
           tokenize: false
       display_extenders:
