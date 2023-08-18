@@ -1,5 +1,12 @@
 
 
+## [0.371.1] - August 17, 2023
+
+### Fixed
+- DP-29398: Fixed paragraph migration.
+
+
+
 ## [0.371.0] - August 15, 2023
 
 ### Changed
