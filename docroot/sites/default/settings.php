@@ -177,6 +177,10 @@ $databases['default']['default']['init_commands'] = [
   'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
 ];
 
+// Add database connection for Service Details migration.
+// @todo Remove once thats complete.
+$databases['migrate'] = $databases['default'];
+
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
 if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   $config['environment_indicator.indicator']['name'] = $_ENV['AH_SITE_ENVIRONMENT'];
