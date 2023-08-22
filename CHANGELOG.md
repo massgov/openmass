@@ -1,5 +1,12 @@
 
 
+## [0.372.0] - August 22, 2023
+
+### Changed
+  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+  
+
+
 ## [0.371.0] - August 15, 2023
 
 ### Changed
