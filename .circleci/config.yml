@@ -249,6 +249,7 @@ jobs:
       - image: cimg/php:8.0-node
     steps:
       - attach_workspace: { at: /tmp }
+      - fetch_drush_aliases
       - *vendor_bin_add_path
       - run:
           command: "drush ma:backup -v prod"
