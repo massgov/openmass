@@ -5,7 +5,7 @@ namespace Drupal\mass_metatag\Plugin\metatag\Tag;
 use Drupal\metatag\Plugin\metatag\Tag\MetaNameBase;
 
 /**
- * Provides a plugin for the 'mg_organization' meta tag.
+ * Provides a plugin for the 'mg_parent_org' meta tag.
  *
  * @MetatagTag(
  *   id = "mass_metatag_parent_organization",
