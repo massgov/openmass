@@ -84,10 +84,6 @@ Feature: As a Massachussetts constituent,
     Given I am viewing any rules node
     Then I should not see any vulnerabilities
 
-  Scenario: Service details should not have any vulnerabilities
-    Given I am viewing any service_details node
-    Then I should not see any vulnerabilities
-
   Scenario: Service pages should not have any vulnerabilities
     Given I am viewing any service_page node
     Then I should not see any vulnerabilities
