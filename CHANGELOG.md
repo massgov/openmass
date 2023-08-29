@@ -1,5 +1,19 @@
 
 
+## [0.372.0] - August 29, 2023
+
+### Changed
+  - DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
+  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+  
+### Removed
+  - DP-26154: Remove testing of service_details pages
+  
+### Added
+  - DP-29259: Add metadata field mg_parent_org.
+  
+
+
 ## [0.371.0] - August 15, 2023
 
 ### Changed
