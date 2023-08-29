@@ -65,8 +65,8 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
 
     $csvData = [];
 
-    if (($handle = fopen($csvFile, 'r')) !== false) {
-      while (($row = fgetcsv($handle)) !== false) {
+    if (($handle = fopen($csvFile, 'r')) !== FALSE) {
+      while (($row = fgetcsv($handle)) !== FALSE) {
         $csvData[] = $row;
       }
       fclose($handle);
