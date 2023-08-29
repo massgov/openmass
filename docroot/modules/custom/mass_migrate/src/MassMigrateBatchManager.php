@@ -2,13 +2,12 @@
 
 namespace Drupal\mass_migrate;
 
-use Drupal\Core\Utility\UpdateException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 
 /**
- * Manages Mass Auto Parents batch processing.
+ * Manages Mass Migrate batch processing.
  */
 class MassMigrateBatchManager implements ContainerInjectionInterface {
 
@@ -25,7 +24,7 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
   protected $nodeStorage;
 
   /**
-   * Creates a MassAutoParentsBatchManager object.
+   * Creates a MassMigrateBatchManager object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
@@ -44,7 +43,7 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
   }
 
   /**
-   * Queue parents relationships automatically using a custom table.
+   * Queue flags.
    */
   public function queueFlagging() {
     $batch = $this->generateBatch();
@@ -52,7 +51,7 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
   }
 
   /**
-   * Create a batch to process the custom table relationships.
+   * Create a batch to process the flagging.
    *
    * @return array
    *   The batch array.
@@ -62,7 +61,7 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
 
     // Read the CSV file into an array
     $module_path = \Drupal::service('file_system')->realpath(\Drupal::service('module_handler')->getModule('mass_migrate')->getPath());
-    $csvFile = $module_path . '/includes/exported_data.csv'; // Replace with your CSV file name
+    $csvFile = $module_path . '/includes/exported_data.csv';
 
     $csvData = [];
 
@@ -79,14 +78,14 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
     $progress_count = 0;
     foreach ($batched_results as $batch_group) {
       $progress_count += (int) count($batch_group);
-      $operations[] = ['\Drupal\mass_migrate\MassMigrateBatchManager::queueParentsBatchWorker', [$batch_group, $progress_count, $total]];
+      $operations[] = ['\Drupal\mass_migrate\MassMigrateBatchManager::queueFlagBatchWorker', [$batch_group, $progress_count, $total]];
     }
 
     $batch = [
       'operations' => $operations,
       'finished' => '\Drupal\mass_migrate\MassMigrateBatchManager::batchFinished',
-      'title' => 'Queueing relationships from table.',
-      'progress_message' => 'Processed @current of @total relationships.',
+      'title' => 'Queueing flagging.',
+      'progress_message' => 'Processed @current of @total flags.',
       'error_message' => 'This batch encountered an error.',
     ];
 
@@ -94,29 +93,30 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
   }
 
   /**
-   * Batch operation worker for queueing up parent relationship assignments.
+   * Batch operation worker for queueing flagging.
    *
    * @param array $batch_group
-   *   Array of relationships to assign.
+   *   Array of flagging to assign.
    * @param int $progress_count
-   *   Progress count of relationships.
+   *   Progress count of flagging.
    * @param int $total
-   *   Total count of relationships.
+   *   Total count of flagging.
    * @param mixed $context
    *   Batch context.
    */
-  public static function queueParentsBatchWorker(array $batch_group, $progress_count, $total, &$context) {
+  public static function queueFlagBatchWorker(array $batch_group, $progress_count, $total, &$context) {
     $queue = \Drupal::queue('mass_migrate_queue');
     if (empty($context['sandbox']['total'])) {
       $context['sandbox']['progress'] = 0;
       $context['sandbox']['total'] = (int) count($batch_group);
     }
     foreach ($batch_group as $row) {
+      // Ignore problematic node with id: 66641 and the first row of csv file.
       if ($row[0] == 'entity_id' || $row[0] == 66641) {
         continue;
       }
-      $entityId = $row[0]; // Change the index to match your CSV columns
-      $uid = $row[1]; // Change the index to match your CSV columns
+      $entityId = $row[0];
+      $uid = $row[1];
       // Add to queue.
       $queue->createItem([
         'entity_id' => $entityId,
@@ -133,7 +133,7 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
       $context['finished'] = 1;
     }
 
-    $context['message'] = t('Queueing parent relationships: @current of @total', [
+    $context['message'] = t('Queueing flags: @current of @total', [
       '@current' => $progress_count,
       '@total' => $total,
     ]);
@@ -151,7 +151,7 @@ class MassMigrateBatchManager implements ContainerInjectionInterface {
    */
   public static function batchFinished($success, array $results, array $operations) {
     if ($success) {
-      \Drupal::messenger()->addMessage(t('Queued parent relationship assignments for @count nodes.', ['@count' => count($results)]));
+      \Drupal::messenger()->addMessage(t('Queued flagging assignments for @count nodes.', ['@count' => count($results)]));
     }
     else {
       // An error occurred.
