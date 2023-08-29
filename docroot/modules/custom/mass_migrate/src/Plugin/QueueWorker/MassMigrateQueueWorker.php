@@ -97,10 +97,12 @@ class MassMigrateQueueWorker extends QueueWorkerBase implements ContainerFactory
       $flag_id = 'watch_content';
       $flag = $this->flagService->getFlagById($flag_id);
 
-      if (!$flag->isFlagged($node, $user)) {
-        // Flag an entity with a specific flag.
-        $this->flagService->flag($flag, $node, $user);
-        $flag->save();
+      if ($flag && $node && $user) {
+        if (!$flag->isFlagged($node, $user)) {
+          // Flag an entity with a specific flag.
+          $this->flagService->flag($flag, $node, $user);
+          $flag->save();
+        }
       }
 
     }
