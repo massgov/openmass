@@ -290,6 +290,7 @@ class Molecules {
     $services = [
       'twitter',
       'facebook',
+      'threads',
       'flickr',
       'blog',
       'linkedin',
