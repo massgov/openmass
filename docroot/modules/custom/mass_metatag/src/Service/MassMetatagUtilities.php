@@ -34,11 +34,15 @@ class MassMetatagUtilities {
    *
    * @param \Drupal\node\Entity\Node $node
    *   The node to get Orgs and parent Orgs from.
+   * @param bool $parent_only
+   *   If the flag is specified only parents slugified titles will be returned.
+   * @param bool $parent_meta
+   *   If the flag is specified only parents metadata will be returned.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
    */
-  public function getAllOrgsFromNode(Node $node) {
+  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE) {
     $result = [];
 
     // The array that will hold all the orgs to check for parents.
@@ -54,12 +58,25 @@ class MassMetatagUtilities {
       // and if there is a parent org, add it to the array for checking.
       if ($node->bundle() === 'org_page') {
         // If it is an unchecked org, add the slugified title to values.
-        if (!in_array($node->id(), $checked_orgs)) {
-          $result[] = $this->slugify(trim($node->label()));
+        if (!$parent_only) {
+          if (!in_array($node->id(), $checked_orgs)) {
+            $result[] = $this->slugify(trim($node->label()));
+          }
         }
         // If there is a parent org, add it to the array to check.
         if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
           $orgs[] = $node->field_parent->entity;
+          if ($parent_only) {
+            if ($parent_meta) {
+              $result[$node->field_parent->entity->id()] = [
+                'title' => $node->field_parent->entity->getTitle(),
+                'uuid' => $node->field_parent->entity->uuid(),
+              ];
+            }
+            else {
+              $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+            }
+          }
         }
       }
       // For all other nodes, get all the organizations referenced
@@ -79,7 +96,7 @@ class MassMetatagUtilities {
       $checked_orgs[] = $node->id();
     }
 
-    return array_unique($result);
+    return $result;
   }
 
   /**
