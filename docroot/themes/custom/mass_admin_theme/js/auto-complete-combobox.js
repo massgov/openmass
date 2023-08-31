@@ -50,6 +50,7 @@
 
         if (optionLists[index] && optionLists[index].hasAttribute('id')) {
           // Get ID of the UL.
+
           var listId = optionLists[index].getAttribute('id');
           // Add aria-controls with the UL ID value.
           // aria-controls doesn't work with VoiceOver.
@@ -65,6 +66,7 @@
             });
           };
         });
+
       });
     }
   };
