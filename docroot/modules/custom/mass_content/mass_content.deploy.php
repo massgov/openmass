@@ -897,3 +897,327 @@ function mass_content_deploy_related_content(&$sandbox) {
   }
   return "Processed {$sandbox['progress']} items.";
 }
+
+/**
+ * Populate data for the org_page navigation.
+ */
+function mass_content_deploy_org_page_navigation_migration(&$sandbox) {
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
+  $query->condition('type', 'org_page');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type org_page.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+
+  // Turn off entity_hierarchy writes while processing the item.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+
+    try {
+      mass_content_org_node_navigation_helper($node);
+    }
+    catch (\Exception $e) {
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    }
+    if (!$node->isLatestRevision()) {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $query = $storage->getQuery()->accessCheck(FALSE);
+      $query->condition('nid', $node->id());
+      $query->latestRevision();
+      $rids = $query->execute();
+      foreach ($rids as $rid) {
+        $latest_revision = $storage->loadRevision($rid);
+        if (isset($latest_revision)) {
+          try {
+            mass_content_org_node_navigation_helper($latest_revision);
+          }
+          catch (\Exception $e) {
+            \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+          }
+        }
+      }
+    }
+
+    $sandbox['progress']++;
+  }
+  $memory_cache->deleteAll();
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    // Turn on entity_hierarchy writes after processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('New Org navigation data has been populated');
+  }
+}
+
+/**
+ * @param $node
+ *
+ * @return void
+ */
+function mass_content_org_node_navigation_helper($node) {
+  $changed = FALSE;
+  if ($sections = $node->get('field_organization_sections')->referencedEntities()) {
+    $has_contact = FALSE;
+    $has_news = FALSE;
+    $has_events = FALSE;
+    $has_locations = FALSE;
+    $has_wws = FALSE;
+    $has_topics = FALSE;
+    $has_wwylt = FALSE;
+    $has_featured = FALSE;
+    $has_about = FALSE;
+    $has_most_requested = FALSE;
+    $has_resources = FALSE;
+    $has_our = FALSE;
+    $has_links = FALSE;
+    $has_meeting = FALSE;
+    $has_webinar = FALSE;
+    $has_services = FALSE;
+    $has_mission = FALSE;
+    $has_information = FALSE;
+    $has_learn_more = FALSE;
+    $has_visit = FALSE;
+    $has_advisories = FALSE;
+    $has_hours = FALSE;
+    $has_priorities = FALSE;
+    $has_data = FALSE;
+    $has_initiatives = FALSE;
+    foreach ($sections as $section) {
+      if (!empty($section->field_section_long_form_heading->value)) {
+        $heading = strtolower($section->field_section_long_form_heading->value);
+        if (strlen($heading) <= 12) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', $heading);
+          $changed = TRUE;
+          $section->save();
+        }
+        if (str_contains($heading, 'contact') && !$has_contact) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Contact us');
+          $has_contact = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'news') && !$has_news) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'News');
+          $has_news = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'events') && !$has_events) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Events');
+          $has_events = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'location') && !$has_locations) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Locations');
+          $has_locations = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'who we serve') && !$has_wws) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Who we serve');
+          $has_wws = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'topics') && !$has_topics) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Topics');
+          $has_topics = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'what would you like to') && !$has_wwylt) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'I want to…');
+          $has_wwylt = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'feature') && !$has_featured) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Featured');
+          $has_featured = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if ((str_contains($heading, 'about the') || str_contains($heading, 'about us')) && !$has_about) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'About');
+          $has_about = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'most requested') && !$has_most_requested) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Most requested');
+          $has_most_requested = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'our ') && !$has_our) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', $heading);
+          $has_our = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if ((str_contains($heading, 'quick links') || str_contains($heading, 'important links') || str_contains($heading, 'top links') || str_contains($heading, 'helpful links') || str_contains($heading, 'popular links'))&& !$has_links) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', $heading);
+          $has_links = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'upcoming public meetings/hearings') && !$has_meeting) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Meetings / Hearings');
+          $has_meeting = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'upcoming webinars and meetings') && !$has_webinar) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Webinars / Meetings');
+          $has_webinar = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'services') && !$has_services) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Services');
+          $has_services = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'hours') && !$has_hours) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Hours');
+          $has_hours = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'mission') && !$has_mission) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Mission');
+          $has_mission = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'resources') && !$has_resources) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Resources');
+          $has_resources = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'information') && !$has_information) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Information');
+          $has_information = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'learn more') && !$has_learn_more) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Learn more');
+          $has_learn_more = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'visit') && !$has_visit) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Visit');
+          $has_visit = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'advisories') && !$has_advisories) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Advisories');
+          $has_advisories = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'by the numbers') && !$has_data) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Data');
+          $has_data = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'initiatives') && !$has_initiatives) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Initiatives');
+          $has_initiatives = TRUE;
+          $changed = TRUE;
+          $section->save();
+          continue;
+        }
+        if (str_contains($heading, 'priorities') && !$has_priorities) {
+          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_org_navigation_jump_link_t', 'Priorities');
+          $has_priorities = TRUE;
+          $changed = TRUE;
+          $section->save();
+        }
+      }
+    }
+  }
+  if ($changed) {
+    // Save the node.
+    // Save without updating the last modified date. This requires a core patch
+    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+    $node->setSyncing(TRUE);
+    $node->save();
+  }
+}
