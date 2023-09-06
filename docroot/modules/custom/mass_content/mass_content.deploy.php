@@ -835,7 +835,7 @@ function mass_content_set_feedback_fields($node) {
   $title = sprintf('contact the %s', trim(preg_replace('#^the #i', '', $contact)));
   $node->set('field_feedback_com_link', [
     'uri' => $uri,
-    'title' => $title
+    'title' => $title,
   ]);
 
   if ($node->field_constituent_communication->value == 'link' || $node->field_constituent_communication->value == 'contact') {
@@ -970,9 +970,7 @@ function mass_content_deploy_org_page_navigation_migration(&$sandbox) {
 }
 
 /**
- * @param $node
- *
- * @return void
+ * Helper function to populate org navigation.
  */
 function mass_content_org_node_navigation_helper($node) {
   $changed = FALSE;
