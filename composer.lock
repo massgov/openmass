@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f8e5d668f7e64eb5b57745f6bff037ac",
+    "content-hash": "bfc9a77b8634df6122c49f310d9d2666",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -2710,11 +2710,17 @@
         },
         {
             "name": "drupal/akamai",
-            "version": "dev-4.x",
+            "version": "4.1.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/akamai.git",
-                "reference": "0dfc25d616dcd20e94468d24eef18ec5925a3bd3"
+                "reference": "4.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/akamai-4.1.0.zip",
+                "reference": "4.1.0",
+                "shasum": "512ade13a781876df2e03afbf9c04569f53ce6d0"
             },
             "require": {
                 "drupal/core": "~8.5 || ^9",
@@ -2727,15 +2733,12 @@
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-4.x": "4.x-dev"
-                },
                 "drupal": {
-                    "version": "4.1.0+1-dev",
-                    "datestamp": "1678898579",
+                    "version": "4.1.0",
+                    "datestamp": "1674831396",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 },
                 "drush": {
@@ -5237,30 +5240,31 @@
         },
         {
             "name": "drupal/entity_embed",
-            "version": "1.3.0",
+            "version": "1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/entity_embed.git",
-                "reference": "8.x-1.3"
+                "reference": "8.x-1.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/entity_embed-8.x-1.3.zip",
-                "reference": "8.x-1.3",
-                "shasum": "37781222e0b31a0319f0b2e67ef345f2033435e7"
+                "url": "https://ftp.drupal.org/files/projects/entity_embed-8.x-1.4.zip",
+                "reference": "8.x-1.4",
+                "shasum": "800cb12020d8751d11292018231d93157fc34d4e"
             },
             "require": {
-                "drupal/core": "^9.3",
+                "drupal/core": "^9.3 || ^10",
                 "drupal/embed": "^1.5"
             },
             "require-dev": {
+                "drupal/ckeditor": "^1",
                 "drupal/entity_browser": "^2.2"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.3",
-                    "datestamp": "1666275539",
+                    "version": "8.x-1.4",
+                    "datestamp": "1686251084",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7322,32 +7326,36 @@
         },
         {
             "name": "drupal/linkit",
-            "version": "6.0.0-beta3",
+            "version": "6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/linkit.git",
-                "reference": "6.0.0-beta3"
+                "reference": "6.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/linkit-6.0.0-beta3.zip",
-                "reference": "6.0.0-beta3",
-                "shasum": "39a5bf54cbc88324d788a573df7b3fecf7622065"
+                "url": "https://ftp.drupal.org/files/projects/linkit-6.0.0.zip",
+                "reference": "6.0.0",
+                "shasum": "3c4143eb797abee04e5af47eb1885a65e6321b51"
             },
             "require": {
-                "drupal/core": "^8.7.7 || ^9"
+                "drupal/core": "^9.4 || ^10.0.0"
+            },
+            "conflict": {
+                "drupal/core": ">=10.1"
             },
             "require-dev": {
+                "drupal/ckeditor": "*",
                 "drupal/imce": "*"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "6.0.0-beta3",
-                    "datestamp": "1632946984",
+                    "version": "6.0.0",
+                    "datestamp": "1688748025",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -12752,12 +12760,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:massgov/mayflower-artifacts.git",
-                "reference": "f999c24ad00bbf00e40a1ccffbf4941b6374523d"
+                "reference": "d4bffc2a73e1118d6dcef990ea421e9e54d5f83a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/f999c24ad00bbf00e40a1ccffbf4941b6374523d",
-                "reference": "f999c24ad00bbf00e40a1ccffbf4941b6374523d",
+                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/d4bffc2a73e1118d6dcef990ea421e9e54d5f83a",
+                "reference": "d4bffc2a73e1118d6dcef990ea421e9e54d5f83a",
                 "shasum": ""
             },
             "require": {
@@ -12775,7 +12783,7 @@
                 }
             ],
             "description": "This repository is the product of the built artifact from massgov/mayflower",
-            "time": "2023-08-09T20:29:14+00:00"
+            "time": "2023-08-17T19:38:28+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -23750,7 +23758,6 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "drupal/akamai": 20,
         "drupal/ckeditor_liststyle": 20,
         "drupal/config_ignore": 20,
         "drupal/entity_diff_ui": 20,
