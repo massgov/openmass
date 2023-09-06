@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_place\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
@@ -21,10 +21,15 @@ use Drupal\schema_metatag\SchemaMetatagManager;
  *   weight = 1,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = TRUE
+ *   multiple = TRUE,
+ *   property_type = "image_object",
+ *   tree_parent = {
+ *     "ImageObject",
+ *   },
+ *   tree_depth = 0
  * )
  */
-class SchemaPlacePhoto extends SchemaImageBase {
+class SchemaPlacePhoto extends SchemaNameBase {
 
   /**
    * Generate a form element for this meta tag.

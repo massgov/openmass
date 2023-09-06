@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_apply_action\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'logo' meta tag.
@@ -20,9 +20,14 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageBase;
  *   weight = 6,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = FALSE
+ *   multiple = FALSE,
+ *   property_type = "image_object",
+ *   tree_parent = {
+ *     "ImageObject",
+ *   },
+ *   tree_depth = 0
  * )
  */
-class SchemaApplyActionLogo extends SchemaImageBase {
+class SchemaApplyActionLogo extends SchemaNameBase {
 
 }
