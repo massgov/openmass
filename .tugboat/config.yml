@@ -51,11 +51,6 @@ services:
         # Install Node.js 16.x
         - curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
         - apt-get install -y nodejs
-        # Install imagick
-        - apt-get install -y libmagickwand-dev
-        # Avoid prompts. https://stackoverflow.com/a/33647515
-        - echo '' | pecl install imagick
-        - docker-php-ext-enable imagick
         # Install opcache
         - docker-php-ext-install opcache
         # Needed for image styles.
