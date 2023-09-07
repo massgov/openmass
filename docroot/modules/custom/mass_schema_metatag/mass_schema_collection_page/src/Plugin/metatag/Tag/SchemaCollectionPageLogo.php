@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_collection_page\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageObjectBase;
 
 /**
  * Provides a plugin for the 'logo' meta tag.
@@ -18,7 +18,7 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
  *   name = "logo",
  *   group = "schema_collection_page",
  *   weight = 6,
- *   type = "string",
+ *   type = "image",
  *   secure = FALSE,
  *   multiple = FALSE,
  *   property_type = "image_object",
@@ -28,6 +28,6 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
  *   tree_depth = 0
  * )
  */
-class SchemaCollectionPageLogo extends SchemaNameBase {
+class SchemaCollectionPageLogo extends SchemaImageObjectBase {
 
 }

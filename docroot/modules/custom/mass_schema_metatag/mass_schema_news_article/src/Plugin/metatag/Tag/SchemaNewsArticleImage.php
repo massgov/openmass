@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_news_article\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageObjectBase;
 
 /**
  * Provides a plugin for the 'schema_news_article_image' meta tag.
@@ -24,6 +24,6 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
  *   tree_depth = 0
  * )
  */
-class SchemaNewsArticleImage extends SchemaNameBase {
+class SchemaNewsArticleImage extends SchemaImageObjectBase {
   // Nothing here yet. Just a placeholder class for a plugin.
 }

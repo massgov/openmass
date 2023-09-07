@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_schema_place\Plugin\metatag\Tag;
 
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageObjectBase;
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 use Drupal\schema_metatag\SchemaMetatagManager;
 
@@ -19,7 +20,7 @@ use Drupal\schema_metatag\SchemaMetatagManager;
  *   name = "photo",
  *   group = "schema_place",
  *   weight = 1,
- *   type = "string",
+ *   type = "image",
  *   secure = FALSE,
  *   multiple = TRUE,
  *   property_type = "image_object",
@@ -29,7 +30,7 @@ use Drupal\schema_metatag\SchemaMetatagManager;
  *   tree_depth = 0
  * )
  */
-class SchemaPlacePhoto extends SchemaNameBase {
+class SchemaPlacePhoto extends SchemaImageObjectBase {
 
   /**
    * Generate a form element for this meta tag.
@@ -43,7 +44,7 @@ class SchemaPlacePhoto extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array {
     $value = SchemaMetatagManager::recomputeSerializedLength($this->value());
     $value = unserialize($value);
     $value = array_merge($value, [
@@ -58,7 +59,7 @@ class SchemaPlacePhoto extends SchemaNameBase {
       $images = SchemaMetatagManager::unserialize($this->value());
 
       if (empty($images['url'])) {
-        return '';
+        return [];
       }
 
       $images = explode(', ', $images['url']);
