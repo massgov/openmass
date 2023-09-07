@@ -31,10 +31,14 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 class SchemaSpecialAnnouncementType extends SchemaNameBase {
 
   /**
-   * {@inheritdoc}
+   * Add SpecialAnnouncement property option.
    */
-  public static function labels() {
-    return ['SpecialAnnouncement'];
+  public function form($element = []) {
+    $form = parent::form($element);
+    $form['#options'] = [
+      'SpecialAnnouncement' => $this->t('SpecialAnnouncement'),
+    ];
+    return $form;
   }
 
 }

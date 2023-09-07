@@ -30,27 +30,14 @@ class SchemaSpecialAnnouncementAnnouncementLocation extends SchemaNameBase {
   /**
    * Add AnnouncementLocation property options.
    */
-//  public function form($element = []) {
-//    $form = parent::form($element);
-//    $form['@type']['#options'] = [
-//      'CivicStructure' => $this->t('CivicStructure'),
-//      'LocalBusiness' => $this->t('LocalBusiness'),
-//    ];
-//    $value = SchemaMetatagManager::unserialize($this->value());
-//
-//    $image_input_values = [
-//      'title' => $this->t('Image'),
-//      'description' => $this->t('An Image of the location'),
-//      'value' => !empty($value['image']) ? $value['image'] : [],
-//      '#required' => isset($element['#required']) ? $element['#required'] : FALSE,
-//      'visibility_selector' => $this->visibilitySelector(),
-//    ];
-//    $form['image'] = $this->form($image_input_values);
-//    $form['image']['@type']['#states']['required'] = $form['image']['url']['#states']['required'] = [
-//      ':input[name="' . $this->visibilitySelector() . '[@type]"]' => ['value' => 'LocalBusiness'],
-//    ];
-//
-//    return $form;
-//  }
+  public function form($element = []) {
+    $form = parent::form($element);
+    $form['@type']['#options'] = [
+      'CivicStructure' => $this->t('CivicStructure'),
+      'LocalBusiness' => $this->t('LocalBusiness'),
+    ];
+
+    return $form;
+  }
 
 }
