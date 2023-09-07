@@ -130,7 +130,7 @@ class UpdateReferences extends SqlBase {
               break;
             case EntityReferenceItem::class:
               if ($item->get('target_id')
-                  ->getString() == $ref['reference_value_old']) {
+                ->getString() == $ref['reference_value_old']) {
                 $values[$field_name][$delta]['target_id'] = $ref['reference_value_new'];
                 $changed = TRUE;
               }
