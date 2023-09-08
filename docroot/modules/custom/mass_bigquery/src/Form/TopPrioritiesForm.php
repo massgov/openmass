@@ -107,7 +107,6 @@ class TopPrioritiesForm extends FormBase {
    * {@inheritdoc}
    */
   public function formGenerator(array $form) {
-    // Begins form construction.
     $form = [];
 
     // Begins table construction with surrounding container.
@@ -199,7 +198,6 @@ class TopPrioritiesForm extends FormBase {
       $analytics = Url::fromUri($analytics_url);
 
       $row = [];
-      // Setup id's for all our rows.
       $row['#attributes']['id'] = $result->nid . '_row';
 
       $row['page_views'] = [
