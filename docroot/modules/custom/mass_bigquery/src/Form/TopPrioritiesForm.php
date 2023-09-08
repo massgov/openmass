@@ -93,8 +93,6 @@ class TopPrioritiesForm extends FormBase {
 
     $form = $this->formGenerator($form);
 
-    $form['#attached']['library'][] = 'mass_bigquery/mass-top-priorities';
-
     return $form;
   }
 
