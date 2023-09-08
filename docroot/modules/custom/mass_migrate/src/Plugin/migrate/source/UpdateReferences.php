@@ -106,89 +106,94 @@ class UpdateReferences extends SqlBase {
       $field_items = $entity->get($field_name);
       $uri_old = 'entity:node/' . $ref['reference_value_old'];
       $uri_new = 'entity:node/' . $ref['reference_value_new'];
-      foreach ($field_items as $delta => $item) {
-        if (!isset($values[$field_name][$delta])) {
-          $values[$field_name][$delta] = $item->getValue();
-        }
-        switch (get_class($item)) {
-          case DynamicLinkItem::class:
-            // Only update the delta that was migrated
-            // (when there are multiple values).
-            // Each if() is a different type of DynamicLinkItem
-            $item_uri = $item->get('uri')->getString();
-            $item_uri_path = parse_url($item_uri, PHP_URL_PATH);
-            if ($item_uri == $uri_old) {
-              $values[$field_name][$delta]['uri'] = $uri_new;
-              $changed = TRUE;
-            }
-            elseif ($item_uri_path == Url::fromUri($uri_old)->toString()) {
-              $values[$field_name][$delta]['uri'] = Url::fromUri($uri_new, $options)->toString();
-              $changed = TRUE;
-            }
-            break;
-          case EntityReferenceItem::class:
-            if ($item->get('target_id')->getString() == $ref['reference_value_old']) {
-              $values[$field_name][$delta]['target_id'] = $ref['reference_value_new'];
-              $changed = TRUE;
-            }
-            break;
-          case TextLongItem::class:
-          case TextWithSummaryItem::class:
-            $value = $values[$field_name][$delta]['value'];
-            // First check for the entity ID
-            if (str_contains($value, $ref['reference_value_old'])) {
-              $replaced = str_replace($ref['reference_value_old'], $ref['reference_value_new'], $value);
-              $value = $replaced;
-              $values[$field_name][$delta]['value'] = $replaced;
-              $changed = TRUE;
-            }
+      if (isset($ref['reference_value_old']) && isset($ref['reference_value_new'])) {
+        foreach ($field_items as $delta => $item) {
+          if (!isset($values[$field_name][$delta])) {
+            $values[$field_name][$delta] = $item->getValue();
+          }
+          switch (get_class($item)) {
+            case DynamicLinkItem::class:
+              // Only update the delta that was migrated
+              // (when there are multiple values).
+              // Each if() is a different type of DynamicLinkItem
+              $item_uri = $item->get('uri')->getString();
+              $item_uri_path = parse_url($item_uri, PHP_URL_PATH);
+              if ($item_uri == $uri_old) {
+                $values[$field_name][$delta]['uri'] = $uri_new;
+                $changed = TRUE;
+              }
+              elseif ($item_uri_path == Url::fromUri($uri_old)->toString()) {
+                $values[$field_name][$delta]['uri'] = Url::fromUri($uri_new, $options)
+                  ->toString();
+                $changed = TRUE;
+              }
+              break;
+            case EntityReferenceItem::class:
+              if ($item->get('target_id')->getString() == $ref['reference_value_old']) {
+                $values[$field_name][$delta]['target_id'] = $ref['reference_value_new'];
+                $changed = TRUE;
+              }
+              break;
+            case TextLongItem::class:
+            case TextWithSummaryItem::class:
+              $value = $values[$field_name][$delta]['value'];
+              // First check for the entity ID
+              if (str_contains($value, $ref['reference_value_old'])) {
+                $replaced = str_replace($ref['reference_value_old'], $ref['reference_value_new'], $value);
+                $value = $replaced;
+                $values[$field_name][$delta]['value'] = $replaced;
+                $changed = TRUE;
+              }
 
-            // Check for the linkit values.
-            if (str_contains($value, 'data-entity-uuid')) {
-              $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-              $entity_old = $node_storage->load($ref['reference_value_old']);
-              if ($entity_old) {
-                if (str_contains($value, $entity_old->uuid())) {
-                  $dom = Html::load($value);
-                  $xpath = new \DOMXPath($dom);
-                  foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $element) {
-                    if ($element->getAttribute('data-entity-uuid') == $entity_old->uuid()) {
-                      // Parse link href as url,
-                      // extract query and fragment from it.
-                      $href_url = parse_url($element->getAttribute('href'));
-                      $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
-                      $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
-                      $entity_new = $node_storage->load($ref['reference_value_new']);
-                      if ($entity_new) {
-                        $substitution = \Drupal::service('plugin.manager.linkit.substitution');
-                        $url = $substitution
-                          ->createInstance('canonical')
-                          ->getUrl($entity_new);
-                        $element->setAttribute('data-entity-uuid', $entity_new->uuid());
-                        $element->setAttribute('href', $url->getGeneratedUrl() . $query . $anchor);
-                        $changed = TRUE;
+              // Check for the linkit values.
+              if (str_contains($value, 'data-entity-uuid')) {
+                $node_storage = \Drupal::entityTypeManager()
+                  ->getStorage('node');
+                $entity_old = $node_storage->load($ref['reference_value_old']);
+                if ($entity_old) {
+                  if (str_contains($value, $entity_old->uuid())) {
+                    $dom = Html::load($value);
+                    $xpath = new \DOMXPath($dom);
+                    foreach ($xpath->query('//a[@data-entity-type and @data-entity-uuid]') as $element) {
+                      if ($element->getAttribute('data-entity-uuid') == $entity_old->uuid()) {
+                        // Parse link href as url,
+                        // extract query and fragment from it.
+                        $href_url = parse_url($element->getAttribute('href'));
+                        $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                        $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                        $entity_new = $node_storage->load($ref['reference_value_new']);
+                        if ($entity_new) {
+                          $substitution = \Drupal::service('plugin.manager.linkit.substitution');
+                          $url = $substitution
+                            ->createInstance('canonical')
+                            ->getUrl($entity_new);
+                          $element->setAttribute('data-entity-uuid', $entity_new->uuid());
+                          $element->setAttribute('href', $url->getGeneratedUrl() . $query . $anchor);
+                          $changed = TRUE;
+                        }
                       }
                     }
-                  }
-                  if ($changed) {
-                    $replaced = Html::serialize($dom);
-                    $value = $replaced;
-                    $values[$field_name][$delta]['value'] = $replaced;
+                    if ($changed) {
+                      $replaced = Html::serialize($dom);
+                      $value = $replaced;
+                      $values[$field_name][$delta]['value'] = $replaced;
+                    }
                   }
                 }
               }
-            }
 
-            // Next check for the link. We want relative links not
-            // absolute so domain mismatch isn't an issue.
-            if (str_contains($value, Url::fromUri($uri_old)->toString())) {
-              $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $value);
-              $values[$field_name][$delta]['value'] = $replaced;
-              $changed = TRUE;
-            }
-            break;
-          default:
-            throw new MigrateSkipRowException('Unhandled item');
+              // Next check for the link. We want relative links not
+              // absolute so domain mismatch isn't an issue.
+              if (str_contains($value, Url::fromUri($uri_old)->toString())) {
+                $replaced = str_replace(Url::fromUri($uri_old)
+                  ->toString(), Url::fromUri($uri_new)->toString(), $value);
+                $values[$field_name][$delta]['value'] = $replaced;
+                $changed = TRUE;
+              }
+              break;
+            default:
+              throw new MigrateSkipRowException('Unhandled item');
+          }
         }
       }
     }
