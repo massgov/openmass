@@ -3,12 +3,38 @@
 namespace Drupal\mass_migrate\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
+use Drupal\mass_migrate\MassMigrateBatchManager;
 use Drush\Commands\DrushCommands;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Mass Migrate drush commands.
  */
 class MassMigrateCommands extends DrushCommands {
+
+  /**
+   * The Mass Migrate batch manager.
+   *
+   * @var \Drupal\mass_migrate\MassMigrateBatchManager
+   */
+  protected $batchManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(MassMigrateBatchManager $batch_manager) {
+    parent::__construct();
+    $this->batchManager = $batch_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('mass_migrate.batch_manager'),
+    );
+  }
 
   /**
    * Override config when running drush migrate:import.
@@ -37,6 +63,16 @@ class MassMigrateCommands extends DrushCommands {
     // Turn on entity_hierarchy writes after processing the items.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     \Drupal::service('cache.discovery')->deleteAll();
+  }
+
+  /**
+   * Create missing flagging.
+   *
+   * @command mass-migrate:queue-flagging
+   */
+  public function queueFlagging(): void {
+    $this->batchManager->queueFlagging();
+    drush_backend_batch_process();
   }
 
 }
