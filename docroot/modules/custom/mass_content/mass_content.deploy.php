@@ -1171,7 +1171,6 @@ function mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragrap
   }
 }
 
-
 /**
  * Populate data for the org_page navigation.
  */
