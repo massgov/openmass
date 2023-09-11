@@ -9,6 +9,8 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mayflower\Helper;
+use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -899,9 +901,281 @@ function mass_content_deploy_related_content(&$sandbox) {
 }
 
 /**
+ * Set "Section style" default value for the org sections.
+ */
+function mass_content_deploy_org_section_style(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
+  $query->condition('type', 'org_section_long_form');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type event.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->accessCheck(FALSE)->execute();
+  }
+
+  $batch_size = 50;
+
+  $pids = $query->condition('id', $sandbox['current'], '>')
+    ->sort('id')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+
+  $paragraphs = $storage->loadMultiple($pids);
+
+  foreach ($paragraphs as $paragraph) {
+    $sandbox['current'] = $paragraph->id();
+    if (!Helper::isParagraphOrphan($paragraph)) {
+      $paragraph->set('field_section_style', 'simple');
+      $paragraph->save();
+    }
+    $sandbox['progress']++;
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Section style default value set for the  org sections. Processed @total items.', ['@total' => $sandbox['progress']]);
+  }
+  return "Processed {$sandbox['progress']} items.";
+}
+
+/**
+ * Migrate "What would you like to do" to be flexible links.
+ */
+function mass_content_deploy_org_wwyltd_flexible_links(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
+  $query->condition('type', 'what_would_you_like_to_do');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type event.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->accessCheck(FALSE)->execute();
+  }
+
+  $batch_size = 50;
+
+  $pids = $query->condition('id', $sandbox['current'], '>')
+    ->sort('id')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+
+  // Turn off entity_hierarchy writes while processing the item.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $paragraphs = $storage->loadMultiple($pids);
+  foreach ($paragraphs as $paragraph) {
+    $sandbox['current'] = $paragraph->id();
+    if ($paragraph instanceof Paragraph) {
+      if (!Helper::isParagraphOrphan($paragraph)) {
+        if ($parent = $paragraph->getParentEntity()) {
+          if ($parent instanceof Paragraph && $parent->bundle() == 'org_section_long_form') {
+            if ($parent->getParentEntity() instanceof Node) {
+              $node = $parent->getParentEntity();
+              try {
+                mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph);
+              }
+              catch (\Exception $e) {
+                \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+              }
+              if (!$node->isLatestRevision()) {
+                $storage = \Drupal::entityTypeManager()->getStorage('node');
+                $query = $storage->getQuery()->accessCheck(FALSE);
+                $query->condition('nid', $node->id());
+                $query->latestRevision();
+                $rids = $query->execute();
+                foreach ($rids as $rid) {
+                  $latest_revision = $storage->loadRevision($rid);
+                  if (isset($latest_revision)) {
+                    try {
+                      mass_content_org_wwyltd_flexible_links_helper($latest_revision, $parent, $paragraph);
+                    }
+                    catch (\Exception $e) {
+                      \Drupal::state()
+                        ->set('entity_hierarchy_disable_writes', FALSE);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    $sandbox['progress']++;
+  }
+
+  $memory_cache->deleteAll();
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('Migrate "What would you like to do" to flexible links. Processed @total items.', ['@total' => $sandbox['progress']]);
+  }
+  return "Processed {$sandbox['progress']} items.";
+}
+
+/**
+ * Helper function to call during migration.
+ */
+function mass_content_org_wwyltd_flexible_links_helper($node, $parent, $paragraph) {
+  $node_field_name = $parent->parent_field_name->value;
+  $parent_field_name = $paragraph->parent_field_name->value;
+  if ($parent = $paragraph->getParentEntity()) {
+    $content_items = $parent->get($parent_field_name)->getValue();
+    if ($parent->get($parent_field_name)->count() > 1) {
+      foreach ($content_items as $i => $content_item) {
+        if ($content_item['target_id'] == $paragraph->id() && $content_item['target_revision_id'] == $paragraph->getRevisionId()) {
+          $content_index = $i;
+          break;
+        }
+      }
+    }
+  }
+
+  $items = $node->get($node_field_name)->getValue();
+  foreach ($items as $index => $item) {
+    if ($item['target_id'] == $parent->id() && $item['target_revision_id'] == $parent->getRevisionId()) {
+      $section_index = $index;
+      break;
+    }
+  }
+
+  $flexible_link_groups = [];
+  if (!$paragraph->get('field_wwyltd_top_s_links')->isEmpty()) {
+    $top_links = $paragraph->get('field_wwyltd_top_s_links')
+      ->getValue();
+
+    $link_group_links = [];
+    foreach ($top_links as $link) {
+      // Create a new link_group_link paragraph.
+      $link_group_link = Paragraph::create([
+        'type' => 'link_group_link',
+      ]);
+
+      $link_group_link->set('field_link_group_link', $link);
+      $link_group_link->save();
+      $link_group_links[] = $link_group_link;
+    }
+
+    // Create a new flexible_link_group paragraph.
+    $flexible_link_group = Paragraph::create([
+      'type' => 'flexible_link_group',
+    ]);
+
+    $flexible_link_group->set('field_featured', 1);
+    $flexible_link_group->set('field_display_type', 'buttons');
+    // 2 = Buttons.
+    $flexible_link_group->set('field_link_group', $link_group_links);
+    $flexible_link_group->save();
+    $flexible_link_groups[] = $flexible_link_group;
+  }
+
+  if (!$paragraph->get('field_wwyltd_more_services')->isEmpty()) {
+    $more_paragraphs = $paragraph->get('field_wwyltd_more_services')
+      ->referencedEntities();
+
+    foreach ($more_paragraphs as $more_paragraph) {
+      if (!$more_paragraph->get('field_links_documents')->isEmpty()) {
+        $link_group_links = $more_paragraph->get('field_links_documents')
+          ->referencedEntities();
+
+        // Create a new flexible_link_group paragraph.
+        $flexible_link_group = Paragraph::create([
+          'type' => 'flexible_link_group',
+        ]);
+
+        $flexible_link_group->set('field_featured', 0);
+        $flexible_link_group->set('field_display_type', 'links');
+        $flexible_link_group->set('field_group_expanded', $more_paragraph->get('field_group_expanded')->value);
+        if (!$more_paragraph->get('field_group_expanded')->isEmpty()) {
+          $flexible_link_group->set('field_group_expanded', $more_paragraph->get('field_group_expanded')->value);
+        }
+        else {
+          $flexible_link_group->set('field_group_expanded', 1);
+        }
+        if (!$more_paragraph->get('field_section_title')->isEmpty()) {
+          $title = $more_paragraph->get('field_section_title')->value;
+          $flexible_link_group->set('field_flexible_link_group_title', $title);
+        }
+        $flexible_link_group->set('field_link_group', $link_group_links);
+        $flexible_link_group->save();
+        $flexible_link_groups[] = $flexible_link_group;
+      }
+    }
+  }
+
+  if ($flexible_link_groups) {
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    if (isset($content_index)) {
+      $result = [];
+      foreach ($content_items as $index => $content_item) {
+        if ($index == $content_index) {
+          foreach ($flexible_link_groups as $flexible_link_group) {
+            $result[] = $flexible_link_group;
+          }
+        }
+        else {
+          $result[] = $content_item;
+        }
+      }
+      $new_org_section_long_form_paragraph->set('field_section_long_form_content', $result);
+    }
+    else {
+      $new_org_section_long_form_paragraph->set('field_section_long_form_content', $flexible_link_groups);
+    }
+    if (!$paragraph->get('field_wwyltd_heading')->isEmpty()) {
+      $heading = $paragraph->get('field_wwyltd_heading')->value;
+      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', $heading);
+    }
+    $new_org_section_long_form_paragraph->set('field_section_style', 'enhanced');
+    $new_org_section_long_form_paragraph->set('field_hide_heading', 0);
+
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $new_org_section_long_form_paragraph_value = [
+      'target_id' => $new_org_section_long_form_paragraph->id(),
+      'target_revision_id' => $new_org_section_long_form_paragraph->getRevisionId(),
+    ];
+    if (isset($section_index)) {
+      $items[$section_index] = $new_org_section_long_form_paragraph_value;
+    }
+    else {
+      $items[] = $new_org_section_long_form_paragraph_value;
+    }
+
+    $node->set('field_organization_sections', $items);
+    // Save the node.
+    // Save without updating the last modified date. This requires a core patch
+    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+    $node->setSyncing(TRUE);
+    $node->revision_log = "Bulk automated change of ‘what would you like to do’ component to ‘flexible link group’";
+    $node->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
+    $node->save();
+    $paragraph->delete();
+  }
+}
+
+
+/**
  * Populate data for the org_page navigation.
  */
-function mass_content_deploy_org_page_navigation_migration(&$sandbox) {
+function mass_content_deploy_org_z_page_navigation_migration(&$sandbox) {
   $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
   $query->condition('type', 'org_page');
 
