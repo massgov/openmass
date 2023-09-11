@@ -7,8 +7,8 @@ dependencies:
     - field.field.paragraph.org_section_long_form.field_org_navigation_jump_link_t
     - field.field.paragraph.org_section_long_form.field_section_long_form_content
     - field.field.paragraph.org_section_long_form.field_section_long_form_heading
-    - field.field.paragraph.org_section_long_form.field_show_in_org_navigation
     - field.field.paragraph.org_section_long_form.field_section_style
+    - field.field.paragraph.org_section_long_form.field_show_in_org_navigation
     - paragraphs.paragraphs_type.org_section_long_form
   module:
     - conditional_fields
@@ -22,7 +22,7 @@ third_party_settings:
       label: 'Section Content'
       region: content
       parent_name: ''
-      weight: 4
+      weight: 5
       format_type: details
       format_settings:
         classes: section-content
@@ -35,7 +35,7 @@ third_party_settings:
       label: 'Additional Resources'
       region: content
       parent_name: ''
-      weight: 5
+      weight: 6
       format_type: details
       format_settings:
         classes: ''
@@ -80,22 +80,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-        8904d857-aaf7-4b63-a912-979bf8b877f0:
-          entity_type: paragraph
-          bundle: org_section_long_form
-          dependee: field_hide_heading
-          settings:
-            state: '!visible'
-            condition: checked
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              value: false
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_section_long_form_content:
     type: entity_reference_paragraphs
     weight: 3
@@ -116,6 +100,12 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_section_style:
+    type: options_buttons
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_show_in_org_navigation:
     type: boolean_checkbox
     weight: 2
@@ -123,45 +113,7 @@ content:
     settings:
       display_label: true
     third_party_settings:
-      conditional_fields:
-        1d4a1e14-f418-45fb-8b2a-973eff119681:
-          entity_type: paragraph
-          bundle: org_section_long_form
-          dependee: field_hide_heading
-          settings:
-            state: '!visible'
-            condition: checked
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              value: false
-            effect: show
-            effect_options: {  }
-            selector: ''
-        942d6c2b-1b45-4f62-ac76-1eba9855d43e:
-          entity_type: paragraph
-          bundle: org_section_long_form
-          dependee: field_hide_heading
-          settings:
-            state: '!checked'
-            condition: checked
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              value: false
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_section_style:
-    type: options_buttons
-    weight: 2
-    region: content
-    settings: {  }
-    third_party_settings: {  }
+      conditional_fields: {  }
 hidden:
   created: true
   status: true

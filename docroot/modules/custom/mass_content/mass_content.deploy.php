@@ -1276,9 +1276,10 @@ function mass_content_org_node_navigation_helper($node) {
     foreach ($sections as $section) {
       if (!empty($section->field_section_long_form_heading->value)) {
         $heading = strtolower($section->field_section_long_form_heading->value);
+        $heading_upper = ucfirst($heading);
         if (strlen($heading) <= 12) {
           $section->set('field_show_in_org_navigation', 1);
-          $section->set('field_org_navigation_jump_link_t', $heading);
+          $section->set('field_org_navigation_jump_link_t', $heading_upper);
           $changed = TRUE;
           $section->save();
         }
@@ -1364,7 +1365,7 @@ function mass_content_org_node_navigation_helper($node) {
         }
         if (str_contains($heading, 'our ') && !$has_our) {
           $section->set('field_show_in_org_navigation', 1);
-          $section->set('field_org_navigation_jump_link_t', $heading);
+          $section->set('field_org_navigation_jump_link_t', $heading_upper);
           $has_our = TRUE;
           $changed = TRUE;
           $section->save();
@@ -1372,7 +1373,7 @@ function mass_content_org_node_navigation_helper($node) {
         }
         if ((str_contains($heading, 'quick links') || str_contains($heading, 'important links') || str_contains($heading, 'top links') || str_contains($heading, 'helpful links') || str_contains($heading, 'popular links'))&& !$has_links) {
           $section->set('field_show_in_org_navigation', 1);
-          $section->set('field_org_navigation_jump_link_t', $heading);
+          $section->set('field_org_navigation_jump_link_t', $heading_upper);
           $has_links = TRUE;
           $changed = TRUE;
           $section->save();
