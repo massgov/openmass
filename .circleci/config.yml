@@ -243,6 +243,17 @@ jobs:
       # @todo When needed, switch to https://circleci.com/developer/orbs/orb/circleci/github-cli
       - run: scripts/tag-release-deploy
 
+  acquia_db_backup:
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:8.0-node
+    steps:
+      - attach_workspace: { at: /tmp }
+      - fetch_drush_aliases
+      - *vendor_bin_add_path
+      - run:
+          command: "drush ma:backup -v prod"
+
   validate:
     working_directory: /tmp/code
     docker:
@@ -1135,6 +1146,16 @@ workflows:
           gitRef: << pipeline.parameters.git-ref >>
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
+
+  # Nightly On Demand Prod DB Backup
+  nightly_prod_db_backup:
+    when:
+      and:
+        - equal: [ nightly_prod_db_backup, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - build
+      - acquia_db_backup:
+          requires: [ build ]
 
   # Nightly Backstop image references.
   nightly_backstop_snapshot:

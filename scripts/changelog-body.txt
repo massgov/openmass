@@ -1,14 +1,22 @@
 
 
-## [0.367.0] - July 11, 2023
+## [0.372.0] - September 5, 2023
 
-### Added
-  - DP-26725: Add option to hide 'Did you find' component on form content type.
-  - DP-28507: Heal orphan references via redirect inspection
-  - DP-28604: Add Siteimprove data to bigquery module
-  - DP-28649: Drupal view made for internal report of how-to pages. Will not be visible to authors
-  
 ### Changed
-  - DP-27207: D10 - upgrade Views related modules
-  - DP-28570: Changed deploy_cd CI workflow.
+  - DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
+  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+  - DP-288257: Consolidate two Drush commands into one - ma:heal-references-to-trash
+  - DP-28842: Drupal 10 compat - Update Entity Embed and LinkIt
+  - DP-29492: Config change to load Google Tag manager in all paths including author paths.
+  
+### Removed
+  - DP-26154: Remove testing of service_details pages
+  
+### Fixed
+  - DP-28622: Export report of orphaned pages fixed.
+  - DP-29391: Fix flagging for migrated service details pages.
+  
+### Added
+  - DP-29259: Add metadata field mg_parent_org.
+  - DP-29392: Add drush ma:backup command for starting an on-demand DB backup.
   

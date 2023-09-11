@@ -1369,23 +1369,8 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Make relationshipIndicatorPrimary data structure available in twig template.
     $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
-    // Create the map of all possible field names to use.
-    $map = [
-      'icon' => ['field_topic_ref_icon'],
-    ];
-
-    // Determines which field names to use from the map.
-    $fields = Helper::getMappedFields($node, $map);
-
-    $icon = Helper::getReferenceField($node->{$fields['icon']}, 'field_sprite_name');
-
-    if ($icon) {
-      $icon = Helper::getIconPath($icon);
-    }
-
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
-      'icon' => $icon,
       'color' => 'white',
       'underline' => TRUE,
     ];
@@ -1483,6 +1468,15 @@ function mass_theme_preprocess_node_info_details(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
+    $page_title = $node->getTitle();
+
+    // Create the map of all possible field names to use.
+    $map = [
+      'contact' => ['field_contact'],
+    ];
+
+    // Determines which field names to use from the map.
+    $fields = Helper::getMappedFields($node, $map);
 
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
@@ -1523,6 +1517,46 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       ];
       $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_info_details_related', $linkList_options);
       $variables['sideContent'] = $sideContent;
+    }
+
+    // Build contact section, if field is populated.
+    if (!empty($fields['contact']) && Helper::isFieldPopulated($node, $fields['contact'])) {
+      // Set up options for contact list.
+
+      $contacts_title = t("Contact");
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+
+      // Set up options for contact list.
+      $contactList_options = [
+        'heading' => [
+          'type' => 'compHeading',
+          'title' => $contacts_title,
+          'titleContext' => $titleContext,
+          'sub' => TRUE,
+        ],
+        'groups' => [
+          'accordion' => TRUE,
+          'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+        ],
+      ];
+
+      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options);
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+        ],
+      ];
+      // Prepare the sidebarContact data object cache tags do not need to be sent.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+      $variables['sideContent'] = $sideContent;
+      $variables['mainContent'] = $mainContent;
     }
 
     // Hide sidebar when 'visual_story' is select from the field_page_template field.
@@ -3181,7 +3215,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
     $keyActions_options = [
       'heading' => [
         'title' => t('First time? Start here.'),
-        'sub' => 3,
+        'level' => 2,
       ],
     ];
 
@@ -4894,6 +4928,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
     $services = [
       'twitter',
       'facebook',
+      'threads',
       'flickr',
       'blog',
       'linkedin',
@@ -6820,6 +6855,7 @@ function mass_theme_preprocess_field__node__field_social_links(&$variables) {
   $services = [
     'twitter',
     'facebook',
+    'threads',
     'flickr',
     'blog',
     'linkedin',
@@ -7219,14 +7255,46 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
  * Groups different components together when necessary.
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+
+  $container = $variables['paragraph'];
+  if (!$container->field_section_style->isEmpty()) {
+    $variables['section_style'] = $container->field_section_style->value;
+  }
+  $variables['hide_heading'] = $container->field_hide_heading->value;
   $variables["org_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
+  $links_group = [];
+  foreach ($variables['org_components'] as $key => &$org_component) {
+    /** @var Drupal\paragraphs\Entity\Paragraph */
+    $org_component_paragraph = &$org_component[0];
+    if (
+      is_object($org_component_paragraph) &&
+      $org_component_paragraph->getType() == 'flexible_link_group' &&
+      $org_component_paragraph->field_display_type->value == 'links'
+    ) {
+      $links_group[$key] = $org_component;
+    }
+    else {
+      _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables, 'org');
+      $links_group = [];
+    }
+  }
+
+  _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables, 'org');
+
+  // Removing elements included previously.
+  foreach ($variables['org_components'] as $key => &$org_component) {
+    if ($org_component === FALSE) {
+      unset($variables['org_components'][$key]);
+    }
+  }
 }
 
 /**
  * Join contiguous flexible link groups, type links, into the same element.
  */
-function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables) {
+function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables, $destination = 'service') {
+  $component_name = $destination . '_components';
   if (count($links_group) < 2) {
     return;
   }
@@ -7236,10 +7304,10 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables['service_components'][$first][0]->subsequent_links[] = $link_group[0];
+    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
 
     // Empty elements included previously.
-    $variables['service_components'][$key] = FALSE;
+    $variables[$component_name][$key] = FALSE;
   }
   $links_group = [];
 }

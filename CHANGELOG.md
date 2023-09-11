@@ -1,5 +1,88 @@
 
 
+## [0.372.0] - September 5, 2023
+
+### Changed
+  - DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
+  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+  - DP-288257: Consolidate two Drush commands into one - ma:heal-references-to-trash
+  - DP-28842: Drupal 10 compat - Update Entity Embed and LinkIt
+  - DP-29492: Config change to load Google Tag manager in all paths including author paths.
+  
+### Removed
+  - DP-26154: Remove testing of service_details pages
+  
+### Fixed
+  - DP-28622: Export report of orphaned pages fixed.
+  - DP-29391: Fix flagging for migrated service details pages.
+  
+### Added
+  - DP-29259: Add metadata field mg_parent_org.
+  - DP-29392: Add drush ma:backup command for starting an on-demand DB backup.
+  
+
+
+## [0.371.0] - August 15, 2023
+
+### Changed
+  - DP-26359: Remove a link from an image in a image promo and a suggested page units. |- Exclude a redundant "more" link from keyboad and AT users from a image promo unit. |- Expand the clickable area to the antire image promo and suggesnted page unit containers. |- Restructure the image promos and the suggested pages with a list for better semantics.
+  - DP-28827: D10 upgrade - "Collab with maintainers" modules
+  
+### Added
+  - DP-29328: Added service details post-migration step for primary parent fields.
+  
+
+
+## [0.370.1] - August 9, 2023
+
+### Fixed
+- DP-29284: Fixed issue with feedback not displaying for info details pages.
+
+
+
+## [0.370.0] - August 8, 2023
+
+### Fixed
+  - DP-20609: Eliminated forced 100% width on images and figures in rich text.
+  
+### Changed
+  - DP-26154: Migrate service details pages to info details
+  - DP-28963: More info link missing from contact component on info details pages.
+  
+### Added
+  - DP-29018: Add 5 languages, including Twi custom language
+  - DP-29229: Added lazy loading to iframes.
+  
+
+
+## [0.369.0] - August 1, 2023
+
+### Changed
+  - DP-27828: Updated Media Entity Download to latest version.
+  - DP-28825: D10 upgrade - Simple Sitemap.
+  
+
+
+## [0.368.0] - July 25, 2023
+
+### Added
+  - DP-28439: New views to show the amount of content by organization.
+  
+### Removed
+  - DP-28600: Removed Icon from Topic pages.
+  
+### Fixed
+  - DP-28600: Fixed Info details accordion styling on mobile issue.
+  - DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
+  
+### Changed
+  - DP-28735: Update Paragraphs, Entity Reference Revision, misc
+  - DP-28783: A11y - aria-label on alert icon.
+  - DP-28854: Remove Google Optimize - it is unused
+  - DP-28890: Process BigQuery queue outside of cron
+  
+
+
 ## [0.367.0] - July 11, 2023
 
 ### Added
