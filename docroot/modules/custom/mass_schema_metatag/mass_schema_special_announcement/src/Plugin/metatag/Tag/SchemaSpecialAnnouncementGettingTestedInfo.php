@@ -21,8 +21,10 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
  *   type = "string",
  *   secure = FALSE,
  *   multiple = FALSE,
- *   property_type = "url",
- *   tree_parent = {},
+ *   property_type = "creative_work",
+ *   tree_parent = {
+ *     "CreativeWork",
+ *   },
  *   tree_depth = -1
  * )
  */
