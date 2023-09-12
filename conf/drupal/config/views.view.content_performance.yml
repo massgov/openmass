@@ -46,7 +46,7 @@ dependencies:
   module:
     - content_moderation
     - csv_serialization
-    - mass_superset
+    - mass_bigquery
     - mass_views
     - node
     - rest
@@ -530,7 +530,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -585,116 +585,10 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Date Snoozed'
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: Score
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: true
-            path: 'node/{{ nid }}/analytics'
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: true
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: true
-          precision: 1
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
@@ -750,7 +644,7 @@ display:
           suffix: ''
         eject_rate:
           id: eject_rate
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: eject_rate
           relationship: vid
           group_type: group
@@ -807,7 +701,7 @@ display:
           suffix: ''
         broken_links:
           id: broken_links
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: broken_links
           relationship: vid
           group_type: group
@@ -864,7 +758,7 @@ display:
           suffix: ''
         grade_level:
           id: grade_level
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: grade_level
           relationship: vid
           group_type: group
@@ -921,7 +815,7 @@ display:
           suffix: ''
         total_feedback:
           id: total_feedback
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_feedback
           relationship: vid
           group_type: group
@@ -978,7 +872,7 @@ display:
           suffix: ''
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: vid
           group_type: group
@@ -1035,7 +929,7 @@ display:
           suffix: ''
         total_yes:
           id: total_yes
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_yes
           relationship: vid
           group_type: group
@@ -1662,125 +1556,9 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '<='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
-            description: ''
-            use_operator: false
-            operator: score_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: score
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: group
@@ -1839,10 +1617,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
@@ -1855,17 +1633,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: nos_per_1000_op
-            label: 'Nos per 1000'
+            operator_id: nos_per_1000_cleaned_op
+            label: 'Nos per 1000 is greater than or equal to'
             description: ''
-            use_operator: true
-            operator: nos_per_1000_op
-            operator_limit_selection: true
-            operator_list:
-              '<=': '<='
-              '>=': '>='
-              between: between
-            identifier: nos_per_1000
+            use_operator: false
+            operator: nos_per_1000_cleaned_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -1902,7 +1677,7 @@ display:
             group_items: {  }
         eject_rate:
           id: eject_rate
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: eject_rate
           relationship: nid
           group_type: group
@@ -1963,7 +1738,7 @@ display:
             group_items: {  }
         grade_level:
           id: grade_level
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: grade_level
           relationship: nid
           group_type: group
@@ -2024,7 +1799,7 @@ display:
             group_items: {  }
         broken_links:
           id: broken_links
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: broken_links
           relationship: nid
           group_type: group
@@ -2085,7 +1860,7 @@ display:
             group_items: {  }
         total_feedback:
           id: total_feedback
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_feedback
           relationship: nid
           group_type: group
@@ -2146,7 +1921,7 @@ display:
             group_items: {  }
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: group
@@ -2207,7 +1982,7 @@ display:
             group_items: {  }
         total_yes:
           id: total_yes
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_yes
           relationship: nid
           group_type: group
@@ -3073,21 +2848,21 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          label: Score
+          label: 'No''s per K page views'
           exclude: false
           alter:
             alter_text: false
             text: ''
-            make_link: true
-            path: 'node/{{ nid }}/analytics'
+            make_link: false
+            path: ''
             absolute: false
             external: false
             replace_spaces: false
@@ -3132,7 +2907,7 @@ display:
           suffix: ''
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -3413,55 +3188,6 @@ display:
             - node_promote_action
             - node_unpromote_action
             - pathauto_update_alias_node
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Date Snoozed'
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
       filters:
         latest_revision:
           id: latest_revision
@@ -4046,15 +3772,15 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          operator: '<='
+          operator: '>='
           value:
             min: ''
             max: ''
@@ -4062,14 +3788,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
+            operator_id: nos_per_1000_cleaned_op
+            label: 'Nos per 1000 is greater than or equal to'
             description: ''
             use_operator: false
-            operator: score_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: score
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -4086,6 +3812,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -4101,67 +3830,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         field_reusable_label_target_id:
           id: field_reusable_label_target_id
           table: node__field_reusable_label
@@ -4729,7 +4397,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -4835,8 +4503,6 @@ display:
           hide_alter_empty: true
           fieldset_one:
             data_field:
-              eject_rate: eject_rate
-              node_bulk_form: 0
               title: 0
               nid: 0
               type: 0
@@ -4844,9 +4510,10 @@ display:
               status: 0
               changed: 0
               pageviews: 0
-              last_updated: 0
               operations: 0
+              eject_rate: 0
             formula: '@eject_rate * 100'
+          mute_logs: false
           set_precision: 1
           precision: '1'
           decimal: .
@@ -4908,7 +4575,7 @@ display:
           destination: false
         eject_rate:
           id: eject_rate
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: eject_rate
           relationship: nid
           group_type: group
@@ -5402,70 +5069,9 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: group
@@ -5526,7 +5132,7 @@ display:
             group_items: {  }
         eject_rate:
           id: eject_rate
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: eject_rate
           relationship: nid
           group_type: group
@@ -5712,7 +5318,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: sum
@@ -5767,10 +5373,10 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: avg
           admin_label: ''
@@ -5878,10 +5484,11 @@ display:
               pageviews: pageviews
               total_no: total_no
               field_organizations: 0
-              nos_per_1000: 0
+              nos_per_1000_cleaned: 0
               title: 0
               field_parent: 0
             formula: '@total_no/@pageviews*1000'
+          mute_logs: false
           set_precision: 1
           precision: '1'
           decimal: .
@@ -6027,7 +5634,7 @@ display:
           field_api_classes: false
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: sum
@@ -6449,70 +6056,9 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: sum
@@ -6571,10 +6117,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: avg
           admin_label: ''
@@ -6587,17 +6133,17 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: nos_per_1000_op
+            operator_id: nos_per_1000_cleaned_op
             label: 'Avg No''s per 1000 Pageviews'
             description: ''
             use_operator: true
-            operator: nos_per_1000_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: true
             operator_list:
               '<=': '<='
               '>=': '>='
               between: between
-            identifier: nos_per_1000
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -7139,125 +6685,9 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '<='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
-            description: ''
-            use_operator: false
-            operator: score_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: score
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: group
@@ -7316,10 +6746,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
@@ -7332,17 +6762,17 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: nos_per_1000_op
+            operator_id: nos_per_1000_cleaned_op
             label: 'Nos per 1000'
             description: ''
             use_operator: true
-            operator: nos_per_1000_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: true
             operator_list:
               '<=': '<='
               '>=': '>='
               between: between
-            identifier: nos_per_1000
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -7379,7 +6809,7 @@ display:
             group_items: {  }
         eject_rate:
           id: eject_rate
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: eject_rate
           relationship: nid
           group_type: group
@@ -7440,7 +6870,7 @@ display:
             group_items: {  }
         grade_level:
           id: grade_level
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: grade_level
           relationship: nid
           group_type: group
@@ -7501,7 +6931,7 @@ display:
             group_items: {  }
         broken_links:
           id: broken_links
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: broken_links
           relationship: nid
           group_type: group
@@ -7997,7 +7427,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -8052,59 +7482,10 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Date Snoozed'
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
@@ -8160,7 +7541,7 @@ display:
           suffix: ''
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: group
@@ -8217,7 +7598,7 @@ display:
           suffix: ''
         total_yes:
           id: total_yes
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_yes
           relationship: nid
           group_type: group
@@ -8762,70 +8143,9 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: group
@@ -8884,10 +8204,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
@@ -8900,17 +8220,17 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: nos_per_1000_op
+            operator_id: nos_per_1000_cleaned_op
             label: 'No''s per 1000 Pageviews'
             description: ''
             use_operator: true
-            operator: nos_per_1000_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: true
             operator_list:
               '<=': '<='
               '>=': '>='
               between: between
-            identifier: nos_per_1000
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -8947,7 +8267,7 @@ display:
             group_items: {  }
         total_feedback:
           id: total_feedback
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_feedback
           relationship: nid
           group_type: group
@@ -8964,7 +8284,7 @@ display:
             operator_id: total_feedback_op
             label: 'Minimum # of Feedback responses'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: total_feedback_op
             operator_limit_selection: false
             operator_list: {  }
@@ -9005,7 +8325,7 @@ display:
             group_items: {  }
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: group
@@ -9063,7 +8383,7 @@ display:
             group_items: {  }
         total_yes:
           id: total_yes
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_yes
           relationship: nid
           group_type: group
