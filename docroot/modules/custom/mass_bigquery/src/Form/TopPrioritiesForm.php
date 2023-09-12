@@ -264,8 +264,8 @@ class TopPrioritiesForm extends FormBase {
       ->isNotNull('total_no')
       ->isNotNull('pageviews')
       ->condition('nos_per_1000_cleaned', 6, '>=')
-      ->condition('total_no', 4, '>=')
-      ->condition('pageviews', 20, '>');
+      ->condition('total_no', 8, '>=')
+      ->condition('pageviews', 30, '>');
     $brokenLinks = $query->andConditionGroup()
       ->isNotNull('broken_links')
       ->condition('broken_links', 1, '>=');
