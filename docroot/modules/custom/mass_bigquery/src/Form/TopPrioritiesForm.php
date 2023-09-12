@@ -93,6 +93,8 @@ class TopPrioritiesForm extends FormBase {
 
     $form = $this->formGenerator($form);
 
+    $form['#attached']['library'][] = 'mass_bigquery/mass-top-priorities';
+
     return $form;
   }
 
@@ -128,25 +130,21 @@ class TopPrioritiesForm extends FormBase {
     }
     $org_nid = $org_node->id();
 
-    // Get the organization name for the header of the table.
     $org_name = $org_node->title->value;
-    $node_org_filter = $org_name . ' (' . $org_nid . ') - Organization';
 
-    // Create url for prefix.
     $option = [
       'query' => [
-        'node_org_filter' => $node_org_filter,
-        // This view uses greater to or equal. >4 is the same as >= 5.
-        'nos_per_1000_cleaned' => '5',
+        'node_org_filter' => $org_name . ' (' . $org_nid . ') - Organization',
         'order' => 'pageviews',
         'sort' => 'desc',
         'last_updated' => 'All',
       ],
     ];
 
-    $url = Url::fromUri('internal:/admin/content', $option)->toString();
+    $url = Url::fromUri('internal:/admin/content/performance', $option)->toString();
 
-    $prefix = "<h2>Content that needs attention</h2><p>These are your organization's 10 highest-trafficked pages with the high Nos per 1000 page views or broken links. You can also sort or filter a <a href=\"" . $url . "\">full list of this content</a> on the \"All content\" page.</p>";
+    $prefix = '<h2>Content that needs attention</h2>';
+    $prefix .= "<p>These are your organization's 12 highest-trafficked pages with the high Nos per 1000 page views or broken links. You see more details by adjusting filters in our <a href=\"" . $url . "\">Content Performance</a> report.</p>";
 
     $header = [
       'page_views' => [
@@ -194,8 +192,8 @@ class TopPrioritiesForm extends FormBase {
     // Feed result data into rows and format results.
     foreach ($results as $result) {
       $url = $this->path->getUrlIfValid($result->alias);
-      $analytics_url = 'internal:/node/' . $result->nid . '/analytics-new';
-      $analytics = Url::fromUri($analytics_url);
+      $analytics_url = Url::fromUri('internal:/node/' . $result->nid . '/analytics-new');
+      $feedback_url = Url::fromUri('internal:/node/' . $result->nid . '/feedback');
 
       $row = [];
       $row['#attributes']['id'] = $result->nid . '_row';
@@ -217,13 +215,20 @@ class TopPrioritiesForm extends FormBase {
       $row['nos_per_1000'] = [
         '#title' => round($result->nos_per_1000_cleaned, 1),
         '#type' => 'link',
-        '#url' => $analytics,
+        '#url' => $feedback_url,
+        '#attributes' => [
+          'class' => round($result->nos_per_1000_cleaned, 1) >= 6 ? 'red-link' : '',
+        ],
       ];
 
       $row['broken_links'] = [
         '#title' => $result->broken_links,
         '#type' => 'link',
-        '#url' => $analytics,
+        '#url' => $analytics_url,
+        '#attributes' => [
+          // Any broken links are bad and red.
+          'class' => !empty($result->broken_links) ? 'red-link' : '',
+        ],
       ];
 
       $row['last_revised'] = [
@@ -249,13 +254,16 @@ class TopPrioritiesForm extends FormBase {
     $query->fields('n', ['nid', 'type', 'title', 'changed']);
     $query->fields('m', ['pageviews', 'nos_per_1000_cleaned', 'total_no', 'broken_links']);
     $query->fields('pa', ['alias']);
+    // Exclude topic pages.
+    $query->condition('n.type', 'topic_page', '!=');
+
     $query->condition('o.field_organizations_target_id', $org_nid, '=');
     $query->condition('n.status', 1);
     $nosPer1000 = $query->andConditionGroup()
       ->isNotNull('nos_per_1000_cleaned')
       ->isNotNull('total_no')
       ->isNotNull('pageviews')
-      ->condition('nos_per_1000_cleaned', 4, '>')
+      ->condition('nos_per_1000_cleaned', 6, '>=')
       ->condition('total_no', 4, '>=')
       ->condition('pageviews', 20, '>');
     $brokenLinks = $query->andConditionGroup()
@@ -266,7 +274,7 @@ class TopPrioritiesForm extends FormBase {
       ->condition($brokenLinks);
     $query->condition($nosPer1000OrBrokenLinks);
     $query->orderBy('m.pageviews', 'DESC');
-    $query->range(0, 10);
+    $query->range(0, 12);
     $results = $query->execute()->fetchAll();
 
     return $results;
