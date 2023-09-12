@@ -42,7 +42,7 @@ class MapLocationFetcher {
           'name' => 'filter-by-location',
           'type' => 'text',
           'placeholder' => 'City, town, or ZIP code',
-          'errorMsg' => 'Please select an address in the suggesions. Hit ENTER or start typing to show suggesions.'
+          'errorMsg' => 'Please select an address in the suggestions. Hit ENTER or start typing to show suggestions.'
         ],
       ],
       'tags' => [
