@@ -1274,7 +1274,7 @@ function mass_content_org_node_navigation_helper($node) {
     $has_data = FALSE;
     $has_initiatives = FALSE;
     foreach ($sections as $section) {
-      if (!empty($section->field_section_long_form_heading->value)) {
+      if (!empty($section->field_section_long_form_heading->value) && $section->field_hide_heading->value != 1) {
         $heading = strtolower($section->field_section_long_form_heading->value);
         $heading_upper = ucfirst($heading);
         if (strlen($heading) <= 12) {
