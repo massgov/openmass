@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaTypeBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'Type' meta tag.
@@ -20,16 +20,25 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaTypeBase;
  *   weight = -10,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = FALSE
+ *   multiple = FALSE,
+ *   property_type = "type",
+ *   tree_parent = {
+ *     "Organization",
+ *   },
+ *   tree_depth = -1
  * )
  */
-class SchemaSpecialAnnouncementType extends SchemaTypeBase {
+class SchemaSpecialAnnouncementType extends SchemaNameBase {
 
   /**
-   * {@inheritdoc}
+   * Add SpecialAnnouncement property option.
    */
-  public static function labels() {
-    return ['SpecialAnnouncement'];
+  public function form($element = []) {
+    $form = parent::form($element);
+    $form['#options'] = [
+      'SpecialAnnouncement' => $this->t('SpecialAnnouncement'),
+    ];
+    return $form;
   }
 
 }
