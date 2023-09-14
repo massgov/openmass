@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.org_section_long_form.field_hide_heading
+    - field.field.paragraph.org_section_long_form.field_hide_in_org_navigation
     - field.field.paragraph.org_section_long_form.field_org_navigation_jump_link_t
     - field.field.paragraph.org_section_long_form.field_section_long_form_content
     - field.field.paragraph.org_section_long_form.field_section_long_form_heading
@@ -17,6 +18,16 @@ targetEntityType: paragraph
 bundle: org_section_long_form
 mode: default
 content:
+  field_hide_in_org_navigation:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 4
+    region: content
   field_org_navigation_jump_link_t:
     type: string
     label: above

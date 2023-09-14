@@ -1278,13 +1278,13 @@ function mass_content_org_node_navigation_helper($node) {
         $heading = strtolower($section->field_section_long_form_heading->value);
         $heading_upper = ucfirst($heading);
         if (strlen($heading) <= 12) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', $heading_upper);
           $changed = TRUE;
           $section->save();
         }
         if (str_contains($heading, 'contact') && !$has_contact) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Contact us');
           $has_contact = TRUE;
           $changed = TRUE;
@@ -1292,7 +1292,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'news') && !$has_news) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'News');
           $has_news = TRUE;
           $changed = TRUE;
@@ -1300,7 +1300,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'events') && !$has_events) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Events');
           $has_events = TRUE;
           $changed = TRUE;
@@ -1308,7 +1308,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'location') && !$has_locations) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Locations');
           $has_locations = TRUE;
           $changed = TRUE;
@@ -1316,7 +1316,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'who we serve') && !$has_wws) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Who we serve');
           $has_wws = TRUE;
           $changed = TRUE;
@@ -1324,7 +1324,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'topics') && !$has_topics) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Topics');
           $has_topics = TRUE;
           $changed = TRUE;
@@ -1332,7 +1332,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'what would you like to') && !$has_wwylt) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'I want to…');
           $has_wwylt = TRUE;
           $changed = TRUE;
@@ -1340,7 +1340,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'feature') && !$has_featured) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Featured');
           $has_featured = TRUE;
           $changed = TRUE;
@@ -1348,7 +1348,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if ((str_contains($heading, 'about the') || str_contains($heading, 'about us')) && !$has_about) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'About');
           $has_about = TRUE;
           $changed = TRUE;
@@ -1356,7 +1356,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'most requested') && !$has_most_requested) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Most requested');
           $has_most_requested = TRUE;
           $changed = TRUE;
@@ -1364,7 +1364,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'our ') && !$has_our) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', $heading_upper);
           $has_our = TRUE;
           $changed = TRUE;
@@ -1372,7 +1372,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if ((str_contains($heading, 'quick links') || str_contains($heading, 'important links') || str_contains($heading, 'top links') || str_contains($heading, 'helpful links') || str_contains($heading, 'popular links'))&& !$has_links) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', $heading_upper);
           $has_links = TRUE;
           $changed = TRUE;
@@ -1380,7 +1380,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'upcoming public meetings/hearings') && !$has_meeting) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Meetings / Hearings');
           $has_meeting = TRUE;
           $changed = TRUE;
@@ -1388,7 +1388,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'upcoming webinars and meetings') && !$has_webinar) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Webinars / Meetings');
           $has_webinar = TRUE;
           $changed = TRUE;
@@ -1396,7 +1396,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'services') && !$has_services) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Services');
           $has_services = TRUE;
           $changed = TRUE;
@@ -1404,7 +1404,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'hours') && !$has_hours) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Hours');
           $has_hours = TRUE;
           $changed = TRUE;
@@ -1412,7 +1412,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'mission') && !$has_mission) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Mission');
           $has_mission = TRUE;
           $changed = TRUE;
@@ -1420,7 +1420,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'resources') && !$has_resources) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Resources');
           $has_resources = TRUE;
           $changed = TRUE;
@@ -1428,7 +1428,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'information') && !$has_information) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Information');
           $has_information = TRUE;
           $changed = TRUE;
@@ -1436,7 +1436,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'learn more') && !$has_learn_more) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Learn more');
           $has_learn_more = TRUE;
           $changed = TRUE;
@@ -1444,7 +1444,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'visit') && !$has_visit) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Visit');
           $has_visit = TRUE;
           $changed = TRUE;
@@ -1452,7 +1452,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'advisories') && !$has_advisories) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Advisories');
           $has_advisories = TRUE;
           $changed = TRUE;
@@ -1460,7 +1460,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'by the numbers') && !$has_data) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Data');
           $has_data = TRUE;
           $changed = TRUE;
@@ -1468,7 +1468,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'initiatives') && !$has_initiatives) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Initiatives');
           $has_initiatives = TRUE;
           $changed = TRUE;
@@ -1476,7 +1476,7 @@ function mass_content_org_node_navigation_helper($node) {
           continue;
         }
         if (str_contains($heading, 'priorities') && !$has_priorities) {
-          $section->set('field_show_in_org_navigation', 1);
+          $section->set('field_hide_in_org_navigation', 0);
           $section->set('field_org_navigation_jump_link_t', 'Priorities');
           $has_priorities = TRUE;
           $changed = TRUE;

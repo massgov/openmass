@@ -24,6 +24,7 @@
         {% if section_style == 'enhanced' %}
           {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
             "coloredHeadingFromLeft": {
+              "id": heading_id,
               "bgColor": "green",
               "title": (content.field_section_long_form_heading|field_value)
             }}

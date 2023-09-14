@@ -4,13 +4,13 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.org_section_long_form.field_hide_heading
+    - field.field.paragraph.org_section_long_form.field_hide_in_org_navigation
     - field.field.paragraph.org_section_long_form.field_org_navigation_jump_link_t
     - field.field.paragraph.org_section_long_form.field_section_long_form_content
     - field.field.paragraph.org_section_long_form.field_section_long_form_heading
     - field.field.paragraph.org_section_long_form.field_section_style
     - paragraphs.paragraphs_type.org_section_long_form
   module:
-    - conditional_fields
     - field_group
     - paragraphs
 third_party_settings:
@@ -21,7 +21,7 @@ third_party_settings:
       label: 'Section Content'
       region: content
       parent_name: ''
-      weight: 3
+      weight: 5
       format_type: details
       format_settings:
         classes: section-content
@@ -34,7 +34,7 @@ third_party_settings:
       label: 'Additional Resources'
       region: content
       parent_name: ''
-      weight: 4
+      weight: 6
       format_type: details
       format_settings:
         classes: ''
@@ -54,6 +54,13 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  field_hide_in_org_navigation:
+    type: boolean_checkbox
+    weight: 2
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_org_navigation_jump_link_t:
     type: string_textfield
     weight: 3
@@ -66,23 +73,6 @@ content:
         maxlength_js: 25
         maxlength_js_label: 'Keep as short as possible. Limit @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: true
-      conditional_fields:
-        6aeb01e2-c4bf-42a2-a7eb-1df948e10cb5:
-          entity_type: paragraph
-          bundle: org_section_long_form
-          dependee: field_show_in_org_navigation
-          settings:
-            state: visible
-            condition: checked
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              value: 1
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_section_long_form_content:
     type: entity_reference_paragraphs
     weight: 3
@@ -105,10 +95,11 @@ content:
     third_party_settings: {  }
   field_section_style:
     type: options_buttons
-    weight: 2
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_show_in_org_navigation: true
   status: true
