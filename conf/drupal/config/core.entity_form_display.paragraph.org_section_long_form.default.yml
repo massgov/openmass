@@ -7,8 +7,6 @@ dependencies:
     - field.field.paragraph.org_section_long_form.field_org_navigation_jump_link_t
     - field.field.paragraph.org_section_long_form.field_section_long_form_content
     - field.field.paragraph.org_section_long_form.field_section_long_form_heading
-    - field.field.paragraph.org_section_long_form.field_section_style
-    - field.field.paragraph.org_section_long_form.field_show_in_org_navigation
     - paragraphs.paragraphs_type.org_section_long_form
   module:
     - conditional_fields
@@ -22,7 +20,7 @@ third_party_settings:
       label: 'Section Content'
       region: content
       parent_name: ''
-      weight: 5
+      weight: 2
       format_type: details
       format_settings:
         classes: section-content
@@ -35,7 +33,7 @@ third_party_settings:
       label: 'Additional Resources'
       region: content
       parent_name: ''
-      weight: 6
+      weight: 3
       format_type: details
       format_settings:
         classes: ''
@@ -104,20 +102,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_section_style:
-    type: options_buttons
-    weight: 4
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_show_in_org_navigation:
-    type: boolean_checkbox
-    weight: 2
-    region: content
-    settings:
-      display_label: true
-    third_party_settings:
-      conditional_fields: {  }
 hidden:
   created: true
   status: true
