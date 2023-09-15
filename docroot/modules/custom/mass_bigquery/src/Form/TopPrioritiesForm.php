@@ -144,7 +144,7 @@ class TopPrioritiesForm extends FormBase {
     $url = Url::fromUri('internal:/admin/content/performance', $option)->toString();
 
     $prefix = '<h2>Content that needs attention</h2>';
-    $prefix .= "<p>These are your organization's 12 highest-trafficked pages with the high Nos per 1000 page views or broken links. You see more details by adjusting filters in our <a href=\"" . $url . "\">Content Performance</a> report.</p>";
+    $prefix .= "<p>These are your organization's highest-trafficked pages with broken links or a relatively high number of visitors reporting that they didn't find what they wanted. The red numbers below indicate where there is an issue and can be clicked for more details. Broken link data is updated weekly so any fixed links will not be removed from this report right away. You can see more details by adjusting filters in our <a href=\"" . $url . "\">Content Performance</a> report.</p>";
 
     $header = [
       'page_views' => [
