@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaWebContentBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'GovernmentBenefitsInfo' meta tag.
@@ -20,9 +20,14 @@ use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaWebContentBase;
  *   weight = 11,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = FALSE
+ *   multiple = FALSE,
+ *   property_type = "government_service",
+ *   tree_parent = {
+ *     "GovernmentService",
+ *   },
+ *   tree_depth = -1,
  * )
  */
-class SchemaSpecialAnnouncementGovernmentBenefitsInfo extends SchemaWebContentBase {
+class SchemaSpecialAnnouncementGovernmentBenefitsInfo extends SchemaNameBase {
 
 }

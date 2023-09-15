@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_event\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaDateBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'schema_event_start_date' meta tag.
@@ -16,9 +16,12 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaDateBase;
  *   weight = 1,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = FALSE
+ *   multiple = FALSE,
+ *   property_type = "date",
+ *   tree_parent = {},
+ *   tree_depth = 0
  * )
  */
-class SchemaEventStartDate extends SchemaDateBase {
+class SchemaEventStartDate extends SchemaNameBase {
 
 }
