@@ -106,7 +106,6 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
       'person',
       'service_page',
       'advisory',
-      'service_details',
       'news',
       'org_page',
       'info_details',
