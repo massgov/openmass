@@ -18,7 +18,6 @@ class ContentUrlTest extends ExistingSiteBase {
 
     // Test against different content types.
     $path_pattern_substring_by_type = [
-      "service_details" => "/service-details/",
       "decision" => "",
       "news" => "/news/",
       "service_page" => "",
@@ -75,7 +74,6 @@ class ContentUrlTest extends ExistingSiteBase {
 
     // Test against different content types.
     $path_pattern_substring_by_type = [
-      "service_details" => "/service-details/",
       "decision" => "",
       "news" => "/news/",
       "service_page" => "",
