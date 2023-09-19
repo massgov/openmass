@@ -11,6 +11,7 @@ dependencies:
     - paragraphs.paragraphs_type.featured_item_mosaic
     - paragraphs.paragraphs_type.featured_message
     - paragraphs.paragraphs_type.featured_topics
+    - paragraphs.paragraphs_type.flexible_link_group
     - paragraphs.paragraphs_type.iframe
     - paragraphs.paragraphs_type.image
     - paragraphs.paragraphs_type.info_details_card_group
@@ -28,7 +29,6 @@ dependencies:
     - paragraphs.paragraphs_type.stat
     - paragraphs.paragraphs_type.tableau_embed
     - paragraphs.paragraphs_type.video
-    - paragraphs.paragraphs_type.what_would_you_like_to_do
   module:
     - entity_reference_revisions
 id: paragraph.org_section_long_form.field_section_long_form_content
@@ -67,8 +67,8 @@ settings:
       stat: stat
       tableau_embed: tableau_embed
       video: video
-      what_would_you_like_to_do: what_would_you_like_to_do
       collection_search: collection_search
+      flexible_link_group: flexible_link_group
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -125,6 +125,9 @@ settings:
       advisory_section:
         weight: 39
         enabled: false
+      alert:
+        weight: 151
+        enabled: false
       board_member:
         weight: 40
         enabled: false
@@ -160,6 +163,9 @@ settings:
         enabled: false
       contact_info:
         weight: 48
+        enabled: false
+      contact_placeholder:
+        weight: 164
         enabled: false
       content_card_group:
         weight: 49
@@ -215,6 +221,9 @@ settings:
       file_download_single:
         weight: 63
         enabled: false
+      flexible_link_group:
+        weight: 183
+        enabled: true
       footnotes:
         weight: 64
         enabled: false
@@ -262,9 +271,6 @@ settings:
         enabled: false
       key_message_section:
         weight: 76
-        enabled: false
-      link_group:
-        weight: 77
         enabled: false
       link_group_accordion:
         weight: 90
@@ -413,6 +419,12 @@ settings:
       section_with_heading:
         weight: 117
         enabled: false
+      service_rich_text:
+        weight: 249
+        enabled: false
+      service_section:
+        weight: 250
+        enabled: false
       sitewide_alert_message:
         weight: 242
         enabled: false
@@ -440,6 +452,9 @@ settings:
       tableau_embed:
         weight: 20
         enabled: true
+      time_callout:
+        weight: 260
+        enabled: false
       video:
         weight: 21
         enabled: true
@@ -451,5 +466,5 @@ settings:
         enabled: false
       what_would_you_like_to_do:
         weight: 22
-        enabled: true
+        enabled: false
 field_type: entity_reference_revisions
