@@ -98,7 +98,6 @@ third_party_settings:
         - field_more_about_leadership
         - field_org_directory_page
         - field_career_opportunities
-        - field_application_login_links
         - field_public_records_link
         - field_get_updates_links
       label: 'Navigation menu'
@@ -108,9 +107,10 @@ third_party_settings:
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: closed
-        description: ''
+        description: '<p>IMPORTANT: Links in this tab no longer show up in a navigation menu. These will now appear at the bottom of your organization page in a special section labeled "[organization title] Information".  </p><p>We recommend that you <b>remove all links from this tab</b> and move them to other places on the page. Once all links are removed from this tab, the "[organization title] Information" section will no longer appear at the bottom of the page.</p>'
         required_fields: true
     group_overview:
       children:
@@ -118,6 +118,7 @@ third_party_settings:
         - field_hide_short_description
         - field_sub_brand
         - field_org_page_thumbnail
+        - field_application_login_links
         - field_social_links
         - field_intended_audience
         - field_parent
@@ -193,7 +194,7 @@ mode: default
 content:
   field_application_login_links:
     type: link_default
-    weight: 124
+    weight: 130
     region: content
     settings:
       placeholder_url: ''
@@ -255,7 +256,7 @@ content:
             selector: ''
   field_billing_organization:
     type: dynamic_entity_reference_options_select
-    weight: 133
+    weight: 134
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -316,7 +317,7 @@ content:
         maxlength_js_enforce: false
   field_get_updates_links:
     type: link_default
-    weight: 126
+    weight: 125
     region: content
     settings:
       placeholder_url: ''
@@ -339,7 +340,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 131
+    weight: 132
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -349,6 +350,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_more_about_agency_link:
     type: link_default
@@ -415,7 +417,7 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 132
+    weight: 133
     region: content
     settings:
       match_operator: CONTAINS
@@ -464,7 +466,7 @@ content:
     third_party_settings: {  }
   field_public_records_link:
     type: link_default
-    weight: 125
+    weight: 124
     region: content
     settings:
       placeholder_url: ''
@@ -528,7 +530,7 @@ content:
     third_party_settings: {  }
   field_social_links:
     type: link_default
-    weight: 130
+    weight: 131
     region: content
     settings:
       placeholder_url: ''
