@@ -1,25 +1,27 @@
-uuid: 6cc4ed01-e1e0-4daa-bb15-f7713dd2388d
+uuid: 8d1737ee-3194-4d11-ac03-423156b4e8fa
 langcode: en
 status: true
 dependencies:
   module:
-    - mass_bigquery
+    - mass_superset
     - system
   theme:
     - mass_admin_theme
-id: toppriorities_2
+id: toppriorities
 theme: mass_admin_theme
 region: content
-weight: -3
+weight: -2
 provider: null
-plugin: top_priorities_bigquery_block
+plugin: top_priorities_block
 settings:
-  id: top_priorities_bigquery_block
+  id: top_priorities_block
   label: 'Top Priorities'
   label_display: '0'
-  provider: mass_bigquery
+  provider: mass_superset
+  top_priorities_block_settings: null
 visibility:
   request_path:
     id: request_path
     negate: false
+    context_mapping: {  }
     pages: /admin/home
