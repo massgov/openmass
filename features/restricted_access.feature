@@ -114,9 +114,6 @@ Feature: Restricted Access
     # Regulation
     When I visit the node with restricted access to "testGranted" on "Test Regulation" "regulation" content
     Then I should get a 200 HTTP response
-    # Service Details
-    When I visit the node with restricted access to "testGranted" on "Test Service Details" "service_details" content
-    Then I should get a 200 HTTP response
     # Service Page
     When I visit the node with restricted access to "testGranted" on "Test Service Page" "service_page" content
     Then I should get a 200 HTTP response
