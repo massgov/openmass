@@ -65,6 +65,7 @@ This is a suggestion for how you can transition between branches when working on
 
 ```
 git checkout DP-8111-cool-branch-work
+composer install
 ahoy pull
 ahoy comi
 ahoy yarn
