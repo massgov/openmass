@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_translations\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -21,8 +22,6 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
-    $this->markTestIncomplete('@TODO: update for info details');
-
     parent::setUp();
 
     $user = User::create(['name' => $this->randomMachineName()]);
@@ -44,14 +43,10 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
    */
   public function getContent(): ContentEntityInterface {
     $node = $this->createNode([
-      'type' => 'service_details',
-      'title' => 'Test Service Details',
-      'field_service_detail_lede' => [
-        'value' => 'Test Lede',
-        'format' => 'basic_html',
-      ],
+      'type' => 'info_details',
+      'title' => 'Test Info Details',
       'field_organizations' => [$this->orgNode],
-      'moderation_state' => 'published',
+      'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     return $node;
@@ -65,16 +60,12 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
     unset($langcodes['en']);
     $langcode = array_rand($langcodes);
     $translation = $this->createNode([
-      'type' => 'service_details',
+      'type' => 'info_details',
       'title' => 'Test Service Details Translation',
       'langcode' => $langcode,
       'field_english_version' => [$node],
-      'field_service_detail_lede' => [
-        'value' => 'Test Lede',
-        'format' => 'basic_html',
-      ],
       'field_organizations' => [$this->orgNode],
-      'moderation_state' => 'published',
+      'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     return $translation;
