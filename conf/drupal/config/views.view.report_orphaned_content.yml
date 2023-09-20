@@ -35,6 +35,7 @@ dependencies:
     - content_moderation
     - csv_serialization
     - entity_usage
+    - mass_bigquery
     - mass_superset
     - mass_views
     - node
@@ -715,7 +716,7 @@ display:
           suffix: ''
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -1270,122 +1271,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '<='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
-            description: ''
-            use_operator: false
-            operator: score_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: score
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
       filter_groups:
         operator: AND
         groups:
@@ -2543,33 +2428,9 @@ display:
           plugin_id: language
           operator: in
           value:
-            en: en
-            es: es
-            zh-hans: zh-hans
-            vi: vi
-            pt-pt: pt-pt
-            ht: ht
-            ru: ru
-            km: km
-            ar: ar
-            fr: fr
-            cv: cv
-            ko: ko
-            it: it
-            af: af
-            lo: lo
-            uk: uk
-            pt-br: pt-br
-            hi: hi
-            ne: ne
-            sq: sq
-            pl: pl
-            zh-hant: zh-hant
-            so: so
-            am: am
-            el: el
+            '***LANGUAGE_site_default***': '***LANGUAGE_site_default***'
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: langcode_op
             label: Language
@@ -3545,7 +3406,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -3981,37 +3842,9 @@ display:
           plugin_id: language
           operator: in
           value:
-            en: en
-            es: es
-            zh-hans: zh-hans
-            zh-hant: zh-hant
-            pt-br: pt-br
-            pt-pt: pt-pt
-            fr: fr
-            ru: ru
-            ko: ko
-            vi: vi
-            ar: ar
-            it: it
-            cv: cv
-            ht: ht
-            pl: pl
-            lo: lo
-            km: km
-            af: af
-            sq: sq
-            am: am
-            hi: hi
-            ne: ne
-            so: so
-            uk: uk
-            el: el
-            sw: sw
-            pst: pst
-            prs: prs
-            hmn: hmn
+            '***LANGUAGE_site_default***': '***LANGUAGE_site_default***'
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: langcode_op
             label: Language
