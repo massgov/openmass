@@ -600,8 +600,13 @@ class Molecules {
 
       if ($type == 'address') {
         $address = Helper::formatAddress($entity->{$fields['value']}, $options);
+        if (!$entity->get('field_contact_directions_link')->isEmpty()) {
+          $item['link'] = $entity->field_contact_directions_link->uri;
+        }
+        else {
+          $item['link'] = 'https://maps.google.com/?q=' . urlencode($address);
+        }
         $item['value'] = $address;
-        $item['link'] = 'https://maps.google.com/?q=' . urlencode($address);
         $item['info'] = t('Get directions to ') . $address;
 
         // Respect first address provided if present.
