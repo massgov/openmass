@@ -98,7 +98,6 @@ third_party_settings:
         - field_more_about_leadership
         - field_org_directory_page
         - field_career_opportunities
-        - field_application_login_links
         - field_public_records_link
         - field_get_updates_links
       label: 'Navigation menu'
@@ -108,9 +107,10 @@ third_party_settings:
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: closed
-        description: ''
+        description: '<p>IMPORTANT: Links in this tab no longer show up in a navigation menu. These will now appear at the bottom of your organization page in a special section labeled "[organization title] Information".  </p><p>We recommend that you <b>remove all links from this tab</b> and move them to other places on the page. Once all links are removed from this tab, the "[organization title] Information" section will no longer appear at the bottom of the page.</p>'
         required_fields: true
     group_overview:
       children:
@@ -118,6 +118,7 @@ third_party_settings:
         - field_hide_short_description
         - field_sub_brand
         - field_org_page_thumbnail
+        - field_application_login_links
         - field_social_links
         - field_intended_audience
         - field_parent
@@ -175,16 +176,32 @@ third_party_settings:
     group_content:
       children:
         - field_organization_sections
+        - group_test_details
       label: Content
       region: content
       parent_name: group_node_edit_form
-      weight: 23
+      weight: 22
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: closed
         description: ''
+        required_fields: true
+    group_test_details:
+      children: {  }
+      label: 'Looking to modify the automatically generated information section?'
+      region: content
+      parent_name: group_content
+      weight: 17
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        open: true
+        description: 'This is an automatic section that appears only when there are links in the Navigation Menu tab. Any links there should be moved elsewhere on the page and then the automatic section will no longer appear.'
         required_fields: true
 id: node.org_page.default
 targetEntityType: node
@@ -193,7 +210,7 @@ mode: default
 content:
   field_application_login_links:
     type: link_default
-    weight: 124
+    weight: 130
     region: content
     settings:
       placeholder_url: ''
@@ -201,7 +218,7 @@ content:
     third_party_settings: {  }
   field_banner_image:
     type: image_image
-    weight: 11
+    weight: 10
     region: content
     settings:
       progress_indicator: throbber
@@ -255,7 +272,7 @@ content:
             selector: ''
   field_billing_organization:
     type: dynamic_entity_reference_options_select
-    weight: 133
+    weight: 135
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -273,7 +290,7 @@ content:
     third_party_settings: {  }
   field_career_opportunities:
     type: link_default
-    weight: 123
+    weight: 11
     region: content
     settings:
       placeholder_url: ''
@@ -316,7 +333,7 @@ content:
         maxlength_js_enforce: false
   field_get_updates_links:
     type: link_default
-    weight: 126
+    weight: 13
     region: content
     settings:
       placeholder_url: ''
@@ -331,7 +348,7 @@ content:
     third_party_settings: {  }
   field_image_credit:
     type: string_textfield
-    weight: 12
+    weight: 11
     region: content
     settings:
       size: 60
@@ -339,20 +356,21 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 131
+    weight: 133
     region: content
     settings: {  }
     third_party_settings: {  }
   field_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 3
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_more_about_agency_link:
     type: link_default
-    weight: 119
+    weight: 8
     region: content
     settings:
       placeholder_url: ''
@@ -360,7 +378,7 @@ content:
     third_party_settings: {  }
   field_more_about_leadership:
     type: entity_reference_autocomplete
-    weight: 120
+    weight: 9
     region: content
     settings:
       match_operator: CONTAINS
@@ -377,7 +395,7 @@ content:
     third_party_settings: {  }
   field_org_directory_page:
     type: link_default
-    weight: 121
+    weight: 10
     region: content
     settings:
       placeholder_url: ''
@@ -405,7 +423,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 14
+    weight: 13
     region: content
     settings:
       match_operator: CONTAINS
@@ -415,7 +433,7 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 132
+    weight: 134
     region: content
     settings:
       match_operator: CONTAINS
@@ -453,7 +471,7 @@ content:
             selector: ''
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 13
+    weight: 12
     region: content
     settings:
       match_operator: CONTAINS
@@ -464,7 +482,7 @@ content:
     third_party_settings: {  }
   field_public_records_link:
     type: link_default
-    weight: 125
+    weight: 12
     region: content
     settings:
       placeholder_url: ''
@@ -528,7 +546,7 @@ content:
     third_party_settings: {  }
   field_social_links:
     type: link_default
-    weight: 130
+    weight: 131
     region: content
     settings:
       placeholder_url: ''
@@ -567,14 +585,14 @@ content:
     third_party_settings: {  }
   field_urgent_warning:
     type: boolean_checkbox
-    weight: 109
+    weight: 110
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -597,20 +615,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 6
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -649,7 +667,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
