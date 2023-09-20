@@ -1,5 +1,26 @@
 
 
+## [0.374.0] - September 19, 2023
+
+### Changed
+  - DP-28339: D10 upgrade packages - tokens/metatag/schema_metatag/field_tokens.
+  - DP-28586: Remove non-English pages and docs from orphan reports (2)
+  - DP-28815: Org nav jump link change openmass implementation.
+  - DP-28823: D10 upgrade - pathologic, Components, Datalayer
+  - DP-28824: D10 upgrade - 3 jQuery UI modules.
+  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+  - DP-29614: Modify Content that needs attention component on /admin/home to use BigQuery data
+  - DP-29680: Link nos per k to feedback in Views
+  
+### Fixed
+  - DP-28586: PHPCS fix.
+  
+### Added
+  - DP-29014: Add a fixed org page component that appears below all sections above the footer.
+  - DP-29613: Add mg_organization and mg_parent_org metatags to promotional pages.
+  
+
+
 ## [0.373.0] - September 12, 2023
 
 ### Changed
