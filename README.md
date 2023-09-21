@@ -61,17 +61,15 @@ Anyone is welcome and encouraged to submit a pull request for this project. Memb
 
 ## Workflow
 
-This is a suggestion for how you can transition between branches when working on tickets. From outside the Docker environment, start by checking out the branch you will be working on:
+This is a suggestion for how you can transition between branches when working on tickets. From the host, run:
 
-| docker compose                                                     | ahoy          |
-| ------------------------------------------------------------------ | ------------- |
-| git checkout DP-8111-cool-branch-work                              | n/a           |
-| docker-compose down && docker-compose pull && docker-compose up -d | ahoy pull     |
-| docker-compose exec drupal composer install                        | ahoy comi     |
-| docker-compose exec drupal yarn                                    | ahoy yarn     |
-| docker-compose exec drupal scripts/ma-refresh-local --skip-db-prep | ahoy updatedb |
-
-
+```
+git checkout DP-8111-cool-branch-work
+ahoy pull
+ahoy comi
+ahoy yarn
+ahoy updatedb
+```
 
 ### Blackfire
 
