@@ -33,7 +33,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * @const string
    */
-  public const PHP_VERSION = '8.0';
+  public const PHP_VERSION = '8.2';
 
   var $site = 'prod:massgov';
 
