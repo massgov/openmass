@@ -4456,7 +4456,7 @@ function mass_theme_preprocess_page(&$variables) {
     $node = $variables['node'];
 
     // When loading a revision only the nid is returned. We need the object.
-    if (ctype_digit($node)) {
+    if (is_scalar($node)) {
       $node = Node::load($node);
     }
 
@@ -6421,7 +6421,7 @@ function mass_theme_theme_suggestions_page_alter(array &$suggestions, array $var
   $node = \Drupal::request()->attributes->get('node');
 
   // When loading a revision only the nid is returned. We need the object.
-  if (ctype_digit($node)) {
+  if (is_scalar($node)) {
     $node = Node::load($node);
   }
 
