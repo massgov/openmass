@@ -45,7 +45,7 @@ class Schemas {
   public static function prepareGovernmentOrganization(array $variables) {
     $metatags = Helper::addMetatagData(['description' => '']);
 
-    // @TODO find a shared location for this, we'll need them in every schema.
+    // @todo find a shared location for this, we'll need them in every schema.
     $current_path = Helper::getCurrentPathAlias();
     $hostname = \Drupal::request()->getSchemeAndHttpHost();
 

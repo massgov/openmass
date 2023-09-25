@@ -48,7 +48,7 @@ class MassMetatagAddress extends MetaNameBase {
             '#attributes' => [
               'name' => $this->name,
               'content' => $address_string,
-            ]
+            ],
           ];
         }
       }

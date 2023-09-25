@@ -3,7 +3,6 @@
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 
@@ -24,7 +23,7 @@ class CollectionsMetadataTest extends MetadataTestCase {
     $collection_term = $this->createTerm(Vocabulary::load('collections'), [
       'name' => 'TestTermCollection',
       'field_reusable_label' => [$label_term],
-      'field_url_name' => 'test-collection-label'
+      'field_url_name' => 'test-collection-label',
     ]);
 
     return $collection_term;
@@ -53,7 +52,7 @@ class CollectionsMetadataTest extends MetadataTestCase {
   public function getExpectedMetatags(ContentEntityInterface $entity) {
     $labels = \Drupal::service('token')->replace("[term:mass_term_labels]", ['term' => $entity]);
     return [
-      'mg_labels' => $labels
+      'mg_labels' => $labels,
     ];
   }
 

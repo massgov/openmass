@@ -23,7 +23,7 @@ class RouteSubscriber extends RouteSubscriberBase {
     }
     if ($route = $collection->get('view.news_curated_list.curated_news')) {
       $route->addRequirements([
-        'arg_0' => '\d+'
+        'arg_0' => '\d+',
       ]);
     }
   }

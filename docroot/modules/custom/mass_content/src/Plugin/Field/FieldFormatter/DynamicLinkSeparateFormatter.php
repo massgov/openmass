@@ -6,7 +6,6 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
 use Drupal\mass_content\Field\FieldType\DynamicLinkItem;
-use Drupal\mayflower\Helper;
 
 /**
  * Plugin implementation of the 'dynamic_link_separate' formatter.

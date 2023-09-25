@@ -2,8 +2,8 @@
 
 namespace Drupal\mayflower\Twig;
 
-use Twig\Loader\FilesystemLoader;
 use Twig\Error\LoaderError;
+use Twig\Loader\FilesystemLoader;
 
 /**
  * Twig loader to load Mayflower templates from the library.
@@ -17,7 +17,7 @@ class MayflowerLoader extends FilesystemLoader {
     'organisms' => '03-organisms',
     'templates' => '04-templates',
     'pages' => '05-pages',
-    'meta' => '07-meta'
+    'meta' => '07-meta',
   ];
 
   /**

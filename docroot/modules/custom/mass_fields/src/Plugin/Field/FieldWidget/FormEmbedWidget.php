@@ -3,8 +3,8 @@
 namespace Drupal\mass_fields\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\WidgetBase;
+use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**

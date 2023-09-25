@@ -2,7 +2,6 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaWebContentBase;
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**

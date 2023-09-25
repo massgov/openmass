@@ -3,7 +3,6 @@
 namespace Drupal\mass_schema_event\Plugin\metatag\Tag;
 
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageObjectBase;
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**

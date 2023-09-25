@@ -144,7 +144,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
   private function getContentTypesAndSelectorForSpecificAlerts() {
     $bundles = $this->getBundlesToTestAlerts();
 
-    // @todo: Still having issues to tests campaign_landing.
+    // @todo Still having issues to tests campaign_landing.
     $campaign_landing_key = array_search('campaign_landing', $bundles);
     if ($campaign_landing_key !== FALSE) {
       unset($bundles[$campaign_landing_key]);
