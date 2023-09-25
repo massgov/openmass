@@ -45,7 +45,11 @@
   * fetchs the social links from the containing node social field.
   */
 #}
-{% if socialLinksBar %}
+{% if social_links == true %}<p>social_links</p>{% endif %}
+{% if social_links %}<p>social_links not empty</p>{% endif %}
+{% if socialLinksBar == true %}<p>socialLinksBar</p>{% endif %}
+{% if socialLinksBar %}<p>socialLinksBar not empty</p>{% endif %}
+{% if socialLinksBar.level == true %}<p>socialLinksBar.level</p>{% endif %}
 {# {% if social_links %} #}
   {% embed "@organisms/by-author/social-links-bar.twig" with {
     "socialLinksBar": {
@@ -64,4 +68,4 @@
       }
     } %}
   {% endif %}
-{% endif %}
+{# {% endif %} #}
