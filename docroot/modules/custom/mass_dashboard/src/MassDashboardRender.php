@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_dashboard;
 
-use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\Core\Security\TrustedCallbackInterface;
 
 /**
  * Class to for our pre_render callbacks Because Drupal 9 wants us to do better.

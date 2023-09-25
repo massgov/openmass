@@ -3,7 +3,6 @@
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
-use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
  * Provides a plugin for the 'AnnouncementLocation' meta tag.

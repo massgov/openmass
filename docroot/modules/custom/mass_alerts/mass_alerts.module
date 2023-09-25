@@ -5,15 +5,14 @@
  * Contains mass_alerts.module.
  */
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Access\AccessResult;
-use Drupal\node\NodeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 
 const MASS_ALERTS_SCOPE_SITEWIDE = 'site_wide';
 const MASS_ALERTS_SCOPE_PAGE = 'specific_target_pages';

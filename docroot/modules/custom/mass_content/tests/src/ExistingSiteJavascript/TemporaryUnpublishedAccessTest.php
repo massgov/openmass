@@ -56,7 +56,7 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
         'field_content_card_link_cards' => [
           'uri' => 'http://test.card.example.com',
           'title' => 'Test Card',
-        ]
+        ],
       ]),
       'field_organizations' => [$org_node],
       'moderation_state' => 'unpublished',

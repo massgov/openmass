@@ -3,7 +3,6 @@
 namespace Drupal\mass_bigquery;
 
 use Google\Cloud\BigQuery\BigQueryClient as GoogleBigQueryClient;
-use GuzzleHttp\Client;
 
 /**
  * A small wrapper around Google's BigQueryClient.

@@ -44,8 +44,8 @@ class BackToContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
           'field_content_card_link_cards' => [
             'uri' => 'http://test.card',
             'title' => 'Test Card',
-          ]
-        ])
+          ],
+        ]),
       ],
       'status' => 0,
     ]);

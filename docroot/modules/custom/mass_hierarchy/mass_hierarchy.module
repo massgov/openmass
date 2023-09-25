@@ -151,7 +151,7 @@ function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
     $form['field_primary_parent']['breadcrumb'] = [
       '#type' => 'container',
       '#weight' => 100,
-      "#attributes" => ["class" => "form-item", "id" => "breadcrumb-preview-wrapper"]
+      "#attributes" => ["class" => "form-item", "id" => "breadcrumb-preview-wrapper"],
     ];
     // Add the #ajax property to the field widget.
     $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#ajax'] = [
@@ -213,7 +213,7 @@ function _mass_hierarchy_breadcrumb_ajax(array &$form, FormStateInterface $form_
       '#weight' => 100,
       "#attributes" => [
         "class" => "form-item",
-        "id" => "breadcrumb-preview-wrapper"
+        "id" => "breadcrumb-preview-wrapper",
       ],
       'block' => Drupal::service("entity_hierarchy.breadcrumb")
         ->build($route_match)

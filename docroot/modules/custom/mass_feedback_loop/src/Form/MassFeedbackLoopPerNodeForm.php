@@ -6,9 +6,9 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
+use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 
 /**
  * Class MassFeedbackLoopPerNodeController.
