@@ -6,9 +6,9 @@ namespace Drupal\mass_media\Plugin\Action;
 
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\file\Entity\File;
 use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
-use Drupal\file\Entity\File;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**

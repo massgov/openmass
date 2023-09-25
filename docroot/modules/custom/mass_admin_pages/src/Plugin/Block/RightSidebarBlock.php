@@ -2,11 +2,8 @@
 
 namespace Drupal\mass_admin_pages\Plugin\Block;
 
-use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Url;
 
 /**
  * Provides a block for the rigth sidebar text.

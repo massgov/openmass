@@ -47,7 +47,6 @@ class DynamicListByLabel extends QueryGeneratedDynamicEntityReferenceList {
 
     // At least one sort is required to avoid results moving around.
     // @see https://stackoverflow.com/a/23782691/1038565
-
     $queries = [];
     $queries['node'] = \Drupal::entityQuery('node')
       ->condition('field_reusable_label.entity.tid', $term_ids, 'IN')

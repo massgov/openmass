@@ -29,7 +29,7 @@ function mass_bigquery_cron() {
   // between start and end, queue the update of bigquery information.
   if (($last_run + $min_interval) < $time && $in_window) {
     \Drupal::state()->set('mass_bigquery.last_run', $time);
-    /* @var Drupal\mass_bigquery\BigqueryStorage $bigquery_storage */
+    /** @var Drupal\mass_bigquery\BigqueryStorage $bigquery_storage */
     $bigquery_storage = \Drupal::service('bigquery.storage');
     $bigquery_storage->queueAll();
   }

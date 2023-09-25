@@ -10,17 +10,17 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
-use Drupal\Core\Entity\EntityTypeInterface;
 
 const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
   ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
-  ScheduledTransition::OPTION_LATEST_REVISION => TRUE
+  ScheduledTransition::OPTION_LATEST_REVISION => TRUE,
 ];
 
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');

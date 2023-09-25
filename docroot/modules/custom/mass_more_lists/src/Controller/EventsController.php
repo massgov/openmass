@@ -59,7 +59,7 @@ class EventsController extends ControllerBase {
       if ($this->eventManager->getPastCount($node) > 0) {
         $more_link = [
           'text' => $node->bundle() === 'event' ? t('See past related events') : t('See past events'),
-          'href' => Url::fromRoute('mass_more_lists.events_past', ['node' => $node->id()])
+          'href' => Url::fromRoute('mass_more_lists.events_past', ['node' => $node->id()]),
         ];
       }
       $breadcrumb = $this->breadcrumb->build($this->routeMatch)->toRenderable();
@@ -71,8 +71,8 @@ class EventsController extends ControllerBase {
         '#related' => [
           [
             'text' => $node->label(),
-            'href' => $node->toUrl()
-          ]
+            'href' => $node->toUrl(),
+          ],
         ],
         '#breadcrumb' => $breadcrumb,
         '#organizations' => $organizations,
@@ -105,7 +105,7 @@ class EventsController extends ControllerBase {
       if ($this->eventManager->hasUpcoming($node)) {
         $more_link = [
           'text' => $node->bundle() === 'event' ? t('See all related events') : t('See upcoming events'),
-          'href' => Url::fromRoute('mass_more_lists.events_upcoming', ['node' => $node->id()])
+          'href' => Url::fromRoute('mass_more_lists.events_upcoming', ['node' => $node->id()]),
         ];
         // This should allow it to invalidate when a future event is finished.
         $metadata->setCacheMaxAge($this->eventManager->getMaxAge($node));
@@ -119,8 +119,8 @@ class EventsController extends ControllerBase {
         '#related' => [
           [
             'text' => $node->label(),
-            'href' => $node->toUrl()
-          ]
+            'href' => $node->toUrl(),
+          ],
         ],
         '#breadcrumb' => $breadcrumb,
         '#organizations' => $organizations,
