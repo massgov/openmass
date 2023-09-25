@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_formatters\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 
 /**
  * Plugin implementation of the 'text_length' formatter.

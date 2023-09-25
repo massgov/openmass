@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_entityreference\Element;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
 

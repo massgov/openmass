@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_schema_web_page\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 use Drupal\node\Entity\Node;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'schema_web_page_source_organization' metatag.

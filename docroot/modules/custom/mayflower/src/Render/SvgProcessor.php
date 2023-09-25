@@ -2,12 +2,12 @@
 
 namespace Drupal\mayflower\Render;
 
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
 use Drupal\Core\Render\HtmlResponse;
-use Drupal\views\Ajax\ViewAjaxResponse;
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\mayflower\Helper;
+use Drupal\views\Ajax\ViewAjaxResponse;
 
 /**
  * Response attachments processor to dump SVGs to a single block on the page.

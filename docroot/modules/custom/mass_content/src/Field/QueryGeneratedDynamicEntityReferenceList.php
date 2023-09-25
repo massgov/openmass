@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_content\Field;
 
-use Drupal\dynamic_entity_reference\Plugin\Field\FieldType\DynamicEntityReferenceFieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\dynamic_entity_reference\Plugin\Field\FieldType\DynamicEntityReferenceFieldItemList;
 
 /**
  * Build a computed entity reference field based on a query.
