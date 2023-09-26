@@ -9,9 +9,9 @@ use Drupal\Core\Link;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
+use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
-use Drupal\mass_content_api\DescendantManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

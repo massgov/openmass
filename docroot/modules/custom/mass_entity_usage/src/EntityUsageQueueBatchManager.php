@@ -2,12 +2,12 @@
 
 namespace Drupal\mass_entity_usage;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Manages Entity Usage integration with Batch API specifically for the queue.
@@ -164,7 +164,6 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
     if ($context['sandbox']['total'] > 0) {
       try {
         // Query entities in batches.
-
         $current_id = $context['sandbox']['current_item'];
         $result = $entity_storage->getQuery()
           ->condition($entity_type_key, $current_id, '>')

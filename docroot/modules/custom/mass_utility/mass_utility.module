@@ -5,29 +5,29 @@
  * Contains mass_utility.module.
  */
 
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\editor\Entity\Editor;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Extension\Extension;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\editor\Entity\Editor;
-use Drupal\link\LinkItemInterface;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\InvokeCommand;
-use Drupal\Core\Ajax\HtmlCommand;
-use Drupal\file\Entity\File;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\Extension\Extension;
-use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\link\LinkItemInterface;
 use Drupal\node\Entity\Node;
-use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\path_alias\PathAliasInterface;
-use Drupal\user\Entity\User;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -645,11 +645,21 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
  */
 function mass_utility_entity_embed_context_alter(array &$context, EntityInterface $entity) {
   if ($entity instanceof File) {
-    if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width' && isset($context['class'])) {
-      $context['class'] .= " half-width";
+    if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
+      if (isset($context['class'])) {
+        $context['class'] .= " half-width";
+      }
+      else {
+        $context['class'] = "align-none half-width";
+      }
     }
-    elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width' && isset($context['class'])) {
-      $context['class'] .= " full-width";
+    elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
+      if (isset($context['class'])) {
+        $context['class'] .= " full-width";
+      }
+      else {
+        $context['class'] = "align-none full-width";
+      }
     }
   }
 }

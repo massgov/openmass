@@ -2,8 +2,8 @@
 
 namespace Drupal\mayflower\Twig;
 
-use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Twig Extension to connect Mayflower.
