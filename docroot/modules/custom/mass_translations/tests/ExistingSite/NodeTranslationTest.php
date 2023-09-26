@@ -11,7 +11,7 @@ use weitzman\LoginTrait\LoginTrait;
 /**
  * Service Details translation tests.
  */
-class ServiceDetailsTranslationTest extends ExistingSiteBase {
+class NodeTranslationTest extends ExistingSiteBase {
 
   use LoginTrait;
 
