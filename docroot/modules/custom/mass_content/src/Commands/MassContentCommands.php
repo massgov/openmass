@@ -51,7 +51,7 @@ class MassContentCommands extends DrushCommands {
       'regulation' => 'field_regulation_last_updated',
       'rules' => 'field_rules_effective_date',
       'advisory' => 'field_advisory_date',
-      'news' => 'field_news_date'
+      'news' => 'field_news_date',
     ];
 
     // 1. Log the start of the script.

@@ -324,8 +324,8 @@ class DescendantStorage implements DescendantStorageInterface {
           ],
         ],
         'primary key' => [
-          'reporter_type', 'reporter_id'
-        ]
+          'reporter_type', 'reporter_id',
+        ],
       ],
     ];
     return $schema[$table];
