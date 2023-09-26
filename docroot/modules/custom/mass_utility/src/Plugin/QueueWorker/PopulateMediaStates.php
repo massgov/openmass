@@ -2,7 +2,6 @@
 
 namespace Drupal\mass_utility\Plugin\QueueWorker;
 
-use Drupal\Core\Database\IntegrityConstraintViolationException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;

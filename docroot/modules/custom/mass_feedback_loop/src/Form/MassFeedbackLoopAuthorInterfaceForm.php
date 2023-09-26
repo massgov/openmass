@@ -114,7 +114,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
         'placeholder' => "Start typing Organizations to filter by ...",
         'class' => ['use-selectize-autocomplete'],
       ],
-      // TODO split on comma, load array.
+      // @todo split on comma, load array.
       '#default_value' => isset($feedback_api_params['org_id']) ? $feedback_api_params['org_id'] : NULL,
     ];
 
@@ -124,7 +124,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#multiple' => TRUE,
       '#title' => $this->t('Author'),
       '#options' => $this->getAuthorUsernames(),
-      // TODO split on comma, load array.
+      // @todo split on comma, load array.
       '#default_value' => isset($feedback_api_params['author_id']) ? $feedback_api_params['author_id'] : NULL,
       '#attributes' => [
         'placeholder' => "Start typing Author usernames ...",
@@ -180,7 +180,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#options' => $label_select_list,
       '#attributes' => [
         'placeholder' => "Start typing labels to filter by ...",
-        'class' => ['use-selectize-autocomplete']
+        'class' => ['use-selectize-autocomplete'],
       ],
       // Updates form input with default value, if available.
       '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,

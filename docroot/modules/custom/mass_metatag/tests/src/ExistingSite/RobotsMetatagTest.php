@@ -2,10 +2,10 @@
 
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
-use Drupal\mass_content_moderation\MassModeration;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use Drupal\file\Entity\File;
+use Drupal\mass_content_moderation\MassModeration;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
+use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Robots metatag tests.

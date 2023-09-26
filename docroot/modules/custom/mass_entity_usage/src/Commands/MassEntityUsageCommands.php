@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_entity_usage\Commands;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drush\Commands\DrushCommands;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\mass_entity_usage\EntityUsageQueueBatchManager;
+use Drush\Commands\DrushCommands;
 
 /**
  * Mass Entity usage drush commands.

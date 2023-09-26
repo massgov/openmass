@@ -3,13 +3,13 @@
 namespace Drupal\mass_feedback_loop\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 use Drupal\Driver\Exception\Exception;
+use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
-use Drupal\Core\Url;
 
 /**
  * Class MassFeedbackCsvDownloadController.
@@ -75,7 +75,7 @@ class MassFeedbackCsvDownloadController extends ControllerBase {
         $feedback_page_url = $url->toString();
         return [
           '#type' => 'markup',
-          '#markup' => "No feedback data to export. <a href='$feedback_page_url'>Alter feedback search filters and try again</a>."
+          '#markup' => "No feedback data to export. <a href='$feedback_page_url'>Alter feedback search filters and try again</a>.",
         ];
       }
       else {
