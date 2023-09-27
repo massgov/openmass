@@ -1,23 +1,18 @@
 <?php
 
-use Drupal\media\Entity\Media;
-/**
- * @file
- * Contains mass_validation.module.
- */
-
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\WidgetInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
+use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
-use Drupal\Component\Utility\UrlHelper;
 
 /**
  * Implements hook_help().

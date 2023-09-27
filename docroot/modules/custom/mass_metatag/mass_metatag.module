@@ -413,7 +413,6 @@ function mass_metatag_page_attachments(array &$attachments) {
   // only if the current user is a logged in user of our product, and the
   // admin theme is active (which could be both admin routes, and non-frontend
   // non-admin routes.
-
   if (\Drupal::currentUser()->isAuthenticated() && \Drupal::service('theme.manager')->getActiveTheme()->getName() == 'mass_admin_theme') {
     $user = Drupal::currentUser();
     $user_entity = User::load($user->id());
@@ -434,16 +433,15 @@ function mass_metatag_page_attachments(array &$attachments) {
     //   or admin pages only because of how metatag module is designed.
     // - And after we did that work, dynamic cacheability would break
     //   Link: https://circleci.com/gh/massgov/mass/24841.
-
     $user_metatag_render_array = [
       [
         "#tag" => "meta",
         "#attributes" => [
           "name" => "mg_backend_user_id",
           "content" => $user->id(),
-        ]
+        ],
       ],
-      "mg_backend_user_id"
+      "mg_backend_user_id",
     ];
 
     $user_org_metatag_render_array = [
@@ -452,9 +450,9 @@ function mass_metatag_page_attachments(array &$attachments) {
         "#attributes" => [
           "name" => "mg_backend_user_org",
           "content" => isset($slugified_user_org) ? $slugified_user_org : "user-org-not-set",
-        ]
+        ],
       ],
-      "mg_backend_user_org"
+      "mg_backend_user_org",
     ];
 
     $attachments['#attached']['html_head'][] = $user_metatag_render_array;
@@ -531,7 +529,7 @@ function mass_metatag_dataformat(array &$attachments) {
  */
 function mass_metatag_datalayer_meta() {
   return [
-    'field_organizations'
+    'field_organizations',
   ];
 }
 
@@ -705,7 +703,7 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
     'rules' => 'field_rules_metatags',
     'service_page' => 'field_service_metatags',
     'service_details' => 'field_service_detail_metatags',
-    'topic_page' => 'field_topic_metatags'
+    'topic_page' => 'field_topic_metatags',
   ];
 
   // Hide the following metatags from the advanced section.

@@ -3,9 +3,9 @@
 namespace Drupal\mass_content;
 
 use Drupal\Core\TypedData\Plugin\DataType\StringData;
+use Drupal\field\Entity\FieldConfig;
 use Drupal\mass_content\Field\FieldType\DynamicLinkItem;
 use Drupal\mayflower\Helper;
-use Drupal\field\Entity\FieldConfig;
 
 /**
  * Computes a type for a link based on a content type to field mapping.

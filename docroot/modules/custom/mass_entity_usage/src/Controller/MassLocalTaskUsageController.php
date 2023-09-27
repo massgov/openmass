@@ -3,8 +3,6 @@
 namespace Drupal\mass_entity_usage\Controller;
 
 use Drupal\content_moderation\Entity\ContentModerationState;
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;

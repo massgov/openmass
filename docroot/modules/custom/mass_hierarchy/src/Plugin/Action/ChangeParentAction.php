@@ -3,9 +3,9 @@
 namespace Drupal\mass_hierarchy\Plugin\Action;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Changes a parent field with another, checking allowed parent types first.
