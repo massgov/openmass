@@ -550,7 +550,7 @@ class Organisms {
       // Use helper function to get the image url of a given image style.
       $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
     }
-    if ($entity->bundle() !== 'org_page') {
+    if ($entity->bundle() !== 'org_page' || $entity->bundle() !== 'topic_page') {
       $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
     }
 
