@@ -546,12 +546,14 @@ class Organisms {
     // Get pageBanner size, use as flag to determine image style.
     $pageBanner['layout'] = array_key_exists('layout', $options) ? $options['layout'] : '';
 
-    if ($entity->bundle() !== 'topic_page') {
+    if (isset($fields['bg_wide'])) {
       // Use helper function to get the image url of a given image style.
       $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
     }
-    if ($entity->bundle() !== 'org_page' || $entity->bundle() !== 'topic_page') {
-      $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    if ($entity->bundle() !== 'org_page') {
+      if (isset($fields['bg_narrow'])) {
+        $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+      }
     }
 
     // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
