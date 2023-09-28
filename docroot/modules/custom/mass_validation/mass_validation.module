@@ -46,9 +46,6 @@ function mass_validation_entity_type_alter(array &$entity_types) {
         $type->addConstraint('UnpublishParent');
         $type->addConstraint('PublishChildWithUnpublishedParent');
       }
-      else {
-        $type->addConstraint('ConditionallyRequireLinkGroupTitle');
-      }
     }
   }
 }
