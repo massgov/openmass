@@ -33,7 +33,7 @@ class TaxonomyTermUserOrganizationNormalizer extends ContentEntityNormalizer {
   /**
    * {@inheritdoc}
    */
-  public function supportsNormalization($data, $format = NULL) {
+  public function supportsNormalization($data, $format = NULL, $context = []): bool {
     // If we aren't dealing with an object or the format is not supported return
     // now.
     if (!is_object($data) || !$this->checkFormat($format)) {
@@ -50,7 +50,7 @@ class TaxonomyTermUserOrganizationNormalizer extends ContentEntityNormalizer {
   /**
    * {@inheritdoc}
    */
-  public function normalize($object, $format = NULL, array $context = []) {
+  public function normalize($object, $format = NULL, array $context = []): float|array|\ArrayObject|bool|int|string|null {
     $attributes = parent::normalize($object, $format, $context);
 
     // Keep only fields defined in context.
