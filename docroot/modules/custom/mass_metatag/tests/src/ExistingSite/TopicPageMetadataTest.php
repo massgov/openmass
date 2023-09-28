@@ -50,13 +50,9 @@ class TopicPageMetadataTest extends MetadataTestCase {
    * {@inheritdoc}
    */
   public function getExpectedMetatags(ContentEntityInterface $entity) {
-    $style = ImageStyle::load('large');
-    $large = $style->buildUrl('public://test.jpg');
     return array_merge(parent::getExpectedMetatags($entity), [
       'og:description' => 'Test Lede',
-      'og:image:url' => $large,
       'twitter:card' => 'summary_large_image',
-      'twitter:image' => $large,
       'twitter:description' => 'Test Lede',
     ]);
   }
@@ -74,12 +70,6 @@ class TopicPageMetadataTest extends MetadataTestCase {
         '@id' => $url . '#topic_page',
         'name' => $entity->label(),
         'description' => 'Test Lede',
-        'primaryImageOfPage' => [
-          [
-            '@type' => 'ImageObject',
-            'url' => $bare,
-          ],
-        ],
         'relatedLink' => [
           $entity->field_topic_ref_related_topics->entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
         ],
