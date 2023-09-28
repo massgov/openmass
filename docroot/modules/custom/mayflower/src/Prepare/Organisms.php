@@ -525,7 +525,6 @@ class Organisms {
       'bg_wide' => [
         'field_bg_wide',
         'field_service_bg_wide',
-        'field_topic_bg_wide',
       ],
       'bg_narrow' => [
         'field_bg_narrow',
