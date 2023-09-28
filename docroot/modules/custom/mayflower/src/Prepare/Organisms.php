@@ -552,11 +552,6 @@ class Organisms {
       $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
     }
 
-    if ($options['type'] == 'section landing') {
-      // Manually specified since we have potentially 4 image fields on topic_page.
-      $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, 'field_topic_section_bg_wide');
-    }
-
     // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
     if (isset($options['icon'])) {
       $pageBanner['icon'] = $options['icon'];
