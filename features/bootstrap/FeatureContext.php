@@ -2070,7 +2070,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
     $query->condition('title', $title);
     $query->range(0, 1);
     $query->sort('nid', 'DESC');
-    $exec = $query->execute();
+    $exec = $query->accessCheck(FALSE)->execute();
     $nid = reset($exec);
     return Node::load($nid);
   }

@@ -118,7 +118,7 @@ class EventManager {
       $query->range(0, $limit);
     }
 
-    return $this->getStorage()->loadMultiple($query->execute());
+    return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());
   }
 
   /**
@@ -141,7 +141,7 @@ class EventManager {
       $query->range(0, $limit);
     }
 
-    return $this->getStorage()->loadMultiple($query->execute());
+    return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());
   }
 
   /**
