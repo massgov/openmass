@@ -15,6 +15,8 @@ class ScheduledTransitionsTest extends ExistingSiteBase {
 
   const FORMAT = 'Y-m-d';
 
+  private \Drupal\user\Entity\User|false $author;
+
   /**
    * Create the user.
    */
