@@ -527,6 +527,9 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
       $element['title']['#description'] = t('A short call to action or invitation to read more. Should begin with a verb. If this is not filled out, the button will not render on the page. 50-character limit.');
       $element['title']['#title'] = t('Button text');
     }
+    elseif ($field_name == 'field_contact_directions_link') {
+      return;
+    }
     else {
       // Set link field descriptions for all other link fields.
       // Default description values.
