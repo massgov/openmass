@@ -45,8 +45,7 @@
   * fetchs the social links from the containing node social field.
   */
 #}
-
-{% if social_links|length > 17 %}
+{% if social_links|render is not empty %}
   {% embed "@organisms/by-author/social-links-bar.twig" with {
     "socialLinksBar": {
       "level": level
