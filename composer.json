@@ -23,7 +23,8 @@
             "drupal/core-project-message": true,
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "php-http/discovery": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "mglaman/composer-drupal-lenient": true
         }
     },
     "repositories": [
@@ -177,6 +178,7 @@
         "drupal/color": "^1",
         "drupal/components": "^3",
         "drupal/composer_deploy": "^1.4",
+        "drupal/conditional_fields": "4.0.0-alpha1",
         "drupal/config_ignore": "3.x-dev",
         "drupal/core-composer-scaffold": "^10",
         "drupal/core-project-message": "^10",
@@ -275,6 +277,7 @@
         "geocoder-php/open-cage-provider": "^4.4",
         "google/cloud-bigquery": "^1.25",
         "massgov/mayflower-artifacts": "dev-develop",
+        "mglaman/composer-drupal-lenient": "^1.0",
         "monolog/monolog": "^3",
         "phlak/semver": "^2.0",
         "symfony/dom-crawler": "^6",
@@ -442,6 +445,9 @@
             }
         },
         "composer-exit-on-patch-failure": true,
-        "composer-version": "^1"
+        "composer-version": "^1",
+        "drupal-lenient": {
+            "allowed-list": ["drupal/conditional_fields"]
+        }
     }
 }
