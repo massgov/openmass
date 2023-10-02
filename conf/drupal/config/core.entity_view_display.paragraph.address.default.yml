@@ -5,12 +5,14 @@ dependencies:
   config:
     - field.field.paragraph.address.field_address_address
     - field.field.paragraph.address.field_address_text
+    - field.field.paragraph.address.field_contact_directions_link
     - field.field.paragraph.address.field_geofield
     - field.field.paragraph.address.field_label
     - field.field.paragraph.address.field_lat_long
     - paragraphs.paragraphs_type.address
   module:
     - geofield
+    - link
     - mass_fields
 id: paragraph.address.default
 targetEntityType: paragraph
@@ -25,11 +27,24 @@ content:
     third_party_settings: {  }
     weight: 1
     region: content
+  field_contact_directions_link:
+    type: link
+    label: above
+    settings:
+      trim_length: null
+      url_only: true
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
+    weight: 3
+    region: content
   field_geofield:
     type: geofield_default
     label: above
     settings:
       output_format: wkt
+      output_escape: true
     third_party_settings: {  }
     weight: 2
     region: content
