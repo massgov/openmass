@@ -1,28 +1,22 @@
 <?php
 
-use Drupal\Core\Entity\EntityTypeInterface;
-/**
- * @file
- * Contains mass_fields.module.
- */
-
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
-use Drupal\Core\Entity\EntityPublishedInterface;
-use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_entity_insert().
@@ -896,87 +890,89 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
-    $paragraph_type = $paragraph_instance->bundle();
-    // Determine which paragraph type is being embedded.
-    switch ($paragraph_type) {
-      case 'collection_search':
-        $dependee_field_name = 'field_search_type';
-        $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
-          $element['#field_parents'][0],
-          $element['#field_parents'][1],
-          $paragraph_entity_reference_field_name,
-          $element['#delta'],
-          $dependee_field_name);
-
-        if ($paragraph_entity_reference_field_name == 'field_sections') {
-          $selector = sprintf('select[name="%s[%d][subform][%s]"]',
+    if ($paragraph_instance) {
+      $paragraph_type = $paragraph_instance->bundle();
+      // Determine which paragraph type is being embedded.
+      switch ($paragraph_type) {
+        case 'collection_search':
+          $dependee_field_name = 'field_search_type';
+          $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
+            $element['#field_parents'][0],
+            $element['#field_parents'][1],
             $paragraph_entity_reference_field_name,
             $element['#delta'],
             $dependee_field_name);
-        }
 
-        // Dependent fields.
-        $element['subform']['field_collection']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'collection'],
-          ],
-          'required' => [
-            $selector => ['value' => 'collection'],
-          ],
-        ];
+          if ($paragraph_entity_reference_field_name == 'field_sections') {
+            $selector = sprintf('select[name="%s[%d][subform][%s]"]',
+              $paragraph_entity_reference_field_name,
+              $element['#delta'],
+              $dependee_field_name);
+          }
 
-        // Dependent fields.
-        $element['subform']['field_search_site_url']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'external'],
-          ],
-          'required' => [
-            $selector => ['value' => 'external'],
-          ],
-        ];
+          // Dependent fields.
+          $element['subform']['field_collection']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'collection'],
+            ],
+            'required' => [
+              $selector => ['value' => 'collection'],
+            ],
+          ];
 
-        // Dependent fields.
-        $element['subform']['field_search_query_param_name']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'external'],
-          ],
-          'required' => [
-            $selector => ['value' => 'external'],
-          ],
-        ];
-        break;
+          // Dependent fields.
+          $element['subform']['field_search_site_url']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'external'],
+            ],
+            'required' => [
+              $selector => ['value' => 'external'],
+            ],
+          ];
 
-      case 'key_message_section':
-        $dependee_field_name = 'field_background_type';
-        $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          // Dependent fields.
+          $element['subform']['field_search_query_param_name']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'external'],
+            ],
+            'required' => [
+              $selector => ['value' => 'external'],
+            ],
+          ];
+          break;
 
-        // Dependent fields.
-        $element['subform']['field_image']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'image'],
-          ],
-          'required' => [
-            $selector => ['value' => 'image'],
-          ],
-        ];
+        case 'key_message_section':
+          $dependee_field_name = 'field_background_type';
+          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
 
-        $element['subform']['field_section_background_color']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'color'],
-          ],
-          'required' => [
-            $selector => ['value' => 'color'],
-          ],
-        ];
+          // Dependent fields.
+          $element['subform']['field_image']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'required' => [
+              $selector => ['value' => 'image'],
+            ],
+          ];
 
-        $element['subform']['field_section_text_overlay_color']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'image'],
-          ],
+          $element['subform']['field_section_background_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'color'],
+            ],
+            'required' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
 
-        ];
-        break;
+          $element['subform']['field_section_text_overlay_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
 
+          ];
+          break;
+
+      }
     }
   }
 }

@@ -5,9 +5,8 @@
  * Custom module providing custom styling for the admin_toolbar.
  */
 
-use Drupal\Core\Url;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\Core\Url;
 use Drupal\mass_admin_toolbar\MassAdminToolbarRender;
 
 /**
@@ -60,7 +59,7 @@ function mass_admin_toolbar_toolbar() {
     '#weight' => -50,
     '#wrapper_attributes' => [
       'class' => [
-        'admin-home-toolbar-tab'
+        'admin-home-toolbar-tab',
       ],
     ],
 
@@ -114,7 +113,7 @@ function mass_admin_toolbar_toolbar() {
     '#weight' => 0,
     '#wrapper_attributes' => [
       'class' => [
-        'add-content-toolbar-tab'
+        'add-content-toolbar-tab',
       ],
     ],
   ];
@@ -134,7 +133,7 @@ function mass_admin_toolbar_toolbar() {
     '#weight' => 5,
     '#wrapper_attributes' => [
       'class' => [
-        'add-document-toolbar-tab'
+        'add-document-toolbar-tab',
       ],
     ],
   ];

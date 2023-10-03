@@ -251,7 +251,7 @@ class EntityUsageTest extends ExistingSiteBase {
       'title' => 'TestOrg',
       'type' => 'org_page',
       'moderation_state' => MassModeration::PUBLISHED,
-      'status' => 1
+      'status' => 1,
     ]);
 
     $this->createNode([
@@ -264,7 +264,7 @@ class EntityUsageTest extends ExistingSiteBase {
       'field_primary_parent' => $new_test_org->id(),
       'field_organizations' => $new_test_org->id(),
       'moderation_state' => MassModeration::PUBLISHED,
-      'status' => 1
+      'status' => 1,
     ]);
 
     $this->processEntityUsageQueues();
@@ -289,7 +289,7 @@ class EntityUsageTest extends ExistingSiteBase {
     $organization_section = Paragraph::create([
       'type' => 'org_section_long_form',
       'field_section_long_form_content' => [
-        $rich_text
+        $rich_text,
       ],
     ]);
 

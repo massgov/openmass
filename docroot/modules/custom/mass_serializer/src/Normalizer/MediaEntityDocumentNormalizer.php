@@ -3,7 +3,6 @@
 namespace Drupal\mass_serializer\Normalizer;
 
 use Drupal\Core\Url;
-use Drupal\Component\Utility\Unicode;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;

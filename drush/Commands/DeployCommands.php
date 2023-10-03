@@ -33,7 +33,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * @const string
    */
-  public const PHP_VERSION = '8.0';
+  public const PHP_VERSION = '8.2';
 
   var $site = 'prod:massgov';
 
@@ -149,6 +149,28 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
+  /**
+   * Initiate an on-demand database backup via the Acquia API.
+   *
+   * @param string $target Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod.
+   *
+   * @usage drush ma:backup prod
+   *   Initiate a database backup in production.
+   *
+   * @command ma:backup
+   *
+   * @throws \Exception
+   */
+  public function createBackup($target) {
+    $env = $this->siteAliasManager()->getAlias($target);
+    $cloudapi = $this->getClient();
+    $backup = new DatabaseBackups($cloudapi);
+    $response = $backup->create($env->get('uuid'), 'massgov');
+    if ($response->message !== 'Creating the backup.') {
+      throw new \Exception('Failed to create a backup via Acquia Cloud API.');
+    }
+    $this->logger()->success('Backup initiated.');
+  }
 
   /**
    * Write the download link for the most recent database backup to stdout.

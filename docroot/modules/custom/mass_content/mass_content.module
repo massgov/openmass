@@ -1,5 +1,15 @@
 <?php
 
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
+use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
+use Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle;
 use Drupal\mass_content\Entity\Bundle\node\ActionBundle;
 use Drupal\mass_content\Entity\Bundle\node\AdvisoryBundle;
 use Drupal\mass_content\Entity\Bundle\node\AlertBundle;
@@ -8,8 +18,8 @@ use Drupal\mass_content\Entity\Bundle\node\CampaignLandingBundle;
 use Drupal\mass_content\Entity\Bundle\node\ContactInformationBundle;
 use Drupal\mass_content\Entity\Bundle\node\CuratedListBundle;
 use Drupal\mass_content\Entity\Bundle\node\DecisionBundle;
-use Drupal\mass_content\Entity\Bundle\node\DecisionTreeBundle;
 use Drupal\mass_content\Entity\Bundle\node\DecisionTreeBranchBundle;
+use Drupal\mass_content\Entity\Bundle\node\DecisionTreeBundle;
 use Drupal\mass_content\Entity\Bundle\node\DecisionTreeConclusionBundle;
 use Drupal\mass_content\Entity\Bundle\node\ErrorPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\EventBundle;
@@ -35,24 +45,7 @@ use Drupal\mass_content\Entity\Bundle\node\SitewideAlertBundle;
 use Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle;
 use Drupal\mass_content\Entity\Bundle\node\TopicPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\UtilityDrawerBundle;
-use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
-use Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle;
 use Drupal\mass_content\Entity\Bundle\user\UserBundle;
-/**
- * @file
- * Contains mass_content.module.
- */
-
-use Drupal\Core\Database\Query\AlterableInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\node\Entity\Node;
-use Drupal\file\Entity\File;
-use Drupal\taxonomy\Entity\Term;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -842,7 +835,7 @@ function _mass_content_collection_all_only_future_events(QueryPluginBase $query)
       [
         'field' => 'node__field_event_date.field_event_date_value',
         'value' => NULL,
-        'operator' => 'IS NULL'
+        'operator' => 'IS NULL',
       ],
       [
         'field' =>
@@ -850,7 +843,7 @@ function _mass_content_collection_all_only_future_events(QueryPluginBase $query)
         "DATE_FORMAT(('" . $now_formatted . "'), '%Y-%m-%d\T%H:%i:%s')",
         'value' => [],
         'operator' => 'formula',
-      ]
+      ],
     ],
   ];
 }

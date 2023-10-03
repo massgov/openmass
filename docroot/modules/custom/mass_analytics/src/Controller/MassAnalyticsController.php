@@ -27,7 +27,7 @@ class MassAnalyticsController extends ControllerBase {
     'campaign_landing',
     'decision',
     'executive_order',
-    'regulation'
+    'regulation',
   ];
 
   /**

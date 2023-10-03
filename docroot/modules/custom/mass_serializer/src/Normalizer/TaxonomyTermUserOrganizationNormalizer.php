@@ -3,8 +3,8 @@
 namespace Drupal\mass_serializer\Normalizer;
 
 use Drupal\Core\Url;
-use Drupal\taxonomy\TermInterface;
 use Drupal\serialization\Normalizer\ContentEntityNormalizer;
+use Drupal\taxonomy\TermInterface;
 
 /**
  * Converts the Drupal entity object structures to a normalized array.

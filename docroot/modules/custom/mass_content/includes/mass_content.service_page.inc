@@ -5,8 +5,8 @@
  * Functions needed for the migration of service_page data into dynamic sections.
  */
 
-use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\mayflower\Helper;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Helper function to check if paragraph of given type is already populated.

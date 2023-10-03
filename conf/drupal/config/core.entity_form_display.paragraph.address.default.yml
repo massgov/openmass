@@ -5,12 +5,14 @@ dependencies:
   config:
     - field.field.paragraph.address.field_address_address
     - field.field.paragraph.address.field_address_text
+    - field.field.paragraph.address.field_contact_directions_link
     - field.field.paragraph.address.field_geofield
     - field.field.paragraph.address.field_label
     - field.field.paragraph.address.field_lat_long
     - paragraphs.paragraphs_type.address
   module:
     - address
+    - link
 id: paragraph.address.default
 targetEntityType: paragraph
 bundle: address
@@ -22,6 +24,14 @@ content:
     region: content
     settings:
       default_country: null
+    third_party_settings: {  }
+  field_contact_directions_link:
+    type: link_default
+    weight: 2
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
     third_party_settings: {  }
   field_label:
     type: string_textfield

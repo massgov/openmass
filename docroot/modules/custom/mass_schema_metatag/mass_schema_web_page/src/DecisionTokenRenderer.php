@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\mass_schema_web_page;
 
-use Drupal\media\MediaInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\media\MediaInterface;
 use Drupal\node\NodeInterface;
 
 /**

@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_decision_tree\EventSubscriber;
 
-use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Drupal\Core\Url;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**

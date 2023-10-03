@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_styles\Plugin\views\style;
 
-use Drupal\views\Plugin\views\style\StylePluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\Plugin\views\style\StylePluginBase;
 
 /**
  * Style plugin for a view to render as mayflower Image Promos.

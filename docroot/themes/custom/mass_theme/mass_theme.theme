@@ -6,32 +6,32 @@
  */
 
 use Drupal\block\Entity\Block;
-use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\file\Entity\File;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\mass_content\EventsRendererOrgPages;
+use Drupal\mass_utility\RelatedToHelper;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
 use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Prepare\Schemas;
-use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\taxonomy\Entity\Term;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\DomCrawler\Crawler;
 use Drupal\schema_metatag\SchemaMetatagManager;
+use Drupal\taxonomy\Entity\Term;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme_suggestions_alter().
@@ -624,6 +624,23 @@ function mass_theme_preprocess_node_form_page(&$variables) {
 function mass_theme_preprocess_node_org_page(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     $node = $variables['node'];
+    if ($sections = $node->get('field_organization_sections')->referencedEntities()) {
+      $utility_service = \Drupal::service('mass_metatag.utilities');
+      $org_nav = [];
+      foreach ($sections as $section) {
+        if ($section->field_hide_in_org_navigation->value != TRUE && $section->field_hide_heading->value != TRUE) {
+          if (!empty($section->field_org_navigation_jump_link_t->value)) {
+            $text = $section->field_org_navigation_jump_link_t->value;
+            $id = 'org-nav-' . $utility_service->slugify($text);
+            $org_nav[] = [
+              'text' => $text,
+              'id' => $id,
+            ];
+          }
+        }
+      }
+      $variables['org_nav'] = $org_nav;
+    }
     $cache_tags = [];
 
     // Get the page title for title context.
@@ -1206,8 +1223,8 @@ function mass_theme_preprocess_node_location(&$variables) {
       'link' => [
         'text' => t("Directions"),
         'href' => $address_link,
-        'info' => ''
-      ]
+        'info' => '',
+      ],
     ];
 
     // Location subtitle.
@@ -1264,7 +1281,7 @@ function mass_theme_preprocess_node_location(&$variables) {
         }
 
         // For filterable icon/term types, create a tag.
-        // @TODO consider making the accepted values configurable.
+        // @todo consider making the accepted values configurable.
         if (in_array($sprite, ['wheelchair', 'open-now'])) {
           $title = $term->getName();
           $tags[] = [
@@ -1522,7 +1539,6 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     // Build contact section, if field is populated.
     if (!empty($fields['contact']) && Helper::isFieldPopulated($node, $fields['contact'])) {
       // Set up options for contact list.
-
       $contacts_title = t("Contact");
       $titleContext = t(' for @title', ['@title' => $page_title]);
 
@@ -2680,7 +2696,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
     $subCategory = [
       'title' => Helper::fieldFullView($node, $fields['subheading']),
       'level' => 3,
-      'tag' => 'div'
+      'tag' => 'div',
     ];
   }
 
@@ -3211,7 +3227,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_service_ref_guide_page_1') || Helper::isFieldPopulated($node, 'field_service_eligibility_info')) {
 
     // Set up static options for key actions component.
-    // @TODO see if we can use this field label instead of hard coding text.
+    // @todo see if we can use this field label instead of hard coding text.
     $keyActions_options = [
       'heading' => [
         'title' => t('First time? Start here.'),
@@ -4028,7 +4044,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
     $variables['hero800x400_image_url'] = ImageStyle::load('hero800x400')->buildUrl($node->field_featured_image->entity->getFileUri());
   }
 
-  // TODO: determine if we need another ImageStyle.
+  // @todo determine if we need another ImageStyle.
   if ($node->field_featured_mobile_image->entity) {
     $variables['mobile800x400_image_url'] = ImageStyle::load('hero800x400')->buildUrl($node->field_featured_mobile_image->entity->getFileUri());
   }
@@ -4439,7 +4455,7 @@ function mass_theme_preprocess_page(&$variables) {
     $node = $variables['node'];
 
     // When loading a revision only the nid is returned. We need the object.
-    if (ctype_digit($node)) {
+    if (is_scalar($node)) {
       $node = Node::load($node);
     }
 
@@ -4928,6 +4944,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
     $services = [
       'twitter',
       'facebook',
+      'threads',
       'flickr',
       'blog',
       'linkedin',
@@ -5999,7 +6016,7 @@ function mass_theme_preprocess_entity_embed_container(array &$variables) {
   // See docroot/themes/custom/mass_admin_theme/mass_admin_theme.theme:27
   // This code will prevent warnings for the content that already
   // has image_loading attribute set.
-  // @TODO Remove this code when entity_embed start supporting lazy loading attribute.
+  // @todo Remove this code when entity_embed start supporting lazy loading attribute.
   if (isset($variables['attributes']['data-entity-embed-display-settings']['image_loading'])) {
     unset($variables['attributes']['data-entity-embed-display-settings']['image_loading']);
   }
@@ -6403,7 +6420,7 @@ function mass_theme_theme_suggestions_page_alter(array &$suggestions, array $var
   $node = \Drupal::request()->attributes->get('node');
 
   // When loading a revision only the nid is returned. We need the object.
-  if (ctype_digit($node)) {
+  if (is_scalar($node)) {
     $node = Node::load($node);
   }
 
@@ -6417,7 +6434,7 @@ function mass_theme_theme_suggestions_page_alter(array &$suggestions, array $var
       'binder',
       'info_details',
       'guide_page',
-      'service_page'
+      'service_page',
     ];
     if (in_array($node->getType(), $without_main)) {
       array_splice($suggestions, 1, 0, 'page__node__without_main');
@@ -6602,7 +6619,7 @@ function mass_theme_googletranslate_options_languages() {
     'yo' => 'Yoruba',
     'zh-CN' => 'Chinese',
     'zh-TW' => 'Chinese, Traditional',
-    'zu' => 'Zulu'
+    'zu' => 'Zulu',
   ];
   return $language_codes;
 }
@@ -6854,6 +6871,7 @@ function mass_theme_preprocess_field__node__field_social_links(&$variables) {
   $services = [
     'twitter',
     'facebook',
+    'threads',
     'flickr',
     'blog',
     'linkedin',
@@ -6973,7 +6991,7 @@ function mass_theme_build_key_message_component(array &$variables) {
     'white' => 'c-white',
     'light_grey' => 'c-gray-lightest',
   ];
-  // @TODO: Setup the button style to pass through once the designs are ready.
+  // @todo Setup the button style to pass through once the designs are ready.
   if (!empty($paragraph->field_button->title)) {
     $button = $variables['elements']['field_button'][0];
     $variables['button']['text'] = $button['#title'];
@@ -7253,14 +7271,54 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
  * Groups different components together when necessary.
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+  $container = $variables['paragraph'];
+
+  $utility_service = \Drupal::service('mass_metatag.utilities');
+  if (!$container->get('field_org_navigation_jump_link_t')->isEmpty()) {
+    $id = 'org-nav-' . $utility_service->slugify($container->field_org_navigation_jump_link_t->value);
+  }
+  else {
+    $id = 'org-nav-' . $utility_service->slugify($container->field_section_long_form_heading->value);
+  }
+  $variables['heading_id'] = $id;
+  if (!$container->field_section_style->isEmpty()) {
+    $variables['section_style'] = $container->field_section_style->value;
+  }
+  $variables['hide_heading'] = $container->field_hide_heading->value;
   $variables["org_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
+  $links_group = [];
+  foreach ($variables['org_components'] as $key => &$org_component) {
+    /** @var Drupal\paragraphs\Entity\Paragraph */
+    $org_component_paragraph = &$org_component[0];
+    if (
+      is_object($org_component_paragraph) &&
+      $org_component_paragraph->getType() == 'flexible_link_group' &&
+      $org_component_paragraph->field_display_type->value == 'links'
+    ) {
+      $links_group[$key] = $org_component;
+    }
+    else {
+      _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables, 'org');
+      $links_group = [];
+    }
+  }
+
+  _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables, 'org');
+
+  // Removing elements included previously.
+  foreach ($variables['org_components'] as $key => &$org_component) {
+    if ($org_component === FALSE) {
+      unset($variables['org_components'][$key]);
+    }
+  }
 }
 
 /**
  * Join contiguous flexible link groups, type links, into the same element.
  */
-function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables) {
+function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables, $destination = 'service') {
+  $component_name = $destination . '_components';
   if (count($links_group) < 2) {
     return;
   }
@@ -7270,10 +7328,10 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables['service_components'][$first][0]->subsequent_links[] = $link_group[0];
+    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
 
     // Empty elements included previously.
-    $variables['service_components'][$key] = FALSE;
+    $variables[$component_name][$key] = FALSE;
   }
   $links_group = [];
 }
@@ -7481,7 +7539,7 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
         "position" => $key + 1,
         "item" => [
           "@id" => $link['url'],
-          "name" => $link['text']
+          "name" => $link['text'],
         ],
       ];
     }

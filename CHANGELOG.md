@@ -1,5 +1,82 @@
 
 
+## [0.375.0] - September 26, 2023
+
+### Changed
+  - DP-27211: Upgrade to PHP 8.2
+  - DP-28587: Rename Alert feature on Info Details, Guide content types to "Highlight"
+  - DP-29773: Help text and field layout changes to accomodate org nav change.
+  - DP-29804: Disallow new or cloned location details pages.
+  - DP-29828: Use PHP 8.2 at CircleCI for several jobs (use newer drupal-container)
+  
+### Security
+  - DP-29825: Drupal core update from version 9.5.10 to 9.5.11.
+  
+
+
+## [0.374.0] - September 19, 2023
+
+### Changed
+  - DP-28339: D10 upgrade packages - tokens/metatag/schema_metatag/field_tokens.
+  - DP-28586: Remove non-English pages and docs from orphan reports (2)
+  - DP-28815: Org nav jump link change openmass implementation.
+  - DP-28823: D10 upgrade - pathologic, Components, Datalayer
+  - DP-28824: D10 upgrade - 3 jQuery UI modules.
+  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+  - DP-29614: Modify Content that needs attention component on /admin/home to use BigQuery data
+  - DP-29680: Link nos per k to feedback in Views
+  
+### Fixed
+  - DP-28586: PHPCS fix.
+  
+### Added
+  - DP-29014: Add a fixed org page component that appears below all sections above the footer.
+  - DP-29613: Add mg_organization and mg_parent_org metatags to promotional pages.
+  
+
+
+## [0.373.0] - September 12, 2023
+
+### Changed
+  - DP-28608: Replace superset data in views with data from bigquery
+  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+  - DP-29416: Replace Twitter logo with new 'X' logo and add Threads logo
+  - DP-29553: Remove service details pages from visual regression testing in backstop.
+  - DP-29559: Role permissions changed to allow all authors and editors access to new analytics tab without tester role. Cleanup of tester role permissions.
+  
+### Fixed
+  - DP-29493: Fix default domain URLs from service detail migration
+  - DP-29536: Fixed Tugboat builds.
+  - DP-29600: Fixed suggested page item link covering the whole page.
+  - DP-29649: Correct spelling issue in address error.
+  
+### Added
+  - Avoid redirect to install.php when DB is down
+  
+
+
+## [0.372.0] - September 5, 2023
+
+### Changed
+  - DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
+  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+  - DP-288257: Consolidate two Drush commands into one - ma:heal-references-to-trash
+  - DP-28842: Drupal 10 compat - Update Entity Embed and LinkIt
+  - DP-29492: Config change to load Google Tag manager in all paths including author paths.
+  
+### Removed
+  - DP-26154: Remove testing of service_details pages
+  
+### Fixed
+  - DP-28622: Export report of orphaned pages fixed.
+  - DP-29391: Fix flagging for migrated service details pages.
+  
+### Added
+  - DP-29259: Add metadata field mg_parent_org.
+  - DP-29392: Add drush ma:backup command for starting an on-demand DB backup.
+  
+
+
 ## [0.371.0] - August 15, 2023
 
 ### Changed

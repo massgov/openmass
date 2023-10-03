@@ -2,11 +2,11 @@
 
 namespace Drupal\mayflower\Prepare;
 
-use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
 /**
@@ -525,11 +525,9 @@ class Organisms {
       'bg_wide' => [
         'field_bg_wide',
         'field_service_bg_wide',
-        'field_topic_bg_wide',
       ],
       'bg_narrow' => [
         'field_bg_narrow',
-        'field_topic_bg_narrow',
       ],
       'description' => ['field_lede', 'field_topic_lede', 'field_service_lede'],
     ];
@@ -548,17 +546,13 @@ class Organisms {
     // Get pageBanner size, use as flag to determine image style.
     $pageBanner['layout'] = array_key_exists('layout', $options) ? $options['layout'] : '';
 
-    // Use helper function to get the image url of a given image style.
-    $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
-    if ($entity->bundle() !== 'org_page') {
-      $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    if (isset($fields['bg_wide'])) {
+      // Use helper function to get the image url of a given image style.
+      $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
     }
-
-    if ($options['type'] == 'section landing') {
-      // Manually specified since we have potentially 4 image fields on topic_page.
-      $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, 'field_topic_section_bg_wide');
-      if (Helper::isFieldPopulated($entity, 'field_topic_section_bg_narrow')) {
-        $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, 'field_topic_section_bg_narrow');
+    if ($entity->bundle() !== 'org_page') {
+      if (isset($fields['bg_narrow'])) {
+        $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
       }
     }
 

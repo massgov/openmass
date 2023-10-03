@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_content_moderation\Plugin\Action;
 
-use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Restore Action to move items from Trash to Unpublished state.
