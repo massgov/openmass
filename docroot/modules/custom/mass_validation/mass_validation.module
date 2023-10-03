@@ -283,9 +283,10 @@ function mass_validation_entity_presave(EntityInterface $entity) {
     }
 
     if ($type === 'fee') {
-      $fee = $entity->field_fee_fee->value;
-      // Remove any non-integers except the decimal.
-      $fee = preg_replace('/[^\d|\.]/', '', $fee);
+      if ($fee = $entity->field_fee_fee->value) {
+        // Remove any non-integers except the decimal.
+        $fee = preg_replace('/[^\d|\.]/', '', $fee);
+      }
       $entity->set('field_fee_fee', $fee);
     }
   }

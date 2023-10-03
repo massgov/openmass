@@ -7277,7 +7277,7 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   if (!$container->get('field_org_navigation_jump_link_t')->isEmpty()) {
     $id = 'org-nav-' . $utility_service->slugify($container->field_org_navigation_jump_link_t->value);
   }
-  elseif (!$container->field_section_long_form_heading->value->isEmpty()) {
+  elseif (!$container->field_section_long_form_heading->isEmpty()) {
     $id = 'org-nav-' . $utility_service->slugify($container->field_section_long_form_heading->value);
   }
   $variables['heading_id'] = $id ?? 'unknown';
