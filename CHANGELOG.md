@@ -1,5 +1,28 @@
 
 
+## [0.376.0] - October 3, 2023
+
+### Changed
+  - DP-28040: Updated Conditional Fields module.
+  - DP-28514: Add a condition to render social media links only when its content is available.
+  - DP-28724: Add validation to require at least one paragraph in an org section.
+  - DP-29103: Update Media Entity Download CKEditor plugin patch for D10.
+  
+### Removed
+  - DP-29329: Delete unused fields on Topic page.
+  
+### Added
+  - DP-29648: Add directions override link to contact content type.
+  
+### Fixed
+  - DP-29830: Fixed paragraph buttons positioning.
+  - DP-29834: Location pages not appearing in XML sitemap.
+  
+### Security
+  - DP-29839: Update 'office hours' module.
+  
+
+
 ## [0.375.0] - September 26, 2023
 
 ### Changed
