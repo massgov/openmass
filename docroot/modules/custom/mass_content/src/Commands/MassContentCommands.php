@@ -5,13 +5,11 @@ namespace Drupal\mass_content\Commands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\path_alias\AliasManagerInterface;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 
