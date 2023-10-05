@@ -249,7 +249,7 @@ class MassContentCommands extends DrushCommands {
     $rows = [];
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-    
+
     $entity_names = ['node_type', 'paragraphs_type'];
     foreach ($entity_names as $entity_name) {
       if ($entity_name == 'node_type') {
