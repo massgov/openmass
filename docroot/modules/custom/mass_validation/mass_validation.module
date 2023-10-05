@@ -1134,7 +1134,6 @@ function mass_validation_form_node_topic_page_form_alter(&$form, FormStateInterf
  *   The form array passed by reference.
  */
 function mass_validation_topic_page_alter_helper(array &$form) {
-  $form['#attached']['library'][] = 'mass_validation/topic_page_edit_form';
   $form['#validate'][] = '_mass_validation_form_node_topic_page_form_validate';
 }
 
@@ -1142,16 +1141,6 @@ function mass_validation_topic_page_alter_helper(array &$form) {
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_topic_page_form_validate(array &$form, FormStateInterface $form_state) {
-  if ($form_state->hasValue('field_topic_type')) {
-    $subtype = $form_state->getValue('field_topic_type');
-    if ($subtype[0]['value'] == 'topic') {
-      $lede = $form_state->getValue('field_topic_lede');
-      if (empty($lede[0]['value'])) {
-        $form_state->setErrorByName('field_topic_lede', t('The Short Description is required.'));
-      }
-    }
-  }
-
   // Verify links have titles.
   _mass_validation_mass_link_validate_paragraph($form_state, 'field_topic_content_cards', ['field_content_card_link_cards']);
 

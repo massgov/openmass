@@ -40,17 +40,12 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
       'type' => 'org_page',
       'title' => 'Test Org Page',
     ]);
-    $image = File::create([
-      'uri' => 'public://test.jpg',
-    ]);
-    $this->markEntityForCleanup($image);
 
     // Create topic page.
     $node = $this->createNode([
       'type' => 'topic_page',
       'title' => 'Test',
       'field_topic_lede' => 'Short description',
-      'field_topic_bg_wide' => $image,
       'field_topic_content_cards' => Paragraph::create([
         'type' => 'content_card_group',
         'field_content_card_link_cards' => [
