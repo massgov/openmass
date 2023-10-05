@@ -3,9 +3,11 @@
 namespace Drupal\mass_content\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Url;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mayflower\Helper;
 use Drupal\path_alias\AliasManagerInterface;
@@ -277,8 +279,30 @@ class MassContentCommands extends DrushCommands {
                   foreach ($list as $delta => $item) {
                     $values[$delta] = $item->getValue();
                     $value = $item->getValue()['value'];
-                    $newString = preg_replace_callback('/\/node\/\d+/', [$this, 'replaceRawURL'], $value);
-                    $values[$delta]['value'] = $newString;
+                    $dom = Html::load($value);
+                    $xpath = new \DOMXPath($dom);
+                    // or starts-with(@href, '/media/')
+                    foreach ($xpath->query("//a[starts-with(@href, '/media/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
+                      $route = Url::fromUri('internal:' . $element->getAttribute('href'))->getRouteParameters();
+                      if ($route) {
+                        if ($nid = $route['node']) {
+                          $node = $this->entityTypeManager->getStorage('node')->load($nid);
+                          $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
+                          if ($alias) {
+                            $href_url = parse_url($element->getAttribute('href'));
+                            $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                            $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                            $element->setAttribute('data-entity-uuid', $node->uuid());
+                            $element->setAttribute('data-entity-substitution', 'canonical');
+                            $element->setAttribute('data-entity-type', 'node');
+                            $element->setAttribute('href', $alias . $query . $anchor);
+                          }
+                        }
+                      }
+                    }
+
+                    $replaced = Html::serialize($dom);
+                    $values[$delta]['value'] = $replaced;
                   }
                   $result = [
                     'success' => 'No',
@@ -350,22 +374,6 @@ class MassContentCommands extends DrushCommands {
     }
 
     return $bundles;
-  }
-
-  /**
-   * Load and return alias from entity id.
-   */
-  public function replaceRawURL($matches) {
-    $alias_manager = \Drupal::service('path_alias.manager');
-
-    // Load the alias for the Entity ID.
-    $alias = $alias_manager->getAliasByPath($matches[0]);
-    if ($alias) {
-      return $alias;
-    }
-    else {
-      return $matches[0];
-    }
   }
 
 }
