@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mayflower\Helper;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\path_alias\AliasManagerInterface;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
@@ -273,8 +274,10 @@ class MassContentCommands extends DrushCommands {
                 $entities = $this->entityTypeManager->getStorage($entity_storage_name)->loadMultiple($entity_ids);
                 foreach ($entities as $entity) {
                   $changed = FALSE;
-                  if (Helper::isParagraphOrphan($entity)) {
-                    continue;
+                  if ($entity instanceof Paragraph) {
+                    if (Helper::isParagraphOrphan($entity)) {
+                      continue;
+                    }
                   }
                   $list = $entity->get($field_name);
                   foreach ($list as $delta => $item) {
