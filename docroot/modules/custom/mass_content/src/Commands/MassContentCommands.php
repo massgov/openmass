@@ -272,6 +272,7 @@ class MassContentCommands extends DrushCommands {
               if ($entity_ids) {
                 $entities = $this->entityTypeManager->getStorage($entity_storage_name)->loadMultiple($entity_ids);
                 foreach ($entities as $entity) {
+                  $changed = FALSE;
                   if (Helper::isParagraphOrphan($entity)) {
                     continue;
                   }
@@ -281,21 +282,24 @@ class MassContentCommands extends DrushCommands {
                     $value = $item->getValue()['value'];
                     $dom = Html::load($value);
                     $xpath = new \DOMXPath($dom);
-                    // or starts-with(@href, '/media/')
-                    foreach ($xpath->query("//a[starts-with(@href, '/media/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
+                    foreach ($xpath->query("//a[starts-with(@href, '/node/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
                       $route = Url::fromUri('internal:' . $element->getAttribute('href'))->getRouteParameters();
                       if ($route) {
                         if ($nid = $route['node']) {
                           $node = $this->entityTypeManager->getStorage('node')->load($nid);
-                          $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
-                          if ($alias) {
-                            $href_url = parse_url($element->getAttribute('href'));
-                            $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
-                            $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
-                            $element->setAttribute('data-entity-uuid', $node->uuid());
-                            $element->setAttribute('data-entity-substitution', 'canonical');
-                            $element->setAttribute('data-entity-type', 'node');
-                            $element->setAttribute('href', $alias . $query . $anchor);
+                          if ($node) {
+                            $alias = \Drupal::service('path_alias.manager')
+                              ->getAliasByPath($element->getAttribute('href'));
+                            if ($alias) {
+                              $changed = TRUE;
+                              $href_url = parse_url($element->getAttribute('href'));
+                              $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                              $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                              $element->setAttribute('data-entity-uuid', $node->uuid());
+                              $element->setAttribute('data-entity-substitution', 'canonical');
+                              $element->setAttribute('data-entity-type', 'node');
+                              $element->setAttribute('href', $alias . $query . $anchor);
+                            }
                           }
                         }
                       }
@@ -304,50 +308,52 @@ class MassContentCommands extends DrushCommands {
                     $replaced = Html::serialize($dom);
                     $values[$delta]['value'] = $replaced;
                   }
-                  $result = [
-                    'success' => 'No',
-                    'entity_type' => $entity_storage_name,
-                    'entity_bundle' => $type,
-                    'entity_id' => $entity->id(),
-                    'field_name' => $field_name,
-                    'parent_id' => 'N/A',
-                    'parent_type' => 'N/A',
-                    'parent_bundle' => 'N/A',
-                  ];
-                  if (!Drush::simulate()) {
-                    if (method_exists($entity, 'setRevisionLogMessage')) {
-                      $entity->setNewRevision();
-                      $entity->setRevisionLogMessage('Revision created to fix plain node links.');
-                      $entity->setRevisionCreationTime(\Drupal::time()
-                        ->getRequestTime());
-                    }
-                    $entity->set($field_name, $values);
-                    $entity->save();
-                    \Drupal::service('cache_tags.invalidator')->invalidateTags($entity->getCacheTagsToInvalidate());
-                    $parent = $entity;
-                    // Climb up to find a non-paragraph parent.
-                    while (method_exists($parent, 'getParentEntity')) {
-                      $parent = $parent->getParentEntity();
-                      if (!$parent->isPublished()) {
-                        continue 2;
+                  if ($changed) {
+                    $result = [
+                      'success' => 'No',
+                      'entity_type' => $entity_storage_name,
+                      'entity_bundle' => $type,
+                      'entity_id' => $entity->id(),
+                      'field_name' => $field_name,
+                      'parent_id' => 'N/A',
+                      'parent_type' => 'N/A',
+                      'parent_bundle' => 'N/A',
+                    ];
+                    if (!Drush::simulate()) {
+                      if (method_exists($entity, 'setRevisionLogMessage')) {
+                        $entity->setNewRevision();
+                        $entity->setRevisionLogMessage('Revision created to fix plain node links.');
+                        $entity->setRevisionCreationTime(\Drupal::time()
+                          ->getRequestTime());
                       }
-                    }
-                    $result['success'] = 'Yes';
-                  }
-                  else {
-                    $parent = $entity;
-                    // Climb up to find a non-paragraph parent.
-                    while (method_exists($parent, 'getParentEntity')) {
-                      $parent = $parent->getParentEntity();
-                      if (!$parent->isPublished()) {
-                        continue 2;
+                      $entity->set($field_name, $values);
+                      $entity->save();
+                      \Drupal::service('cache_tags.invalidator')->invalidateTags($entity->getCacheTagsToInvalidate());
+                      $parent = $entity;
+                      // Climb up to find a non-paragraph parent.
+                      while (method_exists($parent, 'getParentEntity')) {
+                        $parent = $parent->getParentEntity();
+                        if (!$parent->isPublished()) {
+                          continue 2;
+                        }
                       }
+                      $result['success'] = 'Yes';
                     }
-                    $result['parent_id'] = $parent->id();
-                    $result['parent_type'] = $parent->getEntityTypeId();
-                    $result['parent_bundle'] = $parent->bundle();
+                    else {
+                      $parent = $entity;
+                      // Climb up to find a non-paragraph parent.
+                      while (method_exists($parent, 'getParentEntity')) {
+                        $parent = $parent->getParentEntity();
+                        if (!$parent->isPublished()) {
+                          continue 2;
+                        }
+                      }
+                      $result['parent_id'] = $parent->id();
+                      $result['parent_type'] = $parent->getEntityTypeId();
+                      $result['parent_bundle'] = $parent->bundle();
+                    }
+                    $rows[] = $result;
                   }
-                  $rows[] = $result;
                 }
 
               }
