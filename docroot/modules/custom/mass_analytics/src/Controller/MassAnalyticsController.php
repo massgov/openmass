@@ -36,13 +36,16 @@ class MassAnalyticsController extends ControllerBase {
    * @param \Drupal\node\NodeInterface $node
    *   The upcasted node object.
    *
+   * https://lookerstudio.google.com/u/0/reporting/7343c8c0-498b-494f-af6f-1244db5a2a8b/page/p_pwa746kf6c?params=%7B"nodeId":5376,"nodeId2":5376%7D
+   * 
+   * 
    * @return array
    *   The iframe render array or a no match message render array.
    */
   public function build(NodeInterface $node): array {
     $config = $this->config('mass_analytics.settings');
     if (!empty($config->get('looker_studio_url'))) {
-      $iframe_url = $config->get('looker_studio_url') . '?params=%7B"nodeId":' . $node->id() . '%7D';
+      $iframe_url = $config->get('looker_studio_url') . '?params=%7B"nodeId":' . $node->id() . ',"nodeId2":' . $node->id() . '%7D';
       return [
         '#theme' => 'route_iframe',
         '#config' => $iframe_url,
