@@ -36,8 +36,6 @@ class MassAnalyticsController extends ControllerBase {
    * @param \Drupal\node\NodeInterface $node
    *   The upcasted node object.
    *
-   * 
-   * 
    * @return array
    *   The iframe render array or a no match message render array.
    */
