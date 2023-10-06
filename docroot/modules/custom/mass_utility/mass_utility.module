@@ -12,6 +12,7 @@ use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\editor\Entity\Editor;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\Extension;
@@ -637,6 +638,30 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
       if ($original_path = $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['value']['#default_value']) {
         $image_path = \Drupal::service('file_url_generator')->generateAbsoluteString($original_path);
         $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['#prefix'] = '<p><div class="photo-preview"><img src=' . $image_path . '/></div></p>';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_embed_context_alter().
+ */
+function mass_utility_entity_embed_context_alter(array &$context, EntityInterface $entity) {
+  if ($entity instanceof File) {
+    if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
+      if (isset($context['class'])) {
+        $context['class'] .= " half-width";
+      }
+      else {
+        $context['class'] = "align-none half-width";
+      }
+    }
+    elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
+      if (isset($context['class'])) {
+        $context['class'] .= " full-width";
+      }
+      else {
+        $context['class'] = "align-none full-width";
       }
     }
   }
@@ -1369,4 +1394,11 @@ function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_i
   if (isset($form['simple_sitemap'])) {
     $form['simple_sitemap']['#access'] = FALSE;
   }
+}
+
+/**
+ * Implements hook_ckeditor_css_alter().
+ */
+function mass_utility_ckeditor_css_alter(array &$css, Editor $editor) {
+  $css[] = \Drupal::service('extension.list.module')->getPath('mass_utility') . '/css/ckeditor.css';
 }
