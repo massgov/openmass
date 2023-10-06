@@ -36,7 +36,6 @@ class MassAnalyticsController extends ControllerBase {
    * @param \Drupal\node\NodeInterface $node
    *   The upcasted node object.
    *
-   * https://lookerstudio.google.com/u/0/reporting/7343c8c0-498b-494f-af6f-1244db5a2a8b/page/p_pwa746kf6c?params=%7B"nodeId":5376,"nodeId2":5376%7D
    * 
    * 
    * @return array
