@@ -53,7 +53,7 @@ class MassHierarchyRouteMatch implements RouteMatchInterface {
    * {@inheritdoc}
    */
   public function getParameter($name) {
-    return $this->parameters[$name] ?? null;
+    return $this->parameters[$name] ?? NULL;
   }
 
   /**
@@ -62,4 +62,5 @@ class MassHierarchyRouteMatch implements RouteMatchInterface {
   public function setParameter($name, $value) {
     return $this->parameters[$name] = $value;
   }
+
 }
