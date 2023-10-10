@@ -1,5 +1,22 @@
 
 
+## [0.377.0] - October 10, 2023
+
+### Changed
+  - DP-29104: Remove the lightest font-weight globally. Space out and bump up font-weight scale evenly to better show visual hierarchy. Remove styling overrides on telephone links, so they appear as other contact links.
+  - DP-30033: Adding duplicate querystring parameter to looker URL to support multiple datasources.
+  
+### Added
+  - DP-29554: Report view for info details pages. Help text updates for login field
+  
+### Removed
+  - DP-29606: Remove service details content type.
+  
+### Fixed
+  - DP-29955: Fix edit form sidebar buttons position.
+  
+
+
 ## [0.376.0] - October 3, 2023
 
 ### Changed
