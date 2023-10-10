@@ -288,7 +288,6 @@ class MassContentCommands extends DrushCommands {
                       $pattern = '/\d+/';
                       if (preg_match($pattern, $element->getAttribute('href'), $matches)) {
                         if ($nid = $matches[0]) {
-                          dump($nid);
                           $node = $this->entityTypeManager->getStorage('node')->load($nid);
                           if ($node) {
                             $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
