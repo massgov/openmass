@@ -6,7 +6,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Url;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -286,13 +285,13 @@ class MassContentCommands extends DrushCommands {
                     $dom = Html::load($value);
                     $xpath = new \DOMXPath($dom);
                     foreach ($xpath->query("//a[starts-with(@href, '/node/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
-                      $route = Url::fromUri('internal:' . $element->getAttribute('href'))->getRouteParameters();
-                      if ($route) {
-                        if ($nid = $route['node']) {
+                      $pattern = '/\d+/';
+                      if (preg_match($pattern, $element->getAttribute('href'), $matches)) {
+                        if ($nid = $matches[0]) {
+                          dump($nid);
                           $node = $this->entityTypeManager->getStorage('node')->load($nid);
                           if ($node) {
-                            $alias = \Drupal::service('path_alias.manager')
-                              ->getAliasByPath($element->getAttribute('href'));
+                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
                             if ($alias) {
                               $changed = TRUE;
                               $href_url = parse_url($element->getAttribute('href'));
