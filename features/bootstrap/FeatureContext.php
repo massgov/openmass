@@ -12,7 +12,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Drupal\node\Entity\Node;
 use GuzzleHttp\Psr7\Uri;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**

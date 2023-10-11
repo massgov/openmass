@@ -19,7 +19,7 @@ use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 /**
  * Class DeployCommands.
