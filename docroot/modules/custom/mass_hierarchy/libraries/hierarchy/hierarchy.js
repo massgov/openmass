@@ -4,7 +4,7 @@
   Drupal.behaviors.massHierarchy = {
     attach: function (context, settings) {
       // Caching elements and setting vars.
-      var $form = $('form[id^=node][id$="-entity-hierarchy-reorder-form"]');
+      var $form = $('form[id^=node][id$="-entity-hierarchy-reorder-form"]', context);
       var $table = $('#edit-children', $form);
       var parentId = jQuery('tr.hierarchy-row', $table).eq(0).find('.child-parent').val();
       var wrongBundleMessageId = 'hierarchy-node-wrong-bundle-message';
@@ -279,12 +279,13 @@
         }
 
         // Count new rows with errors.
-        var newRowsWithErrors =
-          $table.find('tr.hierarchy-row--parent-bundle-is-wrong')
-            .once('hierarchyAlert').addClass('hierarchy-row--alerted').length;
-
-        if (!newRowsWithErrors) {
+        const newRowsWithErrors = $(once('hierarchyAlert', 'form[id^=node][id$="-entity-hierarchy-reorder-form"] #edit-children tr.hierarchy-row--parent-bundle-is-wrong', context));
+        if (!newRowsWithErrors.length) {
           return;
+        } else {
+          newRowsWithErrors.each(function () {
+            $(this).addClass('hierarchy-row--alerted');
+          });
         }
 
         $('main').before(alertBoxWrapper);
@@ -375,10 +376,11 @@
 
       // Centralized way to apply expand/collapse events once.
       function applyEventsToHierarchyControls() {
-        $('tr.hierarchy-row', $table)
-          .once('hierarchy-expand-collapse')
-          .find('.hierarchy-row-controls')
-          .click(toggleRowClickEvent);
+        const $elements = $(once('hierarchy-expand-collapse', 'form[id^=node][id$="-entity-hierarchy-reorder-form"] #edit-children tr.hierarchy-row', context));
+        $elements.each(function () {
+          $(this).find('.hierarchy-row-controls')
+            .click(toggleRowClickEvent);
+        });
       }
 
       applyEventsToHierarchyControls();
