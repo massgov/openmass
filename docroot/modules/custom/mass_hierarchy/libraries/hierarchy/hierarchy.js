@@ -389,4 +389,4 @@
       $form.submit(doOnSubmit);
     }
   };
-}) (jQuery, Drupal);
+})(jQuery, Drupal);
