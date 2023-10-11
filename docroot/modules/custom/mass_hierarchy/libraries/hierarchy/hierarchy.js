@@ -282,7 +282,8 @@
         var newRowsWithErrors = $(once('hierarchyAlert', 'form[id^=node][id$="-entity-hierarchy-reorder-form"] #edit-children tr.hierarchy-row--parent-bundle-is-wrong', context));
         if (!newRowsWithErrors.length) {
           return;
-        } else {
+        }
+        else {
           newRowsWithErrors.each(function () {
             $(this).addClass('hierarchy-row--alerted');
           });
@@ -387,6 +388,5 @@
       $(document).on('touchend mouseup pointerup', doOnDrag);
       $form.submit(doOnSubmit);
     }
-  }
-
+  };
 }) (jQuery, Drupal);
