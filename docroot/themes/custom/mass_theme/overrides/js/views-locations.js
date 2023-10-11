@@ -8,7 +8,7 @@
   Drupal.behaviors.viewsLocations = {
     attach: function (context, settings) {
       // We hook off of the document-level view ajax event
-      const $elements = $(once('view-locations', document));
+      var $elements = $(once('view-locations', document));
       $elements.each(function () {
         $(this).ajaxComplete(function (e, xhr, settings) {
           if (settings.url === '/views/ajax?_wrapper_format=drupal_ajax') {

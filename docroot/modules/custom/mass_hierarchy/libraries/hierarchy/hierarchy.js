@@ -279,7 +279,7 @@
         }
 
         // Count new rows with errors.
-        const newRowsWithErrors = $(once('hierarchyAlert', 'form[id^=node][id$="-entity-hierarchy-reorder-form"] #edit-children tr.hierarchy-row--parent-bundle-is-wrong', context));
+        var newRowsWithErrors = $(once('hierarchyAlert', 'form[id^=node][id$="-entity-hierarchy-reorder-form"] #edit-children tr.hierarchy-row--parent-bundle-is-wrong', context));
         if (!newRowsWithErrors.length) {
           return;
         } else {
@@ -376,7 +376,7 @@
 
       // Centralized way to apply expand/collapse events once.
       function applyEventsToHierarchyControls() {
-        const $elements = $(once('hierarchy-expand-collapse', 'form[id^=node][id$="-entity-hierarchy-reorder-form"] #edit-children tr.hierarchy-row', context));
+        var $elements = $(once('hierarchy-expand-collapse', 'form[id^=node][id$="-entity-hierarchy-reorder-form"] #edit-children tr.hierarchy-row', context));
         $elements.each(function () {
           $(this).find('.hierarchy-row-controls')
             .click(toggleRowClickEvent);

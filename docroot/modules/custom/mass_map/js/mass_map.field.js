@@ -12,7 +12,7 @@
       var locations = drupalSettings.locations;
 
       // Using once() to apply the myCustomBehaviour effect when you want to do just run one function.
-      const $elements = $(once('js-google-map', '.js-google-map', context));
+      var $elements = $(once('js-google-map', '.js-google-map', context));
       $elements.each(function () {
         $(this).addClass('mass-map-processed');
         // Set the height so the map is visible.

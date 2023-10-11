@@ -12,7 +12,7 @@
   Drupal.behaviors.ajaxViewsExt = {
     attach: function (context, settings) {
       // We hook off of the document-level view ajax event
-      const $elements = $(once('views-ajax', document));
+      var $elements = $(once('views-ajax', document));
       $elements.each(function () {
         $(this).ajaxComplete(function (e, xhr, settings) {
           xhr.done(function () {
