@@ -321,7 +321,7 @@
       }
 
       // Render the templates for the root node.
-      const $elements = $(once('decisionTreeInit', 'div.main-content', context));
+      var $elements = $(once('decisionTreeInit', 'div.main-content', context));
       $elements.each(function (index) {
         onHashChange();
       });

@@ -7,7 +7,7 @@
 
   Drupal.behaviors.fileInputButton = {
     attach: function (context, settings) {
-      const $surrogateButtons = $(once('surrogate-buttons', 'button.mass-input-file', context));
+      var $surrogateButtons = $(once('surrogate-buttons', 'button.mass-input-file', context));
       $surrogateButtons.each(function () {
         $(this).after('<span class="no-file-chosen">No file chosen</span>')
           .on('click', function (event) {
