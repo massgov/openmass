@@ -2,58 +2,29 @@
 
 namespace Drupal\mass_hierarchy;
 
-use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Routing\CurrentRouteMatch;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Custom RouteMatch class which includes setter method.
  */
-class MassHierarchyRouteMatch implements RouteMatchInterface {
+class MassHierarchyRouteMatch extends CurrentRouteMatch {
 
   /**
-   * {@inheritdoc}
+   * Constructs a CurrentRouteMatch object.
+   *
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+   *   The request stack.
    */
-  protected array $parameters;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRouteName(): string {
-    return 'entity.node.canonical';
+  public function __construct(RequestStack $request_stack) {
+    parent::__construct($request_stack);
   }
 
   /**
-   * {@inheritdoc}
+   * Getter method to get the parameter we want.
    */
-  public function getRawParameter($parameter_name) {
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getParameters() {
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRawParameters() {
-    return $this->parameters;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRouteObject() {
-    return NULL;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getParameter($name) {
-    return $this->parameters[$name] ?? NULL;
+  public function getParameter($parameter_name) {
+    return $this->parameters[$parameter_name] ?? NULL;
   }
 
   /**
