@@ -17,7 +17,6 @@ class ContentUrlTest extends ExistingSiteBase {
     // configured pattern, but along with a "---unpublished" string suffix.
     // Test against different content types.
     $path_pattern_substring_by_type = [
-      "service_details" => "/service-details/",
       "decision" => "",
       "news" => "/news/",
       "service_page" => "",
@@ -72,7 +71,6 @@ class ContentUrlTest extends ExistingSiteBase {
     // configured pattern, WITHOUT any "---unpublished" string in it.
     // Test against different content types.
     $path_pattern_substring_by_type = [
-      "service_details" => "/service-details/",
       "decision" => "",
       "news" => "/news/",
       "service_page" => "",
