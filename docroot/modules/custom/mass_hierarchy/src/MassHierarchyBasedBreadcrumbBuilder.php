@@ -47,8 +47,8 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     $breadcrumb = new Breadcrumb();
     $breadcrumb->addCacheContexts(['route']);
     /** @var \Drupal\Core\Entity\ContentEntityInterface $route_entity */
-    if (isset($route_match->parent_node)) {
-      $route_entity = $route_match->parent_node;
+    if (!empty($route_match->getParameter('parent_node'))) {
+      $route_entity = $route_match->getParameter('parent_node');
     }
     elseif ($route_match->getRouteName() == "view.locations.page") {
       // Views argument upcasting is still an issue in Drupal core.
