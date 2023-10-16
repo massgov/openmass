@@ -589,7 +589,6 @@ function _mass_validation_form_node_location_details_form_validate(array &$form,
     foreach ($sections as $key => $section) {
       if (array_key_exists('subform', $section)) {
 
-        // qaq
         $paragraph_error_string = 'field_location_details_sections][' . $key . '][subform]';
         _mass_validation_validate_custom_iframe($form_state, $section, $paragraph_error_string);
 
