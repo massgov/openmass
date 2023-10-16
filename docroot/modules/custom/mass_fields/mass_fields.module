@@ -865,16 +865,16 @@ function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInter
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
-function mass_fields_field_widget_entity_reference_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
+function mass_fields_field_widget_single_element_entity_reference_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
-function mass_fields_field_widget_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
+function mass_fields_field_widget_single_element_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
 }
 
@@ -886,7 +886,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
 
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
@@ -894,6 +894,31 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
       $paragraph_type = $paragraph_instance->bundle();
       // Determine which paragraph type is being embedded.
       switch ($paragraph_type) {
+        case 'flexible_link_group':
+          $dependee_field_name = 'field_display_type';
+          $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
+            $element['#field_parents'][0],
+            $element['#field_parents'][1],
+            $paragraph_entity_reference_field_name,
+            $element['#delta'],
+            $dependee_field_name);
+          // Dependent fields.
+          $element['subform']['field_featured']['#states'] = [
+            'invisible' => [
+              $selector => ['value' => 'links'],
+            ],
+          ];
+          $element['subform']['field_group_expanded']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'links'],
+            ],
+          ];
+          $element['subform']['field_flexible_link_group_title']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'links'],
+            ],
+          ];
+          break;
         case 'collection_search':
           $dependee_field_name = 'field_search_type';
           $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
@@ -941,6 +966,43 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
           ];
           break;
 
+        case 'iframe':
+          $dependee_field_name = 'field_iframe_height_config';
+          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+
+          // Dependent fields.
+          $element['subform']['field_verify_iframe_100_confirm']['widget']['value']['#states'] = [
+            'required' => [
+              $selector => ['value' => '100'],
+            ],
+          ];
+          $element['subform']['field_verify_iframe_100_confirm']['#states'] = [
+            'visible' => [
+              $selector => ['value' => '100'],
+            ],
+          ];
+          $element['subform']['field_aspect_ratio']['widget']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'ratio'],
+            ],
+          ];
+          $element['subform']['field_aspect_ratio']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'ratio'],
+            ],
+          ];
+
+          $element['subform']['field_height']['widget'][0]['value']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'fixed'],
+            ],
+          ];
+          $element['subform']['field_height']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'fixed'],
+            ],
+          ];
+          break;
         case 'key_message_section':
           $dependee_field_name = 'field_background_type';
           $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
