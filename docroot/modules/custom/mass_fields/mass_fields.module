@@ -886,7 +886,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
 
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
@@ -894,6 +894,20 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
       $paragraph_type = $paragraph_instance->bundle();
       // Determine which paragraph type is being embedded.
       switch ($paragraph_type) {
+        case 'org_section_long_form':
+          $dependee_field_name = 'field_hide_heading';
+          $selector = sprintf('input[name="%s[%d][subform][%s][value]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          $element['subform']['field_hide_in_org_navigation']['#states'] = [
+            'invisible' => [
+              $selector => ['checked' => TRUE],
+            ],
+          ];
+          $element['subform']['field_org_navigation_jump_link_t']['#states'] = [
+            'invisible' => [
+              $selector => ['checked' => TRUE],
+            ],
+          ];
+          break;
         case 'flexible_link_group':
           $dependee_field_name = 'field_display_type';
           $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
