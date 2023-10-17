@@ -1,5 +1,23 @@
 
 
+## [0.378.0] - October 17, 2023
+
+### Changed
+  - DP-25894: Set consistent border to table cells.
+  - DP-29849: Accessibility error fix for the org. nav.
+  
+### Fixed
+  - DP-29882: Fix raw "node" links in content.
+  - DP-29961: D10 upgrade - Parent node dynamic property warning fix.
+  
+### Removed
+  - DP-30076: Remove old analytics dashboards from Drupal.
+  
+### Added
+  - DP-30228: Add Farsi language
+  
+
+
 ## [0.377.0] - October 10, 2023
 
 ### Changed
