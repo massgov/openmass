@@ -275,6 +275,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             $org_names[$key] = str_replace("-", "", $value);
           }
 
+          $org_names = array_unique($org_names);
           // Separate the organizations with a comma.
           $replacements[$original] = implode(',', $org_names);
           break;
@@ -288,6 +289,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             $org_names[$key] = str_replace("-", "", $value);
           }
 
+          $org_names = array_unique($org_names);
           // Separate the organizations with a comma.
           $replacements[$original] = implode(',', $org_names);
           break;
