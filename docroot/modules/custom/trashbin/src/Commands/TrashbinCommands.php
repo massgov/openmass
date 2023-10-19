@@ -12,33 +12,25 @@ class TrashbinCommands extends DrushCommands {
 
   const TRASHBIN_ONLY_TRASH = 'trashbin_only_trash';
 
-  /**
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
   private EntityTypeManagerInterface $etm;
-
-  /**
-   * @var \Drupal\Component\Datetime\TimeInterface
-   */
   private TimeInterface $time;
 
   public function __construct(EntityTypeManagerInterface $etm, TimeInterface $time) {
-
     $this->etm = $etm;
     $this->time = $time;
   }
 
   /**
-   * Delete up to 1000 entities that have been in the bin for more than 180 days.
-   *
-   * Use --simulate option to geta report of what would be deleted.
+   * Delete content entities that have been in the bin for more than n days.
    *
    * @param $entity_type
    *  Entity type to purge.
    * @option $max
    *   Maximum number of entities to delete.
    * @option $days-ago
-   *    Number of days that the item must be unchanged in the trashbin.
+   *   Number of days that the item must be unchanged in the trashbin.
+   * @usage drush --simulate trashbin:purge
+   *   Get a report of what would be purged.
    *
    * @command trashbin:purge
    */
@@ -61,36 +53,5 @@ class TrashbinCommands extends DrushCommands {
         $entity->delete();
       }
     }
-  }
-
-  /**
-   * An example of the table output format.
-   *
-   * @param array $options An associative array of options whose values come from cli, aliases, config, etc.
-   *
-   * @field-labels
-   *   group: Group
-   *   token: Token
-   *   name: Name
-   * @default-fields group,token,name
-   *
-   * @command trashbin:token
-   * @aliases token
-   *
-   * @filter-default-field name
-   * @return \Consolidation\OutputFormatters\StructuredData\RowsOfFields
-   */
-  public function token($options = ['format' => 'table']) {
-    $all = \Drupal::token()->getInfo();
-    foreach ($all['tokens'] as $group => $tokens) {
-      foreach ($tokens as $key => $token) {
-        $rows[] = [
-          'group' => $group,
-          'token' => $key,
-          'name' => $token['name'],
-        ];
-      }
-    }
-    return new RowsOfFields($rows);
   }
 }
