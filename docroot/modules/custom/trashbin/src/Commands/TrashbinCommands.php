@@ -29,7 +29,7 @@ class TrashbinCommands extends DrushCommands {
    *   Maximum number of entities to delete.
    * @option $days-ago
    *   Number of days that the item must be unchanged in the trashbin.
-   * @usage drush --simulate trashbin:purge
+   * @usage drush --simulate trashbin:purge node
    *   Get a report of what would be purged.
    *
    * @command trashbin:purge
