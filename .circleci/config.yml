@@ -15,7 +15,8 @@ references:
     run: {name: 'Disable SSH timeout', command: 'echo "ServerAliveInterval 30" >> ~/.ssh/config'}
 
   vendor_bin_add_path: &vendor_bin_add_path
-    run: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run: source $BASH_ENV
 
   restore_composer_cache: &restore_composer_cache
     restore_cache:
