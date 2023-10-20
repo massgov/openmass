@@ -244,6 +244,11 @@ class MassFeedbackLoopContentFetcher {
       $feedback_api_params['node_id'] = $this->fetchFlaggedContent();
     }
 
+    // The ETL Feedback API always expects node_id to be an array.
+    if (!empty($feedback_api_params['node_id']) && !is_array($feedback_api_params['node_id'])) {
+      $feedback_api_params['node_id'] = [$feedback_api_params['node_id']];
+    }
+
     // Fetches feedback from external API.
     try {
       // We always order by submit date without exposing this parameter to users.
