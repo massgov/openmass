@@ -3153,14 +3153,14 @@ display:
       displays:
         page_1: page_1
         default: '0'
-      filename: all_content_export.csv
+      filename: 'massgov-content-export-[date:html_datetime].csv'
       automatic_download: false
       redirect_path: /admin/content
       export_method: batch
       export_batch_size: 100
       store_in_public_file_directory: false
-      custom_redirect_path: true
-      redirect_to_display: none
+      custom_redirect_path: false
+      redirect_to_display: page_1
       include_query_params: true
     cache_metadata:
       max-age: -1
