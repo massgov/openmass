@@ -603,7 +603,7 @@ EOT;
    * @return string
    */
   private function getTimestamp() {
-    return (new \DateTime(NULL, new \DateTimeZone('America/New_York')))->format('Y-m-d g:i:s A');
+    return (new \DateTime('now', new \DateTimeZone('America/New_York')))->format('Y-m-d g:i:s A');
   }
 
   /**
