@@ -357,6 +357,12 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     $stepsUnordered = Organisms::prepareStepsUnordered($node, $unorderedSteps_options);
 
+    if ($stepsUnordered) {
+      if (isset($stepsUnordered['steps'][0])) {
+        $stepsUnordered['steps'][0]['isExpanded'] = TRUE;
+      }
+    }
+
     $pageContent['stepsUnordered'] = $stepsUnordered;
 
     // Set up corresponding sticky nav entry for how to ___.
