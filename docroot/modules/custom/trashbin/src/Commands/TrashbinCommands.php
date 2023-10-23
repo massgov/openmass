@@ -23,8 +23,9 @@ class TrashbinCommands extends DrushCommands {
   /**
    * Delete content entities that have been in the bin for more than n days.
    *
-   * @param $entity_type
-   *  Entity type to purge.
+   * @param string $entity_type
+   *   Entity type to purge.
+   *
    * @option $max
    *   Maximum number of entities to delete.
    * @option $days-ago
@@ -54,4 +55,5 @@ class TrashbinCommands extends DrushCommands {
       }
     }
   }
+
 }
