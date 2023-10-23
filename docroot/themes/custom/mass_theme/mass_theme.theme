@@ -357,6 +357,12 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     $stepsUnordered = Organisms::prepareStepsUnordered($node, $unorderedSteps_options);
 
+    if ($stepsUnordered) {
+      if (isset($stepsUnordered['steps'][0])) {
+        $stepsUnordered['steps'][0]['isExpanded'] = TRUE;
+      }
+    }
+
     $pageContent['stepsUnordered'] = $stepsUnordered;
 
     // Set up corresponding sticky nav entry for how to ___.
@@ -431,7 +437,15 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     if ($pageContent['contactList']) {
       // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-      $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'order' => ['phone', 'online', 'more_info'],
+        ],
+      ];
+      // Prepare the sidebarContact data object cache tags do not need to be sent.
+      $sidebar['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
       // Hide the top contact on mobile.
       $sidebar['contactList']['compHeading']['id'] = 'sidebar-contact';
       $sidebar['contactList']['viewSpecific'] = TRUE;
