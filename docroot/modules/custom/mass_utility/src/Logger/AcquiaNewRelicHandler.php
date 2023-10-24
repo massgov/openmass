@@ -24,8 +24,8 @@ class AcquiaNewRelicHandler extends NewRelicHandler {
     if ($this->isNewRelicEnabled()) {
       return;
     }
-
-    $this->write($record);
+    
+    parent::write($record);
   }
 
 }
