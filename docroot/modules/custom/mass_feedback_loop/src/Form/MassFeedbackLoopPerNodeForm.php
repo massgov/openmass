@@ -138,20 +138,12 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
     $form['table_wrapper']['pager'] = $this->contentFetcher->buildPager($response['total'], $response['per_page']);
 
     if (isset($response['total']) && is_numeric($response['total']) && $response['total'] > 0) {
-      // Create and attach the link to download CSV export.
-      $feedback_api_csv_download_params = $feedback_api_params;
-      foreach ($feedback_api_csv_download_params as $key => $value) {
-        if (is_array($value)) {
-          $feedback_api_csv_download_params[$key] = implode(",", $value);
-        }
-      }
-      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_csv_download_params]);
-      $csv_download_uri = $csv_download_url->toString();
+      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_params])->toString();
       $form['csv_export'] = [
         '#type' => 'markup',
         // @codingStandardsIgnoreStart
         '#markup' => "<div class='csv-export-wrapper'>
-          <a href='$csv_download_uri'>
+          <a href='$csv_download_url'>
             <span class='feed-icon'></span> Download CSV Export
           </a>
         </div>",
