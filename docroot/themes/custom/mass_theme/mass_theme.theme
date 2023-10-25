@@ -1496,6 +1496,7 @@ function mass_theme_preprocess_node_binder(&$variables) {
  * Prepare the variables for the Info Details page.
  */
 function mass_theme_preprocess_node_info_details(&$variables) {
+  $cache_tags = [];
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
@@ -1571,7 +1572,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         ],
       ];
 
-      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options);
+      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
       // Build sidebar.contactList, which is a subset of pageContent.ContactList.
       $sidebarContacts_options = [
         'groups' => [
@@ -1594,6 +1595,11 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       $variables['no_sidebar'] = TRUE;
     }
   }
+
+  // Bubble cache tag to the current render. Based on template_preprocess_pager()
+  // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+  (new CacheableMetadata())->addCacheTags($cache_tags)
+    ->applyTo($variables);
 }
 
 /**
@@ -7205,6 +7211,7 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  * Fetch contact info from parent service node.
  */
 function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
+  $cache_tags = [];
   $paragraph = $variables['paragraph'];
   $node = Helper::getParentNode($paragraph);
 
@@ -7221,7 +7228,12 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
       ],
     ];
     // Prepare the contactList data object.
-    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options);
+    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
+
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    (new CacheableMetadata())->addCacheTags($cache_tags)
+      ->applyTo($variables);
   }
 }
 
