@@ -106,7 +106,6 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
       'person',
       'service_page',
       'advisory',
-      'service_details',
       'news',
       'org_page',
       'info_details',
@@ -144,7 +143,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
   private function getContentTypesAndSelectorForSpecificAlerts() {
     $bundles = $this->getBundlesToTestAlerts();
 
-    // @todo: Still having issues to tests campaign_landing.
+    // @todo Still having issues to tests campaign_landing.
     $campaign_landing_key = array_search('campaign_landing', $bundles);
     if ($campaign_landing_key !== FALSE) {
       unset($bundles[$campaign_landing_key]);

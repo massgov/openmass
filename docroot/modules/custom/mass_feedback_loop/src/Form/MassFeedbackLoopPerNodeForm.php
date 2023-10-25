@@ -6,9 +6,9 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
+use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 
 /**
  * Class MassFeedbackLoopPerNodeController.
@@ -74,7 +74,11 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state, NodeInterface $node = NULL) {
     $params = $this->getRequest()->query->all();
     $feedback_api_params = $this->contentFetcher->formatQueryParams($params);
-    $feedback_api_params['node_id'] = $node->id();
+    $feedback_api_params['node_id'] = [];
+    $feedback_api_params['node_id'][] = $node->id();
+    if ($node->hasField('field_migrated_node_id') && !empty($node->get('field_migrated_node_id')->value)) {
+      $feedback_api_params['node_id'][] = $node->get('field_migrated_node_id')->value;
+    }
 
     $form = [
       '#type' => 'container',
@@ -134,20 +138,12 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
     $form['table_wrapper']['pager'] = $this->contentFetcher->buildPager($response['total'], $response['per_page']);
 
     if (isset($response['total']) && is_numeric($response['total']) && $response['total'] > 0) {
-      // Create and attach the link to download CSV export.
-      $feedback_api_csv_download_params = $feedback_api_params;
-      foreach ($feedback_api_csv_download_params as $key => $value) {
-        if (is_array($value)) {
-          $feedback_api_csv_download_params[$key] = implode(",", $value);
-        }
-      }
-      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_csv_download_params]);
-      $csv_download_uri = $csv_download_url->toString();
+      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_params])->toString();
       $form['csv_export'] = [
         '#type' => 'markup',
         // @codingStandardsIgnoreStart
         '#markup' => "<div class='csv-export-wrapper'>
-          <a href='$csv_download_uri'>
+          <a href='$csv_download_url'>
             <span class='feed-icon'></span> Download CSV Export
           </a>
         </div>",

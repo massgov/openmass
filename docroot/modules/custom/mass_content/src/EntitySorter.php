@@ -3,9 +3,9 @@
 namespace Drupal\mass_content;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\node\Entity\Node;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
+use Drupal\node\Entity\Node;
 
 /**
  * Provides various sorting methods for lists of entities.

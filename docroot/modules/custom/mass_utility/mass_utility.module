@@ -5,28 +5,28 @@
  * Contains mass_utility.module.
  */
 
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Extension\Extension;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\link\LinkItemInterface;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\InvokeCommand;
-use Drupal\Core\Ajax\HtmlCommand;
-use Drupal\file\Entity\File;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\Extension\Extension;
-use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\link\LinkItemInterface;
 use Drupal\node\Entity\Node;
-use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\path_alias\PathAliasInterface;
-use Drupal\user\Entity\User;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -456,7 +456,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
       'field_social_links',
     ];
     if (in_array($field_name, $social_link_fields)) {
-      $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, Twitter, Instagram, LinkedIn, or Medium.',
+      $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, X (formerly Twitter), Threads, Instagram, LinkedIn, or Medium.',
         [
           '%front' => '<front>',
           '%add-node' => '/node/add',
@@ -525,6 +525,9 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
       $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
       $element['title']['#description'] = t('A short call to action or invitation to read more. Should begin with a verb. If this is not filled out, the button will not render on the page. 50-character limit.');
       $element['title']['#title'] = t('Button text');
+    }
+    elseif ($field_name == 'field_contact_directions_link') {
+      return;
     }
     else {
       // Set link field descriptions for all other link fields.

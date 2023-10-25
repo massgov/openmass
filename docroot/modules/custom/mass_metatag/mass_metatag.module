@@ -36,6 +36,11 @@ function mass_metatag_token_info() {
     'description' => t('The organizations related to the current node.'),
     'type' => 'node',
   ];
+  $info['tokens']['node']['mass_parent_organizations'] = [
+    'name' => t('Parent organizations'),
+    'description' => t('The parent organizations related to the current node.'),
+    'type' => 'node',
+  ];
   $info['tokens']['node']['mass_labels'] = [
     'name' => t('Node labels'),
     'description' => t('The labels related to the current node.'),
@@ -270,10 +275,24 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             $org_names[$key] = str_replace("-", "", $value);
           }
 
+          $org_names = array_unique($org_names);
           // Separate the organizations with a comma.
           $replacements[$original] = implode(',', $org_names);
           break;
+        case 'mass_parent_organizations':
+          /** @var \Drupal\mass_metatag\Service\MassMetatagUtilities $metatag_utils */
+          $metatag_utils = \Drupal::service('mass_metatag.utilities');
+          $org_names = $metatag_utils->getAllOrgsFromNode($data['node'], TRUE);
 
+          // Remove hyphens from organizations.
+          foreach ($org_names as $key => $value) {
+            $org_names[$key] = str_replace("-", "", $value);
+          }
+
+          $org_names = array_unique($org_names);
+          // Separate the organizations with a comma.
+          $replacements[$original] = implode(',', $org_names);
+          break;
         case 'mass_related_terms':
           $tags = [];
 
@@ -396,7 +415,6 @@ function mass_metatag_page_attachments(array &$attachments) {
   // only if the current user is a logged in user of our product, and the
   // admin theme is active (which could be both admin routes, and non-frontend
   // non-admin routes.
-
   if (\Drupal::currentUser()->isAuthenticated() && \Drupal::service('theme.manager')->getActiveTheme()->getName() == 'mass_admin_theme') {
     $user = Drupal::currentUser();
     $user_entity = User::load($user->id());
@@ -417,16 +435,15 @@ function mass_metatag_page_attachments(array &$attachments) {
     //   or admin pages only because of how metatag module is designed.
     // - And after we did that work, dynamic cacheability would break
     //   Link: https://circleci.com/gh/massgov/mass/24841.
-
     $user_metatag_render_array = [
       [
         "#tag" => "meta",
         "#attributes" => [
           "name" => "mg_backend_user_id",
           "content" => $user->id(),
-        ]
+        ],
       ],
-      "mg_backend_user_id"
+      "mg_backend_user_id",
     ];
 
     $user_org_metatag_render_array = [
@@ -435,9 +452,9 @@ function mass_metatag_page_attachments(array &$attachments) {
         "#attributes" => [
           "name" => "mg_backend_user_org",
           "content" => isset($slugified_user_org) ? $slugified_user_org : "user-org-not-set",
-        ]
+        ],
       ],
-      "mg_backend_user_org"
+      "mg_backend_user_org",
     ];
 
     $attachments['#attached']['html_head'][] = $user_metatag_render_array;
@@ -514,7 +531,7 @@ function mass_metatag_dataformat(array &$attachments) {
  */
 function mass_metatag_datalayer_meta() {
   return [
-    'field_organizations'
+    'field_organizations',
   ];
 }
 
@@ -524,6 +541,17 @@ function mass_metatag_datalayer_meta() {
  * Change the output of entityField_organizations to include title.
  */
 function mass_metatag_datalayer_alter(&$data_layer) {
+  if (isset($data_layer['entityIdentifier'])) {
+    $node = Node::load($data_layer['entityIdentifier']);
+    if ($node) {
+      $metatag_utils = \Drupal::service('mass_metatag.utilities');
+      $parent_orgs = $metatag_utils->getAllOrgsFromNode($node, TRUE, TRUE);
+      if ($parent_orgs) {
+        $data_layer['entityField_org_parent'] = $parent_orgs;
+      }
+    }
+  }
+
   if (isset($data_layer['entityField_organizations'])) {
     $ids = explode(', ', $data_layer['entityField_organizations']);
     $organizations = [];
@@ -677,7 +705,7 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
     'rules' => 'field_rules_metatags',
     'service_page' => 'field_service_metatags',
     'service_details' => 'field_service_detail_metatags',
-    'topic_page' => 'field_topic_metatags'
+    'topic_page' => 'field_topic_metatags',
   ];
 
   // Hide the following metatags from the advanced section.

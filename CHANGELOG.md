@@ -1,5 +1,218 @@
 
 
+## [0.379.0] - October 24, 2023
+
+### Changed
+  - DP-28648: Change behavior of 'method' section of how-to pages.
+  - DP-30497: New label view, modifications to advanced search view.
+  - DP-8417: Display all contact information in right column when there are multiple on a how-to page.
+  
+### Fixed
+  - DP-29938: Addressed issues where Feedback API calls were not properly formatted.
+  - DP-30232: Fix duplicate parent orgs in metadata.
+  - DP-30352: Content Performance view CSV is missing most data.
+  - DP-30360: Backported views filter configurations for Content.
+  - DP-30373: Fix analytics dashboard theme function.
+  - DP-30436: Fixing all content view CSV export.
+  
+
+
+## [0.378.0] - October 17, 2023
+
+### Changed
+  - DP-25894: Set consistent border to table cells.
+  - DP-29849: Accessibility error fix for the org. nav.
+  
+### Fixed
+  - DP-29882: Fix raw "node" links in content.
+  - DP-29961: D10 upgrade - Parent node dynamic property warning fix.
+  
+### Removed
+  - DP-30076: Remove old analytics dashboards from Drupal.
+  
+### Added
+  - DP-30228: Add Farsi language
+  
+
+
+## [0.377.0] - October 10, 2023
+
+### Changed
+  - DP-29104: Remove the lightest font-weight globally. Space out and bump up font-weight scale evenly to better show visual hierarchy. Remove styling overrides on telephone links, so they appear as other contact links.
+  - DP-30033: Adding duplicate querystring parameter to looker URL to support multiple datasources.
+  
+### Added
+  - DP-29554: Report view for info details pages. Help text updates for login field
+  
+### Removed
+  - DP-29606: Remove service details content type.
+  
+### Fixed
+  - DP-29955: Fix edit form sidebar buttons position.
+  
+
+
+## [0.376.0] - October 3, 2023
+
+### Changed
+  - DP-28040: Updated Conditional Fields module.
+  - DP-28514: Add a condition to render social media links only when its content is available.
+  - DP-28724: Add validation to require at least one paragraph in an org section.
+  - DP-29103: Update Media Entity Download CKEditor plugin patch for D10.
+  
+### Removed
+  - DP-29329: Delete unused fields on Topic page.
+  
+### Added
+  - DP-29648: Add directions override link to contact content type.
+  
+### Fixed
+  - DP-29830: Fixed paragraph buttons positioning.
+  - DP-29834: Location pages not appearing in XML sitemap.
+  
+### Security
+  - DP-29839: Update 'office hours' module.
+  
+
+
+## [0.375.0] - September 26, 2023
+
+### Changed
+  - DP-27211: Upgrade to PHP 8.2
+  - DP-28587: Rename Alert feature on Info Details, Guide content types to "Highlight"
+  - DP-29773: Help text and field layout changes to accomodate org nav change.
+  - DP-29804: Disallow new or cloned location details pages.
+  - DP-29828: Use PHP 8.2 at CircleCI for several jobs (use newer drupal-container)
+  
+### Security
+  - DP-29825: Drupal core update from version 9.5.10 to 9.5.11.
+  
+
+
+## [0.374.0] - September 19, 2023
+
+### Changed
+  - DP-28339: D10 upgrade packages - tokens/metatag/schema_metatag/field_tokens.
+  - DP-28586: Remove non-English pages and docs from orphan reports (2)
+  - DP-28815: Org nav jump link change openmass implementation.
+  - DP-28823: D10 upgrade - pathologic, Components, Datalayer
+  - DP-28824: D10 upgrade - 3 jQuery UI modules.
+  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+  - DP-29614: Modify Content that needs attention component on /admin/home to use BigQuery data
+  - DP-29680: Link nos per k to feedback in Views
+  
+### Fixed
+  - DP-28586: PHPCS fix.
+  
+### Added
+  - DP-29014: Add a fixed org page component that appears below all sections above the footer.
+  - DP-29613: Add mg_organization and mg_parent_org metatags to promotional pages.
+  
+
+
+## [0.373.0] - September 12, 2023
+
+### Changed
+  - DP-28608: Replace superset data in views with data from bigquery
+  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+  - DP-29416: Replace Twitter logo with new 'X' logo and add Threads logo
+  - DP-29553: Remove service details pages from visual regression testing in backstop.
+  - DP-29559: Role permissions changed to allow all authors and editors access to new analytics tab without tester role. Cleanup of tester role permissions.
+  
+### Fixed
+  - DP-29493: Fix default domain URLs from service detail migration
+  - DP-29536: Fixed Tugboat builds.
+  - DP-29600: Fixed suggested page item link covering the whole page.
+  - DP-29649: Correct spelling issue in address error.
+  
+### Added
+  - Avoid redirect to install.php when DB is down
+  
+
+
+## [0.372.0] - September 5, 2023
+
+### Changed
+  - DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
+  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+  - DP-288257: Consolidate two Drush commands into one - ma:heal-references-to-trash
+  - DP-28842: Drupal 10 compat - Update Entity Embed and LinkIt
+  - DP-29492: Config change to load Google Tag manager in all paths including author paths.
+  
+### Removed
+  - DP-26154: Remove testing of service_details pages
+  
+### Fixed
+  - DP-28622: Export report of orphaned pages fixed.
+  - DP-29391: Fix flagging for migrated service details pages.
+  
+### Added
+  - DP-29259: Add metadata field mg_parent_org.
+  - DP-29392: Add drush ma:backup command for starting an on-demand DB backup.
+  
+
+
+## [0.371.0] - August 15, 2023
+
+### Changed
+  - DP-26359: Remove a link from an image in a image promo and a suggested page units. |- Exclude a redundant "more" link from keyboad and AT users from a image promo unit. |- Expand the clickable area to the antire image promo and suggesnted page unit containers. |- Restructure the image promos and the suggested pages with a list for better semantics.
+  - DP-28827: D10 upgrade - "Collab with maintainers" modules
+  
+### Added
+  - DP-29328: Added service details post-migration step for primary parent fields.
+  
+
+
+## [0.370.1] - August 9, 2023
+
+### Fixed
+- DP-29284: Fixed issue with feedback not displaying for info details pages.
+
+
+
+## [0.370.0] - August 8, 2023
+
+### Fixed
+  - DP-20609: Eliminated forced 100% width on images and figures in rich text.
+  
+### Changed
+  - DP-26154: Migrate service details pages to info details
+  - DP-28963: More info link missing from contact component on info details pages.
+  
+### Added
+  - DP-29018: Add 5 languages, including Twi custom language
+  - DP-29229: Added lazy loading to iframes.
+  
+
+
+## [0.369.0] - August 1, 2023
+
+### Changed
+  - DP-27828: Updated Media Entity Download to latest version.
+  - DP-28825: D10 upgrade - Simple Sitemap.
+  
+
+
+## [0.368.0] - July 25, 2023
+
+### Added
+  - DP-28439: New views to show the amount of content by organization.
+  
+### Removed
+  - DP-28600: Removed Icon from Topic pages.
+  
+### Fixed
+  - DP-28600: Fixed Info details accordion styling on mobile issue.
+  - DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
+  
+### Changed
+  - DP-28735: Update Paragraphs, Entity Reference Revision, misc
+  - DP-28783: A11y - aria-label on alert icon.
+  - DP-28854: Remove Google Optimize - it is unused
+  - DP-28890: Process BigQuery queue outside of cron
+  
+
+
 ## [0.367.0] - July 11, 2023
 
 ### Added

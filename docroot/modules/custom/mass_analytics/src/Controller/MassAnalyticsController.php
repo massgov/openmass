@@ -27,7 +27,7 @@ class MassAnalyticsController extends ControllerBase {
     'campaign_landing',
     'decision',
     'executive_order',
-    'regulation'
+    'regulation',
   ];
 
   /**
@@ -42,11 +42,10 @@ class MassAnalyticsController extends ControllerBase {
   public function build(NodeInterface $node): array {
     $config = $this->config('mass_analytics.settings');
     if (!empty($config->get('looker_studio_url'))) {
-      $iframe_url = $config->get('looker_studio_url') . '?params=%7B"nodeId":' . $node->id() . '%7D';
+      $iframe_url = $config->get('looker_studio_url') . '?params=%7B"nodeId":' . $node->id() . ',"nodeId2":' . $node->id() . '%7D';
       return [
-        '#theme' => 'route_iframe',
+        '#theme' => 'mass_analytics_iframe',
         '#config' => $iframe_url,
-        '#iframe_height' => 2200,
         '#cache' => [
           'max-age' => 0,
         ],

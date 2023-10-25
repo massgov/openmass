@@ -3,8 +3,6 @@
 namespace Drupal\mass_entity_usage\Controller;
 
 use Drupal\content_moderation\Entity\ContentModerationState;
-use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
@@ -109,8 +107,16 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
           $source_entity = Helper::getParentNode($source_entity);
         }
 
-        $text = explode('>', $link->getText())[0];
-        $link->setText($text);
+        if (!$source_entity) {
+          // If for some reason this record is broken, just skip it.
+          continue;
+        }
+
+        if (method_exists($link, 'getText')) {
+          $text = explode('>', $link->getText())[0];
+          $link->setText($text);
+        }
+
         // Get the moderation state label of the parent node.
         $state_label = '';
         if ($source_entity instanceof Node) {

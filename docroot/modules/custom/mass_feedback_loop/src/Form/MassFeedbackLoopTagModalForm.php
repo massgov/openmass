@@ -3,17 +3,15 @@
 namespace Drupal\mass_feedback_loop\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\CloseModalDialogCommand;
-use Drupal\Core\Ajax\InvokeCommand;
-use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Ajax\AppendCommand;
+use Drupal\Core\Ajax\CloseModalDialogCommand;
 use Drupal\Core\Ajax\CssCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class MassFeedbackLoopTagModalForm.
@@ -215,9 +213,8 @@ class MassFeedbackLoopTagModalForm extends FormBase {
       $this->contentFetcher->addTag($feedback_id, $tag_id);
       $added_tags_unique_record_id = 0;
       // NOTE: On tag addition the feedback api unfortunately does not return the added tags record it.
-      // @TODO Remove the zero value above after feedback API fixes this.
+      // @todo Remove the zero value above after feedback API fixes this.
       // See: https://jira.mass.gov/browse/DP-12364.
-
       // 3. Send newly added tag markup as ajax response so it can be shown on the front end.
       // 3.1 Creates link to Remove Tag via which the newly added tag can be removed.
       $url = Url::fromRoute(

@@ -15,10 +15,8 @@ class ContentUrlTest extends ExistingSiteBase {
   public function testTitleBasedNewUnpublishedContentUrl() {
     // Unpublished content should get their regular URL alias based on the
     // configured pattern, but along with a "---unpublished" string suffix.
-
     // Test against different content types.
     $path_pattern_substring_by_type = [
-      "service_details" => "/service-details/",
       "decision" => "",
       "news" => "/news/",
       "service_page" => "",
@@ -43,8 +41,7 @@ class ContentUrlTest extends ExistingSiteBase {
     // In this test we only cover the above content types that are configured
     // to have title based path alias patterns
     // like "/somefoo/[node:title]" or "/[node:title]".
-    // TODO: https://jira.state.ma.us/browse/DP-8960.
-
+    // @todo https://jira.state.ma.us/browse/DP-8960.
     foreach ($path_pattern_substring_by_type as $type => $path_pattern_substring) {
       $node = $this->createNode([
         'type' => $type,
@@ -72,10 +69,8 @@ class ContentUrlTest extends ExistingSiteBase {
   public function testTitleBasedPublishedContentUrl() {
     // Published content should get their regular URL alias based on the
     // configured pattern, WITHOUT any "---unpublished" string in it.
-
     // Test against different content types.
     $path_pattern_substring_by_type = [
-      "service_details" => "/service-details/",
       "decision" => "",
       "news" => "/news/",
       "service_page" => "",
@@ -100,8 +95,7 @@ class ContentUrlTest extends ExistingSiteBase {
     // In this test we only cover the above content types that are configured
     // to have title based path alias patterns
     // like "/somefoo/[node:title]" or "/[node:title]".
-    // TODO: https://jira.state.ma.us/browse/DP-8960.
-
+    // @todo https://jira.state.ma.us/browse/DP-8960.
     foreach ($path_pattern_substring_by_type as $type => $path_pattern_substring) {
       $node = $this->createNode([
         'type' => $type,
@@ -110,7 +104,6 @@ class ContentUrlTest extends ExistingSiteBase {
       ]);
 
       // By default this creates published content.
-
       $langcode = $node->language()->getId();
       $source = '/' . $node->toUrl()->getInternalPath();
       $path_alias = \Drupal::service('path_alias.manager')->getAliasByPath($source, $langcode);

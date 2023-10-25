@@ -4,7 +4,6 @@ namespace Drupal\mass_site_map\Plugin\simple_sitemap\UrlGenerator;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
-use Drupal\media\MediaInterface;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGenerator;
 
 /**
@@ -12,7 +11,7 @@ use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGenerator;
  *
  * @UrlGenerator(
  *   id = "mass_entity",
- *   label = @Translation("Entity URL generator"),
+ *   label = @Translation("Mass Entity URL generator"),
  *   description = @Translation("Generates URLs for entity bundles and bundle overrides."),
  * )
  */
@@ -23,19 +22,16 @@ class MassUrlGenerator extends EntityUrlGenerator {
    *
    * @inheritdoc
    */
-  protected function processDataSet($data_set) {
+  protected function processDataSet($data_set): array {
     $entities = $this->entityTypeManager->getStorage($data_set['entity_type'])->loadMultiple((array) $data_set['id']);
     if (empty($entities)) {
-      return FALSE;
+      return [];
     }
 
     $paths = [];
     foreach ($entities as $entity) {
-      $entity_settings = $this->generator
-        ->setVariants($this->sitemapVariant)
-        ->getEntityInstanceSettings($entity->getEntityTypeId(), $entity->id());
-
-      if (empty($entity_settings['index'])) {
+      $has_page = \Drupal::service('simple_sitemap.generator')->entityManager()->bundleIsIndexed($entity->getEntityTypeId(), $entity->bundle());
+      if (!$has_page) {
         continue;
       }
 
@@ -57,11 +53,6 @@ class MassUrlGenerator extends EntityUrlGenerator {
         case 'document':
           $mass_path_value = $this->fixDocumentLinks($entity);
           break;
-
-        case 'location':
-          $mass_path_value = $this->fixLocationLinks($entity);
-          break;
-
       }
       $default_path = [
         'url' => $url_object,
@@ -170,24 +161,6 @@ class MassUrlGenerator extends EntityUrlGenerator {
     }
 
     return $data;
-  }
-
-  /**
-   * The Mass.gov adjustments to Location entities in the sitemap.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   Plain old entity object.
-   */
-  protected function fixLocationLinks(EntityInterface $entity) {
-    $url_object = Url::fromRoute('view.locations.page', ['node' => $entity->id()]);
-    $url_object->setOption('absolute', TRUE);
-
-    return [
-      'url' => $url_object,
-      'lastmod' => method_exists($entity, 'getChangedTime') ? date('c', $entity->getChangedTime()) : NULL,
-      'priority' => 0.5,
-      'changefreq' => 'daily',
-    ];
   }
 
 }

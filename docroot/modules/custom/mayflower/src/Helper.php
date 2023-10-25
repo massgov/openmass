@@ -2,22 +2,21 @@
 
 namespace Drupal\mayflower;
 
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\crop\Entity\Crop;
-use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
-use Drupal\Core\Link;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
-use Drupal\Core\Entity\ContentEntityBase;
 
 /**
  * Provides mayflower prepare functions with helper functions.
@@ -102,7 +101,7 @@ class Helper {
     $fields = $entity->get($field);
 
     if ($fields) {
-      /** @var File[] $images */
+      /** @var \Drupal\file\Entity\File[] $images */
       $images = $fields->referencedEntities();
     }
 
@@ -467,13 +466,17 @@ class Helper {
     if ($entity->hasField($sections_field)) {
       $sections_field_list = $entity->get($sections_field);
       foreach ($sections_field_list as $section_field_value) {
-        $section_field_entity = $section_field_value->entity;
+        if (!$section_field_entity = $section_field_value->entity) {
+          continue;
+        }
         if ($section_field_entity->hasField($sections_field_content)) {
           $sections_field_content_list = $section_field_entity->get($sections_field_content);
           foreach ($sections_field_content_list as $sections_field_content_value) {
             $sections_field_content_entity = $sections_field_content_value->entity;
-            if ($sections_field_content_entity && $sections_field_content_entity->hasField($reference_field)) {
-              return self::getReferencedEntitiesFromField($sections_field_content_entity, $reference_field);
+            if ($sections_field_content_entity) {
+              if ($sections_field_content_entity->hasField($reference_field)) {
+                return self::getReferencedEntitiesFromField($sections_field_content_entity, $reference_field);
+              }
             }
           }
         }
@@ -1498,7 +1501,7 @@ class Helper {
    *   Date object.
    */
   public static function getDate($timestamp) {
-    // @todo: DP-7978 determine why we aren't using the drupal date service
+    // @todo DP-7978 determine why we aren't using the drupal date service
     // 'date.formatter'.
     $dateTime = new \DateTime($timestamp, new \DateTimeZone('UTC'));
     $timezone = 'America/New_York';

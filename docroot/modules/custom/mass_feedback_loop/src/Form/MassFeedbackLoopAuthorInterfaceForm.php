@@ -80,7 +80,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     // Checks for query params in case pager link was used.
     /** @var \Symfony\Component\HttpFoundation\ParameterBag $query */
     $query = $this->getRequest()->query;
-    $feedback_api_params = [];
 
     $params = $query->all();
     $feedback_api_params = $this->contentFetcher->formatQueryParams($params);
@@ -114,7 +113,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
         'placeholder' => "Start typing Organizations to filter by ...",
         'class' => ['use-selectize-autocomplete'],
       ],
-      // TODO split on comma, load array.
+      // @todo split on comma, load array.
       '#default_value' => isset($feedback_api_params['org_id']) ? $feedback_api_params['org_id'] : NULL,
     ];
 
@@ -124,7 +123,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#multiple' => TRUE,
       '#title' => $this->t('Author'),
       '#options' => $this->getAuthorUsernames(),
-      // TODO split on comma, load array.
+      // @todo split on comma, load array.
       '#default_value' => isset($feedback_api_params['author_id']) ? $feedback_api_params['author_id'] : NULL,
       '#attributes' => [
         'placeholder' => "Start typing Author usernames ...",
@@ -180,7 +179,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#options' => $label_select_list,
       '#attributes' => [
         'placeholder' => "Start typing labels to filter by ...",
-        'class' => ['use-selectize-autocomplete']
+        'class' => ['use-selectize-autocomplete'],
       ],
       // Updates form input with default value, if available.
       '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,
@@ -300,19 +299,13 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     if (isset($response['total']) && is_numeric($response['total']) && $response['total'] > 0) {
       // Create and attach the link to download CSV export.
-      $feedback_api_csv_download_params = $feedback_api_params;
-      foreach ($feedback_api_csv_download_params as $key => $value) {
-        if (is_array($value)) {
-          $feedback_api_csv_download_params[$key] = implode(",", $value);
-        }
-      }
-      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_csv_download_params]);
-      $csv_download_uri = $csv_download_url->toString();
+      $feedback_api_csv_download_params = $this->contentFetcher->formatQueryParams($feedback_api_params);
+      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_csv_download_params])->toString();
       $form['csv_export'] = [
         '#type' => 'markup',
         // @codingStandardsIgnoreStart
         '#markup' => "<div class='csv-export-wrapper'>
-          <a href='$csv_download_uri'>
+          <a href='$csv_download_url'>
             <span class='feed-icon'></span> Download CSV Export
           </a>
         </div>",

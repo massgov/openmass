@@ -2,7 +2,6 @@
 
 namespace Drupal\mass_utility\EventSubscriber;
 
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
@@ -11,6 +10,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Route;
@@ -31,7 +31,7 @@ class NewRelicTransactionSubscriber implements EventSubscriberInterface {
         // Run after authentication (300), but before everything else.
         ['earlyRequest', 299],
         // Run after controller is determined, and after page cache.
-        ['onRequest', 24]
+        ['onRequest', 24],
       ],
       // Run after dynamic page cache.
       KernelEvents::RESPONSE => ['onResponse', 99],

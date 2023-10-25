@@ -27,7 +27,6 @@ dependencies:
     - node.type.person
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
     - node.type.topic_page
     - workflows.workflow.campaign_landing_page
@@ -45,6 +44,7 @@ dependencies:
     - entity_usage
     - environment_indicator
     - mass_admin_toolbar
+    - mass_analytics
     - mass_validation
     - mass_views
     - mass_workbench_ui
@@ -52,7 +52,6 @@ dependencies:
     - node
     - quick_node_clone
     - rabbit_hole
-    - route_iframes
     - scheduled_transitions
     - system
     - taxonomy
@@ -96,13 +95,11 @@ permissions:
   - 'clone how_to_page content'
   - 'clone info_details content'
   - 'clone location content'
-  - 'clone location_details content'
   - 'clone news content'
   - 'clone org_page content'
   - 'clone person content'
   - 'clone regulation content'
   - 'clone rules content'
-  - 'clone service_details content'
   - 'clone service_page content'
   - 'create advisory content'
   - 'create alert content'
@@ -122,14 +119,12 @@ permissions:
   - 'create how_to_page content'
   - 'create info_details content'
   - 'create location content'
-  - 'create location_details content'
   - 'create media'
   - 'create news content'
   - 'create org_page content'
   - 'create person content'
   - 'create regulation content'
   - 'create rules content'
-  - 'create service_details content'
   - 'create service_page content'
   - 'delete token'
   - 'dropzone upload files'
@@ -157,7 +152,6 @@ permissions:
   - 'edit any person content'
   - 'edit any regulation content'
   - 'edit any rules content'
-  - 'edit any service_details content'
   - 'edit any service_page content'
   - 'edit any topic_page content'
   - 'edit own advisory content'
@@ -184,7 +178,6 @@ permissions:
   - 'edit own person content'
   - 'edit own regulation content'
   - 'edit own rules content'
-  - 'edit own service_details content'
   - 'edit own service_page content'
   - 'execute mass_content_moderation_restore_action all'
   - 'rabbit hole administer node'
@@ -215,6 +208,7 @@ permissions:
   - 'view alert revisions'
   - 'view all revisions'
   - 'view all scheduled transitions'
+  - 'view analytics pages'
   - 'view any unpublished content'
   - 'view binder revisions'
   - 'view campaign_landing revisions'
@@ -241,7 +235,6 @@ permissions:
   - 'view own unpublished media'
   - 'view person revisions'
   - 'view regulation revisions'
-  - 'view route iframe pages'
   - 'view rules revisions'
   - 'view scheduled transitions media document'
   - 'view scheduled transitions node advisory'
@@ -270,9 +263,7 @@ permissions:
   - 'view scheduled transitions node person'
   - 'view scheduled transitions node regulation'
   - 'view scheduled transitions node rules'
-  - 'view scheduled transitions node service_details'
   - 'view scheduled transitions node service_page'
   - 'view scheduled transitions node topic_page'
-  - 'view service_details revisions'
   - 'view service_page revisions'
   - 'view the administration theme'
