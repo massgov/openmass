@@ -1,5 +1,22 @@
 
 
+## [0.379.0] - October 24, 2023
+
+### Changed
+  - DP-28648: Change behavior of 'method' section of how-to pages.
+  - DP-30497: New label view, modifications to advanced search view.
+  - DP-8417: Display all contact information in right column when there are multiple on a how-to page.
+  
+### Fixed
+  - DP-29938: Addressed issues where Feedback API calls were not properly formatted.
+  - DP-30232: Fix duplicate parent orgs in metadata.
+  - DP-30352: Content Performance view CSV is missing most data.
+  - DP-30360: Backported views filter configurations for Content.
+  - DP-30373: Fix analytics dashboard theme function.
+  - DP-30436: Fixing all content view CSV export.
+  
+
+
 ## [0.378.0] - October 17, 2023
 
 ### Changed
