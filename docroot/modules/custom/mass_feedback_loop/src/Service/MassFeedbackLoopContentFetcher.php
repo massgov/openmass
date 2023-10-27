@@ -361,7 +361,6 @@ class MassFeedbackLoopContentFetcher {
         'label_id',
         'author_id',
         'watch_content',
-        'search',
         'flagged_inappropriate',
       ])) {
         if (in_array($key, ['watch_content', 'flagged_inappropriate']) || !empty($param)) {
