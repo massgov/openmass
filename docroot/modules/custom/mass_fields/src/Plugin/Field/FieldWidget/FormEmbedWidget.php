@@ -56,8 +56,10 @@ class FormEmbedWidget extends WidgetBase {
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $new_values = [];
     foreach ($values as $delta => $value) {
-      $new_values[$delta]['value'] = $value['value']['value'];
-      $new_values[$delta]['type'] = $value['value']['type'];
+      if ($value['value']) {
+        $new_values[$delta]['value'] = $value['value']['value'];
+        $new_values[$delta]['type'] = $value['value']['type'];
+      }
     }
     return $new_values;
   }
