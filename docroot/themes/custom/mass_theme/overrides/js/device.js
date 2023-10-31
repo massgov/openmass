@@ -9,8 +9,12 @@
   Drupal.behaviors.massgovDevice = {
     attach: function (context) {
       once('massgovDeviceId', 'html', context).forEach(function () {
-        if (window.crypto && localStorage.getItem('massgovDeviceId') === null) {
-          localStorage.setItem('massgovDeviceId', window.crypto.randomUUID());
+        if (typeof localStorage !== 'undefined') {
+          if (window.crypto && localStorage.getItem('massgovDeviceId') === null) {
+            if ('randomUUID' in window.crypto) {
+              localStorage.setItem('massgovDeviceId', window.crypto.randomUUID());
+            }
+          }
         }
       });
     }

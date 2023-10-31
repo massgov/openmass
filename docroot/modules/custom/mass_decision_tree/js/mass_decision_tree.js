@@ -65,7 +65,9 @@
 
           initializeButtons();
           Drupal.behaviors.MassAccordions.create($content);
-          window.fitVids($('.js-ma-responsive-video'));
+          if ($('.js-ma-responsive-video').length) {
+            window.fitVids($('.js-ma-responsive-video'));
+          }
         }
       };
 
