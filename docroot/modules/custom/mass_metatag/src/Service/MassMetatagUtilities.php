@@ -111,6 +111,9 @@ class MassMetatagUtilities {
    */
   public function getOrgsFromNode(Node $node) {
     $result = [];
+    if ($node->bundle() === 'org_page') {
+      $result[] = $this->slugify(trim($node->label()));
+    }
     if ($node->hasField('field_organizations')) {
       /** @var \Drupal\node\Entity\Node[] $org_pages */
       $org_pages = $node->field_organizations->referencedEntities();
@@ -120,7 +123,7 @@ class MassMetatagUtilities {
         }
       }
     }
-    return $result;
+    return array_unique($result);
   }
 
   /**
