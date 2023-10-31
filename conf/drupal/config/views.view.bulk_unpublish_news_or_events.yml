@@ -489,7 +489,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'use mass dashboard'
       cache:
         type: tag
         options: {  }
@@ -966,7 +966,10 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: admin/content/bulk-unpublish-news-or-events
     cache_metadata:
       max-age: 0
