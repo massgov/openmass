@@ -3,6 +3,7 @@
 namespace Drupal\mass_metatag\Service;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
 use Drupal\node\Entity\Node;
 
 /**
@@ -96,6 +97,29 @@ class MassMetatagUtilities {
       $checked_orgs[] = $node->id();
     }
 
+    return $result;
+  }
+
+  /**
+   * Gets Organization names for the passed node.
+   *
+   * @param \Drupal\node\Entity\Node $node
+   *   The node to get Orgs and parent Orgs from.
+   *
+   * @return string[]
+   *   The array of slugified Org names related to this node.
+   */
+  public function getOrgsFromNode(Node $node) {
+    $result = [];
+    if ($node->hasField('field_organizations')) {
+      /** @var \Drupal\node\Entity\Node[] $org_pages */
+      $org_pages = $node->field_organizations->referencedEntities();
+      foreach ($org_pages as $org_page) {
+        if ($org_page instanceof OrgPageBundle) {
+          $result[] = $this->slugify(trim($org_page->label()));
+        }
+      }
+    }
     return $result;
   }
 
