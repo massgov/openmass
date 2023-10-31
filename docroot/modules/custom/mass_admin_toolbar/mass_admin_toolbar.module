@@ -29,11 +29,6 @@ function mass_admin_toolbar_css_alter(&$css, $assets) {
   unset($css[\Drupal::service('extension.list.module')->getPath('toolbar') . '/css/toolbar.theme.css']);
   // Disable stylesheet from admin_toolbar module.
   unset($css[\Drupal::service('extension.list.module')->getPath('admin_toolbar') . '/css/admin.toolbar.css']);
-  // Disable styles coming from Stable because somehow they are getting into the admin theme.
-  // unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.icons.theme.css']);
-  // unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.module.css']);
-  // unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.menu.css']);
-  // unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.theme.css']);
 }
 
 /**
