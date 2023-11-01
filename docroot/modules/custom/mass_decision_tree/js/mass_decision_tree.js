@@ -323,7 +323,8 @@
       }
 
       // Render the templates for the root node.
-      $('div.main-content', context).once('decision-tree-init').each(function () {
+      var $elements = $(once('decisionTreeInit', 'div.main-content', context));
+      $elements.each(function (index) {
         onHashChange();
       });
     }
