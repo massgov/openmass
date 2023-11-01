@@ -268,7 +268,9 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'mass_organizations':
           if ($data['node'] instanceof NodeBundle) {
-            if ($org_nodes = $data['node']->getOrganizations()->referencedEntities()) {
+            // If we have an org node then return myself.
+            $org_nodes = $data['node']->bundle() == 'org_page' ? [$data['node']] : $data['node']->getOrganizations()->referencedEntities();
+            if ($org_nodes) {
               $utilities = \Drupal::service('mass_metatag.utilities');
               $org_slugs = [];
               foreach ($org_nodes as $org) {
