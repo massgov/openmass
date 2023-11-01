@@ -5,6 +5,7 @@ namespace Drupal\mass_content\Entity\Bundle\node;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\mass_content_moderation\MassModerationTrait;
 use Drupal\mass_fields\MassCollectionTrait;
+use Drupal\mass_fields\MassOrganizationsTrait;
 use Drupal\mass_fields\MassSearchTrait;
 use Drupal\mass_fields\MassTranslationsTrait;
 use Drupal\node\Entity\Node;
@@ -15,6 +16,7 @@ use Drupal\node\Entity\Node;
 abstract class NodeBundle extends Node {
   use MassSearchTrait;
   use MassCollectionTrait;
+  use MassOrganizationsTrait;
   use MassModerationTrait;
   use MassTranslationsTrait;
 
@@ -25,30 +27,6 @@ abstract class NodeBundle extends Node {
    */
   public function getSearchNoSnippet(): FieldItemListInterface {
     return $this->get('search_nosnippet');
-  }
-
-  /**
-   * Gets Organization names slugified.
-   *
-   * @return array
-   *   The array of slugified Org names related to this node.
-   */
-  public function getOrgsSlugified(): array {
-    $result = [];
-    $utilities = \Drupal::service('mass_metatag.utilities');
-    if ($this->bundle() === 'org_page') {
-      $result[] = $utilities->slugify(trim($this->label()));
-    }
-    if ($this->hasField('field_organizations')) {
-      /** @var \Drupal\node\Entity\Node[] $org_pages */
-      $org_pages = $this->field_organizations->referencedEntities();
-      foreach ($org_pages as $org_page) {
-        if ($org_page instanceof OrgPageBundle) {
-          $result[] = $utilities->slugify(trim($org_page->label()));
-        }
-      }
-    }
-    return array_unique($result);
   }
 
 }
