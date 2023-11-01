@@ -1,5 +1,17 @@
 
 
+## [0.380.0] - October 31, 2023
+
+### Fixed
+  - DP-26422: Info details page missing menu overlay.
+  
+### Changed
+  - DP-29972: Stop hard coding domain for All Documents item titles
+  - DP-30517: Analytics tab cleanup.
+  - DP-30523: Moved bulk edit of labels view to separate view from advanced search, minor tweaks.
+  
+
+
 ## [0.379.0] - October 24, 2023
 
 ### Changed
