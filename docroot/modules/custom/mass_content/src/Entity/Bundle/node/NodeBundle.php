@@ -27,4 +27,28 @@ abstract class NodeBundle extends Node {
     return $this->get('search_nosnippet');
   }
 
+  /**
+   * Gets Organization names slugified.
+   *
+   * @return string[]
+   *   The array of slugified Org names related to this node.
+   */
+  public function getOrgsSlugified(): array {
+    $result = [];
+    $utilities = \Drupal::service('mass_metatag.utilities');
+    if ($this->bundle() === 'org_page') {
+      $result[] = $utilities->slugify(trim($this->label()));
+    }
+    if ($this->hasField('field_organizations')) {
+      /** @var \Drupal\node\Entity\Node[] $org_pages */
+      $org_pages = $this->field_organizations->referencedEntities();
+      foreach ($org_pages as $org_page) {
+        if ($org_page instanceof OrgPageBundle) {
+          $result[] = $utilities->slugify(trim($org_page->label()));
+        }
+      }
+    }
+    return array_unique($result);
+  }
+
 }

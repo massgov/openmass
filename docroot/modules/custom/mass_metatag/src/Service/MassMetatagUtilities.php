@@ -101,32 +101,6 @@ class MassMetatagUtilities {
   }
 
   /**
-   * Gets Organization names for the passed node.
-   *
-   * @param \Drupal\node\Entity\Node $node
-   *   The node to get Orgs and parent Orgs from.
-   *
-   * @return string[]
-   *   The array of slugified Org names related to this node.
-   */
-  public function getOrgsFromNode(Node $node) {
-    $result = [];
-    if ($node->bundle() === 'org_page') {
-      $result[] = $this->slugify(trim($node->label()));
-    }
-    if ($node->hasField('field_organizations')) {
-      /** @var \Drupal\node\Entity\Node[] $org_pages */
-      $org_pages = $node->field_organizations->referencedEntities();
-      foreach ($org_pages as $org_page) {
-        if ($org_page instanceof OrgPageBundle) {
-          $result[] = $this->slugify(trim($org_page->label()));
-        }
-      }
-    }
-    return array_unique($result);
-  }
-
-  /**
    * Gets all Labels for the passed node, including all parent Orgs.
    *
    * @param ContentEntityInterface $entity
