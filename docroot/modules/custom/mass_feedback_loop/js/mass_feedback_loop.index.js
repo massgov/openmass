@@ -31,7 +31,8 @@
       // @see https://www.drupal.org/project/drupal/issues/2504709
       var origin = window.location.origin;
       var pathname = window.location.pathname;
-      $('nav.pager a', context).once('massFeedbackLoop').each(function () {
+      var $elements = $(once('massFeedbackLoop', 'nav.pager a', context));
+      $elements.each(function () {
         var url = new URL(origin + pathname + $(this).attr('href'));
         if (url.searchParams.has('ajax_form')) {
           url.searchParams.delete('ajax_form');

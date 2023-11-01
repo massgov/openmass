@@ -11,12 +11,20 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class MassHierarchyRouteMatch extends CurrentRouteMatch {
 
   /**
+   * Holds the parameters passed.
+   */
+  protected array $parameters;
+
+  /**
    * Constructs a CurrentRouteMatch object.
    *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   The request stack.
+   * @param array $parameters
+   *   Holds the parameters passed.
    */
-  public function __construct(RequestStack $request_stack) {
+  public function __construct(RequestStack $request_stack, array $parameters = []) {
+    $this->parameters = $parameters;
     parent::__construct($request_stack);
   }
 

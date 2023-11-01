@@ -250,7 +250,7 @@ function _mass_entityaccess_userreference_entity_user_ref_access_query(Node $nod
   $query->condition('entity_type', $node->getEntityType()->id());
   $query->condition('entity_id', $node->id());
   $query->range(0, 1);
-  $user_ref_access_id = $query->execute();
+  $user_ref_access_id = $query->accessCheck(FALSE)->execute();
 
   if (!empty($user_ref_access_id)) {
     // Reset to get only the 1 user_ref_access ID and return the user_ref_access object.
