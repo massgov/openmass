@@ -77,7 +77,7 @@ abstract class QueryGeneratedEntityReferenceListUpdated extends EntityReferenceF
         // Prevent overwriting values that might already be set against this
         // field by using the "count" function.
         $i = count($this->list);
-        foreach ($query->execute() as $nid) {
+        foreach ($query->accessCheck(FALSE)->execute() as $nid) {
           $this->list[] = $this->createItem($i, ['target_id' => $nid]);
           $i++;
         }

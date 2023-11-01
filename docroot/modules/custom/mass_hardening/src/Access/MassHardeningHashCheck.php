@@ -17,6 +17,8 @@ use Drupal\Core\Routing\RouteMatch;
  */
 class MassHardeningHashCheck implements AccessInterface {
 
+  private \Drupal\Core\Entity\EntityStorageInterface $userStorage;
+
   /**
    * Constructs a MassHardeningAccess object.
    *
