@@ -123,7 +123,7 @@ class MassUrlGenerator extends EntityUrlGenerator {
             $org_nodes = $entity->field_organizations->referencedEntities();
             $org_slugs = [];
             foreach ($org_nodes as $org) {
-              $org_slugs += str_replace("-", "", $utility_service->getOrgsFromNode($org));
+              $org_slugs += str_replace("-", "", $org->getOrgsSlugified());
             }
             if (!empty($org_slugs)) {
               $data['pagemap']['metatags'][] = [

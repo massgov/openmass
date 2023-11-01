@@ -30,7 +30,7 @@ abstract class NodeBundle extends Node {
   /**
    * Gets Organization names slugified.
    *
-   * @return string[]
+   * @return array
    *   The array of slugified Org names related to this node.
    */
   public function getOrgsSlugified(): array {
