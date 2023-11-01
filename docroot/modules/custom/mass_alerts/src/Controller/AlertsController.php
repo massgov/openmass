@@ -23,6 +23,10 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
   const DURATION_PAGE = 900;
   const DURATION_SITE = 60;
 
+  private DateFormatterInterface $dateFormatter;
+
+  private Renderer $renderer;
+
   /**
    * Constructs a ApiController object.
    *

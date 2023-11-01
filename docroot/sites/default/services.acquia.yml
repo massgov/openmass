@@ -4,7 +4,7 @@ services:
   monolog.handler.acquia_newrelic:
     class: Drupal\mass_utility\Logger\AcquiaNewRelicHandler
     # Set info as the minimum level.
-    arguments: ['%monolog.level.debug%']
+    arguments: [100]
 parameters:
   monolog.channel_handlers:
     # Log to syslog and NewRelic

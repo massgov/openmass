@@ -168,7 +168,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
     /** @var int[] */
     $list = $this->context['list'];
     foreach ($list as $item_id) {
-      $node = $node_storage->load(array_reverse($item_id)[1]);
+      $node = $node_storage->load(array_reverse($item_id)[0]);
       if (!empty($node)) {
         /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
         $collections = $node->hasField('field_collections') ?? FALSE;

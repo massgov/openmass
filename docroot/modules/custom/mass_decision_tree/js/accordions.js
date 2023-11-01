@@ -13,7 +13,8 @@
     attach: function (context, settings) {
     },
     create: function (context) {
-      $('.js-accordion', context).once('massAccordionCreate').each(function (index) {
+      var $elements = $(once('massAccordionCreate', '.js-accordion', context));
+      $elements.each(function (index) {
         // To ensure applying js-accordion only once.
         // Mayflower adds js-accordion as data, so we
         // check if this data was applied or not.
