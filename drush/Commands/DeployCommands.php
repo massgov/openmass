@@ -264,7 +264,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
   #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[OptionsetDeploy]
-  public function deploy(string $target, string $git_ref) {
+  public function deploy(string $target, string $git_ref, array $options) {
     $self = $this->siteAliasManager()->getSelf();
 
     // For production deployments, prompt the user if they are sure. If they say no, exit.
