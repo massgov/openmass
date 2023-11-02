@@ -2,7 +2,7 @@
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Yaml\Yaml;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 

@@ -2,7 +2,7 @@
 
 _The official website of the Commonwealth of Massachusetts_
 
-This is the codebase for the Drupal 9 web site `www.mass.gov`. The site's theme, [mass_theme](https://github.com/massgov/openmass/blob/develop/docroot/themes/custom/mass_theme/README.md), is powered by Mayflower, a companion repo available at https://github.com/massgov/mayflower.
+This is the codebase for the Drupal 10 web site `www.mass.gov`. The site's theme, [mass_theme](https://github.com/massgov/openmass/blob/develop/docroot/themes/custom/mass_theme/README.md), is powered by Mayflower, a companion repo available at https://github.com/massgov/mayflower.
 
 See the [Table of Contents](/docs/README.md) for additional documentation related to this repository.
 
@@ -105,27 +105,6 @@ drush memcache:sizes
 
 If you run out of disk space, try running `docker system prune` to remove unused Docker images, containers and volumes.
 
-### SSH Keys
-
-If you are using a dedicated SSH Key pair and you have named it other than `~/.ssh/id_rsa`, specify the private key name and path in the `.env` file located in the root of the project.
-
-### hosts file
-
-View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Windows; and verify that there is only one entry for `mass.local` and it displays as follows:
-
-```
-127.0.0.1 mass.local
-```
-
 ### Debug
 
 If you know where a problem is happening in your code in Twig or PHP, refer to [these steps](./docs/drupal_debug.md).
-
-### Windows troubleshooting
-
-- All host machine command line steps should be done from an elevated (admin) prompt.
-- Make sure that you have run `git config --local core.symlinks true` to enable symlinks when
-  you check out the repository.
-- If the symlinks from the theme to the Pattern Lab assets are not working after running composer,
-  delete the non-working symlinks and `git checkout` again.
-- You will find it helpful to copy `docroot/.gitattributes` to the root of the project. [@todo - add this to the automation]

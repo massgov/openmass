@@ -357,6 +357,12 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     $stepsUnordered = Organisms::prepareStepsUnordered($node, $unorderedSteps_options);
 
+    if ($stepsUnordered) {
+      if (isset($stepsUnordered['steps'][0])) {
+        $stepsUnordered['steps'][0]['isExpanded'] = TRUE;
+      }
+    }
+
     $pageContent['stepsUnordered'] = $stepsUnordered;
 
     // Set up corresponding sticky nav entry for how to ___.
@@ -431,7 +437,15 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     if ($pageContent['contactList']) {
       // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-      $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'order' => ['phone', 'online', 'more_info'],
+        ],
+      ];
+      // Prepare the sidebarContact data object cache tags do not need to be sent.
+      $sidebar['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
       // Hide the top contact on mobile.
       $sidebar['contactList']['compHeading']['id'] = 'sidebar-contact';
       $sidebar['contactList']['viewSpecific'] = TRUE;
@@ -7277,10 +7291,10 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   if (!$container->get('field_org_navigation_jump_link_t')->isEmpty()) {
     $id = 'org-nav-' . $utility_service->slugify($container->field_org_navigation_jump_link_t->value);
   }
-  else {
+  elseif (!$container->field_section_long_form_heading->isEmpty()) {
     $id = 'org-nav-' . $utility_service->slugify($container->field_section_long_form_heading->value);
   }
-  $variables['heading_id'] = $id;
+  $variables['heading_id'] = $id ?? 'unknown';
   if (!$container->field_section_style->isEmpty()) {
     $variables['section_style'] = $container->field_section_style->value;
   }

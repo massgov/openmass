@@ -80,15 +80,8 @@
         return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
       }).join(', ');
 
-      var conditionallyRequiredFields = [
-        'field_flexible_link_group_title'
-      ].map(function (field) {
-        return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
-      }).join(', ');
-
       this.$generalRequired = $(generalRequiredFields, context);
       this.$electedRequired = $(electedRequiredFields, context);
-      this.$conditionallyRequiredFields = $(conditionallyRequiredFields, context);
       this.$generalRequiredTabs = $tabs.find('a[href$="edit-group-actions"]').find('strong');
     },
 

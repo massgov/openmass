@@ -13,17 +13,14 @@ class JSONAPIURINormalizer extends NormalizerBase {
 
   protected $supportedInterfaceOrClass = Uri::class;
 
-  /**
-   * {@inheritdoc}
-   */
-  public function supportsNormalization($data, $format = NULL) {
+  public function supportsNormalization($data, $format = NULL, array $context = []): bool {
     return parent::supportsNormalization($data, $format) && $this->isInternalUrl($data);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function normalize($object, $format = NULL, array $context = []) {
+  public function normalize($object, $format = NULL, array $context = []): float|\Drupal\Core\GeneratedUrl|int|\ArrayObject|bool|array|string|null {
     $url = Url::fromUri($object->getValue());
     return $url->toString();
   }
