@@ -118,9 +118,12 @@ class MassUrlGenerator extends EntityUrlGenerator {
               ];
             }
           }
-          // If we have an org node then return myself.
           /** @var \Drupal\node\Entity\Node[] $org_nodes */
-          $org_nodes = $data['node']->bundle() == 'org_page' ? [$data['node']] : $data['node']->getOrganizations()->referencedEntities();
+          $org_nodes = $data['node']->getOrganizations()->referencedEntities();
+          // If we have an org page, also return myself.
+          if ($data['node']->bundle() == 'org_page') {
+            $org_nodes[] = $data['node'];
+          }
           if ($org_nodes) {
             $utilities = \Drupal::service('mass_metatag.utilities');
             $org_slugs = [];
