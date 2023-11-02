@@ -32,8 +32,9 @@
       instructionForCombobox.setAttribute('style', 'display: none;');
       instructionForCombobox.setAttribute('aria-hidden', 'true');
       instructionForCombobox.appendChild(instructionForComboboxContent);
-      document.querySelector('main.page-content').appendChild(instructionForCombobox);
-
+      if (document.querySelector('main.page-content') !== null) {
+        document.querySelector('main.page-content').appendChild(instructionForCombobox);
+      }
 
 
       optionLists.forEach(function (optionList) {
