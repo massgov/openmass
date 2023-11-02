@@ -178,7 +178,7 @@ jobs:
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - run:
           name: Update Mayflower to latest develop
-          command: composer -n require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+          command: composer -n -vvv require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
       - *save_composer_cache
       - *yarn_install
       - enable_cacheability_headers
