@@ -90,7 +90,7 @@ function mass_fields_get_tags_from_references(ContentEntityInterface $entity) {
         }
 
         // All referenced nodes are cleared.
-        if ($referencedEntity->getEntityTypeId() === 'node') {
+        if (in_array($referencedEntity->getEntityTypeId(), ['media', 'node'])) {
           return TRUE;
         }
         // All referenced label terms are cleared. We use these to build dynamic
