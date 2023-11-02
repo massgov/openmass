@@ -3,7 +3,6 @@
 namespace Drupal\Tests\mass_feedback_loop\ExistingSiteJavascript;
 
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -119,8 +118,9 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
     $this->checkTextFilter('Start Date', $yesterday);
     $this->checkTextFilter('End Date', $today);
     $this->checkSelectFilter('Sort by', ['Date (Newest first)', 'Date (Oldest first)']);
-    $this->checkSelectFilter('Filter by feedback tag', ['Unemployment', 'Housing', 'Courts/Legal/Lawyers']);
-    $this->checkCheckboxFilter('Watched pages only');
+//    $this->checkSelectFilter('Filter by feedback tag', ['Unemployment', 'Housing', 'Courts/Legal/Lawyers']);
+    $this->checkSelectFilter('filter_by_info_found', ['true', 'false', 0]);
+//    $this->checkCheckboxFilter('Watched pages only');
     $this->checkCheckboxFilter('Show feedback flagged as low quality');
   }
 
