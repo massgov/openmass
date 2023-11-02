@@ -12,7 +12,9 @@
       var locations = drupalSettings.locations;
 
       // Using once() to apply the myCustomBehaviour effect when you want to do just run one function.
-      $(context).find(mapId).once(mapId).addClass('mass-map-processed').each(function () {
+      var $elements = $(once('js-google-map', '.js-google-map', context));
+      $elements.each(function () {
+        $(this).addClass('mass-map-processed');
         // Set the height so the map is visible.
         $(this).height('500px');
         // Create a map with its center at the center of MA

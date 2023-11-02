@@ -4,8 +4,6 @@ namespace Drupal\mass_utility\Commands;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
@@ -14,11 +12,6 @@ use Drush\Commands\DrushCommands;
 use Drush\Utils\StringUtils;
 use GuzzleHttp\Exception\RequestException;
 
-/**
- * Class MassUtilityCommands.
- *
- * @package Drupal\mass_utility\Commands
- */
 class MassUtilityCommands extends DrushCommands {
 
   /**
@@ -27,20 +20,6 @@ class MassUtilityCommands extends DrushCommands {
    * @var \Drupal\Core\Database\Connection
    */
   protected $connection;
-
-  /**
-   * Entity type service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  private $entityTypeManager;
-
-  /**
-   * The registered logger for this channel.
-   *
-   * @var \Drupal\Core\Logger\LoggerChannelInterface
-   */
-  protected $logger;
 
   /**
    * The messenger service.
@@ -54,17 +33,11 @@ class MassUtilityCommands extends DrushCommands {
    *
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   Entity type service.
-   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_channel_factory
-   *   Logger service.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger.
    */
-  public function __construct(Connection $connection, EntityTypeManagerInterface $entity_type_manager, LoggerChannelFactoryInterface $logger_channel_factory, MessengerInterface $messenger) {
+  public function __construct(Connection $connection, MessengerInterface $messenger) {
     $this->database = $connection;
-    $this->entityTypeManager = $entity_type_manager;
-    $this->logger = $logger_channel_factory->get('mass_utility');
     $this->messenger = $messenger;
   }
 
@@ -358,7 +331,7 @@ class MassUtilityCommands extends DrushCommands {
       $finished = $counter === 0 || count($nids) < $batch_size;
 
       if (!empty($nids)) {
-        $this->logger->info(dt('Found @count nodes in need of clean up.', ['@count' => count($nids)]));
+        $this->logger()->info(dt('Found @count nodes in need of clean up.', ['@count' => count($nids)]));
         $ops[] = [
           '\Drupal\mass_utility\BatchService::populateRevisionsCleanupQueue',
           [$nids, $timestamp, $batch],
@@ -366,7 +339,7 @@ class MassUtilityCommands extends DrushCommands {
       }
       else {
         $this->messenger->addMessage('No revisions found in need of clean up.');
-        $this->logger->info('No revisions found in need of clean up.');
+        $this->logger()->info('No revisions found in need of clean up.');
         $finished = TRUE;
       }
 

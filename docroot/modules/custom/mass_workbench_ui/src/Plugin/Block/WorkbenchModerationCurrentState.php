@@ -27,6 +27,10 @@ class WorkbenchModerationCurrentState extends BlockBase implements ContainerFact
 
   private $routeMatch;
 
+  private EntityTypeManagerInterface $entityTypeManager;
+
+  private AccountInterface $currentUser;
+
   /**
    * {@inheritdoc}
    */

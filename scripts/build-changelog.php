@@ -8,7 +8,7 @@
 
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Finder\Finder;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use PHLAK\SemVer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';

@@ -16,6 +16,8 @@ use Drupal\node\NodeInterface;
  */
 class EventManager {
 
+  private EntityTypeManagerInterface $entityTypeManager;
+
   /**
    * Constructor.
    */
@@ -116,7 +118,7 @@ class EventManager {
       $query->range(0, $limit);
     }
 
-    return $this->getStorage()->loadMultiple($query->execute());
+    return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());
   }
 
   /**
@@ -139,7 +141,7 @@ class EventManager {
       $query->range(0, $limit);
     }
 
-    return $this->getStorage()->loadMultiple($query->execute());
+    return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());
   }
 
   /**
@@ -153,7 +155,7 @@ class EventManager {
    */
   public function getPastCount(NodeInterface $parent) {
     $query = $this->getPastQuery($parent);
-    return $query->count()->execute();
+    return $query->accessCheck(FALSE)->count()->execute();
   }
 
   /**
@@ -167,7 +169,7 @@ class EventManager {
    */
   public function getUpcomingCount(NodeInterface $parent) {
     $query = $this->getUpcomingQuery($parent);
-    return $query->count()->execute();
+    return $query->accessCheck(FALSE)->count()->execute();
   }
 
   /**
