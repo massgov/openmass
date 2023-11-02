@@ -2,10 +2,9 @@
 
 namespace Drupal\Tests\mass_feedback_loop\ExistingSiteJavascript;
 
-use Drupal\mass_content_moderation\MassModeration;
-use Drupal\node\Entity\Node;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Drupal\user\Entity\User;
-use Exception;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
@@ -72,11 +71,34 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Asserts a textbox filtering users works.
+   * Asserts textbox filtering works.
    */
-  private function checkTextSearch($filter, $value) {
+  private function checkTextFilter($filter, $value) {
     $this->reset();
     $this->results->findField($filter)->setValue($value);
+    $this->getSession()->wait(1000);
+    $this->results->pressButton('Filter');
+    $this->checkFilterHasResults();
+  }
+
+  /**
+   * Asserts select filtering works.
+   */
+  private function checkSelectFilter($filter, $options) {
+    $this->reset();
+    $rand_key = array_rand($options);
+    $this->results->findField($filter)->selectOption($options[$rand_key]);
+    $this->getSession()->wait(1000);
+    $this->results->pressButton('Filter');
+    $this->checkFilterHasResults();
+  }
+
+  /**
+   * Asserts select filtering works.
+   */
+  private function checkCheckboxFilter($filter) {
+    $this->reset();
+    $this->results->checkField($filter);
     $this->getSession()->wait(1000);
     $this->results->pressButton('Filter');
     $this->checkFilterHasResults();
@@ -86,8 +108,20 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
    * Tests a few things for the "Feedback Manager" page at admin/ma-dash/feedback.
    */
   public function testFilters() {
-    $this->checkTextSearch('Search feedback for specific text', 'help');
-    $this->checkTextSearch('Search feedback for specific text', 'help, officer, health');
+    $yesterday = new DrupalDateTime('-1 days');
+    $yesterday = $yesterday->format('m/d/Y');
+
+    $today = new DrupalDateTime();
+    $today = $today->format('m/d/Y');
+
+    $this->checkTextFilter('Search feedback for specific text', 'help');
+    $this->checkTextFilter('Search feedback for specific text', 'help, officer, health');
+    $this->checkTextFilter('Start Date', $yesterday);
+    $this->checkTextFilter('End Date', $today);
+    $this->checkSelectFilter('Sort by', ['Date (Newest first)', 'Date (Oldest first)']);
+    $this->checkSelectFilter('Filter by feedback tag', ['Unemployment', 'Housing', 'Courts/Legal/Lawyers']);
+    $this->checkCheckboxFilter('Watched pages only');
+    $this->checkCheckboxFilter('Show feedback flagged as low quality');
   }
 
 }
