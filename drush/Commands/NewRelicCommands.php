@@ -3,25 +3,23 @@
 namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Drush\Attributes as CLI;
 use Drush\Commands\DrushCommands;
 
 class NewRelicCommands extends DrushCommands
 {
 
-  /**
-   * @hook option *
-   *
-   * @option nrname New Relic transaction name.
-   */
+  #[CLI\Option(name: 'nrname', description: 'New Relic transaction name.')]
+  #[CLI\Hook(type: HookManager::OPTION_HOOK, target: '*')]
   public function optionsetNrName($options = ['nrname' => self::REQ])
   {
   }
 
   /**
-   * Set NR name
-   *
-   * @hook post-command *
+   * Set NR name.
    */
+  #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: '*')]
   public function name($result, CommandData $commandData)
   {
     if (!extension_loaded('newrelic')) {
