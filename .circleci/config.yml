@@ -1202,7 +1202,7 @@ workflows:
       and:
         - equal: [ deploy_cd, << pipeline.parameters.trigger_workflow >> ]
     jobs:
-#      - build_with_latest_mayflower
+      - build
       - deploy:
           name: deploy-cd-refresh-db
 #          requires: [ build_with_latest_mayflower ]
