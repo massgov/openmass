@@ -1205,7 +1205,7 @@ workflows:
       - build
       - deploy:
           name: deploy-cd-refresh-db
-#          requires: [ build_with_latest_mayflower ]
+          requires: [ build ]
           target: cd
           refresh-db: "--refresh-db"
       - backstop_test:
