@@ -197,7 +197,7 @@ trait FieldProcessingTrait {
    * Processes Link Item fields.
    */
   private function processLinkItemInterface(&$collected, $ref, $field_label, $field_name) {
-    if (!preg_match('~^entity:node/(\d+)$~', $ref->uri, $matches)) {
+    if (empty($ref->uri) || !preg_match('~^entity:node/(\d+)$~', $ref->uri, $matches)) {
       return;
     }
     $collected[$matches[1]] = [

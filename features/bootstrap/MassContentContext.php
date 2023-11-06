@@ -723,6 +723,7 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
       ->condition('type', $bundle)
       ->condition('status', 1)
       ->sort('nid', 'DESC')
+      ->accessCheck(FALSE)
       ->execute();
 
     if ($id = reset($ids)) {
@@ -745,6 +746,7 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
       ->condition('bundle', $bundle)
       ->condition('status', 1)
       ->sort('mid', 'DESC')
+      ->accessCheck(FALSE)
       ->execute();
 
     if ($id = reset($ids)) {

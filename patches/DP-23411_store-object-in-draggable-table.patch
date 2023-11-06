@@ -1,14 +1,15 @@
 diff --git a/core/misc/tabledrag.js b/core/misc/tabledrag.js
-index fe76291e3f..1f37f65d2c 100644
+index bd25008347..49092f062c 100644
 --- a/core/misc/tabledrag.js
 +++ b/core/misc/tabledrag.js
-@@ -28,6 +28,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
- 
-     var self = this;
-     var $table = $(table);
+@@ -66,6 +66,10 @@
+     const self = this;
+     const $table = $(table);
+
 +    // Store table drag object settings to allow
 +    // async row insertions and using makeDraggable.
 +    $table.data('tableDragObject', this);
-     this.$table = $(table);
-     this.table = table;
-     this.tableSettings = tableSettings;
++
+     /**
+      * @type {jQuery}
+      */

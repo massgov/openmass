@@ -10,6 +10,7 @@ use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\link\LinkItemInterface;
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
@@ -266,18 +267,24 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           break;
 
         case 'mass_organizations':
-          /** @var \Drupal\mass_metatag\Service\MassMetatagUtilities $metatag_utils */
-          $metatag_utils = \Drupal::service('mass_metatag.utilities');
-          $org_names = $metatag_utils->getAllOrgsFromNode($data['node']);
+          if ($data['node'] instanceof NodeBundle) {
+            $org_nodes = $data['node']->getOrganizations()->referencedEntities();
+            // If we have an org page, also return myself.
+            if ($data['node']->bundle() == 'org_page') {
+              $org_nodes[] = $data['node'];
+            }
+            if ($org_nodes) {
+              $utilities = \Drupal::service('mass_metatag.utilities');
+              $org_slugs = [];
+              foreach ($org_nodes as $org) {
+                $org_slugs[] = str_replace("-", "", $utilities->slugify(trim($org->label())));
+              }
 
-          // Remove hyphens from organizations.
-          foreach ($org_names as $key => $value) {
-            $org_names[$key] = str_replace("-", "", $value);
+              $org_names = array_unique($org_slugs);
+              // Separate the organizations with a comma.
+              $replacements[$original] = implode(',', $org_names);
+            }
           }
-
-          $org_names = array_unique($org_names);
-          // Separate the organizations with a comma.
-          $replacements[$original] = implode(',', $org_names);
           break;
         case 'mass_parent_organizations':
           /** @var \Drupal\mass_metatag\Service\MassMetatagUtilities $metatag_utils */

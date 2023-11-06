@@ -10,7 +10,7 @@ class BacktraceRemovalProcessor {
   /**
    * Process an individual record.
    */
-  public function __invoke(array $record) {
+  public function __invoke($record) {
     // Remove the backtrace from context so it doesn't cause infinite recursion.
     if (isset($record['context']) && isset($record['context']['backtrace'])) {
       unset($record['context']['backtrace']);

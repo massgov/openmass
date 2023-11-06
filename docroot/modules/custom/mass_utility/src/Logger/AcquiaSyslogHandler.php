@@ -6,6 +6,7 @@ use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Logger;
+use Monolog\LogRecord;
 
 /**
  * Syslog handler for mass.gov.
@@ -37,10 +38,10 @@ class AcquiaSyslogHandler extends SyslogHandler {
   /**
    * {@inheritdoc}
    */
-  public function handle(array $record): bool {
+  public function handle(LogRecord $record): bool {
     global $base_url;
 
-    $record['extra'] += [
+    $record->extra += [
       'base_url' => $base_url,
       'timestamp' => $record['datetime']->format('U'),
     ];
