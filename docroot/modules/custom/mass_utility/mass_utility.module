@@ -153,7 +153,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     $title = $node->getTitle();
     // Truncates title as needed when forming combined `$title_nid` string.
     $title_nid = $title_prefix .
-      ((strlen($title) > $title_max_length) ? substr($title, 0, $title_max_length - 1) . '…' : $title) .
+      (($title ? strlen($title) : 0 > $title_max_length) ? substr($title, 0, $title_max_length - 1) . '…' : $title) .
       $title_suffix;
     $author = $node->getOwner();
     $contact_url = new Url('entity.user.contact_form', ['user' => $author->id()], [
