@@ -9,9 +9,11 @@ use AcquiaCloudApi\Endpoints\DatabaseBackups;
 use AcquiaCloudApi\Endpoints\Environments;
 use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
+use Drush\Attributes as CLI;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
@@ -19,48 +21,66 @@ use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
-use Webmozart\PathUtil\Path;
+use MassGov\Drush\Attributes\OptionsetDeploy;
+use MassGov\Drush\Attributes\ValidateCircleciToken;
+use Symfony\Component\Filesystem\Path;
 
-/**
- * Class DeployCommands.
- */
 class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
 
   use SiteAliasManagerAwareTrait;
 
-  /**
-   * Set the PHP version to use when deploying to Acquia environments.
-   *
-   * @const string
-   */
+
+  // Set the PHP version to use when deploying to Acquia environments.
   public const PHP_VERSION = '8.2';
 
-  var $site = 'prod:massgov';
+  const TARGET_DESC = 'Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod';
+
+  const TARGET_LIST = [
+    'dev',
+    'cd',
+    'test',
+    'feature1',
+    'feature2',
+    'feature3',
+    'feature4',
+    'feature5',
+    'prod',
+  ];
+
+  const VALIDATE_CIRCLECI_TOKEN = 'validate-circleci-token';
+
+  const CI_BACKSTOP_SNAPSHOT = 'ma:ci:backstop-snapshot';
+
+  const CI_BACKSTOP_COMPARE = 'ma:ci:backstop-compare';
+
+  const MA_BACKUP = 'ma:backup';
+
+  const LATEST_BACKUP_URL = 'ma:latest-backup-url';
+
+  const MA_RELEASE = 'ma:release';
+
+  const MA_DEPLOY = 'ma:deploy';
+
+  const TUGBOAT_REBUILD = 'ma:tugboat-rebuild';
+
+  public string $site = 'prod:massgov';
 
   const TUGBOAT_REPO = '612e50fcbaa70da92493eef8';
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
 
   /**
-
-   * Run Backstop Snapshot at CircleCI and save the result for usage with ma:backstop-reference.
-   *
-   * @command ma:ci:backstop-snapshot
-   *
-   * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
-   * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
-   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
-   * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
-   * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
-   * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
-   * @usage drush ma:ci:backstop-snapshot --target=prod
-   *   Create a backstop snapshot from production.
-   * @aliases ma-ci-backstop-snapshot
-   * @validate-circleci-token
-   *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * Run Backstop Snapshot at CircleCI; save result for ma:backstop-reference.
    */
-  public function ci_backstop_snapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false]): void {
+  #[CLI\Command(name: self::CI_BACKSTOP_SNAPSHOT, aliases: ['ma-ci-backstop-snapshot'])]
+  #[CLI\Option(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
+  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js')]
+  #[CLI\Option(name: 'tugboat', description: 'A Tugboat URL which should be used as target. You must also pass \'tugboat\' as target. When omitted, the most recent Preview for the current branch is assumed.')]
+  #[CLI\Option(name: 'viewport', description: 'The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.')]
+  #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start, default value is "develop"')]
+  #[CLI\Option(name: 'cachebuster', description: 'Appends a cache busting query string to URLs of pages to be tested')]
+  #[CLI\Usage(name: 'drush ma:ci:backstop-snapshot --target=prod', description: 'Create a backstop snapshot from production.')]
+  #[ValidateCircleciToken]
+  public function ciBackstopSnapshot(array $options = ['target' => 'prod', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false]): void {
     // If --tugboat is specified without a specific URL, or --tugboat is
     // omitted, automatically determine the preview for the branch.
     if ($options['target'] === 'tugboat') {
@@ -94,26 +114,18 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
-   * Run Backstop Test at CircleCI against the stored screenshots from Backstop Snapshot.
-   *
-   * @command ma:ci:backstop-compare
-   *
-   * @option reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
-   * @option target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
-   * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
-   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
-   * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
-   * @option ci-branch The branch that CircleCI should check out at start, default value is "develop"
-   * @option cachebuster Appends a cache busting query string to URLs of pages to be tested
-   * @option force-reference Forces new reference images to be taken instead of using ones in CircleCI's saved artifacts.
-   * @usage drush ma:ci:backstop-compare --reference=prod --target=test
-   *   Run backstop in the test environment against the latest production screenshots
-   * @aliases ma-ci-backstop-compare
-   * @validate-circleci-token
-   *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
+   * Run Backstop at CircleCI against the screenshots from Backstop Snapshot.
    */
+  #[CLI\Command(name: self::CI_BACKSTOP_COMPARE, aliases: ['ma-ci-backstop-compare'])]
+  #[CLI\Option(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
+  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js')]
+  #[CLI\Option(name: 'tugboat', description: 'A Tugboat URL which should be used as target. You must also pass \'tugboat\' as target. When omitted, the most recent Preview for the current branch is assumed.')]
+  #[CLI\Option(name: 'viewport', description: 'The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.')]
+  #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start, default value is "develop"')]
+  #[CLI\Option(name: 'cachebuster', description: 'Appends a cache busting query string to URLs of pages to be tested')]
+  #[CLI\Option(name: 'force-reference', description: 'Forces new reference images to be taken instead of using ones in CircleCI\'s saved artifacts.')]
+  #[CLI\Usage(name: 'drush ma:ci:backstop-compare --reference=prod --target=test', description: 'Run backstop in the test environment against the latest production screenshots')]
+  #[ValidateCircleciToken]
   public function ciBackstopCompare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false, 'tugboat' => self::OPT, 'force-reference' => false]): void {
     // If --tugboat is specified without a specific URL, or --tugboat is
     // omitted, automatically determine the preview for the branch.
@@ -145,22 +157,16 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
     }
 
-    $body = json_decode((string)$response->getBody(), TRUE);
+    $body = json_decode((string) $response->getBody(), TRUE);
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
   /**
    * Initiate an on-demand database backup via the Acquia API.
-   *
-   * @param string $target Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod.
-   *
-   * @usage drush ma:backup prod
-   *   Initiate a database backup in production.
-   *
-   * @command ma:backup
-   *
-   * @throws \Exception
    */
+  #[CLI\Command(name: self::MA_BACKUP, aliases: [])]
+  #[CLI\Argument(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
+  #[CLI\Usage(name: 'drush ma:backup prod', description: 'Initiate a database backup in production.')]
   public function createBackup($target) {
     $env = $this->siteAliasManager()->getAlias($target);
     $cloudapi = $this->getClient();
@@ -174,18 +180,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   /**
    * Write the download link for the most recent database backup to stdout.
-   *
-   * @param string $target Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod.
-   * @param string $type Backup type. Recognized values: ondemand, daily.
-   *
-   * @usage drush ma:latest-backup-url prod
-   *   Fetch a link to the latest database backup from production.
-   *
-   * @command ma:latest-backup-url
-   *
-   * @throws \Drush\Exceptions\UserAbortException
-   * @throws \Exception
    */
+  #[CLI\Command(name: self::LATEST_BACKUP_URL, aliases: [])]
+  #[CLI\Argument(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
+  #[CLI\Argument(name: 'type', description: 'Backup type. Recognized values: ondemand, daily.')]
+  #[CLI\Usage(name: 'drush ma:latest-backup-url prod', description: 'Fetch a link to the latest database backup from production.')]
   public function latestBackupUrl($target, $type = null) {
     $env = $this->siteAliasManager()->getAlias($target);
     $cloudapi = $this->getClient();
@@ -213,26 +212,14 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   /**
    * Run `ma:deploy` at CircleCI, for better reliability and logging.
-   *
-   * @command ma:release
-   *
-   * @param string $target Target environment. Recognized values: dev, cd,
-   *   test, feature1, feature2, feature3, feature4, feature5, prod.
-   * @param string $git_ref Tag or branch to deploy. Must be pushed to Acquia.
-   * @param array $options The options list.
-   * @option ci-branch The branch that CircleCI should check out at start.
-   *
-   * @usage drush ma:release test tags/build-0.6.1
-   *   Deploy build-0.6.1 tag to the staging environment.
-   * @aliases ma-release
-   * @deploy
-   * @validate-circleci-token
-   *
-   * @return string
-   *   A URL for viewing the build.
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
    */
+  #[CLI\Command(name: self::MA_RELEASE, aliases: [])]
+  #[CLI\Argument(name: 'target', description: self::TARGET_DESC)]
+  #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
+  #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start.')]
+  #[CLI\Usage(name: 'drush ma:release test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
+  #[ValidateCircleciToken]
+  #[OptionsetDeploy]
   public function release($target, $git_ref, array $options = ['ci-branch' => self::REQ]) {
     // For production deployments, prompt the user if they are sure. If they say no, exit.
     if ($target === 'prod') {
@@ -271,22 +258,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * Copies Prod DB to target environment, then runs config import, updb,
    * varnish purge, etc.
-   *
-   * @param string $target Target environment. Recognized values: dev, cd,
-   *   test, feature1, feature2, feature3, feature4, feature5, prod.
-   * @param string $git_ref Tag or branch to deploy. Must be pushed to Acquia.
-   * @param array $options The options list.
-   * @usage drush ma-deploy test tags/build-0.6.1
-   *   Deploy build-0.6.1 tag to the staging environment.
-   * @aliases ma-deploy
-   * @deploy
-   *
-   * @command ma:deploy
-   *
-   * @throws \Drush\Exceptions\UserAbortException
-   * @throws \Exception
    */
-  public function deploy($target, $git_ref, array $options = ['cache-rebuild' => TRUE]) {
+  #[CLI\Command(name: self::MA_DEPLOY, aliases: ['ma-deploy'])]
+  #[CLI\Argument(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
+  #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
+  #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
+  #[OptionsetDeploy]
+  public function deploy(string $target, string $git_ref, array $options) {
     $self = $this->siteAliasManager()->getSelf();
 
     // For production deployments, prompt the user if they are sure. If they say no, exit.
@@ -308,7 +286,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // This section resembles ma-refresh-local --db-prep-only. We don't call that
       // since we can't easily make Cloud API calls from Acquia servers, and we
       // don't need to sanitize here.
-      $process = Drush::drush($self, 'ma:latest-backup-url', ['prod']);
+      $process = Drush::drush($self, self::LATEST_BACKUP_URL, ['prod']);
       $process->mustRun();
       $url = $process->getOutput();
       $this->logger()->success('Backup URL retrieved.');
@@ -401,11 +379,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   /**
    * Rebuild a branch preview at Tugboat.
-   * @param string $branch
-   *
-   * @command ma:tugboat-rebuild
-   * @aliases ma:tbrb
    */
+  #[CLI\Command(name: self::TUGBOAT_REBUILD, aliases: ['ma:tbrb'])]
+  #[CLI\Argument(name: 'branch', description: 'A branch name')]
   public function tugboatRebuild(string $branch) {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
@@ -446,19 +422,15 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   /**
    * Validate the target name.
-   *
-   * @hook validate
-   *
-   * @throws \Exception
    */
+  #[CLI\Hook(type: HookManager::ARGUMENT_VALIDATOR)]
   public function validate(CommandData $commandData) {
     if (!$commandData->input()->hasArgument('target')) {
       return;
     }
     $target = $commandData->input()->getArgument('target');
-    $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage', 'tugboat'];
-    if (!in_array($target, $available_targets)) {
-      throw new \Exception('Invalid argument: target. \nYou entered "' . $target . '". Target must be one of: ' . implode(', ', $available_targets));
+    if (!in_array($target, self::TARGET_LIST)) {
+      throw new \Exception('Invalid argument: target. \nYou entered "' . $target . '". Target must be one of: ' . implode(', ', self::TARGET_LIST));
     }
   }
 
@@ -519,27 +491,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
-   * Validate the presence of a CircleCI token
-   *
-   * @hook validate validate-circleci-token
+   * Validate the presence of a CircleCI token.
    */
-  protected function validateCircleCIToken() {
+  #[CLI\Hook(type: HookManager::ARGUMENT_VALIDATOR, selector: self::VALIDATE_CIRCLECI_TOKEN)]
+  public function validateCircleCIToken() {
     if (!$this->getTokenCircle()) {
       throw new \Exception('Missing CIRCLECI_PERSONAL_API_TOKEN. See .env.example for more details.');
     }
-  }
-
-  /**
-   * @hook option @deploy
-   *
-   * @option refresh-db Copy the DB from Prod to replace target environment's
-   *   DB.
-   * @option skip-maint Skip maintenance mode enable/disable.
-   * @option cache-rebuild Rebuild caches as needed during deployment.
-   * @option varnish Purge Varnish fully at end of deployment. Otherwise, do minimalist purge.
-   */
-  public function options($options = ['refresh-db' => FALSE, 'skip-maint' => FALSE, 'cache-rebuild' => TRUE, 'varnish' => FALSE]) {
-
   }
 
   /**
@@ -571,11 +529,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   /**
    * Post new deployment to New Relic.
-   *
-   * @param $git_ref
-   * @param $email
-   * @param $application
-   * @param $api_key
    */
   public function newRelic($git_ref, $email, $application, $api_key) {
     $cmd = <<<EOT
@@ -603,7 +556,7 @@ EOT;
    * @return string
    */
   private function getTimestamp() {
-    return (new \DateTime(NULL, new \DateTimeZone('America/New_York')))->format('Y-m-d g:i:s A');
+    return (new \DateTime('now', new \DateTimeZone('America/New_York')))->format('Y-m-d g:i:s A');
   }
 
   /**

@@ -21,12 +21,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v15-{{ checksum "composer.lock" }}
+        - site-composer-v16-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v15-{{ checksum "composer.lock" }}
+      key: site-composer-v16-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -168,23 +168,23 @@ jobs:
           root: ..
           paths: [code]
 
-  build_with_latest_mayflower:
-    working_directory: ~/project/code
-    docker:
-      - image: cimg/php:8.2-node
-    steps:
-      - checkout
-      - *restore_composer_cache
-      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
-      - run:
-          name: Update Mayflower to latest develop
-          command: composer -n require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
-      - *save_composer_cache
-      - *yarn_install
-      - enable_cacheability_headers
-      - persist_to_workspace:
-          root: ..
-          paths: [code]
+#  build_with_latest_mayflower:
+#    working_directory: ~/project/code
+#    docker:
+#      - image: cimg/php:8.2-node
+#    steps:
+#      - checkout
+#      - *restore_composer_cache
+#      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+#      - run:
+#          name: Update Mayflower to latest develop
+#          command: composer -n -vvv require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+#      - *save_composer_cache
+#      - *yarn_install
+#      - enable_cacheability_headers
+#      - persist_to_workspace:
+#          root: ..
+#          paths: [code]
 
   push_acquia:
     working_directory: ~/project/code
@@ -1202,10 +1202,10 @@ workflows:
       and:
         - equal: [ deploy_cd, << pipeline.parameters.trigger_workflow >> ]
     jobs:
-      - build_with_latest_mayflower
+      - build
       - deploy:
           name: deploy-cd-refresh-db
-          requires: [ build_with_latest_mayflower ]
+          requires: [ build ]
           target: cd
           refresh-db: "--refresh-db"
       - backstop_test:

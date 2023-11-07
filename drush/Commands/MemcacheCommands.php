@@ -2,9 +2,12 @@
 
 namespace Drush\Commands;
 
-use Consolidation\OutputFormatters\Options\FormatterOptions;
 use Consolidation\OutputFormatters\StructuredData\PropertyList;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Drupal\memcache\Driver\MemcacheDriverFactory;
+use Drupal\memcache\DrupalMemcacheFactory;
+use Drush\Attributes as CLI;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Glob;
 
 /**
@@ -12,14 +15,23 @@ use Symfony\Component\Finder\Glob;
  */
 class MemcacheCommands extends DrushCommands {
 
-  /**
-   * @return \Memcached
-   */
-  private function getMemcached() {
-    /** @var \Drupal\memcache\DrupalMemcacheFactory $factory */
-    $factory = \Drupal::service('memcache.factory');
+  public function __construct(
+    private MemcacheDriverFactory $factory
+  ) {
+    parent::__construct();
+  }
 
-    $driver = $factory->get('_dummy_');
+  public static function create(ContainerInterface $container): self
+  {
+    $commandHandler = new static(
+      $container->get('memcache.factory'),
+    );
+
+    return $commandHandler;
+  }
+
+  private function getMemcached(): \Memcached {
+    $driver = $this->factory->get('_dummy_');
 
     $reflection = new \ReflectionObject($driver);
     $property = $reflection->getProperty('memcache');
@@ -29,16 +41,10 @@ class MemcacheCommands extends DrushCommands {
 
   /**
    * Show memcache information/statistics.
-   *
-   * @bootstrap full
-   * @command memcache:stats
-   * @aliases memst
-   * @usage drush memcache:stats
-   *   Display the data for the cache id "hook_info" from the "bootstrap" bin.
-   *
-   * @return RowsOfFields
    */
-  public function memcacheInfo(array $options = ['format' => 'table']) {
+  #[CLI\Command(name: 'memcache:stats', aliases: ['memst'])]
+  #[CLI\Usage(name: 'drush memcache:stats', description: 'Display the data for the cache id "hook_info" from the "bootstrap" bin.')]
+  public function memcacheInfo(array $options = ['format' => 'table']): RowsOfFields {
     $return = new RowsOfFields([]);
     foreach($this->getMemcached()->getStats() as $server => $stats) {
       foreach($stats as $key => $value) {
@@ -52,21 +58,11 @@ class MemcacheCommands extends DrushCommands {
 
   /**
    * Show memcache health.
-   *
-   * @bootstrap full
-   * @command memcache:health
-   * @aliases memh
-   * @usage drush memcache:health
-   *   Show health statistics.
-   *
-   * @field-labels
-   *   get_set: Get/Set Ratio
-   *   hit_miss: Hit/Miss Ratio
-   *   usage: Usage
-   *
-   * @return PropertyList
    */
-  public function memcacheHealth() {
+  #[CLI\Command(name: 'memcache:health', aliases: ['memh'])]
+  #[CLI\Usage(name: 'drush memcache:health', description: 'Show health statistics.')]
+  #[CLI\FieldLabels(labels: ['get_set' => 'Get/Set Ratio', 'hit_miss' => 'Hit/Miss Ratio', 'usage' => 'Usage'])]
+  public function memcacheHealth(): PropertyList {
     $stats = $this->getMemcached()->getStats();
     $gets = $this->sumStat('cmd_get', $stats);
     $sets = $this->sumStat('cmd_set', $stats);
@@ -86,21 +82,13 @@ class MemcacheCommands extends DrushCommands {
    *
    * This is a "raw" search - it will return data from all bins and all prefixes.
    * You need to know what prefix and bin you want to look in.
-   *
-   * @bootstrap full
-   * @command memcache:keys
-   * @option limit The number of keys to show.
-   * @aliases memk
-   * @usage drush memcache:keys
-   *   List all keys.
-   * @usage drush memcache:keys 'foo*'
-   *   List all keys starting with 'foo'
-   *
-   * @param string $pattern Glob pattern to match keys to.
-   *
-   * @return PropertyList
    */
-  public function listKeys(string $pattern = '*', array $options = ['format' => 'table', 'limit' => -1]) {
+  #[CLI\Command(name: 'memcache:keys', aliases: ['memk'])]
+  #[CLI\Argument(name: 'pattern', description: 'Glob pattern to match keys to.')]
+  #[CLI\Option(name: 'limit', description: 'The number of keys to show.')]
+  #[CLI\Usage(name: 'drush memcache:keys', description: 'List all keys.')]
+  #[CLI\Usage(name: 'drush memcache:keys', description: 'List all keys starting with <info>foo</info>')]
+  public function listKeys(string $pattern = '*', array $options = ['format' => 'table', 'limit' => -1]): PropertyList {
     $memcached = $this->getMemcached();
     return new PropertyList($this->fetchKeys($memcached, $pattern, $options['limit']));
   }
@@ -110,7 +98,6 @@ class MemcacheCommands extends DrushCommands {
    *
    * Returns keys, sorted by size.
    *
-   * @bootstrap full
    * @command memcache:sizes
    * @option limit The number of keys to show.
    * @aliases memsizes
@@ -120,10 +107,12 @@ class MemcacheCommands extends DrushCommands {
    *   Find the size of all keys in the bucket starting with 'foo'
    *
    * @param string $pattern Glob pattern to match keys to.
-   *
-   * @return PropertyList
-   *   Keys, sorted by size.
    */
+  #[CLI\Command(name: 'memcache:sizes')]
+  #[CLI\Argument(name: 'pattern', description: 'Glob pattern to match keys to.')]
+  #[CLI\Option(name: 'limit', description: 'The number of keys to show.')]
+  #[CLI\Usage(name: 'drush memcache:sizes', description: 'Find the size of all keys in the bucket.')]
+  #[CLI\Usage(name: 'drush memcache:sizes "foo*"', description: 'Find the size of all keys in the bucket starting with <info>foo</info>')]
   public function sizes(string $pattern = '*', array $options = ['format' => 'table', 'limit' => -1]) {
     $memcache = $this->getMemcached();
     $return = [];
@@ -134,7 +123,7 @@ class MemcacheCommands extends DrushCommands {
         'key' => $key,
         'cid' => $item->cid,
         'raw' => $size,
-        'formatted' => drush_format_size($size),
+        'formatted' => (string) format_size($size),
       ];
     }
     uasort($return, function($a, $b) {
@@ -149,19 +138,11 @@ class MemcacheCommands extends DrushCommands {
 
   /**
    * Lookup a CID for a memcache key.
-   *
-   * @bootstrap full
-   * @command memcache:cid
-   * @aliases memcg
-   * @usage drush memcache:cid d28d11c1c29cd781fb6dc030eeae99a546069015
-   *   Print the CID of the key 'd28d11c1c29cd781fb6dc030eeae99a546069015'.
-   *
-   * @param string $key Memcache key.
-   *
-   * @return string
-   *   The found item's CID.
    */
-  public function cid(string $key) {
+  #[CLI\Command(name: 'memcache:cid', aliases: ['memcg'])]
+  #[CLI\Argument(name: 'key', description: 'Memcache key')]
+  #[CLI\Usage(name: 'drush memcache:cid d28d11c1c29cd781fb6dc030eeae99a546069015', description: 'Print the CID of the key <info>d28d11c1c29cd781fb6dc030eeae99a546069015</info>')]
+  public function cid(string $key): string {
     $memcache = $this->getMemcached();
     if ($item = $memcache->get($key)) {
       return $item->cid;

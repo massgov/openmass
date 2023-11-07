@@ -25,6 +25,8 @@ class EventsRendererOrgPages {
    */
   private ?NodeInterface $parentNode;
 
+  private ParagraphInterface $paragraph;
+
   /**
    * Creates an events renderer object.
    */
