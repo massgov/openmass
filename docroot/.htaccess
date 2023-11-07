@@ -116,7 +116,7 @@ AddType application/octet-stream .rte
 
 
   # Redirect HTTP to HTTPS in all Acquia environments.
-  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} !^$ [NC]
+#  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} !^$ [NC]
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
