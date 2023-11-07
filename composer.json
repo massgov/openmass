@@ -123,21 +123,6 @@
         {
             "type": "package",
             "package": {
-                "name": "ckeditor/liststyle",
-                "version": "4.11.1",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "ckeditor/plugins/liststyle"
-                },
-                "dist": {
-                    "url": "https://download.ckeditor.com/liststyle/releases/liststyle_4.11.1.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        {
-            "type": "package",
-            "package": {
                 "name": "drupal/entity_usage_queue_tracking",
                 "type": "drupal-module",
                 "version": "9.1.x-dev",
@@ -153,7 +138,6 @@
         "ext-json": "*",
         "andileco/eval-math": "^3.0",
         "christian-riesen/base32": "^1.3.1",
-        "ckeditor/liststyle": "4.11.1",
         "components/highlightjs": "9.7.*",
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1",
@@ -365,13 +349,11 @@
                 "PHP Deprecated: strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in docroot/core/lib/Drupal/Core/Mail/Plugin/Mail/PhpMail.php on line 112 (https://www.drupal.org/project/drupal/issues/3328187#comment-15138241)": "https://www.drupal.org/files/issues/2023-07-05/3372667-2_0.patch",
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch",
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
-                "Link error - the internal path component is invalid (https://www.drupal.org/project/drupal/issues/2943135)": "https://www.drupal.org/files/issues/2023-01-27/link_error_the_internal_path_component_is_invalid-2943135-041.patch"
+                "Link error - the internal path component is invalid (https://www.drupal.org/project/drupal/issues/2943135)": "https://www.drupal.org/files/issues/2023-01-27/link_error_the_internal_path_component_is_invalid-2943135-041.patch",
+                "Use CKEditor 5's native <ol type> and <ul type> UX (https://www.drupal.org/project/drupal/issues/3274635)": "https://www.drupal.org/files/issues/2023-08-30/use_ckeditor5_native_type_for_ul_and_ol-3274635-25.diff"
             },
             "drupal/flag": {
                 "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
-            },
-            "ckeditor/liststyle": {
-                "Change code from styles to type": "https://www.drupal.org/files/issues/2019-01-02/ckeditor_liststyle-styles-to-type-2874952-4-do-not-test.patch"
             },
             "drupal/diff": {
                 "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch"
