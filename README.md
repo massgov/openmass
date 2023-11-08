@@ -51,7 +51,7 @@ This is a suggestion for how you can transition between branches when working on
 
 ```
 git checkout DP-8111-cool-branch-work
-ddev pull
+ddev pulldb
 ddev composer install
 ddev yarn install
 ddev updatedb
