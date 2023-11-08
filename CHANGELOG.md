@@ -1,4 +1,9 @@
 
+## [0.381.1] - November 8, 2023
+
+### Fixed
+- DP-30763: Location filter by location not changing order of locations HOTFIX.
+
 
 ## [0.381.0] - November 7, 2023
 
