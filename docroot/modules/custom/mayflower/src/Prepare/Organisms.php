@@ -498,7 +498,7 @@ class Organisms {
    * @param array $options
    *   The object that contains static data and other options.
    *
-   * @see @organisms/page-banner/page-banner.twig
+   * @see @organisms/legacy-page-banner/page-banner-legacy.twig
    *
    * @return array
    *   Returns an array of items that contains:
