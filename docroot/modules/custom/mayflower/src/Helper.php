@@ -1076,7 +1076,7 @@ class Helper {
    *   The array of node cache tags.
    *
    * @see @molecules/contact-us.twig
-   * @see @organisms/by-template/page-header.twig
+   * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
@@ -1120,7 +1120,7 @@ class Helper {
    *   An array of options for header contact.
    *
    * @see @molecules/contact-us.twig
-   * @see @organisms/by-template/page-header.twig
+   * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:

@@ -22,7 +22,7 @@ class Organisms {
    * @param array $options
    *   The object that contains static data, widgets, and optional content.
    *
-   * @see @organisms/by-template/page-header.twig
+   * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array of items.
