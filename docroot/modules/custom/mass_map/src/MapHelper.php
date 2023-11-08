@@ -98,7 +98,7 @@ class MapHelper {
         'libraries' => implode(',', $libraries),
         'callback' => $callback,
         'channel' => 'massgov',
-        'v' => '3.36',
+        'v' => '3.54',
       ] + $auth,
     ]);
     return (string) $url->toUriString();
