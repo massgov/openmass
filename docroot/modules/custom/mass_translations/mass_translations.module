@@ -23,9 +23,9 @@ use Drupal\node\NodeInterface;
  * Implements hook_preprocess_media().
  */
 function mass_translations_preprocess_media(&$variables) {
+  $cache_tags = [];
   $media = $variables['media'];
   if (($variables["view_mode"] == 'media_download_link' || $variables["view_mode"] == 'linked_desc' || $variables["view_mode"] == 'manual_desc') && $media->hasField('field_media_english_version')) {
-    $cache_tags[] = 'media-list:document';
     $languageManager = Drupal::languageManager();
     $lang_default = $languageManager->getCurrentLanguage();
     $languages = [];
@@ -37,7 +37,7 @@ function mass_translations_preprocess_media(&$variables) {
       ->toString();
     $lang_codes = $languageManager->getLanguages();
 
-    // Get all the translations for this node.
+    // Get all the translations for this media.
     $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
     // Replace "x-default" with the default language id.
     $all_translations[$lang_default->getId()] = $all_translations["x-default"];
