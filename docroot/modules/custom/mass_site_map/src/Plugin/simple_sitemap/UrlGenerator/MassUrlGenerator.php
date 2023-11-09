@@ -118,19 +118,22 @@ class MassUrlGenerator extends EntityUrlGenerator {
               ];
             }
           }
-          if (isset($entity->field_organizations)) {
-            /** @var \Drupal\node\Entity\Node[] $org_nodes */
-            $org_nodes = $entity->field_organizations->referencedEntities();
+          /** @var \Drupal\node\Entity\Node[] $org_nodes */
+          $org_nodes = $data['node']->getOrganizations()->referencedEntities();
+          // If we have an org page, also return myself.
+          if ($data['node']->bundle() == 'org_page') {
+            $org_nodes[] = $data['node'];
+          }
+          if ($org_nodes) {
+            $utilities = \Drupal::service('mass_metatag.utilities');
             $org_slugs = [];
             foreach ($org_nodes as $org) {
-              $org_slugs += str_replace("-", "", $utility_service->getAllOrgsFromNode($org));
+              $org_slugs[] = str_replace("-", "", $utilities->slugify(trim($org->label())));
             }
-            if (!empty($org_slugs)) {
-              $data['pagemap']['metatags'][] = [
-                'name' => 'mg_organization',
-                'value' => implode(',', $org_slugs),
-              ];
-            }
+            $data['pagemap']['metatags'][] = [
+              'name' => 'mg_organization',
+              'value' => implode(',', array_unique($org_slugs)),
+            ];
           }
           // Associate a file with its corresponding Media Entity title.
           if ($field_title = $entity->get('field_title')) {
