@@ -96,9 +96,9 @@ The query in question can be found in different ways. Here are a few approaches 
 			- docroot/core/lib/Drupal/Core/Entity/Query/Sql/Query.php (line 22) change protected $sqlQuery to public $sqlQuery
 			-docroot/core/lib/Drupal/Core/Entity/Plugin/EntityReferenceSelection/
 			DefaultSelection.php look for the "getReferenceableEntities" (line 241) add the following "dd(dpq($query->sqlQuery, TRUE));" under the $result = $query->execute();
-2. Turn on the devel module "drush en devel" and "ahoy up"
+2. Turn on the devel module "drush en devel" and "ddev restart"
 3. Complete a search in autocomplete
-4. Go to the terminal and "ahoy bash"
+4. Go to the terminal and "ddev ssh"
 5. You will need to cd into the root level and cd /tmp directory
 6. If you ls -ltr you should see a drupal-debug.txt file. `tail drupal-debug.txt` to see the new query.
 ```
