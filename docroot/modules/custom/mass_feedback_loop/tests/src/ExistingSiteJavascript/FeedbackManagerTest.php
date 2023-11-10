@@ -116,7 +116,7 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Tests a few things for the "Feedback Manager" page at admin/ma-dash/feedback.
+   * Tests for the "Feedback Manager" page at admin/ma-dash/feedback.
    */
   public function testFilters() {
     $yesterday = new DrupalDateTime('-1 days');
