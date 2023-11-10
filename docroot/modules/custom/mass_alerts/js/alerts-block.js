@@ -242,7 +242,7 @@ var jQueryLike = function (elemOrSelector, context) {
 
             $this.html(content);
             if (removeContainer) {
-              $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');
+              $this.find('.ma__container').removeClass('ma__container');
             }
             $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
           };
