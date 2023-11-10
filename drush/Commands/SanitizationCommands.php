@@ -3,48 +3,49 @@
 namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
+use Drush\Attributes as CLI;
+use Drush\Drupal\Commands\sql\SanitizeCommands;
 use MassGov\Sanitation\ContentModerationSanitizer;
 use MassGov\Sanitation\MediaSanitizer;
 use MassGov\Sanitation\SqlEntitySanitizer;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Extra sanitization commands for drush sql:sanitize.
- *
- * @property EntityFieldManagerInterface $entityFieldManager
- * @property Connection $database
- * @property EntityTypeManagerInterface $entityTypeManager
  */
 class SanitizationCommands extends DrushCommands {
 
-  /**
-   * Dummy magic method to work around site commands not being DI-capable.
-   *
-   * This will go away when this work is moved into Drush core - for now it's
-   * just an easy way to pretend we've had these things injected. Replace with
-   * a proper constructor later.
-   */
-  public function __get($name) {
-    switch ($name) {
-      case 'database':
-        return \Drupal::database();
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected EntityFieldManagerInterface $entityFieldManager,
+    protected Connection $database
+  ) {
+    parent::__construct();
+  }
 
-      case 'entityTypeManager':
-        return \Drupal::entityTypeManager();
+  public static function create(ContainerInterface $container): self
+  {
+    $commandHandler = new static(
+      $container->get('entity_type.manager'),
+      $container->get('entity_field.manager'),
+      $container->get('database')
+    );
 
-      case 'entityFieldManager':
-        return \Drupal::service('entity_field.manager');
-    }
+    return $commandHandler;
   }
 
   /**
    * Sanitize unpublished entities and old revisions of entities.
-   *
-   * @hook post-command sql-sanitize
    */
-  public function sanitizeEntities($result, CommandData $commandData) {
+  #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: SanitizeCommands::SANITIZE)]
+  public function sanitizeEntities($result, CommandData $commandData): void {
     if (!$commandData->input()->getOption('sanitize-entities')) {
       return;
     }
@@ -84,9 +85,8 @@ class SanitizationCommands extends DrushCommands {
    *
    * This will probably need to be adjusted in the future, for example if a
    * contrib module begins storing something critical in key_value.
-   *
-   * @hook post-command sql-sanitize
    */
+  #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: SanitizeCommands::SANITIZE)]
   public function sanitizeKeyValue($result, CommandData $commandData) {
     if (!$commandData->input()->getOption('sanitize-keyvalue')) {
       return;
@@ -114,9 +114,7 @@ class SanitizationCommands extends DrushCommands {
       ->execute();
   }
 
-  /**
-   * @hook on-event sql-sanitize-confirms
-   */
+  #[CLI\Hook(type: HookManager::ON_EVENT, target: SanitizeCommands::CONFIRMS)]
   public function messages(&$messages, InputInterface $input) {
     if ($input->getOption('sanitize-keyvalue')) {
       $messages[] = 'Sanitize key_value table.';
@@ -135,15 +133,13 @@ class SanitizationCommands extends DrushCommands {
     }
   }
 
-  /**
-   * @hook option sql-sanitize
-   * @option sanitize-keyvalue Sanitize key_value table.
-   * @option sanitize-entities Remove unpublished entities and old revisions of entities.
-   * @option sanitize-roles Remove user role assignments.
-   * @option sanitize-unpublish-reminders Remove unpublish reminders.
-   * @option sanitize-names Replace usernames with user+1, user+2, etc.
-   */
-  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-names' => FALSE, 'sanitize-roles' => FALSE, 'sanitize-unpublish-reminders' => FALSE]) {
+  #[CLI\Hook(type: HookManager::OPTION_HOOK, target: SanitizeCommands::SANITIZE)]
+  #[CLI\Option(name: 'sanitize-keyvalue', description: 'Sanitize key_value table.')]
+  #[CLI\Option(name: 'sanitize-entities', description: 'Remove unpublished entities and old revisions of entities.')]
+  #[CLI\Option(name: 'sanitize-roles', description: 'Remove user role assignments.')]
+  #[CLI\Option(name: 'sanitize-unpublish-reminders', description: 'Remove unpublish reminders.')]
+  #[CLI\Option(name: 'sanitize-names', description: 'Replace usernames with user+1, user+2, etc.')]
+  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-names' => FALSE, 'sanitize-roles' => FALSE, 'sanitize-unpublish-reminders' => FALSE]): void {
   }
 
   /**
@@ -173,11 +169,8 @@ class SanitizationCommands extends DrushCommands {
    * these dangling references as they pertain to the active revision of the
    * host entity. ie: we want every published node to only reference published
    * paragraphs.
-   *
-   * @bootstrap full
-   *
-   * @command ma:checkmissing
    */
+  #[CLI\Command(name: 'ma:checkmissing')]
   public function checkMissing() {
     /** @var \Drupal\field\FieldStorageConfigInterface[] $fieldStorages */
     $fieldStorages = $this->getEntityStorage('field_storage_config')
@@ -220,9 +213,8 @@ class SanitizationCommands extends DrushCommands {
 
   /**
    * Sanitize the database table for the user roles.
-   *
-   * @hook post-command sql-sanitize
    */
+  #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: SanitizeCommands::SANITIZE)]
   public function userRole($result, CommandData $commandData) {
     if (!$commandData->input()->getOption('sanitize-roles')) {
       return;
@@ -238,9 +230,8 @@ class SanitizationCommands extends DrushCommands {
 
   /**
    * Sanitize the database table for the unpublish reminders.
-   *
-   * @hook post-command sql-sanitize
    */
+  #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: SanitizeCommands::SANITIZE)]
   public function unpublishReminders($result, CommandData $commandData) {
     if (!$commandData->input()->getOption('sanitize-unpublish-reminders')) {
       return;
@@ -256,9 +247,8 @@ class SanitizationCommands extends DrushCommands {
 
   /**
    * Sanitize usernames.
-   *
-   * @hook post-command sql-sanitize
    */
+  #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: SanitizeCommands::SANITIZE)]
   public function userName($result, CommandData $commandData) {
     if (!$commandData->input()->getOption('sanitize-names')) {
       return;
@@ -274,10 +264,8 @@ class SanitizationCommands extends DrushCommands {
 
   /**
    * Test an option value to see if it is disabled.
-   * @param $value
-   * @return bool
    */
-  protected function isEnabled($value) {
+  protected function isEnabled($value): bool {
     return $value != 'no' && $value != '0';
   }
 
