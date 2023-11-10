@@ -2713,9 +2713,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
 
   if (!empty($fields['subheading']) && Helper::isFieldPopulated($node, $fields['subheading'])) {
     $subCategory = [
-      'title' => Helper::fieldFullView($node, $fields['subheading']),
-      'level' => 3,
-      'tag' => 'div',
+      'title' => Helper::fieldFullView($node, $fields['subheading'])
     ];
   }
 
