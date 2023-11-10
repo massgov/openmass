@@ -321,7 +321,7 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            - run: 'echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "docroot/sites/default/secrets.settings.php"'
+            - run: 'echo -e "${SECRETS_MASS_FEEDBACK_LOOP}" >> "docroot/sites/default/secrets.settings.php"'
             - run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
