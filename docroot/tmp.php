@@ -5,11 +5,10 @@ use Drupal\prod_no_redirect\ProdNoRedirectDrupalKernel;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Force Drupal to use Akamai header even without knowing all the possible IPs before it.
+ * Force Drupal to use trusted Akamai header even without knowing all the possible IPs before it.
  * As suggested by https://www.drupal.org/project/reverse_proxy_header
  */
 if (isset($_SERVER['HTTP_TRUE_CLIENT_IP'])) {
-  print "swapped\n";
   $_SERVER['HTTP_X_FORWARDED_FOR'] = $_SERVER['HTTP_TRUE_CLIENT_IP'];
 }
 
