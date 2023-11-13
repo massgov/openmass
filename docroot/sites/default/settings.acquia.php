@@ -54,7 +54,8 @@ if (!$cli && ($is_prod || $is_mass_gov)) {
 #$settings['reverse_proxy_header'] = 'True-Client-IP';
 #$settings['reverse_proxy'] = TRUE;
 # $settings['reverse_proxy_addresses'] = ['a.b.c.d', 'e.f.g.h/24', ...];
-$settings['reverse_proxy_trusted_headers'] = 'True-Client-IP';
+# $settings['reverse_proxy_trusted_headers'] = 'True-Client-IP';
+$settings['reverse_proxy_trusted_headers'] = \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR | \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_HOST | \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT | \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO | \Symfony\Component\HttpFoundation\Request::HEADER_FORWARDED;
 
 
 /**
