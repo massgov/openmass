@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
  * As suggested by https://www.drupal.org/project/reverse_proxy_header
  */
 if (isset($_SERVER['HTTP_TRUE_CLIENT_IP'])) {
+  print "swapped\n";
   $_SERVER['HTTP_X_FORWARDED_FOR'] = $_SERVER['HTTP_TRUE_CLIENT_IP'];
 }
 
