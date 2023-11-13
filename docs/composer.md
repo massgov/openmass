@@ -59,8 +59,8 @@ Most packages that are used will follow [Semantic Versioning](https://semver.org
 - Use loose version constraints wherever possible. This will allow the version to be updated in the future without changing `composer.json`.
 
 - On occasion, `composer.json` and `composer.lock` files can get out of sync. In order to prevent this from happening, we enabled CircleCI to run `composer validate`. This validation process ensures that both `.json` and `.lock` are in sync and no `json` syntax errors exist. If you get an error that these two files are out of sync, run `composer update --lock` on your local branch and commit the output of this operation.
-  
-- If you have trouble running `ahoy comi` you can try deleting the vendor directory and rerunning `composer install` to get a fresh copy of the vendor directory:
+
+- If you have trouble running `ddev composer install` you can try deleting the vendor directory and rerunning `composer install` to get a fresh copy of the vendor directory:
       - `cd <path/to/mass>`
       - `rm -r vendor`
       - `composer install`
