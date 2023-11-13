@@ -51,7 +51,7 @@ if (!$cli && ($is_prod || $is_mass_gov)) {
  * Set the HTTP header name which stores real client IP. Harmless if not provided.
  * See https://www.drupal.org/project/reverse_proxy_header.
  */
-$settings['reverse_proxy_header'] = 'TRUE-CLIENT-IP';
+$settings['reverse_proxy_header'] = 'HTTP_TRUE_CLIENT_IP';
 //# Note customization at top of index.php
 //$settings['reverse_proxy'] = TRUE;
 //# $settings['reverse_proxy_addresses'] = ['a.b.c.d', 'e.f.g.h/24', ...];
