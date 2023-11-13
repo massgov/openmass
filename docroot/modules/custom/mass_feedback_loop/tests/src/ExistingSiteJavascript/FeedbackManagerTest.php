@@ -33,6 +33,10 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
    */
   protected function setUp(): void {
     parent::setUp();
+
+    // Skip test. This test can be used for local debugging of Feedback Manager.
+    $this->markTestSkipped('Disabled by default.');
+
     /** @var \Drupal\Tests\DocumentElement */
     $this->page = $this->getSession()->getPage();
 
