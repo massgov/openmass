@@ -21,4 +21,5 @@ $response = $kernel->handle($request);
 
 print \Drupal::request()->getClientIp();
 
+print_r(\Drupal::request()->server);
 print_r($_SERVER);
