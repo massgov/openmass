@@ -3809,6 +3809,17 @@ function mass_theme_preprocess_block(&$variables) {
   // Get base_path into our block.twig templates
   // http://data.agaric.com/how-get-base-path-your-drupal-8-site-twig-template
   $variables['base_path'] = base_path();
+
+  if ($variables['elements']['#id'] == 'mainnavigation_3' || $variables['elements']['#id'] == 'mainnavigation_2') {
+    // Get the node object.
+    $node = \Drupal::routeMatch()->getParameter('node');
+
+    // Check if the current page is a node page.
+    if ($node instanceof NodeInterface) {
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node);
+      $variables['headerSearch']['id'] = 'header-search-mobile';
+    }
+  }
 }
 
 /**
@@ -4498,6 +4509,8 @@ function mass_theme_preprocess_page(&$variables) {
       if (array_key_exists($bundle, $map)) {
         $variables['main_class'] = $map[$bundle];
       }
+
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node);
 
       // Add class for org-type to main wrapper.
       if ($bundle === 'org_page' && $node->hasField('field_subtype') && !$node->field_subtype->isEmpty()) {

@@ -12,6 +12,7 @@ use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\mayflower\Helper;
 use Drupal\media\MediaInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 
 /**
@@ -1203,6 +1204,38 @@ class Molecules {
   }
 
   /**
+   * Returns the variables structure required to render headerSearch.
+   *
+   * @param object $entity
+   *   The object that contains the fields.
+   *
+   * @see @molecules/header-search.twig
+   *
+   * @return array
+   *   Returns an array of items that contains:
+   *    [[
+   *      "path": "@molecules/action-map.twig",
+   *      "data": "[actionMap",
+   */
+  public static function prepareHeaderSearch($entity) {
+    $has_suggestions = FALSE;
+    $suggested_scopes = [];
+    if ($entity instanceof NodeInterface) {
+      $suggested_scopes = \Drupal::service('mass_metatag.utilities')->getAllOrgsFromNode($entity, FALSE, FALSE, FALSE);
+      if (!empty($suggested_scopes)) {
+        $has_suggestions = TRUE;
+      }
+    }
+    return [
+      'hasSuggestions' => $has_suggestions,
+      'suggestedScopes' => $suggested_scopes,
+      'id' => 'header-search',
+      'placeholder' => 'Search Mass.gov',
+      'label' => 'Search terms',
+    ];
+  }
+
+  /**
    * Returns the variables structure required to render widgets.
    *
    * @param object $entity
@@ -1544,8 +1577,8 @@ class Molecules {
     $endTimestamp = $entity->{$fields['date']}->end_value;
 
     // Format the dates and times according to style guide.
-    list($startDateTime, $startDate, $startTime) = Helper::getMayflowerDate($startTimestamp);
-    list($endDateTime, $endDate, $endTime) = Helper::getMayflowerDate($endTimestamp);
+    [$startDateTime, $startDate, $startTime] = Helper::getMayflowerDate($startTimestamp);
+    [$endDateTime, $endDate, $endTime] = Helper::getMayflowerDate($endTimestamp);
 
     /*
      * Set up the date summary for single day events.

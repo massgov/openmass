@@ -39,11 +39,13 @@ class MassMetatagUtilities {
    *   If the flag is specified only parents slugified titles will be returned.
    * @param bool $parent_meta
    *   If the flag is specified only parents metadata will be returned.
+   * @param bool $skip_slugify
+   *    If the flag is specified the returned data will be slugified.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
    */
-  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE) {
+  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE, bool $slugify = TRUE) {
     $result = [];
 
     // The array that will hold all the orgs to check for parents.
@@ -61,7 +63,12 @@ class MassMetatagUtilities {
         // If it is an unchecked org, add the slugified title to values.
         if (!$parent_only) {
           if (!in_array($node->id(), $checked_orgs)) {
-            $result[] = $this->slugify(trim($node->label()));
+            if ($slugify) {
+              $result[] = $this->slugify(trim($node->label()));
+            }
+            else {
+              $result[] = trim($node->label());
+            }
           }
         }
         else {
@@ -75,7 +82,12 @@ class MassMetatagUtilities {
               ];
             }
             else {
-              $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+              if ($slugify) {
+                $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+              }
+              else {
+                $result[] = trim($node->field_parent->entity->label());
+              }
             }
           }
         }
