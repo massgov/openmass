@@ -12,6 +12,9 @@ use Drupal\Core\DrupalKernel;
 use Drupal\prod_no_redirect\ProdNoRedirectDrupalKernel;
 use Symfony\Component\HttpFoundation\Request;
 
+// As suggested by https://www.drupal.org/project/reverse_proxy_header
+$_SERVER['HTTP_X_FORWARDED_FOR'] = $_SERVER['HTTP_TRUE_CLIENT_IP'];
+
 $autoloader = require_once 'autoload.php';
 
 $kernel = new ProdNoRedirectDrupalKernel('prod', $autoloader);
