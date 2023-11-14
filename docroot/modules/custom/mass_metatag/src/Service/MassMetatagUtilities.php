@@ -39,13 +39,14 @@ class MassMetatagUtilities {
    *   If the flag is specified only parents slugified titles will be returned.
    * @param bool $parent_meta
    *   If the flag is specified only parents metadata will be returned.
-   * @param bool $skip_slugify
-   *    If the flag is specified the returned data will be slugified.
+   * @param bool $contextual_search
+   *    If the flag is specified the returned data will be used
+   *    in contextual search.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
    */
-  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE, bool $slugify = TRUE) {
+  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE, bool $contextual_search = FALSE) {
     $result = [];
 
     // The array that will hold all the orgs to check for parents.
@@ -63,11 +64,15 @@ class MassMetatagUtilities {
         // If it is an unchecked org, add the slugified title to values.
         if (!$parent_only) {
           if (!in_array($node->id(), $checked_orgs)) {
-            if ($slugify) {
+            if (!$contextual_search) {
               $result[] = $this->slugify(trim($node->label()));
             }
             else {
-              $result[] = trim($node->label());
+              if ($node->hasField('field_field_org_no_search_filter')) {
+                if ($node->field_field_org_no_search_filter->value != '1') {
+                  $result[] = trim($node->label());
+                }
+              }
             }
           }
         }
@@ -82,7 +87,7 @@ class MassMetatagUtilities {
               ];
             }
             else {
-              if ($slugify) {
+              if (!$contextual_search) {
                 $result[] = $this->slugify(trim($node->field_parent->entity->label()));
               }
               else {

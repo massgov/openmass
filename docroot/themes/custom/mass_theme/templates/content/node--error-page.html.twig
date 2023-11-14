@@ -37,7 +37,7 @@
         %}
         {% include "@organisms/by-template/error-page.twig" with { 'errorPage': errorPage } %}
         {% if content.field_include_search|render|striptags|trim == 'True' %}
-          {% include "@custom_includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
+          {% include "@molecules/header-search.twig" %}
         {% endif %}
         {% if content.field_helpful_links is not empty %}
           {{ content.field_helpful_links }}

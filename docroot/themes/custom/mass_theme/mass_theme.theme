@@ -3817,8 +3817,12 @@ function mass_theme_preprocess_block(&$variables) {
     // Check if the current page is a node page.
     if ($node instanceof NodeInterface) {
       $variables['headerSearch'] = Molecules::prepareHeaderSearch($node);
-      $variables['headerSearch']['id'] = 'header-search-mobile';
     }
+    else {
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch();
+    }
+    // Override the ID since this block is used on mobile screens.
+    $variables['headerSearch']['id'] = 'header-search-mobile';
   }
 }
 
@@ -3970,6 +3974,10 @@ function mass_theme_add_regions_to_node($allowed_regions, &$variables) {
  */
 function mass_theme_preprocess_node(&$variables) {
   $node = $variables['node'];
+
+  if ($node->bundle() == 'error_page') {
+    $variables['headerSearch'] = Molecules::prepareHeaderSearch($node);
+  }
 
   // Retrieve view mode.
   $view_mode = $variables['view_mode'];
@@ -4460,6 +4468,15 @@ function mass_theme_preprocess_html(&$variables) {
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
+}
+
+/**
+ * Implements hook_preprocess_page().
+ *
+ * Remove page search if we're using our search band in stacked layout.
+ */
+function mass_theme_preprocess_page__simple(&$variables) {
+  $variables['headerSearch'] = Molecules::prepareHeaderSearch();
 }
 
 /**

@@ -1206,22 +1206,22 @@ class Molecules {
   /**
    * Returns the variables structure required to render headerSearch.
    *
-   * @param object $entity
+   * @param object|null $entity
    *   The object that contains the fields.
-   *
-   * @see @molecules/header-search.twig
    *
    * @return array
    *   Returns an array of items that contains:
    *    [[
    *      "path": "@molecules/action-map.twig",
    *      "data": "[actionMap",
+   *@see @molecules/header-search.twig
+   *
    */
-  public static function prepareHeaderSearch($entity) {
+  public static function prepareHeaderSearch(object $entity = NULL) {
     $has_suggestions = FALSE;
     $suggested_scopes = [];
     if ($entity instanceof NodeInterface) {
-      $suggested_scopes = \Drupal::service('mass_metatag.utilities')->getAllOrgsFromNode($entity, FALSE, FALSE, FALSE);
+      $suggested_scopes = \Drupal::service('mass_metatag.utilities')->getAllOrgsFromNode($entity, FALSE, FALSE, TRUE);
       if (!empty($suggested_scopes)) {
         $has_suggestions = TRUE;
       }
