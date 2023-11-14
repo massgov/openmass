@@ -1,454 +1,504 @@
+## [0.382.0] - November 14, 2023
+
+### Changed
+
+- DP-23015: Standardize on DDEV. Add descriptions for all custom commands.
+- DP-27217: Render cache fixes - media download links and org-wide invalidations
+- DP-30747: Use port 80 in DDEV router. This helps us use the automatic http to https redirect
+
+### Fixed
+
+- DP-30473: Changed the Add/edit document page to have a link at the top to suggest not using a document and help text when uploading a file to remind authors to test documents for accessibility.
+- DP-30754: Fix styling issues with message banners.
+- DP-30770: Changes to alert content type to fix validation issues related to conditional fields.
+- DP-30836: Fixed backup URL retrieval.
+
+### Added
+
+- DP-29929: Flag on org pages to not allow the org to be used in a search filter. This is for future use.
+- DP-30524: Added tests for Feedback Manager.
+
 
 ## [0.381.1] - November 8, 2023
 
 ### Fixed
-- DP-30763: Location filter by location not changing order of locations HOTFIX.
 
+- DP-30763: Location filter by location not changing order of locations HOTFIX.
 
 ## [0.381.0] - November 7, 2023
 
 ### Changed
-  - DP-27208: Drupal 10 - upgrade core and several contrib modules
-  - DP-30507: Upgrade to Drush 12
-  - DP-30639: Remove build_with_latest_mayflower CI job which is used in deploy_cd workflow.
-  
-### Removed
-  - DP-29261: Remove parent organizations from the mg_organization metadata field.
-  
-### Fixed
-  - DP-30388: Resolve JS errors.
-  - DP-30587: Fix 500 error on edit.mass.gov found during bulk edit.
-  - DP-30611: Issue in rich text when hyperlinking document to existing text.
-  - DP-30642: Fix deprecation errors.
-  - DP-30688: Fixed issues with keyword and watched content filters in Feedback Manager.
-  
 
+- DP-27208: Drupal 10 - upgrade core and several contrib modules
+- DP-30507: Upgrade to Drush 12
+- DP-30639: Remove build_with_latest_mayflower CI job which is used in deploy_cd workflow.
+
+### Removed
+
+- DP-29261: Remove parent organizations from the mg_organization metadata field.
+
+### Fixed
+
+- DP-30388: Resolve JS errors.
+- DP-30587: Fix 500 error on edit.mass.gov found during bulk edit.
+- DP-30611: Issue in rich text when hyperlinking document to existing text.
+- DP-30642: Fix deprecation errors.
+- DP-30688: Fixed issues with keyword and watched content filters in Feedback Manager.
 
 ## [0.380.0] - October 31, 2023
 
 ### Fixed
-  - DP-26422: Info details page missing menu overlay.
-  
-### Changed
-  - DP-29972: Stop hard coding domain for All Documents item titles
-  - DP-30517: Analytics tab cleanup.
-  - DP-30523: Moved bulk edit of labels view to separate view from advanced search, minor tweaks.
-  
 
+- DP-26422: Info details page missing menu overlay.
+
+### Changed
+
+- DP-29972: Stop hard coding domain for All Documents item titles
+- DP-30517: Analytics tab cleanup.
+- DP-30523: Moved bulk edit of labels view to separate view from advanced search, minor tweaks.
 
 ## [0.379.0] - October 24, 2023
 
 ### Changed
-  - DP-28648: Change behavior of 'method' section of how-to pages.
-  - DP-30497: New label view, modifications to advanced search view.
-  - DP-8417: Display all contact information in right column when there are multiple on a how-to page.
-  
-### Fixed
-  - DP-29938: Addressed issues where Feedback API calls were not properly formatted.
-  - DP-30232: Fix duplicate parent orgs in metadata.
-  - DP-30352: Content Performance view CSV is missing most data.
-  - DP-30360: Backported views filter configurations for Content.
-  - DP-30373: Fix analytics dashboard theme function.
-  - DP-30436: Fixing all content view CSV export.
-  
 
+- DP-28648: Change behavior of 'method' section of how-to pages.
+- DP-30497: New label view, modifications to advanced search view.
+- DP-8417: Display all contact information in right column when there are multiple on a how-to page.
+
+### Fixed
+
+- DP-29938: Addressed issues where Feedback API calls were not properly formatted.
+- DP-30232: Fix duplicate parent orgs in metadata.
+- DP-30352: Content Performance view CSV is missing most data.
+- DP-30360: Backported views filter configurations for Content.
+- DP-30373: Fix analytics dashboard theme function.
+- DP-30436: Fixing all content view CSV export.
 
 ## [0.378.0] - October 17, 2023
 
 ### Changed
-  - DP-25894: Set consistent border to table cells.
-  - DP-29849: Accessibility error fix for the org. nav.
-  
-### Fixed
-  - DP-29882: Fix raw "node" links in content.
-  - DP-29961: D10 upgrade - Parent node dynamic property warning fix.
-  
-### Removed
-  - DP-30076: Remove old analytics dashboards from Drupal.
-  
-### Added
-  - DP-30228: Add Farsi language
-  
 
+- DP-25894: Set consistent border to table cells.
+- DP-29849: Accessibility error fix for the org. nav.
+
+### Fixed
+
+- DP-29882: Fix raw "node" links in content.
+- DP-29961: D10 upgrade - Parent node dynamic property warning fix.
+
+### Removed
+
+- DP-30076: Remove old analytics dashboards from Drupal.
+
+### Added
+
+- DP-30228: Add Farsi language
 
 ## [0.377.0] - October 10, 2023
 
 ### Changed
-  - DP-29104: Remove the lightest font-weight globally. Space out and bump up font-weight scale evenly to better show visual hierarchy. Remove styling overrides on telephone links, so they appear as other contact links.
-  - DP-30033: Adding duplicate querystring parameter to looker URL to support multiple datasources.
-  
-### Added
-  - DP-29554: Report view for info details pages. Help text updates for login field
-  
-### Removed
-  - DP-29606: Remove service details content type.
-  
-### Fixed
-  - DP-29955: Fix edit form sidebar buttons position.
-  
 
+- DP-29104: Remove the lightest font-weight globally. Space out and bump up font-weight scale evenly to better show visual hierarchy. Remove styling overrides on telephone links, so they appear as other contact links.
+- DP-30033: Adding duplicate querystring parameter to looker URL to support multiple datasources.
+
+### Added
+
+- DP-29554: Report view for info details pages. Help text updates for login field
+
+### Removed
+
+- DP-29606: Remove service details content type.
+
+### Fixed
+
+- DP-29955: Fix edit form sidebar buttons position.
 
 ## [0.376.0] - October 3, 2023
 
 ### Changed
-  - DP-28040: Updated Conditional Fields module.
-  - DP-28514: Add a condition to render social media links only when its content is available.
-  - DP-28724: Add validation to require at least one paragraph in an org section.
-  - DP-29103: Update Media Entity Download CKEditor plugin patch for D10.
-  
-### Removed
-  - DP-29329: Delete unused fields on Topic page.
-  
-### Added
-  - DP-29648: Add directions override link to contact content type.
-  
-### Fixed
-  - DP-29830: Fixed paragraph buttons positioning.
-  - DP-29834: Location pages not appearing in XML sitemap.
-  
-### Security
-  - DP-29839: Update 'office hours' module.
-  
 
+- DP-28040: Updated Conditional Fields module.
+- DP-28514: Add a condition to render social media links only when its content is available.
+- DP-28724: Add validation to require at least one paragraph in an org section.
+- DP-29103: Update Media Entity Download CKEditor plugin patch for D10.
+
+### Removed
+
+- DP-29329: Delete unused fields on Topic page.
+
+### Added
+
+- DP-29648: Add directions override link to contact content type.
+
+### Fixed
+
+- DP-29830: Fixed paragraph buttons positioning.
+- DP-29834: Location pages not appearing in XML sitemap.
+
+### Security
+
+- DP-29839: Update 'office hours' module.
 
 ## [0.375.0] - September 26, 2023
 
 ### Changed
-  - DP-27211: Upgrade to PHP 8.2
-  - DP-28587: Rename Alert feature on Info Details, Guide content types to "Highlight"
-  - DP-29773: Help text and field layout changes to accomodate org nav change.
-  - DP-29804: Disallow new or cloned location details pages.
-  - DP-29828: Use PHP 8.2 at CircleCI for several jobs (use newer drupal-container)
-  
-### Security
-  - DP-29825: Drupal core update from version 9.5.10 to 9.5.11.
-  
 
+- DP-27211: Upgrade to PHP 8.2
+- DP-28587: Rename Alert feature on Info Details, Guide content types to "Highlight"
+- DP-29773: Help text and field layout changes to accomodate org nav change.
+- DP-29804: Disallow new or cloned location details pages.
+- DP-29828: Use PHP 8.2 at CircleCI for several jobs (use newer drupal-container)
+
+### Security
+
+- DP-29825: Drupal core update from version 9.5.10 to 9.5.11.
 
 ## [0.374.0] - September 19, 2023
 
 ### Changed
-  - DP-28339: D10 upgrade packages - tokens/metatag/schema_metatag/field_tokens.
-  - DP-28586: Remove non-English pages and docs from orphan reports (2)
-  - DP-28815: Org nav jump link change openmass implementation.
-  - DP-28823: D10 upgrade - pathologic, Components, Datalayer
-  - DP-28824: D10 upgrade - 3 jQuery UI modules.
-  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
-  - DP-29614: Modify Content that needs attention component on /admin/home to use BigQuery data
-  - DP-29680: Link nos per k to feedback in Views
-  
-### Fixed
-  - DP-28586: PHPCS fix.
-  
-### Added
-  - DP-29014: Add a fixed org page component that appears below all sections above the footer.
-  - DP-29613: Add mg_organization and mg_parent_org metatags to promotional pages.
-  
 
+- DP-28339: D10 upgrade packages - tokens/metatag/schema_metatag/field_tokens.
+- DP-28586: Remove non-English pages and docs from orphan reports (2)
+- DP-28815: Org nav jump link change openmass implementation.
+- DP-28823: D10 upgrade - pathologic, Components, Datalayer
+- DP-28824: D10 upgrade - 3 jQuery UI modules.
+- DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+- DP-29614: Modify Content that needs attention component on /admin/home to use BigQuery data
+- DP-29680: Link nos per k to feedback in Views
+
+### Fixed
+
+- DP-28586: PHPCS fix.
+
+### Added
+
+- DP-29014: Add a fixed org page component that appears below all sections above the footer.
+- DP-29613: Add mg_organization and mg_parent_org metatags to promotional pages.
 
 ## [0.373.0] - September 12, 2023
 
 ### Changed
-  - DP-28608: Replace superset data in views with data from bigquery
-  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
-  - DP-29416: Replace Twitter logo with new 'X' logo and add Threads logo
-  - DP-29553: Remove service details pages from visual regression testing in backstop.
-  - DP-29559: Role permissions changed to allow all authors and editors access to new analytics tab without tester role. Cleanup of tester role permissions.
-  
-### Fixed
-  - DP-29493: Fix default domain URLs from service detail migration
-  - DP-29536: Fixed Tugboat builds.
-  - DP-29600: Fixed suggested page item link covering the whole page.
-  - DP-29649: Correct spelling issue in address error.
-  
-### Added
-  - Avoid redirect to install.php when DB is down
-  
 
+- DP-28608: Replace superset data in views with data from bigquery
+- DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+- DP-29416: Replace Twitter logo with new 'X' logo and add Threads logo
+- DP-29553: Remove service details pages from visual regression testing in backstop.
+- DP-29559: Role permissions changed to allow all authors and editors access to new analytics tab without tester role. Cleanup of tester role permissions.
+
+### Fixed
+
+- DP-29493: Fix default domain URLs from service detail migration
+- DP-29536: Fixed Tugboat builds.
+- DP-29600: Fixed suggested page item link covering the whole page.
+- DP-29649: Correct spelling issue in address error.
+
+### Added
+
+- Avoid redirect to install.php when DB is down
 
 ## [0.372.0] - September 5, 2023
 
 ### Changed
-  - DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
-  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
-  - DP-288257: Consolidate two Drush commands into one - ma:heal-references-to-trash
-  - DP-28842: Drupal 10 compat - Update Entity Embed and LinkIt
-  - DP-29492: Config change to load Google Tag manager in all paths including author paths.
-  
-### Removed
-  - DP-26154: Remove testing of service_details pages
-  
-### Fixed
-  - DP-28622: Export report of orphaned pages fixed.
-  - DP-29391: Fix flagging for migrated service details pages.
-  
-### Added
-  - DP-29259: Add metadata field mg_parent_org.
-  - DP-29392: Add drush ma:backup command for starting an on-demand DB backup.
-  
 
+- DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
+- DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+- DP-288257: Consolidate two Drush commands into one - ma:heal-references-to-trash
+- DP-28842: Drupal 10 compat - Update Entity Embed and LinkIt
+- DP-29492: Config change to load Google Tag manager in all paths including author paths.
+
+### Removed
+
+- DP-26154: Remove testing of service_details pages
+
+### Fixed
+
+- DP-28622: Export report of orphaned pages fixed.
+- DP-29391: Fix flagging for migrated service details pages.
+
+### Added
+
+- DP-29259: Add metadata field mg_parent_org.
+- DP-29392: Add drush ma:backup command for starting an on-demand DB backup.
 
 ## [0.371.0] - August 15, 2023
 
 ### Changed
-  - DP-26359: Remove a link from an image in a image promo and a suggested page units. |- Exclude a redundant "more" link from keyboad and AT users from a image promo unit. |- Expand the clickable area to the antire image promo and suggesnted page unit containers. |- Restructure the image promos and the suggested pages with a list for better semantics.
-  - DP-28827: D10 upgrade - "Collab with maintainers" modules
-  
-### Added
-  - DP-29328: Added service details post-migration step for primary parent fields.
-  
 
+- DP-26359: Remove a link from an image in a image promo and a suggested page units. |- Exclude a redundant "more" link from keyboad and AT users from a image promo unit. |- Expand the clickable area to the antire image promo and suggesnted page unit containers. |- Restructure the image promos and the suggested pages with a list for better semantics.
+- DP-28827: D10 upgrade - "Collab with maintainers" modules
+
+### Added
+
+- DP-29328: Added service details post-migration step for primary parent fields.
 
 ## [0.370.1] - August 9, 2023
 
 ### Fixed
+
 - DP-29284: Fixed issue with feedback not displaying for info details pages.
-
-
 
 ## [0.370.0] - August 8, 2023
 
 ### Fixed
-  - DP-20609: Eliminated forced 100% width on images and figures in rich text.
-  
-### Changed
-  - DP-26154: Migrate service details pages to info details
-  - DP-28963: More info link missing from contact component on info details pages.
-  
-### Added
-  - DP-29018: Add 5 languages, including Twi custom language
-  - DP-29229: Added lazy loading to iframes.
-  
 
+- DP-20609: Eliminated forced 100% width on images and figures in rich text.
+
+### Changed
+
+- DP-26154: Migrate service details pages to info details
+- DP-28963: More info link missing from contact component on info details pages.
+
+### Added
+
+- DP-29018: Add 5 languages, including Twi custom language
+- DP-29229: Added lazy loading to iframes.
 
 ## [0.369.0] - August 1, 2023
 
 ### Changed
-  - DP-27828: Updated Media Entity Download to latest version.
-  - DP-28825: D10 upgrade - Simple Sitemap.
-  
 
+- DP-27828: Updated Media Entity Download to latest version.
+- DP-28825: D10 upgrade - Simple Sitemap.
 
 ## [0.368.0] - July 25, 2023
 
 ### Added
-  - DP-28439: New views to show the amount of content by organization.
-  
-### Removed
-  - DP-28600: Removed Icon from Topic pages.
-  
-### Fixed
-  - DP-28600: Fixed Info details accordion styling on mobile issue.
-  - DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
-  
-### Changed
-  - DP-28735: Update Paragraphs, Entity Reference Revision, misc
-  - DP-28783: A11y - aria-label on alert icon.
-  - DP-28854: Remove Google Optimize - it is unused
-  - DP-28890: Process BigQuery queue outside of cron
-  
 
+- DP-28439: New views to show the amount of content by organization.
+
+### Removed
+
+- DP-28600: Removed Icon from Topic pages.
+
+### Fixed
+
+- DP-28600: Fixed Info details accordion styling on mobile issue.
+- DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
+
+### Changed
+
+- DP-28735: Update Paragraphs, Entity Reference Revision, misc
+- DP-28783: A11y - aria-label on alert icon.
+- DP-28854: Remove Google Optimize - it is unused
+- DP-28890: Process BigQuery queue outside of cron
 
 ## [0.367.0] - July 11, 2023
 
 ### Added
-  - DP-26725: Add option to hide 'Did you find' component on form content type.
-  - DP-28507: Heal orphan references via redirect inspection
-  - DP-28604: Add Siteimprove data to bigquery module
-  - DP-28649: Drupal view made for internal report of how-to pages. Will not be visible to authors
-  
-### Changed
-  - DP-27207: D10 - upgrade Views related modules
-  - DP-28570: Changed deploy_cd CI workflow.
-  
 
+- DP-26725: Add option to hide 'Did you find' component on form content type.
+- DP-28507: Heal orphan references via redirect inspection
+- DP-28604: Add Siteimprove data to bigquery module
+- DP-28649: Drupal view made for internal report of how-to pages. Will not be visible to authors
+
+### Changed
+
+- DP-27207: D10 - upgrade Views related modules
+- DP-28570: Changed deploy_cd CI workflow.
 
 ## [0.366.0] - June 27, 2023
 
 ### Added
-  - DP-28177: Added new drupal module to get nightly data from BigQuery instead of Superset
-  
-### Changed
-  - DP-28558: Reduce number of pages tested in 500 tests.
-  - DP-28572: Backport of a production change to prevent unpublished pages from being redirected to login page on www.mass.gov.
-  
-### Fixed
-  - DP-28592: Resolve 500 errors on edit.mass.gov.
-  - DP-28606: Analytics NEW tab now showing for all appropriate content types.
-  
 
+- DP-28177: Added new drupal module to get nightly data from BigQuery instead of Superset
+
+### Changed
+
+- DP-28558: Reduce number of pages tested in 500 tests.
+- DP-28572: Backport of a production change to prevent unpublished pages from being redirected to login page on www.mass.gov.
+
+### Fixed
+
+- DP-28592: Resolve 500 errors on edit.mass.gov.
+- DP-28606: Analytics NEW tab now showing for all appropriate content types.
 
 ## [0.365.0] - June 20, 2023
 
 ### Removed
-  - DP-27052: Cleanup Drupal data listing views and assets.
-  - DP-28333: Remove the temp fix override css for map component z-index setting as it's replaced with the Mayflower content.
-  
-### Changed
-  - DP-28302: Have contact and related links on info details to right of overview if there is no TOC shown, eliminate related links at bottom on desktop.
-  
-### Fixed
-  - DP-28373: Fix filter bug for collections.
-  - DP-28478: A11y - Duplicate 'main navigation' labels in screen reader.
-  - DP-28497: A11y Eliminate duplicate IDs for header search input.
-  
-### Added
-  - DP-28432: Add components from Guide content type to Information details content type.
-  - DP-28475: Add testing so that we validate that Google Tag Manager code is actually inserted onto the pages.
-  
 
+- DP-27052: Cleanup Drupal data listing views and assets.
+- DP-28333: Remove the temp fix override css for map component z-index setting as it's replaced with the Mayflower content.
+
+### Changed
+
+- DP-28302: Have contact and related links on info details to right of overview if there is no TOC shown, eliminate related links at bottom on desktop.
+
+### Fixed
+
+- DP-28373: Fix filter bug for collections.
+- DP-28478: A11y - Duplicate 'main navigation' labels in screen reader.
+- DP-28497: A11y Eliminate duplicate IDs for header search input.
+
+### Added
+
+- DP-28432: Add components from Guide content type to Information details content type.
+- DP-28475: Add testing so that we validate that Google Tag Manager code is actually inserted onto the pages.
 
 ## [0.364.0] - June 13, 2023
 
 ### Added
-  - DP-26782: Added filtering for low quality feedback.
-  
+
+- DP-26782: Added filtering for low quality feedback.
+
 ### Fixed
-  - DP-27296: Fix deprecation warnings in our custom code (frontend).
-  
+
+- DP-27296: Fix deprecation warnings in our custom code (frontend).
+
 ### Changed
-  - DP-28410: Limit autocomplete for visitor help text to exclude certain content types that are not appropriate.
-  - DP-28460: Move config overrides later in settings.php. Fixes analytics new tab
-  
+
+- DP-28410: Limit autocomplete for visitor help text to exclude certain content types that are not appropriate.
+- DP-28460: Move config overrides later in settings.php. Fixes analytics new tab
+
 ### Removed
-  - DP-28479: Removed default config from old version of the Google Tag module.
-  
+
+- DP-28479: Removed default config from old version of the Google Tag module.
+
 ## [0.363.1] - June 8, 2023
 
 ### Fixed
+
 - DP-28467: Updated google_tag to address config bug.
-
-
 
 ## [0.363.0] - June 6, 2023
 
 ### Fixed
-  - DP-28447: Fix Twig integer filter errors on image promos.
+
+- DP-28447: Fix Twig integer filter errors on image promos.
 
 ### Changed
-  - DP-22494: Upgrade Mayflower PHP version to v8.
-  - DP-27345: Update Geo modules and misc modules to Drupal 10
-  - DP-27941: Banner image on info details added to Twitter and OG image metadata
-  - DP-27983: D10 - update redirect module
-  - DP-28133: Modify report of pages with no parents not to show executive orders.
-  - DP-28252: D10 module updates - ctools, dbal, key, entity_reference_tree, entity_heirarchy, purge
-  - DP-28334: Fix 500 error in KeyAuth module
-  - DP-28340: D10 upgrade path modules
-  - DP-28411: Eliminate truncation of titles in table of contents on binder.
-  
-### Added
-  - DP-28139: Add a linked from parent field to Children and Parents report.
-  - DP-28274: Add Analytics NEW tab for authors when editing.
-  - DP-28300: Add CSV export functionality to orphan reports.
-  - DP-28303: Added Entity usage regenerate new custom command.
-  - DP-28370: Add language functionality to service page.
-  
 
+- DP-22494: Upgrade Mayflower PHP version to v8.
+- DP-27345: Update Geo modules and misc modules to Drupal 10
+- DP-27941: Banner image on info details added to Twitter and OG image metadata
+- DP-27983: D10 - update redirect module
+- DP-28133: Modify report of pages with no parents not to show executive orders.
+- DP-28252: D10 module updates - ctools, dbal, key, entity_reference_tree, entity_heirarchy, purge
+- DP-28334: Fix 500 error in KeyAuth module
+- DP-28340: D10 upgrade path modules
+- DP-28411: Eliminate truncation of titles in table of contents on binder.
+
+### Added
+
+- DP-28139: Add a linked from parent field to Children and Parents report.
+- DP-28274: Add Analytics NEW tab for authors when editing.
+- DP-28300: Add CSV export functionality to orphan reports.
+- DP-28303: Added Entity usage regenerate new custom command.
+- DP-28370: Add language functionality to service page.
 
 ## [0.362.0] - May 23, 2023
 
 ### Fixed
-  - DP-26364: Map is included in the link.
-  
-### Changed
-  - DP-28136: Changes to feedback manager user interface.
-  - DP-28203: Increase resources for Backstop test job
-  - DP-28265: Add a space between the file size and the fiel title to be rendered in Firefox.
-  
-### Added
-  - DP-28202: Add new language to Mass.gov - Hmong
-  - DP-28301: Make report of visitor help pages.
-  
 
+- DP-26364: Map is included in the link.
+
+### Changed
+
+- DP-28136: Changes to feedback manager user interface.
+- DP-28203: Increase resources for Backstop test job
+- DP-28265: Add a space between the file size and the fiel title to be rendered in Firefox.
+
+### Added
+
+- DP-28202: Add new language to Mass.gov - Hmong
+- DP-28301: Make report of visitor help pages.
 
 ## [0.361.0] - May 16, 2023
 
 ### Fixed
-  - DP-28020: Fix Malformed TOC links (Follow-up).
-  - DP-28159: A11y - Admin menu color contrast.
-  - DP-28275: Fixed error when populating Internal Signees for news items.
-  
-### Added
-  - DP-28042: Hide password and check notify box during user creation
-  
-### Changed
-  - DP-28149: A11y Feedback - Text not included in an ARIA landmark.
-  
 
+- DP-28020: Fix Malformed TOC links (Follow-up).
+- DP-28159: A11y - Admin menu color contrast.
+- DP-28275: Fixed error when populating Internal Signees for news items.
+
+### Added
+
+- DP-28042: Hide password and check notify box during user creation
+
+### Changed
+
+- DP-28149: A11y Feedback - Text not included in an ARIA landmark.
 
 ## [0.360.0] - May 9, 2023
 
 ### Changed
-  - DP-25180: A11y - Identify 2 sets of TOCs.
-  - DP-27204: D10 upgrade packages - authoring/fields
-  - DP-28037: A11y - Color contrast for link text on map.
-  - DP-28067: Updated entity_usage_queue_tracking.
-  - DP-28134: Modify "Related content" paragraph to allow external links and custom link labels.
-  - DP-28145: Footer site policies link updated to new target page.
-  - DP-28226: Options for form submission relabeled and help text improved to clarify that submissions with >1000 characters of text should use success message on different page.
-  - DP-28706: Changed format of bypass header and added to Nightcrawler
-  
-### Added
-  - DP-28044: Make it possible for the chatbot to show up on Collections.
-  
-### Fixed
-  - DP-28078: aria label for binder previous button corrected.
-  - DP-28134: Related content paragraph follow up fix to avoid 500 errors.
-  
-### Removed
-  - DP-28155: Allow all authors to add callout link and card group to info details pages.
-  
 
+- DP-25180: A11y - Identify 2 sets of TOCs.
+- DP-27204: D10 upgrade packages - authoring/fields
+- DP-28037: A11y - Color contrast for link text on map.
+- DP-28067: Updated entity_usage_queue_tracking.
+- DP-28134: Modify "Related content" paragraph to allow external links and custom link labels.
+- DP-28145: Footer site policies link updated to new target page.
+- DP-28226: Options for form submission relabeled and help text improved to clarify that submissions with >1000 characters of text should use success message on different page.
+- DP-28706: Changed format of bypass header and added to Nightcrawler
+
+### Added
+
+- DP-28044: Make it possible for the chatbot to show up on Collections.
+
+### Fixed
+
+- DP-28078: aria label for binder previous button corrected.
+- DP-28134: Related content paragraph follow up fix to avoid 500 errors.
+
+### Removed
+
+- DP-28155: Allow all authors to add callout link and card group to info details pages.
 
 ## [0.359.0] - May 2, 2023
 
 ### Fixed
-  - DP-25705: A11y - Fixed hamburger main nav keyboard navigations to 1) use the correct arrow directions in the submenus and 2) fixed the skipping of google translate on the top.
-  
-### Added
-  - DP-27287: Added key auth support to the Content Metadata API
-  
-### Changed
-  - DP-27859: A11y - Rules of court pages do not start with a level 1 heading.
-  - DP-27895: A11y - Incorrect heading levels.
-  - DP-27934: Modify page sub title's line height to 1.5.
-  - DP-28038: Darken font color for .ma__arrow-nav__title and .ma__page-flipper__context-label by adjusting their alpha level to meet the minimum required color contrast.
-  
 
+- DP-25705: A11y - Fixed hamburger main nav keyboard navigations to 1) use the correct arrow directions in the submenus and 2) fixed the skipping of google translate on the top.
+
+### Added
+
+- DP-27287: Added key auth support to the Content Metadata API
+
+### Changed
+
+- DP-27859: A11y - Rules of court pages do not start with a level 1 heading.
+- DP-27895: A11y - Incorrect heading levels.
+- DP-27934: Modify page sub title's line height to 1.5.
+- DP-28038: Darken font color for .ma__arrow-nav__title and .ma__page-flipper__context-label by adjusting their alpha level to meet the minimum required color contrast.
 
 ## [0.358.0] - April 25, 2023
 
 ### Fixed
-  - DP-26219: Fixed empty headings on the home page.
-  - DP-26226: A11y - Fix keyboard navigation in homepage header.
-  - DP-26261: A11y - Empty tags in service page.
-  - DP-27693: Updated Superset endpoints to continue pulling in data.
-  - DP-27921: Correct spelling for aria attribute on sticky TOC show more button.
-  - DP-27930: A11y - Focusable hidden elements in feedback module.
-  - DP-27968: A11y - Fix download link screen reader text.
-  - DP-28013: A11y - Invalid value type for aria-expanded.
-  
+
+- DP-26219: Fixed empty headings on the home page.
+- DP-26226: A11y - Fix keyboard navigation in homepage header.
+- DP-26261: A11y - Empty tags in service page.
+- DP-27693: Updated Superset endpoints to continue pulling in data.
+- DP-27921: Correct spelling for aria attribute on sticky TOC show more button.
+- DP-27930: A11y - Focusable hidden elements in feedback module.
+- DP-27968: A11y - Fix download link screen reader text.
+- DP-28013: A11y - Invalid value type for aria-expanded.
+
 ### Changed
-  - DP-26232: Place the utility nav panel close button to the bottom of the panel conatiner to be the last item to get focus.
-  - DP-27209: Update media related modules to Drupal 10
-  - DP-27212: D10 upgrade packages - Peformance
-  - DP-27789: Redirect to destination page after login
-  - DP-27853: A11y - Invalid language codes.
-  - DP-27858: Darken the illustrated link label font color to meet the minimum required color contrast ratio.
-  - DP-27872: Updated security/performance packages for Drupal 10
-  - DP-27903: Use composer audit in nightly_security CI workflow
-  - DP-27916: Accessibility improvement for search related and main navigation components.
-  
+
+- DP-26232: Place the utility nav panel close button to the bottom of the panel conatiner to be the last item to get focus.
+- DP-27209: Update media related modules to Drupal 10
+- DP-27212: D10 upgrade packages - Peformance
+- DP-27789: Redirect to destination page after login
+- DP-27853: A11y - Invalid language codes.
+- DP-27858: Darken the illustrated link label font color to meet the minimum required color contrast ratio.
+- DP-27872: Updated security/performance packages for Drupal 10
+- DP-27903: Use composer audit in nightly_security CI workflow
+- DP-27916: Accessibility improvement for search related and main navigation components.
+
 ### Removed
-  - DP-26232: Remove focus on the utility nav close button when the utility panel opens.
-  
+
+- DP-26232: Remove focus on the utility nav close button when the utility panel opens.
+
 ### Added
-  - DP-27413: Create view showing documents that have no pages linking here.
-  - DP-27736: Added an HTTP header to Backstop pages to bypass Akamai.
-  
+
+- DP-27413: Create view showing documents that have no pages linking here.
+- DP-27736: Added an HTTP header to Backstop pages to bypass Akamai.
+
 ### Security
-  - DP-27966: Drupal Core update 9.5.5 to 9.5.8.
-  
+
+- DP-27966: Drupal Core update 9.5.5 to 9.5.8.
+
 ## [0.357.2] - April 12, 2023
 
 - No changes. Deploying just to help Acquia debug our open case.
@@ -460,74 +510,76 @@
 ## [0.357.0] - April 11, 2023
 
 ### Changed
-  - DP-26625: Increase visual prominence of links below search on home page.
-  - DP-27686: Immediately deploy release branch (and related CircleCI updates)
+
+- DP-26625: Increase visual prominence of links below search on home page.
+- DP-27686: Immediately deploy release branch (and related CircleCI updates)
 
 ### Added
-  - DP-27723: Add approval fields to User entity
 
+- DP-27723: Add approval fields to User entity
 
 ## [0.356.0] - April 6, 2023 (not released)
 
 ### Removed
-  - DP-26220: Removed feedback button markup from pages that do not have feedback forms.
+
+- DP-26220: Removed feedback button markup from pages that do not have feedback forms.
 
 ### Changed
-  - DP-26227: Restructure banner image credit component for semantics and screen reader users.
-  - DP-27423: Replaces the old backstop job in CircleCI with the new split test
-  - DP-27472: Fix layout shifts before taking backstop screenshots
-  - DP-27498: Use new Akamai domains for Acquia envs
-  - DP-27690: Pins backstop image to a fixed version
-Switches from puppeteer to playwright
-Disables some flaky tests temporarily
-Make the references capture try 3 times
 
-  - DP-27793: Change backstop "test" to use stage.mass.gov
+- DP-26227: Restructure banner image credit component for semantics and screen reader users.
+- DP-27423: Replaces the old backstop job in CircleCI with the new split test
+- DP-27472: Fix layout shifts before taking backstop screenshots
+- DP-27498: Use new Akamai domains for Acquia envs
+- DP-27690: Pins backstop image to a fixed version
+  Switches from puppeteer to playwright
+  Disables some flaky tests temporarily
+  Make the references capture try 3 times
+- DP-27793: Change backstop "test" to use stage.mass.gov
 
 ### Fixed
-  - DP-26259: A11y - Empty heading for video in promo page.
-  - DP-26302: A11y - Empty Contact list.
-  - DP-26314: A11y - Empty read more link.
-  - DP-27578: Move push_acquia CI job to build_tag workflow
-  - DP-27679: Fix 500 error in EventsRendererOrgPages
-  - DP-27679: Fix 500 error in InfoDetails focal_point preview.
-  - DP-27694: A11y - Eliminate duplicate IDs for main navigation and search elements.
-  - DP-27696: A11y - Collapsible content button label in org page.
-  - DP-27697: Fixed Leaflet map A11y.
-  - DP-27728: Removed old hosts from Backstop.
-  - DP-27734: A11y - Malformed TOC links.
 
-
+- DP-26259: A11y - Empty heading for video in promo page.
+- DP-26302: A11y - Empty Contact list.
+- DP-26314: A11y - Empty read more link.
+- DP-27578: Move push_acquia CI job to build_tag workflow
+- DP-27679: Fix 500 error in EventsRendererOrgPages
+- DP-27679: Fix 500 error in InfoDetails focal_point preview.
+- DP-27694: A11y - Eliminate duplicate IDs for main navigation and search elements.
+- DP-27696: A11y - Collapsible content button label in org page.
+- DP-27697: Fixed Leaflet map A11y.
+- DP-27728: Removed old hosts from Backstop.
+- DP-27734: A11y - Malformed TOC links.
 
 ## [0.355.0] - March 28, 2023
 
 ### Added
-  - DP-24499: Enable key auth module
+
+- DP-24499: Enable key auth module
 
 ### Changed
-  - DP-25653: Superset integration changed to also pull data for unpublished content.
-  - DP-26304: Remove empty aria-label from the span with a backgroud image for the press teaser component.
-  - DP-27348: Entity Usage Queue Tracking  - upgrade for Drupal 10
-  - DP-27578: Use git tag in env indicator when available
-  - DP-27591: Store render cache in Memcache
+
+- DP-25653: Superset integration changed to also pull data for unpublished content.
+- DP-26304: Remove empty aria-label from the span with a backgroud image for the press teaser component.
+- DP-27348: Entity Usage Queue Tracking  - upgrade for Drupal 10
+- DP-27578: Use git tag in env indicator when available
+- DP-27591: Store render cache in Memcache
 
 ### Fixed
-  - DP-26258: A11y - Empty heading with social media links.
-  - DP-27476: Fixed taxonomy term 500 error.
-  - DP-27487: Pages linking here fixes to show all pages for documents.
 
-
+- DP-26258: A11y - Empty heading with social media links.
+- DP-27476: Fixed taxonomy term 500 error.
+- DP-27487: Pages linking here fixes to show all pages for documents.
 
 ## [0.354.0] - March 21, 2023
 
 ### Fixed
-  - DP-25389: Wait for Papa.parse to finish manipulating csv tables and Caspio to load forms before taking a screenshot with Backstop
-  - DP-25829: Fixes Backstop ready code to wait for leaflet map tiles and markers to load before taking a screenshot
-  - DP-26574: Passes focal point information to illustrated header background images
-  - DP-27438: Fixed the issue with orphan paragraphs being shown in the "Pages linking here" tab.
-  - DP-27447: Document language bar not showing when document description is shown.
-  - DP-27471: Backstop Reliability Fixes
 
+- DP-25389: Wait for Papa.parse to finish manipulating csv tables and Caspio to load forms before taking a screenshot with Backstop
+- DP-25829: Fixes Backstop ready code to wait for leaflet map tiles and markers to load before taking a screenshot
+- DP-26574: Passes focal point information to illustrated header background images
+- DP-27438: Fixed the issue with orphan paragraphs being shown in the "Pages linking here" tab.
+- DP-27447: Document language bar not showing when document description is shown.
+- DP-27471: Backstop Reliability Fixes
 - Waits for alerts to have content before taking a screenshot
 - Fixes Caspio Form selector on pages which don't have a footer (i.e. the 404 page)
 - Splits the expansions of accordion toggle tests into emergency alerts and regular alerts
@@ -537,561 +589,604 @@ Make the references capture try 3 times
 
   - DP-27478: Organization report (view) for authors re-enabled.
   - DP-27545.yml: Removes the accordion test in Backstop for global alerts as they aren't always present
-Hides all alerts by default
-Refactors the mechanism in Backstop to hide alerts
-
+    Hides all alerts by default
+    Refactors the mechanism in Backstop to hide alerts
 
 ### Changed
-  - DP-26086: Update dependencies for Gin PR.
-  - DP-27421: Remove cache busting string from URLs fetched by Backstop for references
-in the new job which only collects reference images. Also adds a
-`--cachebuster` parameter to the relevant drush jobs.
 
+- DP-26086: Update dependencies for Gin PR.
+- DP-27421: Remove cache busting string from URLs fetched by Backstop for references
+  in the new job which only collects reference images. Also adds a
+  `--cachebuster` parameter to the relevant drush jobs.
 
 ### Added
-  - DP-26786: Add Composer dependencies for Gin theme
-  - DP-27259: Added local storage value to associate with site feedback submissions.
+
+- DP-26786: Add Composer dependencies for Gin theme
+- DP-27259: Added local storage value to associate with site feedback submissions.
 
 ### Security
-  - DP-27543: Drupal core - Moderately critical - Access bypass - SA-CORE-2023-004.
 
-
+- DP-27543: Drupal core - Moderately critical - Access bypass - SA-CORE-2023-004.
 
 ## [0.353.0] - March 7, 2023
 
 ### Changed
-  - DP-27022: Adjust feedback manager report in Drupal
-  - DP-27225: Increase quantity shown on feedback page from 10 to 20.
-  - DP-27435: Dont list an unpublished Locations page
+
+- DP-27022: Adjust feedback manager report in Drupal
+- DP-27225: Increase quantity shown on feedback page from 10 to 20.
+- DP-27435: Dont list an unpublished Locations page
 
 ### Fixed
-  - DP-27257: Investigate and fix errors in Drupal.
-  - DP-27426: Cleanup Banner Search and Header Search templates after removing autocomplete.
+
+- DP-27257: Investigate and fix errors in Drupal.
+- DP-27426: Cleanup Banner Search and Header Search templates after removing autocomplete.
 
 ## [0.352.2] - March 3, 2023
 
 ### Fixed
+
 - DP-27400: Stop storing entity and render caches in Memcache.
 
 ## [0.352.1] - March 2, 2023
 
 ### Fixed
+
 - DP-27400: Fix php error in: drush ma:queue-revision-cleanup.
 
 ## [0.352.0] - February 28, 2023
 
 ### Changed
-  - DP-25212: Upgrade custom code for Drupal 10
-  - DP-26079: Accessibility adjustment for search component.
-  - DP-26251: Remove an empty list from section link and correct semantics for its accordion button.
-  - DP-26763: Fix collection pagination icons.
-  - DP-26913: Adds a DDEV command to allow BackstopJS to be run locally
-  - DP-26913: Increases shm_size to 2gb to avoid the browser crashing inside a docker container. See https://bugs.chromium.org/p/chromium/issues/detail?id=519952 and https://github.com/SeleniumHQ/docker-selenium#--shm-size2g
-  - DP-26913: Switches CircleCI to using backstop's provided image
-  - DP-26913: Updated the documentation and adds instructions for running the backstop job using CircleCI's local CLI
-  - DP-26913: Adds a CircleCI job which collects Backstop reference images nightly and stores them as an artifact
-  - DP-26913: Adds an additional backstop test during the deploy_cd CirlceCI job which uses reference images from the above job
-  - DP-27213: Upgrade Drupal Rector and related dependencies
-  - DP-27234: Upgrade Drush for more robust deployments
-  - DP-27264: Added bare mass.gov domain to entity usage config to increase tracking of URLs specified by authors with www.
+
+- DP-25212: Upgrade custom code for Drupal 10
+- DP-26079: Accessibility adjustment for search component.
+- DP-26251: Remove an empty list from section link and correct semantics for its accordion button.
+- DP-26763: Fix collection pagination icons.
+- DP-26913: Adds a DDEV command to allow BackstopJS to be run locally
+- DP-26913: Increases shm_size to 2gb to avoid the browser crashing inside a docker container. See https://bugs.chromium.org/p/chromium/issues/detail?id=519952 and https://github.com/SeleniumHQ/docker-selenium#--shm-size2g
+- DP-26913: Switches CircleCI to using backstop's provided image
+- DP-26913: Updated the documentation and adds instructions for running the backstop job using CircleCI's local CLI
+- DP-26913: Adds a CircleCI job which collects Backstop reference images nightly and stores them as an artifact
+- DP-26913: Adds an additional backstop test during the deploy_cd CirlceCI job which uses reference images from the above job
+- DP-27213: Upgrade Drupal Rector and related dependencies
+- DP-27234: Upgrade Drush for more robust deployments
+- DP-27264: Added bare mass.gov domain to entity usage config to increase tracking of URLs specified by authors with www.
 
 ### Added
-  - DP-26079: Add suggestion list state to search input.
+
+- DP-26079: Add suggestion list state to search input.
 
 ### Fixed
-  - DP-27248: Corrected URL of backstop test page.
 
-
+- DP-27248: Corrected URL of backstop test page.
 
 ## [0.351.0] - February 14, 2023
 
 ### Added
-  - DP-24435: Add option to toggle language bar labels.
+
+- DP-24435: Add option to toggle language bar labels.
 
 ### Fixed
-  - DP-26967: Style issue with header iframe on visual story info detail page.
+
+- DP-26967: Style issue with header iframe on visual story info detail page.
 
 ### Security
-  - DP-27215: Drupal core major version (9.5.3) and DangerJS update.
+
+- DP-27215: Drupal core major version (9.5.3) and DangerJS update.
 
 ### Changed
-  - DP-27227: Added default settings for entity usage queue tracking that can be overridden.
 
-
+- DP-27227: Added default settings for entity usage queue tracking that can be overridden.
 
 ## [0.350.0] - February 7, 2023
 
 ### Changed
-  - DP-26237: Correct invalid markup, cleaned up confusing aria-label, add context for screenr reader users for collapsible headers.
-  - DP-26696: Change location of 'Associated pages' field on Events.
-  - DP-27088: Active cache invalidation for language link list.
-  - DP-27097.yml: Remove and block non-Azure logins for Drupal
-  - DP-27143: Disallow bot traffic from Semrush.
-  - DP-27176: More fields added to CSV export files for the All Content view.
+
+- DP-26237: Correct invalid markup, cleaned up confusing aria-label, add context for screenr reader users for collapsible headers.
+- DP-26696: Change location of 'Associated pages' field on Events.
+- DP-27088: Active cache invalidation for language link list.
+- DP-27097.yml: Remove and block non-Azure logins for Drupal
+- DP-27143: Disallow bot traffic from Semrush.
+- DP-27176: More fields added to CSV export files for the All Content view.
 
 ### Fixed
-  - DP-27002: Fix form display for Collection selection on External link for Collections
-  - DP-27163: Fix style issue with press release view.
-  - DP-27164: Fix Google Translate styles caused by a classname change by Google.
+
+- DP-27002: Fix form display for Collection selection on External link for Collections
+- DP-27163: Fix style issue with press release view.
+- DP-27164: Fix Google Translate styles caused by a classname change by Google.
 
 ### Removed
-  - DP-27049: Removed real pages from Backstop
-  - DP-27157: Remove the background image from the form requirements section in form pages.
 
-
+- DP-27049: Removed real pages from Backstop
+- DP-27157: Remove the background image from the form requirements section in form pages.
 
 ## [0.349.0] - January 31, 2023
 
 ### Removed
-  - DP-25783: Remove feedback survey UI from edit.mass.gov.
+
+- DP-25783: Remove feedback survey UI from edit.mass.gov.
 
 ### Changed
-  - DP-26177: Update Purge, Acquia purge, Akamai modules
+
+- DP-26177: Update Purge, Acquia purge, Akamai modules
 
 ### Added
-  - DP-26735: New view showing recent press releases. Not linked at this time.
-  - DP-26959: Add bulk edit to the "All documents" view for administrators.
-  - DP-27072: New administrative view showing who has flagged what content to watch it. This will help testing of content migrations.
+
+- DP-26735: New view showing recent press releases. Not linked at this time.
+- DP-26959: Add bulk edit to the "All documents" view for administrators.
+- DP-27072: New administrative view showing who has flagged what content to watch it. This will help testing of content migrations.
 
 ### Fixed
-  - DP-27000: Fix radio button and checkbox sizes in collection view.
-  - DP-27077: Remove config warnings for Azure AD
 
-
+- DP-27000: Fix radio button and checkbox sizes in collection view.
+- DP-27077: Remove config warnings for Azure AD
 
 ## [0.348.0] - January 24, 2023
 
 ### Changed
-  - DP-26309: Remove empty more link for related guides section.
-  - DP-26328: Updated Collections view to use active cache invalidation.
-  - DP-26840: Updated the Entity Usage Queue Tracking module with improvements to the cleaning command.
-  - DP-26854: Fixed small bugs and removed unused code related to CircleCI jobs
+
+- DP-26309: Remove empty more link for related guides section.
+- DP-26328: Updated Collections view to use active cache invalidation.
+- DP-26840: Updated the Entity Usage Queue Tracking module with improvements to the cleaning command.
+- DP-26854: Fixed small bugs and removed unused code related to CircleCI jobs
 
 ### Added
-  - DP-26736: Updates to orphan view.
+
+- DP-26736: Updates to orphan view.
 
 ### Fixed
-  - DP-26999: Reset feedback form text area validation on radio button change.
-  - DP-27003: Bug - not seeing all document language links shown.
+
+- DP-26999: Reset feedback form text area validation on radio button change.
+- DP-27003: Bug - not seeing all document language links shown.
 
 ### Security
-  - DP-27004: Drupal core and Entity Browser module security update.
 
-
+- DP-27004: Drupal core and Entity Browser module security update.
 
 ## [0.347.0] - January 17, 2023
 
 ### Added
-  - DP-24550: Display link to document in multiple languages.
-  - DP-26806: Add apple site icons.
+
+- DP-24550: Display link to document in multiple languages.
+- DP-26806: Add apple site icons.
 
 ### Changed
-  - DP-26327: Backend changes to org feedback options.
-  - DP-26864: Change views to not show any results until there are filters added by user and user pushes button.
-  - DP-26965: Related links not showing on News pages with 'news' subtype when there is no contact defined.
+
+- DP-26327: Backend changes to org feedback options.
+- DP-26864: Change views to not show any results until there are filters added by user and user pushes button.
+- DP-26965: Related links not showing on News pages with 'news' subtype when there is no contact defined.
 
 ### Fixed
-  - DP-26649: Fix org nav being cut off at the bottom of the screen on mobile.
-  - DP-26973: Fixed Behat XSS test failures for link fields.
 
-
+- DP-26649: Fix org nav being cut off at the bottom of the screen on mobile.
+- DP-26973: Fixed Behat XSS test failures for link fields.
 
 ## [0.346.0] - January 10, 2023
 
 ### Changed
-  - DP-25823: Upgrade a few dependencies like Views Data Export
-  - DP-25967: Improve help text for "Organization(s)" field.
-  - DP-26097: Improve help text under Content tab on Service pages.
-  - DP-26305: Update help text for Guide content type.
-  - DP-26612: Add help text paragraph below H1 on page based feedback for authors.
-  - DP-26766: Remove legacy "Pages Linking Here" tab and show new tab for all authors.
-  - DP-26750: Modifications to the user view used by administrators, including downloadable CSV.
+
+- DP-25823: Upgrade a few dependencies like Views Data Export
+- DP-25967: Improve help text for "Organization(s)" field.
+- DP-26097: Improve help text under Content tab on Service pages.
+- DP-26305: Update help text for Guide content type.
+- DP-26612: Add help text paragraph below H1 on page based feedback for authors.
+- DP-26766: Remove legacy "Pages Linking Here" tab and show new tab for all authors.
+- DP-26750: Modifications to the user view used by administrators, including downloadable CSV.
 
 ### Fixed
-  - DP-26222: A11y - Popular searches fix.
-  - DP-26715: Bug - error in bulk job to add items to collection.
+
+- DP-26222: A11y - Popular searches fix.
+- DP-26715: Bug - error in bulk job to add items to collection.
 
 ### Security
-  - DP-26767: Bump decode-uri-component from 0.2.0 to 0.2.2.
-  - DP-26805: Dependabot - Multiple vulnerabilities.
 
-
+- DP-26767: Bump decode-uri-component from 0.2.0 to 0.2.2.
+- DP-26805: Dependabot - Multiple vulnerabilities.
 
 ## [0.345.0] - December 13, 2022
 
 ### Changed
-  - DP-25839: Removed the second set of <main> with its duplilcate ID from guide page.
-  - DP-26300: Hide Offered By on Executive Order content.
+
+- DP-25839: Removed the second set of <main> with its duplilcate ID from guide page.
+- DP-26300: Hide Offered By on Executive Order content.
 
 ### Added
-  - DP-26013: Added Azure AD integration.
+
+- DP-26013: Added Azure AD integration.
 
 ### Fixed
-  - DP-26312: Fixed issue with referencing nodes with long titles via the Redirects tab.
-  - DP-26642: Fixed missing validation for custom search components on service pages.
+
+- DP-26312: Fixed issue with referencing nodes with long titles via the Redirects tab.
+- DP-26642: Fixed missing validation for custom search components on service pages.
 
 ### Removed
-  - DP-26700: Eliminate author message to setup 2 factor auth that users see when logging in.
 
-
+- DP-26700: Eliminate author message to setup 2 factor auth that users see when logging in.
 
 ## [0.344.0] - December 6, 2022
 
 ### Added
-  - DP-25357: Added entity usage queue tracking module, and improved entity usage performance.
-  - DP-26467: Report showing non-English documents and their English relatives.
+
+- DP-25357: Added entity usage queue tracking module, and improved entity usage performance.
+- DP-26467: Report showing non-English documents and their English relatives.
 
 ### Changed
-  - DP-25587: Set up the correct heading level to pass on to the MF template for collection page listing items.
-  - DP-25901: Changed Collection Search to a general search component for either collections or custom searches.
-  - DP-26593: Feedback manager and Pages with high level of negative feedback report headers changed to have links to each other.
-  - DP-26593: Allow transition of pages and documents from trash to published
-  - DP-26593: Remove unused DFML KPI fields from service type as well as performance indicator field
-  - DP-26593: Add exposed filter for “Exclude from search” field to advanced search content view and all documents view.
-  - DP-26593: Advanced search report - Added org and parent fields to results, default order for pageviews changed to descending
-  - DP-26593: All documents view - added filter for search status, any org filter will be remembered for future searches
-  - DP-26593: All documents CSV export - added fields - extension, file size, created date, english version, search status, language.
+
+- DP-25587: Set up the correct heading level to pass on to the MF template for collection page listing items.
+- DP-25901: Changed Collection Search to a general search component for either collections or custom searches.
+- DP-26593: Feedback manager and Pages with high level of negative feedback report headers changed to have links to each other.
+- DP-26593: Allow transition of pages and documents from trash to published
+- DP-26593: Remove unused DFML KPI fields from service type as well as performance indicator field
+- DP-26593: Add exposed filter for “Exclude from search” field to advanced search content view and all documents view.
+- DP-26593: Advanced search report - Added org and parent fields to results, default order for pageviews changed to descending
+- DP-26593: All documents view - added filter for search status, any org filter will be remembered for future searches
+- DP-26593: All documents CSV export - added fields - extension, file size, created date, english version, search status, language.
 
 ### Fixed
-  - DP-26284: Un-install jsonapi_page_limit module to fix jsonapi page limit and offset query parameters.
-  - DP-26492: Unpublished pages with maps still have published location listing pages, follow-up fix of breadcrumb rendering.
 
-
+- DP-26284: Un-install jsonapi_page_limit module to fix jsonapi page limit and offset query parameters.
+- DP-26492: Unpublished pages with maps still have published location listing pages, follow-up fix of breadcrumb rendering.
 
 ## [0.343.0] - November 29, 2022
 
 ### Fixed
-  - DP-26357: Fix Mayflower JS error due to null mainNav and focusTrapping modal.
-  - DP-26556: Bug adding documents to collections in bulk.
+
+- DP-26357: Fix Mayflower JS error due to null mainNav and focusTrapping modal.
+- DP-26556: Bug adding documents to collections in bulk.
 
 ### Added
-  - DP-26403: Add final cache rebuild to deployments
-  - DP-26408: Add new view for trashing event and news content.
+
+- DP-26403: Add final cache rebuild to deployments
+- DP-26408: Add new view for trashing event and news content.
 
 ### Removed
-  - DP-26434: Removed search autocomplete tests
 
-
+- DP-26434: Removed search autocomplete tests
 
 ## [0.342.0] - November 15, 2022
 
 ### Changed
-  - DP-25549: Reduce action finder vertical spacing on org and service pages.
-  - DP-26343: Change validation on info details to either require a content section or a populated overview field.
+
+- DP-25549: Reduce action finder vertical spacing on org and service pages.
+- DP-26343: Change validation on info details to either require a content section or a populated overview field.
 
 ### Added
-  - DP-26344: Add option to hide section heading display on info details pages.
-  - DP-26356: Add filters to advanced search view.
 
-
+- DP-26344: Add option to hide section heading display on info details pages.
+- DP-26356: Add filters to advanced search view.
 
 ## [0.341.0] - November 8, 2022
 
 ### Added
-  - DP-24421: Add test coverage for search autocomplete on www.mass.gov.
-  - DP-26260: Add field to data metadata fields so we can paste in additional content to search.
+
+- DP-24421: Add test coverage for search autocomplete on www.mass.gov.
+- DP-26260: Add field to data metadata fields so we can paste in additional content to search.
 
 ### Fixed
-  - DP-25745: Fix Accordion IDs to be unique on the page.
-  - DP-26115: Fix mainNav submenu skipping the first item using arrow keys.
-  - DP-26229: A11y - Brand banner lock icon accessibility fix.
-  - DP-26315: Force wordbreak and restrain content container width to enforce layout.
+
+- DP-25745: Fix Accordion IDs to be unique on the page.
+- DP-26115: Fix mainNav submenu skipping the first item using arrow keys.
+- DP-26229: A11y - Brand banner lock icon accessibility fix.
+- DP-26315: Force wordbreak and restrain content container width to enforce layout.
 
 ### Changed
-  - DP-26266: Backstop version update.
-  - DP-26299: Update page/org alert rendering to include "Updated" string with the date.
 
-
+- DP-26266: Backstop version update.
+- DP-26299: Update page/org alert rendering to include "Updated" string with the date.
 
 ## [0.340.0] - November 1, 2022
 
 ### Fixed
-  - DP-25594: A11y - Fix sort labels in collections view.
-  - DP-25835: Change organization navigation IDs to be unique.
-  - DP-25916: A11y - Collection featured image on blogs does not have alt tag set.
-  - DP-26239: A11y - Organization navigation content markup fix.
-  - DP-26240: Listing table with no content rendering.
-  - DP-26287: Avoid error message when an unused field data table has already been deleted.
+
+- DP-25594: A11y - Fix sort labels in collections view.
+- DP-25835: Change organization navigation IDs to be unique.
+- DP-25916: A11y - Collection featured image on blogs does not have alt tag set.
+- DP-26239: A11y - Organization navigation content markup fix.
+- DP-26240: Listing table with no content rendering.
+- DP-26287: Avoid error message when an unused field data table has already been deleted.
 
 ### Added
-  - DP-25782: Author redirect form for pages that are trashed
+
+- DP-25782: Author redirect form for pages that are trashed
 
 ### Changed
-  - DP-25848: Make autocomplete fields accessible with JAWS.
-  - DP-26224: Add aria-label to the footer navigation.
-  - DP-26241: A11y - Fix table with no content rendering in Fee.
-  - DP-26263: Do not add or change JS org variable tracking when on a topic page.
 
-
+- DP-25848: Make autocomplete fields accessible with JAWS.
+- DP-26224: Add aria-label to the footer navigation.
+- DP-26241: A11y - Fix table with no content rendering in Fee.
+- DP-26263: Do not add or change JS org variable tracking when on a topic page.
 
 ## [0.339.0] - October 25, 2022
 
 ### Changed
-  - DP-25181: Ensure the skip link target gets focused after the link gets clicked.
-  - DP-26208: Allow internal URL for social links field on org page.
+
+- DP-25181: Ensure the skip link target gets focused after the link gets clicked.
+- DP-26208: Allow internal URL for social links field on org page.
 
 ### Added
-  - DP-26126: Add method for How-to page for text messages.
+
+- DP-26126: Add method for How-to page for text messages.
 
 ### Fixed
-  - DP-26170: Fix JS error when there are no organizations on a page.
-  - DP-26192: Fixed bug with collection tagging for authors and editors.
 
-
+- DP-26170: Fix JS error when there are no organizations on a page.
+- DP-26192: Fixed bug with collection tagging for authors and editors.
 
 ## [0.338.0] - October 18, 2022
 
 ### Changed
-  - DP-25407: Added v1 of Feedback view.
+
+- DP-25407: Added v1 of Feedback view.
 
 ### Removed
-  - DP-25693: Remove siteimprove group field from all content types
-  - DP-26114: Eliminate links to top level topics in main navigation.
+
+- DP-25693: Remove siteimprove group field from all content types
+- DP-26114: Eliminate links to top level topics in main navigation.
 
 ### Added
-  - DP-25704: Warn authors if they associate an event to a service or org page that doesn't have an events component.
-  - DP-25877: Set JS variable to collect the organization meta values of all pages in session.
-  - DP-26127: Add Swahili, Pashto, and Dari to the list of available languages on Mass.gov
+
+- DP-25704: Warn authors if they associate an event to a service or org page that doesn't have an events component.
+- DP-25877: Set JS variable to collect the organization meta values of all pages in session.
+- DP-26127: Add Swahili, Pashto, and Dari to the list of available languages on Mass.gov
 
 ### Fixed
-  - DP-25830: Caches on location summary pages not clearing when updates made to individual location pages.
-  - DP-25899: Fix issue with edit menus cutting off for authors when screen it not super wide.
-  - DP-25952: Right to left languages on manually translated pages not rendering correctly.
-  - DP-26151: Date filter on Collections is not working for document collections.
+
+- DP-25830: Caches on location summary pages not clearing when updates made to individual location pages.
+- DP-25899: Fix issue with edit menus cutting off for authors when screen it not super wide.
+- DP-25952: Right to left languages on manually translated pages not rendering correctly.
+- DP-26151: Date filter on Collections is not working for document collections.
 
 ### Security
-  - DP-26110: Twig field value module update.
+
+- DP-26110: Twig field value module update.
 
 ## [0.337.1] - October 8, 2022
-  - DP-25875 Hotfix. Bubble max-age to response headers. Fixes event listing staleness
+
+- DP-25875 Hotfix. Bubble max-age to response headers. Fixes event listing staleness
 
 ## [0.337.0] - October 5, 2022
 
 ### Changed
-  - DP-15470: Disable late runtime purger module
-  - DP-25216: Add field for exclusing content from search
-  - DP-25636: Delete unused fields for documents.
-  - DP-25727: Permission cleanup of all roles in the system to correct errors and streamline permissions.
-  - DP-25831: Restructure the CMS Welcome screen for authors.
-  - DP-25897: Change unpublished preview links to always display a "www.mass.gov" domain.
+
+- DP-15470: Disable late runtime purger module
+- DP-25216: Add field for exclusing content from search
+- DP-25636: Delete unused fields for documents.
+- DP-25727: Permission cleanup of all roles in the system to correct errors and streamline permissions.
+- DP-25831: Restructure the CMS Welcome screen for authors.
+- DP-25897: Change unpublished preview links to always display a "www.mass.gov" domain.
 
 ### Fixed
-  - DP-25914: Fix duplicated feedback component on event agenda and minutes.
-  - DP-25957: Menus on Org Page do not work correctly on mobile devices.
+
+- DP-25914: Fix duplicated feedback component on event agenda and minutes.
+- DP-25957: Menus on Org Page do not work correctly on mobile devices.
 
 ### Security
-  - DP-25945: Drupal Core security update to 9.4.7.
 
-
+- DP-25945: Drupal Core security update to 9.4.7.
 
 ## [0.336.0] - September 20, 2022
 
 ### Added
-  - DP-25559: Added Total No, Total Yes, and Total Feedback to Content Performance.
+
+- DP-25559: Added Total No, Total Yes, and Total Feedback to Content Performance.
 
 ### Removed
-  - DP-25808: Removed feedback survey from public site.
+
+- DP-25808: Removed feedback survey from public site.
 
 ### Fixed
-  - DP-25861: Fixed permissions issue preventing authors and editors from viewing the entity browser.
 
-
+- DP-25861: Fixed permissions issue preventing authors and editors from viewing the entity browser.
 
 ## [0.335.0] - September 13, 2022
 
 ### Added
-  - DP-25204: Add confirmation warning when bulk transitioning documents.
-  - DP-25248: Add testing for saving QAG pages.
+
+- DP-25204: Add confirmation warning when bulk transitioning documents.
+- DP-25248: Add testing for saving QAG pages.
 
 ### Removed
-  - DP-25692: Hide "Media" and remove "Moderated Content" from All Content view.
+
+- DP-25692: Hide "Media" and remove "Moderated Content" from All Content view.
 
 ### Fixed
-  - DP-25803: Fix TOC jump link target margin top that blocks page content.
-  - DP-25805: Fix accordions collapsing while scrolling on Android/iOS devices issue.
-  - DP-25828: Resolve 500 error on decision tree page.
-  - DP-25832: Fix accordion tests in patternlab.
 
-
+- DP-25803: Fix TOC jump link target margin top that blocks page content.
+- DP-25805: Fix accordions collapsing while scrolling on Android/iOS devices issue.
+- DP-25828: Resolve 500 error on decision tree page.
+- DP-25832: Fix accordion tests in patternlab.
 
 ## [0.334.0] - September 6, 2022
 
 ### Added
-  - DP-25215: Change description field in collection taxonomy to reflect use for search filtering.
-  - DP-25248: Add testing for saving QAG pages.
-  - DP-25551: Add rich text field to Service Section paragraph.
+
+- DP-25215: Change description field in collection taxonomy to reflect use for search filtering.
+- DP-25248: Add testing for saving QAG pages.
+- DP-25551: Add rich text field to Service Section paragraph.
 
 ### Changed
-  - DP-25339: Extensive help text improvements.
+
+- DP-25339: Extensive help text improvements.
 
 ### Fixed
-  - DP-25642: Duplicates of locations exist on service location listing pages.
-  - DP-25755: Fixed Behat test failure due to the entity_embed module array to string conversion warning.
-  - DP-25762: Fix bug with updated date on events that are public meetings
 
-
+- DP-25642: Duplicates of locations exist on service location listing pages.
+- DP-25755: Fixed Behat test failure due to the entity_embed module array to string conversion warning.
+- DP-25762: Fix bug with updated date on events that are public meetings
 
 ## [0.333.0] - August 30, 2022
 
 ### Changed
-  - DP-24286: Adjust the keyboard navigation on the main nav to more make sense to users.
+
+- DP-24286: Adjust the keyboard navigation on the main nav to more make sense to users.
 
 ### Fixed
-  - DP-25175: Improve sticky TOC accessibility - make section headings the jump link targets.
-  - DP-25638: Missing breadcrumb on some events pages.
+
+- DP-25175: Improve sticky TOC accessibility - make section headings the jump link targets.
+- DP-25638: Missing breadcrumb on some events pages.
 
 ### Removed
-  - DP-25409: Cleanup and remove old service page fields no longer needed after flexibility changes.
 
-
+- DP-25409: Cleanup and remove old service page fields no longer needed after flexibility changes.
 
 ## [0.332.0] - August 9, 2022
 
 ### Fixed
-  - DP-24803: Fix page ready event for leaflet map in Backstop.
-  - DP-25137: Fix bad breadcrumb on event landing pages.
-  - DP-25519: Search in some collections doesn't show expected results.
-  - DP-25583: Fix issue with thumbnail image when saving content types locally.
-  - DP-25597: Fix Bulk watch / unwatch error.
+
+- DP-24803: Fix page ready event for leaflet map in Backstop.
+- DP-25137: Fix bad breadcrumb on event landing pages.
+- DP-25519: Search in some collections doesn't show expected results.
+- DP-25583: Fix issue with thumbnail image when saving content types locally.
+- DP-25597: Fix Bulk watch / unwatch error.
 
 ### Changed
-  - DP-25173: Reduce Collection Header vertical spacing, make title H1, and reduce H1 line height, fix logo alignment.
+
+- DP-25173: Reduce Collection Header vertical spacing, make title H1, and reduce H1 line height, fix logo alignment.
 
 ### Added
-  - DP-25211: Enable latest Upgrade Status module.
-  - DP-25285: Add a warning message for authors if editing a page that has an existing draft.
-  - DP-25408: Add description to curated list content type for each list.
+
+- DP-25211: Enable latest Upgrade Status module.
+- DP-25285: Add a warning message for authors if editing a page that has an existing draft.
+- DP-25408: Add description to curated list content type for each list.
 
 ### Removed
-  - DP-25410: Cleanup and remove old ORG page fields no longer needed after flexibility changes.
 
-
+- DP-25410: Cleanup and remove old ORG page fields no longer needed after flexibility changes.
 
 ## [0.331.0] - July 26, 2022
 
 ### Fixed
-  - DP-24431: Fix organization navigation overlapped by main nav on mobile, and fix its positioning logic.
-  - DP-25157: Fixes the relationship indicators script on Mayflower to avoid failures on Backstop tests.
-  - DP-25473: Fixed mg_organizations metatag value generation on organization pages.
-  - DP-25506: Fixed flaky media bulk action tests.
+
+- DP-24431: Fix organization navigation overlapped by main nav on mobile, and fix its positioning logic.
+- DP-25157: Fixes the relationship indicators script on Mayflower to avoid failures on Backstop tests.
+- DP-25473: Fixed mg_organizations metatag value generation on organization pages.
+- DP-25506: Fixed flaky media bulk action tests.
 
 ### Added
-  - DP-24958: Add a skip link target indicator at click to verify users' whereabout. Set focus on the target (= anchor) at click to ensure users can navigate page below the TOC.
+
+- DP-24958: Add a skip link target indicator at click to verify users' whereabout. Set focus on the target (= anchor) at click to ensure users can navigate page below the TOC.
 
 ### Removed
-  - DP-25205: Remove author options to bulk edit or save pages.
+
+- DP-25205: Remove author options to bulk edit or save pages.
 
 ### Security
-  - DP-25324: Resolve dependabot security issues on openmass, update Drupal core to 9.4.2.
-  - DP-25522: Drupal core update to version 9.4.3.
+
+- DP-25324: Resolve dependabot security issues on openmass, update Drupal core to 9.4.2.
+- DP-25522: Drupal core update to version 9.4.3.
 
 ### Changed
-  - DP-25406: Allow Topic Pages to be a parent page of Form Pages.
-  - DP-25468: Allow Rules of Court Pages to be a parent page of Rules of Court Pages.
-  - DP-25527: In local development, pin portainer and fix DB persistence
 
-
+- DP-25406: Allow Topic Pages to be a parent page of Form Pages.
+- DP-25468: Allow Rules of Court Pages to be a parent page of Rules of Court Pages.
+- DP-25527: In local development, pin portainer and fix DB persistence
 
 ## [0.330.0] - July 19, 2022
 
 ### Added
-  - DP-25184: Log moderation state changes
-  - DP-25351: Add validation to limit source URL in form embed field on Form content type.
+
+- DP-25184: Log moderation state changes
+- DP-25351: Add validation to limit source URL in form embed field on Form content type.
 
 ### Fixed
-  - DP-25400: Fixed related location rendering logic issue.
-  - DP-25404: Fix event paragraph to show the correct number of events.
-  - DP-25463: Fix for autocomplete errors on non-English node selection and move children paths.
 
+- DP-25400: Fixed related location rendering logic issue.
+- DP-25404: Fix event paragraph to show the correct number of events.
+- DP-25463: Fix for autocomplete errors on non-English node selection and move children paths.
 
 ## [0.329.0] - July 12, 2022
 
 ### Changed
-  - DP-25055: - Use entity_reference_tree instead of term_reference_tree for collections.
+
+- DP-25055: - Use entity_reference_tree instead of term_reference_tree for collections.
 - Patches entity_reference_tree module to allow more options to select/deselect ancestors/descendants elements.
   - DP-25157: Update org page banner design.
   - DP-25198: Replace custom javascript conditionals with condition fields configurations.
-Style iframe conditional fields in the admin UI.
-
+    Style iframe conditional fields in the admin UI.
   - DP-25373: Update help text related to events.
 
 ### Added
-  - DP-25071: Create report of collections with URLs.
-  - DP-25198: Add aspect ratio to iframe height configuration.
+
+- DP-25071: Create report of collections with URLs.
+- DP-25198: Add aspect ratio to iframe height configuration.
 
 ### Removed
-  - DP-25147: Remove locations-old url.
-  - DP-25347: Removed Traffic to Children from Content Performance view and Mass Superset.
-  - DP-25356: Remove 2 pages from backstop.
-  - DP-25372: Remove unneeded "Content performance" tab in Drupal on content menu.
+
+- DP-25147: Remove locations-old url.
+- DP-25347: Removed Traffic to Children from Content Performance view and Mass Superset.
+- DP-25356: Remove 2 pages from backstop.
+- DP-25372: Remove unneeded "Content performance" tab in Drupal on content menu.
 
 ### Fixed
-  - DP-25190: Fixed issues causing inaccurate revision tracking for media entities on bulk actions.
-  - DP-25230: Creating key message section with image background bug fix.
-  - DP-25242: Fix Backstop wait code for Information Details CSVs.
-  - DP-25348: Fix minor New Relic reported errors
-  - DP-25349: Handle missing contact on howto page
-  - DP-25419: Fixed date sorting errors for automatic list paragraphs.
+
+- DP-25190: Fixed issues causing inaccurate revision tracking for media entities on bulk actions.
+- DP-25230: Creating key message section with image background bug fix.
+- DP-25242: Fix Backstop wait code for Information Details CSVs.
+- DP-25348: Fix minor New Relic reported errors
+- DP-25349: Handle missing contact on howto page
+- DP-25419: Fixed date sorting errors for automatic list paragraphs.
 
 ## [0.328.1] - July 6, 2022
 
 ### Fixed
+
 - DP-25325: Updated the Monolog to fix 403 errors in Acquia environments.
-
-
 
 ## [0.328.0] - July 5, 2022
 
 ### Added
-  - DP-24449: Require strict types on new php files
+
+- DP-24449: Require strict types on new php files
 
 ### Fixed
-  - DP-24818: Fix sitewide alerts breaking Backstop tests.
-  - DP-25154: Fix backstop alerts and footer false positives related.
-  - DP-25197: Avoid body overflow when showing a modal.
-  - DP-25233: Increase Tugboat upload limit
-  - DP-25326: Fix revision view page via bug in moderation status block
+
+- DP-24818: Fix sitewide alerts breaking Backstop tests.
+- DP-25154: Fix backstop alerts and footer false positives related.
+- DP-25197: Avoid body overflow when showing a modal.
+- DP-25233: Increase Tugboat upload limit
+- DP-25326: Fix revision view page via bug in moderation status block
 
 ### Removed
-  - DP-25250: Remove old service overflow page URLs from backstop.
 
-
+- DP-25250: Remove old service overflow page URLs from backstop.
 
 ## [0.327.0] - June 29, 2022
 
 ### Changed
-  - DP-23508: Upgrade to PHP 8.
-  - DP-24668: Upgrade to BackstopJS 6.0.4
-  - DP-25237: Updated CSV Serialization and its dependencies to allow CSV exports to work with PHP 8.
+
+- DP-23508: Upgrade to PHP 8.
+- DP-24668: Upgrade to BackstopJS 6.0.4
+- DP-25237: Updated CSV Serialization and its dependencies to allow CSV exports to work with PHP 8.
 
 ### Fixed
-  - DP-24698: Fix Backstop failing when Tugboat is suspended
-  - DP-25136: Fixes entity usage count when referencing entities are deleted or modified.
-  - DP-25159: Wait for iframes to be resized at least once before taking a screenshot on Backstop.
-  - DP-25231: When changing parent, check descendants entities before calling methods on them.
-  - DP-25249: Fixed Form form validation.
+
+- DP-24698: Fix Backstop failing when Tugboat is suspended
+- DP-25136: Fixes entity usage count when referencing entities are deleted or modified.
+- DP-25159: Wait for iframes to be resized at least once before taking a screenshot on Backstop.
+- DP-25231: When changing parent, check descendants entities before calling methods on them.
+- DP-25249: Fixed Form form validation.
 
 ### Added
-  - DP-25192: Release automation - post deployment merge from master to develop
-  - DP-25225: Add Start date to "All documents" view in Drupal.
-  - DP-9559: Added an Orphaned Content views page report that shows content that is not linked in any other content.
 
-
+- DP-25192: Release automation - post deployment merge from master to develop
+- DP-25225: Add Start date to "All documents" view in Drupal.
+- DP-9559: Added an Orphaned Content views page report that shows content that is not linked in any other content.
 
 ## [0.326.0] - June 21, 2022
 
 ### Fixed
-  - DP-24689: Fix language bar spacing.
-  - DP-24980: Fix flakey \Drupal\Tests\mass_alerts\ExistingSiteJavascript\AlertsPlacementTest.
-  - DP-25106: Rolled back Nightcrawler update to resolve errors.
-  - DP-25153: Add rule to remove animations by setting the transition-duration to 0s.
-  - DP-25156: Backstop - wait all alerts on the page to be processed.
+
+- DP-24689: Fix language bar spacing.
+- DP-24980: Fix flakey \Drupal\Tests\mass_alerts\ExistingSiteJavascript\AlertsPlacementTest.
+- DP-25106: Rolled back Nightcrawler update to resolve errors.
+- DP-25153: Add rule to remove animations by setting the transition-duration to 0s.
+- DP-25156: Backstop - wait all alerts on the page to be processed.
 
 ### Changed
-  - DP-24810: - For Contextual Login Links:
-  - If services, using field_log_in_links if not empty.
-  - If organizations, using field_application_login_links if not empty.
-  - If other bundles, using computed_log_in_links.
+
+- DP-24810: - For Contextual Login Links:
+- If services, using field_log_in_links if not empty.
+- If organizations, using field_application_login_links if not empty.
+- If other bundles, using computed_log_in_links.
 - Setting value of computed_log_in_links
   - Uses links from the closest ancestor, service or organization.
 - If service or organization do not have login links:
@@ -1099,40 +1194,43 @@ Style iframe conditional fields in the admin UI.
 - Ancestor referenced by field_primary_parent.
 
 ### Added
-  - DP-25130: Add new choice for announcement type field for news content type.
-  - DP-25155: Add Entity diff UI module to allow tracking of Media entity revision changes.
+
+- DP-25130: Add new choice for announcement type field for news content type.
+- DP-25155: Add Entity diff UI module to allow tracking of Media entity revision changes.
 
 ### Removed
-  - DP-25147: Remove /locations-old route from the system.
 
-
+- DP-25147: Remove /locations-old route from the system.
 
 ## [0.325.0] - June 14, 2022
 
 ### Changed
-  - DP-22592: Change global footer.
-  - DP-24265: Correct heading levels of event itmes in event listing page, event listing in org and event pages.
-  - DP-24370: Install Imagick PHP extension at Tugboat
-  - DP-24806: Updates to the focal point help text on multiple places.
-  - DP-24993: Help text to clarify how the new Collection field should be used.
+
+- DP-22592: Change global footer.
+- DP-24265: Correct heading levels of event itmes in event listing page, event listing in org and event pages.
+- DP-24370: Install Imagick PHP extension at Tugboat
+- DP-24806: Updates to the focal point help text on multiple places.
+- DP-24993: Help text to clarify how the new Collection field should be used.
 
 ### Added
-  - DP-24414: Added a new Content Performance view.
-  - DP-24573: Add organization metadata to campaign landing pages.
-  - DP-24920: Add translation options to how-to content type.
-  - DP-25041: Add parent organization filter to Parents and Children Report.
-  - DP-25052: Uses field_hide_table_of_contents to hide Table of Contents on Info Details.
-  - DP-25105: Fix timeout tests for Entity Usage by deleting the entity_usage table before running them.
-  - DP-25108: - Creates a view (collection_term_empty_message) to display the "no items field".
+
+- DP-24414: Added a new Content Performance view.
+- DP-24573: Add organization metadata to campaign landing pages.
+- DP-24920: Add translation options to how-to content type.
+- DP-25041: Add parent organization filter to Parents and Children Report.
+- DP-25052: Uses field_hide_table_of_contents to hide Table of Contents on Info Details.
+- DP-25105: Fix timeout tests for Entity Usage by deleting the entity_usage table before running them.
+- DP-25108: - Creates a view (collection_term_empty_message) to display the "no items field".
 - Append collection_term_empty_message to the collection_all view empty section.
   - DP-25112: -| - Added field_external_organization to external_data_resrouce - If field_external_organization has a value, replaces the organization shown on the collection listing pages.
   - DP-25132: Add Greek language to the system.
 
 ### Fixed
-  - DP-24699: Improve CircleCI Backstop Job Times
-  - DP-24800: Automatic list "sort by date" fixes.
-  - DP-24907: Adjust image display on decision tree content type and add to backstop.
-  - DP-24976: - Title not required for CSV resources.
+
+- DP-24699: Improve CircleCI Backstop Job Times
+- DP-24800: Automatic list "sort by date" fixes.
+- DP-24907: Adjust image display on decision tree content type and add to backstop.
+- DP-24976: - Title not required for CSV resources.
 - Title not shown if empty.
 - Help text added for CSV title.
 - If caption is empty, figcaption is not shown.
@@ -1141,50 +1239,55 @@ Style iframe conditional fields in the admin UI.
   - hotfix: Fix global menu overlay
 
 ### Security
-  - DP-24927: Update components causing security alerts.
-  - DP-25141: Updated Drupal core to 9.3.16.
+
+- DP-24927: Update components causing security alerts.
+- DP-25141: Updated Drupal core to 9.3.16.
 
 ## [0.324.0] - May 31, 2022
 
 ### Fixed
-  - DP-24692: - Adding cache tags for prepareExpandableContent
-              - Topic headings override from the link text (if present)
-  - DP-24801: Fix undefined array key 'ariaHidden'.
-  - DP-24983: Avoids special characters on titles for collection and data listing pages.
-  - DP-25028: Fixed caching errors on topics pages.
+
+- DP-24692: - Adding cache tags for prepareExpandableContent
+  - Topic headings override from the link text (if present)
+- DP-24801: Fix undefined array key 'ariaHidden'.
+- DP-24983: Avoids special characters on titles for collection and data listing pages.
+- DP-25028: Fixed caching errors on topics pages.
 
 ### Changed
-  - DP-24948: - editor can edit any external link for collections content
-              - update help text for collections logo
-              - updating form display labels on external data resource
-              - removing 'only admins can' description from everywhere
-              - updating view add_collections_documents label
-  - DP-24955: Configuration changes
-              - Update "use this content type for" for news
-              - Update news body help text
+
+- DP-24948: - editor can edit any external link for collections content
+  - update help text for collections logo
+  - updating form display labels on external data resource
+  - removing 'only admins can' description from everywhere
+  - updating view add_collections_documents label
+- DP-24955: Configuration changes
+  - Update "use this content type for" for news
+  - Update news body help text
 
 ### Added
-  - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
-  - DP-24981: Add data listing pages to Backstop.
-              - Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
-              - All Data Listing: /data-listing/all
+
+- DP-24963: Backstop for Collection pages with top banner and news Blogpost.
+- DP-24981: Add data listing pages to Backstop.
+  - Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
+  - All Data Listing: /data-listing/all
 
 ### Security
-  - DP-24987: Drupal core and Embed module update.
 
-
+- DP-24987: Drupal core and Embed module update.
 
 ## [0.324.0] - May 31, 2022
 
 ### Fixed
-  - DP-24692: - Adding cache tags for prepareExpandableContent
+
+- DP-24692: - Adding cache tags for prepareExpandableContent
 - Topic headings override from the link text (if present)
   - DP-24801: Fix undefined array key 'ariaHidden'.
   - DP-24983: Avoids special characters on titles for collection and data listing pages.
   - DP-25028: Fixed caching errors on topics pages.
 
 ### Changed
-  - DP-24948: - editor can edit any external link for collections content
+
+- DP-24948: - editor can edit any external link for collections content
 - update help text for collections logo
 - updating form display labels on external data resource
 - removing 'only admins can' description from everywhere
@@ -1194,21 +1297,22 @@ Style iframe conditional fields in the admin UI.
 - Update news body help text
 
 ### Added
-  - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
-  - DP-24981: Add data listing pages to Backstop.
+
+- DP-24963: Backstop for Collection pages with top banner and news Blogpost.
+- DP-24981: Add data listing pages to Backstop.
 - Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
 - All Data Listing: /data-listing/all
 
 ### Security
-  - DP-24987: Drupal core and Embed module update.
 
-
+- DP-24987: Drupal core and Embed module update.
 
 ## [0.323.0] - May 24, 2022
 
 ### Changed
-  - DP-24306: Upgrade to the latest Chrome image for tests
-  - DP-24794: - Removes "Related Services" number of links limitation on the service page..
+
+- DP-24306: Upgrade to the latest Chrome image for tests
+- DP-24794: - Removes "Related Services" number of links limitation on the service page..
 - Limits related services to 12 and updates field description.
 - Removes related display, 'related' sub path not used anymore for services.
   - DP-24891: Improve performance of collection bulk tagging views.
@@ -1220,7 +1324,8 @@ Style iframe conditional fields in the admin UI.
   - DP-24952: Disable watch emails when using collection features.
 
 ### Fixed
-  - DP-24909: - Fixes on collection header title.
+
+- DP-24909: - Fixes on collection header title.
 - Showing the banner style only if the description or bg color is not empty.
 - Fix breadcrumb not appearing on collection term pages.
 - Improving breacrumb cacheability by adding entities from the hierarchy.
@@ -1228,19 +1333,19 @@ Style iframe conditional fields in the admin UI.
   - DP-24947: - Modify collection pager to make it work with sort.
 - Collection content filtered by topic pass the topic ID to collection media view.
 
-
-
 ## [0.322.0] - May 17, 2022
 
 ### Added
-  - DP-24108: - Blog post added to News type
+
+- DP-24108: - Blog post added to News type
 - Add parent pages to Collections
 - Add "Organizations" to Collections
 - Collections view with full breadcrumb
 - Modified Blog post header for News
 
 ### Changed
-  - DP-24326: - Not require unpublished date for promotional pages
+
+- DP-24326: - Not require unpublished date for promotional pages
 - KPI fields not required on promo pages
 - Delete role campaign_landing_page_publisher
   - DP-24890: - node.external_data_resource.field_data_format on external_data_resource not required.
@@ -1248,12 +1353,13 @@ Style iframe conditional fields in the admin UI.
   - DP-24928: Label for external data resource content type is now External link for Collections
 
 ### Fixed
-  - DP-24569: - Events listed in the collection, “Thu, 04/28/2022 - 18:00” should be “Thursday, April 28, 2022 - 6:00 p.m.”
+
+- DP-24569: - Events listed in the collection, “Thu, 04/28/2022 - 18:00” should be “Thursday, April 28, 2022 - 6:00 p.m.”
 - Optional collection field for authors to check a box and then only events that are today or in the future will be shown.
 - Removed duplicated filters on Collection pages.
 - Improvements to change_collections view.
   - DP-24802: When development mode is enabled, the extra markup breaks the mechanism
-for getting the label and the hours.
+    for getting the label and the hours.
   - DP-24808: News listing on org pages should update when a new news item is posted.
   - DP-24846: Do not show author on news that are not blogpost type.
   - DP-24876: - Permissions for authors and editors to use the collections field.
@@ -1263,296 +1369,323 @@ for getting the label and the hours.
   - DP-24917: Avoid cache staleness in org page.
 
 ### Security
-  - DP-24687: Update packages. Fixes Dependabot alert security issues.
-  - DP-24913: Re-added security update for quick_node_clone.
+
+- DP-24687: Update packages. Fixes Dependabot alert security issues.
+- DP-24913: Re-added security update for quick_node_clone.
 
 ### Removed
-  - DP-24860: Remove margin bottom override on campaign pages to allow consistent spacing above feedback form on Mass.gov.
+
+- DP-24860: Remove margin bottom override on campaign pages to allow consistent spacing above feedback form on Mass.gov.
 
 ## [0.321.1] - May 12, 2022
 
 ### Changed
+
 - DP-24906: Add new mailchimp text format and use to formail mails
 
 ## [0.321.0] - May 10, 2022
 
 ### Added
-  - DP-17093: Upgrade from Mandrill to Mailchimp Transaction module
-  - DP-24109: Adds collections to the several content types.
-  - DP-24432: Add "Did you find" feedback form to promotional page.
-  - DP-24477: Add focal point to banner images on certain content types.
+
+- DP-17093: Upgrade from Mandrill to Mailchimp Transaction module
+- DP-24109: Adds collections to the several content types.
+- DP-24432: Add "Did you find" feedback form to promotional page.
+- DP-24477: Add focal point to banner images on certain content types.
 
 ### Changed
-  - DP-23216: Adjust required field in org page component "what would you like to do".
-  - DP-24080: Move entity usage processing to a queue.
-  - DP-24668: Upgrade to BackstopJS 6.0.4
-  - DP-24669: Add user.mail to config_ignore.
-  - DP-24690: Upgrade config_ignore module
-  - DP-9273: Set image links' images in org page as decorative.
+
+- DP-23216: Adjust required field in org page component "what would you like to do".
+- DP-24080: Move entity usage processing to a queue.
+- DP-24668: Upgrade to BackstopJS 6.0.4
+- DP-24669: Add user.mail to config_ignore.
+- DP-24690: Upgrade config_ignore module
+- DP-9273: Set image links' images in org page as decorative.
 
 ### Fixed
-  - DP-24273: Accessiblity improvements to in-page alerts.
-  - DP-24350: Fix feedback button position and display when using Google Translate.
-  - DP-24666: Fix missing ext-json requirement in composer.json
-  - DP-24676: Fix unexpected General_Event eyebrow issue.
-  - DP-24691: Fix ahoy pull for developers
-  - DP-24698: Fix Backstop failing when Tugboat is suspended
-  - DP-24731: More specific conditions for GTM.
+
+- DP-24273: Accessiblity improvements to in-page alerts.
+- DP-24350: Fix feedback button position and display when using Google Translate.
+- DP-24666: Fix missing ext-json requirement in composer.json
+- DP-24676: Fix unexpected General_Event eyebrow issue.
+- DP-24691: Fix ahoy pull for developers
+- DP-24698: Fix Backstop failing when Tugboat is suspended
+- DP-24731: More specific conditions for GTM.
 
 ### Security
-  - DP-24814: Quick node clone module update.
 
+- DP-24814: Quick node clone module update.
 
 ## [0.320.0] - April 26, 2022
 
 ### Removed
-  - DP-23217: Remove outdated fields from org_pages
+
+- DP-23217: Remove outdated fields from org_pages
 
 ### Added
-  - DP-23508: Support switching PHP versions during Acquia deployments
+
+- DP-23508: Support switching PHP versions during Acquia deployments
 
 ### Changed
-  - DP-24125: Improve cache hit rate for dynamic page cache
-  - DP-24363: Update entity_hierarchy and its patch to allow enabling of webprofiler.
-  - DP-24545: 6 weeks links duration for unpublished access links.
+
+- DP-24125: Improve cache hit rate for dynamic page cache
+- DP-24363: Update entity_hierarchy and its patch to allow enabling of webprofiler.
+- DP-24545: 6 weeks links duration for unpublished access links.
 
 ### Fixed
-  - DP-24335: Fix hamburger menu horizontal scrolling in IOS.
-  - DP-24420: Ensure to have build info on View Page Controller before getting the view title.
-  - DP-24485: Make header hamburger menu translatable by Google.
-  - DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
-  - DP-24557: Fixes null method exceptions on decisions when media entities are deleted
-  - DP-24657: Sends taxonomy term id to the collection_all_media view.
+
+- DP-24335: Fix hamburger menu horizontal scrolling in IOS.
+- DP-24420: Ensure to have build info on View Page Controller before getting the view title.
+- DP-24485: Make header hamburger menu translatable by Google.
+- DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
+- DP-24557: Fixes null method exceptions on decisions when media entities are deleted
+- DP-24657: Sends taxonomy term id to the collection_all_media view.
 
 ### Security
-  - DP-24632: Drupal core security updates.
+
+- DP-24632: Drupal core security updates.
 
 ## [0.319.2] - April 21, 2022
 
 ### Changed
+
 - DP-24428: Chunk URLs in our custom purger
 
 ## [0.319.1] - April 5, 2022
 
 ### Fixed
+
 - DP-24237: json_encode() needs numeric indices without holes (custom Akamai purger)
 
 ## [0.319.0] - April 5, 2022
 
 ### Fixed
-  - DP-23508: Don't load Dotenv package on Acquia environments
-  - DP-23508: Moved development dependencies from require to require-dev
-  - DP-24263: Fix image sizes on info details page.
-  - DP-24334: Removed unnecesary if condition, the configuration of an object extending
-ViewsBulkOperationsActionBase will always be an array because when it is
-set it requires an array as parameter.
-  - DP-24336: Add cache tag to update if any event changes on events paragraph.
+
+- DP-23508: Don't load Dotenv package on Acquia environments
+- DP-23508: Moved development dependencies from require to require-dev
+- DP-24263: Fix image sizes on info details page.
+- DP-24334: Removed unnecesary if condition, the configuration of an object extending
+  ViewsBulkOperationsActionBase will always be an array because when it is
+  set it requires an array as parameter.
+- DP-24336: Add cache tag to update if any event changes on events paragraph.
 
 ### Added
-  - DP-23805: Move login links on service page from the sidebar into the page banner.
-  - DP-24094: Add and configure environment indicator module
-  - DP-24428: Custom Akamai purger
+
+- DP-23805: Move login links on service page from the sidebar into the page banner.
+- DP-24094: Add and configure environment indicator module
+- DP-24428: Custom Akamai purger
 
 ### Removed
-  - DP-24093: Removed "Show" and "Hide" from the Sitewide alert display.
-  - DP-24413: Hide "Reset to alphabetical" option on the collection admin form.
+
+- DP-24093: Removed "Show" and "Hide" from the Sitewide alert display.
+- DP-24413: Hide "Reset to alphabetical" option on the collection admin form.
 
 ### Changed
-  - DP-24237: Improve url purging by removing unwanted normalization.
-  - DP-24384: Send JSON to syslog
-  - DP-24415: View changes related to collections and documents.
+
+- DP-24237: Improve url purging by removing unwanted normalization.
+- DP-24384: Send JSON to syslog
+- DP-24415: View changes related to collections and documents.
 
 ## [0.318.1] - March 29, 2022
 
-  - Revert https://github.com/massgov/openmass/pull/1386/files due to purge failures.
+- Revert https://github.com/massgov/openmass/pull/1386/files due to purge failures.
 
 ## [0.318.0] - March 29, 2022
 
 ### Fixed
-  - DP-23425: Add validation for the location listing filter submission - show an error message and prevents form from submitting when the input is not suggested by Google.
-  - DP-24353: Update drupal/devel so webprofiler works
-  - DP-24379: Sitemap is generated using scheduled jobs, no need for cron.
+
+- DP-23425: Add validation for the location listing filter submission - show an error message and prevents form from submitting when the input is not suggested by Google.
+- DP-24353: Update drupal/devel so webprofiler works
+- DP-24379: Sitemap is generated using scheduled jobs, no need for cron.
 
 ### Changed
-  - DP-23603: Removed min-height of page header on Guides and Binder pages
-  - DP-24237: Improve url purging by removing unwanted normalization.
-  - DP-24267: Change the short description to be a paragraph instead of a heading.
-  - DP-24360: Remove permissions for anonymous users.
-  - 'access site-wide contact form'
-  - 'use text format restricted_html'
 
-
+- DP-23603: Removed min-height of page header on Guides and Binder pages
+- DP-24237: Improve url purging by removing unwanted normalization.
+- DP-24267: Change the short description to be a paragraph instead of a heading.
+- DP-24360: Remove permissions for anonymous users.
+- 'access site-wide contact form'
+- 'use text format restricted_html'
 
 ## [0.317.0] - March 22, 2022
 
 ### Changed
-  - DP-23372: Add the full URL as a field in the document CSV download file.
-  - DP-23754: Modify Drupal permissions so that only Data admins have data hub tagging permissions.
-  - DP-24119: Consolidate published date fields in various content types.
-  - DP-24231: DDEV 1.19 - Disable seldom used docker services by default. Change DB override
-  - DP-24269: Change "no results" behavior on Data Hub.
-  - DP-24322: Remove ability to put page based alert on topic page.
+
+- DP-23372: Add the full URL as a field in the document CSV download file.
+- DP-23754: Modify Drupal permissions so that only Data admins have data hub tagging permissions.
+- DP-24119: Consolidate published date fields in various content types.
+- DP-24231: DDEV 1.19 - Disable seldom used docker services by default. Change DB override
+- DP-24269: Change "no results" behavior on Data Hub.
+- DP-24322: Remove ability to put page based alert on topic page.
 
 ### Added
-  - DP-24111: Add bulk feature to add collection information to documents.
-  - DP-24287: Use Tugboat web API in ahoy backstop and add Drush command for rebiulding a Preview
+
+- DP-24111: Add bulk feature to add collection information to documents.
+- DP-24287: Use Tugboat web API in ahoy backstop and add Drush command for rebiulding a Preview
 
 ### Fixed
-  - DP-24315: Add Views Porter Stemmer to Collections and Data Listing Views
-  - DP-24321: Configuration does not export cleanly
+
+- DP-24315: Add Views Porter Stemmer to Collections and Data Listing Views
+- DP-24321: Configuration does not export cleanly
 
 ### Security
-  - DP-24348: Minor security upgrade for Drupal core to 9.3.8.
 
-
+- DP-24348: Minor security upgrade for Drupal core to 9.3.8.
 
 ## [0.316.0] - March 15, 2022
 
 ### Changed
-  - DP-23393: Added breadcrumb to page templates and removed "Part of" from node templates.
-  - DP-24230: Release automation - assume its a hotfix release if it isnt a standard release
-  - DP-24257: Backstop pages changes.
+
+- DP-23393: Added breadcrumb to page templates and removed "Part of" from node templates.
+- DP-24230: Release automation - assume its a hotfix release if it isnt a standard release
+- DP-24257: Backstop pages changes.
 
 ### Fixed
-  - DP-23982: Breadcrumb accessiblity improvements -  add aria descriptions for the expand button and set aria-location for current page.
-  - DP-24104: Cleanup breadcrumb schema and part of in listing content types.
-  - DP-24284: Disable debug cache headers locally by default due to header size limit
-  - DP-24285: Encode special chars when rendering text for topic hierarchy.
 
-
+- DP-23982: Breadcrumb accessiblity improvements -  add aria descriptions for the expand button and set aria-location for current page.
+- DP-24104: Cleanup breadcrumb schema and part of in listing content types.
+- DP-24284: Disable debug cache headers locally by default due to header size limit
+- DP-24285: Encode special chars when rendering text for topic hierarchy.
 
 ## [0.315.0] - March 8, 2022
 
 ### Changed
-  - DP-22639: Changed the fields for the Topic content type and a referenced paragraph type.
-  - DP-22640: Updated the Topic page Link groups display.
-  - DP-23717: - Add collection field to news content type.
+
+- DP-22639: Changed the fields for the Topic content type and a referenced paragraph type.
+- DP-22640: Updated the Topic page Link groups display.
+- DP-23717: - Add collection field to news content type.
 - Add image to collection listing teasers for news content type.
 
 ### Added
-  - DP-23300: Author & Editor role can edit any Topic Page
-Users that can Edit Any Topic Page but can't create a Topic Page can
-use the following fields when the field_restrict_link_management is
-not checked:
-  - Intended audience
-  - Organizations
-  - Labels
-  - Link groups
-  - Workflow states.
-  - Action (save/preview)
-  - DP-23418: Added Drush Launcher at Tugboat
+
+- DP-23300: Author & Editor role can edit any Topic Page
+  Users that can Edit Any Topic Page but can't create a Topic Page can
+  use the following fields when the field_restrict_link_management is
+  not checked:
+- Intended audience
+- Organizations
+- Labels
+- Link groups
+- Workflow states.
+- Action (save/preview)
+- DP-23418: Added Drush Launcher at Tugboat
 
 ### Fixed
-  - DP-24225: Fixing bug - Breadcrumb in header of pages on edit is not correct.
-  - DP-24238: Fixes alerts not showing up on IE11.
-  - DP-9216: Place the more/less contact info button before hidden extra contact info in DOM, so keyboard and AT users can navigate to the revealed content after they hit the button.
 
-
+- DP-24225: Fixing bug - Breadcrumb in header of pages on edit is not correct.
+- DP-24238: Fixes alerts not showing up on IE11.
+- DP-9216: Place the more/less contact info button before hidden extra contact info in DOM, so keyboard and AT users can navigate to the revealed content after they hit the button.
 
 ## [0.314.0] - March 1, 2022
 
 ### Changed
-  - DP-23222: Fetches earlier the request for the block alerts.
-  - DP-23584: CircleCI - omit trigger during build_validate
-  - DP-23882: Improve url purging by removing unwanted normalization.
-  - DP-24122: Avoid browser clientside validation on forms.
-  - DP-24144: Change service content type's parent field to allow more field types.
+
+- DP-23222: Fetches earlier the request for the block alerts.
+- DP-23584: CircleCI - omit trigger during build_validate
+- DP-23882: Improve url purging by removing unwanted normalization.
+- DP-24122: Avoid browser clientside validation on forms.
+- DP-24144: Change service content type's parent field to allow more field types.
 
 ### Added
-  - DP-24109: Adds collections to the following content types.
-  - News
-  - Event
-  - Promotional page
-  - Topic Page
-Adds templates for listing display for the added content types.
+
+- DP-24109: Adds collections to the following content types.
+- News
+- Event
+- Promotional page
+- Topic Page
+  Adds templates for listing display for the added content types.
 
 ### Security
-  - DP-24135: Drupal Core security update.
-  - DP-24172: Remediate current javascript and php security advisories
+
+- DP-24135: Drupal Core security update.
+- DP-24172: Remediate current javascript and php security advisories
 
 ### Fixed
-  - DP-24137: Fix breadcrumb visible with parent field to have immediate parent clickable.
-  - DP-24139: Fixed adding state org signees for existing news items.
-  - DP-24158: Fix positioning of alerts and validating node parameter when building alerts.
-  - DP-24177: Removed post-trigger from command parameters to fix backstop commands.
-  - DB-24221: Fix ddev binding to reserved port 88
+
+- DP-24137: Fix breadcrumb visible with parent field to have immediate parent clickable.
+- DP-24139: Fixed adding state org signees for existing news items.
+- DP-24158: Fix positioning of alerts and validating node parameter when building alerts.
+- DP-24177: Removed post-trigger from command parameters to fix backstop commands.
+- DB-24221: Fix ddev binding to reserved port 88
 
 ### Removed
-  - DP-6250: Removed hq2 site
 
-
+- DP-6250: Removed hq2 site
 
 ## [0.313.2] - February 23, 2022
 
 ### Fixed
+
 - DP-24139: Fixed adding state org signees for existing news items.
-
-
 
 ## [0.313.1] - February 16, 2022
 
 ### Removed
+
 - Revert recent breadcrumb builder changes
-
-
 
 ## [0.313.0] - February 15, 2022
 
 ### Changed
-  - DP-23065: - Makes the header image optional on service pages.
+
+- DP-23065: - Makes the header image optional on service pages.
 - When there are no BG image the banner height becomes fluid.
 - Hide image background on mobile by default, disable mobile image field on service page.
 
 ### Added
-  - DP-24023: Upgrade to Drupal 9.3. Add bundle classes.
+
+- DP-24023: Upgrade to Drupal 9.3. Add bundle classes.
 
 ### Fixed
-  - DP-24041: Fix breadcrumb visible with parent field to have immediate parent clickable.
-  - DP-24115: Fixed bug related to adding signees on news items when no logo present.
+
+- DP-24041: Fix breadcrumb visible with parent field to have immediate parent clickable.
+- DP-24115: Fixed bug related to adding signees on news items when no logo present.
 
 ### Security
-  - DP-24045: Update jQuery UI Datepicker Library.
 
-
+- DP-24045: Update jQuery UI Datepicker Library.
 
 ## [0.312.0] - February 8, 2022
 
 ### Changed
-  - DP-23608: Upgrade to Drupal 9.3
+
+- DP-23608: Upgrade to Drupal 9.3
 
 ### Fixed
-  - DP-24018: Fix the halfImage check bug that results in overlapping content on promo page.
-  - DP-24040: Fix 2 file twig errors
+
+- DP-24018: Fix the halfImage check bug that results in overlapping content on promo page.
+- DP-24040: Fix 2 file twig errors
 
 ### Removed
-  - DP-24022: Remove entity usage.
 
-
+- DP-24022: Remove entity usage.
 
 ## [0.311.0] - February 1, 2022
 
 ### Added
-  - DP-23663: Adds option to center the content of CSV tables.
-  - DP-23669: Add "language bar" links for pages that have  professional translations.
+
+- DP-23663: Adds option to center the content of CSV tables.
+- DP-23669: Add "language bar" links for pages that have  professional translations.
 
 ### Fixed
-  - DP-23936: Remove merge choices from rich text for tables.
-  - DP-24012: Fixed edge case issue impacting locations.
+
+- DP-23936: Remove merge choices from rich text for tables.
+- DP-24012: Fixed edge case issue impacting locations.
 
 ### Changed
-  - DP-24000: Update Ahoy pull for latest DDEV
 
-
+- DP-24000: Update Ahoy pull for latest DDEV
 
 ## [0.310.0] - January 26, 2022
 
 ### Added
-  - DP-23355: Search collection component for promotional and org pages.
-  - DP-23849: Adds autocomplete collections filter to view content and my_content.
-  - DP-23909: Add CSV for report of pages with long breadcrumbs.
+
+- DP-23355: Search collection component for promotional and org pages.
+- DP-23849: Adds autocomplete collections filter to view content and my_content.
+- DP-23909: Add CSV for report of pages with long breadcrumbs.
 
 ### Changed
-  - DP-23716: - Modifies collection_all view by adding documents for search.
+
+- DP-23716: - Modifies collection_all view by adding documents for search.
 - Alters collection_all query and creates a union with the collection_all_media_query.
 - Adds a rendered_entity_mixed field for views, to render based on a column named entity_type.
   - DP-23840: Change autocomplete link search to show published status.
@@ -1560,45 +1693,48 @@ Adds templates for listing display for the added content types.
 - Entity usage tracking queue: removed processing out of cron.
 
 ### Fixed
-  - DP-23824: Fix bug with parent length calculation for move children.
-  - DP-23943: Fixed address type conditional field validation on events.
-  - DP-23964: Output safe value for person short bio fields on org pages.
 
-
+- DP-23824: Fix bug with parent length calculation for move children.
+- DP-23943: Fixed address type conditional field validation on events.
+- DP-23964: Output safe value for person short bio fields on org pages.
 
 ## [0.309.0] - January 18, 2022
 
 ### Added
-  - DP-14784: - Creates a custom VBO action to Restore content from trash.
+
+- DP-14784: - Creates a custom VBO action to Restore content from trash.
 - Adds a VBO action field to the Trash view to allow users to restore content.
 - Adds a title to the Trash view.
 
 ### Changed
-  - DP-23647: Bypass watch notifications for CLI node saves
-  - DP-23677: Requires input on "admin/content" view.
+
+- DP-23647: Bypass watch notifications for CLI node saves
+- DP-23677: Requires input on "admin/content" view.
 
 ### Fixed
-  - DP-23780: Fix google places autocomplete using enter key to select
-  - DP-23873: Patched entity_usage module to eliminate issues on config import.
+
+- DP-23780: Fix google places autocomplete using enter key to select
+- DP-23873: Patched entity_usage module to eliminate issues on config import.
 
 ### Removed
-  - DP-23883: Removed entity usage source entity types for Content, Media, and Taxonomy term. Set to View.
 
-
+- DP-23883: Removed entity usage source entity types for Content, Media, and Taxonomy term. Set to View.
 
 ## [0.308.0] - January 11, 2022
 
 ### Added
-  - DP-22007: Added the Entity Usage module.
-  - DP-22872: - Usage records from non-current revisions are deleted on entity creation/update.
+
+- DP-22007: Added the Entity Usage module.
+- DP-22872: - Usage records from non-current revisions are deleted on entity creation/update.
 - Added tests for nodes and media by checking the Usage table (Pages Linking Here tab).
 - Removed some deprecated functionality for "Pages linking here".
   - DP-23382: Add report for D2D redirects in Drupal.
 
 ### Fixed
-  - DP-22028: Add map zoom level to allow mapped locations to zoom out on mobile.
-  - DP-23215: Align stat component(s) in stack row sections, org page, vertically.
-  - DP-23681: - Avoids storing records for non-current revisions on the nested_set_field_primary_parent_node table.
+
+- DP-22028: Add map zoom level to allow mapped locations to zoom out on mobile.
+- DP-23215: Align stat component(s) in stack row sections, org page, vertically.
+- DP-23681: - Avoids storing records for non-current revisions on the nested_set_field_primary_parent_node table.
 - To clear nested_set_field_primary_parent_node table from non-current revisions.
   - Adds an update hook.
   - Implements hook_entity_update & hook_form_alter.
@@ -1606,7 +1742,8 @@ Adds templates for listing display for the added content types.
   - DP-23839: Patched access_unpublish contrib module to eliminate warnings.
 
 ### Changed
-  - DP-23730: - Adds field_collections to external_data_resource.
+
+- DP-23730: - Adds field_collections to external_data_resource.
 - Adds field_data_flag to external_data_resource.
 - Updates view displays for external_data_resource.
 - Updates form display for external_data_resource.
@@ -1617,33 +1754,33 @@ Adds templates for listing display for the added content types.
   - DP-23818: Allowed parents of service details page expanded to include 8 more types.
   - DP-3904: Stop logging 404 in watchdog
 
-
-
-
 ## [0.306.0] - January 4, 2022
 
 ### Changed
-  - DP-23357: Reduce number of pages in backstop.
-  - DP-23377: Increase max number of custom link groups on service page from 6 to 10.
-  - DP-23591: Upcoming events are shown since today instead of now, to see upcoming events no matter the time.
-  - DP-23674: Allowed Parent Bundles for Location Details.
-  - DP-23678: Remove Cloudflare, Fix akamai purge in prod
-  - DP-23687: Update help text for parent page field.
-  - DP-23719: Parent report modifications.
+
+- DP-23357: Reduce number of pages in backstop.
+- DP-23377: Increase max number of custom link groups on service page from 6 to 10.
+- DP-23591: Upcoming events are shown since today instead of now, to see upcoming events no matter the time.
+- DP-23674: Allowed Parent Bundles for Location Details.
+- DP-23678: Remove Cloudflare, Fix akamai purge in prod
+- DP-23687: Update help text for parent page field.
+- DP-23719: Parent report modifications.
 
 ### Added
-  - DP-23359: Add bulk feature to add collection information to content.
-  - DP-23630: Hierarchy Tab:
+
+- DP-23359: Add bulk feature to add collection information to content.
+- DP-23630: Hierarchy Tab:
 - Message box when parent-child relationships are not set correctly
 - Changes message for wrong relationships from warning to error
   - DP-23695: Add languages to Google Translate widget.
 
 ### Fixed
-  - DP-23561: Change monolog level notice level from string to int to avoid warning messages.
-  - DP-23651: Fix halfImage promo page overlap issue.
-  - DP-23654: Add tests to ensure back from preview and access links.
-  - DP-23691: Checks field_section_long_form_content is not null before trying to access any methods.
-  - DP-9880: Fixed image upload requirements and added custom style for display.
+
+- DP-23561: Change monolog level notice level from string to int to avoid warning messages.
+- DP-23651: Fix halfImage promo page overlap issue.
+- DP-23654: Add tests to ensure back from preview and access links.
+- DP-23691: Checks field_section_long_form_content is not null before trying to access any methods.
+- DP-9880: Fixed image upload requirements and added custom style for display.
 
 ## [0.305.3] - January 3, 2022
 
@@ -1651,19 +1788,20 @@ Adds templates for listing display for the added content types.
 
 ## [0.305.2] - December 16, 2021
 
-  - DP-23602 Fix purging of media URLs.
+- DP-23602 Fix purging of media URLs.
 
 ## [0.305.0] - December 14, 2021
 
 ### Added
-  - DP-22908: Adding parent breadcrumb feature.
-  - DP-23017: Added documentation to the openmass project for Drupal Twig debugging.
-  - DP-23089: Added "Parent page" and "Short title" fields to content types.
-  - DP-23302: Added validation to nodes to only allow nodes without children to be unpublished or trashed.
-  - DP-23335: Added a module to automatically assign parent relationships.
-  - DP-23356: Adds functionality to move direct children to another parent.
-  - DP-23360: Display current breadcrumb for authors below the parent field.
-  - DP-23411: - Patches core tabledrag.js to store its object on the table data, to
+
+- DP-22908: Adding parent breadcrumb feature.
+- DP-23017: Added documentation to the openmass project for Drupal Twig debugging.
+- DP-23089: Added "Parent page" and "Short title" fields to content types.
+- DP-23302: Added validation to nodes to only allow nodes without children to be unpublished or trashed.
+- DP-23335: Added a module to automatically assign parent relationships.
+- DP-23356: Adds functionality to move direct children to another parent.
+- DP-23360: Display current breadcrumb for authors below the parent field.
+- DP-23411: - Patches core tabledrag.js to store its object on the table data, to
   allow later append rows asynchronously.
 - Patches entity_hierarchy based on another patch which allowed to see
   node hierarchies, reorder and save. However, the original patch loaded
@@ -1690,16 +1828,18 @@ Adds templates for listing display for the added content types.
   - DP-23572: Added an Updated date field to the Event content type and migrated the node changed date into the field.
 
 ### Changed
-  - DP-23486: Adding views reports to the author report area to support the parent field release.
-  - DP-23513: On child hierarchy form, restores drag and drop and children button, check for allowed bundles when reordering the hierarchy, changes the parents draft version of a node when the draft is the latest version, multiple fixes to the Drag and Drop script.
-  - DP-23537: For pages with missing parents report, allow authors to change operator for the content type field and select multiple types to filter.
-  - DP-23539: Replaced a custom entity_hierarchy patch with a version that changes the weight of the Hierarchy tab.
-  - DP-23540: Get the reports menu page to be easier to maintain and more organized.
-  - DP-23624: Added breadcrumb report. Minor changes to other parent reports.
-  - DP-23629: Org page now allowed as parent for service page. Header change for parent report.
+
+- DP-23486: Adding views reports to the author report area to support the parent field release.
+- DP-23513: On child hierarchy form, restores drag and drop and children button, check for allowed bundles when reordering the hierarchy, changes the parents draft version of a node when the draft is the latest version, multiple fixes to the Drag and Drop script.
+- DP-23537: For pages with missing parents report, allow authors to change operator for the content type field and select multiple types to filter.
+- DP-23539: Replaced a custom entity_hierarchy patch with a version that changes the weight of the Hierarchy tab.
+- DP-23540: Get the reports menu page to be easier to maintain and more organized.
+- DP-23624: Added breadcrumb report. Minor changes to other parent reports.
+- DP-23629: Org page now allowed as parent for service page. Header change for parent report.
 
 ### Fixed
-  - DP-23536: - Properly setting a state value for the Entity Hierarchy in the auto assignment queue processing.
+
+- DP-23536: - Properly setting a state value for the Entity Hierarchy in the auto assignment queue processing.
 - When using the "Move children" feature, set the revision user with the current user.
 - When using the "Move children" feature, set the revision log message.
   - DP-23538: Fixed the missing Schedule Transitions tab on custom and views local task pages.
@@ -1714,1633 +1854,1735 @@ Adds templates for listing display for the added content types.
   - DP-23623: Added ignore to an insert query that was missing it to bypass error.
   - DP-23650: Improve parentID check on mass_hierarchy_form_alter.
 
-
 ## [0.304.0] - December 9, 2021
 
 ### Changed
-  - DP-22990: Update circleCI to remove unused mayflower testing jobs and allow nightly deployment to CD with latest mayflower and openmass develop branches.
-  - DP-23172: Update Db container used for CI and local dev.
-  - DP-23246: Describe the change. If you need multiple lines, start the first line with the following "|-" characters.
-  - DP-23272: Removes the category from guide pages and makes the image background field to be optional instead.
-  - DP-23292: Revert DDEV usage from CI
-  - DP-23403: Sitewide alert content type follow-up fixes/clean up.
-  - DP-23414: Fix BrandBanner accessiblity - make the whole banner clickable on mobile and add aria controls.
-  - DP-23487: Stop accumulating Tugboat binaries in local dev.
-  - DP-23552: Fix extra spacing on promotional pages.
+
+- DP-22990: Update circleCI to remove unused mayflower testing jobs and allow nightly deployment to CD with latest mayflower and openmass develop branches.
+- DP-23172: Update Db container used for CI and local dev.
+- DP-23246: Describe the change. If you need multiple lines, start the first line with the following "|-" characters.
+- DP-23272: Removes the category from guide pages and makes the image background field to be optional instead.
+- DP-23292: Revert DDEV usage from CI
+- DP-23403: Sitewide alert content type follow-up fixes/clean up.
+- DP-23414: Fix BrandBanner accessiblity - make the whole banner clickable on mobile and add aria controls.
+- DP-23487: Stop accumulating Tugboat binaries in local dev.
+- DP-23552: Fix extra spacing on promotional pages.
 
 ### Removed
-  - DP-23406: Drop unused DB tables.
+
+- DP-23406: Drop unused DB tables.
 
 ### Fixed
-  - DP-23444: Fixed issue with Organization Locations paragraphs causing Behat errors.
-  - DP-23447: Fixed duplicate location listing item and location paragraph input fields styling.
-  - DP-23573: Curated List sorts not sorting by created date when created sort is selected.
-  - DP-23575: Fixed canonical URLs for translated content.
+
+- DP-23444: Fixed issue with Organization Locations paragraphs causing Behat errors.
+- DP-23447: Fixed duplicate location listing item and location paragraph input fields styling.
+- DP-23573: Curated List sorts not sorting by created date when created sort is selected.
+- DP-23575: Fixed canonical URLs for translated content.
 
 ### Security
-  - DP-23501: Drupal core update.
+
+- DP-23501: Drupal core update.
 
 ### Added
-  - DP-23517: Add Akamai module
+
+- DP-23517: Add Akamai module
 
 ## [0.303.1] - November 17, 2021
 
 ### Fixed
-  - DP-23441: Remove old validation code on Alert (Page-level and Organization) content type.
+
+- DP-23441: Remove old validation code on Alert (Page-level and Organization) content type.
 
 ## [0.303.0] - November 16, 2021
 
 ### Changed
-  - DP-23082: Promotion pages BG images half-height option.
-  - DP-23317: Change sitewide alerts header prefix.
-  - DP-23353: Avoids field_banner_image to be editable or not based on the field_info_details_sections flag, on an info_details form.
-  - DP-23427: Updated Mayflower version to 11.19.1.
-  - DP-22939: Implmenting responsive images. (MF#1545)
-  - DP-23082: Add half image option for Key messages. (MF#1538)
-  - DP-23317: Adjusted vertical spacing, prevent alert header to wrap on smaller screensizes. (MF#1547)
-  - DP-23427: Add a style variant to allow wrapping on mobile. (MF#1557)
+
+- DP-23082: Promotion pages BG images half-height option.
+- DP-23317: Change sitewide alerts header prefix.
+- DP-23353: Avoids field_banner_image to be editable or not based on the field_info_details_sections flag, on an info_details form.
+- DP-23427: Updated Mayflower version to 11.19.1.
+- DP-22939: Implmenting responsive images. (MF#1545)
+- DP-23082: Add half image option for Key messages. (MF#1538)
+- DP-23317: Adjusted vertical spacing, prevent alert header to wrap on smaller screensizes. (MF#1547)
+- DP-23427: Add a style variant to allow wrapping on mobile. (MF#1557)
 
 ### Added
-  - DP-23228: Added link to the archived versions of page from Drupal edit page.
-  - DP-23351: Tests for "All content" view at admin/content.
+
+- DP-23228: Added link to the archived versions of page from Drupal edit page.
+- DP-23351: Tests for "All content" view at admin/content.
 
 ### Fixed
-  - DP-23381: All content view CSV export is not including all filters.
-  - DP-23388: Fix caching issues with link labels on service overflow page.
 
-
+- DP-23381: All content view CSV export is not including all filters.
+- DP-23388: Fix caching issues with link labels on service overflow page.
 
 ## [0.302.0] - November 10, 2021
 
 ### Added
-  - DP-22906: Create sitewide alert content type.
-  - DP-23171: Allow Tugboat as Backstop target
+
+- DP-22906: Create sitewide alert content type.
+- DP-23171: Allow Tugboat as Backstop target
 
 ### Changed
-  - DP-22939: Implementing responsive images in location pages.
-  - DP-23238: In CI, more descriptive 'Hold' text and explicit QA approvals for release and hotfix.
-  - DP-23386: Use develop from Mayflower artifacts.
-  - DP-23386: Updated Mayflower version to 11.18.0.
-  - DP-23183: Adds divider as a component, adds variant for thin, converts it to hr. (MF #1541)
+
+- DP-22939: Implementing responsive images in location pages.
+- DP-23238: In CI, more descriptive 'Hold' text and explicit QA approvals for release and hotfix.
+- DP-23386: Use develop from Mayflower artifacts.
+- DP-23386: Updated Mayflower version to 11.18.0.
+- DP-23183: Adds divider as a component, adds variant for thin, converts it to hr. (MF #1541)
 
 ### Fixed
-  - DP-23183: Adjusting rich text optional divider for info detail pages.
-  - DP-23350: Avoid 500 errors reported on new Relic.
-Noticed exception 'Error' with message
-'Call to a member function getEntityTypeId() on null' in
-/mnt/www/html/massgov/docroot/modules/custom/mayflower/src/Helper.php:1780,
-  - DP-23387: Correct issue with topic cards on org pages.
 
-
+- DP-23183: Adjusting rich text optional divider for info detail pages.
+- DP-23350: Avoid 500 errors reported on new Relic.
+  Noticed exception 'Error' with message
+  'Call to a member function getEntityTypeId() on null' in
+  /mnt/www/html/massgov/docroot/modules/custom/mayflower/src/Helper.php:1780,
+- DP-23387: Correct issue with topic cards on org pages.
 
 ## [0.301.1] - November 4, 2021
 
 ### Fixed
-  - DP-23374: Fix search on locations pages.
 
-
+- DP-23374: Fix search on locations pages.
 
 ## [0.301.0] - November 2, 2021
 
 ### Added
-  - DP-22210: New elements to handle accesibility issues on map.
-  - DP-22215: Added new locations page.
-  - DP-22941: Added more content types to Curated list automatic lists feature.
-  - DP-23210: Restore OrgBoards
-  - DP-23218: Added Collections field to Advisory, Binder, Curated List, Decision, Executive Order, Form, Guide, Location, Service, Service Details, Regulation, and Rules of Court.
-  - DP-23241: Advanced search feature.
+
+- DP-22210: New elements to handle accesibility issues on map.
+- DP-22215: Added new locations page.
+- DP-22941: Added more content types to Curated list automatic lists feature.
+- DP-23210: Restore OrgBoards
+- DP-23218: Added Collections field to Advisory, Binder, Curated List, Decision, Executive Order, Form, Guide, Location, Service, Service Details, Regulation, and Rules of Court.
+- DP-23241: Advanced search feature.
 
 ### Changed
-  - DP-22423: Disable and remove handy cache tags module in favor of core's bundle list tags
-  - DP-23291: \"You will need\" header removed from CT Form on viewmode full.
-  - DP-23320: Added language Amharic as an option for content pages and documents.
-  - DP-23328: Updated Mayflower version to 11.17.0.
-  - DP-22210: Fixing focus issues when navigating with keyboard. (MF #1490)
-  - DP-22215: Replace googlemaps with leaftlet map, remove filter logic. (MF #1430)
-  - DP-22679: Adjust focus order between the menu button and the menu container when the menu is open. (MF #1479)
-  - DP-22679: Add a feature to close Google Translate option container with ESC key. (MF #1479)
-  - DP-22680: Add focus trap to the global menu dropdown. (MF #1479)
-  - DP-23268: Fix main nav overlay positioning. (MF #1539)
+
+- DP-22423: Disable and remove handy cache tags module in favor of core's bundle list tags
+- DP-23291: \"You will need\" header removed from CT Form on viewmode full.
+- DP-23320: Added language Amharic as an option for content pages and documents.
+- DP-23328: Updated Mayflower version to 11.17.0.
+- DP-22210: Fixing focus issues when navigating with keyboard. (MF #1490)
+- DP-22215: Replace googlemaps with leaftlet map, remove filter logic. (MF #1430)
+- DP-22679: Adjust focus order between the menu button and the menu container when the menu is open. (MF #1479)
+- DP-22679: Add a feature to close Google Translate option container with ESC key. (MF #1479)
+- DP-22680: Add focus trap to the global menu dropdown. (MF #1479)
+- DP-23268: Fix main nav overlay positioning. (MF #1539)
 
 ### Fixed
-  - DP-23070: Fixed error message related to inline entity form table deprecated theme function usage.
-  - DP-23184: Fix nightly security check
-  - DP-23227: Fix "false" text included in release note message on authoring home page.
-  - DP-23329: Fix issue with the missing 'Content type' filter on the content views.
+
+- DP-23070: Fixed error message related to inline entity form table deprecated theme function usage.
+- DP-23184: Fix nightly security check
+- DP-23227: Fix "false" text included in release note message on authoring home page.
+- DP-23329: Fix issue with the missing 'Content type' filter on the content views.
 
 ### Removed
-  - DP-23071: Removed Legacy redirects content type.
 
-
+- DP-23071: Removed Legacy redirects content type.
 
 ## [0.300.0] - October 26, 2021
 
 ### Added
-  - DP-22484: Added curated list details report.
-  - DP-23034: Add brand banner to OpenMass.
-  - DP-23135: Add urls for Lighthouse at Tugboat
-  - DP-23167: Tests for expand/collapse functionality on accordions
-  - DP-23254: Added banner to pages using the without-main page template.
+
+- DP-22484: Added curated list details report.
+- DP-23034: Add brand banner to OpenMass.
+- DP-23135: Add urls for Lighthouse at Tugboat
+- DP-23167: Tests for expand/collapse functionality on accordions
+- DP-23254: Added banner to pages using the without-main page template.
 
 ### Changed
-  - DP-23257: Updated Mayflower version to 11.16.3.
-  - Update BrandBanner toggle button text (MF #1535)
-  - DP-3188: To make search comply with https://rawgit.com/w3c/aria-practices/master/aria-practices-DeletedSectionsArchive.html#autocomplete
-Accesibility improvements for screenreaders on search https://github.com/massgov/openmass/pull/1081#issuecomment-947854475
+
+- DP-23257: Updated Mayflower version to 11.16.3.
+- Update BrandBanner toggle button text (MF #1535)
+- DP-3188: To make search comply with https://rawgit.com/w3c/aria-practices/master/aria-practices-DeletedSectionsArchive.html#autocomplete
+  Accesibility improvements for screenreaders on search https://github.com/massgov/openmass/pull/1081#issuecomment-947854475
 
 ## [0.299.1] - October 25, 2021
 
 ### Fixed
-  - DP-23248: Fix production failures Advisory nodes and Locations pages.
+
+- DP-23248: Fix production failures Advisory nodes and Locations pages.
 
 ## [0.299.0] - October 19, 2021
 
 ### Changed
-  - DP-21388: Updated Mayflower version to 11.16.2.
-  - DP-23034: Changed HTML semantic from dl``dt to ul``li for better screen reader experience. (MF#1516)
+
+- DP-21388: Updated Mayflower version to 11.16.2.
+- DP-23034: Changed HTML semantic from dl``dt to ul``li for better screen reader experience. (MF#1516)
 
 ### Fixed
-  - DP-23011: Fixed radio buttons mobile styling when selected on mobile (Galaxy S10 with Chrome).
-  - DP-23066: Reduce 5xx errors on Mass.gov and edit.mass.gov
-  - DP-23165: Fixed the 500 error for Content Reports Organization Pages.
-  - DP-23192: Fixed fatal error on Person pages related to organization role logic.
-  - DP-23200: Fixed issue causing How To pages to fail Behat testing.
+
+- DP-23011: Fixed radio buttons mobile styling when selected on mobile (Galaxy S10 with Chrome).
+- DP-23066: Reduce 5xx errors on Mass.gov and edit.mass.gov
+- DP-23165: Fixed the 500 error for Content Reports Organization Pages.
+- DP-23192: Fixed fatal error on Person pages related to organization role logic.
+- DP-23200: Fixed issue causing How To pages to fail Behat testing.
 
 ### Security
-  - DP-23160: update drupal/linkit to 6.0.0-beta3
+
+- DP-23160: update drupal/linkit to 6.0.0-beta3
 
 ## [0.298.1] - October 14, 2021
 
 ### Fixed
-  - DP-23166: Hotfix binder accordion JS. Updated Mayflower version to 11.16.1.
 
-
+- DP-23166: Hotfix binder accordion JS. Updated Mayflower version to 11.16.1.
 
 ## [0.298.0] - October 13, 2021
 
 ### Added
-  - DP-22330: Added new sections field to the Organizations content type.
-  - DP-22483: Added featured topics paragraph and themed it.
-  - DP-22533: Added a checkbox to the Organization content type to hide the short description on page display.
-  - DP-22561: Added new What Would You Like To Do paragraph on Organizations.
-  - DP-22644: Added deploy function scaffolding to migrate org_page data to organization sections.
-  - DP-22652: Added new social bar paragraph for organizations.
-  - DP-22658: Migrate org page Featured Topics to sections.
-  - DP-22958: Added a checkbox to hide Organization Section paragraph headings on Organizations.
-  - DP-22961: Added ability to control Organization page section separators.
-  - DP-23040: Added a workaround for the org_page edit 500 error on local dev environments.
+
+- DP-22330: Added new sections field to the Organizations content type.
+- DP-22483: Added featured topics paragraph and themed it.
+- DP-22533: Added a checkbox to the Organization content type to hide the short description on page display.
+- DP-22561: Added new What Would You Like To Do paragraph on Organizations.
+- DP-22644: Added deploy function scaffolding to migrate org_page data to organization sections.
+- DP-22652: Added new social bar paragraph for organizations.
+- DP-22658: Migrate org page Featured Topics to sections.
+- DP-22958: Added a checkbox to hide Organization Section paragraph headings on Organizations.
+- DP-22961: Added ability to control Organization page section separators.
+- DP-23040: Added a workaround for the org_page edit 500 error on local dev environments.
 
 ### Changed
-  - DP-22403: Added Featured Message, Featured Item Mosaic and Organization Grid to the Organization Section paragraph type.
-  - DP-22534: Converted Organization Page News fields into an Organization News paragraph.
-  - DP-22535: Converted Organization Page Events field into an Organization Events paragraph.
-  - DP-22536: Converted Organization Page Map fields into an Organization Locations paragraph.
-  - DP-22537: Converted Organization Page Related Organizations field into an Organization Related Organizations paragraph.
-  - DP-22538: Make paragraph for Board Members on org page.
-  - DP-22633: Migrate org page Board Members to sections.
-  - DP-22654: Migrated Feature Message data to sections for Organization pages.
-  - DP-22655: Migrated Featured Items data to sections for Organization pages.
-  - DP-22656: Migrated Our Organizations data to sections for Organization pages.
-  - DP-22657: Migrated "What would you like to do" data to sections for Organization pages.
-  - DP-22659: Migrated News data to sections for Organization pages.
-  - DP-22660: Migrated Events data to sections for Organization pages.
-  - DP-22661: Migrated Locations data to sections for Organization pages.
-  - DP-22662: Migrated Related Organizations data to sections for Organization pages.
-  - DP-22666: Contact and logo paragraph. It uses the current org fields instead of new ones.
-  - DP-22685: Migrated Who we serve data to sections for Organization pages.
-  - DP-22688: Migrated contact and logo data to sections for Organization pages.
-  - DP-22689: Updated the Organization Section paragraph to allow About paragraphs in the Content field.
-  - DP-22690: Migrated Our About data to sections for Organization pages.
-  - DP-22714: Changed the keyword filter for Data Listings and Collections to search more fields.
-  - DP-22909: Modified curated list content type to support data resource type tagging.
-  - DP-22947: Changes to the Organization Section paragraph and Organization content type form display.
-  - DP-22982: Modified the logic for outputing organization section components depending if it needs to be wrapped or not.
-  - DP-23023: Alphabetized the paragraph type options in the Organization Section Content field.
-  - DP-23041: Update Term reference tree, IEF, Drush, composer-patches
-  - DP-23093: Updated the Content Report for Organization Pages to show new section counts from the organization sections field.
-  - DP-23136: Updated Mayflower version to 11.16.0.
-  - [SectionsThreeUp] DP-22483: Adjusting section 3up to support a compact version. (MF #1452)
-  - [CollapsibleContent] DP-22561: Added modifier for background style and adjusted width. (MF #1460)
-  - [CollapsibleContent] DP-22657: Adjusted accordions to use a minus "-" for collapsing instead of a cross "x". (MF #1491)
-  - [AboutSection] DP-22689: Added a condition to only show the title if it is defined. (MF #1461)
-  - [Figure] DP-22981: Fixing image displaying when right aligned. (MF #1515)
-  - [StackedRowSection] DP-22982: Adding new modifier class option. (MF #1518)
-  - [RichText] DP-22982: Removing right padding if container has a `.no-sidebar` class. (MF #1518)
-  - [ActionFinder] DP-22983: Adjusting action finder to not render the heading if there isn't a title and adds a background option. (MF #1514)
-  - [SectionsThreeUp] DP-23128: Adjusting section 3up spacing top on mobile. (MF #1522)
-  - [SectionsLinks] DP-23128: Fix SectionLinks with icon overlapping issue. (MF #1522)
-  - [SocialLinksBar] DP-22652: Display an horizontal bar of links. (MF #1466)
-  - [CollapsibleContent] DP-22657: Added Collapsible Content Extended variant to allow expand/collapse all accordions. (MF #1491)
-  - [OrgContact] DP-22666: Added Org Contact organism. (MF #1467)
-  - [Sidebar] DP-22940: Fix the horizontal alignment on sidebar for locations. Fix small text-underline on locations. (MF #1513)
-  - [StackedRowSection] DP-23128: Adjust vertical spacing around the component. (MF #1525)
+
+- DP-22403: Added Featured Message, Featured Item Mosaic and Organization Grid to the Organization Section paragraph type.
+- DP-22534: Converted Organization Page News fields into an Organization News paragraph.
+- DP-22535: Converted Organization Page Events field into an Organization Events paragraph.
+- DP-22536: Converted Organization Page Map fields into an Organization Locations paragraph.
+- DP-22537: Converted Organization Page Related Organizations field into an Organization Related Organizations paragraph.
+- DP-22538: Make paragraph for Board Members on org page.
+- DP-22633: Migrate org page Board Members to sections.
+- DP-22654: Migrated Feature Message data to sections for Organization pages.
+- DP-22655: Migrated Featured Items data to sections for Organization pages.
+- DP-22656: Migrated Our Organizations data to sections for Organization pages.
+- DP-22657: Migrated "What would you like to do" data to sections for Organization pages.
+- DP-22659: Migrated News data to sections for Organization pages.
+- DP-22660: Migrated Events data to sections for Organization pages.
+- DP-22661: Migrated Locations data to sections for Organization pages.
+- DP-22662: Migrated Related Organizations data to sections for Organization pages.
+- DP-22666: Contact and logo paragraph. It uses the current org fields instead of new ones.
+- DP-22685: Migrated Who we serve data to sections for Organization pages.
+- DP-22688: Migrated contact and logo data to sections for Organization pages.
+- DP-22689: Updated the Organization Section paragraph to allow About paragraphs in the Content field.
+- DP-22690: Migrated Our About data to sections for Organization pages.
+- DP-22714: Changed the keyword filter for Data Listings and Collections to search more fields.
+- DP-22909: Modified curated list content type to support data resource type tagging.
+- DP-22947: Changes to the Organization Section paragraph and Organization content type form display.
+- DP-22982: Modified the logic for outputing organization section components depending if it needs to be wrapped or not.
+- DP-23023: Alphabetized the paragraph type options in the Organization Section Content field.
+- DP-23041: Update Term reference tree, IEF, Drush, composer-patches
+- DP-23093: Updated the Content Report for Organization Pages to show new section counts from the organization sections field.
+- DP-23136: Updated Mayflower version to 11.16.0.
+- [SectionsThreeUp] DP-22483: Adjusting section 3up to support a compact version. (MF #1452)
+- [CollapsibleContent] DP-22561: Added modifier for background style and adjusted width. (MF #1460)
+- [CollapsibleContent] DP-22657: Adjusted accordions to use a minus "-" for collapsing instead of a cross "x". (MF #1491)
+- [AboutSection] DP-22689: Added a condition to only show the title if it is defined. (MF #1461)
+- [Figure] DP-22981: Fixing image displaying when right aligned. (MF #1515)
+- [StackedRowSection] DP-22982: Adding new modifier class option. (MF #1518)
+- [RichText] DP-22982: Removing right padding if container has a `.no-sidebar` class. (MF #1518)
+- [ActionFinder] DP-22983: Adjusting action finder to not render the heading if there isn't a title and adds a background option. (MF #1514)
+- [SectionsThreeUp] DP-23128: Adjusting section 3up spacing top on mobile. (MF #1522)
+- [SectionsLinks] DP-23128: Fix SectionLinks with icon overlapping issue. (MF #1522)
+- [SocialLinksBar] DP-22652: Display an horizontal bar of links. (MF #1466)
+- [CollapsibleContent] DP-22657: Added Collapsible Content Extended variant to allow expand/collapse all accordions. (MF #1491)
+- [OrgContact] DP-22666: Added Org Contact organism. (MF #1467)
+- [Sidebar] DP-22940: Fix the horizontal alignment on sidebar for locations. Fix small text-underline on locations. (MF #1513)
+- [StackedRowSection] DP-23128: Adjust vertical spacing around the component. (MF #1525)
 
 ### Fixed
-  - DP-22746: Fixed Behat error failures due to Organization page changes.
-  - DP-22747: Organization page fixes discovered during Backstop testing.
-  - DP-22959: Refactored Organization page migrations for events and news to fix edge cases.
-  - DP-22960: Fixing the Organization sub navigation using organization section data.
-  - DP-22981: Adjusted the org long form paragraph to support wrapping sub elements.
-  - DP-23084: Updated the Featured Message paragraph template to conditionally show the callout link.
 
-
+- DP-22746: Fixed Behat error failures due to Organization page changes.
+- DP-22747: Organization page fixes discovered during Backstop testing.
+- DP-22959: Refactored Organization page migrations for events and news to fix edge cases.
+- DP-22960: Fixing the Organization sub navigation using organization section data.
+- DP-22981: Adjusted the org long form paragraph to support wrapping sub elements.
+- DP-23084: Updated the Featured Message paragraph template to conditionally show the callout link.
 
 ## [0.297.0] - October 5, 2021
 
 ### Security
-  - DP-22767: Security updates of the JavaScript and Drupal packages and dependencies.
+
+- DP-22767: Security updates of the JavaScript and Drupal packages and dependencies.
 
 ### Added
-  - DP-22895: PR previews powered by Tugboat.
-  - DP-22994: Allow DB swap via personal DDEV config.
-  - DP-23088: Add new languages to Mass.gov - Somali, traditional Chinese.
+
+- DP-22895: PR previews powered by Tugboat.
+- DP-22994: Allow DB swap via personal DDEV config.
+- DP-23088: Add new languages to Mass.gov - Somali, traditional Chinese.
 
 ### Fixed
-  - DP-23002: Fixed backstop on local dev.
-  - DP-23049: Update Backstop in CI
-  - DP-23002: Update http://mass.local to https://mass.local.
+
+- DP-23002: Fixed backstop on local dev.
+- DP-23049: Update Backstop in CI
+- DP-23002: Update http://mass.local to https://mass.local.
 
 ### Changed
-  - DP-23020: Move release trigger to noon from 1pm for Tuesday release branch.
-  - DP-23092: Updated Mayflower version to 11.15.3.
-  - DP-22681: Replace the existing keyboard navigation function with the new common function, focusTrapping.js for desktop. (MF #1489)
 
-
+- DP-23020: Move release trigger to noon from 1pm for Tuesday release branch.
+- DP-23092: Updated Mayflower version to 11.15.3.
+- DP-22681: Replace the existing keyboard navigation function with the new common function, focusTrapping.js for desktop. (MF #1489)
 
 ## [0.296.0] - September 21, 2021
 
 ### Changed
-  - DP-15164: Update different links to use the new labelContext attibute for links.
-  - DP-22363: Introduce ddev for local development and CI.
-  - DP-22540: Updated Terraform from 0.12.3 to 0.12.31.
-  - DP-22646: Disable client IP restore in Cloudflare module
-  - DP-22776: Edit format settings for 'All content' view so that if someone clicks the pageviews to sort, it will sort descending.
-  - DP-22967: Updated Mayflower version to 11.15.0.
-  - DP-20436: Fix and optimize Noto Sans multi-language fonts. (MF #1322)
-  - DP-22263: Adjusted Picture, KeyMessage, MarketingCampaign to support responsive images. (MF #1484)
-  - DP-22971: Fix Behat URL under DDEV.
-  - DP-23001: Updated Mayflower version to 11.15.2.
-  - DP-22974: Adjusted it to fix regression issue. (MF #1503)
-  - DP-22979: Fix webfonts `woff2` and `woff` fallback order, to avoid duplicated loading. (MF #1501)
+
+- DP-15164: Update different links to use the new labelContext attibute for links.
+- DP-22363: Introduce ddev for local development and CI.
+- DP-22540: Updated Terraform from 0.12.3 to 0.12.31.
+- DP-22646: Disable client IP restore in Cloudflare module
+- DP-22776: Edit format settings for 'All content' view so that if someone clicks the pageviews to sort, it will sort descending.
+- DP-22967: Updated Mayflower version to 11.15.0.
+- DP-20436: Fix and optimize Noto Sans multi-language fonts. (MF #1322)
+- DP-22263: Adjusted Picture, KeyMessage, MarketingCampaign to support responsive images. (MF #1484)
+- DP-22971: Fix Behat URL under DDEV.
+- DP-23001: Updated Mayflower version to 11.15.2.
+- DP-22974: Adjusted it to fix regression issue. (MF #1503)
+- DP-22979: Fix webfonts `woff2` and `woff` fallback order, to avoid duplicated loading. (MF #1501)
 
 ### Removed
-  - DP-19071: Remove person pages from xml sitemap.
+
+- DP-19071: Remove person pages from xml sitemap.
 
 ### Fixed
-  - DP-22263: Enabling and implementing Drupal responsive images for key message paragraph.
-  - DP-22979: Fix preload fonts 404 errors.
+
+- DP-22263: Enabling and implementing Drupal responsive images for key message paragraph.
+- DP-22979: Fix preload fonts 404 errors.
 
 ### Added
-  - DP-22918: Make organization user filter persist in the All Content view.
 
-
+- DP-22918: Make organization user filter persist in the All Content view.
 
 ## [0.295.0] - September 7, 2021
 
 ### Removed
-  - DP-22608: Remove override for TOC overlay in the theming as the related feature is updated to cover the override in Mayflower.
+
+- DP-22608: Remove override for TOC overlay in the theming as the related feature is updated to cover the override in Mayflower.
 
 ### Added
-  - DP-22706: Make backstop test to verify that "Log in to" menu expands.
-  - DP-22773: Added Data Listing fields to the Guide content type.
+
+- DP-22706: Make backstop test to verify that "Log in to" menu expands.
+- DP-22773: Added Data Listing fields to the Guide content type.
 
 ### Fixed
-  - DP-22709: Fixed backstop false positives related to alert positioning.
-  - DP-22772: Fixing "unchecking the Data Flag doesn't remove a page from the data listing" bug.
-  - DP-22927: Patched core to fix CloudFlare Query String sorting issue with Batch API.
+
+- DP-22709: Fixed backstop false positives related to alert positioning.
+- DP-22772: Fixing "unchecking the Data Flag doesn't remove a page from the data listing" bug.
+- DP-22927: Patched core to fix CloudFlare Query String sorting issue with Batch API.
 
 ### Changed
-  - DP-22734: Added function to wait for table csv rendering on backstop test.
-  - DP-22740: Convert block for news and updates field to use rich text.
-  - DP-22899: Help text of alert message timestamp changed to emphasize that it is used only on sitewide alerts.
-  - DP-22924: Updated Mayflower version to 11.14.1.
-      - DP-22608: Fix keyboard accessibility and aria-controls. (MF #1482)
-      - DP-22608: Fix variable logic. (MF #1482)
 
+- DP-22734: Added function to wait for table csv rendering on backstop test.
+- DP-22740: Convert block for news and updates field to use rich text.
+- DP-22899: Help text of alert message timestamp changed to emphasize that it is used only on sitewide alerts.
+- DP-22924: Updated Mayflower version to 11.14.1.
+  - DP-22608: Fix keyboard accessibility and aria-controls. (MF #1482)
+  - DP-22608: Fix variable logic. (MF #1482)
 
 ## [0.294.0] - August 31, 2021
 
 ### Added
-  - DP-11358: Show CircleCI deployments in any associated Jira issue.
-  - DP-22771: Add collections pages to default backstop job.
-  - DP-22774: Added Data Administrator and Collection Administrator roles.
+
+- DP-11358: Show CircleCI deployments in any associated Jira issue.
+- DP-22771: Add collections pages to default backstop job.
+- DP-22774: Added Data Administrator and Collection Administrator roles.
 
 ### Changed
-  - DP-21924: Upgraded Drupal Version to Drupal 9.2
-  - DP-22460: Use Drupal state to load google optimize differently and don't block page load
-  - DP-22560: Update GTM settings, remove unneded patches.
-  - DP-22572: Tweak alerts reponse headers - staleness and duration
-  - DP-22643: Add browser support banner to cover IE10.
-  - DP-22720: Add support to handle multiple messages on page and org alerts.
-  - DP-22775: Fixed help text for alert type field.
-  - DP-22792: Updated Drupal to 9.2.4.
-  - DP-22808: Rollback mysql version in Docker.
-  - DP-22814: Updated Mayflower version to 11.13.0.
-  - DP-22736: Add report icon to Patternlab. (MF #1469)
-  - DP-27720: Add content to ActionSteps to allow rendering multiple items in the content area of a HeaderAlerts accordion. (MF #1472)
-  - DP-22787: Fixed CircleCI job installing AWS CLI. (MF #1471)
-  - DP-22852: Lower browser version requirements for browser update banner display.
-  - DP-22859: Added an extra resize call after 300 ms to ensure the correct height on load.
-  - DP-22891: Updated Mayflower version to 11.14.0.
-  - DP-21342: Add text underline for all inline links. (MF #1468)
-  - DP-22857: Disable pointer-events to avoid colliding with other content. (MF #1483)
-  - DP-22859: Detect iframe in full width figure element, and post an update message to the iframe to update iframe dimension for the responsive iframe height javascript. (MF #1486)
+
+- DP-21924: Upgraded Drupal Version to Drupal 9.2
+- DP-22460: Use Drupal state to load google optimize differently and don't block page load
+- DP-22560: Update GTM settings, remove unneded patches.
+- DP-22572: Tweak alerts reponse headers - staleness and duration
+- DP-22643: Add browser support banner to cover IE10.
+- DP-22720: Add support to handle multiple messages on page and org alerts.
+- DP-22775: Fixed help text for alert type field.
+- DP-22792: Updated Drupal to 9.2.4.
+- DP-22808: Rollback mysql version in Docker.
+- DP-22814: Updated Mayflower version to 11.13.0.
+- DP-22736: Add report icon to Patternlab. (MF #1469)
+- DP-27720: Add content to ActionSteps to allow rendering multiple items in the content area of a HeaderAlerts accordion. (MF #1472)
+- DP-22787: Fixed CircleCI job installing AWS CLI. (MF #1471)
+- DP-22852: Lower browser version requirements for browser update banner display.
+- DP-22859: Added an extra resize call after 300 ms to ensure the correct height on load.
+- DP-22891: Updated Mayflower version to 11.14.0.
+- DP-21342: Add text underline for all inline links. (MF #1468)
+- DP-22857: Disable pointer-events to avoid colliding with other content. (MF #1483)
+- DP-22859: Detect iframe in full width figure element, and post an update message to the iframe to update iframe dimension for the responsive iframe height javascript. (MF #1486)
 
 ### Fixed
-  - DP-22650: Fix js errors on safari.
-  - DP-22745: Fixed the sitewide alert header to correspond to the alert label selection.
-  - DP-22795: Fixed error thrown on feedback manager when filtering content.
-  - DP-22796: Invalidate alert responses based on old and new field values.
-  - DP-22798: Fixed autocomplete feature when adding links to a rich text editor.
-  - DP-22810: Removed duplicated library reference.
-  - DP-22817: Fixed errors and bugs with Collections URL term validation and breadcrumb logic.
-  - DP-22867: Added back library reference that went missing after merge.
-  - DP-22880: Migration script to populate the alert date field.
+
+- DP-22650: Fix js errors on safari.
+- DP-22745: Fixed the sitewide alert header to correspond to the alert label selection.
+- DP-22795: Fixed error thrown on feedback manager when filtering content.
+- DP-22796: Invalidate alert responses based on old and new field values.
+- DP-22798: Fixed autocomplete feature when adding links to a rich text editor.
+- DP-22810: Removed duplicated library reference.
+- DP-22817: Fixed errors and bugs with Collections URL term validation and breadcrumb logic.
+- DP-22867: Added back library reference that went missing after merge.
+- DP-22880: Migration script to populate the alert date field.
 
 ### Security
-  - DP-22863: Updated Admin Toolbar to 3.0.2 per https://www.drupal.org/sa-contrib-2021-025
 
-
+- DP-22863: Updated Admin Toolbar to 3.0.2 per https://www.drupal.org/sa-contrib-2021-025
 
 ## [0.293.0] - August 10, 2021
 
 ### Changed
-  - DP-22550: Allow the updates block configuration form to use CKEditor.
+
+- DP-22550: Allow the updates block configuration form to use CKEditor.
 
 ### Added
-  - DP-22551: Drush ma:backstop can now send custom --list and --viewport params.
+
+- DP-22551: Drush ma:backstop can now send custom --list and --viewport params.
 
 ### Fixed
-  - DP-22703: Fixed bugs related to the Data Listing and Collections features.
-  - DP-22715: More robust queue worker for unpublished email reminders.
 
-
+- DP-22703: Fixed bugs related to the Data Listing and Collections features.
+- DP-22715: More robust queue worker for unpublished email reminders.
 
 ## [0.292.0] - August 3, 2021
 
 ### Security
-  - DP-19580: Upgrade webpack 4 to v5 in openmass.
+
+- DP-19580: Upgrade webpack 4 to v5 in openmass.
 
 ### Removed
-  - DP-22391: Removed old alert block code and supporting Javascript.
+
+- DP-22391: Removed old alert block code and supporting Javascript.
 
 ### Changed
-  - DP-22673: Updated Mayflower version to 11.11.0.
-  - DP-22653: Adds PageHeaderAddons component to render additional contents below PageHeader. (MF)
-  - DP-22653: Takes out optionalContents and widgets from the PageHeader component. Add PageHeaderAddons to the template to render those instead (no change to the PageHeader data object structure). (MF)
-  - DP-22653: Modify the components to break down the header and positionated the alerts below the h1
+
+- DP-22673: Updated Mayflower version to 11.11.0.
+- DP-22653: Adds PageHeaderAddons component to render additional contents below PageHeader. (MF)
+- DP-22653: Takes out optionalContents and widgets from the PageHeader component. Add PageHeaderAddons to the template to render those instead (no change to the PageHeader data object structure). (MF)
+- DP-22653: Modify the components to break down the header and positionated the alerts below the h1
 
 ### Fixed
-  - DP-22674: Added z-index to fix not clickable buttons.
 
-
+- DP-22674: Added z-index to fix not clickable buttons.
 
 ## [0.291.0] - July 28, 2021
 
 ### Changed
-  - DP-18737: Adds Paragraph type for handling CSV files to Info Detail.
-  - DP-22279: Modified s3 sync command to use the size-only option.
-  - DP-22334: Updated the How-to page listing display to use the Quick Actions field.
-  - DP-22395: Modify alerts html return with new data structure for the new alert template.
-  - DP-22598: Increase innodb_log_file_size in dev and CI.
-  - DP-22627: Updated Mayflower version to 11.10.0.
-  - DP-22395: Implement new designs for EmergencyAlerts and HeaderAlerts (replacing HeaderAlert). (MF)
-  - DP-22929: Adjust dataset for page flipper component in binder page for accessibility improvement.
+
+- DP-18737: Adds Paragraph type for handling CSV files to Info Detail.
+- DP-22279: Modified s3 sync command to use the size-only option.
+- DP-22334: Updated the How-to page listing display to use the Quick Actions field.
+- DP-22395: Modify alerts html return with new data structure for the new alert template.
+- DP-22598: Increase innodb_log_file_size in dev and CI.
+- DP-22627: Updated Mayflower version to 11.10.0.
+- DP-22395: Implement new designs for EmergencyAlerts and HeaderAlerts (replacing HeaderAlert). (MF)
+- DP-22929: Adjust dataset for page flipper component in binder page for accessibility improvement.
 
 ### Added
-  - DP-22000: Make report of pages with long titles.
-  - DP-22553: Add featured image to facebook and twitter metadata for news content type.
 
-
+- DP-22000: Make report of pages with long titles.
+- DP-22553: Add featured image to facebook and twitter metadata for news content type.
 
 ## [0.290.0] - July 20, 2021
 
 ### Changed
-  - DP-16738: Case insensitive tag detection during deploys.
-  - DP-22571: Fix invalidation of alert responses upon alert edits.
-  - DP-22573: Send more Watchdog to New Relic APM.
+
+- DP-16738: Case insensitive tag detection during deploys.
+- DP-22571: Fix invalidation of alert responses upon alert edits.
+- DP-22573: Send more Watchdog to New Relic APM.
 
 ### Added
-  - DP-22557: Added field validation on specific page alerts request.
 
-
+- DP-22557: Added field validation on specific page alerts request.
 
 ## [0.289.0] - July 13, 2021
 
 ### Added
-  - DP-21633: Added content inventory view of org page
-  - DP-21734: Render Topic and Subtopic data to the external data resource node.
+
+- DP-21633: Added content inventory view of org page
+- DP-21734: Render Topic and Subtopic data to the external data resource node.
 
 ### Changed
-  - DP-20421: Modify validation rule on HTML to allow text edit.mass.gov but not links.
-  - DP-22277: Redirect authors to "All documents view" when adding/editing media of type documents.
-  - DP-22487: Adding Albanian and Polish as available languages for pages and documents.
-  - DP-22506: Revert Ckeditor liststyle changes.
-  - DP-22507: |-
-        Updated Mayflower version to 11.8.0.
-            - DP-21924: Changed Twig syntax for drupal-9 (MF)
-            - DP-18737: Target regular richtext table more specifically. (MF)
-            - DP-22334: Add quick action links to GeneralTeaser component. (MF)
-            - DP-22506: Reverted globally changed ul/ol elements styling targeting types, fix the listing regressions in navs. (MF)
-            - DP-22281: Fixed the google translate element for mobile. (MF)
+
+- DP-20421: Modify validation rule on HTML to allow text edit.mass.gov but not links.
+- DP-22277: Redirect authors to "All documents view" when adding/editing media of type documents.
+- DP-22487: Adding Albanian and Polish as available languages for pages and documents.
+- DP-22506: Revert Ckeditor liststyle changes.
+- DP-22507: |-
+  Updated Mayflower version to 11.8.0.
+  - DP-21924: Changed Twig syntax for drupal-9 (MF)
+  - DP-18737: Target regular richtext table more specifically. (MF)
+  - DP-22334: Add quick action links to GeneralTeaser component. (MF)
+  - DP-22506: Reverted globally changed ul/ol elements styling targeting types, fix the listing regressions in navs. (MF)
+  - DP-22281: Fixed the google translate element for mobile. (MF)
 
 ## [0.288.0] - June 29, 2021
 
 ### Added
-  - DP-21203: Added flexible and fixed iframe configuration options.
-  - DP-22153: Enable debugging for local development.
-  - DP-22194: Added sortable revision count to People view.
-  - DP-22255: Allow authors to choose the type of ordered list style they need for a list.
+
+- DP-21203: Added flexible and fixed iframe configuration options.
+- DP-22153: Enable debugging for local development.
+- DP-22194: Added sortable revision count to People view.
+- DP-22255: Allow authors to choose the type of ordered list style they need for a list.
 
 ### Changed
-  - DP-22083: Mandrill modules update.
-  - DP-22249: Updated Office Hours Module to 8.x-1.5
-  - DP-22294: Data topic field widget changed.
-  - DP-22375: Updated Mayflower version to 11.7.1
-  - DP-22122: Added aria-hidden to hide duplicate content from screen readers. (MF)
-  - DP-22255: Changed ul/ol elements styling behavior to respect type attribute. (MF)
-  - DP-9770: Hide duplicate content as linked image in image promo in news page from screen reader.
+
+- DP-22083: Mandrill modules update.
+- DP-22249: Updated Office Hours Module to 8.x-1.5
+- DP-22294: Data topic field widget changed.
+- DP-22375: Updated Mayflower version to 11.7.1
+- DP-22122: Added aria-hidden to hide duplicate content from screen readers. (MF)
+- DP-22255: Changed ul/ol elements styling behavior to respect type attribute. (MF)
+- DP-9770: Hide duplicate content as linked image in image promo in news page from screen reader.
 
 ## [0.286.1] - June 16, 2021
 
-  - Temporarily neuter publish_on/unpublish_on validation until scheduler module is uninstalled.
+- Temporarily neuter publish_on/unpublish_on validation until scheduler module is uninstalled.
 
 ## [0.287.0] - June 22, 2021
 
 ### Fixed
-  - DP-19428: Fix 2 buglets related to Hotfix process (github tag creation and Circle automation)
-  - DP-22066: Fixes options in the English Version field autocomplete picker.
-  - DP-22082: Upgrades the Google Tag Manager module.
-  - DP-22160: Fixed external organizatioon image rendering issue on News content type.
+
+- DP-19428: Fix 2 buglets related to Hotfix process (github tag creation and Circle automation)
+- DP-22066: Fixes options in the English Version field autocomplete picker.
+- DP-22082: Upgrades the Google Tag Manager module.
+- DP-22160: Fixed external organizatioon image rendering issue on News content type.
 
 ### Changed
-  - DP-21996: Uninstall Scheduler modules.
-  - DP-22083: Mandrill and Route IFrame modules update.
-  - DP-22280: Show user who created the schedule transition in revision history.
-  - DP-22301: Changed the google sitemap setting to 3000 per page.
+
+- DP-21996: Uninstall Scheduler modules.
+- DP-22083: Mandrill and Route IFrame modules update.
+- DP-22280: Show user who created the schedule transition in revision history.
+- DP-22301: Changed the google sitemap setting to 3000 per page.
 
 ### Added
-  - DP-22180: Added pages for filtering and discovering Collections content.
+
+- DP-22180: Added pages for filtering and discovering Collections content.
 
 ### Security
-  - DP-22313: Updated drupal ctools from version 3.6.0 to 3.7.0.
 
-
+- DP-22313: Updated drupal ctools from version 3.6.0 to 3.7.0.
 
 ## [0.286.0] - June 15, 2021
 
 ### Changed
-  - DP-19428: Neuter scheduler module in favor of scheduled transitions module.
-  - DP-21655: Upgrade to PHP 7.4 for local dev and CI
-  - DP-21690: Added help text and changed batch size of service content inventory views.
-  - DP-22008: Upgrade sitemap and twig tweak modules.
-  - DP-22253: Adds ahoy command to toggle xdebug on and off.
+
+- DP-19428: Neuter scheduler module in favor of scheduled transitions module.
+- DP-21655: Upgrade to PHP 7.4 for local dev and CI
+- DP-21690: Added help text and changed batch size of service content inventory views.
+- DP-22008: Upgrade sitemap and twig tweak modules.
+- DP-22253: Adds ahoy command to toggle xdebug on and off.
 
 ### Added
-  - DP-21943: Created a view to show documents with no binary files attached to it.
-  - DP-21986: Added a content report page for published alerts.
-  - DP-22225: Allow Feedback Manager CSV exports with new labels and search fields.
+
+- DP-21943: Created a view to show documents with no binary files attached to it.
+- DP-21986: Added a content report page for published alerts.
+- DP-22225: Allow Feedback Manager CSV exports with new labels and search fields.
 
 ### Fixed
-  - DP-22248: Fixed post release backstop job issue.
 
-
+- DP-22248: Fixed post release backstop job issue.
 
 ## [0.285.0] - June 8, 2021
 
 ### Removed
-  - DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
-  - DP-21782: Revert PR
+
+- DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
+- DP-21782: Revert PR
 
 ### Added
-  - DP-21043: Created Data Listing All and Data Listing Topic views pages.
-  - DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
-  - DP-21768: Adapt ahoy commands so they also work for native dev env
-  - DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
+
+- DP-21043: Created Data Listing All and Data Listing Topic views pages.
+- DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
+- DP-21768: Adapt ahoy commands so they also work for native dev env
+- DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
 
 ### Fixed
-  - DP-21903: Fixed false positives in Drupal Backstop.
+
+- DP-21903: Fixed false positives in Drupal Backstop.
 
 ### Changed
-  - DP-22099: Changed post-release backstop job to use shorter list of pages.
-  - DP-22191: Modify alert pattern to incude additional data
-  - DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
-  - DP-22231: Updated Mayflower version to 11.7.0.
-  - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
-  - DP-7874: Correct semantics of footer navigation. (MF)
-  - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
+
+- DP-22099: Changed post-release backstop job to use shorter list of pages.
+- DP-22191: Modify alert pattern to incude additional data
+- DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
+- DP-22231: Updated Mayflower version to 11.7.0.
+- DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
+- DP-7874: Correct semantics of footer navigation. (MF)
+- DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
 
 ### Security
-  - DP-22152: Drupal core security update to version 8.9.16.
 
-
+- DP-22152: Drupal core security update to version 8.9.16.
 
 ## [0.284.0] - May 25, 2021
 
 ### Changed
-  - DP-21790: Add labels to feedback manager, fix multiselect.
-  - DP-21983: Makes sure the english version translation field is empty if the content is already english.
-  - DP-22002: Metatag changes for 3 content types.
-  - DP-22130: Updated Mayflower version to 11.5.1.
-  - DP-21660: Fix bullets and list numbers overwrapped with left floated elements in IE11. (MF)
-  - DP-22079: Fixed location listing pagination error, and fixed auto complete. (MF)
+
+- DP-21790: Add labels to feedback manager, fix multiselect.
+- DP-21983: Makes sure the english version translation field is empty if the content is already english.
+- DP-22002: Metatag changes for 3 content types.
+- DP-22130: Updated Mayflower version to 11.5.1.
+- DP-21660: Fix bullets and list numbers overwrapped with left floated elements in IE11. (MF)
+- DP-22079: Fixed location listing pagination error, and fixed auto complete. (MF)
 
 ### Fixed
-  - DP-22021: Fixed error when adding an existing Fee to a How-to page.
+
+- DP-22021: Fixed error when adding an existing Fee to a How-to page.
 
 ### Security
-  - DP-22023: Updated drupal ctools from version 3.4.0 to 3.6.0.
 
-
+- DP-22023: Updated drupal ctools from version 3.4.0 to 3.6.0.
 
 ## [0.283.0] - May 18, 2021
 
 ### Changed
-  - DP-20949: Removes the Basic Google Maps implementation, not the location listing page.
-  - DP-21731: Updated Pathologic, Prepopulate, Sub-pathauto, and Twig Field Value modules.
-  - DP-21783: Content and Document administrative views have proper language settings.
-  - DP-21793: Added character countdown and warning when page titles exceed 70 characters.
-  - DP-22026: Exported Rabbit Hole module configuration.
-  - DP-22060: Updated Mayflower version to 11.5.0.
-  - DP-21554: Added MapLeaflet molecule and variants. (MF)
-  - DP-21554: Switch out interactive and static google maps with leaflet maps in LocationBanners and MappedLocations, on location pages and orgs and services pages. (MF)
-  - DP-21816: Remove h2 from utility nav panel title. (MF)
-  - DP-21763: Extended the GeneralTeaser component to render tags, icon in eyebrow, and upperRight content. (MF)
-  - DP-21883: Added a query string with a version to -VF.woff2 fonts for caching. (MF)
+
+- DP-20949: Removes the Basic Google Maps implementation, not the location listing page.
+- DP-21731: Updated Pathologic, Prepopulate, Sub-pathauto, and Twig Field Value modules.
+- DP-21783: Content and Document administrative views have proper language settings.
+- DP-21793: Added character countdown and warning when page titles exceed 70 characters.
+- DP-22026: Exported Rabbit Hole module configuration.
+- DP-22060: Updated Mayflower version to 11.5.0.
+- DP-21554: Added MapLeaflet molecule and variants. (MF)
+- DP-21554: Switch out interactive and static google maps with leaflet maps in LocationBanners and MappedLocations, on location pages and orgs and services pages. (MF)
+- DP-21816: Remove h2 from utility nav panel title. (MF)
+- DP-21763: Extended the GeneralTeaser component to render tags, icon in eyebrow, and upperRight content. (MF)
+- DP-21883: Added a query string with a version to -VF.woff2 fonts for caching. (MF)
 
 ### Added
-  - DP-21634: Added flexible header functionality to the how-to content type.
-  - DP-21949: Add missing pages to Drupal Backstop.
+
+- DP-21634: Added flexible header functionality to the how-to content type.
+- DP-21949: Add missing pages to Drupal Backstop.
 
 ### Removed
-  - DP-21785: Removing libraries, clamav, and restui from composer, previously removed from drupal config.
+
+- DP-21785: Removing libraries, clamav, and restui from composer, previously removed from drupal config.
 
 ### Fixed
-  - DP-22061: Fix missing hours on location listing pages.
 
-
+- DP-22061: Fix missing hours on location listing pages.
 
 ## [0.282.0] - May 11, 2021
 
 ### Fixed
-  - DP-19072: Fixed serialization issues with metatag output.
-  - DP-21034: Fixed log in error message appearing with wrong styles.
-  - DP-21188: Wrap long file names that have no breaking character in "all documents" view.
-  - DP-21692: Fixed empty support status message rendering upon saving content in Drupal.
-  - DP-21728: Upgrading some contrib modules do d9 compatible versions.
+
+- DP-19072: Fixed serialization issues with metatag output.
+- DP-21034: Fixed log in error message appearing with wrong styles.
+- DP-21188: Wrap long file names that have no breaking character in "all documents" view.
+- DP-21692: Fixed empty support status message rendering upon saving content in Drupal.
+- DP-21728: Upgrading some contrib modules do d9 compatible versions.
 
 ### Added
-  - DP-20892: Host iframe responsive height JS at docroot/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js.
+
+- DP-20892: Host iframe responsive height JS at docroot/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js.
 
 ### Changed
-  - DP-21622: Updated auto_entitylabel module.
-  - DP-21624: Patched the field_tokens module for D9 compatibility.
-  - DP-21677: Use 'massgov' Docker org instead of comass
-  - DP-21691: Replace h2 with div keeping its aria-labelledby for the main nav.
-  - DP-21729: Updated view_mode_page, views_autocomplete_filters, views_custom_cache_tag, and views_data_export modules.
-  - DP-21786: Uninstalling config_log module.
-  - DP-21792: Changed the field order on the node form, keeping language out of the "data" fields.
-  - DP-21990: Updated Mayflower version to 11.4.2.
-  - DP-21686: Change info details page content data from object to array for flexibility, cleanup unused data and render video in preContent-media variant page (MF)
-  - DP-21770: Align text and icon for the directions link. (MF)
+
+- DP-21622: Updated auto_entitylabel module.
+- DP-21624: Patched the field_tokens module for D9 compatibility.
+- DP-21677: Use 'massgov' Docker org instead of comass
+- DP-21691: Replace h2 with div keeping its aria-labelledby for the main nav.
+- DP-21729: Updated view_mode_page, views_autocomplete_filters, views_custom_cache_tag, and views_data_export modules.
+- DP-21786: Uninstalling config_log module.
+- DP-21792: Changed the field order on the node form, keeping language out of the "data" fields.
+- DP-21990: Updated Mayflower version to 11.4.2.
+- DP-21686: Change info details page content data from object to array for flexibility, cleanup unused data and render video in preContent-media variant page (MF)
+- DP-21770: Align text and icon for the directions link. (MF)
 
 ### Removed
-  - DP-21691: Removed deplicated mobile version header + navigation components for the horizontal nav.
 
-
+- DP-21691: Removed deplicated mobile version header + navigation components for the horizontal nav.
 
 ## [0.281.1] - May 6, 2021
 
 ### Changed
+
 - DP-21948: Fixed overflow pages.
-
-
 
 ## [0.281.0] - May 4, 2021
 
 ### Changed
-  - DP-20709: Set caching expiration to 1 year for the font files.
-  - DP-21703: Updated the help text on the page and document Pages Linking Here tabs.
-  - DP-21712: Documentation update for descendant manager.
+
+- DP-20709: Set caching expiration to 1 year for the font files.
+- DP-21703: Updated the help text on the page and document Pages Linking Here tabs.
+- DP-21712: Documentation update for descendant manager.
 
 ### Removed
-  - DP-21730: Uninstalled the libraries, clamav, config_log, and restui contrib modules.
+
+- DP-21730: Uninstalled the libraries, clamav, config_log, and restui contrib modules.
 
 ### Fixed
-  - DP-21745: Fixes issue that allowed for the creation of duplicate aliases.
 
-
+- DP-21745: Fixes issue that allowed for the creation of duplicate aliases.
 
 ## [0.280.0] - April 27, 2021
 
 ### Changed
-  - DP-19203: Fixes code deprications in custom modules in prep for Drupal 9.
-  - DP-21595: Help text fix on Guide content type.
-  - DP-21623: Upgraded quick_node_clone module with the latest patch.
-  - DP-21682: Update the info_details config to add additional fields to descendant manager 'pages linking here' section.
-  - DP-6360: Changed directions links in location listings pages to not all have same link label/title.
+
+- DP-19203: Fixes code deprications in custom modules in prep for Drupal 9.
+- DP-21595: Help text fix on Guide content type.
+- DP-21623: Upgraded quick_node_clone module with the latest patch.
+- DP-21682: Update the info_details config to add additional fields to descendant manager 'pages linking here' section.
+- DP-6360: Changed directions links in location listings pages to not all have same link label/title.
 
 ### Fixed
-  - DP-21727: Re-exported translation config not captured during translation deployment
-  - DP-21733: Exposed the Moderation State field in the External Data Resource node form so nodes can be published.
-  - DP-21745: Addressed memory issues with Media translations migration.
+
+- DP-21727: Re-exported translation config not captured during translation deployment
+- DP-21733: Exposed the Moderation State field in the External Data Resource node form so nodes can be published.
+- DP-21745: Addressed memory issues with Media translations migration.
 
 ### Security
-  - DP-21744: Updated Drupal to 8.9.14 to eliminate security issue.
+
+- DP-21744: Updated Drupal to 8.9.14 to eliminate security issue.
 
 ### Added
-  - DP-21746: Added Hindi and Nepali languages.
 
-
+- DP-21746: Added Hindi and Nepali languages.
 
 ## [0.279.0] - April 20, 2021
 
 ### Changed
-  - DP-19362: D9 upgrade packages - authoring/fields.
+
+- DP-19362: D9 upgrade packages - authoring/fields.
 
 ### Added
-  - DP-20281: Added language fields and Translations tab for several content types and Documents.
+
+- DP-20281: Added language fields and Translations tab for several content types and Documents.
 
 ### Fixed
-  - DP-21662: Adjust format of how labels come over from metadata API
-  - DP-21704: Migrate unpublished header media image fields to use image wrapping field defaults.
 
-
+- DP-21662: Adjust format of how labels come over from metadata API
+- DP-21704: Migrate unpublished header media image fields to use image wrapping field defaults.
 
 ## [0.278.0] - April 13, 2021
 
 ### Added
-  - DP-10272: Added view that shows pages that don't have a published org page in the "Organization(s)" field.
-  - DP-21621: Added content inventory view of service page.
+
+- DP-10272: Added view that shows pages that don't have a published org page in the "Organization(s)" field.
+- DP-21621: Added content inventory view of service page.
 
 ### Changed
-  - DP-19365: Updated the address, draggableviews, flag, metatag, paragraphs, pathauto, views_bulk_operations, token, and entity_reference_revisions modules to latest releases.
-  - DP-21332: Modify Caspio embed functionality to have flexible hostname.
+
+- DP-19365: Updated the address, draggableviews, flag, metatag, paragraphs, pathauto, views_bulk_operations, token, and entity_reference_revisions modules to latest releases.
+- DP-21332: Modify Caspio embed functionality to have flexible hostname.
 
 ### Removed
-  - DP-19465: Uninstalled migrate modules and removed related, disabled custom modules.
 
-
+- DP-19465: Uninstalled migrate modules and removed related, disabled custom modules.
 
 ## [0.277.0] - April 6, 2021
 
 ### Changed
-  - DP-20584: Configured backstop to wait 45 seconds for tableau dashboards to load.
-  - DP-21591: Added 4 new test pages to Backstop for automated visual testing of new images styles on info details.
+
+- DP-20584: Configured backstop to wait 45 seconds for tableau dashboards to load.
+- DP-21591: Added 4 new test pages to Backstop for automated visual testing of new images styles on info details.
 
 ### Fixed
-  - DP-20992: Fixed advisory content type rendering with Title short desription view mode.
-  - DP-21457: Fixed the htmlspecialchars() PHP warning for iframe paragraph captions.
-  - DP-21589: Added migration to set new, required image wrapping values for image paragraphs that do not have captions.
+
+- DP-20992: Fixed advisory content type rendering with Title short desription view mode.
+- DP-21457: Fixed the htmlspecialchars() PHP warning for iframe paragraph captions.
+- DP-21589: Added migration to set new, required image wrapping values for image paragraphs that do not have captions.
 
 ### Added
-  - DP-21300: Added Data Topic Taxonomy and Topic and Sub Topic fields for Data Tab.
 
-
+- DP-21300: Added Data Topic Taxonomy and Topic and Sub Topic fields for Data Tab.
 
 ## [0.276.0] - March 30, 2021
 
 ### Added
-  - DP-19675: Support WYSIWYG textareas with the "Pages Linking Here" functionality.
-  - DP-20411: Add data fields to binder content type and set up meta data output with the fields.
+
+- DP-19675: Support WYSIWYG textareas with the "Pages Linking Here" functionality.
+- DP-20411: Add data fields to binder content type and set up meta data output with the fields.
 
 ### Changed
-  - DP-20722: Modify image section on info page to allow text wrapping.
-  - DP-21583: Updated Mayflower version to 11.3.0.
-  - DP-21549: Add check to see if TOC is actually displayed before initializing. (MF)
-  - DP-20722: Changed figure image atom to work similar to dataviz. (MF)
+
+- DP-20722: Modify image section on info page to allow text wrapping.
+- DP-21583: Updated Mayflower version to 11.3.0.
+- DP-21549: Add check to see if TOC is actually displayed before initializing. (MF)
+- DP-20722: Changed figure image atom to work similar to dataviz. (MF)
 
 ### Fixed
-  - DP-21586: Added missing Header Media migration and Backstop testing failures for image captions.
 
-
+- DP-21586: Added missing Header Media migration and Backstop testing failures for image captions.
 
 ## [0.275.0] - March 23, 2021
 
 ### Changed
-  - DP-19363: Updated key, encrypt, tfa, real_aes, and ga_login modules
-  - DP-21454: Added --no-tablespaces option during sql:dump
-  - DP-21534: Updated Mayflower version to 11.2.2.
-  - DP-20435: Fix Callout Links alignment in key actions (promoted results in search.mass.gov). (MF)
+
+- DP-19363: Updated key, encrypt, tfa, real_aes, and ga_login modules
+- DP-21454: Added --no-tablespaces option during sql:dump
+- DP-21534: Updated Mayflower version to 11.2.2.
+- DP-20435: Fix Callout Links alignment in key actions (promoted results in search.mass.gov). (MF)
 
 ### Fixed
-  - DP-21249: Updated asset_cache_bust module to prevent warnings.
-  - DP-21459: Fixes the missing icon in the document insert wysiwg tool.
-  - DP-21464: Rich Text images set to half-width with no alignment now have a width of 50%.
+
+- DP-21249: Updated asset_cache_bust module to prevent warnings.
+- DP-21459: Fixes the missing icon in the document insert wysiwg tool.
+- DP-21464: Rich Text images set to half-width with no alignment now have a width of 50%.
 
 ### Added
-  - DP-21249: Re-add cache bust querystring param to aggregated CSS and JS.
 
-
+- DP-21249: Re-add cache bust querystring param to aggregated CSS and JS.
 
 ## [0.274.0] - March 16, 2021
 
 ### Fixed
-  - DP-20735: Omit unneeded Acquia logs for sync to S3
-  - DP-20886: Use correct log names during sync to S3
-  - DP-21404: Fixed error messages coming from Mass Metatag.
+
+- DP-20735: Omit unneeded Acquia logs for sync to S3
+- DP-20886: Use correct log names during sync to S3
+- DP-21404: Fixed error messages coming from Mass Metatag.
 
 ### Changed
-  - DP-21025: Add more allowed content types for internal links of Related field in Regulation and Advisory.
-  - DP-21093: Update Drush, Devel, and Composer2
-  - DP-21375: Updated Pathauto maximum alias and component lengths to fix non-English blank alias generation issue.
-  - DP-21449: Updated Mayflower version to 11.2.1.
-  - DP-21433: Update footer data to match Mass.gov. (MF)
+
+- DP-21025: Add more allowed content types for internal links of Related field in Regulation and Advisory.
+- DP-21093: Update Drush, Devel, and Composer2
+- DP-21375: Updated Pathauto maximum alias and component lengths to fix non-English blank alias generation issue.
+- DP-21449: Updated Mayflower version to 11.2.1.
+- DP-21433: Update footer data to match Mass.gov. (MF)
 
 ### Added
-  - DP-21274: Added docs for a native development environment.
 
-
+- DP-21274: Added docs for a native development environment.
 
 ## [0.273.0] - March 2, 2021
 
 ### Fixed
-  - DP-10401: The "500 server error" fix on the descendant manager overview page.
-  - DP-19699: Allow role changes and other account changes without password change.
-  - DP-21120: Do not render advisory date on curated list related links section.
-  - DP-21124: Adjust z-index for the admin tool bar to prevent the Mass.gov heading bar to overwrap.
+
+- DP-10401: The "500 server error" fix on the descendant manager overview page.
+- DP-19699: Allow role changes and other account changes without password change.
+- DP-21120: Do not render advisory date on curated list related links section.
+- DP-21124: Adjust z-index for the admin tool bar to prevent the Mass.gov heading bar to overwrap.
 
 ### Added
-  - DP-13674: Enable New Relic metrics for CLI PHP commands.
-  - DP-20886: Sync logs from Acquia to S3
-  - DP-20141: Create a new content type, External data resource for data tab. Create a new role, External data resource mananger, for the content type.
-  - DP-21259: Added search metadata documentation into openmass public repo.
+
+- DP-13674: Enable New Relic metrics for CLI PHP commands.
+- DP-20886: Sync logs from Acquia to S3
+- DP-20141: Create a new content type, External data resource for data tab. Create a new role, External data resource mananger, for the content type.
+- DP-21259: Added search metadata documentation into openmass public repo.
 
 ### Changed
-  - DP-21326: Updated Mayflower version to 11.2.0.
-  - DP-21258: Add BrandBanner molecule in Patternlab and generate the HTML, CSS and JS for Mayflower core documentation. (MF)
 
-
+- DP-21326: Updated Mayflower version to 11.2.0.
+- DP-21258: Add BrandBanner molecule in Patternlab and generate the HTML, CSS and JS for Mayflower core documentation. (MF)
 
 ## [0.272.0] - February 16, 2021
 
 ### Changed
-  - DP-19181: Change the unpublish reminder email format by adding blank lines between the paragraphs.
-  - DP-20824: Changed link fields to disallow several content types.
-  - DP-21067: Removed menu link content from database sanitization.
-  - DP-21174: Updated Mayflower version to 11.1.4.
-  - DP-20381: Fix left floated figure components and images to cover list style elements in rich text containers. (MF)
+
+- DP-19181: Change the unpublish reminder email format by adding blank lines between the paragraphs.
+- DP-20824: Changed link fields to disallow several content types.
+- DP-21067: Removed menu link content from database sanitization.
+- DP-21174: Updated Mayflower version to 11.1.4.
+- DP-20381: Fix left floated figure components and images to cover list style elements in rich text containers. (MF)
 
 ### Fixed
-  - DP-20580: Address issue where uploading files via the WYSIWYG editor results in an error.
-  - DP-21191: Address pre-deployment issue related to settings cookies in DP-20580.
+
+- DP-20580: Address issue where uploading files via the WYSIWYG editor results in an error.
+- DP-21191: Address pre-deployment issue related to settings cookies in DP-20580.
 
 ### Added
-  - DP-21109: Added label field to the content types, added mg_labels custom metatag.
 
-
+- DP-21109: Added label field to the content types, added mg_labels custom metatag.
 
 ## [0.271.0] - February 2, 2021
 
 ### Changed
-  - DP-20660: Changed sanitization delete query to skip deploy hooks.
-  - DP-21074: Updated Mayflower version to 11.1.3.
-  - DP-19859: Fix the Relationship Indicator display at the show all state in IE. (MF)
-  - DP-21059: Make a skip link target to be displayed only when its associated skip link is clicked. (MF)
+
+- DP-20660: Changed sanitization delete query to skip deploy hooks.
+- DP-21074: Updated Mayflower version to 11.1.3.
+- DP-19859: Fix the Relationship Indicator display at the show all state in IE. (MF)
+- DP-21059: Make a skip link target to be displayed only when its associated skip link is clicked. (MF)
 
 ### Security
-  - DP-21037: Drupal core update to the latest stable version 8.9.13.
 
-
+- DP-21037: Drupal core update to the latest stable version 8.9.13.
 
 ## [0.270.0] - January 27, 2021
 
 ### Added
-  - DP-20579: Added contact information related fields to the mass_content_api configuration.
-  - DP-20590: Add Mayflower ordered list style to ckeditor.
+
+- DP-20579: Added contact information related fields to the mass_content_api configuration.
+- DP-20590: Add Mayflower ordered list style to ckeditor.
 
 ### Fixed
-  - DP-20580: Fixed the warning on Basic HTML text format, updated DropzoneJS module, applied the patch to solve multiple webservers issue related to file uploads.
+
+- DP-20580: Fixed the warning on Basic HTML text format, updated DropzoneJS module, applied the patch to solve multiple webservers issue related to file uploads.
 
 ### Changed
-  - DP-20712: Output content type label name instead of machine name in the Content Type column under the pages linking here tab in content edit page.
-  - DP-21005: Updated Mayflower version to 11.1.1.
-  - DP-20555: Add a skip link to figure component as an accessibility improvement.(MF)
-  - DP-20986: Change Caspio dataId in Patternlab to use the dedicated testing example to avoid breakage.(MF)
-  - DP-20435: Fix filters alignment and move styles into assets.(MF)
-Updated Mayflower version to 11.1.2.
-  - DP-20768: Set fillImage.js to get the page content container width for full size elements with figure component.(MF)
 
-
+- DP-20712: Output content type label name instead of machine name in the Content Type column under the pages linking here tab in content edit page.
+- DP-21005: Updated Mayflower version to 11.1.1.
+- DP-20555: Add a skip link to figure component as an accessibility improvement.(MF)
+- DP-20986: Change Caspio dataId in Patternlab to use the dedicated testing example to avoid breakage.(MF)
+- DP-20435: Fix filters alignment and move styles into assets.(MF)
+  Updated Mayflower version to 11.1.2.
+- DP-20768: Set fillImage.js to get the page content container width for full size elements with figure component.(MF)
 
 ## [0.269.0] - January 12, 2021
 
 ### Changed
-  - DP-20851: Maximum number of featured services on home page has been increased from 6 to 9.
-  - DP-20616: Change 'service detail page' to 'information detail page' in the form embed type field help text in form content type.
-  - DP-20880: Updated Mayflower version to 11.1.0.
-    - DP-9450: Set bullet style for nested unordered list. (MF)
-    - DP-9450: Remove the existing bullet style for a unordered list in rich text to match _elements.scss and adjust nested lists' top margin for consistent spacing. (MF)
-    - GlobalNav: Removed the submenu first child and its hidden styles, cleanup style overrides. Target the category link in submenu using className ma__main__hamburger-nav__subitem--main instead of :last-child (MF)
-  - DP-20148: Correct the alert content type help text.
-  - DP-20706: Updated documentation to make Xdebug setup instructions easier to find.
-  - DP-20771: Changed admin title field to visualization title and its help text.
+
+- DP-20851: Maximum number of featured services on home page has been increased from 6 to 9.
+- DP-20616: Change 'service detail page' to 'information detail page' in the form embed type field help text in form content type.
+- DP-20880: Updated Mayflower version to 11.1.0.
+  - DP-9450: Set bullet style for nested unordered list. (MF)
+  - DP-9450: Remove the existing bullet style for a unordered list in rich text to match _elements.scss and adjust nested lists' top margin for consistent spacing. (MF)
+  - GlobalNav: Removed the submenu first child and its hidden styles, cleanup style overrides. Target the category link in submenu using className ma__main__hamburger-nav__subitem--main instead of :last-child (MF)
+- DP-20148: Correct the alert content type help text.
+- DP-20706: Updated documentation to make Xdebug setup instructions easier to find.
+- DP-20771: Changed admin title field to visualization title and its help text.
 
 ### Added
-  - DP-20498: Add service family KPI fields and dashboard to PFML service pages.
-  - DP-20771: Map title field data to figure template.
 
-
+- DP-20498: Add service family KPI fields and dashboard to PFML service pages.
+- DP-20771: Map title field data to figure template.
 
 ## [0.268.0] - January 5, 2021
 
 ### Changed
-  - DP-20749: Updated Mayflower version to 11.0.0.
-     - DP-19530: Added the new MVP core storybook documentation site. (MF)
-     - DP-20659: Set up a template for Caspio as a figure variation template. (MF)
-     - DP-20321: Refactored header.scss build assets to use header mixed styles. (MF)
-     - DP-20321: Modified menu-overlay to work with top set to zero. Updated ma__header__hamburger__nav z-index. (MF)
-     - DP-20659: Adjust the optional title and its visibility in all figure variation templates. (MF)
-     - Sync FooterLinks markup between React and Patternlab, consolidate styles in assets. (MF)
-     - Fix Noto Sans loading on IE. (MF)
+
+- DP-20749: Updated Mayflower version to 11.0.0.
+  - DP-19530: Added the new MVP core storybook documentation site. (MF)
+  - DP-20659: Set up a template for Caspio as a figure variation template. (MF)
+  - DP-20321: Refactored header.scss build assets to use header mixed styles. (MF)
+  - DP-20321: Modified menu-overlay to work with top set to zero. Updated ma__header__hamburger__nav z-index. (MF)
+  - DP-20659: Adjust the optional title and its visibility in all figure variation templates. (MF)
+  - Sync FooterLinks markup between React and Patternlab, consolidate styles in assets. (MF)
+  - Fix Noto Sans loading on IE. (MF)
 
 ### Fixed
-  - DP-20703: Preload font changed to woff2 format.
+
+- DP-20703: Preload font changed to woff2 format.
 
 ### Added
-  - DP-20500: Set up a new paragraph to embed Caspio data page.
 
-
+- DP-20500: Set up a new paragraph to embed Caspio data page.
 
 ## [0.267.0] - December 15, 2020
 
 ### Added
-  - DP-15991: Descendant manager added for Promotional pages content type.
+
+- DP-15991: Descendant manager added for Promotional pages content type.
 
 ### Changed
-  - DP-20691: Updated Mayflower version to 10.4.1.
-    - DP-20682: Significantly reduced Noto Sans Latin variable font `.woff` file sizes, from ~900k to ~60k. (MF)
-    - DP-20682: Add conditionals to import static fonts and variable fonts `.woff2`, in order to prevent both fonts to be downloaded. (MF)
-    - DP-20681: Add polyfill for includes. (MF)
 
-
+- DP-20691: Updated Mayflower version to 10.4.1.
+  - DP-20682: Significantly reduced Noto Sans Latin variable font `.woff` file sizes, from ~900k to ~60k. (MF)
+  - DP-20682: Add conditionals to import static fonts and variable fonts `.woff2`, in order to prevent both fonts to be downloaded. (MF)
+  - DP-20681: Add polyfill for includes. (MF)
 
 ## [0.266.0] - December 8, 2020
 
 ### Added
-  - DP-20585: Disallow '/doc/courts-dwnld-*' in robots.txt for courts as DP-20585.
+
+- DP-20585: Disallow '/doc/courts-dwnld-*' in robots.txt for courts as DP-20585.
 
 ### Changed
-  - DP-20629: Updated Mayflower version to 10.4.0.
-     - DP-19233: Fix the width of small size and adjust side margins for side by side layout. (MF)
-     - Assets CSS: Cleaned up general template styles and added layout.css. (MF)
-  - DP-20418: Changed "Media bundle is missing file for media entity" error message to report only to logs.
 
-
+- DP-20629: Updated Mayflower version to 10.4.0.
+  - DP-19233: Fix the width of small size and adjust side margins for side by side layout. (MF)
+  - Assets CSS: Cleaned up general template styles and added layout.css. (MF)
+- DP-20418: Changed "Media bundle is missing file for media entity" error message to report only to logs.
 
 ## [0.265.0] - December 1, 2020
 
 ### Security
-  - DP-20592: Drupal core security update to version 8.9.10.
+
+- DP-20592: Drupal core security update to version 8.9.10.
 
 ### Fixed
-  - DP-19553: Authoring experience improved when adding existing media as download.
 
+- DP-19553: Authoring experience improved when adding existing media as download.
 
 ## [0.264.0] - November 24, 2020
 
 ### Added
-  - DP-19156: Exclude footer, feedback and sitewide alerts from page snippets in Google.
-  - DP-20111: Add mp4 as an allowed file extension to the Select field in the Document media type.
+
+- DP-19156: Exclude footer, feedback and sitewide alerts from page snippets in Google.
+- DP-20111: Add mp4 as an allowed file extension to the Select field in the Document media type.
 
 ### Fixed
-  - DP-19391: Added new iframe fields to match tableau and migrated values.
-  - DP-20086: Prevent bulk update of author from sending watch emails.
-  - DP-20499: Add override css for sticky nav positioning with admin bar.
-  - DP-20556: Alerts - "Message link" field logic fix to always control the behavior of the alert message.
-  - DP-20578: Fixes Behat XSS errors related to new rich text iframe caption field.
+
+- DP-19391: Added new iframe fields to match tableau and migrated values.
+- DP-20086: Prevent bulk update of author from sending watch emails.
+- DP-20499: Add override css for sticky nav positioning with admin bar.
+- DP-20556: Alerts - "Message link" field logic fix to always control the behavior of the alert message.
+- DP-20578: Fixes Behat XSS errors related to new rich text iframe caption field.
 
 ### Changed
-  - DP-20113: Converted iframe whitelist and Header configurations to not be in code.
-  - DP-20166: Upgrade Drupal core to 8.9.
-  - DP-20518: |-
-        Updated Mayflower version to 10.2.0.
-              - DP-19391: Added raw to iframe templates. (MF)
-  - DP-20543: Added a test page that shows Tableau. visualizations in various sizes and formats.
-  - DP-20563: |-
-        Updated Mayflower version to 10.3.0.
-              - DP-19520: Specify the link color for the second unit. (MF)
-              - DP-20499: Align stikcy nav to the top of the page with screen width 780px and less. (MF)
-              - Added PNG and SVG formats for all official state seal variations stateseal.[png|svg], stateseal-color.[png|svg], stateseal-black.[png|svg], stateseal-white.[png|svg]. (MF)
-              - Changed global.scss path for static assets to point to unpkg CDN url. (MF)
-              - Changed main nav js for window resize to use addEventListener instead of undefined addEventHandler. (MF)
-              - Renamed variable names to be unique for each module file, allowing those files to be combined without conflicts for static js generation. (MF)
-              - Optimize and standardize existing state seals PNGs in assets to reduce file sizes for web usage without sacrificing qualities. (MF)
 
-
-
+- DP-20113: Converted iframe whitelist and Header configurations to not be in code.
+- DP-20166: Upgrade Drupal core to 8.9.
+- DP-20518: |-
+  Updated Mayflower version to 10.2.0.
+  - DP-19391: Added raw to iframe templates. (MF)
+- DP-20543: Added a test page that shows Tableau. visualizations in various sizes and formats.
+- DP-20563: |-
+  Updated Mayflower version to 10.3.0.
+  - DP-19520: Specify the link color for the second unit. (MF)
+  - DP-20499: Align stikcy nav to the top of the page with screen width 780px and less. (MF)
+  - Added PNG and SVG formats for all official state seal variations stateseal.[png|svg], stateseal-color.[png|svg], stateseal-black.[png|svg], stateseal-white.[png|svg]. (MF)
+  - Changed global.scss path for static assets to point to unpkg CDN url. (MF)
+  - Changed main nav js for window resize to use addEventListener instead of undefined addEventHandler. (MF)
+  - Renamed variable names to be unique for each module file, allowing those files to be combined without conflicts for static js generation. (MF)
+  - Optimize and standardize existing state seals PNGs in assets to reduce file sizes for web usage without sacrificing qualities. (MF)
 
 ## [0.264.0] - November 17, 2020
 
 ### Fixed
-  - DP-19391: Added new iframe fields to match tableau and migrated values.
+
+- DP-19391: Added new iframe fields to match tableau and migrated values.
 
 ### Changed
-  - DP-20518: Updated Mayflower version to 10.2.0.
-      - DP-19391: Added raw to iframe templates. (MF)
 
-
+- DP-20518: Updated Mayflower version to 10.2.0.
+  - DP-19391: Added raw to iframe templates. (MF)
 
 ## [0.263.0] - November 10, 2020
 
 ### Fixed
-  - DP-19550: Removed unneeded horizontal lines on org pages.
-  - DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari for admin theme.
+
+- DP-19550: Removed unneeded horizontal lines on org pages.
+- DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari for admin theme.
 
 ### Changed
-  - DP-19008: ClamAV disabled at Acquia
-  - DP-19364: Remove uninstalled modules and upgrade performance modules.
-  - DP-20394: |-
-      Updated Mayflower version to 10.1.0.
-            - Images: Rename assets/static/images/svg-icons to assets/static/images/icons and move checkmark.svg into the icons folder. (MF)
-            - Images: Move stateseal PNGs into a folder named logo. (MF)
-            - DP-20363: Fine tune line-height setting in the components. (MF)
-  - DP-20398: Update the image paths for the state seal and svg icons with Mayflower v.10.1.0.
-  - DP-20465: |-
-      Updated Mayflower version to 10.1.2.
-            - DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari. (MF)
+
+- DP-19008: ClamAV disabled at Acquia
+- DP-19364: Remove uninstalled modules and upgrade performance modules.
+- DP-20394: |-
+  Updated Mayflower version to 10.1.0.
+  - Images: Rename assets/static/images/svg-icons to assets/static/images/icons and move checkmark.svg into the icons folder. (MF)
+  - Images: Move stateseal PNGs into a folder named logo. (MF)
+  - DP-20363: Fine tune line-height setting in the components. (MF)
+- DP-20398: Update the image paths for the state seal and svg icons with Mayflower v.10.1.0.
+- DP-20465: |-
+  Updated Mayflower version to 10.1.2.
+  - DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari. (MF)
 
 ### Security
-  - DP-19696: Security updates to Cloudflare and dependencies.
 
-
+- DP-19696: Security updates to Cloudflare and dependencies.
 
 ## [0.262.0] - November 2, 2020
 
 ### Fixed
-  - DP-20164: Fixed CDN Token verification
-  - DP-20331: Fix duplicate records in content views
-  - DP-20374: Remove obsolete Texta font styles and load the Noto Sans fonts properly in Mass.gov and edit.mass.gov
+
+- DP-20164: Fixed CDN Token verification
+- DP-20331: Fix duplicate records in content views
+- DP-20374: Remove obsolete Texta font styles and load the Noto Sans fonts properly in Mass.gov and edit.mass.gov
 
 ## [0.261.0] - October 27, 2020
 
 ### Changed
-  - DP-19227: Rename the 'none' option in the field_page_template list.
-  - DP-20297: Admin font changed to Noto to match Mayflower v10.
-  - DP-20385: Updated Mayflower version to 10.0.0.
-    - DP-17982: Refactor RichText component to render raw HTML without dangerouslySetInnerHTML. (MF)
-    - DP-18263: Refactor TeaserListing and convert it to a composition component. (MF)
-    - DP-19414: Icon has been refactored from one component into many icon components. Each .svg icon file is now generated into its own React component at build time with SVGR and SVG Sprite Loader is no longer used. (MF)
-    - DP-19539: Allow adding multiple logos, added stackedLogo prop to support multiple logo layout. (MF)
-    - DP-19541: Extend HeaderSlim component to allow passing in custom components/HTML elements into the utility nav (blue bar) and the main header area, providing basic layout and styles. (MF)
-    - DP-20050: Switch fonts from Texta to Noto Sans, removed fallback fonts and added language support. (MF)
-    - DP-20241: Remove extra space above the sticky table header. (MF)
-    - DP-18263: Removed NWB package and replaced its usage with gulp. Combined lib(es5) and es(es6) directory in dist, and added Webpack/Babel aliases to flatten the structure of the mayflower-react published package. Removed storybook specific data from published package. Cleaned up all component styles in mayflower-react to rely on mayflower-assets peer dependency. (MF)
-    - Restructure mono repo — group all projects under packages folder. Use rush and pnpm to manage and share dependencies. (MF)
-    - DP-18263: Remove PressTeaser molecule from mayflower-react npm package. (MF)
-    - DP-18263: Remove GeneralTeaser and Teaser organisms from mayflower-react npm package. (MF)
-    - DP-19539: Use address html tag for contact info in footer. (MF)
-    - DP-19539: Removed mommentJS import. (MF)
-    - DP-20050: Added $fonts-enable-rtl global variable to allow setting direction to "right-to-left" for languages like Arabic, Persian, Urdu and Hebrew. (MF)
-    - DP-20050: Added $fonts-langs-support global variable to conditionally load and render additional fonts for language support. (MF)
-    - DP-20050: Added $fonts-display-global global variable to control the custom fonts download and render behavior. (MF)
+
+- DP-19227: Rename the 'none' option in the field_page_template list.
+- DP-20297: Admin font changed to Noto to match Mayflower v10.
+- DP-20385: Updated Mayflower version to 10.0.0.
+  - DP-17982: Refactor RichText component to render raw HTML without dangerouslySetInnerHTML. (MF)
+  - DP-18263: Refactor TeaserListing and convert it to a composition component. (MF)
+  - DP-19414: Icon has been refactored from one component into many icon components. Each .svg icon file is now generated into its own React component at build time with SVGR and SVG Sprite Loader is no longer used. (MF)
+  - DP-19539: Allow adding multiple logos, added stackedLogo prop to support multiple logo layout. (MF)
+  - DP-19541: Extend HeaderSlim component to allow passing in custom components/HTML elements into the utility nav (blue bar) and the main header area, providing basic layout and styles. (MF)
+  - DP-20050: Switch fonts from Texta to Noto Sans, removed fallback fonts and added language support. (MF)
+  - DP-20241: Remove extra space above the sticky table header. (MF)
+  - DP-18263: Removed NWB package and replaced its usage with gulp. Combined lib(es5) and es(es6) directory in dist, and added Webpack/Babel aliases to flatten the structure of the mayflower-react published package. Removed storybook specific data from published package. Cleaned up all component styles in mayflower-react to rely on mayflower-assets peer dependency. (MF)
+  - Restructure mono repo — group all projects under packages folder. Use rush and pnpm to manage and share dependencies. (MF)
+  - DP-18263: Remove PressTeaser molecule from mayflower-react npm package. (MF)
+  - DP-18263: Remove GeneralTeaser and Teaser organisms from mayflower-react npm package. (MF)
+  - DP-19539: Use address html tag for contact info in footer. (MF)
+  - DP-19539: Removed mommentJS import. (MF)
+  - DP-20050: Added $fonts-enable-rtl global variable to allow setting direction to "right-to-left" for languages like Arabic, Persian, Urdu and Hebrew. (MF)
+  - DP-20050: Added $fonts-langs-support global variable to conditionally load and render additional fonts for language support. (MF)
+  - DP-20050: Added $fonts-display-global global variable to control the custom fonts download and render behavior. (MF)
 
 ### Fixed
+
 Fixed:
-  - DP-20364: Adjust the checked state display of the radio button in the feedback component with Mayflower v.10.
+
+- DP-20364: Adjust the checked state display of the radio button in the feedback component with Mayflower v.10.
 
 ### Removed
-  - DP-19034: Remove unused paragraph from alerts
-  - DP-20337: Remove unused alert paragraphs from DB.
 
-
+- DP-19034: Remove unused paragraph from alerts
+- DP-20337: Remove unused alert paragraphs from DB.
 
 ## [0.260.0] - October 20, 2020
 
 ### Changed
-  - DP-19328: Update the <head> content generation logic in /themes/custom/mass_theme/templates/layout/page--node--without-main.html.twig for binder page.
-  - DP-0161: Updates iFrame for events, forms, news, and law library content types.
-  - DP-20172: Key message button link text maximum characters increased to 50.
-  - DP-20268: Updated Mayflower version to 9.56.0.
-    - DP-17154: Change the label of the hamburger menu button on mobile width. (MF)
-    - DP-17154: Change the location of the logo based on screen widths. (MF)
-    - DP-17154: Match the style of the utility nav elements to the main nav ones in the hamburger menu. (MF)
-    - DP-17155: Set focus on the linked state seal in the hamburger menu  from a lower element with 'shift + tab'. (MF)
-    - DP-17155: Set focus on the menu button from the linked state seal in the hamburger menu with 'shift + tab' from a lower element. (MF)
-    - DP-17155: Set an open submenu not to collapse as focus moves to another menu unit. (MF)
-    - DP-19330: Expand the menu button width to fill the available space on the blue bar when it's labeled as "close" with the screen size 840px and smaller. (MF)
-    - DP-19331: Set the height of the nav bar consistent regardless of screen sizes. (MF)
-    - DP-19332: Position the nav bar below the site wide alert. (MF)
-    - DP-19332: Remove the extra top space to position the alert container to the top of the page. (MF)
-    - DP-19335: Make the font size for the menu button consistent regardless of the screen size. (MF)
-    - DP-19335: Set the button label "Mass.gov" changes to "Close" when the hamburger menu is open. (MF)
-    - DP-19335: The menu button always lines up to the state seal on the left regardless of the screen size when the seal is visible. (MF)
-    - DP-19336: Fixes to address off-screen scroll behavior and console errors (MF)
-    - DP-19337: Set only one menu is open at a time including the "log in to" content. (MF)
-    - DP-19337: Make the open/close animation consistent. (MF)
-    - DP-19337: Adjust the position of the bottom border of "Log In To…" content in the hamburger menu. (MF)
-    - DP-19354: Addded Color stories and color gradients. (MF)
-    - DP-19879: Adjust menu overlay position and timing in mobile and Firefox in desktop. (MF)
-    - DP-19953: Style the log in to content in the menu container. (MF)
-    - DP-19984: Remove chevron from links in the menu container. (MF)
-    - DP-19984: Align the text and icon in the last sub menu items vertically centered. (MF)
-    - DP-20091: Change z-index value variables for overlay components for consistency. (MF)
-    - DP-20096: Clean up and streamline some timing functions, unused variables and functions. (MF)
-    - DP-20119: Switch the main navigation to the new one in all page types which have the main navigation. (MF)
-    - DP-20119: Adjust sticky table heaer z-index value to be under the main manu bar. (MF)
-    - DP-20163: Remove extra space and bottom border from the search component in menu container. (MF)
-    - DP-20176: Fix utility sub container open/close state icon with keyboard navigation. (MF)
-    - DP-17154: Add a 'jump to search' button on the utility nav bar in mobile display. (MF)
-    - DP-17154: Set up to render the log-in-to content in the utility nav in the hamburger menu. (MF)
-    - DP-17155: Set up tabbing behaviors at the last elements in various conditions in the hamburger menu. (MF)
-    - DP-17155: Set up behaviors with 'escape' key at the last elements in various conditions in the hamburger menu. (MF)
-    - DP-17200: Added new hamburger naviagation and the header with mixed version of navigation.
-    - DP-19739: Enable keyboard users to navigate sub set elements with up/down arrow keys. (MF)
-    - DP-19878: Removed touchend events from the menu and search buttons. (MF)
-    - DP-19879: Add overlay to alert as the menu is open. (MF)
-    - DP-20091: Add new variables for z-index values for overlay navigation components and the overlay shade. (MF)
-    - DP-19683: Set the overlay below the blue nav bar when it has active alerts. (MF)
-    - DP-19738: For IE11, add polyfill to enable 'NodeList.prototype.forEach()' and escape key definition of 'e.key === Esc'. (MF)
-    - DP-19739: Enable Voiceover to navigate the flyout content. (MF)
-    - DP-19783: Set focus on the menu container from the menu button while the container is open with tab. (MF)
-    - DP-19889: Make the menu container stay open and scrollable. (MF)
-    - DP-19783: Fixed log in to menu width. (MF)
-    - DP-20029: Fixed search button issues caused by resize events (MF)
-    - DP-20037: Fix the page not to scroll up to the top of the page as the menu closes. (MF)
-    - DP-20038: Fix the alert shifts as sub components open in the menu container. (MF)
-    - DP-20038: Enable scrolling in the menu container to the bottom. (MF)
-    - DP-20054: Addresses a timing issue with jump to search that prevented it from working on some Android devices. (MF)
-    - DP-20085: Fixed sticky TOC on the newer global nav. (MF)
-    - DP-20090: Fixed menu icon, text, search alignment. (MF)
-    - DP-20092: Fixed global nav issues when text truncation enabled. (MF)
-    - DP-20080: Fix the varying height value for the menu container whenever the menu opens in ios. (MF)
-    - DP-20085: Put back the lost fix for sticky TOC positioning. (MF)
-    - DP-20181: Set focus on the menu button from the logo link in the menu container with shift + tab. (MF)
-    - DP-20201: Move window scrollTo and remove inline body styling when closing the global nav menu. (MF)
-    - DP-20209: Move window scrollTo and remove inline body styling when closing the global nav menu. (MF)
-    - DP-20209: Fixed global nav scrolling for small devices. (MF)
-    - DP-19738: Replace "e.which", which is deprecated, with "e.code". (MF)
-    - DP-20039: Remove transition value causing Safari to crash in iOS 12. (MF)
-    - DP-20055: Removed Firefox-specific code causing menu overlay issues in Firefox. (MF)
-  - DP-20203: Add a container for alert overlay to mass_theme/templates/layout/page--node--without-main.html.twig.
+
+- DP-19328: Update the <head> content generation logic in /themes/custom/mass_theme/templates/layout/page--node--without-main.html.twig for binder page.
+- DP-0161: Updates iFrame for events, forms, news, and law library content types.
+- DP-20172: Key message button link text maximum characters increased to 50.
+- DP-20268: Updated Mayflower version to 9.56.0.
+  - DP-17154: Change the label of the hamburger menu button on mobile width. (MF)
+  - DP-17154: Change the location of the logo based on screen widths. (MF)
+  - DP-17154: Match the style of the utility nav elements to the main nav ones in the hamburger menu. (MF)
+  - DP-17155: Set focus on the linked state seal in the hamburger menu  from a lower element with 'shift + tab'. (MF)
+  - DP-17155: Set focus on the menu button from the linked state seal in the hamburger menu with 'shift + tab' from a lower element. (MF)
+  - DP-17155: Set an open submenu not to collapse as focus moves to another menu unit. (MF)
+  - DP-19330: Expand the menu button width to fill the available space on the blue bar when it's labeled as "close" with the screen size 840px and smaller. (MF)
+  - DP-19331: Set the height of the nav bar consistent regardless of screen sizes. (MF)
+  - DP-19332: Position the nav bar below the site wide alert. (MF)
+  - DP-19332: Remove the extra top space to position the alert container to the top of the page. (MF)
+  - DP-19335: Make the font size for the menu button consistent regardless of the screen size. (MF)
+  - DP-19335: Set the button label "Mass.gov" changes to "Close" when the hamburger menu is open. (MF)
+  - DP-19335: The menu button always lines up to the state seal on the left regardless of the screen size when the seal is visible. (MF)
+  - DP-19336: Fixes to address off-screen scroll behavior and console errors (MF)
+  - DP-19337: Set only one menu is open at a time including the "log in to" content. (MF)
+  - DP-19337: Make the open/close animation consistent. (MF)
+  - DP-19337: Adjust the position of the bottom border of "Log In To…" content in the hamburger menu. (MF)
+  - DP-19354: Addded Color stories and color gradients. (MF)
+  - DP-19879: Adjust menu overlay position and timing in mobile and Firefox in desktop. (MF)
+  - DP-19953: Style the log in to content in the menu container. (MF)
+  - DP-19984: Remove chevron from links in the menu container. (MF)
+  - DP-19984: Align the text and icon in the last sub menu items vertically centered. (MF)
+  - DP-20091: Change z-index value variables for overlay components for consistency. (MF)
+  - DP-20096: Clean up and streamline some timing functions, unused variables and functions. (MF)
+  - DP-20119: Switch the main navigation to the new one in all page types which have the main navigation. (MF)
+  - DP-20119: Adjust sticky table heaer z-index value to be under the main manu bar. (MF)
+  - DP-20163: Remove extra space and bottom border from the search component in menu container. (MF)
+  - DP-20176: Fix utility sub container open/close state icon with keyboard navigation. (MF)
+  - DP-17154: Add a 'jump to search' button on the utility nav bar in mobile display. (MF)
+  - DP-17154: Set up to render the log-in-to content in the utility nav in the hamburger menu. (MF)
+  - DP-17155: Set up tabbing behaviors at the last elements in various conditions in the hamburger menu. (MF)
+  - DP-17155: Set up behaviors with 'escape' key at the last elements in various conditions in the hamburger menu. (MF)
+  - DP-17200: Added new hamburger naviagation and the header with mixed version of navigation.
+  - DP-19739: Enable keyboard users to navigate sub set elements with up/down arrow keys. (MF)
+  - DP-19878: Removed touchend events from the menu and search buttons. (MF)
+  - DP-19879: Add overlay to alert as the menu is open. (MF)
+  - DP-20091: Add new variables for z-index values for overlay navigation components and the overlay shade. (MF)
+  - DP-19683: Set the overlay below the blue nav bar when it has active alerts. (MF)
+  - DP-19738: For IE11, add polyfill to enable 'NodeList.prototype.forEach()' and escape key definition of 'e.key === Esc'. (MF)
+  - DP-19739: Enable Voiceover to navigate the flyout content. (MF)
+  - DP-19783: Set focus on the menu container from the menu button while the container is open with tab. (MF)
+  - DP-19889: Make the menu container stay open and scrollable. (MF)
+  - DP-19783: Fixed log in to menu width. (MF)
+  - DP-20029: Fixed search button issues caused by resize events (MF)
+  - DP-20037: Fix the page not to scroll up to the top of the page as the menu closes. (MF)
+  - DP-20038: Fix the alert shifts as sub components open in the menu container. (MF)
+  - DP-20038: Enable scrolling in the menu container to the bottom. (MF)
+  - DP-20054: Addresses a timing issue with jump to search that prevented it from working on some Android devices. (MF)
+  - DP-20085: Fixed sticky TOC on the newer global nav. (MF)
+  - DP-20090: Fixed menu icon, text, search alignment. (MF)
+  - DP-20092: Fixed global nav issues when text truncation enabled. (MF)
+  - DP-20080: Fix the varying height value for the menu container whenever the menu opens in ios. (MF)
+  - DP-20085: Put back the lost fix for sticky TOC positioning. (MF)
+  - DP-20181: Set focus on the menu button from the logo link in the menu container with shift + tab. (MF)
+  - DP-20201: Move window scrollTo and remove inline body styling when closing the global nav menu. (MF)
+  - DP-20209: Move window scrollTo and remove inline body styling when closing the global nav menu. (MF)
+  - DP-20209: Fixed global nav scrolling for small devices. (MF)
+  - DP-19738: Replace "e.which", which is deprecated, with "e.code". (MF)
+  - DP-20039: Remove transition value causing Safari to crash in iOS 12. (MF)
+  - DP-20055: Removed Firefox-specific code causing menu overlay issues in Firefox. (MF)
+- DP-20203: Add a container for alert overlay to mass_theme/templates/layout/page--node--without-main.html.twig.
 
 ### Added
-  - DP-19120: Adding new hamburger navigation header and ability to choose between hamburger and mixed version headers.
-  - DP-19887: Add data fields to service_page
-  - DP-20110: Update Cloudflare caching rules to exclude certain analytics query strings
+
+- DP-19120: Adding new hamburger navigation header and ability to choose between hamburger and mixed version headers.
+- DP-19887: Add data fields to service_page
+- DP-20110: Update Cloudflare caching rules to exclude certain analytics query strings
 
 ### Fixed
-  - DP-19120: Resolved merge conflicts
-  - DP-19787: Fix the needs attention views
-  - DP-19876: Contextual menu class selector modified to reflect new navigation structure.
+
+- DP-19120: Resolved merge conflicts
+- DP-19787: Fix the needs attention views
+- DP-19876: Contextual menu class selector modified to reflect new navigation structure.
 
 ### Removed
-  - DP-19747: Debug loggings
-  - DP-20115: Balancer address
 
-
+- DP-19747: Debug loggings
+- DP-20115: Balancer address
 
 ## [0.259.0] - October 6, 2020
 
 ### Changed
-  - DP-20094: Modified help text of data resource type field on both the info details and service details pages.
-  - DP-20112: Allowing iframing of domain w.soundcloud.com.
 
-
+- DP-20094: Modified help text of data resource type field on both the info details and service details pages.
+- DP-20112: Allowing iframing of domain w.soundcloud.com.
 
 ## [0.258.0] - September 29, 2020
 
 ### Changed
-  - DP-20059: Backport for allowing iframes from the domain calc.a4we.org.
+
+- DP-20059: Backport for allowing iframes from the domain calc.a4we.org.
 
 ### Fixed
-  - DP-19974: Remove form submit in button click to stop double formstack submissions
 
-
+- DP-19974: Remove form submit in button click to stop double formstack submissions
 
 ## [0.257.0] - September 22, 2020
 
 ### Changed
-  - DP-19935: Fixes the iFrame URLs for our web analytics Superset dashboards.
+
+- DP-19935: Fixes the iFrame URLs for our web analytics Superset dashboards.
 
 ### Added
-  - DP-19886: Add data format field to curated list, info details and service details
-  - DP-19390: Tag data pages in Drupal so that Google knows they are data
+
+- DP-19886: Add data format field to curated list, info details and service details
+- DP-19390: Tag data pages in Drupal so that Google knows they are data
 
 ### Fixed
-  - DP-19478: Verify that tests pass after resolving mismatched entity definitions
+
+- DP-19478: Verify that tests pass after resolving mismatched entity definitions
 
 ### Security
-  - DP-19941: Drupal core updated to version 8.8.10
+
+- DP-19941: Drupal core updated to version 8.8.10
 
 ## [0.256.1] - September 16, 2020
 
 ### Fixed
-  - DP-19934: Fixed datalayer output issues.
-  - DP-19938: Rolled back Google Tag Manager.
+
+- DP-19934: Fixed datalayer output issues.
+- DP-19938: Rolled back Google Tag Manager.
 
 ## [0.256.0] - September 15, 2020
 
 ### Fixed
-  - DP-19740: Release automation - Avoid file deletion exception
-  - DP-19192: Stops bots submitting feedback forms. Stops double form submission. Uses formstack ID as uniqueID for survey.
+
+- DP-19740: Release automation - Avoid file deletion exception
+- DP-19192: Stops bots submitting feedback forms. Stops double form submission. Uses formstack ID as uniqueID for survey.
 
 ### Changed
-  - DP-19463: D9 upgrade packages - Analytics/Metadata
-  - DP-19132: Look into issues with redirects not working with all capitalization variations
-  - DP-19770: Update analytics tab dashboards to new ones using BQ data
 
-
+- DP-19463: D9 upgrade packages - Analytics/Metadata
+- DP-19132: Look into issues with redirects not working with all capitalization variations
+- DP-19770: Update analytics tab dashboards to new ones using BQ data
 
 ## [0.255.0] - August 18, 2020
 
 ### Fixed
-  - DP-19677: Investigate continued issue with slow builds in CircleCI
-  - DP-19523: Render featured message text with its format
-  - DP-19670: ELK cannot parse Acquia massgov records
 
-
+- DP-19677: Investigate continued issue with slow builds in CircleCI
+- DP-19523: Render featured message text with its format
+- DP-19670: ELK cannot parse Acquia massgov records
 
 ## [0.254.0] - August 11, 2020
 
 ### Added
-  - DP-19570: Logging to detect node publishing issues.
-  - DP-19497: Add back symfony/dom-crawler as required package.
+
+- DP-19570: Logging to detect node publishing issues.
+- DP-19497: Add back symfony/dom-crawler as required package.
 
 ### Changed
-  - DP-19199: Update geo modules and address module in prep fo Drupal 9
-  - DP-19464: Update several security related Contrib modules.
-  - DP-19651: Updated Mayflower version to 9.54.0.
-      - DP-19538: Consolidate font sizes into a variable scale. (MF)
-      - Bump elliptic from 6.5.2 to 6.5.3. (MF)
 
-
+- DP-19199: Update geo modules and address module in prep fo Drupal 9
+- DP-19464: Update several security related Contrib modules.
+- DP-19651: Updated Mayflower version to 9.54.0.
+  - DP-19538: Consolidate font sizes into a variable scale. (MF)
+  - Bump elliptic from 6.5.2 to 6.5.3. (MF)
 
 ## [0.253.0] - July 29, 2020
 
 ### Changed
-  - DP-19498: Updated Mayflower version to 9.53.1.
-      - DP-19187: Set up styles for relationship indicator .single component links. (MF)
-      - DP-19187: Correct the sample for relationship indicator .single component. (MF)
-  - DP-19198: D9 upgrade packages - media. Also update to drupal/core-recommended.
-  - DP-15708: Speed up local development environment for latest Docker for Mac
+
+- DP-19498: Updated Mayflower version to 9.53.1.
+  - DP-19187: Set up styles for relationship indicator .single component links. (MF)
+  - DP-19187: Correct the sample for relationship indicator .single component. (MF)
+- DP-19198: D9 upgrade packages - media. Also update to drupal/core-recommended.
+- DP-15708: Speed up local development environment for latest Docker for Mac
 
 ### Added
-  - DP-18527: Add PHP Yaml parse validation for changelog.yml files in PRs.
-  - DP-19497: Added back dom-crawler library
+
+- DP-18527: Add PHP Yaml parse validation for changelog.yml files in PRs.
+- DP-19497: Added back dom-crawler library
 
 ### Fixed
-  - DP-19494: Harden unpublish reminder queue worker
 
-
+- DP-19494: Harden unpublish reminder queue worker
 
 ## [0.252.0] - July 14, 2020
 
 ### Added
-  - DP-19123: Add callout link and card to relationship indicator's content.computed_related_to in Advisory, Binder, Curated List, Decision, Decision tree, Event, Executive order, Form, Guide, How-to, Information details, Location, Location details, News, Person, Regulation, Rules of court, and Service details.
+
+- DP-19123: Add callout link and card to relationship indicator's content.computed_related_to in Advisory, Binder, Curated List, Decision, Decision tree, Event, Executive order, Form, Guide, How-to, Information details, Location, Location details, News, Person, Regulation, Rules of court, and Service details.
 
 ### Changed
-  - DP-15470: Disable cron and lateruntime purge processors
-  - DP-19197: Update several developer-centric packages for Drupal 9.
-  - DP-15829: RelatedNodes - several simple queries instead of 1 complex query
-  - DP-19314: Allow iframes of to domain app.powerbigov.us.
+
+- DP-15470: Disable cron and lateruntime purge processors
+- DP-19197: Update several developer-centric packages for Drupal 9.
+- DP-15829: RelatedNodes - several simple queries instead of 1 complex query
+- DP-19314: Allow iframes of to domain app.powerbigov.us.
 
 ### Fixed
-  - DP-19338: Unpublish Reminder test was failing
 
-
+- DP-19338: Unpublish Reminder test was failing
 
 ## [0.251.0] - July 7, 2020
 
 ### Changed
-  - DP-19316: Updated Mayflower version to 8.14.0.
-    - DP-18951: Feedback related markup removed from print styles. (MF)
+
+- DP-19316: Updated Mayflower version to 8.14.0.
+  - DP-18951: Feedback related markup removed from print styles. (MF)
 
 ### Fixed
-  - DP-19001: Fixed race condition where content changes would sometimes not show after saving.
 
-
+- DP-19001: Fixed race condition where content changes would sometimes not show after saving.
 
 ## [0.250.0] - June 30, 2020
 
 ### Changed
-  - DP-18252: Upgrade to PHP 7.3 for local dev and CI
-  - DP-19177: Updated typhonius/acquia-php-sdk-v2 to 1.2 version
-  - DP-19115: Updated Drupal core to 8.8.8.
-  - DP-19185: Longer timeouts for alerts in ExistingSite tests
+
+- DP-18252: Upgrade to PHP 7.3 for local dev and CI
+- DP-19177: Updated typhonius/acquia-php-sdk-v2 to 1.2 version
+- DP-19115: Updated Drupal core to 8.8.8.
+- DP-19185: Longer timeouts for alerts in ExistingSite tests
 
 ### Fixed
-  - DP-19148: Fixed the robots metatag on the /tasks pages.
-  - DP-19182: Changing alert unpublish email template and fixing tests.
+
+- DP-19148: Fixed the robots metatag on the /tasks pages.
+- DP-19182: Changing alert unpublish email template and fixing tests.
 
 ### Added
-  - DP-18776: Add page-template field permission for authors/editors on the info-details page.
-  - DP-19089: Add noindex and follow to the robots metatag for doc pages
 
-
+- DP-18776: Add page-template field permission for authors/editors on the info-details page.
+- DP-19089: Add noindex and follow to the robots metatag for doc pages
 
 ## [0.249.0] - June 23, 2020
 
 ### Changed
-  - DP-19159: Updated Mayflower version to 9.52.1.
-    - DP-17150: Change the label of the secondary set. Change the width of each set. Adjust spacing. (MF)
-    - DP-17404: Match spacing with the current prod(develop) version. (MF)
-    - DP-17404: Align relationship the first terms in primary and secondary sets. (MF)
-    - DP-17404: Position the TOC below the relationship indicator. (MF)
-    - DP-17404: Put back missing mobileNav.js in index.js. (MF)
-    - DP-19085: Modify google-map.twig to print googleMap.link.info value and set it visualy hidden as context info for screen reader users. (MF)
-  - DP-18237: Adjust templates for Mayflower relationship indicator changes.
-  - DP-18237: Replace content eyebrow with relationshp indicator in topic page.
-  - DP-18638: Adjusted backstopJS alert test to wait for timestamp element before taking a screenshot.
-  - DP-18611: Set a paging limit for the Documents By Contributor view and fixed related issues.
-  - DP-15128: Set a page title as googlMap.link.info property value as static Google map directions link context for assistive technology.
-  - DP-19131: Bump composer cache key at CircleCI
+
+- DP-19159: Updated Mayflower version to 9.52.1.
+  - DP-17150: Change the label of the secondary set. Change the width of each set. Adjust spacing. (MF)
+  - DP-17404: Match spacing with the current prod(develop) version. (MF)
+  - DP-17404: Align relationship the first terms in primary and secondary sets. (MF)
+  - DP-17404: Position the TOC below the relationship indicator. (MF)
+  - DP-17404: Put back missing mobileNav.js in index.js. (MF)
+  - DP-19085: Modify google-map.twig to print googleMap.link.info value and set it visualy hidden as context info for screen reader users. (MF)
+- DP-18237: Adjust templates for Mayflower relationship indicator changes.
+- DP-18237: Replace content eyebrow with relationshp indicator in topic page.
+- DP-18638: Adjusted backstopJS alert test to wait for timestamp element before taking a screenshot.
+- DP-18611: Set a paging limit for the Documents By Contributor view and fixed related issues.
+- DP-15128: Set a page title as googlMap.link.info property value as static Google map directions link context for assistive technology.
+- DP-19131: Bump composer cache key at CircleCI
 
 ### Added
-  - DP-18249: Enable upgrade_status and supporting modules.
-  - DP-16437: Generates reminders for users prior to content unpublish dates.
+
+- DP-18249: Enable upgrade_status and supporting modules.
+- DP-16437: Generates reminders for users prior to content unpublish dates.
 
 ### Security
-  - DP-19115: Update Drupal core from 8.8.6 to 8.8.8.
 
-
+- DP-19115: Update Drupal core from 8.8.6 to 8.8.8.
 
 ## [0.248.0] - June 16, 2020
 
 ### Added
-  - DP-18846: Additional testing for site-wide, organization, and page-specific alerts.
-  - DP-18958: Create method to run adhoc backstop jobs on CircleCI
+
+- DP-18846: Additional testing for site-wide, organization, and page-specific alerts.
+- DP-18958: Create method to run adhoc backstop jobs on CircleCI
 
 ### Changed
-  - DP-19097: Updated Mayflower version to 9.52.0.
-    - DP-15628: Make the parent container of TOC link function like a link by expanding clickable area. (MF)
-    - DP-17612: Adjust z-index of open search box to fix style issue on Firefox.  (MF)
-    - DP-18940: Adjusted the key-message template and styles to stop BG image display problem. (MF)
-  - DP-18926: Cover image and replace text with dummy one for componentns, which have frequently changing content, to avoid false positive in backstop; banner image, popular searches text, Featured services key action text, News and updates images and text on Home page, images and text in Updates From The Baker-Polito Administration, and images and teaser in Under Recent news and announcements.
+
+- DP-19097: Updated Mayflower version to 9.52.0.
+  - DP-15628: Make the parent container of TOC link function like a link by expanding clickable area. (MF)
+  - DP-17612: Adjust z-index of open search box to fix style issue on Firefox.  (MF)
+  - DP-18940: Adjusted the key-message template and styles to stop BG image display problem. (MF)
+- DP-18926: Cover image and replace text with dummy one for componentns, which have frequently changing content, to avoid false positive in backstop; banner image, popular searches text, Featured services key action text, News and updates images and text on Home page, images and text in Updates From The Baker-Polito Administration, and images and teaser in Under Recent news and announcements.
 
 ### Fixed
-  - DP-18954: Fixes an issue with link fields breaking node views when linked internal content is deleted.
-  - DP-19070: Fixed issue where noindex was removed on certain pages matching a list of keywords.
-  - DP-19009: Fixing buttons too close together on decision tree style issue.
-  - DP-19027: Fixed broken bulk-operations select field on watched-content view.
 
-
+- DP-18954: Fixes an issue with link fields breaking node views when linked internal content is deleted.
+- DP-19070: Fixed issue where noindex was removed on certain pages matching a list of keywords.
+- DP-19009: Fixing buttons too close together on decision tree style issue.
+- DP-19027: Fixed broken bulk-operations select field on watched-content view.
 
 ## [0.247.0] - June 9, 2020
 
 ### Removed
-  - DP-18932: The hold-for-backstop job is not needed.
+
+- DP-18932: The hold-for-backstop job is not needed.
 
 ### Fixed
-  - DP-18778: Fixed bug on Add Content page where list-items were disappearing when filtering.
-  - DP-18812: Fixing related locations page not found issue when referenced node is deleted.
-  - DP-18983: Fix the visual difference of feedback module radio buttons in form page.
-  - DP-16160: Fix accessibility issues with feedback module.
+
+- DP-18778: Fixed bug on Add Content page where list-items were disappearing when filtering.
+- DP-18812: Fixing related locations page not found issue when referenced node is deleted.
+- DP-18983: Fix the visual difference of feedback module radio buttons in form page.
+- DP-16160: Fix accessibility issues with feedback module.
 
 ### Added
-  - DP-18832: Improve the production post-deployment Backstop job
 
-
+- DP-18832: Improve the production post-deployment Backstop job
 
 ## [0.246.0] - June 2, 2020
 
 ### Added
-  - DP-18838: Add behat test for binder navigation and TOC.
-  - DP-18775: New checkbox added to Info details Content type to toggle Banner field, Callout and Card group buttons visibility.
-  - DP-18313: Add alerts by organization, swap page alert functionality from paragraph to entity-reference field.
-  - DP-18891: Add arcgis link to the iframe whitelist config.
+
+- DP-18838: Add behat test for binder navigation and TOC.
+- DP-18775: New checkbox added to Info details Content type to toggle Banner field, Callout and Card group buttons visibility.
+- DP-18313: Add alerts by organization, swap page alert functionality from paragraph to entity-reference field.
+- DP-18891: Add arcgis link to the iframe whitelist config.
 
 ### Fixed
-  - DP-16346: Solving broken links issue on location pages.
-  - DP-10442: Add missing regulation page eyebrow text.
+
+- DP-16346: Solving broken links issue on location pages.
+- DP-10442: Add missing regulation page eyebrow text.
 
 ### Security
-  - DP-18813: Drupal core update 8.8.4 -> 8.8.6
+
+- DP-18813: Drupal core update 8.8.4 -> 8.8.6
 
 ### Changed
-  - DP-18777: Changed Caption field order in Tableau paragraph form displays.
-  - DP-18921: Updated Mayflower version to 8.14.0.
-      - DP-18894: Remove param from font import statement to fix Drupal css aggregation issue. (MF)
-      - DP-18036: Update handlebars and node-sass. (MF)
 
-
+- DP-18777: Changed Caption field order in Tableau paragraph form displays.
+- DP-18921: Updated Mayflower version to 8.14.0.
+  - DP-18894: Remove param from font import statement to fix Drupal css aggregation issue. (MF)
+  - DP-18036: Update handlebars and node-sass. (MF)
 
 ## [0.245.0] - May 26, 2020
 
 ### Changed
-  - DP-17139: Change duration for the ma:queue-revision-cleanup drush command to be 14 months ago
-  - DP-18735: Simplifying code in the Circle Ci config file to avoid duplicates.
-  - DP-18453: Added new column to linking pages screen
+
+- DP-17139: Change duration for the ma:queue-revision-cleanup drush command to be 14 months ago
+- DP-18735: Simplifying code in the Circle Ci config file to avoid duplicates.
+- DP-18453: Added new column to linking pages screen
 
 ### Fixed
-  - DP-18819: Fixed Jslint related issue.
-  - DP-18837: Reverts a change that impacted binder inner navigation on the site.
-  - DP-18625: Added bottom padding of 90px to disclaimer on decision tree
-  - DP-18819: Fixed Tableau visualization conditional fields toggle.
+
+- DP-18819: Fixed Jslint related issue.
+- DP-18837: Reverts a change that impacted binder inner navigation on the site.
+- DP-18625: Added bottom padding of 90px to disclaimer on decision tree
+- DP-18819: Fixed Tableau visualization conditional fields toggle.
 
 ### Added
-  - DP-18735: Adding backstop to workflows
-  - DP-18558: Add a new hold to build_tag workflow for releasing without maint mode.
+
+- DP-18735: Adding backstop to workflows
+- DP-18558: Add a new hold to build_tag workflow for releasing without maint mode.
 
 ### Removed
-  - DP-18757: Removing deprecated 'Answeres' paragraph
+
+- DP-18757: Removing deprecated 'Answeres' paragraph
 
 ## [0.243.1] - May 14, 2020
 
 ### Changed
-  - DP-18750: Edit a meaningless char in a CSS file to regenerate URL.
+
+- DP-18750: Edit a meaningless char in a CSS file to regenerate URL.
 
 ## [0.244.0] - May 19, 2020
 
 ### Fixed
-  - DP-13022: Fix Danger check for a PR number.
-  - DP-18795: Removing robots disallow for doc top level folders.
-  - DP-18556: Fixed 500 error on taxonomy term pages.
+
+- DP-13022: Fix Danger check for a PR number.
+- DP-18795: Removing robots disallow for doc top level folders.
+- DP-18556: Fixed 500 error on taxonomy term pages.
 
 ### Added
-  - DP-18678: Added submodule for Schema.org SpecialAnnouncement.
+
+- DP-18678: Added submodule for Schema.org SpecialAnnouncement.
 
 ### Changed
-  - DP-18790: Updated Mayflower version to 9.50.0.
-      - DP-18543: Update jquery from 3.4.0 to 3.5.1. (MF)
-      - DP-18591: Consolidate font weights into variables. (MF)
 
-
+- DP-18790: Updated Mayflower version to 9.50.0.
+  - DP-18543: Update jquery from 3.4.0 to 3.5.1. (MF)
+  - DP-18591: Consolidate font weights into variables. (MF)
 
 ## [0.243.0] - May 12, 2020
 
 ### Added
-  - DP-17676: Add a field for caption in tableau embed paragraph and set a charactor limit to 500.
-  - DP-17750: Add fields for administrative title, display size, alignment and wrapping. Add a new template, paragraph--tableau-embed.html.twig, to render tableau content in figure.twig aloing with align, size and wrapping options.
-  - DP-18332: Added new functionality for multiple answers on Decision tree branch
+
+- DP-17676: Add a field for caption in tableau embed paragraph and set a charactor limit to 500.
+- DP-17750: Add fields for administrative title, display size, alignment and wrapping. Add a new template, paragraph--tableau-embed.html.twig, to render tableau content in figure.twig aloing with align, size and wrapping options.
+- DP-18332: Added new functionality for multiple answers on Decision tree branch
 
 ### Changed
-  - DP-18653: Override figure style for pre-existing figure items.
-  - DP-18588: Updated Mayflower version to 8.14.0.
-  - DP-17483: Add datavisualization iframe to figure. (MF)
-  - DP-17634: Add a link to sample caption content. (MF)
+
+- DP-18653: Override figure style for pre-existing figure items.
+- DP-18588: Updated Mayflower version to 8.14.0.
+- DP-17483: Add datavisualization iframe to figure. (MF)
+- DP-17634: Add a link to sample caption content. (MF)
 
 ### Fixed
-  - DP-18615: Add check to featured message link formatter to stop 500 error
-  - DP-18608: Fix for caching to prevent excess traffic from hitting backend
-  - DP-16946: Switch urls in the sitemap to /download instead of /files
 
-
+- DP-18615: Add check to featured message link formatter to stop 500 error
+- DP-18608: Fix for caching to prevent excess traffic from hitting backend
+- DP-16946: Switch urls in the sitemap to /download instead of /files
 
 ## [0.242.0] - May 5, 2020
 
 ### Fixed
-  - DP-17511: Solving deleted referenced entity rendering issue causing fatal error
+
+- DP-17511: Solving deleted referenced entity rendering issue causing fatal error
 
 ## [0.241.1] - May 1, 2020
 
 ### Fixed
-  - DP-18544: Defensive code in PageFlipper.
 
-
+- DP-18544: Defensive code in PageFlipper.
 
 ## [0.241.0] - April 29, 2020
 
 ### Added
-  - DP-18049: Shows message to users who login and have no 2FA setup.
-  - DP-18336: Wait for font to load during Backstop test
-  - Disable field_alert_display widget on Alert node for users w/o permission
-  - DP-18242:
-  - DP-18246: Added CSV export button for exporting redirects.
-  - DP-18423: Add featured message to org page.
+
+- DP-18049: Shows message to users who login and have no 2FA setup.
+- DP-18336: Wait for font to load during Backstop test
+- Disable field_alert_display widget on Alert node for users w/o permission
+- DP-18242:
+- DP-18246: Added CSV export button for exporting redirects.
+- DP-18423: Add featured message to org page.
 
 ### Fixed
-  - DP-17574: Prevent 500 error when changing link in utility menu
-  - DP-18050: Adds login failure message for users attempting to login without TFA
+
+- DP-17574: Prevent 500 error when changing link in utility menu
+- DP-18050: Adds login failure message for users attempting to login without TFA
 
 ### Changed
-  - DP-18429: Changing field_template permission to be visible for Author and Editor.
-  - DP-16023: Revise help text for fields related to custom link group service page.
-  - DP-17994: Change TFA configuration to disallow skipping setup and logging in without TFA
-  - DP-18492: Updated Mayflower version to 9.49.1.
-  - DP-18422  Add a new component to have rich text and callout link, adjust margin with/without callout message. (MF)
-  - DP-18315  Addded fonts for Khmer language support. (MF)
-  - DP-17792  Adjusted scss to rotate button arrow up when accordion opens. (MF)
-  - DP-18401: Update pfdp, mandrill, and focal point modules
 
-
+- DP-18429: Changing field_template permission to be visible for Author and Editor.
+- DP-16023: Revise help text for fields related to custom link group service page.
+- DP-17994: Change TFA configuration to disallow skipping setup and logging in without TFA
+- DP-18492: Updated Mayflower version to 9.49.1.
+- DP-18422  Add a new component to have rich text and callout link, adjust margin with/without callout message. (MF)
+- DP-18315  Addded fonts for Khmer language support. (MF)
+- DP-17792  Adjusted scss to rotate button arrow up when accordion opens. (MF)
+- DP-18401: Update pfdp, mandrill, and focal point modules
 
 ## [0.240.0] - April 21, 2020
 
 ### Changed
-  - DP-18377: Added more languages to Google translate feature
-  - DP-13246: Changed the style of decision tree buttons below 620px width to line up vertically instead of horizontally.
-  - DP-18229: Changed field order, help text, and labels on Alert content type.
-  - DP-18015: Adjust nightcrawler test to remove action page type and adjust time thresholds.
+
+- DP-18377: Added more languages to Google translate feature
+- DP-13246: Changed the style of decision tree buttons below 620px width to line up vertically instead of horizontally.
+- DP-18229: Changed field order, help text, and labels on Alert content type.
+- DP-18015: Adjust nightcrawler test to remove action page type and adjust time thresholds.
 
 ### Security
-  - Updated vulnerable javascript packages with yarn
-  - DP-18035:
+
+- Updated vulnerable javascript packages with yarn
+- DP-18035:
 
 ### Fixed
-  - DP-14628: Truncates node title as needed when contacting authors.
-  - DP-17619: Change the condition to check sideContent.linkList to check if its content is not null.
+
+- DP-14628: Truncates node title as needed when contacting authors.
+- DP-17619: Change the condition to check sideContent.linkList to check if its content is not null.
 
 ### Removed
-  - DP-17962: Removed the paragraphs_type_help module with composer
 
-
+- DP-17962: Removed the paragraphs_type_help module with composer
 
 ## [0.239.0] - April 14, 2020
 
 ### Changed
-  - DP-18294: Updated Mayflower version to 9.47.0.
-    - DP-16029: Change the property value to set style for see all link in service page to match Mass.gov production. (MF)
-    - DP-16690: Changed text from less to fewer. (MF)
-  - DP-18269: Added purge when redirects are added/updated.
+
+- DP-18294: Updated Mayflower version to 9.47.0.
+  - DP-16029: Change the property value to set style for see all link in service page to match Mass.gov production. (MF)
+  - DP-16690: Changed text from less to fewer. (MF)
+- DP-18269: Added purge when redirects are added/updated.
 
 ### Added
-  - DP-18241: Validate Mayflower to Drupal PR so that cut_release_branch workflow passes
-  - DP-17579: Add Tableau JS for sizing dashboard based on container width
+
+- DP-18241: Validate Mayflower to Drupal PR so that cut_release_branch workflow passes
+- DP-17579: Add Tableau JS for sizing dashboard based on container width
 
 ### Fixed
-  - DP-17976: Stop unpublished nodes from showing up in page flipper.
 
-
+- DP-17976: Stop unpublished nodes from showing up in page flipper.
 
 ## [0.238.0] - April 7, 2020
 
 ### Changed
-  - DP-15351: Added 2 new pages to the set of pages we use for our Backstop tests.
-  - DP-16701: Add alt value to a linked image for an organization as a signee in news page.
-  - DP-17901: Update Drupal core from 8.8.1 to 8.8.4.
-  - DP-17990: Updated emails sent to users when added or activated.
-  - DP-18030: Set the link text for address as "Direction" with uppercase "D" instead of lowercase "d" in org page.
-  - DP-18033: Update help text for banner images on info details and binders.
-  - DP-18039: Configure related_content paragraph to permit more content types and update theme to use actionCards layout (not bullets) as default layout.
-  - DP-18179: |-
-    Updated Mayflower version to 9.46.0.
-         - DP-15965: Changed capitalization of directions. (MF)
-         - DP-17387: Adjust css for decorative link in location listing for Chrome. Match the markup of assets/js/templates/locationListingRow.html to 02-molecules/image-promo.twig. (MF)
+
+- DP-15351: Added 2 new pages to the set of pages we use for our Backstop tests.
+- DP-16701: Add alt value to a linked image for an organization as a signee in news page.
+- DP-17901: Update Drupal core from 8.8.1 to 8.8.4.
+- DP-17990: Updated emails sent to users when added or activated.
+- DP-18030: Set the link text for address as "Direction" with uppercase "D" instead of lowercase "d" in org page.
+- DP-18033: Update help text for banner images on info details and binders.
+- DP-18039: Configure related_content paragraph to permit more content types and update theme to use actionCards layout (not bullets) as default layout.
+- DP-18179: |-
+  Updated Mayflower version to 9.46.0.
+  - DP-15965: Changed capitalization of directions. (MF)
+  - DP-17387: Adjust css for decorative link in location listing for Chrome. Match the markup of assets/js/templates/locationListingRow.html to 02-molecules/image-promo.twig. (MF)
 
 ### Fixed
-  - DP-17863: Document files should be added to the private filesystem by default.
-  - DP-17891: Add validation to prevent publishing more than 1 sitewide alert at a time.
-  - DP-18056: Fixed the body for both the Release PR and hotfix GitHub tagging.
-  - DP-18165: Resolve a performance regression due to alert URLs changing.
+
+- DP-17863: Document files should be added to the private filesystem by default.
+- DP-17891: Add validation to prevent publishing more than 1 sitewide alert at a time.
+- DP-18056: Fixed the body for both the Release PR and hotfix GitHub tagging.
+- DP-18165: Resolve a performance regression due to alert URLs changing.
 
 ### Added
-  - DP-17995: Added ability to link to promotional pages in the binder content-type.
+
+- DP-17995: Added ability to link to promotional pages in the binder content-type.
 
 ### Removed
-  - DP-15511: Removed the workbench_moderation and workbench_moderation_actions modules.
+
+- DP-15511: Removed the workbench_moderation and workbench_moderation_actions modules.
 
 ## [0.237.1] - March 31, 2020
 
 ### Changed
-  - DP-18016: Changed overrides/css/callout-link.css file name to be more generic to info details page, overrides/css/info-details-richtext.css.
-  - DP-18021: |-
-    Updated Mayflower version to 9.45.2.
-        - DP-17674: Add a new style for link list in service page. (MF)
-        - DP-18000: Make top-level nav items clickable. (MF)
-        - DP-18018: Add alternate style for COVID-19 link. (MF)
+
+- DP-18016: Changed overrides/css/callout-link.css file name to be more generic to info details page, overrides/css/info-details-richtext.css.
+- DP-18021: |-
+  Updated Mayflower version to 9.45.2.
+  - DP-17674: Add a new style for link list in service page. (MF)
+  - DP-18000: Make top-level nav items clickable. (MF)
+  - DP-18018: Add alternate style for COVID-19 link. (MF)
 
 ### Added
-  - DP-18016: Add override style for the section links component in .ma__rich-text.
+
+- DP-18016: Add override style for the section links component in .ma__rich-text.
 
 ## [0.237.0] - March 30, 2020
 
 ### Changed
-  - DP-16926: Uninstalled the paragraphs_type_help module.
-  - DP-17772: Block alerts in most BackstopJS tests.
-  - DP-17938: At CircleCI, fail Danger if no PR exists.
-  - DP-17961: Allow How-to and Form nodes to be added to binders.
-  - DP-17989: Only allow content admins to add Callout Link and Card paragraphs to the Info Details content type.
+
+- DP-16926: Uninstalled the paragraphs_type_help module.
+- DP-17772: Block alerts in most BackstopJS tests.
+- DP-17938: At CircleCI, fail Danger if no PR exists.
+- DP-17961: Allow How-to and Form nodes to be added to binders.
+- DP-17989: Only allow content admins to add Callout Link and Card paragraphs to the Info Details content type.
 
 ### Fixed
-  - DP-17959: Fix github tagging during release
+
+- DP-17959: Fix github tagging during release
 
 ### Added
-  - DP-17971: Add a field template to wrap callout links in rich text container as action items and css to style them.
-  - DP-17971: Adds info details card group paragraph type and styles.
-  - DP-17972: Added a new banner-image field to info_details node which provided an alternate header option.
 
+- DP-17971: Add a field template to wrap callout links in rich text container as action items and css to style them.
+- DP-17971: Adds info details card group paragraph type and styles.
+- DP-17972: Added a new banner-image field to info_details node which provided an alternate header option.
 
 ## [0.236.0] - March 24, 2020
 
 ### Changed
-  - DP-17886: Shorten edge cache TTLs on COVID-19 related pages.
-  - DP-17821: Update filter for basic dashboards (iframe route).
+
+- DP-17886: Shorten edge cache TTLs on COVID-19 related pages.
+- DP-17821: Update filter for basic dashboards (iframe route).
 
 ### Fixed
-  - DP-17924: Adjust PageSpecificAlert test since uid=1 is blocked.
-  - DP-17810: Fixed the json data to output the correct emergency_alert paragraph id for the alerts block.
-  - DP-17838: Make tagging for Hotfix releases work as patch release numbers
+
+- DP-17924: Adjust PageSpecificAlert test since uid=1 is blocked.
+- DP-17810: Fixed the json data to output the correct emergency_alert paragraph id for the alerts block.
+- DP-17838: Make tagging for Hotfix releases work as patch release numbers
 
 ### Added
-  - DP-17851: Add a Redirect Manager role with redirect permissions.
-  - DP-16085: Add behat tests for the Promotional Page (campaign_landing) content-type.
 
-
+- DP-17851: Add a Redirect Manager role with redirect permissions.
+- DP-16085: Add behat tests for the Promotional Page (campaign_landing) content-type.
 
 ## [0.235.0] - March 17, 2020
 
 ### Fixed
-  - DP-17005: Fix deploy_mayflower_cd to always run on commits on mayflower-dev branch.
-  - DP-17781: Fix mayflower-dev not building when a PR is absent.
-  - DP-17808: Fix conditional states for emergency alert inputs not working properly.
+
+- DP-17005: Fix deploy_mayflower_cd to always run on commits on mayflower-dev branch.
+- DP-17781: Fix mayflower-dev not building when a PR is absent.
+- DP-17808: Fix conditional states for emergency alert inputs not working properly.
 
 ### Changed
-  - DP-17535: Remove ability to create documents inline on a Curated List node.
-  - DP-17737: Alter Cloudflare settings to change edit access for COVID-19.
-  - DP-17756: Update the data and time to trigger release_branch to 13:00 EST on Tuesdays, and change the schedule for mayflower_develop_branch from 11:00 PM Sunday EST to 11:00 PM Thursday EST, and adjust deploy_cd to skip the job on Thursday instead of Sunday to make cd env. available.
-  - DP-17791: Add "Read More" link to teasers shown on /alerts page.
-  - DP-17809: Fixed an issue where document download URLs were not being cleared from cache on initial creation of the document.
-  - DP-178181: |-
-    Updated Mayflower version to 9.44.0.
-         - DP-17625: Visual Story sidebar template and styles adjust. (MF)
-         - DP-17633: Fix geocoding for autocomplete results on location listings. (MF)
+
+- DP-17535: Remove ability to create documents inline on a Curated List node.
+- DP-17737: Alter Cloudflare settings to change edit access for COVID-19.
+- DP-17756: Update the data and time to trigger release_branch to 13:00 EST on Tuesdays, and change the schedule for mayflower_develop_branch from 11:00 PM Sunday EST to 11:00 PM Thursday EST, and adjust deploy_cd to skip the job on Thursday instead of Sunday to make cd env. available.
+- DP-17791: Add "Read More" link to teasers shown on /alerts page.
+- DP-17809: Fixed an issue where document download URLs were not being cleared from cache on initial creation of the document.
+- DP-178181: |-
+  Updated Mayflower version to 9.44.0.
+  - DP-17625: Visual Story sidebar template and styles adjust. (MF)
+  - DP-17633: Fix geocoding for autocomplete results on location listings. (MF)
 
 ### Added
-  - DP-17625: Add list field to info_details page to allow changing layout sidebar display.
-  - DP-17791: Add styling to alert links on alert list page.
 
+- DP-17625: Add list field to info_details page to allow changing layout sidebar display.
+- DP-17791: Add styling to alert links on alert list page.
 
 ## [0.234.1] - March 13, 2020
 
 ### Changed
-  - DP-17784: Shorten the media download cache lifetime for the browser to avoid content that changes quickly being cached.
+
+- DP-17784: Shorten the media download cache lifetime for the browser to avoid content that changes quickly being cached.
 
 ### Fixed
-  - DP-17785: Purge /download media urls when media is updated.
 
+- DP-17785: Purge /download media urls when media is updated.
 
 ## [0.234.0] - March 10, 2020
 
 ### Fixed
-  - DP-17185: Add a redirect to the media download link when a media alias is changed.
-  - DP-17414: Add check for transition permissions before rendering scheduler form.
+
+- DP-17185: Add a redirect to the media download link when a media alias is changed.
+- DP-17414: Add check for transition permissions before rendering scheduler form.
 
 ### Added
-  - DP-12397: Add Drush commands for creating Druapl redirects from legacy.
-  - DP-17194: Added data tab metatags to service details info details and curated lists
 
+- DP-12397: Add Drush commands for creating Druapl redirects from legacy.
+- DP-17194: Added data tab metatags to service details info details and curated lists
 
 ## [0.233.0] - March 4, 2020
 
 ### Security
-  - DP-17407: Update views_bulk_operations from 3.2.0 to 3.4.0.
+
+- DP-17407: Update views_bulk_operations from 3.2.0 to 3.4.0.
 
 ### Changed
- - DP-17564: Consolidate Github API token usage to reduce the number of secrets we need to manage in CircleCI.
- - DP-17682: |-
-      Updated Mayflower version to 9.42.0.
-         - DP-15035: Limit pagination output to 10 items. (MF)
-         - DP-17258: Fix "see more" button not appearing after the TOC. (MF)
-         - DP-17532: Added lighter lightest darker darkest variables consistently across all brand colors, adjusted the variable labels in the storybook. (MF)
-         - DP-17651: Added @massds/mayflower-tokens package to auto release, keeping versioning consistent with other mayflower npm packages. (MF)
-         - DP-17652: Added step to bump version in package.json. (MF)
+
+- DP-17564: Consolidate Github API token usage to reduce the number of secrets we need to manage in CircleCI.
+- DP-17682: |-
+  Updated Mayflower version to 9.42.0.
+  - DP-15035: Limit pagination output to 10 items. (MF)
+  - DP-17258: Fix "see more" button not appearing after the TOC. (MF)
+  - DP-17532: Added lighter lightest darker darkest variables consistently across all brand colors, adjusted the variable labels in the storybook. (MF)
+  - DP-17651: Added @massds/mayflower-tokens package to auto release, keeping versioning consistent with other mayflower npm packages. (MF)
+  - DP-17652: Added step to bump version in package.json. (MF)
 
 ### Fixed
-  - DP-17557: Fixed sorting on location listing pages.
-  - DP-17564: Fix how we read "changelog-body.txt" and publish the release tag on Github. Consolidate Github API token usage to reduce the number of secrets we need to manage in CircleCI.
 
+- DP-17557: Fixed sorting on location listing pages.
+- DP-17564: Fix how we read "changelog-body.txt" and publish the release tag on Github. Consolidate Github API token usage to reduce the number of secrets we need to manage in CircleCI.
 
 ## [0.232.0] - February 26, 2020
 
 ### Changed
-  - DP-17449: Update configuration to suppress Rabbit hole settings on info details, promo page.
-  - DP-16214: Update configuration of pathologic module to include rewriting links to bare mass.gov domain.
-  - DP-17534: Remove unused Terraform files.
-  - DP-17233: add date filter to promo pages iframe route.
-  - DP-17546: Update BackstopJS to the latest stable version (4.4.2)
-  - DP-17546: Speed up Backstop tests by removing the delay.
+
+- DP-17449: Update configuration to suppress Rabbit hole settings on info details, promo page.
+- DP-16214: Update configuration of pathologic module to include rewriting links to bare mass.gov domain.
+- DP-17534: Remove unused Terraform files.
+- DP-17233: add date filter to promo pages iframe route.
+- DP-17546: Update BackstopJS to the latest stable version (4.4.2)
+- DP-17546: Speed up Backstop tests by removing the delay.
 
 ### Fixed
-  - DP-17571: Fixes nightly super-sanitized database build that broke following 8.8 update.
-  - DP-17546: Fix false positives for Google Maps in Backstop tests by hot-swapping images with placeholders.
-  - DP-17411: Integrated scheduler_media module with content moderation so documents can be scheduled for publish/unpublish.
 
-
+- DP-17571: Fixes nightly super-sanitized database build that broke following 8.8 update.
+- DP-17546: Fix false positives for Google Maps in Backstop tests by hot-swapping images with placeholders.
+- DP-17411: Integrated scheduler_media module with content moderation so documents can be scheduled for publish/unpublish.
 
 ## [0.231.2] - February 21, 2020
 
 ### Fixed
-  - DP-17563: Resolves an issue where deployment commands were unable to complete due to Acquia token expiration.
+
+- DP-17563: Resolves an issue where deployment commands were unable to complete due to Acquia token expiration.
 
 ### Changed
-  - DP-17580: Update Mayflower to 9.40.2.
 
+- DP-17580: Update Mayflower to 9.40.2.
 
 ## [0.231.1] - February 20, 2020
 
 ### Fixed
-  - DP-17568: Resolve editor-facing view slowness by reapplying the content moderation index usage patch.
+
+- DP-17568: Resolve editor-facing view slowness by reapplying the content moderation index usage patch.
 
 ### Changed
-  - DP-17568: Uninstalled the Devel module.
-  - DP-17568: Uninstalled the WebProfiler module.
-  - DP-17568: Uninstalled the Dblog module.
 
+- DP-17568: Uninstalled the Devel module.
+- DP-17568: Uninstalled the WebProfiler module.
+- DP-17568: Uninstalled the Dblog module.
 
 ## [0.231.0] - February 19, 2020
 
 ### Fixed
-  - DP-17507: Fix the `cat` command call in `tag-release-github` to read `changelog-body.txt` correctly.
-  - DP-17527: Fixes Nightcrawler to work with Drupal 8.8.x
-  - DP-17273: Update content moderation indeces patch.
+
+- DP-17507: Fix the `cat` command call in `tag-release-github` to read `changelog-body.txt` correctly.
+- DP-17527: Fixes Nightcrawler to work with Drupal 8.8.x
+- DP-17273: Update content moderation indeces patch.
 
 ### Added
-  - DP-17259: Add Cloudflare deployment at CircleCI and corresponding Drush command.
+
+- DP-17259: Add Cloudflare deployment at CircleCI and corresponding Drush command.
 
 ### Changed
-  - DP-17525: Update Mayflower to v9.40.1.
-  - DP-17267: Upgrade Drupal core and a few modules to Drupal 8.8
+
+- DP-17525: Update Mayflower to v9.40.1.
+- DP-17267: Upgrade Drupal core and a few modules to Drupal 8.8
 
 ## [0.230.0] - February 12, 2020
 
@@ -3358,7 +3600,6 @@ Fixed:
 
 - DP-17054: Add robots rule to no-index any link containing string "?auHash=."
 - DP-17243: Bring back ma:release command.
-
 
 ## [0.229.0] - February 5, 2020
 
@@ -6977,10 +7218,10 @@ DP-5098: Uninstalls "simple_oauth" and "simple_oauth_extras" modules (Cookie bas
 
 - DP-6396:
 
-1.  drush queue-run mass_content_api_descendant_queue
-    (should take about a minute to process)
-2.  drush queue-run mass_content_api_relationship_queue
-    (could take quite a while, maybe 20 to 30 minutes to process)
+1. drush queue-run mass_content_api_descendant_queue
+   (should take about a minute to process)
+2. drush queue-run mass_content_api_relationship_queue
+   (could take quite a while, maybe 20 to 30 minutes to process)
 
 ## [0.50.0] - November 7, 2017
 
@@ -7074,7 +7315,6 @@ DP-5335: Set up the following terms for the Regulation Status vocabulary in /adm
   - `drush migrate-status` to check the migration status.
 
   Much more detailed instructions in Jira: https://jira.state.ma.us/browse/DP-6289
-
 - DP-6290: Adds descriptions to the decision tree, decision tree branch, and decision tree conclusion content types.
 - DP-6322: Adds create links for decision tree branch, decision tree conclusion nodes. Creates destination query parameters to return user back to parent decision tree.
 - DP-6346: Adds URL hash that controls routes for decision trees.
@@ -7596,7 +7836,6 @@ DP-5335: Set up the following terms for the Regulation Status vocabulary in /adm
 ### Changed
 
 - DP-5030: Updates mass_flagging logic to exclude any 'prepublished' nodes from Watch notification emails.
-
 - DP-5154 - Adds a view that gives our content team access to information about legacy redirects and the pages that are being redirected to. There are 2 displays, one a page with exposed filters, one a CSV export.
 - DP-5268 - Add display for short description to front end of News content type
 - DP-4820 - Add Contact field and theme on front end to Service detail page.

@@ -1,19 +1,22 @@
 
 
-## [0.381.0] - November 7, 2023
+## [0.382.0] - November 14, 2023
 
 ### Changed
-  - DP-27208: Drupal 10 - upgrade core and several contrib modules
-  - DP-30507: Upgrade to Drush 12
-  - DP-30639: Remove build_with_latest_mayflower CI job which is used in deploy_cd workflow.
-  
-### Removed
-  - DP-29261: Remove parent organizations from the mg_organization metadata field.
-  
+
+- DP-23015: Standardize on DDEV. Add descriptions for all custom commands.
+- DP-27217: Render cache fixes - media download links and org-wide invalidations
+- DP-30747: Use port 80 in DDEV router. This helps us use the automatic http to https redirect
+
 ### Fixed
-  - DP-30388: Resolve JS errors.
-  - DP-30587: Fix 500 error on edit.mass.gov found during bulk edit.
-  - DP-30611: Issue in rich text when hyperlinking document to existing text.
-  - DP-30642: Fix deprecation errors.
-  - DP-30688: Fixed issues with keyword and watched content filters in Feedback Manager.
-  
+
+- DP-30473: Changed the Add/edit document page to have a link at the top to suggest not using a document and help text when uploading a file to remind authors to test documents for accessibility.
+- DP-30754: Fix styling issues with message banners.
+- DP-30770: Changes to alert content type to fix validation issues related to conditional fields.
+- DP-30836: Fixed backup URL retrieval.
+
+### Added
+
+- DP-29929: Flag on org pages to not allow the org to be used in a search filter. This is for future use.
+- DP-30524: Added tests for Feedback Manager.
+
