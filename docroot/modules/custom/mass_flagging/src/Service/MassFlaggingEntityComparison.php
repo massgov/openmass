@@ -24,7 +24,9 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
     $revision_summary = '';
     // Check if the revision has a revision log message.
     if ($revision instanceof RevisionLogInterface) {
-      $revision_summary = Xss::filter($revision->getRevisionLogMessage());
+      if ($revision->getRevisionLogMessage()) {
+        $revision_summary = Xss::filter($revision->getRevisionLogMessage());
+      }
     }
     // Auto generate the revision log.
     if ($revision_summary == '') {
