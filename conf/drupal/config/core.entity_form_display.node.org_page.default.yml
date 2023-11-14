@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.org_page.field_career_opportunities
     - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
+    - field.field.node.org_page.field_field_org_no_search_filter
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
@@ -122,6 +123,7 @@ third_party_settings:
         - field_social_links
         - field_intended_audience
         - field_parent
+        - field_field_org_no_search_filter
         - field_billing_organization
       label: Overview
       region: content
@@ -180,7 +182,7 @@ third_party_settings:
       label: Content
       region: content
       parent_name: group_node_edit_form
-      weight: 22
+      weight: 23
       format_type: tab
       format_settings:
         classes: ''
@@ -331,6 +333,13 @@ content:
         maxlength_js: null
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: false
+  field_field_org_no_search_filter:
+    type: boolean_checkbox
+    weight: 134
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_get_updates_links:
     type: link_default
     weight: 13
@@ -356,7 +365,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 133
+    weight: 132
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -433,7 +442,7 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 134
+    weight: 133
     region: content
     settings:
       match_operator: CONTAINS
