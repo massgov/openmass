@@ -189,7 +189,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $env = $this->siteAliasManager()->getAlias($target);
     $cloudapi = $this->getClient();
     $backup = new DatabaseBackups($cloudapi);
-    $backups = $backup->getAll($env->get('uuid'), 'massgov');
+    $backups = $backup->getAll('26644-ff8ed1de-b8bc-48a4-b316-cd91bfa192c4', 'massgov');
 
     // Ignore backups that are still in progress, and of wrong type.
     // The 'use' keyword is described at https://bryce.fisher-fleig.org/blog/php-what-does-function-use-syntax-mean/index.html.
@@ -206,7 +206,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       }
       $response = $cloudapi->makeRequest('get', substr($url, strlen(Connector::BASE_URI)), ['allow_redirects' => FALSE]);
 
-      return str_replace('massgov.ssh.prod.acquia-sites.com', 'edit.mass.gov', $response->getHeader('Location'));
+      return str_replace('massgov.prod.acquia-sites.com', 'edit.mass.gov', $response->getHeader('Location'));
     }
     throw new \Exception('No usable backups were found.');
   }
