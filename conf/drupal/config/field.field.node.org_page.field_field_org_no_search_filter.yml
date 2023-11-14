@@ -1,0 +1,23 @@
+uuid: 2997de24-ba92-4f24-beac-9dafeaae770a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_field_org_no_search_filter
+    - node.type.org_page
+id: node.org_page.field_field_org_no_search_filter
+field_name: field_field_org_no_search_filter
+entity_type: node
+bundle: org_page
+label: "Don't use this organization as a search filter"
+description: "FOR FUTURE USE. By default, any organization related to a page can be used as a search filter. If this organization should NOT be used as a search filter when related to a page, check this box. You may want to do this when an organization has a very small number of pages listing it as an organization so it won't be useful as a search filter."
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean
