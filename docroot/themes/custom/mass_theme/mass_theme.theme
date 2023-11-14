@@ -3821,6 +3821,8 @@ function mass_theme_preprocess_block(&$variables) {
     else {
       $variables['headerSearch'] = Molecules::prepareHeaderSearch();
     }
+  }
+  if ($variables['elements']['#id'] == 'mainnavigation_3') {
     // Override the ID since this block is used on mobile screens.
     $variables['headerSearch']['id'] = 'header-search-mobile';
   }
