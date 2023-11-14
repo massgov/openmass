@@ -3,7 +3,6 @@
 namespace Drupal\mass_metatag\Service;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
 use Drupal\node\Entity\Node;
 
 /**
@@ -40,8 +39,8 @@ class MassMetatagUtilities {
    * @param bool $parent_meta
    *   If the flag is specified only parents metadata will be returned.
    * @param bool $contextual_search
-   *    If the flag is specified the returned data will be used
-   *    in contextual search.
+   *   If the flag is specified the returned data will be used
+   *   in contextual search.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
