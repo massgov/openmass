@@ -1214,8 +1214,8 @@ class Molecules {
    *    [[
    *      "path": "@molecules/action-map.twig",
    *      "data": "[actionMap",
-   *@see @molecules/header-search.twig
    *
+   * @see @molecules/header-search.twig
    */
   public static function prepareHeaderSearch(object $entity = NULL) {
     $has_suggestions = FALSE;
