@@ -10,7 +10,6 @@ dependencies:
     - field.field.node.org_page.field_career_opportunities
     - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
-    - field.field.node.org_page.field_field_org_no_search_filter
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
@@ -20,6 +19,7 @@ dependencies:
     - field.field.node.org_page.field_more_about_leadership
     - field.field.node.org_page.field_org_always_show_help_page
     - field.field.node.org_page.field_org_directory_page
+    - field.field.node.org_page.field_org_no_search_filter
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_organization_sections
@@ -123,6 +123,7 @@ third_party_settings:
         - field_social_links
         - field_intended_audience
         - field_parent
+        - field_org_no_search_filter
         - field_field_org_no_search_filter
         - field_billing_organization
       label: Overview
@@ -196,7 +197,7 @@ third_party_settings:
       label: 'Looking to modify the automatically generated information section?'
       region: content
       parent_name: group_content
-      weight: 17
+      weight: 18
       format_type: details
       format_settings:
         classes: ''
@@ -274,7 +275,7 @@ content:
             selector: ''
   field_billing_organization:
     type: dynamic_entity_reference_options_select
-    weight: 135
+    weight: 136
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -292,7 +293,7 @@ content:
     third_party_settings: {  }
   field_career_opportunities:
     type: link_default
-    weight: 11
+    weight: 12
     region: content
     settings:
       placeholder_url: ''
@@ -333,16 +334,9 @@ content:
         maxlength_js: null
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: false
-  field_field_org_no_search_filter:
-    type: boolean_checkbox
-    weight: 134
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   field_get_updates_links:
     type: link_default
-    weight: 13
+    weight: 14
     region: content
     settings:
       placeholder_url: ''
@@ -387,7 +381,7 @@ content:
     third_party_settings: {  }
   field_more_about_leadership:
     type: entity_reference_autocomplete
-    weight: 9
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS
@@ -404,11 +398,18 @@ content:
     third_party_settings: {  }
   field_org_directory_page:
     type: link_default
-    weight: 10
+    weight: 11
     region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings: {  }
+  field_org_no_search_filter:
+    type: boolean_checkbox
+    weight: 134
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_org_page_thumbnail:
     type: image_image
@@ -491,7 +492,7 @@ content:
     third_party_settings: {  }
   field_public_records_link:
     type: link_default
-    weight: 12
+    weight: 13
     region: content
     settings:
       placeholder_url: ''
