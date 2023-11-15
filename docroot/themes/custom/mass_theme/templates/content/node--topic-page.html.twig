@@ -67,20 +67,18 @@
           } %}
         {% endfor %}
       {% endblock %}
-      {# {% block secondaryRelationship %}
-        {% for item in secondary %}
-          {% include "@atoms/item-link.twig" with {
-            "itemLink": {
-              "title": item.title,
-              "href": item.href
-            }
-          } %}
-        {% endfor %}
-      {% endblock %} #}
     {% endembed %}
   {% endif %}
-
-  {% include "@organisms/legacy-page-banner/page-banner-legacy.twig" %}
+  {% include "@organisms/page-banner/page-banner.twig" with {
+    "pageBanner": {
+      "theme": "c-white",
+      "pageHeader": {
+        "title": node.label,
+        "underline": "TRUE",
+        "description": content.field_topic_lede
+      }
+    }
+  } %}
 {% endblock %}
 
 {% block pageContent %}
