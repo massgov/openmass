@@ -10,7 +10,6 @@ dependencies:
     - field.field.node.org_page.field_career_opportunities
     - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
-    - field.field.node.org_page.field_field_org_no_search_filter
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
@@ -20,6 +19,7 @@ dependencies:
     - field.field.node.org_page.field_more_about_leadership
     - field.field.node.org_page.field_org_always_show_help_page
     - field.field.node.org_page.field_org_directory_page
+    - field.field.node.org_page.field_org_no_search_filter
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_organization_sections
@@ -195,16 +195,6 @@ content:
     third_party_settings: {  }
     weight: 41
     region: content
-  field_field_org_no_search_filter:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 138
-    region: content
   field_get_updates_links:
     type: dynamic_link_separate
     label: above
@@ -273,6 +263,16 @@ content:
       target: ''
     third_party_settings: {  }
     weight: 40
+    region: content
+  field_org_no_search_filter:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 139
     region: content
   field_org_page_thumbnail:
     type: image
