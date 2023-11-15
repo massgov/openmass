@@ -68,7 +68,7 @@ class MassMetatagUtilities {
             }
             else {
               if ($node->hasField('field_org_no_search_filter')) {
-                if ($node->field_field_org_no_search_filter->value != '1') {
+                if ($node->field_org_no_search_filter->value != '1') {
                   $result[] = trim($node->label());
                 }
               }
@@ -90,7 +90,14 @@ class MassMetatagUtilities {
                 $result[] = $this->slugify(trim($node->field_parent->entity->label()));
               }
               else {
-                $result[] = trim($node->field_parent->entity->label());
+                $parent = $node->field_parent->entity;
+                if ($parent) {
+                  if ($parent->hasField('field_org_no_search_filter')) {
+                    if ($parent->field_org_no_search_filter->value != '1') {
+                      $result[] = trim($parent->label());
+                    }
+                  }
+                }
               }
             }
           }
