@@ -79,6 +79,12 @@
       "inlineLinks": translationLinks
     } %}
   {% endif %}
+  {% include "@organisms/by-template/page-banner.twig" with {
+    "pageBanner": {
+      "image": bannerImageWide,
+      "theme": "c-primary",
+    }
+  } %}
   {% include "@organisms/legacy-page-banner/page-banner-legacy.twig" with {
     "pageBanner": {
       "layout": bannerImageWide ? "overlay" : "",
