@@ -67,7 +67,7 @@ class MassMetatagUtilities {
               $result[] = $this->slugify(trim($node->label()));
             }
             else {
-              if ($node->hasField('field_field_org_no_search_filter')) {
+              if ($node->hasField('field_org_no_search_filter')) {
                 if ($node->field_field_org_no_search_filter->value != '1') {
                   $result[] = trim($node->label());
                 }
