@@ -126,13 +126,14 @@ class Helper {
             break;
 
           case 'service_page':
-            if ($style_name == 'hero1600x400_fp') {
+            if ($style_name == '800x400_fp') {
               $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
               $style_uri = $style->buildUri($uri);
               $url = $style->buildUrl($uri);
               if (!file_exists($style_uri) || !$stream_wrapper_manager->isValidUri($style_uri)) {
                 // Fallback style if the focal point style is not generated.
-                $url = $image->createFileUrl();
+                $style->createDerivative($uri, $style_uri);
+                $url = $style->buildUrl($uri);
               }
             }
             break;

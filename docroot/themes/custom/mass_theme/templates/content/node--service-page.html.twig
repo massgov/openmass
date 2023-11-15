@@ -79,23 +79,17 @@
       "inlineLinks": translationLinks
     } %}
   {% endif %}
-  {% include "@organisms/by-template/page-banner.twig" with {
+  {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
       "image": bannerImageWide,
       "theme": "c-primary",
-    }
-  } %}
-  {% include "@organisms/legacy-page-banner/page-banner-legacy.twig" with {
-    "pageBanner": {
-      "layout": bannerImageWide ? "overlay" : "",
-      "color": "blue",
-      "title": node.label,
-      "titleSubText": content.field_title_sub_text,
-      "description": content.field_service_lede,
-      "bgWide": bannerImageWide,
-      "bgNarrow": '',
-      "buttonsLabel": "LOG IN:",
-      "buttons": logInButtons
+      "pageHeader": {
+        "title": node.label,
+        "titleSubText": content.field_title_sub_text,
+        "description": content.field_service_lede,
+        "buttonsLabel": "LOG IN:",
+        "buttons": logInButtons
+      }
     }
   } %}
 {% endblock %}

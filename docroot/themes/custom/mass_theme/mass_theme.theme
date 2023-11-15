@@ -3236,7 +3236,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
 
   // Prepare field_service_bg_wide, if it's populated.
   if (Helper::isFieldPopulated($node, 'field_service_bg_wide')) {
-    $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, 'hero1600x400_fp', 'field_service_bg_wide');
+    $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, '800x400_fp', 'field_service_bg_wide');
   }
 
   // Prepare the First Time? key actions component, if field is populated.
