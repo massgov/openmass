@@ -89,16 +89,14 @@
     } %}
   {% endif %}
   {% if node.field_banner_image is not empty %}
-    {% include "@organisms/illustrated-header/illustrated-header.twig" with {
-      "illustratedHeader": {
-        "bgImage": bgImage,
+    {% include "@organisms/page-banner/page-banner.twig" with {
+      "pageBanner": {
+        "image": bgImage,
         "bgPositionX": bgPosition['x'],
         "bgPositionY": bgPosition['y'],
-        "category": "",
-        "inverted": true,
+        "theme": "c-primary",
         "pageHeader": {
           "title": label,
-          "subTitle": "",
           "optionalContents": [{
             "path": "@atoms/11-text/paragraph.twig",
             "data": {
