@@ -50,14 +50,13 @@
 			{{ content.field_organizations }}
 		{% endblock %}
 	{% endembed %}
-	{% include "@organisms/illustrated-header/illustrated-header.twig" with {
-    "illustratedHeader": {
-      "bgImage": content.field_guide_page_bg_wide[0],
-      "noImage": content.field_guide_page_bg_wide[0]?false:true,
-      "bgCentered": true,
+  {% include "@organisms/page-banner/page-banner.twig" with {
+    "pageBanner": {
+      "image": content.field_guide_page_bg_wide[0],
+      "bgPositionX": 'center',
+      "theme": "c-white",
       "pageHeader": {
         "title": node.title.value,
-        "subTitle": "",
         "optionalContents": [{
           "path": "@organisms/by-author/rich-text.twig",
           "data": {
@@ -73,7 +72,6 @@
             }
           }
         }],
-        "headerTags": null
       }
     }
   } %}
