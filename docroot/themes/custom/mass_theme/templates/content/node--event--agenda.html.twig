@@ -53,12 +53,12 @@
 {% block pageContent %}
   {% if sideContent.contactList %}
     {% set contactList = sideContent.contactList|merge({'compHeading': sideContent.contactList.sidebarHeading, 'sidebarHeading': null}) %}
-    {% include "@organisms/by-author/contact-list.twig" %}
+    {% include "@organisms/contact/contact-list.twig" %}
   {% endif %}
 
   {% if sideContent.mediaContact %}
     {% set contactList = sideContent.mediaContact|merge({'compHeading': sideContent.mediaContact.sidebarHeading, 'sidebarHeading': null}) %}
-    {% include "@organisms/by-author/contact-list.twig" %}
+    {% include "@organisms/contact/contact-list.twig" %}
   {% endif %}
 
   {{ content.field_event_meeting_agenda_sect }}
@@ -69,11 +69,11 @@
 {% block sidebarContent %}
   {% if sideContent.contactList %}
     {% set contactList = sideContent.contactList %}
-    {% include "@organisms/by-author/contact-list.twig" %}
+    {% include "@organisms/contact/contact-list.twig" %}
   {% endif %}
   {% if sideContent.mediaContact %}
     {% set contactList = sideContent.mediaContact %}
-    {% include "@organisms/by-author/contact-list.twig" %}
+    {% include "@organisms/contact/contact-list.twig" %}
   {% endif %}
 
   {# Render only the contactUs section in the optionalContents. #}

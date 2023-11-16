@@ -83,9 +83,9 @@
     {# If there is a location listing page for the referencing organization
     page, display the link. #}
     {% if content.location_listings_url|render is not empty %}
-      {% embed "@molecules/contact-group.twig" %}
+      {% embed "@molecules/contact/contact-group.twig" %}
         {% block groupItems %}
-          {% include "@molecules/contact-item.twig" with {
+          {% include "@molecules/contact/contact-item.twig" with {
             item: {
               type: 'seeAllLink',
               link: {
@@ -105,7 +105,7 @@
 
     {# The application login links from the referencing organization page. #}
     {% if content.application_login_links|render is not empty %}
-      {% embed "@molecules/contact-group.twig" with {
+      {% embed "@molecules/contact/contact-group.twig" with {
         "contactGroup": {
           "name": "Login to"|t ~ "...",
           "icon": "login",

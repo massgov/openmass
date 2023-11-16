@@ -68,7 +68,7 @@
       <div class="page-content">
         {% if sidebar.contactList %}
           {% set contactList = sidebar.contactList %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
         {% set coloredHeading = {
             "text": details.contentTitle,
@@ -201,7 +201,7 @@
                   'level': level,
                   'id': contactList.compHeading.id
                 }}) %}
-                {% include "@organisms/by-author/contact-list.twig" %}
+                {% include "@organisms/contact/contact-list.twig" %}
               {% endif %}
               {% if sidebar.linkList %}
                 {% set linkList = sidebar.linkList %}
@@ -226,7 +226,7 @@
               'id': contactList.compHeading.id,
               'sub': false
             }}) %}
-            {% include "@organisms/by-author/contact-list.twig" %}
+            {% include "@organisms/contact/contact-list.twig" %}
           </div>
         {% endif %}
         {% if sidebar %}

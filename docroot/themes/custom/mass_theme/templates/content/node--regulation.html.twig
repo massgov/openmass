@@ -55,7 +55,7 @@
       {% block pageContent %}
         {% if sideContent.contactList %}
           {% set contactList = sideContent.contactList %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
       {% endblock %}
     </div>
@@ -112,7 +112,7 @@
             'titleContext': contactList.compHeading.titleContext,
             'level': level,
             'id': contactList.compHeading.id }}) %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
         {% if mainContent.footnoteList %}
           {% set footnoteList = mainContent.footnoteList %}
@@ -126,7 +126,7 @@
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% include "@organisms/by-author/contact-list.twig" %}
+        {% include "@organisms/contact/contact-list.twig" %}
       {% endif %}
       {% if sideContent.pressListing %}
         {% set pressListing = sideContent.pressListing %}
