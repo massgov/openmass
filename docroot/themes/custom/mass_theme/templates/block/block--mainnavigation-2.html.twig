@@ -35,8 +35,9 @@
 Desktop horizontal main nav is added by themes/custom/mass_theme/templates/block/block--mainnavigation-2.html.twig
 in the following block to this.
 #}
-{% set ariaLabel = heading_id ?? 'main-navigation-heading' %}
-<nav class="ma__header__hamburger__nav" aria-labelledby="{{ ariaLabel }}" id="main-navigation-mobile" role="navigation">
+{# {% set ariaLabel = heading_id ?? 'main-navigation-heading' %} #}
+<nav class="ma__header__hamburger__nav" aria-label="main navigation" id="main-navigation-mobile">
+<p style="color: orange; font-weight: bold;">MAINNAVIGATION2.HTML.TWIG</p>
   <div class="ma__header__hamburger-wrapper">
 
     <div class="ma__header__hamburger__button-container js-sticky-header">
@@ -69,12 +70,8 @@ in the following block to this.
       {{ render_menu('utility') }}
     </div>
 
-    {# Label. If not displayed, we still provide it for screen readers.#}
-    {% if not configuration.label_display %}
-      {% set title_attributes = title_attributes.addClass('visually-hidden') %}
-    {% endif %}
     {{ title_prefix }}
-    <div{{ title_attributes.setAttribute('id', ariaLabel) }}>{{ configuration.label }}</div>
+
     {{ title_suffix }}
 
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
