@@ -32,6 +32,7 @@ third_party_settings:
     group_timeframe:
       children:
         - field_start_date
+        - field_end_date
       label: Timeframe
       region: content
       parent_name: group_basic
@@ -56,7 +57,24 @@ third_party_settings:
         id: ''
         direction: horizontal
     group_advanced:
-      children: {  }
+      children:
+        - field_alternative_title
+        - field_geographic_area
+        - field_content_type
+        - field_subjects
+        - field_additional_info
+        - field_link_related_content
+        - field_part_of
+        - field_license
+        - field_rights
+        - field_conform
+        - field_data_quality
+        - field_system_of_records
+        - field_oclc_number
+        - field_file_migration_id
+        - field_link_classic_massgov
+        - field_checksum
+        - field_data_dictionary
       label: Advanced
       region: content
       parent_name: group_form
@@ -78,10 +96,16 @@ third_party_settings:
         - field_organizations
         - langcode
         - field_media_english_version
+        - field_creator
+        - field_publishing_frequency
+        - field_geographic_place
+        - field_contact_name
+        - field_contact_information
         - group_timeframe
         - field_document_type
         - field_document_label
         - field_collections
+        - field_tags
         - field_internal_notes
       label: Basic
       region: content
@@ -90,10 +114,9 @@ third_party_settings:
       format_type: tab
       format_settings:
         classes: ''
-        show_empty_fields: false
         id: ''
         formatter: open
-        description: '<a href="https://www.mass.gov/kb/usehtml">Learn more about why it’s best to avoid documents and use HTML instead.</a>'
+        description: ''
         required_fields: true
 id: media.document.default
 targetEntityType: media
@@ -262,11 +285,6 @@ content:
       display_label: true
     third_party_settings: {  }
     display_label: true
-  simple_sitemap:
-    weight: 10
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   status:
     type: boolean_checkbox
     weight: 2
