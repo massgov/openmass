@@ -147,7 +147,7 @@ function mass_map_preprocess_node(&$variables) {
 function mass_map_library_info_alter(&$libraries, $extension) {
   if ($extension === 'mass_map' && isset($libraries['google-map-api'])) {
     $url = \Drupal::service('mass_map')
-      ->getJavascriptApiUrl(['geometry', 'places', 'geocoder'], 'initGoogleMaps');
+      ->getJavascriptApiUrl(['geometry', 'places'], 'initGoogleMaps');
     $libraries['google-map-api']['js'][$url] = [
       'scope' => 'header',
       'type' => 'external',

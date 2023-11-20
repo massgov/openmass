@@ -226,7 +226,7 @@ class MassFeedbackLoopContentFetcher {
     // by default we fetch feedback for all the nodes that the current user is watching.
     if (!isset($feedback_api_params['node_id']) && !isset($feedback_api_params['org_id']) && !isset($feedback_api_params['author_id'])) {
       if (isset($feedback_api_params['watch_content']) && $feedback_api_params['watch_content'] == 1) {
-        $feedback_api_params['node_id'] = [$this->fetchFlaggedContent()];
+        $feedback_api_params['node_id'] = $this->fetchFlaggedContent();
       }
     }
     elseif (isset($feedback_api_params['node_id']) && (isset($feedback_api_params['watch_content']) && $feedback_api_params['watch_content'] == 1)) {
@@ -241,7 +241,7 @@ class MassFeedbackLoopContentFetcher {
       }
     }
     elseif ((isset($feedback_api_params['watch_content']) && $feedback_api_params['watch_content'] == 1)) {
-      $feedback_api_params['node_id'] = [$this->fetchFlaggedContent()];
+      $feedback_api_params['node_id'] = $this->fetchFlaggedContent();
     }
 
     // Fetches feedback from external API.
@@ -361,7 +361,6 @@ class MassFeedbackLoopContentFetcher {
         'label_id',
         'author_id',
         'watch_content',
-        'search',
         'flagged_inappropriate',
       ])) {
         if (in_array($key, ['watch_content', 'flagged_inappropriate']) || !empty($param)) {

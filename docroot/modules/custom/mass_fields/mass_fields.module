@@ -84,8 +84,13 @@ function mass_fields_get_tags_from_references(ContentEntityInterface $entity) {
     if ($field_items instanceof EntityReferenceFieldItemListInterface) {
 
       $referenced = array_merge($referenced, array_filter($field_items->referencedEntities(), function ($referencedEntity) {
+        if ($referencedEntity->bundle() === 'org_page') {
+          // These nodes are referenced by many pages, so lets not do such a wide cache invalidation.
+          return FALSE;
+        }
+
         // All referenced nodes are cleared.
-        if ($referencedEntity->getEntityTypeId() === 'node') {
+        if (in_array($referencedEntity->getEntityTypeId(), ['media', 'node'])) {
           return TRUE;
         }
         // All referenced label terms are cleared. We use these to build dynamic

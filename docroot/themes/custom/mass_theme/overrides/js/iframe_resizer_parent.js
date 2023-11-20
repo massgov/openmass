@@ -65,8 +65,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var observer = new MutationObserver(function (mutations) {
       var matches = document.querySelectorAll('.js-ma-responsive-iframe iframe');
       var i = 0;
-      for (; i < matches.length; i++) {
-        matches[i].contentWindow.postMessage('update', '*');
+      if (matches.length) {
+        for (; i < matches.length; i++) {
+          matches[i].contentWindow.postMessage('update', '*');
+        }
       }
     });
 

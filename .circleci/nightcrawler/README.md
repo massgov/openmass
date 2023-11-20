@@ -5,7 +5,7 @@ Night Crawler is a tool to automate comprehensive crawls of a site on a regular 
 Running
 -------
 1. From the root directory, run `npm install` (or `yarn install`).
-2. Run `ahoy nightcrawler crawl`
+2. Run `ddev nightcrawler crawl`
 
 You may pass the following arguments to the crawl command:
 ```bash
@@ -15,8 +15,8 @@ You may pass the following arguments to the crawl command:
 ```
 
 Examples:
-* `ahoy nightcrawler crawl --target=cd --samples=100`: Crawl the CD environment and run through 100 of each content type.
-* `ahoy nightcrawler crawl --target=local`: Check all node pages in the local environment.
+* `ddev nightcrawler crawl --target=cd --samples=100`: Crawl the CD environment and run through 100 of each content type.
+* `ddev nightcrawler crawl --target=local`: Check all node pages in the local environment.
 
 *Note*: When running on remote environments, Nightcrawler may attempt to verify the host's SSH signature.  If this happens, you will see something like:
 ```bash

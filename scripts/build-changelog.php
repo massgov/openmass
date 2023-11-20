@@ -6,10 +6,12 @@
  * Used by the release_branch job in CircleCI.
  */
 
+use DrupalCodeGenerator\Application;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Path;
 use PHLAK\SemVer;
+use Twig\Loader\FilesystemLoader as FileSystemLoader;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -94,7 +96,9 @@ echo "Going through all of the changelog files to update CHANGELOG.md and removi
 echo "\n";
 echo "";
 
-$env = new \Twig_Environment(new \Twig_Loader_Filesystem(__DIR__));
+$template_loader = new FileSystemLoader();
+$template_loader->addPath(__DIR__);
+$env = new \Twig\Environment($template_loader);
 $context = [
   'changes' => $changes,
   'version' => $version,

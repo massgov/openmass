@@ -1,4 +1,28 @@
 
+## [0.381.1] - November 8, 2023
+
+### Fixed
+- DP-30763: Location filter by location not changing order of locations HOTFIX.
+
+
+## [0.381.0] - November 7, 2023
+
+### Changed
+  - DP-27208: Drupal 10 - upgrade core and several contrib modules
+  - DP-30507: Upgrade to Drush 12
+  - DP-30639: Remove build_with_latest_mayflower CI job which is used in deploy_cd workflow.
+  
+### Removed
+  - DP-29261: Remove parent organizations from the mg_organization metadata field.
+  
+### Fixed
+  - DP-30388: Resolve JS errors.
+  - DP-30587: Fix 500 error on edit.mass.gov found during bulk edit.
+  - DP-30611: Issue in rich text when hyperlinking document to existing text.
+  - DP-30642: Fix deprecation errors.
+  - DP-30688: Fixed issues with keyword and watched content filters in Feedback Manager.
+  
+
 
 ## [0.380.0] - October 31, 2023
 
