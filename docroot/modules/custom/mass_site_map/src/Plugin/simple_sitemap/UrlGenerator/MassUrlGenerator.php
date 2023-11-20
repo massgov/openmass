@@ -77,7 +77,7 @@ class MassUrlGenerator extends EntityUrlGenerator {
   }
 
   /**
-   * The Mass.gov adjustments to Locaiton entities in the sitemap.
+   * The Mass.gov adjustments to Location entities in the sitemap.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   Plain old entity object.
@@ -119,11 +119,7 @@ class MassUrlGenerator extends EntityUrlGenerator {
             }
           }
           /** @var \Drupal\node\Entity\Node[] $org_nodes */
-          $org_nodes = $data['node']->getOrganizations()->referencedEntities();
-          // If we have an org page, also return myself.
-          if ($data['node']->bundle() == 'org_page') {
-            $org_nodes[] = $data['node'];
-          }
+          $org_nodes = $entity->getOrganizations()->referencedEntities();
           if ($org_nodes) {
             $utilities = \Drupal::service('mass_metatag.utilities');
             $org_slugs = [];
