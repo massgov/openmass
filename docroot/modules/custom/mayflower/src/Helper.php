@@ -126,7 +126,7 @@ class Helper {
 
           case 'org_page':
           case 'service_page':
-            if ($style_name == '800x400_fp') {
+            if ($style_name == '800x400_fp' || $style_name == '480x240_fp') {
               $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
               $style_uri = $style->buildUri($uri);
               $url = $style->buildUrl($uri);
