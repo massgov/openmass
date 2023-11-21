@@ -6,7 +6,7 @@
  */
 
 /**
- * Switch Image field data, form field_banner_image to field_bg_wide
+ * Switch Image field data, form field_banner_image to field_bg_wide.
  */
 function mass_content_deploy_org_page_banner_image_migration(&$sandbox) {
   $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
