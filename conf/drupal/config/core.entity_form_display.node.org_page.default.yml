@@ -77,7 +77,6 @@ third_party_settings:
         - group_organization_name
         - field_ref_contact_info_1
         - field_bg_wide
-        - field_banner_image
         - field_image_credit
         - field_primary_parent
         - field_organizations
@@ -124,7 +123,6 @@ third_party_settings:
         - field_intended_audience
         - field_parent
         - field_org_no_search_filter
-        - field_field_org_no_search_filter
         - field_billing_organization
       label: Overview
       region: content
@@ -219,32 +217,6 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-  field_banner_image:
-    type: image_image
-    weight: 10
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        69ea8f14-56d8-4b66-986e-1dc6102de0d9:
-          entity_type: node
-          bundle: org_page
-          dependee: field_subtype
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'Elected Official'
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_bg_wide:
     type: image_focal_point
     weight: 9
@@ -255,24 +227,7 @@ content:
       preview_link: true
       offsets: '75,50'
     third_party_settings:
-      conditional_fields:
-        14d3d7ee-bc6e-491e-9134-bc1bcb861bb9:
-          entity_type: node
-          bundle: org_page
-          dependee: field_subtype
-          settings:
-            state: '!visible'
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'Elected Official'
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_billing_organization:
     type: dynamic_entity_reference_options_select
     weight: 136
@@ -365,7 +320,7 @@ content:
     third_party_settings: {  }
   field_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 2
     region: content
     settings:
       sidebar: true
@@ -602,7 +557,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -625,20 +580,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 7
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 8
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -677,12 +632,13 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_banner_image: true
   field_constituent_communication: true
   field_org_sentence_phrasing: true
   langcode: true

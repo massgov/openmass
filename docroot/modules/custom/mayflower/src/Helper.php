@@ -111,7 +111,6 @@ class Helper {
       if (!empty($style_name) && ($style = ImageStyle::load($style_name))) {
         $uri = $image->getFileUri();
         switch ($entity->bundle()) {
-          case 'org_page':
           case 'info_details':
             if ($style_name == 'action_banner_large_focal_point') {
               $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
@@ -125,6 +124,7 @@ class Helper {
             }
             break;
 
+          case 'org_page':
           case 'service_page':
             if ($style_name == '800x400_fp') {
               $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');

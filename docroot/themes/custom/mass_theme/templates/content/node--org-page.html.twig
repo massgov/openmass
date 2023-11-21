@@ -16,14 +16,23 @@
   {% endif %}
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
-  {% if pageBanner and node.field_subtype.value == 'General Organization' or node.field_subtype.value == 'Boards' or node.field_banner_image is empty %}
-    {% include "@organisms/legacy-page-banner/page-banner-legacy.twig" %}
-  {% elseif node.field_banner_image is not empty %}
+  {% set subtext = node.field_title_sub_text is not empty ? node.field_title_sub_text.value : '' %}
+  {% set links = [] %}
+  {% if node.field_subtype.value == 'Elected Official' %}
     {% set personUrl = false %}
     {% if node.field_person_bio.entity.field_publish_bio_page.value %}
       {% set personUrl = url('entity.node.canonical', {
         'node': node.field_person_bio.target_id
       }) %}
+      {% set links = links|merge([
+        {
+          "text": node.field_person_bio.entity.field_person_first_name.value ~ " " ~ node.field_person_bio.entity.field_person_last_name.value,
+          "href": personUrl,
+          "inverse": true,
+          "description": node.field_person_bio.entity.field_person_role_title.value,
+          "info": "",
+        },
+      ]) %}
     {% endif %}
     {% set secondaryPerson = false %}
     {% if node.field_secondary_person_bio is not empty %}
@@ -40,9 +49,9 @@
         "description": node.field_secondary_person_bio.entity.field_person_role_title.value,
         "info": ""
       } %}
+      {% set links = links|merge([secondaryPerson]) %}
     {% endif %}
-    {% set bannerImage = file_url(node.field_banner_image.entity.fileuri ?? '') %}
-    {% set subtext = node.field_title_sub_text is not empty ? node.field_title_sub_text.value : '' %}
+  {% endif %}
     {% include "@organisms/page-banner/page-banner.twig" with {
       "pageBanner": {
         "image": bannerImage,
@@ -51,21 +60,10 @@
         "pageHeader": {
           "title": node.title.value,
           "titleSubText": subtext,
-          "description": content.field_service_lede,
-          "links": [
-            {
-              "text": node.field_person_bio.entity.field_person_first_name.value ~ " " ~ node.field_person_bio.entity.field_person_last_name.value,
-              "href": personUrl,
-              "inverse": true,
-              "description": node.field_person_bio.entity.field_person_role_title.value,
-              "info": "",
-            },
-            secondaryPerson,
-          ]
+          "links": links
         }
       }
     } %}
-  {% endif %}
 
   {% embed "@organisms/by-template/organization-navigation.twig" with {
     organizationNavigation: {

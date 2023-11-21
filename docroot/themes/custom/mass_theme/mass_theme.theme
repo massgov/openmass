@@ -662,19 +662,9 @@ function mass_theme_preprocess_node_org_page(&$variables) {
     // Slugified title.
     $variables['slugified_title'] = _mass_metatag_slugify(trim($page_title));
 
-    $subtype = $node->field_subtype->value;
-    if ($subtype === 'General Organization' ||
-      $subtype === 'Boards' ||
-      $node->field_banner_image->count() === 0) {
-      // Set static pageBanner properties to pass to prepare function.
-      $pageBanner_options = [
-        "layout" => "taper",
-        "icon" => NULL,
-      ];
-
-      // Make pageBanner data object available in twig template.
-      $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
-
+    // Prepare field_service_bg_wide, if it's populated.
+    if (Helper::isFieldPopulated($node, 'field_bg_wide')) {
+      $variables['bannerImage'] = Helper::getFieldImageUrl($node, '800x400_fp', 'field_bg_wide');
     }
 
     if (!empty($cache_tags)) {
