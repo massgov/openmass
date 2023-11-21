@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
+    - field.field.node.org_page.field_include_parent_org_search
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
@@ -122,9 +123,9 @@ third_party_settings:
         - field_application_login_links
         - field_social_links
         - field_intended_audience
-        - field_parent
         - field_org_no_search_filter
-        - field_field_org_no_search_filter
+        - field_parent
+        - field_include_parent_org_search
         - field_billing_organization
       label: Overview
       region: content
@@ -357,6 +358,13 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_include_parent_org_search:
+    type: boolean_checkbox
+    weight: 135
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: 132
@@ -406,7 +414,7 @@ content:
     third_party_settings: {  }
   field_org_no_search_filter:
     type: boolean_checkbox
-    weight: 134
+    weight: 133
     region: content
     settings:
       display_label: true
@@ -443,7 +451,7 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 133
+    weight: 134
     region: content
     settings:
       match_operator: CONTAINS

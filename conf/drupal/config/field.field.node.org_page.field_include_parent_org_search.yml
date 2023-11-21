@@ -1,0 +1,23 @@
+uuid: 75410dfc-64c7-4996-88b9-00fb1f8aac35
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_include_parent_org_search
+    - node.type.org_page
+id: node.org_page.field_include_parent_org_search
+field_name: field_include_parent_org_search
+entity_type: node
+bundle: org_page
+label: 'Include the parent organization in search filter for pages associated with this organization'
+description: "FOR FUTURE USE. When the parent organization is known, relevant, and meaningful to visitors, you can include it in the search filter dropdown on pages related to this organization. Generally, leave this unchecked unless you have a good reason to use it so that visitors don't get unhelpful suggestions. "
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean
