@@ -3,21 +3,21 @@
 namespace Drupal\mass_feedback_loop\Service;
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Http\ClientFactory;
+use Drupal\Core\Link;
 use Drupal\Core\Pager\PagerManagerInterface;
 use Drupal\Core\Session\AccountProxy;
-use Drupal\Core\Database\Connection;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Url;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Component\Utility\Html;
-use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Link;
-use Drupal\Core\Url;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Service class for interacting with external Mass.gov API.
@@ -220,7 +220,7 @@ class MassFeedbackLoopContentFetcher {
     else {
       $feedback_api_params['page'] += 1;
     }
-    // TODO By default we actually want to show all node's latest feedback over the last two weeks.
+    // @todo By default we actually want to show all node's latest feedback over the last two weeks.
     // See: https://jira.mass.gov/browse/DP-11729.
     // Until then if no specific 'org_id', 'author_id' or 'node_id' filters are provided, then
     // by default we fetch feedback for all the nodes that the current user is watching.
@@ -269,7 +269,7 @@ class MassFeedbackLoopContentFetcher {
       }
     }
     catch (RequestException $e) {
-      // TODO The API should not return an exception in the no results situation.
+      // @todo The API should not return an exception in the no results situation.
       // See: https://jira.mass.gov/browse/DP-11729.
       \Drupal::logger('mass_feedback_loop')->error('The Feedback API returned an exception when a request with the following params was sent. SERIALIZED PARAMS = @params', ['@params' => serialize($feedback_api_params)]);
       return [
@@ -361,9 +361,9 @@ class MassFeedbackLoopContentFetcher {
         'label_id',
         'author_id',
         'watch_content',
-        'search'
+        'flagged_inappropriate',
       ])) {
-        if (($key == 'watch_content') || !empty($param)) {
+        if (in_array($key, ['watch_content', 'flagged_inappropriate']) || !empty($param)) {
           $feedback_api_params[$key] = $param;
           if (is_array($param) && strpos($param[0], ',') !== FALSE) {
             $feedback_api_params[$key] = explode(',', $param[0]);
@@ -440,14 +440,7 @@ class MassFeedbackLoopContentFetcher {
         'class' => ['feedback-wide'],
       ];
     }
-    if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Requires Response'),
-        ],
-        'class' => ['feedback-medium'],
-      ];
-    }
+
     if (empty($limit_fields) || in_array('tags', $limit_fields)) {
       $table['#header'][] = [
         'data' => [
@@ -486,7 +479,6 @@ class MassFeedbackLoopContentFetcher {
             // Builds "Source Page".
             // Uses data stored in drupalSettings object on initial page load.
             // @see \Drupal\mass_feedback_loop\Form\MassFeedbackLoopAuthorInterfaceForm
-
             // Check if node exists.
             $node_check = $this->entityTypeManager->getStorage('node')
               ->load($feedback['node_id']);
@@ -503,7 +495,7 @@ class MassFeedbackLoopContentFetcher {
             }
             else {
               $row['source_page'] = [
-                '#markup' => $node_check->title,
+                '#markup' => $node_check->title ?? '',
               ];
             }
           }
@@ -511,35 +503,8 @@ class MassFeedbackLoopContentFetcher {
             // Builds "Feedback Text".
             $feedback_text = (!empty($feedback['text'])) ? $feedback['text'] : '';
             $row['text'] = [
-              '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span><span class="feedback-text-toggle">Show More</span>',
+              '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span>',
               '#wrapper_attributes' => ['class' => 'survey-response'],
-            ];
-          }
-          if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
-            $response_info = 'N/A';
-            if (!empty($feedback['requested_response'])) {
-              if ($feedback['requested_response'] === 'Yes') {
-                $response_info = '<span class="feedback-bold">Yes</span>';
-                if (!empty($feedback['first_name'])) {
-                  $response_info .= $feedback['first_name'] . ' ';
-                }
-                if (!empty($feedback['last_name'])) {
-                  $response_info .= $feedback['last_name'] . '<br />';
-                }
-                if (!empty($feedback['email'])) {
-                  $response_info .= $feedback['email'] . '<br />';
-                }
-                if (!empty($feedback['phone'])) {
-                  $response_info .= $feedback['phone'];
-                }
-              }
-              else {
-                $response_info = 'No';
-              }
-            }
-
-            $row['requires_response'] = [
-              '#markup' => $response_info,
             ];
           }
 
@@ -595,7 +560,7 @@ class MassFeedbackLoopContentFetcher {
                 'id' => 'feedback-tags-list',
                 'class' => [
                   'feedback-' . $feedback['id'] . '-tags-list',
-                ]
+                ],
               ],
               '#items' => $feedback_tags,
             ];

@@ -12,6 +12,7 @@ dependencies:
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
+    - field.field.taxonomy_term.collections.field_reusable_label
     - field.field.taxonomy_term.collections.field_short_description
     - field.field.taxonomy_term.collections.field_show_only_future_events
     - field.field.taxonomy_term.collections.field_sort_order
@@ -83,6 +84,14 @@ content:
       weight_output: attribute
     third_party_settings: {  }
     weight: -4
+    region: content
+  field_reusable_label:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 2
     region: content
   field_short_description:
     type: string

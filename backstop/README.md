@@ -47,7 +47,7 @@ they look the same.
 > local circleci runner as described below, or [turn on Rosetta2 virtualization in Docker Desktop](https://levelup.gitconnected.com/docker-on-apple-silicon-mac-how-to-run-x86-containers-with-rosetta-2-4a679913a0d5)
 
 - If testing an Acquia environment, make sure the `LOWER_ENVIR_AUTH_USER` and
-`LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
+  `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
 - Enable the Backstop docker image for local running.
   `ddev service enable backstop`
 - Before doing any testing, you will need to capture the "reference" screenshots,
@@ -76,9 +76,6 @@ were created for testing purposes.
 
 ## Runing Backstop in CircleCI
 
-`drush ma:backstop` will run Backstop in the CircleCI infrastructure.
-See [DeployCommands.php](../drush/Commands/DeployCommands.php).
-
 `drush ma:backstop-snapshot` will run Backstop and store the screenshots to be
 used later by `drush ma:backstop-compare` e.g.
 ```
@@ -90,6 +87,13 @@ If you want to run a specific branch you're working on to test changes, you can
 use the `--ci-branch` parameter.
 ```
 drush ma:ci:backstop-snapshot --target=prod --ci-branch=dp-26913-run-backstop-js-locally
+```
+
+To create new references and test them in the same job, you can force new reference
+images to be created by adding `--force-reference` e.g. to test changes you've been
+making to backstop related code:
+```
+drush ma:ci:backstop-compare --reference=prod --target=prod --force-reference --ci-branch=dp-26913-run-backstop-js-locally
 ```
 
 You can also run the tests using CircleCi's [local CLI](https://circleci.com/docs/local-cli/).

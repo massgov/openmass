@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_content\Plugin\views\field;
 
-use Drupal\views\ResultRow;
 use Drupal\views\Plugin\views\field\RenderedEntity;
+use Drupal\views\ResultRow;
 
 /**
  * Renders content or other entity type in a certain view mode.

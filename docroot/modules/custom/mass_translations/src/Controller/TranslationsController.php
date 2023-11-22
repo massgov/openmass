@@ -3,9 +3,9 @@
 namespace Drupal\mass_translations\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Language\Language;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Language\LanguageDefault;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;

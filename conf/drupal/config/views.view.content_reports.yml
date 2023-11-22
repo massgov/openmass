@@ -26,13 +26,12 @@ dependencies:
     - node.type.person
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
   module:
     - better_exposed_filters
     - content_moderation
     - csv_serialization
-    - mass_superset
+    - mass_bigquery
     - mass_views
     - node
     - rest
@@ -498,7 +497,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -837,7 +836,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
           group: 1
           exposed: true
           expose:
@@ -967,7 +965,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
           group: 1
           exposed: false
           expose:
@@ -1713,6 +1710,15 @@ display:
             date_format: short
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -2936,11 +2942,520 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      display_extenders: {  }
+      arguments: {  }
+      filters:
+        title:
+          id: title
+          table: node_field_data
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: views_autocomplete_filters_string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: title_op
+            label: Title
+            description: ''
+            use_operator: false
+            operator: title_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: title
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+            placeholder: ''
+            autocomplete_filter: 1
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: title
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        title_1:
+          id: title_1
+          table: node_field_data
+          field: title
+          relationship: field_organizations
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: views_autocomplete_filters_string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: title_1_op
+            label: 'Organization title'
+            description: ''
+            use_operator: false
+            operator: title_1_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: org_title
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+            placeholder: ''
+            autocomplete_filter: 1
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: title_1
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: in
+          value:
+            advisory: advisory
+            alert: alert
+            binder: binder
+            contact_information: contact_information
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            event: event
+            executive_order: executive_order
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            location: location
+            location_details: location_details
+            news: news
+            person: person
+            campaign_landing: campaign_landing
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+          group: 1
+          exposed: true
+          expose:
+            operator_id: type_op
+            label: 'Content type'
+            description: ''
+            use_operator: false
+            operator: type_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: type
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+            reduce: true
+          is_grouped: false
+          group_info:
+            label: 'Content type'
+            description: null
+            identifier: type
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items:
+              1: {  }
+              2: {  }
+              3: {  }
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: uid
+          plugin_id: user_name
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: uid_op
+            label: 'Authored by'
+            description: ''
+            use_operator: false
+            operator: uid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        type_1:
+          id: type_1
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: in
+          value:
+            advisory: advisory
+            binder: binder
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            event: event
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            news: news
+            person: person
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        status_1:
+          id: status_1
+          table: node_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        title_2:
+          id: title_2
+          table: node_field_data
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: views_autocomplete_filters_string
+          operator: not_starts
+          value: QAG
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        title_3:
+          id: title_3
+          table: node_field_data
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: views_autocomplete_filters_string
+          operator: not_starts
+          value: test
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        title_4:
+          id: title_4
+          table: node_field_data
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: views_autocomplete_filters_string
+          operator: not_starts
+          value: _qa
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      defaults:
+        arguments: false
+        filters: false
+        filter_groups: false
+      display_extenders:
+        metatag_display_extender: {  }
       path: admin/ma-dash/reports/organizations
       menu:
         type: none
-        title: 'Pages that don''t have a public organization'
+        title: "Pages that don't have a public organization"
         description: ''
         weight: 0
         expanded: false
@@ -3288,6 +3803,15 @@ display:
             date_format: short
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true

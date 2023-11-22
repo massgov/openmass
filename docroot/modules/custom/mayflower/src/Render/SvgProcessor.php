@@ -4,6 +4,7 @@ namespace Drupal\mayflower\Render;
 
 use Drupal\Core\Asset\AssetCollectionRendererInterface;
 use Drupal\Core\Asset\AssetResolverInterface;
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\EnforcedResponseException;
@@ -12,9 +13,8 @@ use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\Core\Render\HtmlResponseAttachmentsProcessor;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\views\Ajax\ViewAjaxResponse;
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\mayflower\Helper;
+use Drupal\views\Ajax\ViewAjaxResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**

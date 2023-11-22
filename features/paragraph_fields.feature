@@ -8,7 +8,7 @@ Feature: Paragraph type definitions
     Given I am logged in as a user with the "administrator" role
     Then the "action_area" paragraph has the fields:
       | field                 | widget             |
-      | field-area-action-ref | Paragraphs Classic |
+      | field-area-action-ref | Paragraphs Legacy |
 
     Then the "action_step" paragraph has the fields:
       | field                 | widget                    |
@@ -23,7 +23,7 @@ Feature: Paragraph type definitions
 
     Then the "action_step_numbered_list" paragraph has the fields:
       | field                            | widget                    |
-      | field-action-step-numbered-items | Paragraphs Classic        |
+      | field-action-step-numbered-items | Paragraphs Legacy        |
 
     Then the "action_set" paragraph has the fields:
       | field                  | widget                    |
@@ -45,7 +45,7 @@ Feature: Paragraph type definitions
 
     Then the "emergency_alert" paragraph has the fields:
       | field                           | widget             |
-      | field-emergency-alert-content   | Paragraphs Classic |
+      | field-emergency-alert-content   | Paragraphs Legacy |
       | field-emergency-alert-link      | Link               |
       | field-emergency-alert-message   | Textfield          |
 
@@ -60,7 +60,7 @@ Feature: Paragraph type definitions
 
     Then the "full_bleed" paragraph has the fields:
       | field                 | widget                    |
-      | field-full-bleed-ref  | Paragraphs Classic        |
+      | field-full-bleed-ref  | Paragraphs Legacy        |
 
     Then the "iframe" paragraph has the fields:
       | field               | widget         |
@@ -85,7 +85,7 @@ Feature: Paragraph type definitions
       | field-description                | Textfield                 |
       | field-link-six                   | Link                      |
       | field-title                      | Textfield                 |
-      | field-home-bckgrnd-img-paragraph | Paragraphs Classic        |
+      | field-home-bckgrnd-img-paragraph | Paragraphs Legacy        |
 
     Then the "homepage_background_images" paragraph has the fields:
       | field                            | widget                    |
@@ -122,7 +122,7 @@ Feature: Paragraph type definitions
     Then the "contact_group" paragraph has the fields:
       | field                      | widget              |
       | field-title                | Textfield           |
-      | field-contact-info         | Paragraphs Classic  |
+      | field-contact-info         | Paragraphs Legacy  |
       | field-contact-group-layout | Select list         |
 
     Then the "contact_info" paragraph has the fields:
@@ -162,7 +162,7 @@ Feature: Paragraph type definitions
 
     Then the "icon_links" paragraph has the fields:
       | field            | widget              |
-      | field-icon-link  | Paragraphs Classic  |
+      | field-icon-link  | Paragraphs Legacy  |
 
     Then the "icon_link" paragraph has the fields:
       | field                | widget      |
@@ -190,8 +190,8 @@ Feature: Paragraph type definitions
 
     Then the "section_long_form" paragraph has the fields:
       | field                             | widget              |
-      | field-section-long-form-addition  | Paragraphs Classic  |
-      | field-section-long-form-content   | Paragraphs Classic  |
+      | field-section-long-form-addition  | Paragraphs Legacy  |
+      | field-section-long-form-content   | Paragraphs Legacy  |
       | field-section-long-form-heading   | Textfield           |
 
     Then the "file_download_single" paragraph has the fields:

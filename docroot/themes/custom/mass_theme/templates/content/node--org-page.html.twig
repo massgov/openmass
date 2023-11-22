@@ -63,292 +63,104 @@
   {% endif %}
 
   {# Org Nav - "I want to..." tab contents. #}
-  {% set iWantToTabContents = false %}
-  {% if content.extra_org_nav_featured_services|render or
-    content.extra_org_nav_featured_topics|render or
-    content.field_application_login_links|render %}
-    {% set iWantToTabContents = true %}
-  {% endif %}
+{#  {% set iWantToTabContents = false %}#}
+{#  {% if content.extra_org_nav_featured_services|render or#}
+{#    content.extra_org_nav_featured_topics|render or#}
+{#    content.field_application_login_links|render %}#}
+{#    {% set iWantToTabContents = true %}#}
+{#  {% endif %}#}
 
   {# Org Nav - About tab contents. #}
-  {% set aboutTabContents = {} %}
-  {% set subtype = node.field_subtype_value %}
-  {% if subtype == 'Elected Official' and content.extra_org_nav_more_agency_link|render %}
-    {% set aboutTabContents = aboutTabContents|merge({ moreAgencyLink: content.extra_org_nav_more_agency_link }) %}
-  {% elseif node.field_more_about_agency_link is not empty %}
-    {% set aboutTabContents = aboutTabContents|merge({ moreAgencyLink: content.field_more_about_agency_link }) %}
-  {% endif %}
+{#  {% set aboutTabContents = {} %}#}
+{#  {% set subtype = node.field_subtype_value %}#}
+{#  {% if subtype == 'Elected Official' and content.extra_org_nav_more_agency_link|render %}#}
+{#    {% set aboutTabContents = aboutTabContents|merge({ moreAgencyLink: content.extra_org_nav_more_agency_link }) %}#}
+{#  {% elseif node.field_more_about_agency_link is not empty %}#}
+{#    {% set aboutTabContents = aboutTabContents|merge({ moreAgencyLink: content.field_more_about_agency_link }) %}#}
+{#  {% endif %}#}
 
-  {% if subtype == 'Boards' %}
-    {# Board members heading link with anchor to section (from Boards paragraph). #}
-    {% set boards_section_title = node.field_boards.entity.field_heading.value %}
-    {% if boards_section_title %}
-      {% set aboutTabContents = aboutTabContents|merge({ boardSectionTitle: boards_section_title }) %}
-    {% endif %}
-  {% elseif node.field_more_about_leadership is not empty %}
-    {% set aboutTabContents = aboutTabContents|merge({ moreAboutLeadership: content.field_more_about_leadership }) %}
-  {% endif %}
+{#  {% if subtype == 'Boards' %}#}
+{#    #}{# Board members heading link with anchor to section (from Boards paragraph). #}
+{#    {% set boards_section_title = node.field_boards.entity.field_heading.value %}#}
+{#    {% if boards_section_title %}#}
+{#      {% set aboutTabContents = aboutTabContents|merge({ boardSectionTitle: boards_section_title }) %}#}
+{#    {% endif %}#}
+{#  {% elseif node.field_more_about_leadership is not empty %}#}
+{#    {% set aboutTabContents = aboutTabContents|merge({ moreAboutLeadership: content.field_more_about_leadership }) %}#}
+{#  {% endif %}#}
 
-  {% if node.field_org_directory_page is not empty %}
-    {% set aboutTabContents = aboutTabContents|merge({ orgDirectoryPage: content.field_org_directory_page  }) %}
-  {% endif %}
+{#  {% if node.field_org_directory_page is not empty %}#}
+{#    {% set aboutTabContents = aboutTabContents|merge({ orgDirectoryPage: content.field_org_directory_page  }) %}#}
+{#  {% endif %}#}
 
-  {% if node.field_career_opportunities is not empty %}
-    {% set aboutTabContents = aboutTabContents|merge({ careerOpportunities: content.field_career_opportunities  }) %}
-  {% endif %}
+{#  {% if node.field_career_opportunities is not empty %}#}
+{#    {% set aboutTabContents = aboutTabContents|merge({ careerOpportunities: content.field_career_opportunities  }) %}#}
+{#  {% endif %}#}
 
   {# Org Nav - "Contact us" tab contents. #}
-  {% set contactUsTabContents = false %}
-  {% if content.extra_org_nav_contact_us|render or
-    node.field_org_directory_page is not empty or
-    node.field_get_updates_links is not empty or
-    node.field_public_records_link is not empty
-  %}
-    {% set contactUsTabContents = true %}
-  {% endif %}
+{#  {% set contactUsTabContents = false %}#}
+{#  {% if content.extra_org_nav_contact_us|render or#}
+{#    node.field_org_directory_page is not empty or#}
+{#    node.field_get_updates_links is not empty or#}
+{#    node.field_public_records_link is not empty#}
+{#  %}#}
+{#    {% set contactUsTabContents = true %}#}
+{#  {% endif %}#}
 
   {# Our Organizations. #}
-  {% set ourOrganizationsHasContent = false %}
-  {% if content.extra_org_nav_our_organizations is not empty %}
-    {% set ourOrganizationsHasContent = true %}
-  {% endif %}
+{#  {% set ourOrganizationsHasContent = false %}#}
+{#  {% if content.extra_org_nav_our_organizations is not empty %}#}
+{#    {% set ourOrganizationsHasContent = true %}#}
+{#  {% endif %}#}
 
-  {# News. #}
-  {% set newsHasContent = false %}
-  {% if content.extra_org_nav_news is not empty %}
-    {% set newsHasContent = true %}
-  {% endif %}
+{#  #}{# News. #}
+{#  {% set newsHasContent = false %}#}
+{#  {% if content.extra_org_nav_news is not empty %}#}
+{#    {% set newsHasContent = true %}#}
+{#  {% endif %}#}
 
-  {# Locations. #}
-  {% set locationsHasContent = false %}
-  {% if content.extra_org_nav_locations is not empty %}
-    {% set locationsHasContent = true %}
-  {% endif %}
+{#  #}{# Locations. #}
+{#  {% set locationsHasContent = false %}#}
+{#  {% if content.extra_org_nav_locations is not empty %}#}
+{#    {% set locationsHasContent = true %}#}
+{#  {% endif %}#}
 
-  {# Events. #}
-  {% set eventsHasContent = false %}
-  {% if content.extra_org_nav_events is not empty %}
-    {% set eventsHasContent = true %}
-  {% endif %}
+{#  #}{# Events. #}
+{#  {% set eventsHasContent = false %}#}
+{#  {% if content.extra_org_nav_events is not empty %}#}
+{#    {% set eventsHasContent = true %}#}
+{#  {% endif %}#}
 
-  {% set orgNavTabs = [
-    iWantToTabContents,
-    aboutTabContents,
-    contactUsTabContents,
-    ourOrganizationsHasContent,
-    newsHasContent,
-    locationsHasContent,
-    eventsHasContent,
-  ] %}
+{#  {% set orgNavTabs = [#}
+{#    iWantToTabContents,#}
+{#    aboutTabContents,#}
+{#    contactUsTabContents,#}
+{#    ourOrganizationsHasContent,#}
+{#    newsHasContent,#}
+{#    locationsHasContent,#}
+{#    eventsHasContent,#}
+{#  ] %}#}
 
-  {% set itemsWithContent = 0 %}
-  {% for item in orgNavTabs if itemsWithContent < 2 %}
-    {% if item %}
-      {% set itemsWithContent = itemsWithContent + 1 %}
-    {% endif %}
-  {% endfor %}
+{#  {% set itemsWithContent = 0 %}#}
+{#  {% for item in orgNavTabs %}#}
+{#    {% if itemsWithContent < 2 %}#}
+{#      {% if item %}#}
+{#        {% set itemsWithContent = itemsWithContent + 1 %}#}
+{#      {% endif %}#}
+{#    {% endif %}#}
+{#  {% endfor %}#}
 
-  {# Only show org sub nav if there are at least 2 items with content. #}
-  {% if itemsWithContent >= 2 %}
-    {% embed "@organisms/by-template/organization-navigation.twig" with {
-      organizationNavigation: {
-        orgNavTitle: node.label,
-        orgNavAbbrev: '',
-        orgId: slugified_title,
-        orgSearch: true,
-        orgNav: [
-          {
-            title: 'I want to'|t ~ '...',
-            section: 'i-want-to',
-            subNav: iWantToTabContents,
-          },
-          {
-            title: 'About'|t,
-            section: 'about',
-            subNav: aboutTabContents is not empty,
-          },
-          {
-            title: 'Contact us'|t,
-            section: 'contact-us',
-            subNav: contactUsTabContents,
-          },
-        ],
-      },
-    } %}
-      {% block iWantToTab %}
-        <div class="ma__organization-navigation__subitem">
-          {% embed "@organisms/by-template/org-nav-i-want-to-menu.twig" %}
-            {% block findService %}
-              {% if content.extra_org_nav_featured_services|render %}
-                <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__findService">
-                  {% if content.extra_org_nav_featured_services|render is not empty %}
-                    {# Display the links from "Featured Services". #}
-                    {{ content.extra_org_nav_featured_services }}
-                  {% endif %}
-                </div>
-              {% endif %}
-            {% endblock %}
+  {% embed "@organisms/by-template/organization-navigation.twig" with {
+    organizationNavigation: {
+      orgNavTitle: node.label,
+      orgNavAbbrev: '',
+      orgId: slugified_title,
+      orgSearch: true,
+      orgNav: org_nav
+    },
+  } %}
+  {% endembed %}
 
-            {% block learnAbout %}
-              {% if content.extra_org_nav_featured_topics|render %}
-                <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__learnAbout">
-                  {% include '@atoms/04-headings/comp-heading.twig' with {
-                    compHeading: {
-                      title: 'Learn more about'|t ~ '...',
-                      sub: true,
-                    },
-                  } %}
-                  <div class="ma__link-list__container">
-                    <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                      {{ content.extra_org_nav_featured_topics }}
-                    </ul>
-                  </div>
-                </div>
-              {% endif %}
-            {% endblock %}
-
-            {% block login %}
-              {% if node.field_application_login_links is not empty %}
-                <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__login">
-                  {{ content.extra_org_nav_application_login_links }}
-                </div>
-              {% endif %}
-            {% endblock %}
-
-          {% endembed %}
-        </div>
-      {% endblock %}
-
-      {% block aboutTab %}
-        <div class="ma__organization-navigation__subitem">
-          {% embed "@organisms/by-author/link-list.twig" with {
-            linkList: {
-              hideBullets: true,
-            },
-          } %}
-            {% block linkListDecorativeLink %}
-              {{ aboutTabContents.moreAgencyLink }}
-
-              {% if aboutTabContents.boardSectionTitle %}
-                <li class="ma__link-list__item">
-                  {% include "@atoms/decorative-link.twig" with {
-                    decorativeLink: {
-                      text: aboutTabContents.boardSectionTitle,
-                      href: '#board-members',
-                    },
-                  } %}
-                </li>
-              {% else %}
-                {{ aboutTabContents.moreAboutLeadership }}
-              {% endif %}
-
-              {{ aboutTabContents.orgDirectoryPage }}
-              {{ aboutTabContents.careerOpportunities }}
-            {% endblock %}
-          {% endembed %}
-        </div>
-      {% endblock %}
-
-      {% block contactTab %}
-        {% set findContact = {} %}
-        {% if node.field_org_directory_page is not empty %}
-          {% set findContact = {
-            link: {
-              href: true,
-            },
-          }  %}
-        {% endif %}
-
-        {% set newsletter = {} %}
-        {% if node.field_get_updates_links is not empty %}
-          {% set newsletter = {
-            link: {
-              href: true,
-            },
-          }  %}
-        {% endif %}
-
-        {% set publicRecords = {} %}
-        {% if node.field_public_records_link is not empty %}
-          {% set publicRecords = {
-            link: {
-              href: true,
-            },
-          }  %}
-        {% endif %}
-        <div class="ma__organization-navigation__subitem">
-          {% embed '@organisms/by-template/org-nav-contact-menu.twig' with {
-            customItems: {
-              findContact: findContact,
-              newsletter: newsletter,
-              publicRecords: publicRecords,
-            },
-          } %}
-            {# Top contact row here. #}
-            {% block contactTopRow %}
-              {% set compHeading = {
-                title: node.label,
-              } %}
-              {% include "@atoms/04-headings/comp-heading.twig" %}
-              {{ content.extra_org_nav_contact_us }}
-            {% endblock %}
-
-            {# Bottom row. #}
-            {% block findContact %}
-              {% if node.field_org_directory_page is not empty %}
-                <div class="custom-options__find-contact custom-option-item">
-                  <span class="custom-option-item__label">
-                  {{ icon('search') }} {{ 'Find a contact'|t }}
-                </span>
-                  <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                    {% for key,value in node.field_org_directory_page.value %}
-                      <li class="ma__link-list__item">
-                        {{ content.field_org_directory_page[key] }}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              {% endif %}
-            {% endblock %}
-
-            {% block getUpdates %}
-              {% if node.field_get_updates_links is not empty %}
-                <div class="custom-options__get-updates custom-option-item">
-                  <span class="custom-option-item__label">
-                    {{ icon('alert') }} {{ 'Get updates'|t }}
-                  </span>
-                  <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                    {% for key,value in node.field_get_updates_links.value %}
-                      <li class="ma__link-list__item">
-                        {{ content.field_get_updates_links[key] }}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              {% endif %}
-            {% endblock %}
-
-            {% block recordsRequest %}
-              {% if node.field_public_records_link is not empty %}
-                <div class="custom-options__prr custom-option-item">
-                  <span class="custom-option-item__label">
-                    {{ icon('lg-scroll') }} {{ 'Public records request'|t }}
-                  </span>
-                  <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                    {% for key,value in node.field_public_records_link.value %}
-                      <li class="ma__link-list__item">
-                        {{ content.field_public_records_link[key] }}
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </div>
-              {% endif %}
-            {% endblock %}
-          {% endembed %}
-        </div>
-      {% endblock %}
-    {% endembed %}
-  {% endif %}
 {% endblock %}
 
 {% block main %}
@@ -362,6 +174,64 @@
       {% endif %}
       {% block pageContent %}
         {{ content.field_organization_sections }}
+
+        {% if node.field_more_about_agency_link is not empty
+          or node.field_more_about_leadership is not empty
+          or node.field_org_directory_page is not empty
+          or node.field_career_opportunities is not empty
+          or node.field_get_updates_links is not empty
+          or node.field_public_records_link is not empty
+        %}
+          {% set heading = {
+            "title": node.title.value ~ ' information',
+            "id": "",
+            "borderless": true
+          } %}
+          {% embed "@organisms/by-author/stacked-row-section.twig" with {
+            "stackedRowSection": heading,
+            "stackedRow": {
+              "borderless": true,
+              "modifier" : "no-sidebar"
+            },
+            "externalSidebar": true
+          } %}
+            {% block stackedRowContentOverride %}
+              <section class="ma__link-list">
+                <div class="ma__link-list__container">
+                  <ul class="ma__link-list__items ma__link-list__items">
+                    {{ content.field_more_about_agency_link }}
+                    {{ content.field_more_about_leadership }}
+                    {{ content.field_org_directory_page }}
+
+                    {% if node.field_career_opportunities is not empty %}
+                      <li class="ma__link-list__item">
+                        {{ content.field_career_opportunities }}
+                      </li>
+                    {% endif %}
+
+                    {% if node.field_get_updates_links is not empty %}
+                      {% for key,value in node.field_get_updates_links.value %}
+                        <li class="ma__link-list__item">
+                          {{ content.field_get_updates_links[key] }}
+                        </li>
+                      {% endfor %}
+                    {% endif %}
+
+                    {% if node.field_public_records_link is not empty %}
+                      {% for key,value in node.field_public_records_link.value %}
+                        <li class="ma__link-list__item">
+                          {{ content.field_public_records_link[key] }}
+                        </li>
+                      {% endfor %}
+
+                    {% endif %}
+                  </ul>
+                </div>
+              </section>
+            {% endblock %}
+          {% endembed %}
+        {% endif %}
+
       {% endblock %}
     </div>
   </div>

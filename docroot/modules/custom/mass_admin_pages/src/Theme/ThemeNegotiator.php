@@ -3,8 +3,8 @@
 namespace Drupal\mass_admin_pages\Theme;
 
 use Drupal\Core\Routing\RouteMatchInterface;
-use Symfony\Component\Routing\Route;
 use Drupal\Core\Theme\ThemeNegotiatorInterface;
+use Symfony\Component\Routing\Route;
 
 /**
  * A basic Theme Negotiator.

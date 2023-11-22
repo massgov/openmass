@@ -8,8 +8,8 @@ namespace Drupal\mass_validation\Plugin\Validation\Constraint;
  */
 
 use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
-use Drupal\node\Entity\NodeType;
 use Drupal\field\Entity\FieldConfig;
+use Drupal\node\Entity\NodeType;
 use Drupal\paragraphs\Entity\ParagraphsType;
 
 /**

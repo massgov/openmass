@@ -12,17 +12,10 @@ dependencies:
     - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
-    - field.field.node.topic_page.field_topic_bg_narrow
-    - field.field.node.topic_page.field_topic_bg_wide
     - field.field.node.topic_page.field_topic_content_cards
-    - field.field.node.topic_page.field_topic_display_links
     - field.field.node.topic_page.field_topic_lede
     - field.field.node.topic_page.field_topic_metatags
-    - field.field.node.topic_page.field_topic_ref_icon
     - field.field.node.topic_page.field_topic_ref_related_topics
-    - field.field.node.topic_page.field_topic_section_bg_narrow
-    - field.field.node.topic_page.field_topic_section_bg_wide
-    - field.field.node.topic_page.field_topic_type
     - node.type.topic_page
   module:
     - entity_reference_revisions
@@ -99,14 +92,6 @@ content:
     third_party_settings: {  }
     weight: 13
     region: content
-  field_topic_ref_icon:
-    type: entity_reference_label
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    weight: 3
-    region: content
   field_topic_ref_related_topics:
     type: entity_reference_label
     label: above
@@ -133,11 +118,5 @@ hidden:
   field_restrict_link_management: true
   field_reusable_label: true
   field_short_title: true
-  field_topic_bg_narrow: true
-  field_topic_bg_wide: true
-  field_topic_display_links: true
   field_topic_ref_content_cards: true
-  field_topic_section_bg_narrow: true
-  field_topic_section_bg_wide: true
-  field_topic_type: true
   langcode: true

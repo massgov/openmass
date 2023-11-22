@@ -1,28 +1,22 @@
 <?php
 
-use Drupal\Core\Entity\EntityTypeInterface;
-/**
- * @file
- * Contains mass_fields.module.
- */
-
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
-use Drupal\Core\Entity\EntityPublishedInterface;
-use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Url;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_entity_insert().
@@ -90,8 +84,13 @@ function mass_fields_get_tags_from_references(ContentEntityInterface $entity) {
     if ($field_items instanceof EntityReferenceFieldItemListInterface) {
 
       $referenced = array_merge($referenced, array_filter($field_items->referencedEntities(), function ($referencedEntity) {
+        if ($referencedEntity->bundle() === 'org_page') {
+          // These nodes are referenced by many pages, so lets not do such a wide cache invalidation.
+          return FALSE;
+        }
+
         // All referenced nodes are cleared.
-        if ($referencedEntity->getEntityTypeId() === 'node') {
+        if (in_array($referencedEntity->getEntityTypeId(), ['media', 'node'])) {
           return TRUE;
         }
         // All referenced label terms are cleared. We use these to build dynamic
@@ -299,15 +298,9 @@ function mass_fields_entity_base_field_info(EntityTypeInterface $entity_type) {
  * @see https://chromatichq.com/insights/dynamic-default-and-allowed-values-list-fields-drupal-8/
  */
 function mass_fields_search_default_value(ContentEntityInterface $entity) {
-  $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
-  $default = FALSE;
-  if (!$settings[$entity->getEntityTypeId()][$entity->bundle()]['index']) {
-    // Bundle is not part of the sitemap so turn on 'Exclude from content'.
-    $default = TRUE;
-  }
-
+  $is_indexed = \Drupal::service('simple_sitemap.generator')->entityManager()->bundleIsIndexed($entity->getEntityTypeId(), $entity->bundle());
   return [
-    ['value' => $default],
+    ['value' => !$is_indexed],
   ];
 }
 
@@ -790,40 +783,20 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
 
   /** @var ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
-  $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
+  $is_indexed = \Drupal::service('simple_sitemap.generator')->entityManager()->bundleIsIndexed($entity->getEntityTypeId(), $entity->bundle());
   $form['search_status'] = [
     '#type' => 'details',
     '#group' => 'advanced',
     '#open' => FALSE,
     '#title' => t('Search status'),
     '#weight' => 55,
-    '#access' => $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
+    '#access' => $is_indexed,
   ];
   // Copy the checkbox field into the advanced group.
   $form['search_status']['search'] = $form['search'];
 
   // Remove the original checkbox in the main section.
   unset($form['search']);
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * Block access to add "Callout Link" and "Card Group" paragraphs on the
- * info details node form unless the user is specially permissioned.
- */
-function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInterface $form_state) {
-  _mass_fields_info_details_enable_flag($form, $form_state);
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * Hide the field_details_enable_fields field on the info_details
- * node form for users without permission.
- */
-function mass_fields_form_node_info_details_form_alter(&$form, FormStateInterface $form_state) {
-  _mass_fields_info_details_enable_flag($form, $form_state);
 }
 
 /**
@@ -897,64 +870,16 @@ function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInter
 }
 
 /**
- * Helper function to avoid duplicate codes.
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
-function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_state) {
-  $restricted_types = [
-    'callout_link',
-    'info_details_card_group',
-  ];
-  $user = \Drupal::currentUser();
-  if (!$user->hasPermission('enable info details fields')) {
-    $form['field_details_enable_fields']['#access'] = FALSE;
-  }
-
-  if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
-    // Load the node and get field value form here
-    // to avoid loading it inside loop multiple times.
-    if (!empty($form_state->getFormObject()->getEntity())) {
-      $enabled_status = FALSE;
-      $node = $form_state->getFormObject()->getEntity()->toArray();
-      if (!empty($node['field_details_enable_fields'][0]['value']) && $node['field_details_enable_fields'][0]['value'] == 1) {
-        $enabled_status = TRUE;
-      }
-    }
-    foreach (Element::children($form['field_info_details_sections']['widget']) as $key) {
-      if (isset($form['field_info_details_sections']['widget'][$key]['subform'])) {
-        $subform =& $form['field_info_details_sections']['widget'][$key]['subform'];
-        foreach ($restricted_types as $restricted_type) {
-          $add_more_container =& $subform['field_section_long_form_content']['widget']['add_more'];
-          if (isset($add_more_container["add_more_button_{$restricted_type}"])) {
-            $result = AccessResult::allowedIfHasPermission(\Drupal::currentUser(), 'enable info details fields');
-            if (isset($add_more_container['#access'])) {
-              $result = $result->andIf($add_more_container['#access']);
-            }
-            if ($result->isAllowed()) {
-              $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
-            }
-            elseif (isset($enabled_status)) {
-              // Return field value as a result to determine
-              // access to the other fields.
-              $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $enabled_status;
-            }
-          }
-        }
-      }
-    }
-  }
-}
-
-/**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
- */
-function mass_fields_field_widget_entity_reference_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
+function mass_fields_field_widget_single_element_entity_reference_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
-function mass_fields_field_widget_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
+function mass_fields_field_widget_single_element_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
 }
 
@@ -966,91 +891,189 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
 
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_header' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
-    $paragraph_type = $paragraph_instance->bundle();
-    // Determine which paragraph type is being embedded.
-    switch ($paragraph_type) {
-      case 'collection_search':
-        $dependee_field_name = 'field_search_type';
-        $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
-          $element['#field_parents'][0],
-          $element['#field_parents'][1],
-          $paragraph_entity_reference_field_name,
-          $element['#delta'],
-          $dependee_field_name);
-
-        if ($paragraph_entity_reference_field_name == 'field_sections') {
-          $selector = sprintf('select[name="%s[%d][subform][%s]"]',
+    if ($paragraph_instance) {
+      $paragraph_type = $paragraph_instance->bundle();
+      // Determine which paragraph type is being embedded.
+      switch ($paragraph_type) {
+        case 'key_message':
+          $dependee_field_name = 'field_background_type';
+          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          $element['subform']['field_background_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'color'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'image'],
+            ],
+          ];
+          $element['subform']['field_text_overlay_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
+          break;
+        case 'org_section_long_form':
+          $dependee_field_name = 'field_hide_heading';
+          $selector = sprintf('input[name="%s[%d][subform][%s][value]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          $element['subform']['field_hide_in_org_navigation']['#states'] = [
+            'invisible' => [
+              $selector => ['checked' => TRUE],
+            ],
+          ];
+          $element['subform']['field_org_navigation_jump_link_t']['#states'] = [
+            'invisible' => [
+              $selector => ['checked' => TRUE],
+            ],
+          ];
+          break;
+        case 'flexible_link_group':
+          $dependee_field_name = 'field_display_type';
+          $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
+            $element['#field_parents'][0],
+            $element['#field_parents'][1],
             $paragraph_entity_reference_field_name,
             $element['#delta'],
             $dependee_field_name);
-        }
+          // Dependent fields.
+          $element['subform']['field_featured']['#states'] = [
+            'invisible' => [
+              $selector => ['value' => 'links'],
+            ],
+          ];
+          $element['subform']['field_group_expanded']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'links'],
+            ],
+          ];
+          $element['subform']['field_flexible_link_group_title']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'links'],
+            ],
+          ];
+          break;
+        case 'collection_search':
+          $dependee_field_name = 'field_search_type';
+          $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
+            $element['#field_parents'][0],
+            $element['#field_parents'][1],
+            $paragraph_entity_reference_field_name,
+            $element['#delta'],
+            $dependee_field_name);
 
-        // Dependent fields.
-        $element['subform']['field_collection']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'collection'],
-          ],
-          'required' => [
-            $selector => ['value' => 'collection'],
-          ],
-        ];
+          if ($paragraph_entity_reference_field_name == 'field_sections') {
+            $selector = sprintf('select[name="%s[%d][subform][%s]"]',
+              $paragraph_entity_reference_field_name,
+              $element['#delta'],
+              $dependee_field_name);
+          }
 
-        // Dependent fields.
-        $element['subform']['field_search_site_url']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'external'],
-          ],
-          'required' => [
-            $selector => ['value' => 'external'],
-          ],
-        ];
+          // Dependent fields.
+          $element['subform']['field_collection']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'collection'],
+            ],
+            'required' => [
+              $selector => ['value' => 'collection'],
+            ],
+          ];
 
-        // Dependent fields.
-        $element['subform']['field_search_query_param_name']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'external'],
-          ],
-          'required' => [
-            $selector => ['value' => 'external'],
-          ],
-        ];
-        break;
+          // Dependent fields.
+          $element['subform']['field_search_site_url']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'external'],
+            ],
+            'required' => [
+              $selector => ['value' => 'external'],
+            ],
+          ];
 
-      case 'key_message_section':
-        $dependee_field_name = 'field_background_type';
-        $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          // Dependent fields.
+          $element['subform']['field_search_query_param_name']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'external'],
+            ],
+            'required' => [
+              $selector => ['value' => 'external'],
+            ],
+          ];
+          break;
 
-        // Dependent fields.
-        $element['subform']['field_image']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'image'],
-          ],
-          'required' => [
-            $selector => ['value' => 'image'],
-          ],
-        ];
+        case 'iframe':
+          $dependee_field_name = 'field_iframe_height_config';
+          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
 
-        $element['subform']['field_section_background_color']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'color'],
-          ],
-          'required' => [
-            $selector => ['value' => 'color'],
-          ],
-        ];
+          // Dependent fields.
+          $element['subform']['field_verify_iframe_100_confirm']['widget']['value']['#states'] = [
+            'required' => [
+              $selector => ['value' => '100'],
+            ],
+          ];
+          $element['subform']['field_verify_iframe_100_confirm']['#states'] = [
+            'visible' => [
+              $selector => ['value' => '100'],
+            ],
+          ];
+          $element['subform']['field_aspect_ratio']['widget']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'ratio'],
+            ],
+          ];
+          $element['subform']['field_aspect_ratio']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'ratio'],
+            ],
+          ];
 
-        $element['subform']['field_section_text_overlay_color']['#states'] = [
-          'visible' => [
-            $selector => ['value' => 'image'],
-          ],
+          $element['subform']['field_height']['widget'][0]['value']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'fixed'],
+            ],
+          ];
+          $element['subform']['field_height']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'fixed'],
+            ],
+          ];
+          break;
+        case 'key_message_section':
+          $dependee_field_name = 'field_background_type';
+          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
 
-        ];
-        break;
+          // Dependent fields.
+          $element['subform']['field_image']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'required' => [
+              $selector => ['value' => 'image'],
+            ],
+          ];
 
+          $element['subform']['field_section_background_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'color'],
+            ],
+            'required' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
+
+          $element['subform']['field_section_text_overlay_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+
+          ];
+          break;
+
+      }
     }
   }
 }

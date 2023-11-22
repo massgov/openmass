@@ -16,7 +16,7 @@ The following tests are included in the CircleCI workflow automatically each tim
 
 To run these tests locally:
 
-- Run all [Behat](http://behat.org) tests: `ahoy exec behat`
+- Run all [Behat](http://behat.org) tests: `ddev exec behat`
 
   To run a single Behat test:
 
@@ -24,9 +24,9 @@ To run these tests locally:
   1. Run `docker-compose exec drupal vendor/bin/behat --tags=@cool`
   1. Locally, debug files are saved to `/tmp` (they start with `behat*`). These same files are uploaded as Artifacts in CircleCI.
 
-- Run all [PHPUnit](https://phpunit.de/) tests: `ahoy exec phpunit docroot/modules/custom`
+- Run all [PHPUnit](https://phpunit.de/) tests: `ddev exec phpunit docroot/modules/custom`
 
-- Run all tests (Behat & PHPUnit): `ahoy exec scripts/ma-test`
+- Run all tests (Behat & PHPUnit): `ddev exec scripts/ma-test`
 
 Pass the --help option to learn the arguments and options for each tool.
 
@@ -39,7 +39,7 @@ To run these tests locally:
 ### Nightcrawler
 
 ```
-ahoy nightcrawler crawl --samples=50
+ddev nightcrawler crawl --samples=50
 
 ### Sample size should be between 40-60 for a branch
 ```
@@ -94,5 +94,7 @@ The ideal case is that Product Owners and developers jointly describe new featur
 ## Tips
 
 - Robust tests create and delete their own content. Relying on production content is brittle.
+- Randomness in tests is non-desireable, as it can cause a situation where a failing test will pass on re-run.
 - Do not break up your tests in to too many classes and methods. Each one has a startup cost and contributes to long test times for the whole suite.
 - Do not change a test that is failing for an unknown reason. Tests are supposed to fail when new work has a negative impact. Don't change a test until you have investigated and understood what purpose the test serves and are confident your new work and any test changes are an improvement.
+- Scheduled tests are managed on the [CircleCI triggers page](https://app.circleci.com/settings/project/github/massgov/openmass/triggers).

@@ -10,9 +10,6 @@ use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
-/**
- * Service Details translation tests.
- */
 class DocumentTranslationTest extends ExistingSiteBase {
 
   use MediaCreationTrait;

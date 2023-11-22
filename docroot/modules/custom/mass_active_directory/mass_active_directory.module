@@ -5,7 +5,7 @@ use Drupal\Core\Form\FormStateInterface;
 function mass_active_directory_form_openid_connect_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['preamble-ad'] = [
     '#weight' => -10,
-    '#markup' => t('Log in with Azure Active Directory using the same credentials most state users have for their primary email login.')
+    '#markup' => t('Log in with Azure Active Directory using the same credentials most state users have for their primary email login.'),
   ];
   $form['openid_connect_client_azure_ad_login']['#attributes']['class'][] = 'ma__button';
   $form["openid_connect_client_azure_ad_login"]["#value"] = t('Log in');

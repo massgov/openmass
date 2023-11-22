@@ -6,8 +6,6 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Queue\RequeueException;
-use Drupal\Core\Queue\SuspendQueueException;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -62,7 +60,7 @@ function mass_content_api_crud(EntityInterface $node) {
     'decision_tree_conclusion',
   ];
   if (in_array($node->bundle(), $types)) {
-    /* @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+    /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
     $descendant_manager = \Drupal::getContainer()->get('descendant_manager');
     $descendant_manager->index($node);
   }
@@ -81,7 +79,7 @@ function mass_content_api_crud(EntityInterface $node) {
  * take to edit the dependency settings.
  */
 function mass_content_api_form_node_type_form_alter(&$form, FormStateInterface $form_state) {
-  /* @var $node \Drupal\node\NodeInterface */
+  /** @var \Drupal\node\NodeInterface $node */
   $node = $form_state->getFormObject()->getEntity();
   $config_name = $node->getConfigDependencyName();
   $bundle = $node->get('type');

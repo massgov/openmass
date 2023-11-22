@@ -4,9 +4,8 @@ namespace Drupal\mass_map;
 
 use Drupal\Core\Link;
 use Drupal\mayflower\Helper;
-use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\node\Entity\Node;
-use Drupal\node\Entity;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Class MapLocationFetcher.
@@ -42,11 +41,11 @@ class MapLocationFetcher {
           'name' => 'filter-by-location',
           'type' => 'text',
           'placeholder' => 'City, town, or ZIP code',
-          'errorMsg' => 'Please select an address in the suggesions. Hit ENTER or start typing to show suggesions.'
+          'errorMsg' => 'Please select an address in the suggestions. Hit ENTER or start typing to show suggestions.',
         ],
       ],
       'tags' => [
-        // @TODO consider making this configurable
+        // @todo consider making this configurable
         [
           'value' => 'wheelchair',
           'id' => 'wheelchair',
@@ -85,7 +84,7 @@ class MapLocationFetcher {
 
     // Scaffold the googleMap data structure (markers added later).
     // See: @molecules/google-map.md
-    // @TODO consider making this configurable
+    // @todo consider making this configurable
     $locations['googleMap']['map']['zoom'] = 16;
     $locations['googleMap']['map']['center'] = [
       'lat' => '42.4072107',
@@ -148,7 +147,7 @@ class MapLocationFetcher {
       ];
 
       // Get location listing page overview.
-      // @TODO use a field map array
+      // @todo use a field map array
       $overview = '';
       if (!empty($node->field_lede->value)) {
         $overview = Helper::fieldFullView($node, 'field_lede');
@@ -210,7 +209,7 @@ class MapLocationFetcher {
           }
 
           // For filterable icon/term types, create a tag.
-          // @TODO consider making the accepted values configurable.
+          // @todo consider making the accepted values configurable.
           if (in_array($sprite, ['wheelchair', 'open-now'])) {
             $title = $term->getName();
             $tags[] = [
@@ -230,7 +229,7 @@ class MapLocationFetcher {
         'text' => "Directions",
         'href' => 'https://www.google.com/maps/place/' . $locations['imagePromos']['items'][$key]['location']['text'],
         'type' => "external",
-        'info' => ''
+        'info' => '',
       ];
 
       if (isset($node->field_ref_contact_info_1) && !$node->field_ref_contact_info_1->isEmpty()) {

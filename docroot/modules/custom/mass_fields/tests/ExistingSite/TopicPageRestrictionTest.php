@@ -27,7 +27,6 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
     return [
       '#edit-title-0-value',
       '#edit-field-topic-lede-0-value',
-      '#edit-field-topic-ref-icon',
       '#edit-field-topic-ref-related-topics-0-target-id',
     ];
   }
@@ -112,8 +111,8 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
           'field_content_card_link_cards' => [
             'uri' => 'http://test.card',
             'title' => 'Test Card',
-          ]
-        ])
+          ],
+        ]),
       ],
       'status' => 1,
       'moderation_state' => 'published',

@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_event\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaImageObjectBase;
 use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
@@ -15,12 +15,17 @@ use Drupal\schema_metatag\SchemaMetatagManager;
  *   name = "image",
  *   group = "schema_event",
  *   weight = 1,
- *   type = "string",
+ *   type = "image",
  *   secure = FALSE,
- *   multiple = TRUE
+ *   multiple = TRUE,
+ *   property_type = "image_object",
+ *   tree_parent = {
+ *     "ImageObject",
+ *   },
+ *   tree_depth = 0
  * )
  */
-class SchemaEventImage extends SchemaImageBase {
+class SchemaEventImage extends SchemaImageObjectBase {
 
   /**
    * Generate a form element for this meta tag.
@@ -34,7 +39,7 @@ class SchemaEventImage extends SchemaImageBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array {
     $value = SchemaMetatagManager::recomputeSerializedLength($this->value());
     $value = unserialize($value);
     $value = array_merge($value, [
@@ -49,7 +54,7 @@ class SchemaEventImage extends SchemaImageBase {
       $images = SchemaMetatagManager::unserialize($this->value());
 
       if (empty($images['url'])) {
-        return '';
+        return [];
       }
 
       $images = explode(', ', $images['url']);

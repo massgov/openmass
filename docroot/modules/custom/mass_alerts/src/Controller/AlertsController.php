@@ -23,6 +23,10 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
   const DURATION_PAGE = 900;
   const DURATION_SITE = 60;
 
+  private DateFormatterInterface $dateFormatter;
+
+  private Renderer $renderer;
+
   /**
    * Constructs a ApiController object.
    *
@@ -143,8 +147,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         'max-age' => self::DURATION_SITE,
         'tags' => [
           MASS_ALERTS_TAG_GLOBAL,
-          MASS_ALERTS_TAG_SITEWIDE . ':list'
-        ]
+          MASS_ALERTS_TAG_SITEWIDE . ':list',
+        ],
       ],
     ];
 
@@ -177,7 +181,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         'text' => 'Notices & Alerts',
         'hideText' => 'Hide',
         'showText' => 'Expand',
-      ]
+      ],
     ];
 
     $nodeStorage = $this->entityTypeManager()->getStorage('node');
@@ -304,7 +308,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
                   'text' => $content,
                   'info' => $this->t('Learn more @label', ['@label' => $label]),
                   'property' => '',
-                ]
+                ],
               ];
             }
             else {
@@ -318,7 +322,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
                       ],
                     ],
                   ],
-                ]
+                ],
               ];
             }
           }

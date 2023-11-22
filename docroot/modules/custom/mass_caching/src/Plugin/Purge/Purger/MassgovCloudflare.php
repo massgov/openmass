@@ -3,8 +3,8 @@
 namespace Drupal\mass_caching\Plugin\Purge\Purger;
 
 use CloudFlarePhpSdk\ApiEndpoints\ZoneApi;
-use Drupal\Core\State\StateInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Purger\PurgerBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -151,7 +151,7 @@ class MassgovCloudflare extends PurgerBase {
    * state write per request that has invalidations seems unlikely to cause a
    * meltdown.
    *
-   * @todo: Remove this once and clean up state we've collected our data.
+   * @todo Remove this once and clean up state we've collected our data.
    */
   private function incrementInvalidations(string $type, int $count) {
     $stateKey = "mass.cloudflare.${type}.counts";

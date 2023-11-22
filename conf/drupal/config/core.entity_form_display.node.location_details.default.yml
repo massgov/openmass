@@ -203,6 +203,11 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  simple_sitemap:
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   title:
     type: string_textfield
     weight: -5
@@ -214,7 +219,7 @@ content:
       maxlength:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
-        maxlength_js_enforce_attribute: false
+        maxlength_js_enforce: false
   uid:
     type: entity_reference_autocomplete
     weight: 0

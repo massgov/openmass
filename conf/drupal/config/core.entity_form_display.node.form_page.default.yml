@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.form_page.field_form_listing_desc
     - field.field.node.form_page.field_form_ref_contacts_3
     - field.field.node.form_page.field_form_you_will
+    - field.field.node.form_page.field_hide_feedback_component
     - field.field.node.form_page.field_intended_audience
     - field.field.node.form_page.field_metatags
     - field.field.node.form_page.field_organizations
@@ -50,6 +51,7 @@ third_party_settings:
         - field_form_you_will
         - field_form_ref_contacts_3
         - field_form_embed
+        - field_hide_feedback_component
         - field_primary_parent
         - field_organizations
         - field_intended_audience
@@ -75,7 +77,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 20
+    weight: 21
     region: content
     settings:
       theme: default
@@ -93,7 +95,7 @@ content:
     third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 18
+    weight: 19
     region: content
     settings:
       match_operator: CONTAINS
@@ -159,9 +161,16 @@ content:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_hide_feedback_component:
+    type: boolean_checkbox
+    weight: 14
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 16
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -174,7 +183,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 15
+    weight: 16
     region: content
     settings:
       match_operator: CONTAINS
@@ -184,7 +193,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 14
+    weight: 15
     region: content
     settings:
       match_operator: CONTAINS
@@ -195,7 +204,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 19
+    weight: 20
     region: content
     settings:
       match_operator: CONTAINS
@@ -213,7 +222,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 17
+    weight: 18
     region: content
     settings:
       include_locked: false
@@ -255,6 +264,11 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  simple_sitemap:
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   title:
     type: string_textfield
     weight: 7
@@ -266,7 +280,7 @@ content:
       maxlength:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
-        maxlength_js_enforce_attribute: false
+        maxlength_js_enforce: false
   uid:
     type: entity_reference_autocomplete
     weight: 0

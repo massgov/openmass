@@ -1,77 +1,65 @@
+module.exports = async (page, scenario, viewport, isReference, browserContext) => {
+  const banned = [
+    'www.googletagmanager.com',
+    'script.crazyegg.com',
+    'www.google-analytics.com',
+    'js-agent.newrelic.com',
+    'translate.google.com',
+    'foresee.com',
+    'www.youtube.com',
+    'bam.nr-data.net',
+    'maps.googleapis.com',
+    '9p83os0fkf.execute-api.us-east-1.amazonaws.com/v1/waittime',
+    'player.vimeo.com',
+    'https://massgov.github.io/FWE/PondMaps/dfw-pond-maps-table.html',
+  ];
+  await page.route('**/*', (route) => {
+    const url = route.request().url();
+    const matches = banned.filter(ban => url.includes(ban));
+    return matches.length ? route.abort() : route.continue();
+  });
 
-module.exports = async (page, scenario, vp) => {
-    // Load cookies from scripts/cookies.js by default.
-    await require('./loadCookies')(page, scenario);
+  await browserContext.setExtraHTTPHeaders(
+    {'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT}
+  );
 
-    if (scenario.auth) {
-      await page.authenticate(scenario.auth)
+  let cookies = [
+    {
+      "expirationDate": 1798790400,
+      "path": "/",
+      "name": "im-bypass",
+      "value": "true",
+      "hostOnly": false,
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": "Lax"
     }
-    await page.setRequestInterception(true);
-    page.on('request', createRequestInterceptor(scenario));
-}
-
-function escapeRegexp(string) {
-  return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&');
-}
-
-const banned = [
-  'www.googletagmanager.com',
-  'script.crazyegg.com',
-  'www.google-analytics.com',
-  'js-agent.newrelic.com',
-  'translate.google.com',
-  'foresee.com',
-  'www.youtube.com',
-  'bam.nr-data.net',
-  'maps.googleapis.com',
-  '9p83os0fkf.execute-api.us-east-1.amazonaws.com/v1/waittime',
-  'player.vimeo.com',
-  'https://massgov.github.io/FWE/PondMaps/dfw-pond-maps-table.html',
-];
-// Block scripts that do analytics tracking, have side effects based on
-// domain, or cause timeouts on page load because they load in lots of extra
-// stuff.
-const bannedRE = new RegExp(banned.map(escapeRegexp).join('|'))
-
-function createRequestInterceptor(scenario) {
-
-  return function intercept(request) {
-    let urlMatch;
-    const url = request.url();
-
-    // Replace static maps with a placeholder image of the same size.
-    if(urlMatch = url.match(/maps\.googleapis\.com\/maps\/api\/staticmap.*size=(\d+x\d+)/)) {
-      return request.respond({
-        status: 301,
-        headers: {"Location": `https://via.placeholder.com/${urlMatch[1]}/B2DEA2.png?text=Static%20Map`}
-      });
+  ];
+  // Override the domain based on what we are testing.
+  const url = new URL(scenario.url);
+  cookies = cookies.map(cookie => {
+    if (url.host === 'mass-web') {
+      cookie.domain = "mass-web";
     }
-    // Replace hero images with placeholder images. Hero images can be randomized, so we just
-    // replace them with their placeholder equivalents.
-    if(urlMatch = url.match(/\/files\/styles\/hero(\d+x\d+)/)) {
-      return request.respond({
-        status: 301,
-        headers: {Location: `https://via.placeholder.com/${urlMatch[1]}.png?text=Hero%20Image`}
-      });
+    else {
+      cookie.domain = "." + url.host;
     }
+    return cookie;
+  });
 
-    if(!scenario.showAlerts && url.match(/\/jsonapi\/node\/alert/)) {
-      return request.respond({
-        status: 200,
-        headers: {"Content-Type": 'application/json'},
-        body: JSON.stringify({
-          jsonapi: {},
-          data: [],
-          included: [],
-          links: {}
-        })
-      });
-    }
+  await browserContext.addCookies(cookies);
 
-    if(bannedRE.test(url)) {
-      return request.abort()
-    } else {
-      return request.continue();
+  const ignoredMessages = [
+    'New Relic',
+    'BackstopTools have been installed'
+  ];
+  console.log = (message) => {
+    if (typeof message === 'string' || message instanceof String) {
+      ignoredMessages.some(ignore => message.includes(ignore)) ? undefined : process.stdout.write(`${message}\n`);
     }
-  }
+    else {
+      process.stdout.write(`${message}\n`);
+    }
+  };
 }

@@ -92,7 +92,7 @@ $configureMemcache = function($settings) use ($app_root, $site_path, $class_load
 
   // Acquia doesn't recommend these in memcache and we are seeing Revision confusion at https://edit.mass.gov/info-details/covid-19-response-reporting/revisions
   // $settings['cache']['bins']['entity'] = 'cache.backend.memcache';
-  // $settings['cache']['bins']['render'] = 'cache.backend.memcache';
+  $settings['cache']['bins']['render'] = 'cache.backend.memcache';
 
   $settings['cache']['bins']['menu'] = 'cache.backend.memcache';
   // All other cache bins are stored in the database.
@@ -133,11 +133,6 @@ $settings['database_cache_max_rows']['default'] = -1;
 // Speed up entity updates by taking advantage of available memory.
 $settings['entity_update_batch_size'] = 250;
 
-// Secrets
-$config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] = getenv('MANDRILL_API_KEY');
-$config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
-$config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
-
 // Start with stage for all envs. This gets overridden for Prod in settings.acquia.php
 $settings['mass_caching.hosts'] = [
   'stage.mass.gov',
@@ -172,9 +167,19 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   }
 }
 
+// Now that secrets file was included, perform config overrides.
+$config['mass_analytics.settings']['looker_studio_url'] = getenv('LOOKER_STUDIO_URL');
+$config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] = getenv('MANDRILL_API_KEY');
+$config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
+$config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
+
 $databases['default']['default']['init_commands'] = [
   'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
 ];
+
+// Add database connection for Service Details migration.
+// @todo Remove once thats complete.
+$databases['migrate'] = $databases['default'];
 
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
 if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {

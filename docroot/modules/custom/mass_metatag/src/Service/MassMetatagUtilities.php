@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_metatag\Service;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
 use Drupal\node\Entity\Node;
 
 /**
@@ -33,11 +35,15 @@ class MassMetatagUtilities {
    *
    * @param \Drupal\node\Entity\Node $node
    *   The node to get Orgs and parent Orgs from.
+   * @param bool $parent_only
+   *   If the flag is specified only parents slugified titles will be returned.
+   * @param bool $parent_meta
+   *   If the flag is specified only parents metadata will be returned.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
    */
-  public function getAllOrgsFromNode(Node $node) {
+  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE) {
     $result = [];
 
     // The array that will hold all the orgs to check for parents.
@@ -53,12 +59,25 @@ class MassMetatagUtilities {
       // and if there is a parent org, add it to the array for checking.
       if ($node->bundle() === 'org_page') {
         // If it is an unchecked org, add the slugified title to values.
-        if (!in_array($node->id(), $checked_orgs)) {
-          $result[] = $this->slugify(trim($node->label()));
+        if (!$parent_only) {
+          if (!in_array($node->id(), $checked_orgs)) {
+            $result[] = $this->slugify(trim($node->label()));
+          }
         }
-        // If there is a parent org, add it to the array to check.
-        if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
-          $orgs[] = $node->field_parent->entity;
+        else {
+          // If there is a parent org, add it to the array to check.
+          if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
+            $orgs[] = $node->field_parent->entity;
+            if ($parent_meta) {
+              $result[$node->field_parent->entity->id()] = [
+                'title' => $node->field_parent->entity->getTitle(),
+                'uuid' => $node->field_parent->entity->uuid(),
+              ];
+            }
+            else {
+              $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+            }
+          }
         }
       }
       // For all other nodes, get all the organizations referenced
@@ -78,24 +97,24 @@ class MassMetatagUtilities {
       $checked_orgs[] = $node->id();
     }
 
-    return array_unique($result);
+    return $result;
   }
 
   /**
    * Gets all Labels for the passed node, including all parent Orgs.
    *
-   * @param \Drupal\node\Entity\Node $node
+   * @param ContentEntityInterface $entity
    *   The node to get Labels from.
    *
    * @return string[]
    *   The array of slugified Labels names related to this node.
    */
-  public function getAllLabelsFromNode(Node $node) {
+  public function getAllLabelsFromEntity(ContentEntityInterface $entity) {
     $result = [];
 
-    if (!empty($node)) {
-      if ($node->hasField('field_reusable_label')) {
-        $labels = $node->field_reusable_label->referencedEntities();
+    if (!empty($entity)) {
+      if ($entity->hasField('field_reusable_label')) {
+        $labels = $entity->field_reusable_label->referencedEntities();
         foreach ($labels as $label) {
           $result[] = $this->slugify(trim($label->label()));
         }

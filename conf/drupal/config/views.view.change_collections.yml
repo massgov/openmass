@@ -17,7 +17,6 @@ dependencies:
     - node.type.news
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
@@ -25,7 +24,7 @@ dependencies:
     - workflows.workflow.editorial
   module:
     - content_moderation
-    - mass_superset
+    - mass_bigquery
     - mass_views
     - node
     - taxonomy
@@ -103,13 +102,13 @@ display:
           form_step: true
           buttons: true
           action_title: Action
+          clear_on_exposed: false
+          force_selection_info: false
           selected_actions:
             4:
               action_id: mass_views_change_collections
               preconfiguration:
-                add_confirmation: 1
-          clear_on_exposed: false
-          force_selection_info: 0
+                add_confirmation: true
         title:
           id: title
           table: node_field_revision
@@ -495,6 +494,15 @@ display:
             date_format: short_date_only
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -1083,15 +1091,15 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: vid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          operator: '<='
+          operator: '>='
           value:
             min: ''
             max: ''
@@ -1099,16 +1107,16 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
+            operator_id: nos_per_1000_cleaned_op
+            label: 'Nos per 1000 is greater than or equal to'
             description: ''
             use_operator: false
-            operator: score_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: score
+            identifier: nos_per_1000_cleaned
             required: false
-            remember: true
+            remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
@@ -1123,6 +1131,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1138,67 +1149,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
       filter_groups:
         operator: AND
         groups:
@@ -1608,7 +1558,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
           group: 1
           exposed: true
           expose:
@@ -2013,7 +1962,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
           group: 1
           exposed: false
           expose:

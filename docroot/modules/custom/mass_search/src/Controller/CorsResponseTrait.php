@@ -3,8 +3,8 @@
 namespace Drupal\mass_search\Controller;
 
 use Drupal\Core\Cache\CacheableMetadata;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Trait for mass_search controller implementations.

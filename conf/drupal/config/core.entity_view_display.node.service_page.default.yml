@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_data_search_content
     - field.field.node.service_page.field_data_topic
+    - field.field.node.service_page.field_english_version
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_list_data_type
@@ -28,7 +29,6 @@ dependencies:
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
     - field.field.node.service_page.field_short_title
-    - image.style.action_banner_large
     - node.type.service_page
   module:
     - entity_reference_revisions
@@ -94,6 +94,14 @@ content:
       link: true
     third_party_settings: {  }
     weight: 32
+    region: content
+  field_english_version:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 34
     region: content
   field_image_credit:
     type: string

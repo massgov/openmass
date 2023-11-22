@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_content;
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\TypedData\Plugin\DataType\StringData;
 use Drupal\mass_content\Field\FieldType\DynamicLinkItem;
 use Drupal\mayflower\Helper;
-use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Computes a date for a link based on a content type to field mapping.

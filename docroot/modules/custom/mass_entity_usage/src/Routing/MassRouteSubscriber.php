@@ -2,10 +2,6 @@
 
 namespace Drupal\mass_entity_usage\Routing;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Routing\RouteSubscriberBase;
-use Drupal\Core\Routing\RoutingEvents;
 use Drupal\entity_usage\Routing\RouteSubscriber;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;

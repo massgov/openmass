@@ -3,12 +3,12 @@
 namespace Drupal\mass_entityaccess_userreference\Entity;
 
 use Drupal\Core\Entity\ContentEntityBase;
-use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
-use Drupal\Core\Field\FieldStorageDefinitionInterface;
 
 /**
  * Defines the User Ref Access entity.

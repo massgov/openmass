@@ -28,9 +28,9 @@ class SupersetDatabaseClient {
         'base_uri' => $options['base_uri'],
         'cookies' => TRUE,
       ]);
-      $response = $this->client->get('/superset/csrf_token/');
+      $response = $this->client->get('/api/v1/security/csrf_token/');
       $response_object = json_decode($response->getBody()->getContents());
-      $this->csrfToken = $response_object->csrf_token;
+      $this->csrfToken = $response_object->result;
 
       if (!empty($options['username']) && !empty($options['password'])) {
         // Perform login.
@@ -40,7 +40,7 @@ class SupersetDatabaseClient {
             'username' => $options['username'],
             'password' => $options['password'],
             'csrf_token' => $this->csrfToken,
-          ]
+          ],
         ]);
       }
     }
@@ -67,7 +67,7 @@ class SupersetDatabaseClient {
   public function runQuery(string $query, array $options) {
     $client = $this->getClient($options);
 
-    $response = $client->post('/superset/sql_json/', [
+    $response = $client->post('/api/v1/sqllab/execute', [
       'headers' => [
         'X-CSRFToken' => $this->csrfToken,
       ],
@@ -79,8 +79,7 @@ class SupersetDatabaseClient {
         'schema' => $options['schema'],
         'runAsync' => FALSE,
         'sql' => $query,
-        'template_params' => "{}",
-      ]
+      ],
     ]);
     return json_decode($response->getBody()->getContents(), TRUE);
   }

@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_content\Field;
 
-use Drupal\dynamic_entity_reference\Plugin\Field\FieldType\DynamicEntityReferenceFieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\dynamic_entity_reference\Plugin\Field\FieldType\DynamicEntityReferenceFieldItemList;
 
 /**
  * Build a computed entity reference field based on a query.
@@ -33,7 +33,7 @@ abstract class QueryGeneratedDynamicEntityReferenceList extends DynamicEntityRef
       $queries = $this->queries();
       $i = 0;
       foreach ($queries as $type => $query) {
-        foreach ($query->execute() as $id) {
+        foreach ($query->accessCheck(FALSE)->execute() as $id) {
           $this->list[$i] = $this->createItem($i, ['target_id' => $id, 'target_type' => $type]);
           $i++;
         }

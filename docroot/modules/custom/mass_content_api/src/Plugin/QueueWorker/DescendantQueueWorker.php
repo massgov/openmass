@@ -4,8 +4,8 @@ namespace Drupal\mass_content_api\Plugin\QueueWorker;
 
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\node\Entity\Node;
 use Drupal\mass_content_api\DescendantManagerInterface;
+use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

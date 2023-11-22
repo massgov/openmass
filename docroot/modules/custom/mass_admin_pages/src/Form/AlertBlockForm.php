@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_admin_pages\Form;
 
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * @file
@@ -69,7 +69,7 @@ class AlertBlockForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'mass_admin_pages.updates_block_settings'
+      'mass_admin_pages.updates_block_settings',
     ];
   }
 

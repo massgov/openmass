@@ -2,12 +2,12 @@
 
 namespace Drupal\mass_entityreference\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\SortArray;
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\EntityReferenceAutocompleteWidget;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Component\Utility\NestedArray;
-use Drupal\Component\Utility\SortArray;
 
 /**
  * Plugin implementation of the 'entity_reference_select_autocomplete' widget.

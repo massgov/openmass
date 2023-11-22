@@ -6,20 +6,19 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\node\NodeInterface;
-use Drupal\simple_sitemap\Simplesitemap;
+use Drupal\simple_sitemap\Manager\Generator;
 use Symfony\Component\Routing\Route;
 
 class NodeHasPageAccessChecker implements AccessInterface {
 
-  private Simplesitemap $sitemap;
+  private Generator $sitemap;
 
-  public function __construct(Simplesitemap $sitemap) {
+  public function __construct(Generator $sitemap) {
     $this->sitemap = $sitemap;
   }
 
   public function access(Route $route, NodeInterface $node): AccessResultInterface {
-    $settings = $this->sitemap->getBundleSettings();
-    $has_page = $settings[$node->getEntityTypeId()][$node->bundle()]['index'];
+    $has_page = $this->sitemap->entityManager()->bundleIsIndexed($node->getEntityTypeId(), $node->bundle());
     return AccessResult::allowedIf($has_page);
   }
 

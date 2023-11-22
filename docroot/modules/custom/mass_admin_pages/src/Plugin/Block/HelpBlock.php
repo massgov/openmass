@@ -44,7 +44,7 @@ class HelpBlock extends BlockBase {
           'class' => [
             'button',
             'button--see-help-articles',
-          ]
+          ],
         ],
       ];
     }

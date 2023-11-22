@@ -4,8 +4,8 @@ namespace Drupal\mass_fields\Controller;
 
 use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
 use Drupal\mass_fields\EntityAutocompleteMatcher;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\system\Controller\EntityAutocompleteController as DefaultEntityAutocompleteController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provide an updated controller for entity autocomplete.

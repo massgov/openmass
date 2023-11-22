@@ -40,19 +40,21 @@
  * @ingroup themeable
  */
 #}
-{% for i in range(1, numOfSections) %}
-  {% if sectionContent[i]['sectionThreeUp'] %}
-    {% set sectionThreeUp = sectionContent[i]['sectionThreeUp'] %}
-    {% set linkHeading = 3 %}
-    <section class="ma__sections-3up">
-      <div class="ma__sections-3up__container">
-        {% block sectionLinks %}
-          {% for sectionLinks in sectionThreeUp.sections %}
-            {% set sectionLinks = sectionLinks|merge({'level': linkHeading }) %}
-            {% include "@molecules/section-links.twig" with sectionLinks %}
-          {% endfor %}
-        {% endblock %}
-      </div>
-    </section>
-  {% endif %}
-{% endfor %}
+{% if numOfSections %}
+  {% for i in range(1, numOfSections) %}
+    {% if sectionContent[i]['sectionThreeUp'] %}
+      {% set sectionThreeUp = sectionContent[i]['sectionThreeUp'] %}
+      {% set linkHeading = 3 %}
+      <section class="ma__sections-3up">
+        <div class="ma__sections-3up__container">
+          {% block sectionLinks %}
+            {% for sectionLinks in sectionThreeUp.sections %}
+              {% set sectionLinks = sectionLinks|merge({'level': linkHeading }) %}
+              {% include "@molecules/section-links.twig" with sectionLinks %}
+            {% endfor %}
+          {% endblock %}
+        </div>
+      </section>
+    {% endif %}
+  {% endfor %}
+{% endif %}

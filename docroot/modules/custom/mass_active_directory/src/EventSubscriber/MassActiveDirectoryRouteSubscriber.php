@@ -3,7 +3,6 @@
 namespace Drupal\mass_active_directory\EventSubscriber;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
-use Drupal\Core\Routing\RoutingEvents;
 use Symfony\Component\Routing\RouteCollection;
 
 /**

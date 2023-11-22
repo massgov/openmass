@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
-use weitzman\DrupalTestTraits\ScreenShotTrait;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
@@ -35,7 +34,6 @@ class ContentEditingTest extends ExistingSiteBase {
     "/regulations/900-CMR-2-qag-regulation-title",
     "/person/qag-person-boardmember-role",
     "/trial-court-rules/qag-rulesofcourt",
-    "/service-details/qag-servicedetails",
     "/qag-service1",
     "/topics/qag-topicpage1",
   ];

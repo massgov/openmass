@@ -74,7 +74,11 @@
       {% set logInButtons = logInButtons|merge([button]) %}
     {% endfor %}
   {% endif %}
-
+  {% if translationLinks %}
+    {% include "@organisms/by-author/inline-links-language.twig" with {
+      "inlineLinks": translationLinks
+    } %}
+  {% endif %}
   {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
       "layout": bannerImageWide ? "overlay" : "",
@@ -95,23 +99,25 @@
 {% set level = level + 1 %}
 
 {% block pageContentIntro %}
-  {# NOTE: teaser-text conditionally also includes "@atoms/decorative-link.twig" but Service Page teaser-text does  #}
-  {# not use a "learn more / read more" sort of link, so we don't pass any "decorativeLink" values to the template. #}
-  {% include "@organisms/by-author/teaser-text.twig" with {
-    "teaserText": {
-      "richText": {
-        "property": "",
-        "rteElements": [{
-          "path": "@atoms/11-text/paragraph.twig",
-          "data": {
-            "paragraph" : {
-              "text": content.field_service_body
+  {% if content.field_service_body|render is not empty %}
+    {# NOTE: teaser-text conditionally also includes "@atoms/decorative-link.twig" but Service Page teaser-text does  #}
+    {# not use a "learn more / read more" sort of link, so we don't pass any "decorativeLink" values to the template. #}
+    {% include "@organisms/by-author/teaser-text.twig" with {
+      "teaserText": {
+        "richText": {
+          "property": "",
+          "rteElements": [{
+            "path": "@atoms/11-text/paragraph.twig",
+            "data": {
+              "paragraph" : {
+                "text": content.field_service_body
+              }
             }
-          }
-        }]
-      },
-    }
-  } %}
+          }]
+        },
+      }
+    } %}
+  {% endif %}
 
   {% if introPageContent.video %}
     {% set video = introPageContent.video %}

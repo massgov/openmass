@@ -12,6 +12,7 @@ dependencies:
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
+    - field.field.taxonomy_term.collections.field_reusable_label
     - field.field.taxonomy_term.collections.field_short_description
     - field.field.taxonomy_term.collections.field_show_only_future_events
     - field.field.taxonomy_term.collections.field_sort_order
@@ -37,14 +38,14 @@ third_party_settings:
       label: 'Collection Settings'
       region: content
       parent_name: ''
-      weight: 3
+      weight: 6
       format_type: tab
       format_settings:
         classes: ''
         show_empty_fields: false
         id: ''
         formatter: open
-        description: 'These settings only need to be defined for the top level collection term. They don''t need to be set for topics or sub topics.'
+        description: "These settings only need to be defined for the top level collection term. They don't need to be set for topics or sub topics."
         required_fields: true
     group_sort_settings:
       children:
@@ -53,7 +54,7 @@ third_party_settings:
       label: Sorting
       region: content
       parent_name: group_collection_settings
-      weight: 12
+      weight: 13
       format_type: details
       format_settings:
         classes: ''
@@ -70,7 +71,7 @@ third_party_settings:
       label: 'Top banner'
       region: content
       parent_name: group_collection_settings
-      weight: 10
+      weight: 9
       format_type: details
       format_settings:
         classes: ''
@@ -87,7 +88,7 @@ third_party_settings:
       label: 'Hierarchy and Breadcrumb'
       region: content
       parent_name: group_collection_settings
-      weight: 11
+      weight: 10
       format_type: details
       format_settings:
         classes: ''
@@ -103,7 +104,7 @@ third_party_settings:
       label: Results
       region: content
       parent_name: group_collection_settings
-      weight: 13
+      weight: 14
       format_type: details
       format_settings:
         classes: ''
@@ -141,7 +142,6 @@ content:
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: true
         maxlength_js_truncate_html: true
-        maxlength_js_enforce_attribute: true
   field_all_collection_breadcrumb:
     type: string_textfield
     weight: 6
@@ -160,7 +160,7 @@ content:
     third_party_settings: {  }
   field_default_sort:
     type: string_textfield
-    weight: 8
+    weight: 9
     region: content
     settings:
       size: 60
@@ -168,13 +168,13 @@ content:
     third_party_settings: {  }
   field_header_color:
     type: options_select
-    weight: 22
+    weight: 24
     region: content
     settings: {  }
     third_party_settings: {  }
   field_landing_page:
     type: link_default
-    weight: 6
+    weight: 5
     region: content
     settings:
       placeholder_url: ''
@@ -201,9 +201,19 @@ content:
       placeholder: ''
       hide_weight: true
     third_party_settings: {  }
+  field_reusable_label:
+    type: entity_reference_autocomplete
+    weight: 3
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_short_description:
     type: string_textfield
-    weight: 24
+    weight: 25
     region: content
     settings:
       size: 60
@@ -247,7 +257,7 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 5
+    weight: 7
     region: content
     settings:
       display_label: true

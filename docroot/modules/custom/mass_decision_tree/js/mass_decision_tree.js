@@ -65,7 +65,9 @@
 
           initializeButtons();
           Drupal.behaviors.MassAccordions.create($content);
-          window.fitVids($('.js-ma-responsive-video'));
+          if ($('.js-ma-responsive-video').length) {
+            window.fitVids($('.js-ma-responsive-video'));
+          }
         }
       };
 
@@ -321,7 +323,8 @@
       }
 
       // Render the templates for the root node.
-      $('div.main-content', context).once('decision-tree-init').each(function () {
+      var $elements = $(once('decisionTreeInit', 'div.main-content', context));
+      $elements.each(function (index) {
         onHashChange();
       });
     }

@@ -58,7 +58,7 @@ class LocationMetadataTest extends MetadataTestCase {
       'geo.placename' => $entity->label(),
       'geo.region' => 'US-MA',
       'mg_phone_number' => '123-456-7890',
-      'mg_address' => "123 Test Way\nBoston, MA 12345\nUnited States",
+      'mg_address' => "123 Test Way Boston, MA 12345 United States",
       'mg_organization' => 'testorgpage',
     ]);
   }

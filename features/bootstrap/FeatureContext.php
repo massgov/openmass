@@ -12,7 +12,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Drupal\node\Entity\Node;
 use GuzzleHttp\Psr7\Uri;
-use Webmozart\PathUtil\Path;
+use Symfony\Component\Filesystem\Path;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
@@ -1072,11 +1072,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'content-card-group',
           ),
           array (
-            'field' => 'field-topic-ref-icon',
-            'tag' => 'select',
-            'type' => '',
-          ),
-          array (
             'field' => 'field-topic-ref-related-topics',
             'tag' => 'input',
             'type' => 'text',
@@ -2075,7 +2070,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
     $query->condition('title', $title);
     $query->range(0, 1);
     $query->sort('nid', 'DESC');
-    $exec = $query->execute();
+    $exec = $query->accessCheck(FALSE)->execute();
     $nid = reset($exec);
     return Node::load($nid);
   }

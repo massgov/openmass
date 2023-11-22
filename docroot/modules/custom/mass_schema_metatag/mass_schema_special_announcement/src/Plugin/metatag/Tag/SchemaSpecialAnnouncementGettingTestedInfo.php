@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaWebContentBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'GettingTestedInfo' meta tag.
@@ -20,9 +20,14 @@ use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaWebContentBase;
  *   weight = 11,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = FALSE
+ *   multiple = FALSE,
+ *   property_type = "creative_work",
+ *   tree_parent = {
+ *     "CreativeWork",
+ *   },
+ *   tree_depth = -1
  * )
  */
-class SchemaSpecialAnnouncementGettingTestedInfo extends SchemaWebContentBase {
+class SchemaSpecialAnnouncementGettingTestedInfo extends SchemaNameBase {
 
 }

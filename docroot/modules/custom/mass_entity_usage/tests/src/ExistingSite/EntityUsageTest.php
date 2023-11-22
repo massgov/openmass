@@ -41,7 +41,7 @@ class EntityUsageTest extends ExistingSiteBase {
     // to avoid long cleaning times that break this test.
     // Note this avoids triggering events on bulk deletes, such as at
     // \Drupal\entity_usage\EntityUsage::bulkDeleteTargets().
-    \Drupal::service('database')->delete('entity_usage')->execute();
+    \Drupal::service('database')->truncate('entity_usage')->execute();
 
     $this->emptyEntityUsageQueues();
     $user = User::create(['name' => $this->randomMachineName()]);
@@ -133,7 +133,7 @@ class EntityUsageTest extends ExistingSiteBase {
   private function emptyEntityUsageQueues() {
     $this->clearQueue('entity_usage_tracker');
     $this->clearQueue('entity_usage_regenerate_queue');
-    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean();
+    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean(['pointing' => TRUE]);
   }
 
   /**
@@ -141,7 +141,7 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   private function processEntityUsageQueues() {
     $this->runQueue('entity_usage_tracker');
-    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean();
+    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean(['pointing' => TRUE]);
   }
 
   /**
@@ -251,7 +251,7 @@ class EntityUsageTest extends ExistingSiteBase {
       'title' => 'TestOrg',
       'type' => 'org_page',
       'moderation_state' => MassModeration::PUBLISHED,
-      'status' => 1
+      'status' => 1,
     ]);
 
     $this->createNode([
@@ -264,7 +264,7 @@ class EntityUsageTest extends ExistingSiteBase {
       'field_primary_parent' => $new_test_org->id(),
       'field_organizations' => $new_test_org->id(),
       'moderation_state' => MassModeration::PUBLISHED,
-      'status' => 1
+      'status' => 1,
     ]);
 
     $this->processEntityUsageQueues();
@@ -289,7 +289,7 @@ class EntityUsageTest extends ExistingSiteBase {
     $organization_section = Paragraph::create([
       'type' => 'org_section_long_form',
       'field_section_long_form_content' => [
-        $rich_text
+        $rich_text,
       ],
     ]);
 

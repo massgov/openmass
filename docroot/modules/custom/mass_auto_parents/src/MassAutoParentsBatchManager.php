@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_auto_parents;
 
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Utility\UpdateException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 
 /**
  * Manages Mass Auto Parents batch processing.

@@ -2,10 +2,9 @@
 
 namespace Drupal\mass_hardening\Access;
 
-use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Routing\RouteMatch;
 
 /**
@@ -17,6 +16,8 @@ use Drupal\Core\Routing\RouteMatch;
  * @package Drupal\mass_hardening\Access
  */
 class MassHardeningHashCheck implements AccessInterface {
+
+  private \Drupal\Core\Entity\EntityStorageInterface $userStorage;
 
   /**
    * Constructs a MassHardeningAccess object.

@@ -4,8 +4,6 @@ namespace Drupal\mass_scheduled_transitions;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
-use Drupal\scheduled_transitions\EventSubscriber\ScheduledTransitionsNewRevision;
-use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Defines a service provider for the Mass Scheduled Transitions module.

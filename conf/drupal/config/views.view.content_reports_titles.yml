@@ -6,12 +6,13 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.storage.node.field_short_title
   module:
+    - mass_bigquery
     - mass_formatters
-    - mass_superset
     - mass_views
     - node
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
 id: content_reports_titles
 label: 'Pages with long or short titles'
 module: views
@@ -540,6 +541,15 @@ display:
             date_format: short
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -550,66 +560,9 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: Score
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -971,64 +924,6 @@ display:
               d2d_redirect_manager: '0'
               external_data_resource_manager: '0'
             reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: score_op
-            label: Score
-            description: ''
-            use_operator: false
-            operator: score_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: score
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
           is_grouped: false
           group_info:
             label: ''

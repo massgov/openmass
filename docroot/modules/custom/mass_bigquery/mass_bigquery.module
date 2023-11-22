@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for mass_bigquery module.
+ */
+
+/**
+ * Implements hook_cron().
+ */
+function mass_bigquery_cron() {
+  $config = \Drupal::config('mass_bigquery.config');
+  $time = \Drupal::time()->getRequestTime();
+
+  $time_hours_min = \Drupal::service('date.formatter')->format($time, 'custom', 'H:i');
+  $last_run = \Drupal::state()->get('mass_bigquery.last_run', 0);
+  $start = $config->get('start');
+  $end = $config->get('end');
+  $min_interval = $config->get('max_interval');
+
+  if ($end > $start) {
+    $in_window = $time_hours_min > $start && $time_hours_min < $end;
+  }
+  else {
+    $in_window = $time_hours_min > $start || $time_hours_min < $end;
+  }
+
+  // If the last run was longer ago than the max interval and the time is
+  // between start and end, queue the update of bigquery information.
+  if (($last_run + $min_interval) < $time && $in_window) {
+    \Drupal::state()->set('mass_bigquery.last_run', $time);
+    /** @var Drupal\mass_bigquery\BigqueryStorage $bigquery_storage */
+    $bigquery_storage = \Drupal::service('bigquery.storage');
+    $bigquery_storage->queueAll();
+  }
+}

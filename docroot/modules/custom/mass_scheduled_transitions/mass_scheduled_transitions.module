@@ -10,17 +10,17 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
-use Drupal\Core\Entity\EntityTypeInterface;
 
 const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
   ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
-  ScheduledTransition::OPTION_LATEST_REVISION => TRUE
+  ScheduledTransition::OPTION_LATEST_REVISION => TRUE,
 ];
 
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
@@ -98,23 +98,24 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
  * Deny deletion of scheduled transitions when our business rules requires one for the content type.
  */
 function mass_scheduled_transitions_scheduled_transition_access(EntityInterface $transition, $operation) {
-  $entity = $transition->getEntity();
-  if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert'])) {
-    return;
-  }
-
-  $duration_string = MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION;
-  $duration = (new DrupalDateTime('now +' . $duration_string))->getTimestamp();
-  $transitions = mass_scheduled_transitions_load_by_host_entity($entity, FALSE, MassModeration::UNPUBLISHED);
-  unset($transitions[$transition->id()]);
-  $fail = TRUE;
-  foreach ($transitions as $transition) {
-    if ($transition->getTransitionDate()->getTimestamp() < $duration) {
-      $fail = FALSE;
+  if ($entity = $transition->getEntity()) {
+    if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert'])) {
+      return;
     }
-  }
-  if ($fail) {
-    return AccessResult::forbidden('Alert requires an imminent unpublish transition');
+
+    $duration_string = MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION;
+    $duration = (new DrupalDateTime('now +' . $duration_string))->getTimestamp();
+    $transitions = mass_scheduled_transitions_load_by_host_entity($entity, FALSE, MassModeration::UNPUBLISHED);
+    unset($transitions[$transition->id()]);
+    $fail = TRUE;
+    foreach ($transitions as $transition) {
+      if ($transition->getTransitionDate()->getTimestamp() < $duration) {
+        $fail = FALSE;
+      }
+    }
+    if ($fail) {
+      return AccessResult::forbidden('Alert requires an imminent unpublish transition');
+    }
   }
 }
 

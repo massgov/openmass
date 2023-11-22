@@ -91,7 +91,7 @@ Some prepare methods are more complex, because they have to get the data from an
    *      "titleSubText": "(EOHHS)"
    *    ]
    */
-   
+
   public static function preparePageBanner($entity, $options = NULL) {
     $pageBanner = [];
     ...
@@ -101,7 +101,7 @@ As you can tell from both the documentation and signature, this method accepts a
 
 ##### Field maps
 
-Many of these more complex methods will have a `$map` array, whose keys correspond to pattern variable names and whose values are an array of field machine names. 
+Many of these more complex methods will have a `$map` array, whose keys correspond to pattern variable names and whose values are an array of field machine names.
 
 Because we share patterns across our site, these field name arrays will grow as more Drupal entities (nodes, paragraphs, etc.) are implemented.
 
@@ -120,12 +120,10 @@ $map = [
   'bg_wide' => [
     'field_bg_wide',
     'field_service_bg_wide',
-    'field_topic_bg_wide',
   ],
   'bg_narrow' => [
     'field_bg_narrow',
     'field_service_bg_narrow',
-    'field_topic_bg_narrow',
   ],
   'description' => ['field_lede', 'field_topic_lede'],
 ];
@@ -191,10 +189,10 @@ Most prepare methods will end with a simple statement which returns the data str
 
 public static function preparePageBanner($entity, $options = NULL) {
   $pageBanner = [];
-  
+
   // retrieve and transform data to populate $pageBanner
   ...
-    
+
   return $pageBanner;
 }
 ```

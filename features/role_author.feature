@@ -189,5 +189,5 @@ Feature: Author Role
       | userWithOrg | testorg@mass.gov | author | behatOrgTestTerm |
 
     Given I am logged in as "userWithOrg"
-    And I am on "node/add/service_details"
+    And I am on "node/add/info_details"
     And the response should contain "behatOrgTestTerm"

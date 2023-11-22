@@ -1,23 +1,18 @@
 <?php
 
-use Drupal\media\Entity\Media;
-/**
- * @file
- * Contains mass_validation.module.
- */
-
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\EntityForm;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\WidgetInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
+use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
-use Drupal\Component\Utility\UrlHelper;
 
 /**
  * Implements hook_help().
@@ -65,8 +60,10 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
     $field_social_links->addConstraint('SocialLink', [
       'allowedValues' => [
         'twitter.com',
+        'x.com',
         'flickr.com',
         'facebook.com',
+        'threads.net',
         'instagram.com',
         'linkedin.com',
         'youtube.com',
@@ -286,9 +283,10 @@ function mass_validation_entity_presave(EntityInterface $entity) {
     }
 
     if ($type === 'fee') {
-      $fee = $entity->field_fee_fee->value;
-      // Remove any non-integers except the decimal.
-      $fee = preg_replace('/[^\d|\.]/', '', $fee);
+      if ($fee = $entity->field_fee_fee->value) {
+        // Remove any non-integers except the decimal.
+        $fee = preg_replace('/[^\d|\.]/', '', $fee);
+      }
       $entity->set('field_fee_fee', $fee);
     }
   }
@@ -590,6 +588,10 @@ function _mass_validation_form_node_location_details_form_validate(array &$form,
     unset($sections['add_more']);
     foreach ($sections as $key => $section) {
       if (array_key_exists('subform', $section)) {
+
+        $paragraph_error_string = 'field_location_details_sections][' . $key . '][subform]';
+        _mass_validation_validate_custom_iframe($form_state, $section, $paragraph_error_string);
+
         // Validate that the Links and Downloads fields
         // have no more than 6 values between them.
         $num_links = 0;
@@ -1137,7 +1139,6 @@ function mass_validation_form_node_topic_page_form_alter(&$form, FormStateInterf
  *   The form array passed by reference.
  */
 function mass_validation_topic_page_alter_helper(array &$form) {
-  $form['#attached']['library'][] = 'mass_validation/topic_page_edit_form';
   $form['#validate'][] = '_mass_validation_form_node_topic_page_form_validate';
 }
 
@@ -1145,16 +1146,6 @@ function mass_validation_topic_page_alter_helper(array &$form) {
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_topic_page_form_validate(array &$form, FormStateInterface $form_state) {
-  if ($form_state->hasValue('field_topic_type')) {
-    $subtype = $form_state->getValue('field_topic_type');
-    if ($subtype[0]['value'] == 'topic') {
-      $lede = $form_state->getValue('field_topic_lede');
-      if (empty($lede[0]['value'])) {
-        $form_state->setErrorByName('field_topic_lede', t('The Short Description is required.'));
-      }
-    }
-  }
-
   // Verify links have titles.
   _mass_validation_mass_link_validate_paragraph($form_state, 'field_topic_content_cards', ['field_content_card_link_cards']);
 
@@ -1296,6 +1287,22 @@ function _mass_validation_validate_caspio(FormStateInterface $form_state, $parag
   }
 }
 
+function _mass_validation_validate_custom_flexible_links(FormStateInterface $form_state, $paragraph, $paragraph_error_string) {
+  if (!isset($paragraph['subform']['field_display_type'])) {
+    return;
+  }
+  $subtype = $paragraph['subform']['field_display_type'][0]['value'];
+  if ($subtype == 'links') {
+    if (empty($paragraph['subform']['field_flexible_link_group_title'][0]['value'])) {
+      dump($paragraph_error_string);
+      $form_state->setErrorByName(
+        $paragraph_error_string . '[field_flexible_link_group_title][0][value',
+        t('Link group title" field is required.')
+      );
+    }
+  }
+}
+
 function _mass_validation_validate_custom_search(FormStateInterface $form_state, $paragraph, $paragraph_error_string) {
   if (!isset($paragraph['subform']['field_search_type'])) {
     return;
@@ -1341,6 +1348,54 @@ function _mass_validation_validate_custom_search(FormStateInterface $form_state,
   }
 }
 
+function _mass_validation_validate_custom_iframe(FormStateInterface $form_state, $paragraph, $paragraph_error_string) {
+  if (!isset($paragraph['subform']['field_iframe_height_config'])) {
+    return;
+  }
+
+  $subtype = $paragraph['subform']['field_iframe_height_config'][0]['value'];
+  switch ($subtype) {
+    case '100':
+      $report = FALSE;
+      if (empty($paragraph['subform']['field_verify_iframe_100_confirm'])) {
+        $report = TRUE;
+      }
+      elseif ($paragraph['subform']['field_verify_iframe_100_confirm']['value'] != 1) {
+        $report = TRUE;
+      }
+      if ($report) {
+        $form_state->setErrorByName(
+          $paragraph_error_string . '[field_verify_iframe_100_confirm][value',
+          t('The "Verify dynamic height configuration" field is required.')
+        );
+      }
+      break;
+    case 'fixed':
+      $report = FALSE;
+      if (empty($paragraph['subform']['field_height'])) {
+        $report = TRUE;
+      }
+      elseif (empty($paragraph['subform']['field_height'][0]['value'])) {
+        $report = TRUE;
+      }
+      if ($report) {
+        $form_state->setErrorByName(
+          $paragraph_error_string . '[field_height][0][value',
+          t('The "Set Fixed Height" field is required.')
+        );
+      }
+      break;
+    case 'ratio':
+      if (empty($paragraph['subform']['field_aspect_ratio'])) {
+        $form_state->setErrorByName(
+          $paragraph_error_string . '[field_aspect_ratio',
+          t('The "Set Aspect Ratio" field is required.')
+        );
+      }
+      break;
+  }
+}
+
 /**
  * Validates submission values in the FORM_ID() form.
  */
@@ -1358,6 +1413,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
           _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
           _mass_validation_validate_mosaic_items($form_state, $paragraph);
           _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
+          _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
         }
       }
     }
@@ -1662,7 +1718,7 @@ function _mass_validation_form_node_contact_information_form_validate(array &$fo
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * Hide the field_page_template and field_details_enable_fields fields on the
+ * Hide the field_page_template field on the
  * info_details node form for users without permission. Also rename the 'none'
  * option in the field_page_template list.
  */

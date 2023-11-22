@@ -52,7 +52,7 @@ class UsageTrackingBlockerTest extends ExistingSiteBase {
     $organization_section = Paragraph::create([
       'type' => 'org_section_long_form',
       'field_section_long_form_content' => [
-        $rich_text
+        $rich_text,
       ],
     ]);
 

@@ -1,16 +1,598 @@
 
 
+## [0.382.0] - November 21, 2023
+
+### Changed
+  - DP-23015: Standardize on DDEV. Add descriptions for all custom commands.
+  - DP-27217: Render cache fixes - media download links and org-wide invalidations
+  - DP-29860: Fix IP address in Logs and cleanup New Relic logs.
+  - DP-30747: Use port 80 in DDEV router. This helps us use the automatic http to https redirect
+  
+### Added
+  - DP-29929: Flag on org pages to not allow the org to be used in a search filter. This is for future use.
+  - DP-30524: Added tests for Feedback Manager.
+  - DP-30813: Added Kinyarwanda language
+  
+### Fixed
+  - DP-29929: Fix field machine name on Org pages.
+  - DP-30473: Changed the Add/edit document page to have a link at the top to suggest not using a document and help text when uploading a file to remind authors to test documents for accessibility.
+  - DP-30754: Fix styling issues with message banners.
+  - DP-30770: Changes to alert content type to fix validation issues related to conditional fields.
+  - DP-30836: Fixed backup URL retrieval.
+  
+### Removed
+  - DP-30881: Removed drush pm:security from pending_security job in CircleCI.
+  
+
+## [0.381.1] - November 8, 2023
+
+### Fixed
+- DP-30763: Location filter by location not changing order of locations HOTFIX.
+
+
+## [0.381.0] - November 7, 2023
+
+### Changed
+  - DP-27208: Drupal 10 - upgrade core and several contrib modules
+  - DP-30507: Upgrade to Drush 12
+  - DP-30639: Remove build_with_latest_mayflower CI job which is used in deploy_cd workflow.
+  
+### Removed
+  - DP-29261: Remove parent organizations from the mg_organization metadata field.
+  
+### Fixed
+  - DP-30388: Resolve JS errors.
+  - DP-30587: Fix 500 error on edit.mass.gov found during bulk edit.
+  - DP-30611: Issue in rich text when hyperlinking document to existing text.
+  - DP-30642: Fix deprecation errors.
+  - DP-30688: Fixed issues with keyword and watched content filters in Feedback Manager.
+  
+
+
+## [0.380.0] - October 31, 2023
+
+### Fixed
+  - DP-26422: Info details page missing menu overlay.
+  
+### Changed
+  - DP-29972: Stop hard coding domain for All Documents item titles
+  - DP-30517: Analytics tab cleanup.
+  - DP-30523: Moved bulk edit of labels view to separate view from advanced search, minor tweaks.
+  
+
+
+## [0.379.0] - October 24, 2023
+
+### Changed
+  - DP-28648: Change behavior of 'method' section of how-to pages.
+  - DP-30497: New label view, modifications to advanced search view.
+  - DP-8417: Display all contact information in right column when there are multiple on a how-to page.
+  
+### Fixed
+  - DP-29938: Addressed issues where Feedback API calls were not properly formatted.
+  - DP-30232: Fix duplicate parent orgs in metadata.
+  - DP-30352: Content Performance view CSV is missing most data.
+  - DP-30360: Backported views filter configurations for Content.
+  - DP-30373: Fix analytics dashboard theme function.
+  - DP-30436: Fixing all content view CSV export.
+  
+
+
+## [0.378.0] - October 17, 2023
+
+### Changed
+  - DP-25894: Set consistent border to table cells.
+  - DP-29849: Accessibility error fix for the org. nav.
+  
+### Fixed
+  - DP-29882: Fix raw "node" links in content.
+  - DP-29961: D10 upgrade - Parent node dynamic property warning fix.
+  
+### Removed
+  - DP-30076: Remove old analytics dashboards from Drupal.
+  
+### Added
+  - DP-30228: Add Farsi language
+  
+
+
+## [0.377.0] - October 10, 2023
+
+### Changed
+  - DP-29104: Remove the lightest font-weight globally. Space out and bump up font-weight scale evenly to better show visual hierarchy. Remove styling overrides on telephone links, so they appear as other contact links.
+  - DP-30033: Adding duplicate querystring parameter to looker URL to support multiple datasources.
+  
+### Added
+  - DP-29554: Report view for info details pages. Help text updates for login field
+  
+### Removed
+  - DP-29606: Remove service details content type.
+  
+### Fixed
+  - DP-29955: Fix edit form sidebar buttons position.
+  
+
+
+## [0.376.0] - October 3, 2023
+
+### Changed
+  - DP-28040: Updated Conditional Fields module.
+  - DP-28514: Add a condition to render social media links only when its content is available.
+  - DP-28724: Add validation to require at least one paragraph in an org section.
+  - DP-29103: Update Media Entity Download CKEditor plugin patch for D10.
+  
+### Removed
+  - DP-29329: Delete unused fields on Topic page.
+  
+### Added
+  - DP-29648: Add directions override link to contact content type.
+  
+### Fixed
+  - DP-29830: Fixed paragraph buttons positioning.
+  - DP-29834: Location pages not appearing in XML sitemap.
+  
+### Security
+  - DP-29839: Update 'office hours' module.
+  
+
+
+## [0.375.0] - September 26, 2023
+
+### Changed
+  - DP-27211: Upgrade to PHP 8.2
+  - DP-28587: Rename Alert feature on Info Details, Guide content types to "Highlight"
+  - DP-29773: Help text and field layout changes to accomodate org nav change.
+  - DP-29804: Disallow new or cloned location details pages.
+  - DP-29828: Use PHP 8.2 at CircleCI for several jobs (use newer drupal-container)
+  
+### Security
+  - DP-29825: Drupal core update from version 9.5.10 to 9.5.11.
+  
+
+
+## [0.374.0] - September 19, 2023
+
+### Changed
+  - DP-28339: D10 upgrade packages - tokens/metatag/schema_metatag/field_tokens.
+  - DP-28586: Remove non-English pages and docs from orphan reports (2)
+  - DP-28815: Org nav jump link change openmass implementation.
+  - DP-28823: D10 upgrade - pathologic, Components, Datalayer
+  - DP-28824: D10 upgrade - 3 jQuery UI modules.
+  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+  - DP-29614: Modify Content that needs attention component on /admin/home to use BigQuery data
+  - DP-29680: Link nos per k to feedback in Views
+  
+### Fixed
+  - DP-28586: PHPCS fix.
+  
+### Added
+  - DP-29014: Add a fixed org page component that appears below all sections above the footer.
+  - DP-29613: Add mg_organization and mg_parent_org metatags to promotional pages.
+  
+
+
+## [0.373.0] - September 12, 2023
+
+### Changed
+  - DP-28608: Replace superset data in views with data from bigquery
+  - DP-29020: Convert org page paragraph "What would you like to do" to use service page component "Flexible link group".
+  - DP-29416: Replace Twitter logo with new 'X' logo and add Threads logo
+  - DP-29553: Remove service details pages from visual regression testing in backstop.
+  - DP-29559: Role permissions changed to allow all authors and editors access to new analytics tab without tester role. Cleanup of tester role permissions.
+  
+### Fixed
+  - DP-29493: Fix default domain URLs from service detail migration
+  - DP-29536: Fixed Tugboat builds.
+  - DP-29600: Fixed suggested page item link covering the whole page.
+  - DP-29649: Correct spelling issue in address error.
+  
+### Added
+  - Avoid redirect to install.php when DB is down
+  
+
+
+## [0.372.0] - September 5, 2023
+
+### Changed
+  - DP-25149: Revert Akamai version which got moved up recently. Fixes test failures.
+  - DP-28733: Remove aria-labelledby from key actions, title attribute from its comp heading and correct the heading level.
+  - DP-288257: Consolidate two Drush commands into one - ma:heal-references-to-trash
+  - DP-28842: Drupal 10 compat - Update Entity Embed and LinkIt
+  - DP-29492: Config change to load Google Tag manager in all paths including author paths.
+  
+### Removed
+  - DP-26154: Remove testing of service_details pages
+  
+### Fixed
+  - DP-28622: Export report of orphaned pages fixed.
+  - DP-29391: Fix flagging for migrated service details pages.
+  
+### Added
+  - DP-29259: Add metadata field mg_parent_org.
+  - DP-29392: Add drush ma:backup command for starting an on-demand DB backup.
+  
+
+
+## [0.371.0] - August 15, 2023
+
+### Changed
+  - DP-26359: Remove a link from an image in a image promo and a suggested page units. |- Exclude a redundant "more" link from keyboad and AT users from a image promo unit. |- Expand the clickable area to the antire image promo and suggesnted page unit containers. |- Restructure the image promos and the suggested pages with a list for better semantics.
+  - DP-28827: D10 upgrade - "Collab with maintainers" modules
+  
+### Added
+  - DP-29328: Added service details post-migration step for primary parent fields.
+  
+
+
+## [0.370.1] - August 9, 2023
+
+### Fixed
+- DP-29284: Fixed issue with feedback not displaying for info details pages.
+
+
+
+## [0.370.0] - August 8, 2023
+
+### Fixed
+  - DP-20609: Eliminated forced 100% width on images and figures in rich text.
+  
+### Changed
+  - DP-26154: Migrate service details pages to info details
+  - DP-28963: More info link missing from contact component on info details pages.
+  
+### Added
+  - DP-29018: Add 5 languages, including Twi custom language
+  - DP-29229: Added lazy loading to iframes.
+  
+
+
+## [0.369.0] - August 1, 2023
+
+### Changed
+  - DP-27828: Updated Media Entity Download to latest version.
+  - DP-28825: D10 upgrade - Simple Sitemap.
+  
+
+
+## [0.368.0] - July 25, 2023
+
+### Added
+  - DP-28439: New views to show the amount of content by organization.
+  
+### Removed
+  - DP-28600: Removed Icon from Topic pages.
+  
+### Fixed
+  - DP-28600: Fixed Info details accordion styling on mobile issue.
+  - DP-28762: Override header alerts and org nav search ios button colors, to keep design consistent between desktop and mobile.
+  
+### Changed
+  - DP-28735: Update Paragraphs, Entity Reference Revision, misc
+  - DP-28783: A11y - aria-label on alert icon.
+  - DP-28854: Remove Google Optimize - it is unused
+  - DP-28890: Process BigQuery queue outside of cron
+  
+
+
+## [0.367.0] - July 11, 2023
+
+### Added
+  - DP-26725: Add option to hide 'Did you find' component on form content type.
+  - DP-28507: Heal orphan references via redirect inspection
+  - DP-28604: Add Siteimprove data to bigquery module
+  - DP-28649: Drupal view made for internal report of how-to pages. Will not be visible to authors
+  
+### Changed
+  - DP-27207: D10 - upgrade Views related modules
+  - DP-28570: Changed deploy_cd CI workflow.
+  
+
+
+## [0.366.0] - June 27, 2023
+
+### Added
+  - DP-28177: Added new drupal module to get nightly data from BigQuery instead of Superset
+  
+### Changed
+  - DP-28558: Reduce number of pages tested in 500 tests.
+  - DP-28572: Backport of a production change to prevent unpublished pages from being redirected to login page on www.mass.gov.
+  
+### Fixed
+  - DP-28592: Resolve 500 errors on edit.mass.gov.
+  - DP-28606: Analytics NEW tab now showing for all appropriate content types.
+  
+
+
+## [0.365.0] - June 20, 2023
+
+### Removed
+  - DP-27052: Cleanup Drupal data listing views and assets.
+  - DP-28333: Remove the temp fix override css for map component z-index setting as it's replaced with the Mayflower content.
+  
+### Changed
+  - DP-28302: Have contact and related links on info details to right of overview if there is no TOC shown, eliminate related links at bottom on desktop.
+  
+### Fixed
+  - DP-28373: Fix filter bug for collections.
+  - DP-28478: A11y - Duplicate 'main navigation' labels in screen reader.
+  - DP-28497: A11y Eliminate duplicate IDs for header search input.
+  
+### Added
+  - DP-28432: Add components from Guide content type to Information details content type.
+  - DP-28475: Add testing so that we validate that Google Tag Manager code is actually inserted onto the pages.
+  
+
+
+## [0.364.0] - June 13, 2023
+
+### Added
+  - DP-26782: Added filtering for low quality feedback.
+  
+### Fixed
+  - DP-27296: Fix deprecation warnings in our custom code (frontend).
+  
+### Changed
+  - DP-28410: Limit autocomplete for visitor help text to exclude certain content types that are not appropriate.
+  - DP-28460: Move config overrides later in settings.php. Fixes analytics new tab
+  
+### Removed
+  - DP-28479: Removed default config from old version of the Google Tag module.
+  
+## [0.363.1] - June 8, 2023
+
+### Fixed
+- DP-28467: Updated google_tag to address config bug.
+
+
+
+## [0.363.0] - June 6, 2023
+
+### Fixed
+  - DP-28447: Fix Twig integer filter errors on image promos.
+
+### Changed
+  - DP-22494: Upgrade Mayflower PHP version to v8.
+  - DP-27345: Update Geo modules and misc modules to Drupal 10
+  - DP-27941: Banner image on info details added to Twitter and OG image metadata
+  - DP-27983: D10 - update redirect module
+  - DP-28133: Modify report of pages with no parents not to show executive orders.
+  - DP-28252: D10 module updates - ctools, dbal, key, entity_reference_tree, entity_heirarchy, purge
+  - DP-28334: Fix 500 error in KeyAuth module
+  - DP-28340: D10 upgrade path modules
+  - DP-28411: Eliminate truncation of titles in table of contents on binder.
+  
+### Added
+  - DP-28139: Add a linked from parent field to Children and Parents report.
+  - DP-28274: Add Analytics NEW tab for authors when editing.
+  - DP-28300: Add CSV export functionality to orphan reports.
+  - DP-28303: Added Entity usage regenerate new custom command.
+  - DP-28370: Add language functionality to service page.
+  
+
+
+## [0.362.0] - May 23, 2023
+
+### Fixed
+  - DP-26364: Map is included in the link.
+  
+### Changed
+  - DP-28136: Changes to feedback manager user interface.
+  - DP-28203: Increase resources for Backstop test job
+  - DP-28265: Add a space between the file size and the fiel title to be rendered in Firefox.
+  
+### Added
+  - DP-28202: Add new language to Mass.gov - Hmong
+  - DP-28301: Make report of visitor help pages.
+  
+
+
+## [0.361.0] - May 16, 2023
+
+### Fixed
+  - DP-28020: Fix Malformed TOC links (Follow-up).
+  - DP-28159: A11y - Admin menu color contrast.
+  - DP-28275: Fixed error when populating Internal Signees for news items.
+  
+### Added
+  - DP-28042: Hide password and check notify box during user creation
+  
+### Changed
+  - DP-28149: A11y Feedback - Text not included in an ARIA landmark.
+  
+
+
+## [0.360.0] - May 9, 2023
+
+### Changed
+  - DP-25180: A11y - Identify 2 sets of TOCs.
+  - DP-27204: D10 upgrade packages - authoring/fields
+  - DP-28037: A11y - Color contrast for link text on map.
+  - DP-28067: Updated entity_usage_queue_tracking.
+  - DP-28134: Modify "Related content" paragraph to allow external links and custom link labels.
+  - DP-28145: Footer site policies link updated to new target page.
+  - DP-28226: Options for form submission relabeled and help text improved to clarify that submissions with >1000 characters of text should use success message on different page.
+  - DP-28706: Changed format of bypass header and added to Nightcrawler
+  
+### Added
+  - DP-28044: Make it possible for the chatbot to show up on Collections.
+  
+### Fixed
+  - DP-28078: aria label for binder previous button corrected.
+  - DP-28134: Related content paragraph follow up fix to avoid 500 errors.
+  
+### Removed
+  - DP-28155: Allow all authors to add callout link and card group to info details pages.
+  
+
+
+## [0.359.0] - May 2, 2023
+
+### Fixed
+  - DP-25705: A11y - Fixed hamburger main nav keyboard navigations to 1) use the correct arrow directions in the submenus and 2) fixed the skipping of google translate on the top.
+  
+### Added
+  - DP-27287: Added key auth support to the Content Metadata API
+  
+### Changed
+  - DP-27859: A11y - Rules of court pages do not start with a level 1 heading.
+  - DP-27895: A11y - Incorrect heading levels.
+  - DP-27934: Modify page sub title's line height to 1.5.
+  - DP-28038: Darken font color for .ma__arrow-nav__title and .ma__page-flipper__context-label by adjusting their alpha level to meet the minimum required color contrast.
+  
+
+
+## [0.358.0] - April 25, 2023
+
+### Fixed
+  - DP-26219: Fixed empty headings on the home page.
+  - DP-26226: A11y - Fix keyboard navigation in homepage header.
+  - DP-26261: A11y - Empty tags in service page.
+  - DP-27693: Updated Superset endpoints to continue pulling in data.
+  - DP-27921: Correct spelling for aria attribute on sticky TOC show more button.
+  - DP-27930: A11y - Focusable hidden elements in feedback module.
+  - DP-27968: A11y - Fix download link screen reader text.
+  - DP-28013: A11y - Invalid value type for aria-expanded.
+  
+### Changed
+  - DP-26232: Place the utility nav panel close button to the bottom of the panel conatiner to be the last item to get focus.
+  - DP-27209: Update media related modules to Drupal 10
+  - DP-27212: D10 upgrade packages - Peformance
+  - DP-27789: Redirect to destination page after login
+  - DP-27853: A11y - Invalid language codes.
+  - DP-27858: Darken the illustrated link label font color to meet the minimum required color contrast ratio.
+  - DP-27872: Updated security/performance packages for Drupal 10
+  - DP-27903: Use composer audit in nightly_security CI workflow
+  - DP-27916: Accessibility improvement for search related and main navigation components.
+  
+### Removed
+  - DP-26232: Remove focus on the utility nav close button when the utility panel opens.
+  
+### Added
+  - DP-27413: Create view showing documents that have no pages linking here.
+  - DP-27736: Added an HTTP header to Backstop pages to bypass Akamai.
+  
+### Security
+  - DP-27966: Drupal Core update 9.5.5 to 9.5.8.
+  
+## [0.357.2] - April 12, 2023
+
+- No changes. Deploying just to help Acquia debug our open case.
+
+## [0.357.1] - April 12, 2023
+
+- Hotfix to run updatedb and config:import which were skipped by Acquia support when they redeployed.
+
+## [0.357.0] - April 11, 2023
+
+### Changed
+  - DP-26625: Increase visual prominence of links below search on home page.
+  - DP-27686: Immediately deploy release branch (and related CircleCI updates)
+
+### Added
+  - DP-27723: Add approval fields to User entity
+
+
+## [0.356.0] - April 6, 2023 (not released)
+
+### Removed
+  - DP-26220: Removed feedback button markup from pages that do not have feedback forms.
+
+### Changed
+  - DP-26227: Restructure banner image credit component for semantics and screen reader users.
+  - DP-27423: Replaces the old backstop job in CircleCI with the new split test
+  - DP-27472: Fix layout shifts before taking backstop screenshots
+  - DP-27498: Use new Akamai domains for Acquia envs
+  - DP-27690: Pins backstop image to a fixed version
+Switches from puppeteer to playwright
+Disables some flaky tests temporarily
+Make the references capture try 3 times
+
+  - DP-27793: Change backstop "test" to use stage.mass.gov
+
+### Fixed
+  - DP-26259: A11y - Empty heading for video in promo page.
+  - DP-26302: A11y - Empty Contact list.
+  - DP-26314: A11y - Empty read more link.
+  - DP-27578: Move push_acquia CI job to build_tag workflow
+  - DP-27679: Fix 500 error in EventsRendererOrgPages
+  - DP-27679: Fix 500 error in InfoDetails focal_point preview.
+  - DP-27694: A11y - Eliminate duplicate IDs for main navigation and search elements.
+  - DP-27696: A11y - Collapsible content button label in org page.
+  - DP-27697: Fixed Leaflet map A11y.
+  - DP-27728: Removed old hosts from Backstop.
+  - DP-27734: A11y - Malformed TOC links.
+
+
+
+## [0.355.0] - March 28, 2023
+
+### Added
+  - DP-24499: Enable key auth module
+
+### Changed
+  - DP-25653: Superset integration changed to also pull data for unpublished content.
+  - DP-26304: Remove empty aria-label from the span with a backgroud image for the press teaser component.
+  - DP-27348: Entity Usage Queue Tracking  - upgrade for Drupal 10
+  - DP-27578: Use git tag in env indicator when available
+  - DP-27591: Store render cache in Memcache
+
+### Fixed
+  - DP-26258: A11y - Empty heading with social media links.
+  - DP-27476: Fixed taxonomy term 500 error.
+  - DP-27487: Pages linking here fixes to show all pages for documents.
+
+
+
+## [0.354.0] - March 21, 2023
+
+### Fixed
+  - DP-25389: Wait for Papa.parse to finish manipulating csv tables and Caspio to load forms before taking a screenshot with Backstop
+  - DP-25829: Fixes Backstop ready code to wait for leaflet map tiles and markers to load before taking a screenshot
+  - DP-26574: Passes focal point information to illustrated header background images
+  - DP-27438: Fixed the issue with orphan paragraphs being shown in the "Pages linking here" tab.
+  - DP-27447: Document language bar not showing when document description is shown.
+  - DP-27471: Backstop Reliability Fixes
+
+- Waits for alerts to have content before taking a screenshot
+- Fixes Caspio Form selector on pages which don't have a footer (i.e. the 404 page)
+- Splits the expansions of accordion toggle tests into emergency alerts and regular alerts
+- Refactor the logic for checking if accordions expand as expected
+- Tweaks engine options and passes an option to tell Puppeteer to wait for domcontentloaded before proceeding
+- Adds a backstop reference test to each pull request to verify that backstop can collect reference images successfully
+
+  - DP-27478: Organization report (view) for authors re-enabled.
+  - DP-27545.yml: Removes the accordion test in Backstop for global alerts as they aren't always present
+Hides all alerts by default
+Refactors the mechanism in Backstop to hide alerts
+
+
+### Changed
+  - DP-26086: Update dependencies for Gin PR.
+  - DP-27421: Remove cache busting string from URLs fetched by Backstop for references
+in the new job which only collects reference images. Also adds a
+`--cachebuster` parameter to the relevant drush jobs.
+
+
+### Added
+  - DP-26786: Add Composer dependencies for Gin theme
+  - DP-27259: Added local storage value to associate with site feedback submissions.
+
+### Security
+  - DP-27543: Drupal core - Moderately critical - Access bypass - SA-CORE-2023-004.
+
+
+
 ## [0.353.0] - March 7, 2023
 
 ### Changed
   - DP-27022: Adjust feedback manager report in Drupal
   - DP-27225: Increase quantity shown on feedback page from 10 to 20.
   - DP-27435: Dont list an unpublished Locations page
-  
+
 ### Fixed
   - DP-27257: Investigate and fix errors in Drupal.
   - DP-27426: Cleanup Banner Search and Header Search templates after removing autocomplete.
-  
+
 ## [0.352.2] - March 3, 2023
 
 ### Fixed

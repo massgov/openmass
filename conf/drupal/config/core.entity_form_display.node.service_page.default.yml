@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_data_search_content
     - field.field.node.service_page.field_data_topic
+    - field.field.node.service_page.field_english_version
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_list_data_type
@@ -77,6 +78,8 @@ third_party_settings:
         - field_data_format
         - field_data_topic
         - field_data_search_content
+        - langcode
+        - field_english_version
         - field_intended_audience
         - field_reusable_label
         - field_collections
@@ -147,7 +150,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 84
+    weight: 86
     region: content
     settings:
       theme: default
@@ -272,6 +275,34 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_english_version:
+    type: entity_reference_autocomplete
+    weight: 83
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        bebb78a1-c9e3-4b8c-96fe-2bf70211b690:
+          entity_type: node
+          bundle: service_page
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_image_credit:
     type: string_textfield
     weight: 73
@@ -282,7 +313,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 82
+    weight: 84
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -366,7 +397,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 83
+    weight: 85
     region: content
     settings:
       match_operator: CONTAINS
@@ -468,12 +499,13 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: video_browser
   field_services_social_links:
     type: link_default
-    weight: 36
+    weight: 37
     region: content
     settings:
       placeholder_url: ''
@@ -487,6 +519,13 @@ content:
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 82
+    region: content
+    settings:
+      include_locked: true
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
@@ -525,6 +564,11 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  simple_sitemap:
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   title:
     type: string_textfield
     weight: 69
@@ -536,7 +580,7 @@ content:
       maxlength:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
-        maxlength_js_enforce_attribute: false
+        maxlength_js_enforce: false
   uid:
     type: entity_reference_autocomplete
     weight: 0
@@ -566,7 +610,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  langcode: true
   path: true
   promote: true
   status: true

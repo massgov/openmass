@@ -21,7 +21,7 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     $queue = \Drupal::service('purge.queue');
     $queue->emptyQueue();
     // Ensure that mass_caching_purge_purgers_alter() executes during the phpunit run.
-    $manager = \Drupal::service('plugin.manager.purge.purgers');
+    $manager = \Drupal::service('plugin.cache_clearer');
     $manager->clearCachedDefinitions();
   }
 

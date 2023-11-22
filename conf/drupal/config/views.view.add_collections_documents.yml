@@ -91,13 +91,13 @@ display:
           form_step: true
           buttons: true
           action_title: Action
+          clear_on_exposed: false
+          force_selection_info: false
           selected_actions:
             6:
               action_id: mass_views_add_documents_collections
               preconfiguration:
-                add_confirmation: 1
-          clear_on_exposed: false
-          force_selection_info: 0
+                add_confirmation: true
         mid:
           id: mid
           table: media_field_data
@@ -178,9 +178,9 @@ display:
             alter_text: false
             text: ''
             make_link: true
-            path: 'https://www.mass.gov/media/{{ mid }}/download'
+            path: '/media/{{ mid }}/download'
             absolute: false
-            external: true
+            external: false
             replace_spaces: false
             path_case: none
             trim_whitespace: false
@@ -606,6 +606,15 @@ display:
             date_format: short
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -1247,30 +1256,42 @@ display:
           operator: in
           value:
             en: en
-            es: es
-            zh-hans: zh-hans
-            zh-hant: zh-hant
-            pt-br: pt-br
-            pt-pt: pt-pt
-            fr: fr
-            ru: ru
-            ko: ko
-            vi: vi
-            ar: ar
-            it: it
-            cv: cv
-            ht: ht
-            pl: pl
-            lo: lo
-            km: km
             af: af
             sq: sq
             am: am
-            hi: hi
-            ne: ne
-            so: so
-            uk: uk
+            ar: ar
+            hy: hy
+            cv: cv
+            zh-hans: zh-hans
+            zh-hant: zh-hant
+            prs: prs
+            nl: nl
+            fr: fr
+            de: de
             el: el
+            ht: ht
+            he: he
+            hi: hi
+            hmn: hmn
+            it: it
+            ja: ja
+            km: km
+            ko: ko
+            lo: lo
+            ne: ne
+            pst: pst
+            fa: fa
+            pl: pl
+            pt-br: pt-br
+            pt-pt: pt-pt
+            ru: ru
+            so: so
+            es: es
+            sw: sw
+            tw: tw
+            uk: uk
+            vi: vi
+            rw: rw
           group: 1
           exposed: true
           expose:
@@ -1298,9 +1319,7 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
             reduce: true

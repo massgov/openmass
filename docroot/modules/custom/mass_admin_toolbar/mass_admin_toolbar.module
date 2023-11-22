@@ -5,9 +5,8 @@
  * Custom module providing custom styling for the admin_toolbar.
  */
 
-use Drupal\Core\Url;
-use Drupal\Core\Render\Markup;
 use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\Core\Url;
 use Drupal\mass_admin_toolbar\MassAdminToolbarRender;
 
 /**
@@ -30,11 +29,6 @@ function mass_admin_toolbar_css_alter(&$css, $assets) {
   unset($css[\Drupal::service('extension.list.module')->getPath('toolbar') . '/css/toolbar.theme.css']);
   // Disable stylesheet from admin_toolbar module.
   unset($css[\Drupal::service('extension.list.module')->getPath('admin_toolbar') . '/css/admin.toolbar.css']);
-  // Disable styles coming from Stable because somehow they are getting into the admin theme.
-  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.icons.theme.css']);
-  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.module.css']);
-  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.menu.css']);
-  unset($css[\Drupal::service('extension.list.theme')->getPath('stable') . '/css/toolbar/toolbar.theme.css']);
 }
 
 /**
@@ -60,7 +54,7 @@ function mass_admin_toolbar_toolbar() {
     '#weight' => -50,
     '#wrapper_attributes' => [
       'class' => [
-        'admin-home-toolbar-tab'
+        'admin-home-toolbar-tab',
       ],
     ],
 
@@ -114,7 +108,7 @@ function mass_admin_toolbar_toolbar() {
     '#weight' => 0,
     '#wrapper_attributes' => [
       'class' => [
-        'add-content-toolbar-tab'
+        'add-content-toolbar-tab',
       ],
     ],
   ];
@@ -134,7 +128,7 @@ function mass_admin_toolbar_toolbar() {
     '#weight' => 5,
     '#wrapper_attributes' => [
       'class' => [
-        'add-document-toolbar-tab'
+        'add-document-toolbar-tab',
       ],
     ],
   ];

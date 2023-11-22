@@ -157,22 +157,6 @@
   };
 
   /**
-   * Enable/disable fields on info details.
-   *
-   * Hide or show fields based on the field_details_enable_fields value.
-   */
-  Drupal.behaviors.enableInfoFieldsConditional = {
-    attach: function (context) {
-      $('.field--name-field-details-enable-fields', context).change(function () {
-        var enabledDetails = $(this).find('input').prop('checked') !== false;
-        var $infoDetails = $('.field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content');
-        $infoDetails.find("input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").toggle(enabledDetails);
-        $infoDetails.find("input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").toggle(enabledDetails);
-      }).change();
-    }
-  };
-
-  /**
    * Conditional fields on events.
    *
    * Make administrative area optional when unique option unchecked.

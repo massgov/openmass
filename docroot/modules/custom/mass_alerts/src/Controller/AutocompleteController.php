@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_alerts\Controller;
 
+use Drupal\Component\Utility\Tags;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\Component\Utility\Tags;
 
 /**
  * Defines a route controller for entity autocomplete form elements.

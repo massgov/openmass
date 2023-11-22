@@ -201,7 +201,7 @@
   Drupal.behaviors.autocomplete = {
     attach: function (context) {
       // Act on textfields with the "form-autocomplete" class.
-      var $autocomplete = $(context).find('input.form-autocomplete').once('autocomplete');
+      const $autocomplete = $(once('autocomplete', 'input.form-autocomplete', context));
       if ($autocomplete.length) {
     // Allow options to be overriden per instance.
         var blacklist = $autocomplete.attr('data-autocomplete-first-character-blacklist');

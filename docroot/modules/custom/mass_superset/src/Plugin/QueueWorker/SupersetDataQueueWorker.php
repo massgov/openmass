@@ -6,8 +6,6 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\mass_superset\SupersetStorageInterface;
-use Drupal\node\Entity\Node;
-use Drupal\mass_content_api\DescendantManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

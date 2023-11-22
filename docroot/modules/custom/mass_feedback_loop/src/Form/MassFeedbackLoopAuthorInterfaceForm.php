@@ -80,7 +80,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     // Checks for query params in case pager link was used.
     /** @var \Symfony\Component\HttpFoundation\ParameterBag $query */
     $query = $this->getRequest()->query;
-    $feedback_api_params = [];
 
     $params = $query->all();
     $feedback_api_params = $this->contentFetcher->formatQueryParams($params);
@@ -114,7 +113,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
         'placeholder' => "Start typing Organizations to filter by ...",
         'class' => ['use-selectize-autocomplete'],
       ],
-      // TODO split on comma, load array.
+      // @todo split on comma, load array.
       '#default_value' => isset($feedback_api_params['org_id']) ? $feedback_api_params['org_id'] : NULL,
     ];
 
@@ -124,7 +123,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#multiple' => TRUE,
       '#title' => $this->t('Author'),
       '#options' => $this->getAuthorUsernames(),
-      // TODO split on comma, load array.
+      // @todo split on comma, load array.
       '#default_value' => isset($feedback_api_params['author_id']) ? $feedback_api_params['author_id'] : NULL,
       '#attributes' => [
         'placeholder' => "Start typing Author usernames ...",
@@ -180,7 +179,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#options' => $label_select_list,
       '#attributes' => [
         'placeholder' => "Start typing labels to filter by ...",
-        'class' => ['use-selectize-autocomplete']
+        'class' => ['use-selectize-autocomplete'],
       ],
       // Updates form input with default value, if available.
       '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,
@@ -235,24 +234,20 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => isset($feedback_api_params['info_found']) ? $feedback_api_params['info_found'] : 0,
     ];
 
-    // Builds 'Filter by "Did you find?" status' input.
-    $form['requested_response'] = [
-      '#type' => 'radios',
-      '#title' => $this->t('Filter by "Requires Response"'),
-      '#options' => [
-        'yes' => $this->t('Yes'),
-        'no' => $this->t('No'),
-        '0' => $this->t('Show all'),
-      ],
-      '#default_value' => isset($feedback_api_params['requested_response']) ? $feedback_api_params['requested_response'] : 0,
-    ];
-
     // Builds 'Watched pages only' input.
     $form['watch_content'] = [
       '#type' => 'checkboxes',
       '#options' => ['watch_content' => $this->t('Watched pages only')],
       '#title' => $this->t('Filter by watched pages only'),
       '#default_value' => !empty($feedback_api_params['watch_content']) ? ['watch_content'] : [],
+    ];
+
+    // Builds 'Flagged inappropriate' input.
+    $form['flagged_inappropriate'] = [
+      '#type' => 'checkboxes',
+      '#options' => ['flagged_inappropriate' => $this->t('Show feedback flagged as low quality')],
+      '#title' => $this->t('Filter by feedback quality'),
+      '#default_value' => !empty($feedback_api_params['flagged_inappropriate']) ? ['flagged_inappropriate'] : [],
     ];
 
     // Hidden value used for tracking current page on pager in case of reload.
@@ -304,19 +299,13 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     if (isset($response['total']) && is_numeric($response['total']) && $response['total'] > 0) {
       // Create and attach the link to download CSV export.
-      $feedback_api_csv_download_params = $feedback_api_params;
-      foreach ($feedback_api_csv_download_params as $key => $value) {
-        if (is_array($value)) {
-          $feedback_api_csv_download_params[$key] = implode(",", $value);
-        }
-      }
-      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_csv_download_params]);
-      $csv_download_uri = $csv_download_url->toString();
+      $feedback_api_csv_download_params = $this->contentFetcher->formatQueryParams($feedback_api_params);
+      $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_csv_download_params])->toString();
       $form['csv_export'] = [
         '#type' => 'markup',
         // @codingStandardsIgnoreStart
         '#markup' => "<div class='csv-export-wrapper'>
-          <a href='$csv_download_uri'>
+          <a href='$csv_download_url'>
             <span class='feed-icon'></span> Download CSV Export
           </a>
         </div>",
@@ -411,11 +400,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
         $feedback_api_params['info_found'] = $filter_by_info_found_param;
       }
 
-      $filter_by_info_found_param = $form_state->getValue('requested_response');
-      if (!empty($filter_by_info_found_param)) {
-        $feedback_api_params['requested_response'] = $filter_by_info_found_param;
-      }
-
       $filter_by_watched_param = $form_state->getValue('watch_content');
       if (isset($filter_by_watched_param['watch_content'])) {
         $watch_value = $filter_by_watched_param['watch_content'];
@@ -425,6 +409,17 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       }
       else {
         $feedback_api_params['watch_content'] = 1;
+      }
+
+      $filter_by_flagged_inappropriate = $form_state->getValue('flagged_inappropriate');
+      if (isset($filter_by_flagged_inappropriate['flagged_inappropriate'])) {
+        $flagged_inappropriate_value = $filter_by_flagged_inappropriate['flagged_inappropriate'];
+      }
+      if (!isset($flagged_inappropriate_value) || $flagged_inappropriate_value !== 'flagged_inappropriate') {
+        $feedback_api_params['flagged_inappropriate'] = 0;
+      }
+      else {
+        $feedback_api_params['flagged_inappropriate'] = 1;
       }
 
       $url = Url::fromRoute('mass_feedback_loop.mass_feedback_loop_author_interface_form', [], ['query' => $feedback_api_params]);

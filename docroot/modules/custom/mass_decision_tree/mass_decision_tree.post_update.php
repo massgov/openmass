@@ -5,9 +5,9 @@
  * Implementations of hook_post_update_NAME() for Mass Content.
  */
 
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\mayflower\Helper;
 
 /**
  * Migrate data from field_answers to field_multiple_answers.

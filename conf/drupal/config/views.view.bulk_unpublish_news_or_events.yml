@@ -397,6 +397,15 @@ display:
             date_format: short_date_only
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -489,7 +498,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'use mass dashboard'
       cache:
         type: tag
         options: {  }
@@ -966,7 +975,10 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: admin/content/bulk-unpublish-news-or-events
     cache_metadata:
       max-age: 0

@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaDateBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'Expires' meta tag.
@@ -20,9 +20,12 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaDateBase;
  *   weight = 4,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = FALSE
+ *   multiple = FALSE,
+ *   property_type = "date",
+ *   tree_parent = {},
+ *   tree_depth = 0
  * )
  */
-class SchemaSpecialAnnouncementExpires extends SchemaDateBase {
+class SchemaSpecialAnnouncementExpires extends SchemaNameBase {
 
 }

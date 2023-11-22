@@ -115,8 +115,8 @@
       {% endif %}
     {% endfor %}
   {% endblock %}
-  {% if secondaryItems %}
-    {% block secondaryContactGroups %}
+  {% block secondaryContactGroups %}
+    {% if secondaryItems %}
       {% if availableContactGroups[2] %}
         {{ availableContactGroups[2] }}
       {% endif %}
@@ -135,8 +135,8 @@
           } %}
         </div>
       {% endif %}
-    {% endblock %}
-  {% endif %}
+    {% endif %}
+  {% endblock %}
 {% endembed %}
 
 {{ content | without('field_display_title', 'field_contact_more_info_link', 'field_ref_phone_number', 'field_ref_links', 'field_ref_fax_number', 'field_ref_address') }}

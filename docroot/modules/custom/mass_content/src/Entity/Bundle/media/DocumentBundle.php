@@ -4,7 +4,6 @@ namespace Drupal\mass_content\Entity\Bundle\media;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\file\Entity\File;
-use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
 
 /**
  * A bundle class for media entities.

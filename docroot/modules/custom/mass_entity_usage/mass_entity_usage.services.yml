@@ -4,3 +4,6 @@ services:
     arguments: ['@entity_type.manager', '@config.factory']
     tags:
       - { name: event_subscriber }
+  mass_entity_usage.queue_batch_manager:
+    class: Drupal\mass_entity_usage\EntityUsageQueueBatchManager
+    arguments: [ '@entity_type.manager', '@string_translation', '@config.factory' ]

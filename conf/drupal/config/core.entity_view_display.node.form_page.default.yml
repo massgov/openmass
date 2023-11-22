@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.form_page.field_form_listing_desc
     - field.field.node.form_page.field_form_ref_contacts_3
     - field.field.node.form_page.field_form_you_will
+    - field.field.node.form_page.field_hide_feedback_component
     - field.field.node.form_page.field_intended_audience
     - field.field.node.form_page.field_metatags
     - field.field.node.form_page.field_organizations
@@ -96,6 +97,16 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 3
+    region: content
+  field_hide_feedback_component:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 15
     region: content
   field_intended_audience:
     type: list_default

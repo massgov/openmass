@@ -2,12 +2,12 @@
 
 namespace Drupal\mass_content;
 
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\node\NodeInterface;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\State\StateInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\node\NodeInterface;
 
 /**
  * Lightweight event manager.
@@ -15,6 +15,8 @@ use Drupal\Core\State\StateInterface;
  * Queries for events in a performant way.
  */
 class EventManager {
+
+  private EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * Constructor.
@@ -116,7 +118,7 @@ class EventManager {
       $query->range(0, $limit);
     }
 
-    return $this->getStorage()->loadMultiple($query->execute());
+    return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());
   }
 
   /**
@@ -139,7 +141,7 @@ class EventManager {
       $query->range(0, $limit);
     }
 
-    return $this->getStorage()->loadMultiple($query->execute());
+    return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());
   }
 
   /**
@@ -153,7 +155,7 @@ class EventManager {
    */
   public function getPastCount(NodeInterface $parent) {
     $query = $this->getPastQuery($parent);
-    return $query->count()->execute();
+    return $query->accessCheck(FALSE)->count()->execute();
   }
 
   /**
@@ -167,7 +169,7 @@ class EventManager {
    */
   public function getUpcomingCount(NodeInterface $parent) {
     $query = $this->getUpcomingQuery($parent);
-    return $query->count()->execute();
+    return $query->accessCheck(FALSE)->count()->execute();
   }
 
   /**

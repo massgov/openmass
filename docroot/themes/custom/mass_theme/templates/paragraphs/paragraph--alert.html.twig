@@ -1,0 +1,9 @@
+{# Alert #}
+{% if content.field_alert_text|render is not empty %}
+    {% include "@organisms/by-author/callout-alert.twig" with {
+        "calloutAlert": {
+          "text": content.field_alert_text,
+          "href": ""
+        }
+      } %}
+{% endif %}

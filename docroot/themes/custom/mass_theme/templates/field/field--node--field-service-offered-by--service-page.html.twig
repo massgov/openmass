@@ -59,7 +59,7 @@
     {% for item in items|slice(3,3) %}
       <li class="ma__link-list__item ma__link-list__item--secondary js-accordion-content"{{ attributes }}>{{ item.content }}</li>
     {% endfor %}
-    {% for item in items|slice(6) %}
+    {% for item in items|slice(0,6) %}
       <li class="ma__link-list__item ma__link-list__item--tertiary js-accordion-content"{{ attributes }}>{{ item.content }}</li>
     {% endfor %}
   {% endblock %}

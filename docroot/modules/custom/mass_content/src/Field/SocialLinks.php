@@ -17,6 +17,7 @@ class SocialLinks extends InjectParentField {
     $services = [
       'twitter',
       'facebook',
+      'threads',
       'flickr',
       'blog',
       'linkedin',

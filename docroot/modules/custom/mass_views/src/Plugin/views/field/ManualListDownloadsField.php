@@ -3,9 +3,9 @@
 namespace Drupal\mass_views\Plugin\views\field;
 
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
-use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\ViewExecutable;
 
 /**

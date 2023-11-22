@@ -5,10 +5,9 @@ namespace Drupal\mass_hierarchy\Form;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\entity_hierarchy\Form\HierarchyChildrenForm as EntityHierachyHierarchyChildrenForm;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Defines a form for re-ordering children.
@@ -126,7 +125,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
           'action' => 'order',
           'relationship' => 'sibling',
           'group' => 'child-weight',
-        ]
+        ],
       ],
       '#empty' => $this->t('There are no children to reorder'),
     ];
@@ -203,7 +202,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
             <div class="hierarchy-row-controls">
               <div class="hierarchy-row-controls--expand"></div>
               <div class="hierarchy-row-controls--collapse"></div>
-            </div>'
+            </div>',
         ],
       ];
 

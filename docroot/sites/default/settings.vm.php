@@ -97,12 +97,12 @@ $settings['skip_permissions_hardening'] = TRUE;
  * @see https://wiki.php.net/rfc/expectations
  */
 assert_options(ASSERT_ACTIVE, TRUE);
-\Drupal\Component\Assertion\Handle::register();
+assert_options(ASSERT_EXCEPTION, TRUE);
 
 // If Memcache needs to be disabled, comment out this block.
 if($memcached_host = getenv('MEMCACHED_HOST')) {
   $memcached_port = getenv('MEMCACHED_PORT') ?: 11211;
-  $settings['memcache']['servers'] = ["${memcached_host}:${memcached_port}" => 'default'];
+  $settings['memcache']['servers'] = ["{$memcached_host}:{$memcached_port}" => 'default'];
   $settings = $configureMemcache($settings);
 }
 

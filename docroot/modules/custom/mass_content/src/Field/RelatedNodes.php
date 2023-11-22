@@ -112,7 +112,7 @@ class RelatedNodes extends EntityReferenceFieldItemList {
       foreach ($linkFields as $linkField) {
         $query = $this->getQuery();
         $query->condition($linkField . '.uri', $uri);
-        $return = $query->execute();
+        $return = $query->accessCheck(FALSE)->execute();
         // Discard the keys in $return as we don't care about revision ids.
         $nids = array_merge($nids, array_values($return));
       }
@@ -123,7 +123,7 @@ class RelatedNodes extends EntityReferenceFieldItemList {
       foreach ($referenceFields as $referenceField) {
         $query = $this->getQuery();
         $query->condition($referenceField . '.target_id', $entity->id());
-        $return = $query->execute();
+        $return = $query->accessCheck(FALSE)->execute();
         // Discard the keys in $return as we don't care about revision ids.
         $nids = array_merge($nids, array_values($return));
       }

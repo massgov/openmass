@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_section_long_form_content
+    - paragraphs.paragraphs_type.alert
     - paragraphs.paragraphs_type.callout_link
     - paragraphs.paragraphs_type.caspio_embed
     - paragraphs.paragraphs_type.csv_table
@@ -15,6 +16,7 @@ dependencies:
     - paragraphs.paragraphs_type.section_long_form
     - paragraphs.paragraphs_type.stat
     - paragraphs.paragraphs_type.tableau_embed
+    - paragraphs.paragraphs_type.time_callout
     - paragraphs.paragraphs_type.video
   module:
     - entity_reference_revisions
@@ -42,6 +44,8 @@ settings:
       video: video
       caspio_embed: caspio_embed
       tableau_embed: tableau_embed
+      alert: alert
+      time_callout: time_callout
       csv_table: csv_table
     negate: 0
     target_bundles_drag_drop:
@@ -99,6 +103,9 @@ settings:
       advisory_section:
         weight: 16
         enabled: false
+      alert:
+        weight: 132
+        enabled: true
       board_member:
         weight: 46
         enabled: false
@@ -120,6 +127,9 @@ settings:
       caspio_embed:
         weight: 110
         enabled: true
+      collection_search:
+        weight: 158
+        enabled: false
       completion_time:
         weight: 20
         enabled: false
@@ -131,6 +141,9 @@ settings:
         enabled: false
       contact_info:
         weight: 23
+        enabled: false
+      contact_placeholder:
+        weight: 163
         enabled: false
       content_card_group:
         weight: 24
@@ -177,11 +190,17 @@ settings:
       featured_message:
         weight: 81
         enabled: false
+      featured_topics:
+        weight: 179
+        enabled: false
       file_download:
         weight: 33
         enabled: false
       file_download_single:
         weight: 35
+        enabled: false
+      flexible_link_group:
+        weight: 182
         enabled: false
       footnotes:
         weight: 78
@@ -231,8 +250,8 @@ settings:
       key_message_section:
         weight: 96
         enabled: false
-      link_group:
-        weight: 98
+      link_group_accordion:
+        weight: 199
         enabled: false
       link_group_document:
         weight: 99
@@ -300,6 +319,24 @@ settings:
       online_email:
         weight: 63
         enabled: false
+      org_events:
+        weight: 222
+        enabled: false
+      org_locations:
+        weight: 223
+        enabled: false
+      org_news:
+        weight: 224
+        enabled: false
+      org_related_orgs:
+        weight: 225
+        enabled: false
+      org_section_long_form:
+        weight: 226
+        enabled: false
+      organization_contact_logo:
+        weight: 227
+        enabled: false
       organization_grid:
         weight: 106
         enabled: false
@@ -360,8 +397,20 @@ settings:
       section_with_heading:
         weight: 86
         enabled: false
+      service_rich_text:
+        weight: 248
+        enabled: false
+      service_section:
+        weight: 249
+        enabled: false
+      sitewide_alert_message:
+        weight: 250
+        enabled: false
       slideshow:
         weight: 87
+        enabled: false
+      social_media:
+        weight: 252
         enabled: false
       stacked_band:
         weight: 88
@@ -381,6 +430,9 @@ settings:
       tableau_embed:
         weight: 111
         enabled: true
+      time_callout:
+        weight: 133
+        enabled: true
       video:
         weight: 97
         enabled: true
@@ -389,5 +441,8 @@ settings:
         enabled: false
       video_with_section:
         weight: 113
+        enabled: false
+      what_would_you_like_to_do:
+        weight: 262
         enabled: false
 field_type: entity_reference_revisions

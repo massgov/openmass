@@ -6,8 +6,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\mass_serializer\CacheEndpoint;
 use Drupal\mass_serializer\RenderEndpoint;
 use Drupal\taxonomy\TermInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class DataJsonController.

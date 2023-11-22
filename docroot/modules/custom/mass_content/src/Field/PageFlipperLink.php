@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_content\Field;
 
-use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;

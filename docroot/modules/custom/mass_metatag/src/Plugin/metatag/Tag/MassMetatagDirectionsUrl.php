@@ -48,7 +48,7 @@ class MassMetatagDirectionsUrl extends MetaNameBase {
             '#attributes' => [
               'name' => $this->name,
               'content' => 'https://maps.google.com/?q=' . urlencode($address_string),
-            ]
+            ],
           ];
         }
       }

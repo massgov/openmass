@@ -4,14 +4,13 @@ namespace Drupal\mass_views\Plugin\Action;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -192,7 +191,7 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements C
         '#start_minimized' => TRUE,
         '#title' => $this->t('New Collection'),
         '#required' => TRUE,
-        '#attributes' => ['class' => ['field--widget-term-reference-tree']]
+        '#attributes' => ['class' => ['field--widget-term-reference-tree']],
       ];
     }
     return $form;

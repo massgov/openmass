@@ -2,10 +2,15 @@
 
 namespace Drupal\mass_content\Commands;
 
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\mayflower\Helper;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\DrushCommands;
+use Drush\Drush;
 
 /**
  * Mass Content drush commands.
@@ -17,7 +22,7 @@ class MassContentCommands extends DrushCommands {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  private $entityTypeManager;
+  private EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * {@inheritdoc}
@@ -51,7 +56,7 @@ class MassContentCommands extends DrushCommands {
       'regulation' => 'field_regulation_last_updated',
       'rules' => 'field_rules_effective_date',
       'advisory' => 'field_advisory_date',
-      'news' => 'field_news_date'
+      'news' => 'field_news_date',
     ];
 
     // 1. Log the start of the script.
@@ -216,6 +221,166 @@ class MassContentCommands extends DrushCommands {
 
     // Turn on entity_hierarchy writes after processing the item.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+  }
+
+  /**
+   * Replaces raw URLs in content with the aliases.
+   *
+   * Use --simulate to get a report, and skip healing.
+   *
+   * @command ma:heal-raw-urls
+   * @field-labels
+   *   success: Success
+   *   entity_type: Entity Type
+   *   entity_bundle: Entity Bundle
+   *   entity_id: Entity ID
+   *   field_name: Field Name
+   *   parent_id: Parent ID
+   *   parent_type: Parent Type
+   *   parent_bundle: Parent Bundle
+   * @default-fields success,entity_type,entity_bundle,entity_id,field_name,parent_id,parent_type,parent_bundle
+   * @aliases mru
+   * @filter-default-field from_id
+   */
+  public function healRawLinkInContent($options = ['format' => 'table']): RowsOfFields {
+    $rows = [];
+    // Don't spam all the users with content update emails.
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    $entity_names = ['node_type', 'paragraphs_type'];
+    foreach ($entity_names as $entity_name) {
+      if ($entity_name == 'node_type') {
+        $entity_storage_name = 'node';
+      }
+      elseif ($entity_name == 'paragraphs_type') {
+        $entity_storage_name = 'paragraph';
+      }
+      $types = $this->getEntityBundles($entity_name);
+      foreach ($types as $type) {
+        $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions($entity_storage_name, $type);
+        foreach ($fields as $field_name => $definition) {
+          switch ($definition->getType()) {
+            case 'text_with_summary':
+            case 'text_long':
+              $query = $this->entityTypeManager->getStorage($entity_storage_name)->getQuery();
+              $query->condition('type', $type);
+              // Add a condition to filter entities with a specific textarea field containing "node/nid".
+              $query->condition("$field_name.value", 'node/', 'CONTAINS');
+
+              // Execute the query and get a list of entity IDs.
+              $entity_ids = $query->execute();
+              if ($entity_ids) {
+                $entities = $this->entityTypeManager->getStorage($entity_storage_name)->loadMultiple($entity_ids);
+                foreach ($entities as $entity) {
+                  $changed = FALSE;
+                  if ($entity instanceof Paragraph) {
+                    if (Helper::isParagraphOrphan($entity)) {
+                      continue;
+                    }
+                  }
+                  $list = $entity->get($field_name);
+                  foreach ($list as $delta => $item) {
+                    $values[$delta] = $item->getValue();
+                    $value = $item->getValue()['value'];
+                    $dom = Html::load($value);
+                    $xpath = new \DOMXPath($dom);
+                    foreach ($xpath->query("//a[starts-with(@href, '/node/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
+                      $pattern = '/\d+/';
+                      if (preg_match($pattern, $element->getAttribute('href'), $matches)) {
+                        if ($nid = $matches[0]) {
+                          $node = $this->entityTypeManager->getStorage('node')->load($nid);
+                          if ($node) {
+                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
+                            if ($alias) {
+                              $changed = TRUE;
+                              $href_url = parse_url($element->getAttribute('href'));
+                              $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                              $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                              $element->setAttribute('data-entity-uuid', $node->uuid());
+                              $element->setAttribute('data-entity-substitution', 'canonical');
+                              $element->setAttribute('data-entity-type', 'node');
+                              $element->setAttribute('href', $alias . $query . $anchor);
+                            }
+                          }
+                        }
+                      }
+                    }
+
+                    $replaced = Html::serialize($dom);
+                    $values[$delta]['value'] = $replaced;
+                  }
+                  if ($changed) {
+                    $result = [
+                      'success' => 'No',
+                      'entity_type' => $entity_storage_name,
+                      'entity_bundle' => $type,
+                      'entity_id' => $entity->id(),
+                      'field_name' => $field_name,
+                      'parent_id' => 'N/A',
+                      'parent_type' => 'N/A',
+                      'parent_bundle' => 'N/A',
+                    ];
+                    if (!Drush::simulate()) {
+                      if (method_exists($entity, 'setRevisionLogMessage')) {
+                        $entity->setNewRevision();
+                        $entity->setRevisionLogMessage('Revision created to fix plain node links.');
+                        $entity->setRevisionCreationTime(\Drupal::time()
+                          ->getRequestTime());
+                      }
+                      $entity->set($field_name, $values);
+                      $entity->save();
+                      \Drupal::service('cache_tags.invalidator')->invalidateTags($entity->getCacheTagsToInvalidate());
+                      $parent = $entity;
+                      // Climb up to find a non-paragraph parent.
+                      while (method_exists($parent, 'getParentEntity')) {
+                        $parent = $parent->getParentEntity();
+                        if (!$parent->isPublished()) {
+                          continue 2;
+                        }
+                      }
+                      $result['success'] = 'Yes';
+                    }
+                    else {
+                      $parent = $entity;
+                      // Climb up to find a non-paragraph parent.
+                      while (method_exists($parent, 'getParentEntity')) {
+                        $parent = $parent->getParentEntity();
+                        if (!$parent->isPublished()) {
+                          continue 2;
+                        }
+                      }
+                      $result['parent_id'] = $parent->id();
+                      $result['parent_type'] = $parent->getEntityTypeId();
+                      $result['parent_bundle'] = $parent->bundle();
+                    }
+                    $rows[] = $result;
+                  }
+                }
+
+              }
+              break;
+          }
+        }
+      }
+    }
+    return new RowsOfFields($rows);
+  }
+
+  /**
+   * Get all content type bundle names.
+   */
+  public function getEntityBundles($type) {
+    $bundles = [];
+
+    // Get a list of all entity types.
+    $content_types = $this->entityTypeManager->getStorage($type)->loadMultiple();
+
+    // Iterate through entity types to retrieve bundle names.
+    foreach ($content_types as $content_type) {
+      $bundles[] = $content_type->id();
+    }
+
+    return $bundles;
   }
 
 }

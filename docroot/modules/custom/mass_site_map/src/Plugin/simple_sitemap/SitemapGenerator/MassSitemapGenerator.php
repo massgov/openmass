@@ -9,7 +9,7 @@ use Drupal\simple_sitemap\Plugin\simple_sitemap\SitemapGenerator\DefaultSitemapG
  *
  * @SitemapGenerator(
  *   id = "mass",
- *   label = @Translation("Default sitemap generator"),
+ *   label = @Translation("Mass Default sitemap generator"),
  *   description = @Translation("Generates a standard conform hreflang sitemap of your content."),
  * )
  */
@@ -21,13 +21,13 @@ class MassSitemapGenerator extends DefaultSitemapGenerator {
    * @param array $url_data
    *   The array of properties for this URL.
    */
-  protected function addUrl(array $url_data) {
+  protected function addUrl(array $url_data): void {
     $this->writer->writeElement('loc', $url_data['url']);
 
     // If more than one language is enabled, add all translation variant URLs
     // as alternate links to this link turning the sitemap into a hreflang
     // sitemap.
-    if (isset($url_data['alternate_urls']) && $this->isHreflangSitemap()) {
+    if (isset($url_data['alternate_urls']) && $this->sitemap->isMultilingual()) {
       $this->addAlternateUrls($url_data['alternate_urls']);
     }
 

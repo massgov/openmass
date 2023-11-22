@@ -52,58 +52,7 @@ content:
     region: content
     settings: {  }
     third_party_settings:
-      conditional_fields:
-        3005304f-6a0d-42ae-ada4-3f4b10b9cb99:
-          entity_type: paragraph
-          bundle: key_message
-          dependee: field_background_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: color
-            effect: show
-            effect_options: {  }
-            selector: ''
-        01d9f10b-8e9d-456b-b774-0500080a46dc:
-          entity_type: paragraph
-          bundle: key_message
-          dependee: field_background_type
-          settings:
-            state: '!visible'
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: image
-            effect: show
-            effect_options: {  }
-            selector: ''
-        30ea3527-6aba-43b7-bb1d-908a16a8a0e7:
-          entity_type: paragraph
-          bundle: key_message
-          dependee: field_background_type
-          settings:
-            state: required
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: color
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_background_type:
     type: options_buttons
     weight: 5
@@ -121,7 +70,7 @@ content:
       maxlength:
         maxlength_js: 50
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
+        maxlength_js_enforce: true
       mass_validation:
         internal_link_content_type_blacklist: {  }
   field_image:
@@ -158,7 +107,6 @@ content:
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: true
         maxlength_js_truncate_html: true
-        maxlength_js_enforce_attribute: true
       conditional_fields: {  }
   field_sub_heading:
     type: string_textfield
@@ -175,41 +123,7 @@ content:
     region: content
     settings: {  }
     third_party_settings:
-      conditional_fields:
-        a1b17516-676b-4562-94c6-150165cee7e6:
-          entity_type: paragraph
-          bundle: key_message
-          dependee: field_background_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: image
-            effect: show
-            effect_options: {  }
-            selector: ''
-        228b7692-c5e7-4566-98ad-abf724c58fc0:
-          entity_type: paragraph
-          bundle: key_message
-          dependee: field_background_type
-          settings:
-            state: '!visible'
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: color
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_use_half_image:
     type: boolean_checkbox
     weight: 7

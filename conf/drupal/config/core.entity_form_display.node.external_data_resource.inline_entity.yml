@@ -137,9 +137,8 @@ content:
       maxlength:
         maxlength_js: 500
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce: false
+        maxlength_js_enforce: true
         maxlength_js_truncate_html: false
-        maxlength_js_enforce_attribute: true
   field_externaldata_url:
     type: link_default
     weight: 9
@@ -201,6 +200,11 @@ content:
     region: content
     settings:
       display_label: true
+    third_party_settings: {  }
+  simple_sitemap:
+    weight: 10
+    region: content
+    settings: {  }
     third_party_settings: {  }
   title:
     type: string_textfield

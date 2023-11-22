@@ -98,8 +98,8 @@ class MapHelper {
         'libraries' => implode(',', $libraries),
         'callback' => $callback,
         'channel' => 'massgov',
-        'v' => '3.36'
-      ] + $auth
+        'v' => '3.54',
+      ] + $auth,
     ]);
     return (string) $url->toUriString();
   }
@@ -116,8 +116,8 @@ class MapHelper {
   public function getMapLinkUrl($location) {
     $url = Url::fromUri('https://maps.google.com', [
       'query' => [
-        'q' => Helper::formatAddress($location)
-      ]
+        'q' => Helper::formatAddress($location),
+      ],
     ]);
     return (string) $url->toUriString();
   }

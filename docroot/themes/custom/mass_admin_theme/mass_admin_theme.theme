@@ -6,7 +6,6 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\Core\Site\Settings;
 use Drupal\views\Render\ViewsRenderPipelineMarkup;
 use Drupal\views\Views;
@@ -23,7 +22,7 @@ function mass_admin_theme_form_entity_embed_dialog_alter(&$form, FormStateInterf
     // Image loading added by core image module not supported by entity_embed.
     // This is causing array to string conversion warning and behat test failure.
     // Temporarily unsetting image_loading field from the dialog to avoid warnings.
-    // @TODO Remove this code when entity_embed start supporting lazy loading attribute.
+    // @todo Remove this code when entity_embed start supporting lazy loading attribute.
     if (array_key_exists('image_loading', $display_settings)) {
       unset($form['attributes']['data-entity-embed-display-settings']['image_loading']);
     }
@@ -58,7 +57,7 @@ function mass_admin_theme_preprocess_file_upload_help(&$variables) {
   }
 
   if (count($variables['descriptions']) == 3) {
-    /* @var $description \Drupal\Core\StringTranslation\TranslatableMarkup */
+    /** @var \Drupal\Core\StringTranslation\TranslatableMarkup $description */
     $description = $variables['descriptions'][1];
     $variables['descriptions'][1] = t("Files must be less than @size.", $description->getArguments(), $description->getOptions());
 
@@ -150,7 +149,7 @@ function mass_admin_theme_theme($existing, $type, $theme, $path) {
   return [
     'media_document_form' => [
       'render element' => 'form',
-    ]
+    ],
   ];
 }
 

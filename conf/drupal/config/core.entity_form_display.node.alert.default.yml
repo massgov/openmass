@@ -197,13 +197,14 @@ content:
           dependee: field_alert_hide_message
           settings:
             state: '!visible'
-            condition: checked
+            reset: false
+            condition: value
             grouping: AND
             values_set: 1
             value: ''
             values: {  }
             value_form:
-              value: false
+              value: 1
             effect: show
             effect_options: {  }
             selector: ''
@@ -261,6 +262,23 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        63600dba-b037-44da-923e-7a9248af34f4:
+          entity_type: node
+          bundle: alert
+          dependee: field_alert_hide_message
+          settings:
+            state: required
+            reset: false
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_alert_title_link_target:
     type: link_default
     weight: 11
@@ -300,6 +318,24 @@ content:
             values: {  }
             value_form:
               value: 1
+            effect: show
+            effect_options: {  }
+            selector: ''
+        08140ff4-88d4-4605-a0c5-8fad93c71675:
+          entity_type: node
+          bundle: alert
+          dependee: field_alert_title_link
+          settings:
+            state: required
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: link
             effect: show
             effect_options: {  }
             selector: ''
@@ -457,6 +493,11 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  simple_sitemap:
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   title:
     type: string_textfield
     weight: 4
@@ -468,7 +509,7 @@ content:
       maxlength:
         maxlength_js: 145
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
+        maxlength_js_enforce: true
   uid:
     type: entity_reference_autocomplete
     weight: 1

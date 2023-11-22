@@ -3,8 +3,6 @@
 namespace Drupal\mass_serializer;
 
 use Drupal\Core\File\FileSystemInterface;
-use Psr\Log\LoggerInterface;
-use Consolidation\SiteAlias\SiteAliasManager;
 use Drupal\views\Views;
 use Drush\Drush;
 use Exception;

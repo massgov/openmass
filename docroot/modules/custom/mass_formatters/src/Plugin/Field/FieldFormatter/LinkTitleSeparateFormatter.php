@@ -2,11 +2,10 @@
 
 namespace Drupal\mass_formatters\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\link\Plugin\Field\FieldFormatter\LinkSeparateFormatter;
-use Drupal\node\Entity\Node;
-use Drupal\Core\Url;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Url;
+use Drupal\link\Plugin\Field\FieldFormatter\LinkSeparateFormatter;
 
 /**
  * Plugin implementation of the 'class_link' formatter.

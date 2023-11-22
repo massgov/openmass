@@ -30,7 +30,7 @@ function mass_superset_cron() {
   if (($last_run + $min_interval) < $time && $in_window) {
 
     \Drupal::state()->set('mass_superset.last_run', $time);
-    /* @var Drupal\mass_superset\SupersetStorage $superset_storage */
+    /** @var Drupal\mass_superset\SupersetStorage $superset_storage */
     $superset_storage = \Drupal::service('superset.storage');
     $superset_storage->queueAll();
   }

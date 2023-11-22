@@ -1,0 +1,10 @@
+mass_analytics.analytics_new:
+  path: '/node/{node}/analytics-new'
+  defaults:
+    _controller: '\Drupal\mass_analytics\Controller\MassAnalyticsController::build'
+    _title: 'Analytics NEW'
+  requirements:
+    _permission: 'view analytics pages'
+    _custom_access: '\Drupal\mass_analytics\Controller\MassAnalyticsController::access'
+  options:
+    _admin_route: TRUE

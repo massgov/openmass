@@ -31,7 +31,7 @@ class MassFilterEntitiesSelection extends DefaultSelection {
       $types = unserialize($cookie);
     }
 
-    $query = $this->entityTypeManager->getStorage($target_type)->getQuery();
+    $query = $this->entityTypeManager->getStorage($target_type)->getQuery()->accessCheck();
 
     // If 'target_bundles' is NULL, all bundles are referenceable, no further
     // conditions are needed.

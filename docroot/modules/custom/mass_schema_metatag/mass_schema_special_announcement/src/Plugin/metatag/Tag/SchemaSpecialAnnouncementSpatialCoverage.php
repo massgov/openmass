@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPlaceBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
  * Provides a plugin for the 'SpatialCoverage' meta tag.
@@ -17,9 +17,14 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPlaceBase;
  *   type = "label",
  *   secure = FALSE,
  *   multiple = TRUE,
+ *   property_type = "place",
+ *   tree_parent = {
+ *     "AdministrativeArea",
+ *   },
+ *   tree_depth = -1,
  * )
  */
-class SchemaSpecialAnnouncementSpatialCoverage extends SchemaPlaceBase {
+class SchemaSpecialAnnouncementSpatialCoverage extends SchemaNameBase {
 
   /**
    * {@inheritdoc}

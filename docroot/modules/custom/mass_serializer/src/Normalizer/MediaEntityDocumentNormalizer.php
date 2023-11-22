@@ -3,7 +3,6 @@
 namespace Drupal\mass_serializer\Normalizer;
 
 use Drupal\Core\Url;
-use Drupal\Component\Utility\Unicode;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
@@ -77,10 +76,7 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
    */
   protected $supportedInterfaceOrClass = MediaInterface::class;
 
-  /**
-   * {@inheritdoc}
-   */
-  public function supportsNormalization($data, $format = NULL) {
+  public function supportsNormalization($data, $format = NULL, array $context = []): bool {
     // If we aren't dealing with an object or the format is not supported return
     // now.
     if (!is_object($data) || !$this->checkFormat($format)) {
@@ -97,7 +93,7 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
   /**
    * {@inheritdoc}
    */
-  public function normalize($object, $format = NULL, array $context = []) {
+  public function normalize($object, $format = NULL, array $context = []): float|array|\ArrayObject|bool|int|string|null {
     $attributes = parent::normalize($object, $format, $context);
     /** @var \Drupal\taxonomy\TermStorage $term_storage */
     $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');

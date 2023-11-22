@@ -6,49 +6,11 @@
  */
 
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
-
-/**
- * Implements hook_views_pre_view().
- */
-function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
-  if ($view->id() == 'content_reports' && $display_id == 'page_orgs') {
-    $nids = [];
-    // Get nids where field_organizations is empty.
-    $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
-      ->notExists('field_organizations');
-    $nids_empty = $query->execute();
-
-    // Get nids where field_organizations status is unpublished.
-    $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
-      ->exists('field_organizations')
-      ->condition('field_organizations.%delta.entity:node.status', '0', '=');
-    $nids_to_check = $query->execute();
-
-    if (!empty($nids_to_check)) {
-
-      // Uses above query to filter out results where one
-      // of the organisations in published.
-      $query = \Drupal::entityQuery('node')->accessCheck(FALSE)
-        ->exists('field_organizations')
-        ->condition('nid', array_values($nids_to_check), 'IN')
-        ->condition('field_organizations.%delta.entity:node.status', '1', '=');
-      $nids = $query->execute();
-    }
-    // Merge the arrays to pass to the contextual filter.
-    $nids_unpublished = array_diff(array_values($nids_to_check), array_values($nids));
-    $nids_empty = array_diff(array_values($nids_empty), $nids_unpublished);
-    $args_to_pass = array_merge($nids_empty, $nids_unpublished);
-
-    $args[0] = implode('+', $args_to_pass);
-
-  }
-}
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -69,7 +31,7 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
     }
   }
 
-  if (in_array($view['view']->id(), ['data_listing_all', 'press_releases']) && $view['view']->getDisplay()->getPluginId() == 'page') {
+  if ($view['view']->id() == 'press_releases' && $view['view']->getDisplay()->getPluginId() == 'page') {
     // Remove sub topics from the data topic filter.
     if (isset($form['topicid'])) {
       // Loop through the field options.
@@ -184,6 +146,47 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
       // Call helper function to recursively alter conditions.
       _redirect_recursively_alter_query_conditions($condition_group['conditions'], $query, $key_group_conditions);
     }
+  }
+
+  if ($view->id() == 'content_reports' && $view->getDisplay()->display['id'] == 'page_orgs') {
+    $nids = [];
+    $nids_to_check = [];
+    $deleted_nids = [];
+    // Get nids where field_organizations is empty.
+    $sub_query = \Drupal::entityQuery('node')->accessCheck(FALSE)
+      ->notExists('field_organizations');
+    $nids_empty = $sub_query->execute();
+
+    // Get nids where field_organizations status is unpublished.
+    $sub_query = \Drupal::entityQuery('node')->accessCheck(FALSE)
+      ->exists('field_organizations')
+      ->condition('field_organizations.%delta.entity:node.status', '0', '=');
+    $nids_to_check = $sub_query->execute();
+
+    // Get the nodes which has the value for the field,
+    // but the actual entity is deleted..
+    $sub_query = \Drupal::entityQuery('node')->accessCheck(FALSE)
+      ->exists('field_organizations')
+      ->condition('field_organizations.%delta.entity:node.nid', NULL, 'IS NULL');
+    $deleted_nids = $sub_query->execute();
+    $nids_to_check = array_merge($nids_to_check, $deleted_nids);
+
+    if (!empty($nids_to_check)) {
+
+      // Uses above query to filter out results where one
+      // of the organisations in published.
+      $sub_query = \Drupal::entityQuery('node')->accessCheck(FALSE)
+        ->exists('field_organizations')
+        ->condition('nid', array_values($nids_to_check), 'IN')
+        ->condition('field_organizations.%delta.entity:node.status', '1', '=');
+      $nids = $sub_query->execute();
+    }
+
+    // Merge the arrays to pass to the contextual filter.
+    $nids_unpublished = array_diff(array_values($nids_to_check), array_values($nids));
+    $nids_empty = array_diff(array_values($nids_empty), $nids_unpublished);
+    $args_to_pass = array_merge($nids_empty, $nids_unpublished);
+    $query->addWhere(0, 'node_field_data.nid', $args_to_pass, 'IN');
   }
 }
 

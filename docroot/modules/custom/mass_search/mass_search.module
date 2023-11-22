@@ -5,10 +5,10 @@
  * Contains mass_search.module.
  */
 
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 
 /**
  * Implements hook_help().
@@ -45,7 +45,7 @@ function mass_search_menu_link_content_access(EntityInterface $entity, string $o
   $allowed_menus = [
     'footer-1',
     'footer-2',
-    'footer-3'
+    'footer-3',
   ];
   if ($operation === 'view' && in_array($entity->menu_name->value, $allowed_menus)) {
     return AccessResult::allowed();

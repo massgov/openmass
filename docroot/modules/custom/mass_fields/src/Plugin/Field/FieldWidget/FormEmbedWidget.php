@@ -3,8 +3,8 @@
 namespace Drupal\mass_fields\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\WidgetBase;
+use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -36,14 +36,14 @@ class FormEmbedWidget extends WidgetBase {
 
     $element['type'] = [
       '#type' => 'select',
-      '#title' => $this->t('Form Embed Type'),
+      '#title' => $this->t('Form success message'),
       '#default_value' => $type,
       '#options' => [
-        'formstack' => 'Formstack with no file upload (success message on same page)',
-        'formstack_reload' => 'Formstack with file upload (success message on different page)',
+        'formstack' => 'Formstack with success message on same page',
+        'formstack_reload' => 'Formstack with success message on separate page',
       ],
       '#required' => TRUE,
-      '#description' => 'Forms that include file uploads require special handling. For any form that includes a file upload, first, change the embed type here to "Formstack with file upload." Next, publish a information detail page that contains the message users should see if the form is submitted successfully. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the URL of the service detail page you published.',
+      '#description' => 'By default, the form success message is on the same page as the form. But, <strong>if your form includes file uploads or has text fields that could collect as many as 1000 characters combined, you MUST use a separate success page</strong> to avoid errors. In those cases, choose "Formstack with success message on separate page" from the dropdown menu below. Next, publish an Information Details page that contains the message users should see if the form is submitted successfully. In the right column of that page under "Search Status," check the option to exclude the success page from search. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the public URL of the success page you published (starting with http://www.mass.gov).',
     ];
     $element['#element_validate'] = [[get_called_class(), 'validate']];
 
@@ -56,8 +56,10 @@ class FormEmbedWidget extends WidgetBase {
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     $new_values = [];
     foreach ($values as $delta => $value) {
-      $new_values[$delta]['value'] = $value['value']['value'];
-      $new_values[$delta]['type'] = $value['value']['type'];
+      if ($value['value']) {
+        $new_values[$delta]['value'] = $value['value']['value'];
+        $new_values[$delta]['type'] = $value['value']['type'];
+      }
     }
     return $new_values;
   }

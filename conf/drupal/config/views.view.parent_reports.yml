@@ -23,7 +23,6 @@ dependencies:
     - node.type.org_page
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
     - node.type.topic_page
     - taxonomy.vocabulary.label
@@ -35,7 +34,7 @@ dependencies:
   module:
     - csv_serialization
     - entity_hierarchy
-    - mass_superset
+    - mass_bigquery
     - mass_views
     - node
     - rest
@@ -456,7 +455,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -871,7 +870,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: true
@@ -1436,9 +1434,59 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        linked_from_parent:
+          id: linked_from_parent
+          table: node_field_data
+          field: linked_from_parent
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: linked_from_parent
+          label: 'Linked from Parent'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -1843,7 +1891,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: true
@@ -1921,7 +1968,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: false
@@ -2274,7 +2320,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -2586,7 +2632,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: true
@@ -2807,7 +2852,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: false
@@ -2941,7 +2985,7 @@ display:
           plugin_id: text
           empty: false
           content:
-            value: '<p>These pages have no parent (or a parent that''s not published). Their breadcrumb will only have a link to the home page.  This is appropriate for top level topics and for organizations that have no organization above them. For other pages, a parent should usually be defined.</p>'
+            value: "<p>These pages have no parent (or a parent that's not published). Their breadcrumb will only have a link to the home page.  This is appropriate for top level topics and for organizations that have no organization above them. For other pages, a parent should usually be defined.</p>"
             format: basic_html
           tokenize: false
       display_extenders: {  }
@@ -3373,7 +3417,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -3803,7 +3847,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: true
@@ -3881,7 +3924,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: false
@@ -4494,9 +4536,59 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        linked_from_parent:
+          id: linked_from_parent
+          table: node_field_data
+          field: linked_from_parent
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: linked_from_parent
+          label: 'Linked from Parent'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -4954,7 +5046,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: true
@@ -5085,7 +5176,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: false
@@ -5358,7 +5448,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -5670,7 +5760,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: true
@@ -5891,7 +5980,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: false
@@ -6011,7 +6099,7 @@ display:
           plugin_id: text
           empty: false
           content:
-            value: '<p>These pages have no parent (or a parent that''s not published). Their breadcrumb will only have a link to the home page.  This is appropriate for top level topics and for organizations that have no organization above them. For other pages, a parent should usually be defined.</p>'
+            value: "<p>These pages have no parent (or a parent that's not published). Their breadcrumb will only have a link to the home page.  This is appropriate for top level topics and for organizations that have no organization above them. For other pages, a parent should usually be defined.</p>"
             format: basic_html
           tokenize: false
       display_extenders: {  }
@@ -6430,7 +6518,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -6860,7 +6948,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: true
@@ -6938,7 +7025,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
             topic_page: topic_page
           group: 1
           exposed: false

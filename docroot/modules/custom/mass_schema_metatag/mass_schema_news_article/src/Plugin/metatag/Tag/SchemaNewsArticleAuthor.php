@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_news_article\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPersonOrgBase;
+use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
@@ -21,10 +21,16 @@ use Drupal\schema_metatag\SchemaMetatagManager;
  *   weight = 1,
  *   type = "string",
  *   secure = FALSE,
- *   multiple = TRUE
+ *   multiple = TRUE,
+ *   property_type = "organization",
+ *   tree_parent = {
+ *     "Person",
+ *     "Organization",
+ *   },
+ *   tree_depth = 0
  * )
  */
-class SchemaNewsArticleAuthor extends SchemaPersonOrgBase {
+class SchemaNewsArticleAuthor extends SchemaNameBase {
 
   /**
    * {@inheritdoc}

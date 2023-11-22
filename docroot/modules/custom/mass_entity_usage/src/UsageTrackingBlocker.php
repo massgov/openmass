@@ -4,10 +4,10 @@ namespace Drupal\mass_entity_usage;
 
 use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\content_moderation\Entity\ContentModerationStateInterface;
-use Drupal\mass_content_moderation\MassModeration;
-use Drupal\mayflower\Helper;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mayflower\Helper;
 
 /**
  * To decide if a entity needs to be tracked by the entity usage.

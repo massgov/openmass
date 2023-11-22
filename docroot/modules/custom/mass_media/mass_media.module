@@ -5,18 +5,17 @@
  * Primary module hooks for Mass Media module.
  */
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
-use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\FileInterface;
 use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
-use Drupal\Core\Url;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
 use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
 use Drupal\media\MediaInterface;
-use Drupal\file\FileInterface;
-use Drupal\Core\File\FileSystemInterface;
 
 /**
  * Immediately delete any old file entity on this media entity.
@@ -183,6 +182,39 @@ function mass_media_media_presave(MediaInterface $entity) {
   $bypass_presave = isset($_ENV['MASS_MEDIA_PRESAVE_BYPASS']) ? (bool) $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] : FALSE;
 
   if ($entity->bundle() == 'document' && !$bypass_presave) {
+
+    // This helps the system to track documents in the automatic curated lists.
+    if ($labels = $entity->field_document_label->getValue()) {
+
+      // Check if the usage of the document is 0.
+      // If not process further to track the media.
+      $total = Drupal::service('entity_usage.usage')->listUniqueSourcesCount($entity);
+      if (!$total) {
+        foreach ($labels as $label) {
+          // Check if there are paragraphs with the same labels.
+          // If there are, this means we should track the document.
+          $paragraphs = \Drupal::entityTypeManager()
+            ->getStorage('paragraph')
+            ->loadByProperties([
+              'field_listdynamic_label' => $label['target_id'],
+            ]);
+          if ($paragraphs) {
+            foreach ($paragraphs as $paragraph) {
+              if (\Drupal::config('entity_usage_queue_tracking.settings')
+                ->get('queue_tracking')) {
+                // Add the paragraph to the queue to update the usage.
+                \Drupal::queue('entity_usage_tracker')->createItem([
+                  'operation' => 'update',
+                  'entity_type' => 'paragraph',
+                  'entity_id' => $paragraph->id(),
+                ]);
+              }
+            }
+          }
+        }
+      }
+    }
+
     // Loads file.
     /** @var \Drupal\file\Entity\File $file */
     $file = File::load($entity->field_upload_file->target_id);

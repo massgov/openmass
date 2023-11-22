@@ -3,8 +3,8 @@
 namespace Drupal\mass_feedback_form\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

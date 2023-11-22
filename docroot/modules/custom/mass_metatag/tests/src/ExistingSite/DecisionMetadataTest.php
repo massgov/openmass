@@ -110,12 +110,12 @@ class DecisionMetadataTest extends MetadataTestCase {
         'sourceOrganization' => 'Test Org Page',
         'name' => 'Test Decision',
         'identifier' => 'ABC123',
-        // @todo: This seems broken.
+        // @todo This seems broken.
         'reviewedBy' => [NULL],
         'mainContentOfPage' => [
           [
             '@type' => 'WebPageElement',
-            // @todo: This seems broken.
+            // @todo This seems broken.
             'text' => NULL,
           ],
         ],

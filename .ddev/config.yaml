@@ -1,13 +1,12 @@
 name: mass
 type: drupal9
 docroot: docroot
-php_version: "8.0"
+php_version: "8.2"
 webserver_type: apache-fpm
 omit_containers:
   - db
 disable_settings_management: true
-# Avoid conflict on port 80. This is rarely used anyway.
-router_http_port: "81"
+router_http_port: "80"
 router_https_port: "443"
 xdebug_enabled: false
 project_tld: local

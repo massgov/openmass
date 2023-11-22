@@ -45,16 +45,22 @@
   * fetchs the social links from the containing node social field.
   */
 #}
-
- {% embed "@organisms/by-author/social-links-bar.twig" %}
-   {% block sectionContent %}
-     {{ social_links }}
-   {% endblock %}
- {% endembed %}
-{% if content.field_component_add_separator|field_value|render == "True" %}
-  {% include "@atoms/divider.twig" with {
-    "divider": {
-      "thin": true
+{% if social_links|render is not empty %}
+  {% embed "@organisms/by-author/social-links-bar.twig" with {
+    "socialLinksBar": {
+      "level": level
     }
   } %}
+    {% block sectionContent %}
+      {{ social_links }}
+    {% endblock %}
+  {% endembed %}
+
+  {% if content.field_component_add_separator|field_value|render == "True" %}
+    {% include "@atoms/divider.twig" with {
+      "divider": {
+        "thin": true
+      }
+    } %}
+  {% endif %}
 {% endif %}

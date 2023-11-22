@@ -9,5 +9,5 @@ Feature: Person Content type
     Then "person" content has the correct fields
 
   Scenario: Verify that the person content type can't be viewed by anonymous visitors.
-    Given I am viewing a published "person" with the title "Test Person"
+    Given I am viewing a published "person" with the title "Test person"
     Then the response status code should be 404

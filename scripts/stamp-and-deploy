@@ -1,12 +1,12 @@
 #!/usr/bin/env sh
 
 # Called from circle's config.yml. Needed for Twig cache busting.
-echo "<?php\n\n\$settings['deployment_identifier'] = '$CIRCLE_SHA1';" > docroot/sites/deployment_id.php
+echo "<?php\n\n\$settings['deployment_identifier'] = '$CIRCLE_TAG' ?: '$CIRCLE_SHA1';" > docroot/sites/deployment_id.php
 git add docroot/sites/deployment_id.php
 git commit -m "Update deployment identifier"
 
 # Add Acquia repo as an additional remote.
 git remote add acquia massgov@svn-20994.prod.hosting.acquia.com:massgov.git
 
-# Push the branch. name comes from an environment variable.
-git push --force acquia $CIRCLE_BRANCH
+# Push the branch. Name comes from an environment variable.
+git push --force acquia ${CIRCLE_BRANCH:-HEAD:master}

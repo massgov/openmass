@@ -1,0 +1,272 @@
+diff --git a/src/Form/HierarchyChildrenForm.php b/src/Form/HierarchyChildrenForm.php
+index e3ff5d0..2efd468 100644
+--- a/src/Form/HierarchyChildrenForm.php
++++ b/src/Form/HierarchyChildrenForm.php
+@@ -15,7 +15,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+  * Defines a form for re-ordering children.
+  */
+ class HierarchyChildrenForm extends ContentEntityForm {
+-  const CHILD_ENTITIES_STORAGE = 'child_entities';
+ 
+   /**
+    * The hierarchy being displayed.
+@@ -79,6 +78,8 @@ class HierarchyChildrenForm extends ContentEntityForm {
+   public function form(array $form, FormStateInterface $form_state) {
+     $cache = (new CacheableMetadata())->addCacheableDependency($this->entity);
+ 
++    $form['#attached']['library'][] = 'entity_hierarchy/entity_hierarchy.nodetypeform';
++
+     /** @var \Drupal\Core\Field\FieldDefinitionInterface[] $fields */
+     $fields = $this->parentCandidate->getCandidateFields($this->entity);
+     if (!$fields) {
+@@ -113,21 +114,46 @@ class HierarchyChildrenForm extends ContentEntityForm {
+         '#submit' => ['::updateField'],
+       ];
+     }
++    /** @var \PNX\NestedSet\Node $node */
+     /** @var \PNX\NestedSet\Node[] $children */
++    /** @var \PNX\NestedSet\NodeKey $nodeKey */
+     /** @var \PNX\NestedSet\NestedSetInterface $storage */
++    $nodeKey = $this->nodeKeyFactory->fromEntity($this->entity);
+     $storage = $this->nestedSetStorageFactory->get($fieldName, $this->entity->getEntityTypeId());
+-    $children = $storage->findChildren($this->nodeKeyFactory->fromEntity($this->entity));
++    $children = $storage->findDescendants($nodeKey, 2);
++    $node = $storage->getNode($nodeKey);
++
++    // Ensure entity depth does not exceed 9
++    $baseDepth = ($node) ? $node->getDepth() : 0;
++
+     $childEntities = $this->entityTreeNodeMapper->loadAndAccessCheckEntitysForTreeNodes($this->entity->getEntityTypeId(), $children, $cache);
+-    $form_state->setTemporaryValue(self::CHILD_ENTITIES_STORAGE, $childEntities);
++
+     $form['#attached']['library'][] = 'entity_hierarchy/entity_hierarchy.nodetypeform';
+     $form['children'] = [
+       '#type' => 'table',
+-      '#header' => [t('Child'), t('Type'), t('Weight'), t('Operations')],
++      '#header' => [
++        $this->t('Child'),
++        $this->t('Type'),
++        $this->t('Weight'),
++        [
++          'data' => $this->t('Operations'),
++          'colspan' => 3,
++        ],
++      ],
+       '#tabledrag' => [
++        [
++          'action' => 'match',
++          'relationship' => 'parent',
++          'group' => 'child-parent',
++          'subgroup' => 'child-parent',
++          'source' => 'child-id',
++          'hidden' => TRUE,
++          'limit' => 100,
++        ],
+         [
+           'action' => 'order',
+           'relationship' => 'sibling',
+-          'group' => 'children-order-weight',
++          'group' => 'child-weight',
+         ],
+       ],
+       '#empty' => $this->t('There are no children to reorder'),
+@@ -147,10 +173,31 @@ class HierarchyChildrenForm extends ContentEntityForm {
+         continue;
+       }
+       $child = $node->getId();
++      $level = $node->getDepth() - $baseDepth;
++      if ($level > 1) {
++        continue;
++      }
++
++      $nextElem = $children[$weight + 1] ?? FALSE;
++      $inc = 1;
++      while ($nextElem && !$childEntities->contains($nextElem)) {
++        $nextElem = $children[$weight + $inc++] ?? FALSE;
++      }
++      !$nextElem || ($nextElem->getDepth() <= $node->getDepth())
++        ?: $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--parent';
++
++      $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row';
++
+       $form['children'][$child]['#attributes']['class'][] = 'draggable';
+       $form['children'][$child]['#weight'] = $weight;
+-      $form['children'][$child]['title'] = $childEntity->toLink()
+-        ->toRenderable();
++      $form['children'][$child]['title'] = [
++        [
++          '#theme' => 'indentation',
++          '#size' => $node->getDepth() - $baseDepth - 1,
++        ],
++        $childEntity->toLink()->toRenderable(),
++      ];
++
+       if (!$bundles) {
+         $bundles = $this->entityTypeBundleInfo->getBundleInfo($childEntity->getEntityTypeId());
+       }
+@@ -162,7 +209,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+         '#title_display' => 'invisible',
+         '#default_value' => $childEntity->{$fieldName}->weight,
+         // Classify the weight element for #tabledrag.
+-        '#attributes' => ['class' => ['children-order-weight']],
++        '#attributes' => ['class' => ['child-weight']],
+       ];
+       // Operations column.
+       $form['children'][$child]['operations'] = [
+@@ -175,9 +222,18 @@ class HierarchyChildrenForm extends ContentEntityForm {
+           'url' => $childEntity->toUrl('edit-form'),
+         ];
+       }
+-    }
+ 
+-    $cache->applyTo($form);
++      $form['children'][$child]['id'] = [
++        '#type' => 'hidden',
++        '#value' => $node->getNodeKey()->getId(),
++        '#attributes' => ['class' => ['child-id']],
++      ];
++      $form['children'][$child]['parent'] = [
++        '#type' => 'hidden',
++        '#default_value' => $storage->findParent($node->getNodeKey())->getNodeKey()->getId(),
++        '#attributes' => ['class' => ['child-parent']],
++      ];
++    }
+ 
+     return $form;
+   }
+@@ -199,7 +255,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+    */
+   protected function actions(array $form, FormStateInterface $form_state) {
+     $actions = parent::actions($form, $form_state);
+-    $actions['submit']['#value'] = $this->t('Update child order');
++    $actions['submit']['#value'] = $this->t('Update children');
+     // Don't perform field validation.
+     $actions['submit']['#limit_validation_errors'] = [['children'], ['fieldname']];
+     unset($actions['delete']);
+@@ -210,7 +266,9 @@ class HierarchyChildrenForm extends ContentEntityForm {
+     $fields = $this->parentCandidate->getCandidateFields($this->entity);
+     $fieldName = $form_state->getValue('fieldname') ?: reset($fields);
+     $entityType = $this->entity->getEntityType();
+-    if ($entityType->hasHandlerClass('entity_hierarchy') && ($childBundles = $this->parentCandidate->getCandidateBundles($this->entity)) && isset($childBundles[$fieldName])) {
++
++    // Add children buttons not needed.
++    if (FALSE && $entityType->hasHandlerClass('entity_hierarchy') && ($childBundles = $this->parentCandidate->getCandidateBundles($this->entity)) && isset($childBundles[$fieldName])) {
+       $handlerClass = $entityType->getHandlerClass('entity_hierarchy');
+       /** @var \Drupal\entity_hierarchy\Handler\EntityHierarchyHandlerInterface $handler */
+       $handler = new $handlerClass();
+@@ -253,22 +311,19 @@ class HierarchyChildrenForm extends ContentEntityForm {
+    */
+   public function save(array $form, FormStateInterface $form_state) {
+     $children = $form_state->getValue('children');
+-    $childEntities = $form_state->getTemporaryValue(self::CHILD_ENTITIES_STORAGE);
+     $fieldName = $form_state->getValue('fieldname');
+     $batch = [
+-      'title' => new TranslatableMarkup('Reordering children ...'),
++      'title' => new TranslatableMarkup('Rebuilding tree ...'),
+       'operations' => [],
+       'finished' => [static::class, 'finished'],
+     ];
+-    foreach ($childEntities as $node) {
+-      $childEntity = $childEntities->offsetGet($node);
+-      if (!$childEntity->isDefaultRevision()) {
+-        // We don't operate on other than the default revision.
+-        continue;
+-      }
++    foreach ($children as $child) {
++      $entity = \Drupal::entityTypeManager()
++        ->getStorage($this->entity->getEntityTypeId())
++        ->load($child['id']);
+       $batch['operations'][] = [
+-        [static::class, 'reorder'],
+-        [$fieldName, $childEntity, $children[$node->getId()]['weight']],
++        [static::class, 'rebuildTree'],
++        [$fieldName, $entity, $child['parent'], $child['weight']],
+       ];
+ 
+     }
+@@ -276,7 +331,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+   }
+ 
+   /**
+-   * Reorder batch callback.
++   * Batch callback to rebuild the tree.
+    *
+    * @param string $fieldName
+    *   Field name.
+@@ -285,16 +340,45 @@ class HierarchyChildrenForm extends ContentEntityForm {
+    * @param int $weight
+    *   New weight.
+    */
+-  public static function reorder($fieldName, ContentEntityInterface $childEntity, $weight) {
+-    $childEntity->{$fieldName}->weight = $weight;
+-    $childEntity->save();
+-  }
++  public static function rebuildTree($fieldName, ContentEntityInterface $entity, $parent, $weight) {
++    if ($entity->{$fieldName}->target_id == $parent) {
++      return;
++    }
++
++    /** @var \Drupal\Node\NodeStorage */
++    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
++    $vid = $node_storage->getLatestRevisionId($entity->id());
++
++    /** @var \Drupal\node\Entity\Node $entity */
++    $entity->setNewRevision(TRUE);
++    $entity->setRevisionUserId(\Drupal::currentUser()->id());
++    $entity->setRevisionLogMessage('Revision created with "Hierarchy" feature.');
++    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
++    $create_draft = $vid != $entity->getRevisionId();
++
++    $entity->{$fieldName}->target_id = $parent;
++    $entity->{$fieldName}->weight = $weight;
++    $entity->save();
++
++    // Is the current version different from the latest version?
++    if ($create_draft) {
++      /** @var \Drupal\node\Entity\Node */
++      $node_latest = $node_storage->loadRevision($vid);
++      $node_latest->setNewRevision(TRUE);
++      $node_latest->setRevisionUserId(\Drupal::currentUser()->id());
++      $node_latest->setRevisionLogMessage('Revision created with "Hierarchy" feature.');
++      $node_latest->setRevisionCreationTime(\Drupal::time()->getRequestTime());
++      $node_latest->field_primary_parent = $parent;
++      $node_latest->save();
++    }
++
++   }
+ 
+   /**
+    * Batch finished callback.
+    */
+   public static function finished() {
+-    \Drupal::messenger()->addMessage(new TranslatableMarkup('Updated child order.'));
++    \Drupal::messenger()->addMessage(new TranslatableMarkup('Updated parent - child relationships.'));
+   }
+ 
+ }
+diff --git a/src/Plugin/Derivative/DynamicLocalTasks.php b/src/Plugin/Derivative/DynamicLocalTasks.php
+index bc8bd8a..e065096 100644
+--- a/src/Plugin/Derivative/DynamicLocalTasks.php
++++ b/src/Plugin/Derivative/DynamicLocalTasks.php
+@@ -80,7 +80,7 @@ class DynamicLocalTasks extends DeriverBase implements ContainerDeriverInterface
+       }
+       $this->derivatives["$entity_type_id.entity_hierarchy_reorder"] = [
+         'route_name' => "entity.$entity_type_id.entity_hierarchy_reorder",
+-        'title' => $this->t('Children'),
++        'title' => $this->t('Hierarchy'),
+         'base_route' => "entity.$entity_type_id.canonical",
+         'weight' => 30,
+       ] + $base_plugin_definition;
+diff --git a/src/Routing/EntityHierarchyRouteProvider.php b/src/Routing/EntityHierarchyRouteProvider.php
+index 44f05ff..3dc55a5 100644
+--- a/src/Routing/EntityHierarchyRouteProvider.php
++++ b/src/Routing/EntityHierarchyRouteProvider.php
+@@ -73,7 +73,7 @@ class EntityHierarchyRouteProvider implements EntityRouteProviderInterface, Enti
+       $route
+         ->setPath($entity_type->getLinkTemplate('canonical') . '/children')
+         ->addDefaults([
+-          '_title' => 'Reorder children',
++          '_title' => 'Children',
+           '_entity_form' => "$entity_type_id.entity_hierarchy_reorder",
+         ])
+         ->setRequirement('_entity_access', "{$entity_type_id}.view")

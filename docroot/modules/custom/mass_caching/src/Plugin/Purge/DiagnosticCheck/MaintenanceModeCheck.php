@@ -2,9 +2,9 @@
 
 namespace Drupal\mass_caching\Plugin\Purge\DiagnosticCheck;
 
+use Drupal\Core\State\StateInterface;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckBase;
 use Drupal\purge\Plugin\Purge\DiagnosticCheck\DiagnosticCheckInterface;
-use Drupal\Core\State\StateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

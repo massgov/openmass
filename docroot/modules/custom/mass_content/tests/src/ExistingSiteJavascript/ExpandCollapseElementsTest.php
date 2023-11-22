@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use Behat\Mink\Session;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**

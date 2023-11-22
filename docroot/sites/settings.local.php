@@ -33,7 +33,7 @@
  * @see https://wiki.php.net/rfc/expectations
  */
 assert_options(ASSERT_ACTIVE, TRUE);
-\Drupal\Component\Assertion\Handle::register();
+assert_options(ASSERT_EXCEPTION, TRUE);
 
 /**
  * Enable local development services.
@@ -138,7 +138,7 @@ $settings['skip_permissions_hardening'] = TRUE;
 // 3. Uncomment below.
 // 4. drush cr
 // 5. drush cron
-// 6. ahoy drush queue:run ***FUNCTION TO RUN***
+// 6. ddev drush queue:run ***FUNCTION TO RUN***
 // 7. check http://mailhog.mass.local/
 // $config['swiftmailer.transport']['transport'] = 'native';
 

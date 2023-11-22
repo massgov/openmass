@@ -1,0 +1,95 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mass_bigquery module.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function mass_bigquery_schema() {
+  $schema['mass_bigquery_data'] = [
+    'description' => 'Table description.',
+    'fields' => [
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The node ID.',
+      ],
+      'pageviews' => [
+        'type' => 'int',
+        'description' => 'The pageviews of the node.',
+      ],
+      'last_updated' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The UNIX time stamp representing when the node was last updated.',
+      ],
+      'nos_per_1000' => [
+        'type' => 'float',
+        'description' => 'The number of No responses per 1000.',
+      ],
+      'eject_rate' => [
+        'type' => 'float',
+        'description' => 'The eject rate.',
+      ],
+      'total_no' => [
+        'type' => 'int',
+        'description' => 'The total no.',
+      ],
+      'total_yes' => [
+        'type' => 'int',
+        'description' => 'The total yes.',
+      ],
+      'total_feedback' => [
+        'type' => 'int',
+        'description' => 'The total feedback.',
+      ],
+      'broken_links' => [
+        'type' => 'int',
+        'description' => 'The number of broken links.',
+      ],
+      'grade_level' => [
+        'type' => 'int',
+        'description' => 'The grade level.',
+      ],
+      'nos_per_1000_cleaned' => [
+        'type' => 'float',
+        'description' => 'Populated if the node has 500 or more page views or 5 or more nos',
+      ],
+    ],
+    'indexes' => [
+      'nid' => ['nid'],
+      'last_updated' => ['last_updated'],
+    ],
+    'unique_keys' => [
+      'unique_nid' => ['nid'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_update_n().
+ *
+ * Add siteimprove fields and a cleaned nos_per_1000 field.
+ */
+function mass_bigquery_update_9001() {
+  $fields_to_add = [
+    'nos_per_1000_cleaned',
+    'broken_links',
+    'grade_level',
+  ];
+
+  $schema = Database::getConnection()->schema();
+  $table = 'mass_bigquery_data';
+  $spec = mass_bigquery_schema();
+
+  foreach ($fields_to_add as $field_to_add) {
+    $schema->addField($table, $field_to_add, $spec[$table]['fields'][$field_to_add]);
+  }
+}

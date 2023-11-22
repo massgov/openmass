@@ -17,6 +17,21 @@
   }]) %}
 {% endif %}
 
+{% set showToc = TRUE %}
+{% if node.field_hide_table_of_contents.value == "1" %}
+  {% set showToc = FALSE %}
+{% endif %}
+{% if showToc %}
+  {% if sectionCount >=2 %}
+    {% set overviewPreContentVisible = TRUE %}
+  {% elseif sectionCount < 2 %}
+    {% set overviewPageContentVisible = TRUE %}
+    {% set overviewPreContentVisible = FALSE %}
+  {% endif %}
+{% elseif not showToc %}
+  {% set overviewPageContentVisible = TRUE %}
+{% endif %}
+
 {# Build optional last update row. #}
 {% if content.field_info_details_last_updated.0 %}
   {% set table_rows = table_rows|merge([{
@@ -106,17 +121,20 @@
   } %}
   {% endif %}
 
-  {% if content.field_info_detail_overview|render|trim is not empty %}
-    {% embed "@organisms/by-author/rich-text.twig" with {
-      "richText": {}
-    } %}
-      {% block rteElements %}
-        {{ content.field_info_detail_overview }}
-      {% endblock %}
-    {% endembed %}
+  {% if overviewPreContentVisible %}
+    {% if content.field_info_detail_overview|render|trim is not empty %}
+      {% embed "@organisms/by-author/rich-text.twig" with {
+        "richText": {}
+      } %}
+        {% block rteElements %}
+          {{ content.field_info_detail_overview }}
+        {% endblock %}
+      {% endembed %}
+    {% endif %}
   {% endif %}
 
-  {% if not node.field_hide_table_of_contents.value %}
+
+  {% if showToc %}
     {% include "@organisms/by-template/sticky-toc.twig" with {
       "stickyTOC": {
         "title": "Table of Contents"|t,
@@ -131,17 +149,39 @@
 {% if node.field_info_details_header_media.isempty == false %}
   {% set preContentMedia = true %}
 {% endif %}
-{% if preContentMedia %}
-  {% block preContentMedia %}
-    {{ content.field_info_details_header_media }}
-  {% endblock %}
-{% endif %}
+
+{% block preContentMedia %}
+  {% if preContentMedia %}
+   {{ content.field_info_details_header_media }}
+  {% endif %}
+{% endblock %}
 
 {% block pageContent %}
 
+  {% if overviewPageContentVisible %}
+    {% if content.field_info_detail_overview|render|trim is not empty %}
+      {% embed "@organisms/by-author/rich-text.twig" with {
+        "richText": {}
+      } %}
+        {% block rteElements %}
+          {{ content.field_info_detail_overview }}
+        {% endblock %}
+      {% endembed %}
+    {% endif %}
+  {% endif %}
+
   {{ content.field_info_details_sections }}
 
-  {{ content.field_contact }}
+  {% if mainContent.contactList %}
+    {% set contactList = mainContent.contactList %}
+    {% set contactList = contactList|merge({'compHeading': {
+      'title': contactList.compHeading.title,
+      'titleContext': contactList.compHeading.titleContext,
+      'level': level + 1,
+      'id': contactList.compHeading.id
+    }}) %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
 
   {% if node.field_footnotes[0].value %}
     {% include "@organisms/by-author/footnote-list.twig" with {
@@ -170,9 +210,10 @@
     }%}
   {% endif %}
 
+  {% set relatedClass = not no_sidebar ? 'hidden-desktop' %}
   {% if sideContent and sideContent.linkList %}
     {% set linkList = sideContent.linkList %}
-    {% set linkList = linkList|merge({'sidebarHeading': {
+    {% set linkList = linkList|merge({'sectionClass': relatedClass,'sidebarHeading': {
       'title': linkList.sidebarHeading.title,
       'titleContext': linkList.sidebarHeading.titleContext,
       'level': level
@@ -187,13 +228,18 @@
 {% endblock %}
 
 {% if not no_sidebar %}
-  {% if (content.extra_sidebar_contact|render|trim is not empty) or (sideContent.linkList) %}
+  {% if sideContent.contactList or (sideContent.linkList) %}
     {% set sidebar = true %}
   {% endif %}
 {% endif %}
 
 {% block sidebar %}
-  {{ content.extra_sidebar_contact }}
+  {% if sideContent.contactList %}
+    {% set contactList = sideContent.contactList %}
+    {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
+    {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
   {% if sideContent.linkList %}
     {% set linkList = sideContent.linkList %}
     {% set linkList = linkList|merge({'compHeading': {

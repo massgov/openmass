@@ -76,7 +76,7 @@ abstract class QueryGeneratedEntityReferenceList extends EntityReferenceFieldIte
       if ($query) {
         $query->range($this->start, $this->length);
         $i = 0;
-        foreach ($query->execute() as $nid) {
+        foreach ($query->accessCheck(FALSE)->execute() as $nid) {
           $this->list[$i] = $this->createItem($i, ['target_id' => $nid]);
           $i++;
         }

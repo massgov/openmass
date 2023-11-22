@@ -55,7 +55,7 @@ function mass_redirects_entity_operation(EntityInterface $entity): array {
  * Implements hook_entity_type_alter().
  */
 function mass_redirects_entity_type_alter(array &$entity_types) {
-  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   $handlers = $entity_types['node']->getHandlerClasses();
   $handlers['form']['move-redirects'] = MoveRedirectsForm::class;
   $entity_types['node']->setHandlerClass('form', $handlers['form']);

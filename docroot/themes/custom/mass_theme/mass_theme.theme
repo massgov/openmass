@@ -6,30 +6,32 @@
  */
 
 use Drupal\block\Entity\Block;
-use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\file\Entity\File;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\mass_content\EventsRendererOrgPages;
+use Drupal\mass_utility\RelatedToHelper;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
 use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Prepare\Schemas;
-use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
-use Drupal\taxonomy\Entity\Term;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\DomCrawler\Crawler;
+use Drupal\node\NodeInterface;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\schema_metatag\SchemaMetatagManager;
+use Drupal\taxonomy\Entity\Term;
+use Symfony\Component\DomCrawler\Crawler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme_suggestions_alter().
@@ -98,14 +100,9 @@ function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, arra
   /** @var \Drupal\views\ViewExecutable $view */
   $view = $variables['view'];
 
-  // Allow all data listing views pages to use the same template file.
-  if (strpos($view->id(), 'data_listing') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
-    $suggestions[] = 'views_view__data_listing';
-  }
-
   // Allow all collection views pages to use the same template file.
   if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
-    $suggestions[] = 'views_view__data_listing';
+    $suggestions[] = 'views_view__collections';
   }
 }
 
@@ -122,8 +119,11 @@ function mass_theme_preprocess_callout_links(&$variables) {
     'calloutLinks' => Molecules::prepareCalloutLinks($paragraph),
   ];
 
-  if (Helper::getParentNode($paragraph)->bundle() == "org_page") {
-    $variables["useWrapper"] = TRUE;
+  $parent = Helper::getParentNode($paragraph);
+  if ($parent instanceof NodeInterface) {
+    if ($parent->bundle() == "org_page") {
+      $variables["useWrapper"] = TRUE;
+    }
   }
 }
 
@@ -357,6 +357,12 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     $stepsUnordered = Organisms::prepareStepsUnordered($node, $unorderedSteps_options);
 
+    if ($stepsUnordered) {
+      if (isset($stepsUnordered['steps'][0])) {
+        $stepsUnordered['steps'][0]['isExpanded'] = TRUE;
+      }
+    }
+
     $pageContent['stepsUnordered'] = $stepsUnordered;
 
     // Set up corresponding sticky nav entry for how to ___.
@@ -431,7 +437,14 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     if ($pageContent['contactList']) {
       // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-      $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'order' => ['phone', 'online', 'more_info'],
+        ],
+      ];
+      $sidebar['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
       // Hide the top contact on mobile.
       $sidebar['contactList']['compHeading']['id'] = 'sidebar-contact';
       $sidebar['contactList']['viewSpecific'] = TRUE;
@@ -570,8 +583,8 @@ function mass_theme_preprocess_node_form_page(&$variables) {
           'isExpanded' => FALSE,
         ],
       ];
-      // Prepare the sidebarContact data object cache tags do not need to be sent.
-      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+      // Prepare the sidebarContact data object.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
       unset($sideContent['contactList']['compHeading']);
       $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
       $sideContent['contactList']['viewSpecific'] = FALSE;
@@ -624,6 +637,23 @@ function mass_theme_preprocess_node_form_page(&$variables) {
 function mass_theme_preprocess_node_org_page(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     $node = $variables['node'];
+    if ($sections = $node->get('field_organization_sections')->referencedEntities()) {
+      $utility_service = \Drupal::service('mass_metatag.utilities');
+      $org_nav = [];
+      foreach ($sections as $section) {
+        if ($section->field_hide_in_org_navigation->value != TRUE && $section->field_hide_heading->value != TRUE) {
+          if (!empty($section->field_org_navigation_jump_link_t->value)) {
+            $text = $section->field_org_navigation_jump_link_t->value;
+            $id = 'org-nav-' . $utility_service->slugify($text);
+            $org_nav[] = [
+              'text' => $text,
+              'id' => $id,
+            ];
+          }
+        }
+      }
+      $variables['org_nav'] = $org_nav;
+    }
     $cache_tags = [];
 
     // Get the page title for title context.
@@ -1206,8 +1236,8 @@ function mass_theme_preprocess_node_location(&$variables) {
       'link' => [
         'text' => t("Directions"),
         'href' => $address_link,
-        'info' => ''
-      ]
+        'info' => '',
+      ],
     ];
 
     // Location subtitle.
@@ -1264,7 +1294,7 @@ function mass_theme_preprocess_node_location(&$variables) {
         }
 
         // For filterable icon/term types, create a tag.
-        // @TODO consider making the accepted values configurable.
+        // @todo consider making the accepted values configurable.
         if (in_array($sprite, ['wheelchair', 'open-now'])) {
           $title = $term->getName();
           $tags[] = [
@@ -1369,23 +1399,8 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Make relationshipIndicatorPrimary data structure available in twig template.
     $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
-    // Create the map of all possible field names to use.
-    $map = [
-      'icon' => ['field_topic_ref_icon'],
-    ];
-
-    // Determines which field names to use from the map.
-    $fields = Helper::getMappedFields($node, $map);
-
-    $icon = Helper::getReferenceField($node->{$fields['icon']}, 'field_sprite_name');
-
-    if ($icon) {
-      $icon = Helper::getIconPath($icon);
-    }
-
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
-      'icon' => $icon,
       'color' => 'white',
       'underline' => TRUE,
     ];
@@ -1480,12 +1495,23 @@ function mass_theme_preprocess_node_binder(&$variables) {
  * Prepare the variables for the Info Details page.
  */
 function mass_theme_preprocess_node_info_details(&$variables) {
+  $cache_tags = [];
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
+    $page_title = $node->getTitle();
+
+    // Create the map of all possible field names to use.
+    $map = [
+      'contact' => ['field_contact'],
+    ];
+
+    // Determines which field names to use from the map.
+    $fields = Helper::getMappedFields($node, $map);
 
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
+    $variables['sectionCount'] = $node->field_info_details_sections->count();
 
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
@@ -1524,11 +1550,55 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       $variables['sideContent'] = $sideContent;
     }
 
+    // Build contact section, if field is populated.
+    if (!empty($fields['contact']) && Helper::isFieldPopulated($node, $fields['contact'])) {
+      // Set up options for contact list.
+      $contacts_title = t("Contact");
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+
+      // Set up options for contact list.
+      $contactList_options = [
+        'heading' => [
+          'type' => 'compHeading',
+          'title' => $contacts_title,
+          'titleContext' => $titleContext,
+          'sub' => TRUE,
+        ],
+        'groups' => [
+          'accordion' => TRUE,
+          'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+        ],
+      ];
+
+      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+      $variables['sideContent'] = $sideContent;
+      $variables['mainContent'] = $mainContent;
+    }
+
     // Hide sidebar when 'visual_story' is select from the field_page_template field.
     if ($node->field_page_template && $node->field_page_template->value == 'visual_story') {
       $variables['no_sidebar'] = TRUE;
     }
   }
+
+  // Bubble cache tag to the current render. Based on template_preprocess_pager()
+  // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+  (new CacheableMetadata())->addCacheTags($cache_tags)
+    ->applyTo($variables);
 }
 
 /**
@@ -1677,9 +1747,9 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
         'onlyPhoneAndOnline' => TRUE,
       ],
     ];
-    // Prepare the sidebarContact data object do not need to send cache tags a second time.
+    // Prepare the sidebarContact data object.
     $titleContext = t(' for  @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
     unset($sideContent['contactList']['compHeading']);
     $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
     $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
@@ -1951,9 +2021,9 @@ function mass_theme_preprocess_node_decision(&$variables) {
         'onlyPhoneAndOnline' => TRUE,
       ],
     ];
-    // Prepare the sidebarContact data object do not need to send cache tags a second time.
+    // Prepare the sidebarContact data object.
     $titleContext = t(' for @docket @title', ['@docket' => $docket_number, '@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
     unset($sideContent['contactList']['compHeading']);
     $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
     $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
@@ -2201,9 +2271,9 @@ function mass_theme_preprocess_node_regulation(&$variables) {
         'onlyPhoneAndOnline' => TRUE,
       ],
     ];
-    // Prepare the sidebarContact data object, no need to pass cache_tags a second time.
+    // Prepare the sidebarContact data object.
     $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
     unset($sideContent['contactList']['compHeading']);
     $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
     $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
@@ -2419,8 +2489,8 @@ function mass_theme_preprocess_node_advisory(&$variables) {
         'onlyPhoneAndOnline' => TRUE,
       ],
     ];
-    // Prepare the sidebarContact data object no need to pass $cache_tags twice.
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+    // Prepare the sidebarContact data object.
+    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
     unset($sideContent['contactList']['compHeading']);
     $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
     $titleContext = t(' for @title', ['@title' => $page_title]);
@@ -2645,6 +2715,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
     $subCategory = [
       'title' => Helper::fieldFullView($node, $fields['subheading']),
       'level' => 3,
+      'tag' => 'div',
     ];
   }
 
@@ -2733,7 +2804,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
       ],
     ];
     // Prepare the sidebarContact data object.
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
     unset($sideContent['contactList']['compHeading']);
     $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
     $sideContent['contactList']['viewSpecific'] = TRUE;
@@ -3046,9 +3117,8 @@ function mass_theme_preprocess_node_event(&$variables) {
         'isExpanded' => FALSE,
       ],
     ];
-    // Prepare the sidebarContact data object, no need to get cache tags twice.
     $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
+    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
     unset($sideContent['contactList']['compHeading']);
     $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
     $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
@@ -3175,11 +3245,11 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_service_ref_guide_page_1') || Helper::isFieldPopulated($node, 'field_service_eligibility_info')) {
 
     // Set up static options for key actions component.
-    // @TODO see if we can use this field label instead of hard coding text.
+    // @todo see if we can use this field label instead of hard coding text.
     $keyActions_options = [
       'heading' => [
         'title' => t('First time? Start here.'),
-        'sub' => 3,
+        'level' => 2,
       ],
     ];
 
@@ -3992,7 +4062,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
     $variables['hero800x400_image_url'] = ImageStyle::load('hero800x400')->buildUrl($node->field_featured_image->entity->getFileUri());
   }
 
-  // TODO: determine if we need another ImageStyle.
+  // @todo determine if we need another ImageStyle.
   if ($node->field_featured_mobile_image->entity) {
     $variables['mobile800x400_image_url'] = ImageStyle::load('hero800x400')->buildUrl($node->field_featured_mobile_image->entity->getFileUri());
   }
@@ -4387,6 +4457,12 @@ function mass_theme_preprocess_html(&$variables) {
  * Remove page search if we're using our search band in stacked layout.
  */
 function mass_theme_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+  $variables['footerFloatingAction'] = TRUE;
+  if ($is_front_page || $route_name != 'entity.node.canonical') {
+    $variables['footerFloatingAction'] = FALSE;
+  }
   // Get Theme settings languages if available.
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
@@ -4397,7 +4473,7 @@ function mass_theme_preprocess_page(&$variables) {
     $node = $variables['node'];
 
     // When loading a revision only the nid is returned. We need the object.
-    if (ctype_digit($node)) {
+    if (is_scalar($node)) {
       $node = Node::load($node);
     }
 
@@ -4438,6 +4514,12 @@ function mass_theme_preprocess_page(&$variables) {
           }
         }
       }
+
+      if ($node->hasField('field_hide_feedback_component')) {
+        if ($node->field_hide_feedback_component->value == 1) {
+          $variables['footerFloatingAction'] = FALSE;
+        }
+      }
     }
   }
 
@@ -4466,6 +4548,10 @@ function mass_theme_preprocess_page(&$variables) {
  */
 function mass_theme_preprocess_field(&$variables, $hook) {
   $element = $variables['element'];
+
+  if ($element['#field_name'] == 'field_binder_pages') {
+    $variables['host_entity'] = $variables['element']['#object'];
+  }
 
   if ($element['#field_name'] == 'field_curatedlist_list_section') {
     if (count($element['#items']) == 1) {
@@ -4876,6 +4962,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
     $services = [
       'twitter',
       'facebook',
+      'threads',
       'flickr',
       'blog',
       'linkedin',
@@ -5088,11 +5175,11 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
 function mass_theme_preprocess_paragraph__related_content(&$variables) {
   $paragraph = $variables['paragraph'];
 
-  $field_related_content_items = $paragraph->get('field_related_content');
+  $field_related_content_items = $paragraph->get('field_related_content_link');
 
   // Get Related items.
   if ($field_related_content_items->count() > 0) {
-    $related_items = $field_related_content_items->referencedEntities();
+    $related_items = $field_related_content_items->getValue();
   }
 
   if (!empty($related_items)) {
@@ -5100,88 +5187,113 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
     $types = [];
     $total_count = count($related_items);
 
-    foreach ($related_items as $id => $item) {
-      /** @var Drupal\node\Entity\Node $item */
-      // Default icon for content without icons but using the Topic card.
-      $item->{'icon'} = 'marker';
-      $item->{'node_path'} = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $item->get('nid')->value);
-      $item->{'image_thumbnail_url'} = $item->hasField('field_photo') ? Helper::getFieldImageUrl($item, 'thumbnail_130x160', 'field_photo') : '';
+    foreach ($related_items as $related_item) {
 
-      // For Stacked Layout, if label or acronym is Guide then the label
-      // should be "Guide:".
-      if ($item->getType() == 'stacked_layout') {
-        $label = $item->get('field_label')->isEmpty() ? '' : $item->get('field_label')->value;
-        $item->{'label_text'} = $label == 'Guide' ? 'Guide:' : '';
-      }
+      // Get the URL object from the link field.
+      $url = Url::fromUri($related_item['uri']);
+      if (!$url->isExternal()) {
+        $route_parameters = $url->getRouteParameters();
+        if (isset($route_parameters['node'])) {
+          $node = Node::load($route_parameters['node']);
+          if ($node) {
+            /** @var Drupal\node\Entity\Node $node */
+            // Default icon for content without icons but using the Topic card.
+            $node->{'icon'} = 'marker';
+            $node->{'node_path'} = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->get('nid')->value);
+            $node->{'image_thumbnail_url'} = $node->hasField('field_photo') ? Helper::getFieldImageUrl($node, 'thumbnail_130x160', 'field_photo') : '';
 
-      // Grab our icon.
-      // Topics have an icon field.
-      if ($item->hasField('field_icon_term') && array_key_exists('0', $item->get('field_icon_term')->referencedEntities())) {
-        $icon = $item->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
-        $item->{'icon'} = $icon;
-      }
-
-      // Topics don't have topic callouts, so we use common content for links.
-      if ($item->hasField('field_common_content')) {
-        $links = [];
-        foreach ($item->get('field_common_content')->referencedEntities() as $link) {
-          // Get aliased path.
-          $link_path = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $link->get('nid')->value);
-          if ($link && $link->hasField('field_external_url')) {
-            $external_link = $link->get('field_external_url')->uri;
-            // Check the external url field value is not empty.
-            if (!empty($external_link)) {
-              $link_path = $external_link;
+            // For Stacked Layout, if label or acronym is Guide then the label
+            // should be "Guide:".
+            if ($node->getType() == 'stacked_layout') {
+              $label = $node->get('field_label')->isEmpty() ? '' : $node->get('field_label')->value;
+              $node->{'label_text'} = $label == 'Guide' ? 'Guide:' : '';
             }
-          }
-          $links[] = ['text' => $link->getTitle(), 'href' => $link_path];
-        }
-        // Get links for our topic cards.
-        $item->{'links'} = $links;
-      }
 
-      // Subtopics have topic callout links.
-      if ($item->hasField('field_topic_callout_links')) {
-        $links = [];
-        foreach ($item->get('field_topic_callout_links') as $link) {
-          $link_path = Url::fromUri($link->uri);
-          if (mb_strpos($link->uri, 'entity:node/') !== FALSE) {
-            $nid = explode('/', $link->uri)[1];
-            $linked_node = Node::load($nid);
-            // Check that we have a node and that it has an external_url field.
-            if ($linked_node && $linked_node->hasField('field_external_url')) {
-              $external_link = $linked_node->get('field_external_url')->uri;
-              // Check the external url field value is not empty.
-              if (!empty($external_link)) {
-                $link_path = $external_link;
+            // Grab our icon.
+            // Topics have an icon field.
+            if ($node->hasField('field_icon_term') && array_key_exists('0', $node->get('field_icon_term')->referencedEntities())) {
+              $icon = $node->get('field_icon_term')->referencedEntities()[0]->get('field_sprite_name')->value;
+              $node->{'icon'} = $icon;
+            }
+
+            // Topics don't have topic callouts, so we use common content for links.
+            if ($node->hasField('field_common_content')) {
+              $links = [];
+              foreach ($node->get('field_common_content')->referencedEntities() as $link) {
+                // Get aliased path.
+                $link_path = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $link->get('nid')->value);
+                if ($link && $link->hasField('field_external_url')) {
+                  $external_link = $link->get('field_external_url')->uri;
+                  // Check the external url field value is not empty.
+                  if (!empty($external_link)) {
+                    $link_path = $external_link;
+                  }
+                }
+                $links[] = ['text' => $link->getTitle(), 'href' => $link_path];
               }
+              // Get links for our topic cards.
+              $node->{'links'} = $links;
             }
+
+            // Subtopics have topic callout links.
+            if ($node->hasField('field_topic_callout_links')) {
+              $links = [];
+              foreach ($node->get('field_topic_callout_links') as $link) {
+                $link_path = Url::fromUri($link->uri);
+                if (mb_strpos($link->uri, 'entity:node/') !== FALSE) {
+                  $nid = explode('/', $link->uri)[1];
+                  $linked_node = Node::load($nid);
+                  // Check that we have a node and that it has an external_url field.
+                  if ($linked_node && $linked_node->hasField('field_external_url')) {
+                    $external_link = $linked_node->get('field_external_url')->uri;
+                    // Check the external url field value is not empty.
+                    if (!empty($external_link)) {
+                      $link_path = $external_link;
+                    }
+                  }
+                }
+                $links[] = ['text' => $link->computed_title, 'href' => $link_path];
+              }
+              // Get links for our topic cards.
+              $node->{'links'} = $links;
+            }
+
+            if (!empty($related_item['title'])) {
+              $node->{'label'} = $related_item['title'];
+            }
+
+            $nodes[] = $node;
+            $types[] = $node->getType();
           }
-          $links[] = ['text' => $link->computed_title, 'href' => $link_path];
         }
-        // Get links for our topic cards.
-        $item->{'links'} = $links;
       }
-
-      $nodes[] = $item;
-      $types[] = $item->getType();
+      else {
+        $item = new stdClass();
+        if (!empty($related_item['title'])) {
+          $item->{'label'} = $related_item['title'];
+        }
+        else {
+          $item->{'label'} = $related_item['uri'];
+        }
+        $item->{'node_path'} = $related_item['uri'];
+        $nodes[] = $item;
+      }
     }
+    $contentTypes = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
+
+    $contentTypesList = [];
+
+    // Get our content types list.
+    foreach ($contentTypes as $contentType) {
+      $contentTypesList[$contentType->id()] = 0;
+    }
+
+    // Merge in our content types with totals so we don't have to check indexs.
+    $total_type_with_count = array_merge($contentTypesList, array_count_values($types));
+
+    $variables['layout'] = _get_layout($total_type_with_count, $total_count);
+    $variables['items'] = $nodes;
   }
-
-  $contentTypes = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
-
-  $contentTypesList = [];
-
-  // Get our content types list.
-  foreach ($contentTypes as $contentType) {
-    $contentTypesList[$contentType->id()] = 0;
-  }
-
-  // Merge in our content types with totals so we don't have to check indexs.
-  $total_type_with_count = array_merge($contentTypesList, array_count_values($types));
-
-  $variables['layout'] = _get_layout($total_type_with_count, $total_count);
-  $variables['items'] = $nodes;
 }
 
 /**
@@ -5367,27 +5479,30 @@ function mass_theme_preprocess_paragraph__3_up_content(&$variables) {
         }
       }
 
-      $list[] = [
-        'items' => [
-          [
-            'path' => '@atoms/04-headings/column-heading.twig',
-            'data' => [
-              'columnHeading' => [
-                'text' => $item->get('field_heading')->value,
-                'href' => '',
-                'info' => '',
-              ],
+      $list_items = [];
+      if ($item->get('field_heading')->value) {
+        $list_items[] = [
+          'path' => '@atoms/04-headings/column-heading.twig',
+          'data' => [
+            'columnHeading' => [
+              'text' => $item->get('field_heading')->value,
+              'href' => '',
+              'info' => '',
             ],
           ],
-          [
-            'path' => '@organisms/by-author/rich-text.twig',
-            'data' => [
-              'richText' => [
-                'rteElements' => $paragraphs,
-              ],
-            ],
+        ];
+      }
+      $list_items[] = [
+        'path' => '@organisms/by-author/rich-text.twig',
+        'data' => [
+          'richText' => [
+            'rteElements' => $paragraphs,
           ],
         ],
+      ];
+
+      $list[] = [
+        'items' => $list_items,
       ];
     }
   }
@@ -5919,7 +6034,7 @@ function mass_theme_preprocess_entity_embed_container(array &$variables) {
   // See docroot/themes/custom/mass_admin_theme/mass_admin_theme.theme:27
   // This code will prevent warnings for the content that already
   // has image_loading attribute set.
-  // @TODO Remove this code when entity_embed start supporting lazy loading attribute.
+  // @todo Remove this code when entity_embed start supporting lazy loading attribute.
   if (isset($variables['attributes']['data-entity-embed-display-settings']['image_loading'])) {
     unset($variables['attributes']['data-entity-embed-display-settings']['image_loading']);
   }
@@ -5946,7 +6061,7 @@ function _mass_theme_populate_collection_image_from_collection($collection_term,
 }
 
 /**
- * Adds variables to views-view--data-listing.html.
+ * Adds variables to views-view--collections.html.
  */
 function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $collection = \Drupal::routeMatch()->getParameter('collection');
@@ -5957,12 +6072,11 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   // Get collection terms matching the field_url_name
   $query = Drupal::entityQuery('taxonomy_term');
   $query
-    ->accessCheck(FALSE)
     ->condition('vid', 'collections')
     ->condition('field_url_name', $collection)
     ->range(0, 1);
 
-  $res = $query->execute();
+  $res = $query->accessCheck(FALSE)->execute();
   if (!$res) {
     return;
   }
@@ -6324,7 +6438,7 @@ function mass_theme_theme_suggestions_page_alter(array &$suggestions, array $var
   $node = \Drupal::request()->attributes->get('node');
 
   // When loading a revision only the nid is returned. We need the object.
-  if (ctype_digit($node)) {
+  if (is_scalar($node)) {
     $node = Node::load($node);
   }
 
@@ -6338,6 +6452,7 @@ function mass_theme_theme_suggestions_page_alter(array &$suggestions, array $var
       'binder',
       'info_details',
       'guide_page',
+      'service_page',
     ];
     if (in_array($node->getType(), $without_main)) {
       array_splice($suggestions, 1, 0, 'page__node__without_main');
@@ -6428,6 +6543,7 @@ function mass_theme_googletranslate_options_languages() {
     'ha' => 'Hausa',
     'hi' => 'Hindi',
     'hr' => 'Croatian',
+    'hmn' => 'Hmong',
     'hu' => 'Hungarian',
     'ht' => 'Haitian Creole',
     'hy' => 'Armenian',
@@ -6521,7 +6637,7 @@ function mass_theme_googletranslate_options_languages() {
     'yo' => 'Yoruba',
     'zh-CN' => 'Chinese',
     'zh-TW' => 'Chinese, Traditional',
-    'zu' => 'Zulu'
+    'zu' => 'Zulu',
   ];
   return $language_codes;
 }
@@ -6773,6 +6889,7 @@ function mass_theme_preprocess_field__node__field_social_links(&$variables) {
   $services = [
     'twitter',
     'facebook',
+    'threads',
     'flickr',
     'blog',
     'linkedin',
@@ -6892,7 +7009,7 @@ function mass_theme_build_key_message_component(array &$variables) {
     'white' => 'c-white',
     'light_grey' => 'c-gray-lightest',
   ];
-  // @TODO: Setup the button style to pass through once the designs are ready.
+  // @todo Setup the button style to pass through once the designs are ready.
   if (!empty($paragraph->field_button->title)) {
     $button = $variables['elements']['field_button'][0];
     $variables['button']['text'] = $button['#title'];
@@ -7060,11 +7177,20 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
  * Fetch social links from parent org node.
  */
 function mass_theme_preprocess_paragraph__social_media(&$variables) {
+  $level = "2";
   $paragraph = $variables['paragraph'];
+  if ($paragraph->parent_field_name->value == 'field_service_section_content') {
+    if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
+      if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
+        $level = "3";
+      }
+    }
+  }
   $node = Helper::getParentNode($paragraph);
   $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
   $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
     $node->$social_field_name->view() : [];
+  $variables['level'] = $level;
 }
 
 /**
@@ -7083,6 +7209,7 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  * Fetch contact info from parent service node.
  */
 function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
+  $cache_tags = [];
   $paragraph = $variables['paragraph'];
   $node = Helper::getParentNode($paragraph);
 
@@ -7099,7 +7226,12 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
       ],
     ];
     // Prepare the contactList data object.
-    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options);
+    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
+
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    (new CacheableMetadata())->addCacheTags($cache_tags)
+      ->applyTo($variables);
   }
 }
 
@@ -7163,14 +7295,54 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
  * Groups different components together when necessary.
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+  $container = $variables['paragraph'];
+
+  $utility_service = \Drupal::service('mass_metatag.utilities');
+  if (!$container->get('field_org_navigation_jump_link_t')->isEmpty()) {
+    $id = 'org-nav-' . $utility_service->slugify($container->field_org_navigation_jump_link_t->value);
+  }
+  elseif (!$container->field_section_long_form_heading->isEmpty()) {
+    $id = 'org-nav-' . $utility_service->slugify($container->field_section_long_form_heading->value);
+  }
+  $variables['heading_id'] = $id ?? 'unknown';
+  if (!$container->field_section_style->isEmpty()) {
+    $variables['section_style'] = $container->field_section_style->value;
+  }
+  $variables['hide_heading'] = $container->field_hide_heading->value;
   $variables["org_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
+  $links_group = [];
+  foreach ($variables['org_components'] as $key => &$org_component) {
+    /** @var Drupal\paragraphs\Entity\Paragraph */
+    $org_component_paragraph = &$org_component[0];
+    if (
+      is_object($org_component_paragraph) &&
+      $org_component_paragraph->getType() == 'flexible_link_group' &&
+      $org_component_paragraph->field_display_type->value == 'links'
+    ) {
+      $links_group[$key] = $org_component;
+    }
+    else {
+      _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables, 'org');
+      $links_group = [];
+    }
+  }
+
+  _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables, 'org');
+
+  // Removing elements included previously.
+  foreach ($variables['org_components'] as $key => &$org_component) {
+    if ($org_component === FALSE) {
+      unset($variables['org_components'][$key]);
+    }
+  }
 }
 
 /**
  * Join contiguous flexible link groups, type links, into the same element.
  */
-function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables) {
+function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables, $destination = 'service') {
+  $component_name = $destination . '_components';
   if (count($links_group) < 2) {
     return;
   }
@@ -7180,10 +7352,10 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables['service_components'][$first][0]->subsequent_links[] = $link_group[0];
+    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
 
     // Empty elements included previously.
-    $variables['service_components'][$key] = FALSE;
+    $variables[$component_name][$key] = FALSE;
   }
   $links_group = [];
 }
@@ -7391,7 +7563,7 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
         "position" => $key + 1,
         "item" => [
           "@id" => $link['url'],
-          "name" => $link['text']
+          "name" => $link['text'],
         ],
       ];
     }

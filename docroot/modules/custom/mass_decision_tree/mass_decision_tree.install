@@ -41,7 +41,7 @@ function mass_decision_tree_update_8001() {
   $new_instance->save();
 
   // Migrate the data over using a direct INSERT ... FROM query.
-  // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+  // @todo Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
   // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
   $base_from = \Drupal::database()->select('node__field_how_to_link_1', 's')
     ->fields('s', [
@@ -56,13 +56,13 @@ function mass_decision_tree_update_8001() {
   $base_from->addField('s', 'field_how_to_link_1_uri', 'field_decision_actions_uri');
   $base_from->addField('s', 'field_how_to_link_1_title', 'field_decision_actions_title');
   $base_from->addField('s', 'field_how_to_link_1_options', 'field_decision_actions_options');
-  // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+  // @todo Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
   // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
   \Drupal::database()->insert('node__field_decision_actions')
     ->from($base_from)
     ->execute();
 
-  // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+  // @todo Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
   // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
   $revision_from = \Drupal::database()->select('node_revision__field_how_to_link_1', 's')
     ->fields('s', [
@@ -77,7 +77,7 @@ function mass_decision_tree_update_8001() {
   $revision_from->addField('s', 'field_how_to_link_1_uri', 'field_decision_actions_uri');
   $revision_from->addField('s', 'field_how_to_link_1_title', 'field_decision_actions_title');
   $revision_from->addField('s', 'field_how_to_link_1_options', 'field_decision_actions_options');
-  // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+  // @todo Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
   // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
   \Drupal::database()->insert('node_revision__field_decision_actions')
     ->from($revision_from)

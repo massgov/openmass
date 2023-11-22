@@ -3,8 +3,8 @@
 namespace Drupal\mass_search_suppression\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
-use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Defines a form that configures Mass Search Suppression settings.

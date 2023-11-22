@@ -5,10 +5,10 @@
  * Contains ma_feedback_form.module..
  */
 
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Implements hook_help().
@@ -113,6 +113,11 @@ function mass_feedback_form_entity_extra_field_info() {
  */
 function mass_feedback_form_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   if ($display->getComponent('extra_org_feedback_form')) {
+    if ($entity->hasField('field_hide_feedback_component')) {
+      if ($entity->field_hide_feedback_component->value == 1) {
+        return;
+      }
+    }
     $entityTypeManager = \Drupal::entityTypeManager();
     $viewBuilder = $entityTypeManager->getViewBuilder('node');
     if ($entity->bundle() === 'org_page') {

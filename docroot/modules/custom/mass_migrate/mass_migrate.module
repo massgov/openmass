@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function mass_migrate_module_implements_alter(&$implementations, $hook) {
+  // Completely take over entity_hierarchy delete hook.
+  if ($hook == 'entity_delete' && \Drupal::state()->get('entity_hierarchy_disable_writes', FALSE)) {
+    unset($implementations['entity_hierarchy']);
+  }
+}

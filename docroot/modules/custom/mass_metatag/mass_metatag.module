@@ -5,14 +5,17 @@
  * Contains mass_metatag.module.
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\link\LinkItemInterface;
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\schema_metatag\SchemaMetatagManager;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
 
 /**
@@ -32,6 +35,11 @@ function mass_metatag_token_info() {
   $info['tokens']['node']['mass_organizations'] = [
     'name' => t('Related organizations'),
     'description' => t('The organizations related to the current node.'),
+    'type' => 'node',
+  ];
+  $info['tokens']['node']['mass_parent_organizations'] = [
+    'name' => t('Parent organizations'),
+    'description' => t('The parent organizations related to the current node.'),
     'type' => 'node',
   ];
   $info['tokens']['node']['mass_labels'] = [
@@ -72,6 +80,11 @@ function mass_metatag_token_info() {
     'description' => t('The Services category metatag.'),
     'type' => 'node',
   ];
+  $info['tokens']['term']['mass_term_labels'] = [
+    'name' => t('Taxonomy term labels'),
+    'description' => t('The labels related to the current Taxonomy term.'),
+    'type' => 'term',
+  ];
 
   return $info;
 }
@@ -81,6 +94,45 @@ function mass_metatag_token_info() {
  */
 function mass_metatag_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
+  if ($type == 'term') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'mass_term_labels':
+          $metatag_utils = \Drupal::service('mass_metatag.utilities');
+          if (isset($data['term'])) {
+            if ($data['term'] instanceof ContentEntityInterface) {
+              $term = $data['term'];
+            }
+          }
+          elseif ($collection = \Drupal::routeMatch()->getParameter('collection')) {
+            // Get collection terms matching the field_url_name
+            $query = Drupal::entityQuery('taxonomy_term');
+            $query
+              ->condition('vid', 'collections')
+              ->condition('field_url_name', $collection)
+              ->range(0, 1);
+
+            $res = $query->accessCheck(FALSE)->execute();
+            if ($res) {
+              $tid = reset($res);
+              $term = Term::load($tid);
+            }
+          }
+          if ($term) {
+            $labels = $metatag_utils->getAllLabelsFromEntity($term);
+            // Remove hyphens from the labels...
+            $label_names = [];
+            foreach ($labels as $key => $value) {
+              $label_names[$key] = str_replace("-", "", $value);
+            }
+
+            // Separate the labels with a comma.
+            $replacements[$original] = implode(',', $label_names);
+          }
+          break;
+      }
+    }
+  }
   if ($type == 'node') {
     foreach ($tokens as $name => $original) {
       switch ($name) {
@@ -199,31 +251,55 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'mass_labels':
           $metatag_utils = \Drupal::service('mass_metatag.utilities');
-          $labels = $metatag_utils->getAllLabelsFromNode($data['node']);
-          // Remove hyphens from the labels..
-          $label_names = [];
-          foreach ($labels as $key => $value) {
-            $label_names[$key] = str_replace("-", "", $value);
-          }
+          if (isset($data['node'])) {
+            if ($data['node'] instanceof ContentEntityInterface) {
+              $labels = $metatag_utils->getAllLabelsFromEntity($data['node']);
+              // Remove hyphens from the labels...
+              $label_names = [];
+              foreach ($labels as $key => $value) {
+                $label_names[$key] = str_replace("-", "", $value);
+              }
 
-          // Separate the labels with a comma.
-          $replacements[$original] = implode(',', $label_names);
+              // Separate the labels with a comma.
+              $replacements[$original] = implode(',', $label_names);
+            }
+          }
           break;
 
         case 'mass_organizations':
+          if ($data['node'] instanceof NodeBundle) {
+            $org_nodes = $data['node']->getOrganizations()->referencedEntities();
+            // If we have an org page, also return myself.
+            if ($data['node']->bundle() == 'org_page') {
+              $org_nodes[] = $data['node'];
+            }
+            if ($org_nodes) {
+              $utilities = \Drupal::service('mass_metatag.utilities');
+              $org_slugs = [];
+              foreach ($org_nodes as $org) {
+                $org_slugs[] = str_replace("-", "", $utilities->slugify(trim($org->label())));
+              }
+
+              $org_names = array_unique($org_slugs);
+              // Separate the organizations with a comma.
+              $replacements[$original] = implode(',', $org_names);
+            }
+          }
+          break;
+        case 'mass_parent_organizations':
           /** @var \Drupal\mass_metatag\Service\MassMetatagUtilities $metatag_utils */
           $metatag_utils = \Drupal::service('mass_metatag.utilities');
-          $org_names = $metatag_utils->getAllOrgsFromNode($data['node']);
+          $org_names = $metatag_utils->getAllOrgsFromNode($data['node'], TRUE);
 
           // Remove hyphens from organizations.
           foreach ($org_names as $key => $value) {
             $org_names[$key] = str_replace("-", "", $value);
           }
 
+          $org_names = array_unique($org_names);
           // Separate the organizations with a comma.
           $replacements[$original] = implode(',', $org_names);
           break;
-
         case 'mass_related_terms':
           $tags = [];
 
@@ -346,7 +422,6 @@ function mass_metatag_page_attachments(array &$attachments) {
   // only if the current user is a logged in user of our product, and the
   // admin theme is active (which could be both admin routes, and non-frontend
   // non-admin routes.
-
   if (\Drupal::currentUser()->isAuthenticated() && \Drupal::service('theme.manager')->getActiveTheme()->getName() == 'mass_admin_theme') {
     $user = Drupal::currentUser();
     $user_entity = User::load($user->id());
@@ -367,16 +442,15 @@ function mass_metatag_page_attachments(array &$attachments) {
     //   or admin pages only because of how metatag module is designed.
     // - And after we did that work, dynamic cacheability would break
     //   Link: https://circleci.com/gh/massgov/mass/24841.
-
     $user_metatag_render_array = [
       [
         "#tag" => "meta",
         "#attributes" => [
           "name" => "mg_backend_user_id",
           "content" => $user->id(),
-        ]
+        ],
       ],
-      "mg_backend_user_id"
+      "mg_backend_user_id",
     ];
 
     $user_org_metatag_render_array = [
@@ -385,9 +459,9 @@ function mass_metatag_page_attachments(array &$attachments) {
         "#attributes" => [
           "name" => "mg_backend_user_org",
           "content" => isset($slugified_user_org) ? $slugified_user_org : "user-org-not-set",
-        ]
+        ],
       ],
-      "mg_backend_user_org"
+      "mg_backend_user_org",
     ];
 
     $attachments['#attached']['html_head'][] = $user_metatag_render_array;
@@ -464,7 +538,7 @@ function mass_metatag_dataformat(array &$attachments) {
  */
 function mass_metatag_datalayer_meta() {
   return [
-    'field_organizations'
+    'field_organizations',
   ];
 }
 
@@ -474,6 +548,17 @@ function mass_metatag_datalayer_meta() {
  * Change the output of entityField_organizations to include title.
  */
 function mass_metatag_datalayer_alter(&$data_layer) {
+  if (isset($data_layer['entityIdentifier'])) {
+    $node = Node::load($data_layer['entityIdentifier']);
+    if ($node) {
+      $metatag_utils = \Drupal::service('mass_metatag.utilities');
+      $parent_orgs = $metatag_utils->getAllOrgsFromNode($node, TRUE, TRUE);
+      if ($parent_orgs) {
+        $data_layer['entityField_org_parent'] = $parent_orgs;
+      }
+    }
+  }
+
   if (isset($data_layer['entityField_organizations'])) {
     $ids = explode(', ', $data_layer['entityField_organizations']);
     $organizations = [];
@@ -627,7 +712,7 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
     'rules' => 'field_rules_metatags',
     'service_page' => 'field_service_metatags',
     'service_details' => 'field_service_detail_metatags',
-    'topic_page' => 'field_topic_metatags'
+    'topic_page' => 'field_topic_metatags',
   ];
 
   // Hide the following metatags from the advanced section.

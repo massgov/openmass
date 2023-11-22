@@ -1,0 +1,8 @@
+{# Callout Time #}
+{% if content.field_time_callout_text|render is not empty %}
+  {% include "@organisms/by-author/callout-time.twig" with {
+    "calloutTime": {
+      "text": content.field_time_callout_text
+    }
+  } %}
+{% endif %}

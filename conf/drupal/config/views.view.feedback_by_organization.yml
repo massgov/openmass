@@ -12,7 +12,7 @@ dependencies:
     - workflows.workflow.topic_page
   module:
     - content_moderation
-    - mass_superset
+    - mass_bigquery
     - mass_views
     - node
     - taxonomy
@@ -481,6 +481,15 @@ display:
             date_format: short_date_only
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -491,9 +500,66 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
+          relationship: vid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          label: 'Nos per 1000'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: true
+            path: 'node/{{ nid }}/feedback'
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: true
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: true
+          precision: 1
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: group
@@ -548,172 +614,9 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Date Snoozed'
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: Score
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: true
-            path: 'node/{{ nid }}/analytics'
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: true
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: true
-          precision: 1
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: 'Nos per 1000'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: true
-            path: 'node/{{ nid }}/feedback'
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: true
-          precision: 1
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
         eject_rate:
           id: eject_rate
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: eject_rate
           relationship: vid
           group_type: group
@@ -770,7 +673,7 @@ display:
           suffix: ''
         broken_links:
           id: broken_links
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: broken_links
           relationship: vid
           group_type: group
@@ -827,7 +730,7 @@ display:
           suffix: ''
         grade_level:
           id: grade_level
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: grade_level
           relationship: vid
           group_type: group
@@ -884,7 +787,7 @@ display:
           suffix: ''
         total_feedback:
           id: total_feedback
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_feedback
           relationship: vid
           group_type: group
@@ -941,7 +844,7 @@ display:
           suffix: ''
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: vid
           group_type: group
@@ -998,7 +901,7 @@ display:
           suffix: ''
         total_yes:
           id: total_yes
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_yes
           relationship: vid
           group_type: group
@@ -1625,125 +1528,9 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '<='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
-            description: ''
-            use_operator: false
-            operator: score_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: score
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: group
@@ -1802,10 +1589,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
@@ -1818,17 +1605,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: nos_per_1000_op
-            label: 'Nos per 1000'
+            operator_id: nos_per_1000_cleaned_op
+            label: 'Nos per 1000 is greater than or equal to'
             description: ''
-            use_operator: true
-            operator: nos_per_1000_op
-            operator_limit_selection: true
-            operator_list:
-              '<=': '<='
-              '>=': '>='
-              between: between
-            identifier: nos_per_1000
+            use_operator: false
+            operator: nos_per_1000_cleaned_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -1865,7 +1649,7 @@ display:
             group_items: {  }
         eject_rate:
           id: eject_rate
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: eject_rate
           relationship: nid
           group_type: group
@@ -1926,7 +1710,7 @@ display:
             group_items: {  }
         grade_level:
           id: grade_level
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: grade_level
           relationship: nid
           group_type: group
@@ -1987,7 +1771,7 @@ display:
             group_items: {  }
         broken_links:
           id: broken_links
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: broken_links
           relationship: nid
           group_type: group
@@ -2048,7 +1832,7 @@ display:
             group_items: {  }
         total_feedback:
           id: total_feedback
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_feedback
           relationship: nid
           group_type: group
@@ -2109,7 +1893,7 @@ display:
             group_items: {  }
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: group
@@ -2170,7 +1954,7 @@ display:
             group_items: {  }
         total_yes:
           id: total_yes
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_yes
           relationship: nid
           group_type: group
@@ -2238,118 +2022,118 @@ display:
         options:
           row_class: ''
           default_row_class: true
-          override: 1
-          sticky: 0
-          caption: ''
-          summary: ''
-          description: ''
           columns:
             field_organizations: field_organizations
             pageviews: pageviews
-            nos_per_1000: nos_per_1000
+            nos_per_1000_cleaned: nos_per_1000_cleaned
             field_views_simple_math_field: field_views_simple_math_field
             title: title
             field_parent: field_parent
             total_no: total_no
+          default: nos_per_1000_cleaned
           info:
             field_organizations:
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             pageviews:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-            nos_per_1000:
-              sortable: 1
+            nos_per_1000_cleaned:
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             field_views_simple_math_field:
-              sortable: 0
+              sortable: false
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             title:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             field_parent:
-              sortable: 0
+              sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             total_no:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-          default: nos_per_1000
-          empty_table: 0
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
           group_aggregation:
             group_aggregation_results: '0'
             grouping_field_class: ''
@@ -2358,7 +2142,7 @@ display:
             grouping_row_class: ''
           column_aggregation:
             totals_row_position:
-              2: '2'
+              2: 2
               1: 0
               3: 0
             totals_per_page: '1'
@@ -2534,7 +2318,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: vid
           group_type: sum
@@ -2589,15 +2373,15 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
-          relationship: vid
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
+          relationship: nid
           group_type: avg
           admin_label: ''
           plugin_id: numeric
-          label: 'Average No''s per 1000 page views'
+          label: "Average No's per 1000 page views"
           exclude: false
           alter:
             alter_text: false
@@ -2635,7 +2419,7 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: false
+          hide_empty: true
           empty_zero: false
           hide_alter_empty: true
           set_precision: true
@@ -2654,7 +2438,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field_views_simple_math_field
-          label: 'No''s per 1000 pv'
+          label: "No's per 1000 pv"
           exclude: false
           alter:
             alter_text: false
@@ -2700,10 +2484,11 @@ display:
               pageviews: pageviews
               total_no: total_no
               field_organizations: 0
-              nos_per_1000: 0
+              nos_per_1000_cleaned: 0
               title: 0
               field_parent: 0
             formula: '@total_no/@pageviews*1000'
+          mute_logs: false
           set_precision: 1
           precision: '1'
           decimal: .
@@ -2849,7 +2634,7 @@ display:
           field_api_classes: false
         total_no:
           id: total_no
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: total_no
           relationship: nid
           group_type: sum
@@ -3271,70 +3056,9 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              3:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: sum
@@ -3393,10 +3117,10 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nos_per_1000:
-          id: nos_per_1000
-          table: mass_superset_data
-          field: nos_per_1000
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: avg
           admin_label: ''
@@ -3409,17 +3133,17 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: nos_per_1000_op
-            label: 'Avg No''s per 1000 Pageviews'
+            operator_id: nos_per_1000_cleaned_op
+            label: "Avg No's per 1000 Pageviews"
             description: ''
             use_operator: true
-            operator: nos_per_1000_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: true
             operator_list:
               '<=': '<='
               '>=': '>='
               between: between
-            identifier: nos_per_1000
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false

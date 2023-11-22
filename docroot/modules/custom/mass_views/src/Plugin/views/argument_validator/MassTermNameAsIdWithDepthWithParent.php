@@ -135,7 +135,7 @@ class MassTermNameAsIdWithDepthWithParent extends TermNameAsId {
           }
           return TRUE;
         }
-        // @todo: If there are other values in $terms, maybe it'd be nice to
+        // @todo If there are other values in $terms, maybe it'd be nice to
         // warn someone that there were multiple matches and we're only using
         // the first one.
       }

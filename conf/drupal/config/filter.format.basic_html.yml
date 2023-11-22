@@ -7,7 +7,6 @@ dependencies:
     - entity_embed
     - linkit
     - mass_fields
-    - media
     - pathologic
 _core:
   default_config_hash: P8ddpAIKtawJDi5SzOwCzVnnNYqONewSTJ6Xn0dW_aQ
@@ -19,7 +18,7 @@ filters:
     id: filter_html
     provider: filter
     status: true
-    weight: -10
+    weight: 0
     settings:
       allowed_html: '<a href hreflang data-entity-type data-entity-uuid data-entity-substitution> <sup> <sub> <em> <strong> <cite> <blockquote cite> <code> <ul start type class> <ol start type> <li> <dl> <dt> <dd> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <p> <br> <span> <img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <table> <caption> <tbody> <thead> <tfoot> <th> <td> <tr> <drupal-entity data-entity-type data-entity-uuid data-entity-substitution data-entity-embed-display data-entity-embed-display-settings data-align data-caption data-embed-button title alt>'
       filter_html_help: false
@@ -28,19 +27,19 @@ filters:
     id: filter_align
     provider: filter
     status: true
-    weight: 7
+    weight: 8
     settings: {  }
   filter_caption:
     id: filter_caption
     provider: filter
     status: true
-    weight: 8
+    weight: 11
     settings: {  }
   editor_file_reference:
     id: editor_file_reference
     provider: editor
     status: true
-    weight: 11
+    weight: 50
     settings: {  }
   entity_embed:
     id: entity_embed
@@ -52,7 +51,7 @@ filters:
     id: filter_pathologic
     provider: pathologic
     status: true
-    weight: 50
+    weight: -10
     settings:
       settings_source: global
       local_settings:
@@ -62,21 +61,36 @@ filters:
     id: filter_richtext
     provider: mass_fields
     status: true
-    weight: 0
+    weight: 7
     settings: {  }
   linkit:
     id: linkit
     provider: linkit
     status: true
-    weight: -11
+    weight: -10
     settings:
       title: false
-  media_embed:
-    id: media_embed
-    provider: media
+  filter_html_escape:
+    id: filter_html_escape
+    provider: filter
     status: false
-    weight: 100
-    settings:
-      default_view_mode: default
-      allowed_view_modes: {  }
-      allowed_media_types: {  }
+    weight: 0
+    settings: {  }
+  filter_html_image_secure:
+    id: filter_html_image_secure
+    provider: filter
+    status: false
+    weight: -50
+    settings: {  }
+  filter_richtext_indent:
+    id: filter_richtext_indent
+    provider: mass_fields
+    status: false
+    weight: 9
+    settings: {  }
+  filter_richtext_lang:
+    id: filter_richtext_lang
+    provider: mass_fields
+    status: true
+    weight: -50
+    settings: {  }

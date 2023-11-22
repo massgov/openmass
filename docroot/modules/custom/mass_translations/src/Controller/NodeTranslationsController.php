@@ -4,7 +4,6 @@ namespace Drupal\mass_translations\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\node\NodeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

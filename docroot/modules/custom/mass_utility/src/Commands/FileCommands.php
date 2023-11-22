@@ -19,7 +19,7 @@ use Drush\Commands\DrushCommands;
  * SELECT COUNT(*), entity_type, type FROM file_usage_real GROUP BY entity_type, type;
  * SELECT COUNT(*), type, module FROM file_usage GROUP BY type, module;
  *
- * @todo: Link fields are not normalized.
+ * @todo Link fields are not normalized.
  */
 class FileCommands extends DrushCommands {
 
@@ -37,14 +37,14 @@ class FileCommands extends DrushCommands {
       'entity_type' => [
         'type' => 'varchar',
         'not null' => TRUE,
-        'length' => 128
+        'length' => 128,
       ],
       'entity_id' => ['type' => 'int', 'not null' => TRUE],
-      'type' => ['type' => 'varchar', 'not null' => TRUE, 'length' => 128]
+      'type' => ['type' => 'varchar', 'not null' => TRUE, 'length' => 128],
     ],
     'indexes' => [
       'fid' => ['fid'],
-    ]
+    ],
   ];
 
   /**

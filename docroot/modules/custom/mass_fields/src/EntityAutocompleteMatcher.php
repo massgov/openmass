@@ -2,11 +2,11 @@
 
 namespace Drupal\mass_fields;
 
+use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Tags;
 use Drupal\Core\Entity\EntityAutocompleteMatcher as DefaultAutocompleteMatcher;
 use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Tags;
 
 /**
  * Matcher class to get autocompletion results for entity reference.

@@ -48,7 +48,7 @@ class MassMetatagContactDetails extends MetaNameBase {
               '#attributes' => [
                 'name' => $this->name,
                 'content' => $hours,
-              ]
+              ],
             ];
           }
         }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\mass_workbench_ui\Plugin\Block;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
@@ -12,7 +13,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Access\AccessResult;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -26,6 +26,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class WorkbenchModerationCurrentState extends BlockBase implements ContainerFactoryPluginInterface {
 
   private $routeMatch;
+
+  private EntityTypeManagerInterface $entityTypeManager;
+
+  private AccountInterface $currentUser;
 
   /**
    * {@inheritdoc}

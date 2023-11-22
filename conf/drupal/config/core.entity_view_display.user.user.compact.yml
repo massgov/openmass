@@ -4,6 +4,8 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.user.compact
+    - field.field.user.user.field_approval_notes
+    - field.field.user.user.field_approved
     - field.field.user.user.field_user_intern
     - field.field.user.user.field_user_org
     - field.field.user.user.user_picture
@@ -30,6 +32,8 @@ content:
     weight: 0
     region: content
 hidden:
+  field_approval_notes: true
+  field_approved: true
   field_user_intern: true
   field_user_org: true
   langcode: true

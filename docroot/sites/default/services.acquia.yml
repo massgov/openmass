@@ -4,10 +4,12 @@ services:
   monolog.handler.acquia_newrelic:
     class: Drupal\mass_utility\Logger\AcquiaNewRelicHandler
     # Set info as the minimum level.
-    arguments: ['%monolog.level.debug%']
+    arguments: [100]
 parameters:
   monolog.channel_handlers:
     # Log to syslog and NewRelic
     default: ['acquia_syslog', 'acquia_newrelic']
     # Cut down noise in New Relic
     purge: ['acquia_syslog']
+    # 403 still visible at Akamai.
+    access denied: ['null']

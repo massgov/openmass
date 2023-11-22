@@ -30,13 +30,12 @@ dependencies:
     - node.type.person
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
   module:
     - content_moderation
     - csv_serialization
     - dynamic_entity_reference
-    - mass_superset
+    - mass_bigquery
     - mass_views
     - node
     - options
@@ -504,7 +503,7 @@ display:
           field_api_classes: false
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: none
           group_type: group
@@ -843,7 +842,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
           group: 1
           exposed: true
           expose:
@@ -973,7 +971,6 @@ display:
             regulation: regulation
             rules: rules
             service_page: service_page
-            service_details: service_details
           group: 1
           exposed: false
           expose:
@@ -1709,6 +1706,15 @@ display:
             date_format: short
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -3551,6 +3557,15 @@ display:
             date_format: short
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true

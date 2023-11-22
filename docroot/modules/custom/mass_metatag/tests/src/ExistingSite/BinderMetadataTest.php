@@ -52,7 +52,7 @@ class BinderMetadataTest extends MetadataTestCase {
       'twitter:description' => 'Test Short Desc',
       'mg_date' => '20121231',
       'mg_organization' => 'testorgpage',
-      // @todo: This doesn't seem like the correct value.
+      // @todo This doesn't seem like the correct value.
       'mg_contact_details' => 'Test Contact - admin',
     ]);
   }

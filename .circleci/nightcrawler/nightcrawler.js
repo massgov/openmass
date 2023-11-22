@@ -37,12 +37,12 @@ switch(target) {
     alias = '@self';
     break;
   case 'test':
-    base = 'https://edit.stage.mass.gov';
+    base = 'https://stage.mass.gov';
     alias = '@test';
     auth = getAuth();
     break;
   default:
-    base = `https://massgov${target}.prod.acquia-sites.com`;
+    base = `https://${target}.edit.mass.gov`;
     alias = `@${target}`
     auth = getAuth();
 }
@@ -69,6 +69,9 @@ function getAuth() {
 
 var driver = new RequestDriver({
   strictSSL: false,
+  headers: {
+    "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT,
+  },
   // This number is arbitrary - we report performance statistics during
   // the crawl - we just want to avoid a failure here due to timeout, which
   // occurs for the first pageview on a cold cache.

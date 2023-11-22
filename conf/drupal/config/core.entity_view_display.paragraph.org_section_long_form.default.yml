@@ -4,16 +4,38 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.org_section_long_form.field_hide_heading
+    - field.field.paragraph.org_section_long_form.field_hide_in_org_navigation
+    - field.field.paragraph.org_section_long_form.field_org_navigation_jump_link_t
     - field.field.paragraph.org_section_long_form.field_section_long_form_content
     - field.field.paragraph.org_section_long_form.field_section_long_form_heading
+    - field.field.paragraph.org_section_long_form.field_section_style
     - paragraphs.paragraphs_type.org_section_long_form
   module:
     - entity_reference_revisions
+    - options
 id: paragraph.org_section_long_form.default
 targetEntityType: paragraph
 bundle: org_section_long_form
 mode: default
 content:
+  field_hide_in_org_navigation:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_org_navigation_jump_link_t:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
   field_section_long_form_content:
     type: entity_reference_revisions_entity_view
     label: above
@@ -31,6 +53,15 @@ content:
     third_party_settings: {  }
     weight: 0
     region: content
+  field_section_style:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
 hidden:
   computed_org_page: true
   field_hide_heading: true
+  field_section_style: true
+  field_show_in_org_navigation: true

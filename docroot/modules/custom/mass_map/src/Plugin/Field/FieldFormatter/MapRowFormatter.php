@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_map\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 use Drupal\mass_map\MapLocationFetcher;
 
 /**

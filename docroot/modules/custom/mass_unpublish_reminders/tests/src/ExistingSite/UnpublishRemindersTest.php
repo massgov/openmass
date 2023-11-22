@@ -8,11 +8,11 @@ use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\workflows\Entity\Workflow;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
+use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
+use weitzman\DrupalTestTraits\Entity\UserCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\DrupalTestTraits\Mail\MailCollectionAssertTrait;
 use weitzman\DrupalTestTraits\Mail\MailCollectionTrait;
-use weitzman\DrupalTestTraits\Entity\UserCreationTrait;
-use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
 
 /**
  * Tests reminder emails functionality.

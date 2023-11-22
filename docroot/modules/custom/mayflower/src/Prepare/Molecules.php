@@ -6,13 +6,13 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\mayflower\Helper;
 use Drupal\media\MediaInterface;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
-use Drupal\Core\Url;
 
 /**
  * Provides variable structure for mayflower molecules using prepare functions.
@@ -290,6 +290,7 @@ class Molecules {
     $services = [
       'twitter',
       'facebook',
+      'threads',
       'flickr',
       'blog',
       'linkedin',
@@ -374,7 +375,6 @@ class Molecules {
       ],
       'icon' => [
         'field_icon_term',
-        'field_topic_ref_icon',
       ],
       'links' => [
         'field_topic_content_cards',
@@ -430,7 +430,7 @@ class Molecules {
       'catIcon' => in_array($entity->getType(), isset($options['useIcon']) ? $options['useIcon'] : []) ? $icon : '',
       'title' => [
         'href' => $entity->toURL()->toString(),
-        // @TODO: check if title is being overridden
+        // @todo check if title is being overridden
         'text' => isset($options['title_override']) ? $options['title_override'] : $entity->getTitle(),
       ],
       'description' => !empty($entity->{$fields['text']}->value) ? Helper::fieldValue($entity, $fields['text']) : '',
@@ -600,8 +600,13 @@ class Molecules {
 
       if ($type == 'address') {
         $address = Helper::formatAddress($entity->{$fields['value']}, $options);
+        if (!$entity->get('field_contact_directions_link')->isEmpty()) {
+          $item['link'] = $entity->field_contact_directions_link->uri;
+        }
+        else {
+          $item['link'] = 'https://maps.google.com/?q=' . urlencode($address);
+        }
         $item['value'] = $address;
-        $item['link'] = 'https://maps.google.com/?q=' . urlencode($address);
         $item['info'] = t('Get directions to ') . $address;
 
         // Respect first address provided if present.
@@ -858,10 +863,47 @@ class Molecules {
 
     // Check our groups for value.
     foreach ($groups as $index => $group) {
+
+      // If the value is empty, but the link is in place,
+      // we are setting the value to be the same as link.
+      if (!empty($group['items'][0]['link']) && empty($group['items'][0]['value'])) {
+        $groups[$index]['items'][0]['value'] = $group['items'][0]['link'];
+      }
       // If we have an empty group, do not display.
-      if (empty($group['items'][0]['value'])) {
+      elseif (empty($group['items'][0]['value'])) {
         unset($groups[$index]);
       }
+    }
+
+    if (isset($options['order'])) {
+      $reordered_groups = [];
+      foreach ($options['order'] as $order) {
+        foreach ($groups as $index => $group) {
+          if (!empty($group['name'])) {
+            foreach ($group['items'] as $item) {
+              if ($item['type'] == $order) {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+                break 2;
+              }
+              if ($item['type'] == 'email' && $order == 'online') {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+                break 2;
+              }
+            }
+          }
+          if ($order == 'more_info') {
+            if (isset($options['is_more_info'])) {
+              if ($options['is_more_info'] == TRUE && empty($group['name'])) {
+                $extracted_group = array_slice($groups, $index, 1);
+                $reordered_groups[] = reset($extracted_group);
+              }
+            }
+          }
+        }
+      }
+      $groups = $reordered_groups;
     }
 
     return [
@@ -873,7 +915,7 @@ class Molecules {
       'accordion' => isset($options['accordion']) ? $options['accordion'] : FALSE,
       'isExpanded' => isset($options['isExpanded']) ? $options['isExpanded'] : FALSE,
       'level' => isset($options['level']) ? $options['level'] : '',
-      // TODO: Needs validation if empty or not.
+      // @todo Needs validation if empty or not.
       'subTitle' => $title,
       'groups' => $groups,
     ];
@@ -1012,7 +1054,7 @@ class Molecules {
           $fax_number = Helper::fieldValue($faxEntity, 'field_fax');
         }
 
-        // @todo: This logic is broken.  It's supposed to load an e-mail value
+        // @todo This logic is broken.  It's supposed to load an e-mail value
         // from a paragraph's link field (I think), but it doesn't work. Instead,
         // it causes paragraph loads that don't do anything.
         // Get links.
@@ -1037,6 +1079,7 @@ class Molecules {
         }
         $markers[] = [
           'position' => [
+            'alt' => $location_link ? $location_link->getText() : Helper::fieldValue($addressEntity, 'field_label'),
             'lat' => $addressEntity->field_geofield->lat,
             'lng' => $addressEntity->field_geofield->lon,
           ],
@@ -1701,7 +1744,7 @@ class Molecules {
       'regulation',
       'event',
       'advisory',
-      'news'
+      'news',
     ];
 
     $map = [

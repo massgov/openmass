@@ -6,11 +6,12 @@ dependencies:
     - taxonomy.vocabulary.label
   module:
     - content_moderation
-    - mass_superset
+    - mass_bigquery
     - node
     - taxonomy
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
 id: scheduled_content_revisions
 label: 'Scheduled Content Revisions'
 module: views
@@ -466,6 +467,15 @@ display:
             date_format: medium
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -533,6 +543,15 @@ display:
             date_format: medium
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -543,21 +562,21 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
-          plugin_id: standard
-          label: Score
+          plugin_id: numeric
+          label: 'Nos per 1000'
           exclude: false
           alter:
             alter_text: false
             text: ''
             make_link: true
-            path: 'node/{{ nid }}/analytics'
+            path: 'node/{{ nid }}/feedback'
             absolute: false
             external: false
             replace_spaces: false
@@ -592,22 +611,22 @@ display:
           hide_empty: true
           empty_zero: false
           hide_alter_empty: true
-          set_precision: 1
-          precision: '1'
+          set_precision: true
+          precision: 1
           decimal: .
           separator: ','
-          format_plural: 0
+          format_plural: false
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: group
           admin_label: ''
-          plugin_id: standard
+          plugin_id: numeric
           label: 'Page views (1 month)'
           exclude: false
           alter:
@@ -649,6 +668,14 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
         operations:
           id: operations
           table: node
@@ -952,15 +979,15 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          operator: '<='
+          operator: '>='
           value:
             min: ''
             max: ''
@@ -968,14 +995,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
+            operator_id: nos_per_1000_cleaned_op
+            label: 'Nos per 1000 is greater than or equal to'
             description: ''
             use_operator: false
-            operator: score_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: score
+            identifier: nos_per_1000_cleaned
             required: false
             remember: false
             multiple: false
@@ -992,6 +1019,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''

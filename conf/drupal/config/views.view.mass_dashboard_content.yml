@@ -32,7 +32,6 @@ dependencies:
     - node.type.person
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
     - node.type.stacked_layout
     - node.type.topic_page
@@ -43,12 +42,13 @@ dependencies:
     - workflows.workflow.topic_page
   module:
     - content_moderation
-    - mass_superset
+    - mass_bigquery
     - mass_views
     - node
     - taxonomy
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
 id: mass_dashboard_content
 label: 'Mass Dashboard Content'
 module: views
@@ -509,6 +509,15 @@ display:
             date_format: short_date_only
             custom_date_format: ''
             timezone: ''
+            tooltip:
+              date_format: ''
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -647,21 +656,21 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          label: Score
+          label: 'Nos per 1000'
           exclude: false
           alter:
             alter_text: false
             text: ''
             make_link: true
-            path: 'node/{{ nid }}/analytics'
+            path: 'node/{{ nid }}/feedback'
             absolute: false
             external: false
             replace_spaces: false
@@ -693,7 +702,7 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: false
+          hide_empty: true
           empty_zero: false
           hide_alter_empty: true
           set_precision: true
@@ -706,7 +715,7 @@ display:
           suffix: ''
         pageviews:
           id: pageviews
-          table: mass_superset_data
+          table: mass_bigquery_data
           field: pageviews
           relationship: nid
           group_type: group
@@ -1066,7 +1075,6 @@ display:
             action: action
             rules: rules
             service_page: service_page
-            service_details: service_details
             stacked_layout: stacked_layout
             topic_page: topic_page
             utility_drawer: utility_drawer
@@ -1265,15 +1273,15 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        nos_per_1000_cleaned:
+          id: nos_per_1000_cleaned
+          table: mass_bigquery_data
+          field: nos_per_1000_cleaned
           relationship: nid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          operator: '<='
+          operator: '>='
           value:
             min: ''
             max: ''
@@ -1281,14 +1289,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
+            operator_id: nos_per_1000_cleaned_op
+            label: 'Nos per 1000 is greater than or equal to'
             description: ''
             use_operator: false
-            operator: score_op
+            operator: nos_per_1000_cleaned_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: score
+            identifier: nos_per_1000_cleaned
             required: false
             remember: true
             multiple: false
@@ -1305,6 +1313,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''

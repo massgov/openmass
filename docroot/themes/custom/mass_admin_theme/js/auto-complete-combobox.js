@@ -32,8 +32,9 @@
       instructionForCombobox.setAttribute('style', 'display: none;');
       instructionForCombobox.setAttribute('aria-hidden', 'true');
       instructionForCombobox.appendChild(instructionForComboboxContent);
-      document.querySelector('main.page-content').appendChild(instructionForCombobox);
-
+      if (document.querySelector('main.page-content') !== null) {
+        document.querySelector('main.page-content').appendChild(instructionForCombobox);
+      }
 
 
       optionLists.forEach(function (optionList) {
@@ -48,11 +49,14 @@
         // autoCompleteField.setAttribute('aria-expanded', 'false');
         autoCompleteField.setAttribute('aria-describedby', 'comboboxInfo');
 
-        // Get ID of the UL.
-        var listId = optionLists[index].getAttribute('id');
-        // Add aria-controls with the UL ID value.
-        // aria-controls doesn't work with VoiceOver.
-        autoCompleteField.setAttribute('aria-activedescendant', listId);
+        if (optionLists[index] && optionLists[index].hasAttribute('id')) {
+          // Get ID of the UL.
+
+          var listId = optionLists[index].getAttribute('id');
+          // Add aria-controls with the UL ID value.
+          // aria-controls doesn't work with VoiceOver.
+          autoCompleteField.setAttribute('aria-activedescendant', listId);
+        }
 
         autoCompleteField.addEventListener('change', function (e) {
           // Wait till the options are added to the list container .ui-autocomplete.
@@ -63,6 +67,7 @@
             });
           };
         });
+
       });
     }
   };

@@ -32,7 +32,6 @@ dependencies:
     - node.type.person
     - node.type.regulation
     - node.type.rules
-    - node.type.service_details
     - node.type.service_page
     - node.type.stacked_layout
     - node.type.topic_page
@@ -54,9 +53,9 @@ dependencies:
     - field_ui
     - file
     - filter
-    - flood_unblock
     - google_tag
     - image
+    - key_auth
     - mailchimp_transactional
     - mailchimp_transactional_template
     - mass_admin_toolbar
@@ -75,7 +74,6 @@ dependencies:
     - rabbit_hole
     - redirect
     - rest
-    - route_iframes
     - scheduled_transitions
     - seckit
     - security_review
@@ -99,7 +97,6 @@ permissions:
   - 'access draggableviews'
   - 'access environment indicator'
   - 'access files overview'
-  - 'access flood unblock'
   - 'access media overview'
   - 'access media overview'
   - 'access media_browser entity browser pages'
@@ -138,7 +135,6 @@ permissions:
   - 'add scheduled transitions node person'
   - 'add scheduled transitions node regulation'
   - 'add scheduled transitions node rules'
-  - 'add scheduled transitions node service_details'
   - 'add scheduled transitions node service_page'
   - 'add scheduled transitions node stacked_layout'
   - 'add scheduled transitions node topic_page'
@@ -152,7 +148,7 @@ permissions:
   - 'administer environment indicator settings'
   - 'administer filters'
   - 'administer form for node feedback block'
-  - 'administer google tag manager'
+  - 'administer google_tag_container'
   - 'administer image styles'
   - 'administer mailchimp transactional'
   - 'administer mailchimp transactional templates'
@@ -179,8 +175,6 @@ permissions:
   - 'administer pathauto'
   - 'administer permissions'
   - 'administer redirects'
-  - 'administer route iframe configuration'
-  - 'administer route iframe configuration entities'
   - 'administer seckit'
   - 'administer site configuration'
   - 'administer taxonomy'
@@ -206,7 +200,6 @@ permissions:
   - 'create how_to_page content'
   - 'create interstitial content'
   - 'create location content'
-  - 'create location_details content'
   - 'create media'
   - 'create media'
   - 'create org_page content'
@@ -214,7 +207,6 @@ permissions:
   - 'create person content'
   - 'create regulation content'
   - 'create rules content'
-  - 'create service_details content'
   - 'create service_page content'
   - 'create stacked_layout content'
   - 'create topic_page content'
@@ -248,7 +240,6 @@ permissions:
   - 'delete any person content'
   - 'delete any regulation content'
   - 'delete any rules content'
-  - 'delete any service_details content'
   - 'delete any service_page content'
   - 'delete any stacked_layout content'
   - 'delete any topic_page content'
@@ -294,7 +285,6 @@ permissions:
   - 'delete own person content'
   - 'delete own regulation content'
   - 'delete own rules content'
-  - 'delete own service_details content'
   - 'delete own service_page content'
   - 'delete own stacked_layout content'
   - 'delete own topic_page content'
@@ -302,7 +292,6 @@ permissions:
   - 'delete person revisions'
   - 'delete regulation revisions'
   - 'delete rules revisions'
-  - 'delete service_details revisions'
   - 'delete service_page revisions'
   - 'delete stacked_layout revisions'
   - 'delete terms in icons'
@@ -327,7 +316,6 @@ permissions:
   - 'edit any person content'
   - 'edit any regulation content'
   - 'edit any rules content'
-  - 'edit any service_details content'
   - 'edit any service_page content'
   - 'edit any stacked_layout content'
   - 'edit any topic_page content'
@@ -350,7 +338,6 @@ permissions:
   - 'edit own person content'
   - 'edit own regulation content'
   - 'edit own rules content'
-  - 'edit own service_details content'
   - 'edit own service_page content'
   - 'edit own stacked_layout content'
   - 'edit own topic_page content'
@@ -390,7 +377,6 @@ permissions:
   - 'reschedule scheduled transitions node person'
   - 'reschedule scheduled transitions node regulation'
   - 'reschedule scheduled transitions node rules'
-  - 'reschedule scheduled transitions node service_details'
   - 'reschedule scheduled transitions node service_page'
   - 'reschedule scheduled transitions node stacked_layout'
   - 'reschedule scheduled transitions node topic_page'
@@ -413,7 +399,6 @@ permissions:
   - 'revert person revisions'
   - 'revert regulation revisions'
   - 'revert rules revisions'
-  - 'revert service_details revisions'
   - 'revert service_page revisions'
   - 'revert stacked_layout revisions'
   - 'revert topic_page revisions'
@@ -432,6 +417,7 @@ permissions:
   - 'use editorial transition publish'
   - 'use editorial transition to_draft'
   - 'use editorial transition unpublish'
+  - 'use key authentication'
   - 'use mass dashboard'
   - 'use media_states transition publish'
   - 'use media_states transition restriction_changes'
@@ -469,7 +455,6 @@ permissions:
   - 'view page revisions'
   - 'view person revisions'
   - 'view regulation revisions'
-  - 'view route iframe pages'
   - 'view rules revisions'
   - 'view scheduled transitions media document'
   - 'view scheduled transitions node action'
@@ -499,11 +484,9 @@ permissions:
   - 'view scheduled transitions node person'
   - 'view scheduled transitions node regulation'
   - 'view scheduled transitions node rules'
-  - 'view scheduled transitions node service_details'
   - 'view scheduled transitions node service_page'
   - 'view scheduled transitions node stacked_layout'
   - 'view scheduled transitions node topic_page'
-  - 'view service_details revisions'
   - 'view service_page revisions'
   - 'view stacked_layout revisions'
   - 'view the administration theme'

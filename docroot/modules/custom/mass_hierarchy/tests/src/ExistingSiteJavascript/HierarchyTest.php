@@ -6,7 +6,6 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
-use Drupal\Tests\Traits\Core\CronRunTrait;
 
 /**
  * Tests Hierachy tab.

@@ -3,8 +3,8 @@
 namespace Drupal\mass_admin_pages\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
 /**
@@ -62,7 +62,7 @@ class ReleaseNotesBlock extends BlockBase {
             'class' => [
               'more-link',
             ],
-          ]
+          ],
         ],
 
       ];

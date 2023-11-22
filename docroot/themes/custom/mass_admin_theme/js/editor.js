@@ -27,4 +27,4 @@
     });
   }
 
-})(jQuery, Drupal, CKEDITOR);
+})(jQuery, Drupal);

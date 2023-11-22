@@ -2,10 +2,8 @@
 
 namespace Drupal\Tests\mass_media\ExistingSite;
 
-use Behat\Mink\Driver\GoutteDriver;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\mass_utility\DebugCachability;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 

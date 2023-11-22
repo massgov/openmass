@@ -8,10 +8,10 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
-use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -168,7 +168,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
     /** @var int[] */
     $list = $this->context['list'];
     foreach ($list as $item_id) {
-      $node = $node_storage->load(array_reverse($item_id)[1]);
+      $node = $node_storage->load(array_reverse($item_id)[0]);
       if (!empty($node)) {
         /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
         $collections = $node->hasField('field_collections') ?? FALSE;
@@ -210,7 +210,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
         '#start_minimized' => TRUE,
         '#title' => $this->t('New Collection'),
         '#required' => TRUE,
-        '#attributes' => ['class' => ['field--widget-term-reference-tree']]
+        '#attributes' => ['class' => ['field--widget-term-reference-tree']],
       ];
     }
     return $form;

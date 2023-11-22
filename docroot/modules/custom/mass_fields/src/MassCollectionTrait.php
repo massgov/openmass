@@ -2,7 +2,6 @@
 
 namespace Drupal\mass_fields;
 
-use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Field\FieldItemListInterface;
 
 trait MassCollectionTrait {

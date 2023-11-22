@@ -1,21 +1,12 @@
 version: 2.1
 orbs:
   jira: circleci/jira@1.3.1
-  node: circleci/node@4.7.0
+  node: circleci/node@4.9.0
 
 # YAML anchors/aliases. See;
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
 # - https://github.com/circleci/frontend/blob/master/.circleci/config.yml
 references:
-  container_config: &container_config
-    working_directory: /var/www/code
-    docker:
-      # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.20-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          AWS_REGION: us-east-1
-
   # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
   no_host_check: &no_host_check
     run: {name: 'Disable StrictHostKeyChecking', command: 'mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config'}
@@ -30,12 +21,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v15-{{ checksum "composer.lock" }}
+        - site-composer-v16-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v15-{{ checksum "composer.lock" }}
+      key: site-composer-v16-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -62,7 +53,7 @@ executors:
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     docker:
-      - image: massgov/drupal-container:1.0.20-ci
+      - image: massgov/drupal-container:1.1.0-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -100,7 +91,7 @@ commands:
         type: string
         default: "./drush/sites/self.site.yml"
     steps:
-      - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
+      - run: "curl --create-dirs -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
   enable_cacheability_headers:
     steps:
       - run:
@@ -118,9 +109,6 @@ parameters:
     type: boolean
     default: false
   # These params for currently used in drush ma:backstop. target is declared later.
-  ma-backstop:
-    type: boolean
-    default: false
   reference:
     type: string
     default: ""
@@ -139,6 +127,9 @@ parameters:
   save-build:
     type: boolean
     default: true
+  force-reference:
+    type: boolean
+    default: false
 
   # These params for currently used in drush ma:release
   ma-release:
@@ -165,7 +156,7 @@ jobs:
   build:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - checkout
       - *restore_composer_cache
@@ -177,28 +168,28 @@ jobs:
           root: ..
           paths: [code]
 
-  build_with_latest_mayflower:
-    working_directory: ~/project/code
-    docker:
-      - image: cimg/php:8.0-node
-    steps:
-      - checkout
-      - *restore_composer_cache
-      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
-      - run:
-          name: Update Mayflower to latest develop
-          command: composer -n require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
-      - *save_composer_cache
-      - *yarn_install
-      - enable_cacheability_headers
-      - persist_to_workspace:
-          root: ..
-          paths: [code]
+#  build_with_latest_mayflower:
+#    working_directory: ~/project/code
+#    docker:
+#      - image: cimg/php:8.2-node
+#    steps:
+#      - checkout
+#      - *restore_composer_cache
+#      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+#      - run:
+#          name: Update Mayflower to latest develop
+#          command: composer -n -vvv require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+#      - *save_composer_cache
+#      - *yarn_install
+#      - enable_cacheability_headers
+#      - persist_to_workspace:
+#          root: ..
+#          paths: [code]
 
   push_acquia:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - *no_host_check
       - *no_ssh_timeout
@@ -220,7 +211,7 @@ jobs:
   danger:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp}
       - run:
@@ -231,7 +222,7 @@ jobs:
   tagging_github:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -242,7 +233,7 @@ jobs:
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - *no_host_check
       - checkout
@@ -252,10 +243,21 @@ jobs:
       # @todo When needed, switch to https://circleci.com/developer/orbs/orb/circleci/github-cli
       - run: scripts/tag-release-deploy
 
+  acquia_db_backup:
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:8.2-node
+    steps:
+      - attach_workspace: { at: /tmp }
+      - fetch_drush_aliases
+      - *vendor_bin_add_path
+      - run:
+          command: "drush ma:backup -v prod"
+
   validate:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -319,7 +321,7 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -336,7 +338,7 @@ jobs:
   cut_release_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -352,7 +354,7 @@ jobs:
   mayflower_develop_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -368,7 +370,7 @@ jobs:
   master_to_develop:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: { at: /tmp }
       - *vendor_bin_add_path
@@ -396,7 +398,7 @@ jobs:
         default: ""
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -420,7 +422,7 @@ jobs:
         type: string
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -436,60 +438,6 @@ jobs:
           path: /tmp/results
       - store_artifacts:
           path: /tmp/results
-
-  backstop:
-    parameters:
-      reference:
-        type: string
-      target:
-        type: string
-      list:
-        type: string
-        default: all
-      viewport:
-        type: string
-        default: all
-      tugboat:
-        type: string
-        default: ""
-      # Set this to true by default to not change any existing behaviour.
-      cachebuster:
-        type: boolean
-        default: true
-    resource_class: xlarge
-    docker:
-      - image: backstopjs/backstopjs
-    steps:
-      - checkout
-      - run:
-          name: "Setup environment variables"
-          command: |
-            if [ "<< parameters.cachebuster >>" = "true" ]; then
-              echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
-            fi
-      - run:
-          name: Backstop reference
-          working_directory: backstop
-          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
-      - when:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
-      - unless:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (non Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
-                no_output_timeout: 300m
-      - store_test_results:
-          path: backstop/report
-      - store_artifacts:
-          path: backstop
 
   backstop_reference:
     parameters:
@@ -510,7 +458,9 @@ jobs:
         default: true
     resource_class: xlarge
     docker:
-      - image: backstopjs/backstopjs
+      # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
+      # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
+      - image: backstopjs/backstopjs:6.1.4
     steps:
       - checkout
       - run:
@@ -523,20 +473,27 @@ jobs:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
+            EXIT_CODE=0
+            backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+            # Retry
+            if [ "$EXIT_CODE" != "0" ]; then
+              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+            fi
+            # Retry
+            if [ "$EXIT_CODE" != "0" ]; then
+              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+            fi
       - run:
           name: Archive Reference Screenshots
           command: |
-            apt-get update
-            apt-get install zip -y
+            sudo apt-get update
+            sudo apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
-      - store_test_results:
-          path: backstop/report
       - run:
           name: Save Build Number
           command: |
@@ -569,9 +526,14 @@ jobs:
       cachebuster:
         type: boolean
         default: false
-    resource_class: xlarge
+      force-reference:
+        type: boolean
+        default: false
+    resource_class: 2xlarge+
     docker:
-      - image: backstopjs/backstopjs
+      # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
+      # Update this after https://github.com/garris/BackstopJS/issues/1468
+      - image: backstopjs/backstopjs:6.1.4
     steps:
       - checkout
       - run:
@@ -580,37 +542,57 @@ jobs:
             if [ "<< parameters.cachebuster >>" = "true" ]; then
               echo 'export CACHEBUSTER="--cachebuster"' >> "$BASH_ENV"
             fi
-      - run:
-          name: Verify Artifacts
-          command: |
-            apt-get update
-            apt-get install jq -y
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-            if [ "${!BACKSTOP_REF}" == "" ]; then
-              echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-              exit 1
-            fi
-            STOPPED_AT=$(curl --request GET \
-              --fail \
-              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
-            LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
-            STALE_TIME=$(date -d "-168 hours" +%s)
-            if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
-              echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
-              exit 1
-            fi
-      - run:
-          name: Restore Artifacts
-          command: |
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-            URL=$(curl --request GET \
-              --fail \
-              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
-              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
-            curl --fail --location --url $URL --output backstop_ref.zip
-            unzip backstop_ref.zip
-            rm backstop_ref.zip
+      - when:
+          condition: << parameters.force-reference >>
+          steps:
+            - run:
+                name: Capture Backstop Reference Screenshots
+                working_directory: backstop
+                command: |
+                  EXIT_CODE=0
+                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+                  # Retry
+                  if [ "$EXIT_CODE" != "0" ]; then
+                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
+                  fi
+                  # Retry
+                  if [ "$EXIT_CODE" != "0" ]; then
+                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+                  fi
+      - unless:
+          condition: << parameters.force-reference >>
+          steps:
+            - run:
+                name: Verify Artifacts
+                command: |
+                  apt-get update
+                  apt-get install jq -y
+                  BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                  if [ "${!BACKSTOP_REF}" == "" ]; then
+                    echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                    exit 1
+                  fi
+                  STOPPED_AT=$(curl --request GET \
+                    --fail \
+                    --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
+                  LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
+                  STALE_TIME=$(date -d "-168 hours" +%s)
+                  if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
+                    echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
+                    exit 1
+                  fi
+            - run:
+                name: Restore Artifacts
+                command: |
+                  BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
+                  URL=$(curl --request GET \
+                    --fail \
+                    --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-<< parameters.reference >>-<< parameters.list >>-<< parameters.viewport >>-latest") | .url')
+                  curl --fail --location --url $URL --output backstop_ref.zip
+                  unzip backstop_ref.zip
+                  rm backstop_ref.zip
       - when:
           condition: << parameters.tugboat >>
           steps:
@@ -675,17 +657,17 @@ jobs:
   pending_security:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.0-node
+      - image: cimg/php:8.2-node
     steps:
       - attach_workspace: {at: /tmp}
-      - *vendor_bin_add_path
-      - run: "drush pm:security"
-      - run: "drush pm:security-php"
+      - run: "composer audit --no-interaction --no-dev"
 
 workflows:
-  version: 2
   build_test:
-    when: << pipeline.parameters.webhook >>
+    when:
+      and:
+        - << pipeline.parameters.webhook >>
+        - not: << pipeline.parameters.trigger_workflow >>
     jobs:
       - build:
           filters:
@@ -725,28 +707,16 @@ workflows:
             branches:
               <<: *branch_ignore
 
-      - backstop_reference:
-          target: prod
-          save-build: false
-          filters:
-            branches:
-              <<: *branch_ignore
-
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
+    when:
+      and:
+        - equal: [ release_branch, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - cut_release_branch:
           requires: [build]
-    triggers:
-      - schedule:
-          # UTC time-zone
-          cron: "00 17 * * 2"
-          filters:
-            branches:
-              only:
-                - develop
 
   # This is to automate the release branch only.
   release:
@@ -773,32 +743,25 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - hold - Release manager only:
-          type: approval
-          requires:
-            - build
-            - push_acquia
-          filters:
-            branches:
-              only: /^release\/.*$/
       - deploy:
           name: deploy-test-refresh-db
           requires:
-            - hold - Release manager only
+            - build
+            - push_acquia
           target: test
           refresh-db: "--refresh-db"
           filters:
             branches:
               only: /^release\/.*$/
       - crawl:
-          name: crawl-test-700
+          name: crawl-test-350
           requires: [deploy-test-refresh-db]
           target: test
-          samples: 700
+          samples: 350
           filters:
             branches:
               only: /^release\/.*$/
-      - backstop:
+      - backstop_test:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
@@ -857,14 +820,14 @@ workflows:
             branches:
               only: /^hotfix\/.*$/
       - crawl:
-            name: crawl-test-200
+            name: crawl-test-50
             requires: [deploy-test-no-refresh-db]
             target: test
-            samples: 200
+            samples: 50
             filters:
               branches:
                 only: /^hotfix\/.*$/
-      - backstop:
+      - backstop_test:
             name: backstop-test
             requires: [deploy-test-no-refresh-db]
             target: test
@@ -934,14 +897,14 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - crawl:
-          name: crawl-test-500
+          name: crawl-test-250
           requires: [deploy-test-refresh-db]
           target: test
-          samples: 500
+          samples: 250
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - backstop:
+      - backstop_test:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
@@ -955,10 +918,6 @@ workflows:
     when: << pipeline.parameters.webhook >>
     jobs:
       - build:
-          filters:
-            branches:
-              only: master
-      - push_acquia:
           filters:
             branches:
               only: master
@@ -980,7 +939,6 @@ workflows:
           type: approval
           requires:
             - build
-            - push_acquia
           filters:
             branches:
               only: master
@@ -1001,7 +959,15 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
+      - push_acquia:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
       - tagging_acquia:
+          requires:
+            - push_acquia
           filters:
             branches:
               ignore: /.*/
@@ -1077,7 +1043,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop:
+      - backstop_test:
           name: backstop-prod-maint
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
@@ -1089,7 +1055,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop:
+      - backstop_test:
           name: backstop-prod-no-maint
           requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
@@ -1120,6 +1086,9 @@ workflows:
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
+    when:
+      and:
+        - equal: [ build_test_super, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - test:
@@ -1132,17 +1101,13 @@ workflows:
           command: behat
           instance: massgov/mysql-sanitized:super
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "49 20 * * *"
-          filters:
-            branches:
-              only:
-                - develop
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
+    when:
+      and:
+        - equal: [ mysql_rebuild, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - populate:
@@ -1167,27 +1132,6 @@ workflows:
           sanitizeOption: --super-sanitize
           instance: massgov/mysql-sanitized:super.arm
           resource_class: arm.large
-    triggers:
-      - schedule:
-          cron: "20 00 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-
-  # Usually triggered by drush ma:backstop.
-  backstop_ad_hoc:
-    when: << pipeline.parameters.ma-backstop >>
-    jobs:
-      - build
-      - backstop:
-          requires: [build]
-          target: << pipeline.parameters.target >>
-          reference: << pipeline.parameters.reference >>
-          list: << pipeline.parameters.list >>
-          viewport: << pipeline.parameters.viewport >>
-          tugboat: << pipeline.parameters.tugboat >>
-          cachebuster: << pipeline.parameters.cachebuster >>
 
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
@@ -1201,15 +1145,21 @@ workflows:
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
 
+  # Nightly On Demand Prod DB Backup
+  nightly_prod_db_backup:
+    when:
+      and:
+        - equal: [ nightly_prod_db_backup, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - build
+      - acquia_db_backup:
+          requires: [ build ]
+
   # Nightly Backstop image references.
   nightly_backstop_snapshot:
-    triggers:
-      - schedule:
-          cron: "03 00 * * *"
-          filters:
-            branches:
-              only:
-                - develop
+    when:
+      and:
+        - equal: [ nightly_backstop_snapshot, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - backstop_reference:
           target: prod
@@ -1246,43 +1196,32 @@ workflows:
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
+    when:
+      and:
+        - equal: [ deploy_cd, << pipeline.parameters.trigger_workflow >> ]
     jobs:
-      - build_with_latest_mayflower
+      - build
       - deploy:
           name: deploy-cd-refresh-db
-          requires: [build_with_latest_mayflower]
+          requires: [ build ]
           target: cd
           refresh-db: "--refresh-db"
-      - crawl:
-          name: crawl-deploy-900
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          samples: 900
-      - backstop:
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          reference: prod
       - backstop_test:
+          requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
-    triggers:
-      - schedule:
-          cron: "00 04 * * *"
-          filters:
-            branches:
-              only:
-                - develop
+      - crawl:
+          name: crawl-deploy-450
+          requires: [ deploy-cd-refresh-db ]
+          target: cd
+          samples: 450
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
+    when:
+      and:
+        - equal: [ nightly_pending_security, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - pending_security:
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "05 07 * * *"
-          filters:
-              branches:
-                  only:
-                      - develop

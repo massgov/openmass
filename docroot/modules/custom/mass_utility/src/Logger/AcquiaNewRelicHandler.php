@@ -3,6 +3,7 @@
 namespace Drupal\mass_utility\Logger;
 
 use Monolog\Handler\NewRelicHandler;
+use Monolog\LogRecord;
 
 /**
  * New Relic logging handler.
@@ -16,7 +17,7 @@ class AcquiaNewRelicHandler extends NewRelicHandler {
   /**
    * {@inheritdoc}
    */
-  public function write(array $record): void {
+  public function write(LogRecord $record): void {
     // Graceful failure if New Relic isn't enabled. On Acquia, NR is not enabled
     // in Drush contexts (can be dynamically loaded), so this prevents the exception that would otherwise
     // be thrown.

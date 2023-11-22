@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\mass_content;
 
 use Drupal\mayflower\Helper;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\ParagraphInterface;
 
 /**
@@ -12,26 +13,19 @@ use Drupal\paragraphs\ParagraphInterface;
  */
 class EventsRendererOrgPages {
 
-  /**
-   * The Drupal\mass_content\EventManager service.
-   *
-   * @var \Drupal\mass_content\EventManager
-   */
-  private $eventManager;
+  private EventManager $eventManager;
 
   /**
    * Stores if there are past events.
-   *
-   * @var bool
    */
-  private $hasPastEvents;
+  private bool $hasPastEvents;
 
   /**
    * The parent node where the paragraph is referenced.
-   *
-   * @var \Drupal\node\Entity\Node
    */
-  private $parentNode;
+  private ?NodeInterface $parentNode;
+
+  private ParagraphInterface $paragraph;
 
   /**
    * Creates an events renderer object.
@@ -40,7 +34,7 @@ class EventsRendererOrgPages {
     $this->eventManager = $event_manager;
     $this->paragraph = $paragraph;
     $this->parentNode = Helper::getParentNode($paragraph);
-    $this->hasPastEvents = $this->eventManager->hasPast($this->parentNode);
+    $this->hasPastEvents = $this->parentNode && $this->eventManager->hasPast($this->parentNode);
   }
 
   /**

@@ -24,7 +24,7 @@ class SupportTicketBlock extends BlockBase {
         'class' => [
           'block--support-request',
         ],
-      ]
+      ],
     ];
     return $link;
   }

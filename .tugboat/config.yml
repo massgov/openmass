@@ -2,7 +2,7 @@ services:
   # What to call the service hosting the site.
   php:
     # Use PHP 8.x with Apache; this syntax pulls in the latest version of PHP 8
-    image: tugboatqa/php:8.0-apache
+    image: tugboatqa/php:8.2-apache
 
     # Set this as the default service. This does a few things
     #   1. Clones the git repository into the service container
@@ -51,11 +51,6 @@ services:
         # Install Node.js 16.x
         - curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
         - apt-get install -y nodejs
-        # Install imagick
-        - apt-get install -y libmagickwand-dev
-        # Avoid prompts. https://stackoverflow.com/a/33647515
-        - echo '' | pecl install imagick
-        - docker-php-ext-enable imagick
         # Install opcache
         - docker-php-ext-install opcache
         # Needed for image styles.
@@ -80,7 +75,6 @@ services:
         # Prep secrets file
         # https://www.baeldung.com/linux/insert-new-line-script-output#using-printf
         - printf "<?php \n\n" >> "${DOCROOT}/sites/default/secrets.settings.php"
-        - echo "${SECRETS_GLOBAL}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_GOOGLE_MAPS}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
 

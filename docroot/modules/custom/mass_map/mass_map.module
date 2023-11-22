@@ -5,11 +5,10 @@
  * Contains mass_map.module.
  */
 
-use Drupal\Core\Url;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
-use Drupal\Core\Site\Settings;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
 
@@ -116,6 +115,9 @@ function mass_map_node_view(array &$build, EntityInterface $entity, EntityViewDi
 function mass_map_preprocess_node(&$variables) {
   $node = $variables['node'];
   if ($node->bundle() === 'contact_information' && !empty($variables['elements']['#view_mode']) && $variables['elements']['#view_mode'] === 'map') {
+    if ($current_page = \Drupal::routeMatch()->getParameter('node')) {
+      $variables['parent_label'] = $current_page->label();
+    }
     $address = $node->field_ref_address->entity;
     $massMap = \Drupal::service('mass_map');
     $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);
@@ -145,14 +147,14 @@ function mass_map_preprocess_node(&$variables) {
 function mass_map_library_info_alter(&$libraries, $extension) {
   if ($extension === 'mass_map' && isset($libraries['google-map-api'])) {
     $url = \Drupal::service('mass_map')
-      ->getJavascriptApiUrl(['geometry', 'places', 'geocoder'], 'initGoogleMaps');
+      ->getJavascriptApiUrl(['geometry', 'places'], 'initGoogleMaps');
     $libraries['google-map-api']['js'][$url] = [
       'scope' => 'header',
       'type' => 'external',
       'attributes' => [
         'defer' => TRUE,
         'async' => TRUE,
-      ]
+      ],
     ];
   }
 }
@@ -234,7 +236,7 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
       $query->where[0]['conditions'][] = [
         'field' => 'node_field_data.nid',
         'value' => array_unique($nids),
-        'operator' => 'in'
+        'operator' => 'in',
       ];
     }
     else {
@@ -242,7 +244,7 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
       $query->where[0]['conditions'][] = [
         'field' => 'node_field_data.nid',
         'value' => 0,
-        'operator' => '='
+        'operator' => '=',
       ];
     }
   }

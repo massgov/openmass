@@ -41,7 +41,7 @@ class LocationDetailsMetadataTest extends MetadataTestCase {
    */
   public function getExpectedMetatags(ContentEntityInterface $entity) {
     return array_merge(parent::getExpectedMetatags($entity), [
-      // @todo: og:description does not seem to be working here.
+      // @todo og:description does not seem to be working here.
       // 'og:description' => '',
       'twitter:description' => 'Test LD Lede',
       'mg_organization' => 'testorgpage',

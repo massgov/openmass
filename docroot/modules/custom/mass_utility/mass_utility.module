@@ -5,28 +5,28 @@
  * Contains mass_utility.module.
  */
 
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Extension\Extension;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\link\LinkItemInterface;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\InvokeCommand;
-use Drupal\Core\Ajax\HtmlCommand;
-use Drupal\file\Entity\File;
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\Core\Extension\Extension;
-use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\link\LinkItemInterface;
 use Drupal\node\Entity\Node;
-use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\path_alias\PathAliasInterface;
-use Drupal\user\Entity\User;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -150,7 +150,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     $prefix_suffix_combo_lenth = strlen($title_prefix . $title_suffix);
     // Fits title into 100 characters or less.
     $title_max_length = 100 - $prefix_suffix_combo_lenth;
-    $title = $node->getTitle();
+    $title = (string) $node->getTitle();
     // Truncates title as needed when forming combined `$title_nid` string.
     $title_nid = $title_prefix .
       ((strlen($title) > $title_max_length) ? substr($title, 0, $title_max_length - 1) . '…' : $title) .
@@ -424,7 +424,7 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_field_widget_form_alter().
  */
-function mass_utility_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function mass_utility_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   // Hide the map name field on the address google map field.
   $field_definition = $context['items']->getFieldDefinition();
   $type = $field_definition->getType();
@@ -456,7 +456,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
       'field_social_links',
     ];
     if (in_array($field_name, $social_link_fields)) {
-      $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, Twitter, Instagram, LinkedIn, or Medium.',
+      $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, X (formerly Twitter), Threads, Instagram, LinkedIn, or Medium.',
         [
           '%front' => '<front>',
           '%add-node' => '/node/add',
@@ -525,6 +525,9 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
       $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
       $element['title']['#description'] = t('A short call to action or invitation to read more. Should begin with a verb. If this is not filled out, the button will not render on the page. 50-character limit.');
       $element['title']['#title'] = t('Button text');
+    }
+    elseif ($field_name == 'field_contact_directions_link') {
+      return;
     }
     else {
       // Set link field descriptions for all other link fields.
@@ -779,7 +782,7 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
     $file = File::load($fid);
     $image_path = $file->getFileUri();
     $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
-    $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"]', 'val', [$image_path]));
     $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
     return $response;
   }
@@ -802,11 +805,11 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
       if (!empty($node->field_sub_brand->entity->uri->value)) {
         $image_path = $node->field_sub_brand->entity->uri->value;
         $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
-        $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+        $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"]', 'val', [$image_path]));
         $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
       }
-      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"', 'val', [$name]));
-      $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"', 'val', [$description]));
+      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"]', 'val', [$name]));
+      $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"]', 'val', [$description]));
     }
     return $response;
   }
@@ -872,9 +875,9 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
 
     }
 
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_name][0][value]"', 'val', [$name]));
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_email][0][value]"', 'val', [$email]));
-    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_phone][0][value]"', 'val', [$phone]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_name][0][value]"]', 'val', [$name]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_email][0][value]"]', 'val', [$email]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_phone][0][value]"]', 'val', [$phone]));
     return $response;
   }
 
@@ -931,30 +934,12 @@ function mass_utility_entity_view(array &$build, EntityInterface $entity, Entity
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter().
+ * Implements hook_form_FORM_ID_alter().
  */
-function mass_utility_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Add a new validation function to unset field validation.
-  $form['#validate'][] = 'mass_utility_remove_login_validation';
-  // Hide the inline form error message.
-  $form['name']['#error_no_message'] = TRUE;
-}
-
-/**
- * Moves username inline form errors on login page to the top of the page.
- *
- * @param array $form
- *   The form.
- * @param Drupal\Core\Form\FormStateInterface $form_state
- *   The form state.
- */
-function mass_utility_remove_login_validation(array &$form, FormStateInterface $form_state) {
-  $errors = $form_state->getErrors();
-  if (isset($errors['name'])) {
-    $error = $errors['name'];
-    // Rebuild translated error message for displaying link.
-    \Drupal::messenger()->addError($error);
-  }
+function mass_utility_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['account']['pass']['#required'] = FALSE;
+  $form['account']['pass']['#access'] = FALSE;
+  $form['account']['notify']['#default_value'] = TRUE;
 }
 
 /**
@@ -1025,6 +1010,11 @@ function mass_utility_process_name_title(array $data) {
     return '';
   }
   $node = $data['node'];
+
+  if (empty($node->field_person_first_name->value) && empty($node->field_person_last_name->value)) {
+    // 'We need a placeholder title for tests so this is as good as any.
+    return 'No contact found';
+  }
 
   // Setup the basic title as fname lname.
   $title = $node->field_person_first_name->value . ' ' . $node->field_person_last_name->value;

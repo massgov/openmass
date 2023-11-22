@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_utility\EventSubscriber;
 
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
