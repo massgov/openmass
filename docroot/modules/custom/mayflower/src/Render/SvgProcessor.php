@@ -2,9 +2,9 @@
 
 namespace Drupal\mayflower\Render;
 
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Asset\AssetCollectionRendererInterface;
 use Drupal\Core\Asset\AssetResolverInterface;
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\EnforcedResponseException;
