@@ -366,7 +366,22 @@ jobs:
       - run:
           command: "php scripts/ma-mayflower-develop.php"
 
-  # Post-release merge from master to develop.
+  # Log a new release in New Relic
+  new_relic_change_tracking:
+    docker:
+      - image: cimg/base
+    parameters:
+      version:
+        type: string
+    steps:
+      # Install NR CLI
+      - run: curl -Ls "https://download.newrelic.com/install/newrelic-cli/scripts/install.sh" | bash
+      # https://docs.newrelic.com/docs/change-tracking/change-tracking-cli/
+      # https://circleci.com/docs/variables/#built-in-environment-variables
+      # The GUID is for the mass.gov prod entity. Browse all entities with `newrelic apm application search --name mass.gov`
+      - run: NEW_RELIC_API_KEY=$MASS_NEWRELIC_KEY newrelic entity deployment create --acountId $MASS_NEWRELIC_APPLICATION --guid MTUyMjA0MXxBUE18QVBQTElDQVRJT058NzIwNjAyNjQz --version << parameters.version >> --commit $CIRCLE_SHA1 --deeplink $CIRCLE_BUILD_URL
+
+      # Post-release merge from master to develop.
   master_to_develop:
     working_directory: /tmp/code
     docker:
@@ -949,7 +964,7 @@ workflows:
             branches:
               only: master
 
-  # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
+  # This deploys the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
     when: << pipeline.parameters.webhook >>
     jobs:
@@ -1055,13 +1070,27 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop_test:
-          name: backstop-prod-no-maint
-          requires: [deploy-tag-prod-acquia-no-maint]
-          target: prod
-          reference: test
-          list: post-release
-          viewport: desktop
+      - new_relic_release:
+          name: new-relic-release-prod-maint
+          requires: [deploy-tag-prod-acquia-maint]
+          version: $CIRCLE_TAG
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - new_relic_release:
+          name: new-relic-release-prod-no-maint
+          requires: [ deploy-tag-prod-acquia-no-maint ]
+          version: $CIRCLE_TAG
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - master_to_develop:
+          name: master-to-develop-prod-no-maint
+          requires: [ deploy-tag-prod-acquia-no-maint ]
           filters:
             branches:
               ignore: /.*/
@@ -1215,6 +1244,15 @@ workflows:
           requires: [ deploy-cd-refresh-db ]
           target: cd
           samples: 450
+
+  # Temporary, for testing.
+  new_relic_testing:
+    when:
+      and:
+        - equal: [ new_relic_testing, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - new_relic_change_tracking:
+          version: $CIRCLE_SHA1
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
