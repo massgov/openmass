@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
+    - field.field.node.org_page.field_include_parent_org_search
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
@@ -215,6 +216,16 @@ content:
     third_party_settings: {  }
     weight: 14
     region: content
+  field_include_parent_org_search:
+    type: boolean
+    label: inline
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 140
+    region: content
   field_intended_audience:
     type: list_default
     label: above
@@ -266,7 +277,7 @@ content:
     region: content
   field_org_no_search_filter:
     type: boolean
-    label: above
+    label: inline
     settings:
       format: default
       format_custom_false: ''
