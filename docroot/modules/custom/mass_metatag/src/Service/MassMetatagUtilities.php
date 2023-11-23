@@ -94,7 +94,11 @@ class MassMetatagUtilities {
                 if ($parent) {
                   if ($parent->hasField('field_org_no_search_filter')) {
                     if ($parent->field_org_no_search_filter->value != '1') {
-                      $result[] = trim($parent->label());
+                      if ($node->hasField('field_include_parent_org_search')) {
+                        if ($node->field_include_parent_org_search == 1) {
+                          $result[] = trim($parent->label());
+                        }
+                      }
                     }
                   }
                 }
