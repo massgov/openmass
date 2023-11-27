@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
+    - field.field.node.org_page.field_include_parent_org_search
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
@@ -122,9 +123,9 @@ third_party_settings:
         - field_application_login_links
         - field_social_links
         - field_intended_audience
+        - group_test_fieldset_group
         - field_parent
-        - field_org_no_search_filter
-        - field_field_org_no_search_filter
+        - group_organization_parent_mass_g
         - field_billing_organization
       label: Overview
       region: content
@@ -206,6 +207,34 @@ third_party_settings:
         open: true
         description: 'This is an automatic section that appears only when there are links in the Navigation Menu tab. Any links there should be moved elsewhere on the page and then the automatic section will no longer appear.'
         required_fields: true
+    group_test_fieldset_group:
+      children:
+        - field_org_no_search_filter
+      label: 'Mass.gov Organization search filter'
+      region: content
+      parent_name: group_overview
+      weight: 133
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        description: ''
+        required_fields: true
+    group_organization_parent_mass_g:
+      children:
+        - field_include_parent_org_search
+      label: 'Organization parent Mass.gov search filter'
+      region: content
+      parent_name: group_overview
+      weight: 135
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        description: ''
+        required_fields: true
 id: node.org_page.default
 targetEntityType: node
 bundle: org_page
@@ -275,7 +304,7 @@ content:
             selector: ''
   field_billing_organization:
     type: dynamic_entity_reference_options_select
-    weight: 136
+    weight: 137
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -301,7 +330,7 @@ content:
     third_party_settings: {  }
   field_feedback_com_link:
     type: link_default
-    weight: 107
+    weight: 134
     region: content
     settings:
       placeholder_url: ''
@@ -357,6 +386,13 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_include_parent_org_search:
+    type: boolean_checkbox
+    weight: 136
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: 132
@@ -365,7 +401,7 @@ content:
     third_party_settings: {  }
   field_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 2
     region: content
     settings:
       sidebar: true
@@ -391,7 +427,7 @@ content:
     third_party_settings: {  }
   field_org_always_show_help_page:
     type: boolean_checkbox
-    weight: 108
+    weight: 135
     region: content
     settings:
       display_label: true
@@ -443,7 +479,7 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 133
+    weight: 134
     region: content
     settings:
       match_operator: CONTAINS
@@ -595,14 +631,14 @@ content:
     third_party_settings: {  }
   field_urgent_warning:
     type: boolean_checkbox
-    weight: 110
+    weight: 137
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -625,20 +661,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 7
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 8
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -677,7 +713,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
