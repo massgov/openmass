@@ -20,10 +20,6 @@ figure figcaption {
   margin: 0;
 }
 
-article.half-width {
-  max-width: 50%;
-}
-
 figure.half-width-parent {
   max-width: 50%;
 }
@@ -56,11 +52,14 @@ article.full-width {
 }
 
 @media (max-width: 620px) {
+  figure.half-width-parent {
+    margin-left: 0;
+  }
   figure.half-width-parent,
-  article.half-width,
   .align-right.half-width,
   .align-left.half-width {
     width: 100%;
+    max-width: 100%;
   }
 }
 
