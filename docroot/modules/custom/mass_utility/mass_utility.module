@@ -648,12 +648,13 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
  */
 function mass_utility_entity_embed_context_alter(array &$context, EntityInterface $entity) {
   if ($entity instanceof File) {
+
     if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
       if (isset($context['class'])) {
         $context['class'] .= " half-width";
       }
       else {
-        $context['class'] = "align-none half-width";
+        $context['class'] = "half-width";
       }
     }
     elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
@@ -661,7 +662,7 @@ function mass_utility_entity_embed_context_alter(array &$context, EntityInterfac
         $context['class'] .= " full-width";
       }
       else {
-        $context['class'] = "align-none full-width";
+        $context['class'] = "full-width";
       }
     }
   }

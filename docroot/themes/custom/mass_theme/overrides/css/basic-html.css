@@ -20,26 +20,39 @@ figure figcaption {
   margin: 0;
 }
 
-.align-none.half-width,
+article.half-width {
+  max-width: 50%;
+}
+
+figure.align-right > article.half-width {
+  max-width: 100%;
+}
+
+figure.align-left > article.half-width {
+  max-width: 100%;
+}
+
+article.full-width {
+  max-width: 100%;
+}
+
 .align-right.half-width,
 .align-left.half-width {
   max-width: 50%;
 }
 
-.align-none.full-width,
 .align-right.full-width,
 .align-left.full-width {
   width: 100%;
 }
 
-.align-none img,
 .align-right img,
 .align-left img {
   max-width: 100%;
 }
 
 @media (max-width: 620px) {
-  .align-none.half-width,
+  article.half-width,
   .align-right.half-width,
   .align-left.half-width {
     width: 100%;
