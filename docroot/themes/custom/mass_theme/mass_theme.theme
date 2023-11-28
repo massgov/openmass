@@ -38,7 +38,13 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 function mass_theme_preprocess_filter_caption(&$variables) {
   if (str_contains($variables['node'], 'embedded_half_width')) {
-    $variables['classes'] = isset($variables['classes']) && !empty($variables['classes']) ? $variables['classes'] . ' half-width-parent' : 'half-width-parent';
+    $class_name = 'half-width-parent';
+  }
+  elseif (str_contains($variables['node'], 'embedded_full_width')) {
+    $class_name = 'full-width-parent';
+  }
+  if (isset($class_name)) {
+    $variables['classes'] = isset($variables['classes']) && !empty($variables['classes']) ? $variables['classes'] . ' ' . $class_name : $class_name;
   }
 }
 
