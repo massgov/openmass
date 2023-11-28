@@ -158,9 +158,6 @@ var jQueryLike = function (elemOrSelector, context) {
               if ($('.ma__illustrated-header').length) {
                 $this.insertAfter('.ma__illustrated-header');
               }
-              else if ($('.ma__page-header').length) {
-                $this.insertAfter('.ma__page-header');
-              }
               else if ($('.ma__organization-navigation').length) {
                 $this.insertAfter('.ma__organization-navigation');
               }
@@ -169,6 +166,9 @@ var jQueryLike = function (elemOrSelector, context) {
               }
               else if ($('.pre-content').length) {
                 $this.insertAfter('.pre-content');
+              }
+              else if ($('.ma__page-header').length) {
+                $this.insertAfter('.ma__page-header');
               }
             }
           }
