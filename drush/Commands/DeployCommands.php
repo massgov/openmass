@@ -268,7 +268,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   public function deploy(string $target, string $git_ref, array $options) {
     $self = $this->siteAliasManager()->getSelf();
 
-    // For production deployments, prompt the user if they are sure. If they say no, exit.
+    // For production deployments, prompt user. If they say no, exit.
     $is_prod = ($target === 'prod');
     if ($is_prod) {
       $this->confirmProd();
@@ -277,14 +277,14 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success('Starting deployment of {revision} to {target} at {time}', [
       'target' => $target,
       'revision' => $git_ref,
-      'time' => $this->getTimestamp()
+      'time' => $this->getTimestamp(),
     ]);
 
     $targetRecord = $this->siteAliasManager()->get('@' . $target);
 
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
-      // This section resembles ma-refresh-local --db-prep-only. We don't call that
+      // This section resembles ma-refresh-local --db-prep-only. Don't call that
       // since we can't easily make Cloud API calls from Acquia servers, and we
       // don't need to sanitize here.
       $process = Drush::drush($self, self::LATEST_BACKUP_URL, ['prod']);
@@ -322,13 +322,15 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     if ($options['skip-maint'] == FALSE) {
-      // Turn on Maint mode.
-      // @todo change to `drush maint:set` after Drush 11.5 is deployed to Prod.
-      $args = array('system.maintenance_mode', 1);
-      $state_options = array('input-format' => 'integer');
-      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
-      $process->mustRun();
-      $this->logger()->success("Maintenance mode enabled in $target.");
+      try {
+        // Turn on Maint mode.
+        $process = Drush::drush($targetRecord, 'maint:set', [1]);
+        $process->mustRun();
+        $this->logger()->success("Maintenance mode enabled in $target.");
+      }
+      catch (\Exception $e) {
+        $this->logger()->info('Unable to set maintenance mode. Proceeding - ' . $e->getMessage());
+      }
     }
 
     // We need to set the PHP version before we deploy the code, as the new
@@ -356,19 +358,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Extra cache rebuild completed at $target.");
     }
 
-    if ($options['skip-maint'] == FALSE) {
+    if (!$options['skip-maint']) {
       // Disable Maintenance mode.
-      $args = array('system.maintenance_mode', '0');
-      $state_options = ['input-format' => 'integer'];
-      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
+      $process = Drush::drush($targetRecord, 'maint:set', [0]);
       $process->mustRun();
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
 
-    if ($is_prod) {
-      // Log a new deployment at New Relic.
-      $this->newRelic($git_ref, getenv('AC_API_USER'), getenv('MASS_NEWRELIC_APPLICATION'), getenv('MASS_NEWRELIC_KEY'));
-    }
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
 
@@ -383,7 +379,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   #[CLI\Command(name: self::TUGBOAT_REBUILD, aliases: ['ma:tbrb'])]
   #[CLI\Argument(name: 'branch', description: 'A branch name')]
-  public function tugboatRebuild(string $branch) {
+  public function tugboatRebuild(string $branch): void {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -425,7 +421,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * Validate the target name.
    */
   #[CLI\Hook(type: HookManager::ARGUMENT_VALIDATOR)]
-  public function validate(CommandData $commandData) {
+  public function validate(CommandData $commandData): void {
     if (!$commandData->input()->hasArgument('target')) {
       return;
     }
@@ -437,11 +433,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   /**
    * Lookup the Preview corresponding to the specified branch.
-   *
-   * @param $branch
-   * @param $property
-   *
-   * @return ?string
    */
   public function getTugboatPreviewForBranch(string $branch, string $property = 'id'): ?string {
     // Get all previews.
@@ -457,7 +448,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
     }
 
-    $previews = json_decode((string)$response->getBody(), TRUE);
+    $previews = json_decode((string) $response->getBody(), TRUE);
     foreach ($previews as $preview) {
       if ($preview['provider_ref']['head']['ref'] == $branch || $preview->provider_id == "refs/heads/$branch") {
         $this->logger()->info("Fetched preview for branch $branch.");
@@ -504,12 +495,12 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   /**
    * Loop and re-check until a given task is complete.
    *
-   * @param str $uuid
+   * @param $uuid
    *   The Notification UUID.
    *
    * @throws \Exception
    */
-  public function waitForTaskToComplete($uuid) {
+  public function waitForTaskToComplete(string $uuid) {
     $client = $this->getClient();
 
     while (TRUE) {
@@ -529,43 +520,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
-   * Post new deployment to New Relic.
-   */
-  public function newRelic($git_ref, $email, $application, $api_key) {
-    $cmd = <<<EOT
-curl -X POST 'https://api.newrelic.com/v2/applications/$application/deployments.json' \
-     -H 'Api-Key:$api_key' -i \
-     -H 'Content-Type: application/json' \
-     -d \
-'{
-  "deployment": {
-    "revision": "$git_ref",
-    "changelog": "",
-    "description": "",
-    "user": "$email"
-  }
-}'
-EOT;
-    if (!Drush::shell($cmd)) {
-      $this->logger()->warning('Failed to create a Deployment at New Relic');
-    }
-  }
-
-  /**
    * Get a string representing the current time in EST.
-   *
-   * @return string
    */
-  private function getTimestamp() {
+  private function getTimestamp(): string {
     return (new \DateTime('now', new \DateTimeZone('America/New_York')))->format('Y-m-d g:i:s A');
   }
 
-  /**
-   * @return string|void
-   * @throws \Drush\Exceptions\UserAbortException
-   */
-  protected function confirmProd(): void
-  {
+  protected function confirmProd(): void {
     if (!$this->io()
       ->confirm('This is a Production deployment. Are you damn sure?')) {
       throw new UserAbortException();
@@ -574,8 +535,6 @@ EOT;
 
   /**
    * Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
-   *
-   * @return \GuzzleHttp\HandlerStack
    */
   protected function getStack(): \GuzzleHttp\HandlerStack {
     $stack = HandlerStack::create();
@@ -583,21 +542,14 @@ EOT;
     return $stack;
   }
 
-  /**
-   * @return array|false|string
-   */
-  protected function getTokenCircle() {
+  protected function getTokenCircle(): false|string {
     return getenv('CIRCLECI_PERSONAL_API_TOKEN');
   }
 
   /**
    * Return success message about how to view a Pipeline at CircleCI.
-   *
-   * @param array $body
-   *
-   * @return string
    */
-  private function getSuccessMessage($body): string {
+  private function getSuccessMessage(array $body): string {
     return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
   }
 
@@ -606,12 +558,6 @@ EOT;
    *
    * Acquia treats the PHP version as a setting in the environment, and not
    * configuration as a part of a build.
-   *
-   * @param \Consolidation\SiteAlias\SiteAlias $targetRecord
-   * @param string $version
-   *
-   * @return void
-   * @throws \Exception
    */
   private function setPhpVersion(SiteAlias $targetRecord, string $version): void {
     $environmentUuid = $targetRecord->get('uuid');
@@ -624,13 +570,13 @@ EOT;
 
     $this->logger()->info("{name} is currently set to PHP {version}", [
       'name' => $targetRecord->name(),
-      'version'=> $currentVersion,
+      'version' => $currentVersion,
     ]);
 
     if ($version !== $currentVersion) {
       $this->logger()->info("Switching {name} to PHP {version}", [
         'name' => $targetRecord->name(),
-        'version'=> $version,
+        'version' => $version,
       ]);
       $modifyResponse = (new Environments($this->getClient()))->update($environmentUuid, ['version' => $version]);
       /** @noinspection PhpParamsInspection */
@@ -650,8 +596,6 @@ EOT;
    *
    * @throws \RuntimeException
    *   Thrown when a Drush logger is not set.
-   *
-   * @return \Drush\Log\DrushLoggerManager
    */
   protected function logger(): DrushLoggerManager {
     $logger = parent::logger();
@@ -671,10 +615,10 @@ EOT;
    * @param string $ci_branch
    *   The branch being built.
    *
-   * @return string
+   * @return
    *   The Tugboat URL to test against.
    */
-  private function getTugboatUrl($tugboat_url_option, string $ci_branch): string {
+  private function getTugboatUrl(mixed $tugboat_url_option, string $ci_branch): string {
     if ($tugboat_url_option === TRUE || empty($tugboat_url_option)) {
       $branch = $ci_branch;
       if ($branch === 'develop') {
