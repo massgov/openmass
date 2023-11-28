@@ -31,6 +31,14 @@ figure.half-width-parent {
   max-width: 50%;
 }
 
+figure.half-width-parent.align-left {
+  margin-right: 1em;
+}
+
+figure.half-width-parent.align-right {
+  margin-left: 1em;
+}
+
 figure.align-right > article.half-width {
   max-width: 100%;
 }
@@ -59,6 +67,14 @@ article.full-width {
 }
 
 @media (max-width: 620px) {
+  figure.half-width-parent.align-left {
+    margin-right: 0;
+  }
+
+  figure.half-width-parent.align-right {
+    margin-left: 0;
+  }
+
   figure.half-width-parent,
   .align-right.half-width,
   .align-left.half-width {
