@@ -164,11 +164,11 @@ var jQueryLike = function (elemOrSelector, context) {
               else if ($('.ma__page-banner').length) {
                 $this.insertAfter('.ma__page-banner');
               }
-              else if ($('.pre-content').length) {
-                $this.insertAfter('.pre-content');
-              }
               else if ($('.ma__page-header').length) {
                 $this.insertAfter('.ma__page-header');
+              }
+              else if ($('.pre-content').length) {
+                $this.insertAfter('.pre-content');
               }
             }
           }
