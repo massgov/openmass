@@ -1,5 +1,19 @@
 
 
+## [0.383.0] - November 28, 2023
+
+### Fixed
+  - DP-29819: Image style fix for images in rich text.
+  
+### Changed
+  - DP-30787: Change allowable size of info details header from 100 to 130 characters.
+  - DP-30904: DDEV nightcrawler fix, More robust deployment, Log deployments in New Relic
+  
+### Added
+  - DP-30897: For future use, added field to include org parent in search filters and modified help text of related field.
+  
+
+
 ## [0.382.0] - November 21, 2023
 
 ### Changed
