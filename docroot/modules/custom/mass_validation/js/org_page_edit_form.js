@@ -72,7 +72,7 @@
       ].map(function (field) {
         return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
       }).join(', ');
-      
+
       this.$electedRequired = $(electedRequiredFields, context);
       this.$generalRequiredTabs = $tabs.find('a[href$="edit-group-actions"]').find('strong');
     },
