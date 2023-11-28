@@ -69,14 +69,10 @@
       {% endblock %}
     {% endembed %}
   {% endif %}
-  {% include "@organisms/page-banner/page-banner.twig" with {
-    "pageBanner": {
-      "theme": "c-white",
-      "pageHeader": {
-        "title": node.label,
-        "underline": "TRUE",
-        "description": content.field_topic_lede
-      }
+  {% include "@organisms/page-header/page-header.twig" with {
+    "pageHeader": {
+      "title": node.label,
+      "underline": "TRUE",
     }
   } %}
 {% endblock %}
