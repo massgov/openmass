@@ -42,7 +42,7 @@ class TrashbinCommands extends DrushCommands {
     $query->addTag(self::TRASHBIN_ONLY_TRASH);
     $query->condition('changed', $maximum, '<');
     $query->range(0, $options['max']);
-    $ids = $query->execute();
+    $ids = $query->accessCheck(FALSE)->execute();
     $this->logger()->notice('Found {count} entities to delete.', ['count' => count($ids)]);
     $entities = $storage->loadMultiple($ids);
     foreach ($entities as $entity) {
