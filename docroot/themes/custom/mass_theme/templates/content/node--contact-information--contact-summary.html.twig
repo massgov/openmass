@@ -31,7 +31,7 @@
     {{ content.field_ref_address }}
 
     {% if (node.field_ref_phone_number is not empty) or (node.field_ref_fax_number is not empty) %}
-      {% embed "@molecules/contact-group.twig" with {
+      {% embed "@molecules/contact/contact-group.twig" with {
         "contactGroup": {
           "name": "Phone",
           "icon": "phone",
@@ -46,7 +46,7 @@
     {% endif %}
 
     {% if node.field_ref_links is not empty %}
-      {% embed "@molecules/contact-group.twig" with {
+      {% embed "@molecules/contact/contact-group.twig" with {
         "contactGroup": {
           "name": "Online",
           "icon": "laptop",

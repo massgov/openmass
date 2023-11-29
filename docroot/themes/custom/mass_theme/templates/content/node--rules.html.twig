@@ -56,7 +56,7 @@
       {% block pageContent %}
         {% if sideContent.contactList %}
           {% set contactList = sideContent.contactList %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
       {% endblock %}
     </div>
@@ -93,7 +93,7 @@
         {% endif %}
         {% if mainContent.contactList %}
           {% set contactList = mainContent.contactList %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
         {% if mainContent.footnoteList %}
           {% set footnoteList = mainContent.footnoteList %}
@@ -111,7 +111,7 @@
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% include "@organisms/by-author/contact-list.twig" %}
+        {% include "@organisms/contact/contact-list.twig" %}
       {% endif %}
       {% if sideContent.pressListing %}
         {% set pressListing = sideContent.pressListing %}
