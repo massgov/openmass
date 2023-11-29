@@ -1,0 +1,15 @@
+diff --git a/src/Form/BulkEditFormTrait.php b/src/Form/BulkEditFormTrait.php
+index de8ef20..12105bd 100644
+--- a/src/Form/BulkEditFormTrait.php
++++ b/src/Form/BulkEditFormTrait.php
+@@ -255,6 +255,10 @@ trait BulkEditFormTrait {
+     $definitions = $this->entityFieldManager->getFieldDefinitions($entity_type_id, $bundle);
+ 
+     foreach (Element::children($form) as $key) {
++      if (isset($form[$key]['widget'][0]['#paragraph_type'])) {
++        unset($form[$key]);
++        continue;
++      }
+       if (isset($form[$key]['#access']) && !$form[$key]['#access']) {
+         continue;
+       }
