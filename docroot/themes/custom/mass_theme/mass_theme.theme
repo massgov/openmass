@@ -3831,7 +3831,12 @@ function mass_theme_preprocess_block(&$variables) {
 
     // Check if the current page is a node page.
     if ($node instanceof NodeInterface) {
-      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node);
+      $cache_tags = [];
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      (new CacheableMetadata())->addCacheTags($cache_tags)
+        ->applyTo($variables);
     }
     else {
       $variables['headerSearch'] = Molecules::prepareHeaderSearch();
@@ -3993,7 +3998,12 @@ function mass_theme_preprocess_node(&$variables) {
   $node = $variables['node'];
 
   if ($node->bundle() == 'error_page') {
-    $variables['headerSearch'] = Molecules::prepareHeaderSearch($node);
+    $cache_tags = [];
+    $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    (new CacheableMetadata())->addCacheTags($cache_tags)
+      ->applyTo($variables);
   }
 
   // Retrieve view mode.
@@ -4542,7 +4552,12 @@ function mass_theme_preprocess_page(&$variables) {
         $variables['main_class'] = $map[$bundle];
       }
 
-      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node);
+      $cache_tags = [];
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      (new CacheableMetadata())->addCacheTags($cache_tags)
+        ->applyTo($variables);
 
       // Add class for org-type to main wrapper.
       if ($bundle === 'org_page' && $node->hasField('field_subtype') && !$node->field_subtype->isEmpty()) {

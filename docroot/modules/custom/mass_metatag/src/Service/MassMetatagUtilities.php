@@ -38,14 +38,11 @@ class MassMetatagUtilities {
    *   If the flag is specified only parents slugified titles will be returned.
    * @param bool $parent_meta
    *   If the flag is specified only parents metadata will be returned.
-   * @param bool $contextual_search
-   *   If the flag is specified the returned data will be used
-   *   in contextual search.
    *
    * @return string[]
    *   The array of slugified Org names related to this node.
    */
-  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE, bool $contextual_search = FALSE) {
+  public function getAllOrgsFromNode(Node $node, bool $parent_only = FALSE, bool $parent_meta = FALSE) {
     $result = [];
 
     // The array that will hold all the orgs to check for parents.
@@ -63,16 +60,7 @@ class MassMetatagUtilities {
         // If it is an unchecked org, add the slugified title to values.
         if (!$parent_only) {
           if (!in_array($node->id(), $checked_orgs)) {
-            if (!$contextual_search) {
-              $result[] = $this->slugify(trim($node->label()));
-            }
-            else {
-              if ($node->hasField('field_org_no_search_filter')) {
-                if ($node->field_org_no_search_filter->value != '1') {
-                  $result[] = trim($node->label());
-                }
-              }
-            }
+            $result[] = $this->slugify(trim($node->label()));
           }
         }
         else {
@@ -86,23 +74,7 @@ class MassMetatagUtilities {
               ];
             }
             else {
-              if (!$contextual_search) {
-                $result[] = $this->slugify(trim($node->field_parent->entity->label()));
-              }
-              else {
-                $parent = $node->field_parent->entity;
-                if ($parent) {
-                  if ($parent->hasField('field_org_no_search_filter')) {
-                    if ($parent->field_org_no_search_filter->value != '1') {
-                      if ($node->hasField('field_include_parent_org_search')) {
-                        if ($node->field_include_parent_org_search == 1) {
-                          $result[] = trim($parent->label());
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              $result[] = $this->slugify(trim($node->field_parent->entity->label()));
             }
           }
         }

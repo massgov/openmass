@@ -1208,6 +1208,8 @@ class Molecules {
    *
    * @param object|null $entity
    *   The object that contains the fields.
+   * @param array &$cache_tags
+   *   The array of node cache tags.
    *
    * @return array
    *   Returns an array of items that contains:
@@ -1217,15 +1219,53 @@ class Molecules {
    *
    * @see @molecules/header-search.twig
    */
-  public static function prepareHeaderSearch(object $entity = NULL) {
+  public static function prepareHeaderSearch(object $entity = NULL, array &$cache_tags = []) {
     $has_suggestions = FALSE;
     $suggested_scopes = [];
+    $orgs = [];
     if ($entity instanceof NodeInterface) {
-      $suggested_scopes = \Drupal::service('mass_metatag.utilities')->getAllOrgsFromNode($entity, FALSE, FALSE, TRUE);
-      if (!empty($suggested_scopes)) {
-        $has_suggestions = TRUE;
+
+      if ($entity->bundle() === 'org_page') {
+        $orgs[] = $entity;
+      }
+
+      if ($entity->hasField('field_organizations')) {
+        if (!$entity->get('field_organizations')->isEmpty()) {
+          $org_field_values = $entity->get('field_organizations')->referencedEntities();
+          $orgs = array_merge($orgs, $org_field_values);
+        }
+      }
+
+      if (!empty($orgs)) {
+        foreach ($orgs as $org) {
+          if ($org->hasField('field_org_no_search_filter')) {
+            if ($org->field_org_no_search_filter->value != 1) {
+              $cache_tags = array_merge($cache_tags, $org->getCacheTags());
+              $suggested_scopes[] = trim($org->label());
+
+              $parent = $org->field_parent->entity;
+              if ($parent) {
+                if ($parent->hasField('field_org_no_search_filter')) {
+                  if ($parent->field_org_no_search_filter->value != 1) {
+                    if ($org->hasField('field_include_parent_org_search')) {
+                      if ($org->field_include_parent_org_search->value == 1) {
+                        $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
+                        $suggested_scopes[] = trim($parent->label());
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
+    if (!empty($suggested_scopes)) {
+      $has_suggestions = TRUE;
+      $suggested_scopes = array_unique($suggested_scopes);
+    }
+
     return [
       'hasSuggestions' => $has_suggestions,
       'suggestedScopes' => $suggested_scopes,
