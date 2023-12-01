@@ -1,7 +1,0 @@
-#!/bin/bash
-
-## Description: Container+Volume deletion, then image deletion, then start (db fetch happens at end).
-## Usage: pulldb
-## Example: "ddev pulldb"
-
-ddev delete --omit-snapshot -y && ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml down --rmi all && ddev start

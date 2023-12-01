@@ -150,7 +150,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     $prefix_suffix_combo_lenth = strlen($title_prefix . $title_suffix);
     // Fits title into 100 characters or less.
     $title_max_length = 100 - $prefix_suffix_combo_lenth;
-    $title = (string) $node->getTitle();
+    $title = $node->getTitle();
     // Truncates title as needed when forming combined `$title_nid` string.
     $title_nid = $title_prefix .
       ((strlen($title) > $title_max_length) ? substr($title, 0, $title_max_length - 1) . '…' : $title) .

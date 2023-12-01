@@ -49,9 +49,10 @@ if (!$cli && ($is_prod || $is_mass_gov)) {
 
 /**
  * Set the HTTP header name which stores real client IP. Harmless if not provided.
- * We use https://www.drupal.org/project/reverse_proxy_header because of https://www.drupal.org/project/drupal/issues/3223280
+ * See https://www.drupal.org/project/reverse_proxy_header.
  */
-$settings['reverse_proxy_header'] = 'HTTP_TRUE_CLIENT_IP';
+$settings['reverse_proxy_header'] = 'True-Client-IP';
+
 
 /**
  * Load Acquia-specific services.

@@ -17,11 +17,18 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
   use LoginTrait;
 
   /**
+   * The element for the entire document.
+   *
+   * @var \Behat\Mink\Element\DocumentElement
+   */
+  protected $page;
+
+  /**
    * The All Content view.
    *
    * @var \Behat\Mink\Element\DocumentElement
    */
-  protected $view = NULL;
+  protected $view;
 
   /**
    * Asserts a random row has a specific text value.
@@ -269,7 +276,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
       $this->view->findField('Action')->selectOption($action_label);
       $this->view->pressButton('Apply to selected items');
-      $message = $this->getCurrentPage()->find('css', '.messages--status')->getText();
+      $message = $this->page->find('css', '.messages--status')->getText();
       $this->assertStringContainsString($action_label . ' was applied to ' . $num, $message);
     }
   }
@@ -295,6 +302,8 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->markTestSkipped('Disabled in https://github.com/massgov/openmass/pull/1153');
 
     parent::setUp();
+    /** @var \Drupal\Tests\DocumentElement */
+    $this->page = $this->getSession()->getPage();
 
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
@@ -305,7 +314,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Visiting the view.
     $this->drupalGet('admin/content');
-    $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
+    $this->view = $this->page->find('css', '.view.view-content');
 
     // Ensure we have at least one unpublished page,
     // so we can also test the Unpublished nodes filter.

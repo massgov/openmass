@@ -1,0 +1,73 @@
+ahoyapi: v2
+commands:
+  exec:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml exec "$@"
+    usage: Run a command
+
+  bash:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml bash "$@"
+    usage: Open a shell inside the container.
+
+  up:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml up "$@"
+    usage: Start the containers.
+
+  down:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml down "$@"
+    usage: Stop and delete the containers.
+
+  stop:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml stop "$@"
+    usage: Stop the containers.
+
+  pull:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml pull "$@"
+    usage: Refresh the database.
+
+  updatedb:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml updatedb "$@"
+    usage: Run after a git pull, so that pending updates are run.
+
+  prune:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml prune "$@"
+    usage: Prune unused images, etc. to gain back disk space.
+
+  comi:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml comi "$@"
+    usage: Run 'composer install' in the container.
+
+  yarn:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml yarn "$@"
+    usage: Run 'yarn install' in the container.
+
+  drush:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml drush "$@"
+    usage: Run Drush in the container
+
+  uli:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml uli "$@"
+    usage: Run uli in the container and then open local browser.
+
+  test:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml test "$@"
+    usage: Run all tests in the container.
+
+  tail:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml tail "$@"
+    usage: Tail the Apache + PHP logs.
+
+  blackfire:
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml blackfire "$@"
+    usage: "Profile CLI requests. Usages: blackfire curl http://mass-web OR blackfire run --samples=10 drush st"
+
+  backstop:
+    usage: Run BackstopJS visual regression tests.
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml backstop "$@"
+
+  nightcrawler:
+    usage: Run NightcrawlerJS fatal error tests.
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml nightcrawler $@
+
+  xdebug:
+    usage: Pass "on" or "off" to enable or disable Xdebug
+    cmd: ddev xdebug "$@"

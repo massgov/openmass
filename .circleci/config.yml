@@ -661,6 +661,8 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       - run: "composer audit --no-interaction --no-dev"
+      - *vendor_bin_add_path
+      - run: "drush pm:security"
 
 workflows:
   build_test:

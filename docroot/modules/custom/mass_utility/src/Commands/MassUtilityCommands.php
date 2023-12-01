@@ -19,7 +19,7 @@ class MassUtilityCommands extends DrushCommands {
    *
    * @var \Drupal\Core\Database\Connection
    */
-  protected $database;
+  protected $connection;
 
   /**
    * The messenger service.

@@ -1,29 +1,4 @@
 
-
-## [0.382.0] - November 21, 2023
-
-### Changed
-  - DP-23015: Standardize on DDEV. Add descriptions for all custom commands.
-  - DP-27217: Render cache fixes - media download links and org-wide invalidations
-  - DP-29860: Fix IP address in Logs and cleanup New Relic logs.
-  - DP-30747: Use port 80 in DDEV router. This helps us use the automatic http to https redirect
-  
-### Added
-  - DP-29929: Flag on org pages to not allow the org to be used in a search filter. This is for future use.
-  - DP-30524: Added tests for Feedback Manager.
-  - DP-30813: Added Kinyarwanda language
-  
-### Fixed
-  - DP-29929: Fix field machine name on Org pages.
-  - DP-30473: Changed the Add/edit document page to have a link at the top to suggest not using a document and help text when uploading a file to remind authors to test documents for accessibility.
-  - DP-30754: Fix styling issues with message banners.
-  - DP-30770: Changes to alert content type to fix validation issues related to conditional fields.
-  - DP-30836: Fixed backup URL retrieval.
-  
-### Removed
-  - DP-30881: Removed drush pm:security from pending_security job in CircleCI.
-  
-
 ## [0.381.1] - November 8, 2023
 
 ### Fixed

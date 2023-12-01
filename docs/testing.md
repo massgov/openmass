@@ -16,7 +16,7 @@ The following tests are included in the CircleCI workflow automatically each tim
 
 To run these tests locally:
 
-- Run all [Behat](http://behat.org) tests: `ddev exec behat`
+- Run all [Behat](http://behat.org) tests: `ahoy exec behat`
 
   To run a single Behat test:
 
@@ -24,9 +24,9 @@ To run these tests locally:
   1. Run `docker-compose exec drupal vendor/bin/behat --tags=@cool`
   1. Locally, debug files are saved to `/tmp` (they start with `behat*`). These same files are uploaded as Artifacts in CircleCI.
 
-- Run all [PHPUnit](https://phpunit.de/) tests: `ddev exec phpunit docroot/modules/custom`
+- Run all [PHPUnit](https://phpunit.de/) tests: `ahoy exec phpunit docroot/modules/custom`
 
-- Run all tests (Behat & PHPUnit): `ddev exec scripts/ma-test`
+- Run all tests (Behat & PHPUnit): `ahoy exec scripts/ma-test`
 
 Pass the --help option to learn the arguments and options for each tool.
 
@@ -39,7 +39,7 @@ To run these tests locally:
 ### Nightcrawler
 
 ```
-ddev nightcrawler crawl --samples=50
+ahoy nightcrawler crawl --samples=50
 
 ### Sample size should be between 40-60 for a branch
 ```

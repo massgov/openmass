@@ -205,8 +205,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
         throw new \Exception('Backup URL is not hosted on Acquia API. We\'re not sure what to do here.');
       }
       $response = $cloudapi->makeRequest('get', substr($url, strlen(Connector::BASE_URI)), ['allow_redirects' => FALSE]);
-
-      return str_replace('massgov.prod.acquia-sites.com', 'edit.mass.gov', $response->getHeader('Location'));
+      return $response->getHeader('Location');
     }
     throw new \Exception('No usable backups were found.');
   }
