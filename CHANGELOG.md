@@ -1,5 +1,22 @@
 
 
+## [0.383.0] - December 1, 2023
+
+### Changed
+  - DP-27538: Modified decorator class for SVG processor to add additional cache metadata.
+  - DP-30787: Change allowable size of info details header from 100 to 130 characters.
+  - DP-30904: DDEV nightcrawler fix, More robust deployment, Log deployments in New Relic
+  
+### Fixed
+  - DP-29819: Image style fix for images in rich text.
+  
+### Added
+  - DP-30874: Added csv download to advanced search.
+  - DP-30897: For future use, added field to include org parent in search filters and modified help text of related field.
+  - DP-8443: Added label to pull quote on info details pages.
+  
+
+
 ## [0.382.0] - November 21, 2023
 
 ### Changed
