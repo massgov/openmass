@@ -1,8 +1,7 @@
 #!/bin/bash
 
 ## Description: Run nightcrawler
-## Flags: [{"Name":"target","Usage":"The environment to target. Eg prod, test.  Default: local"},{"Name":"samples","Usage":"The number of nodes of each content type to crawl."},{"Name":"concurrency","Usage":"The number of requests to allow 'in-flight' at once"}]
 ## Usage: nightcrawler [flags] [args]
-## Example: ddev nightcrawl --target=local --samples=50
+## Example: ddev nightcrawler crawl --target=local --samples=50
 
 node_modules/.bin/nightcrawler --config=.circleci/nightcrawler/nightcrawler $@
