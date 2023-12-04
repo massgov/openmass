@@ -24,6 +24,11 @@ function mass_redirects_form_node_form_alter(&$form, FormStateInterface $form_st
  * We don't use hook_entity_update since that was spamming during bulk update. See https://massgov.atlassian.net/browse/DP-26408
  */
 function mass_redirects_node_form_submit($form, FormStateInterface $form_state) {
+  if ($form_state->getFormObject()->getFormId() == 'mass_redirects_move_redirects') {
+    // Don't prompt after user has just redirected.
+    return;
+  }
+
   /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $entity */
   $entity = $form_state->getFormObject()->getEntity();
   if (PHP_SAPI !== 'cli' && $entity->getModerationState()->getString() == MassModeration::TRASH) {
