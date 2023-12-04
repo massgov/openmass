@@ -3835,7 +3835,9 @@ function mass_theme_preprocess_block(&$variables) {
       $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-      (new CacheableMetadata())->addCacheTags($cache_tags)
+      // Add cache context for the current URL path.
+      $cache_contexts = ['url.path'];
+      (new CacheableMetadata())->addCacheTags($cache_tags)->addCacheContexts($cache_contexts)
         ->applyTo($variables);
     }
     else {
