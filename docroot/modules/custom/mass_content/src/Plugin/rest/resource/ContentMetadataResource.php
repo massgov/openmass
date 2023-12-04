@@ -220,7 +220,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       $record_limit = min($record_limit, (int) $query_params['limit']);
     }
     if (isset($query_params['descendant_format'])) {
-      $descendant_format = ($query_params['descendant_format'] != MASS_CONTENT_API_DEPTH);
+      $descendant_format = ($query_params['descendant_format'] != 'depth');
     }
     if (isset($query_params['content_types'])) {
       $content_types = explode(',', $query_params['content_types']);
