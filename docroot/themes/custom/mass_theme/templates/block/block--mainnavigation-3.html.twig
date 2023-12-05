@@ -31,9 +31,8 @@
  * http://www.w3.org/TR/WCAG-TECHS/H42.html for more information.
  */
 #}
-{# Hamburger menu only #}
-{% set ariaLabel = heading_id ?? 'main-navigation-heading' %}
-<nav class="ma__header__hamburger__nav" aria-labelledby="{{ ariaLabel }}"  id="main-navigation" role="navigation">
+{# Hamburger menu only for non home pages #}
+<nav class="ma__header__hamburger__nav" aria-label="main navigation" id="main-navigation">
   <div class="ma__header__hamburger-wrapper">
 
     <div class="ma__header__hamburger__button-container js-sticky-header">
@@ -66,12 +65,8 @@
       {{ render_menu('utility') }}
     </div>
 
-    {# Label. If not displayed, we still provide it for screen readers.#}
-    {% if not configuration.label_display %}
-      {% set title_attributes = title_attributes.addClass('visually-hidden') %}
-    {% endif %}
     {{ title_prefix }}
-    <div{{ title_attributes.setAttribute('id', ariaLabel) }}>{{ configuration.label }}</div>
+
     {{ title_suffix }}
 
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
@@ -80,7 +75,7 @@
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__nav-search js-header__nav-search">
-          {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form", 'searchHamburger': 'TRUE' } %}
+          {% include "@molecules/header-search.twig" %}
         </div>
       {% endif %}
       <div class="ma__header__hamburger__main-nav">
