@@ -12,6 +12,7 @@ use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\mayflower\Helper;
 use Drupal\media\MediaInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 
 /**
@@ -1203,6 +1204,77 @@ class Molecules {
   }
 
   /**
+   * Returns the variables structure required to render headerSearch.
+   *
+   * @param object|null $entity
+   *   The object that contains the fields.
+   * @param array &$cache_tags
+   *   The array of node cache tags.
+   *
+   * @return array
+   *   Returns an array of items that contains:
+   *    [[
+   *      "path": "@molecules/action-map.twig",
+   *      "data": "[actionMap",
+   *
+   * @see @molecules/header-search.twig
+   */
+  public static function prepareHeaderSearch(object $entity = NULL, array &$cache_tags = []) {
+    $has_suggestions = FALSE;
+    $suggested_scopes = [];
+    $orgs = [];
+    if ($entity instanceof NodeInterface) {
+
+      if ($entity->bundle() === 'org_page') {
+        $orgs[] = $entity;
+      }
+
+      if ($entity->hasField('field_organizations')) {
+        if (!$entity->get('field_organizations')->isEmpty()) {
+          $org_field_values = $entity->get('field_organizations')->referencedEntities();
+          $orgs = array_merge($orgs, $org_field_values);
+        }
+      }
+
+      if (!empty($orgs)) {
+        foreach ($orgs as $org) {
+          if ($org->hasField('field_org_no_search_filter')) {
+            if ($org->field_org_no_search_filter->value != 1) {
+              $cache_tags = array_merge($cache_tags, $org->getCacheTags());
+              $suggested_scopes[] = trim($org->label());
+            }
+            $parent = $org->field_parent->entity;
+            if ($parent) {
+              if ($parent->hasField('field_org_no_search_filter')) {
+                if ($parent->field_org_no_search_filter->value != 1) {
+                  if ($org->hasField('field_include_parent_org_search')) {
+                    if ($org->field_include_parent_org_search->value == 1) {
+                      $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
+                      $suggested_scopes[] = trim($parent->label());
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    if (!empty($suggested_scopes)) {
+      $has_suggestions = TRUE;
+      $suggested_scopes = array_unique($suggested_scopes);
+    }
+
+    return [
+      'hasSuggestions' => $has_suggestions,
+      'suggestedScopes' => $suggested_scopes,
+      'id' => 'header-search',
+      'placeholder' => 'Search Mass.gov',
+      'label' => 'Search terms',
+    ];
+  }
+
+  /**
    * Returns the variables structure required to render widgets.
    *
    * @param object $entity
@@ -1544,8 +1616,8 @@ class Molecules {
     $endTimestamp = $entity->{$fields['date']}->end_value;
 
     // Format the dates and times according to style guide.
-    list($startDateTime, $startDate, $startTime) = Helper::getMayflowerDate($startTimestamp);
-    list($endDateTime, $endDate, $endTime) = Helper::getMayflowerDate($endTimestamp);
+    [$startDateTime, $startDate, $startTime] = Helper::getMayflowerDate($startTimestamp);
+    [$endDateTime, $endDate, $endTime] = Helper::getMayflowerDate($endTimestamp);
 
     /*
      * Set up the date summary for single day events.

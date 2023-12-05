@@ -10,6 +10,7 @@ dependencies:
     - paragraphs.paragraphs_type.section_long_form
   module:
     - field_group
+    - maxlength
     - paragraphs
 third_party_settings:
   field_group:
@@ -82,7 +83,11 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 130
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
   paragraphs_type_help__default:
     weight: -100
     region: content

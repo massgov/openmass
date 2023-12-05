@@ -1,0 +1,16 @@
+#!/bin/bash
+
+## Description: Fetch the mass.gov Drush aliases file
+## Usage: aliases
+## Example: "ddev aliases"
+
+if ! command -v gh &> /dev/null
+then
+    echo "Please install gh program, and be logged into it. See https://cli.github.com/"
+    exit 1
+fi
+
+gh api \
+  -H "Accept: application/vnd.github.raw" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  repos/massgov/massgov-internal-docs/contents/self.site.yml > ./drush/sites/self.site.yml
