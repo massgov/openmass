@@ -57,21 +57,7 @@
       "theme": "c-white",
       "pageHeader": {
         "title": node.title.value,
-        "optionalContents": [{
-          "path": "@organisms/by-author/rich-text.twig",
-          "data": {
-            "richText": {
-              "rteElements": [{
-                "path": "@atoms/11-text/paragraph.twig",
-                "data": {
-                  "paragraph" : {
-                    "text": content.field_guide_page_lede | render
-                  }
-                }
-              }]
-            }
-          }
-        }],
+        "description": content.field_guide_page_lede ?? '',
       }
     }
   } %}
