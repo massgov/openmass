@@ -1,25 +1,24 @@
 
 
-## [0.382.0] - November 21, 2023
+## [0.383.0] - December 5, 2023
 
-### Changed
-  - DP-23015: Standardize on DDEV. Add descriptions for all custom commands.
-  - DP-27217: Render cache fixes - media download links and org-wide invalidations
-  - DP-29860: Fix IP address in Logs and cleanup New Relic logs.
-  - DP-30747: Use port 80 in DDEV router. This helps us use the automatic http to https redirect
-  
 ### Added
-  - DP-29929: Flag on org pages to not allow the org to be used in a search filter. This is for future use.
-  - DP-30524: Added tests for Feedback Manager.
-  - DP-30813: Added Kinyarwanda language
+  - DP-16045: Fix broken link when adding video
+  - DP-29928: Implement contextual search suggestions.
+  - DP-30874: Added csv download to advanced search.
+  - DP-30897: For future use, added field to include org parent in search filters and modified help text of related field.
+  - DP-8443: Added label to pull quote on info details pages.
+  
+### Changed
+  - DP-24290: Clarify the main navigation labels for screen reader users.
+  - DP-27538: Modified decorator class for SVG processor to add additional cache metadata.
+  - DP-30787: Change allowable size of info details header from 100 to 130 characters.
+  - DP-30904: DDEV nightcrawler fix, More robust deployment, Log deployments in New Relic
   
 ### Fixed
-  - DP-29929: Fix field machine name on Org pages.
-  - DP-30473: Changed the Add/edit document page to have a link at the top to suggest not using a document and help text when uploading a file to remind authors to test documents for accessibility.
-  - DP-30754: Fix styling issues with message banners.
-  - DP-30770: Changes to alert content type to fix validation issues related to conditional fields.
-  - DP-30836: Fixed backup URL retrieval.
+  - DP-29819: Image style fix for images in rich text.
+  - DP-31045: Don't show line below iframe if caption is empty.
   
 ### Removed
-  - DP-30881: Removed drush pm:security from pending_security job in CircleCI.
+  - DP-30777: Don't prompt if author has just redirected node
   
