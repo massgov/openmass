@@ -1,5 +1,3 @@
-
-
 ## [0.383.0] - December 5, 2023
 
 ### Added
@@ -22,7 +20,6 @@
 ### Removed
   - DP-30777: Don't prompt if author has just redirected node
   
-
 
 ## [0.382.1] - December 4, 2023
 
