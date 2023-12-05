@@ -1,5 +1,11 @@
 
 
+## [0.382.1] - December 4, 2023
+
+### Fixed
+  - DP-30945: Disabled reverse proxy header changes to resolve issue affecting collections.
+
+
 ## [0.382.0] - November 21, 2023
 
 ### Changed
