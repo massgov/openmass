@@ -3,7 +3,6 @@
 namespace Drupal\mass_metatag\Service;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
 use Drupal\node\Entity\Node;
 
 /**

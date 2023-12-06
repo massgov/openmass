@@ -34,6 +34,21 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
+ * Implements hook_preprocess_HOOK() for setting classes.
+ */
+function mass_theme_preprocess_filter_caption(&$variables) {
+  if (str_contains($variables['node'], 'embedded_half_width')) {
+    $class_name = 'half-width-parent';
+  }
+  elseif (str_contains($variables['node'], 'embedded_full_width')) {
+    $class_name = 'full-width-parent';
+  }
+  if (isset($class_name)) {
+    $variables['classes'] = isset($variables['classes']) && !empty($variables['classes']) ? $variables['classes'] . ' ' . $class_name : $class_name;
+  }
+}
+
+/**
  * Implements hook_theme_suggestions_alter().
  */
 function mass_theme_theme_suggestions_paragraph_alter(array &$suggestions, array $variables) {
@@ -3784,6 +3799,30 @@ function mass_theme_preprocess_block(&$variables) {
   // Get base_path into our block.twig templates
   // http://data.agaric.com/how-get-base-path-your-drupal-8-site-twig-template
   $variables['base_path'] = base_path();
+
+  if ($variables['elements']['#id'] == 'mainnavigation_3' || $variables['elements']['#id'] == 'mainnavigation_2') {
+    // Get the node object.
+    $node = \Drupal::routeMatch()->getParameter('node');
+
+    // Check if the current page is a node page.
+    if ($node instanceof NodeInterface) {
+      $cache_tags = [];
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      // Add cache context for the current URL path.
+      $cache_contexts = ['url.path'];
+      (new CacheableMetadata())->addCacheTags($cache_tags)->addCacheContexts($cache_contexts)
+        ->applyTo($variables);
+    }
+    else {
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch();
+    }
+  }
+  if ($variables['elements']['#id'] == 'mainnavigation_3') {
+    // Override the ID since this block is used on mobile screens.
+    $variables['headerSearch']['id'] = 'header-search-mobile';
+  }
 }
 
 /**
@@ -3934,6 +3973,15 @@ function mass_theme_add_regions_to_node($allowed_regions, &$variables) {
  */
 function mass_theme_preprocess_node(&$variables) {
   $node = $variables['node'];
+
+  if ($node->bundle() == 'error_page') {
+    $cache_tags = [];
+    $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    (new CacheableMetadata())->addCacheTags($cache_tags)
+      ->applyTo($variables);
+  }
 
   // Retrieve view mode.
   $view_mode = $variables['view_mode'];
@@ -4428,6 +4476,13 @@ function mass_theme_preprocess_html(&$variables) {
 
 /**
  * Implements hook_preprocess_page().
+ */
+function mass_theme_preprocess_page__simple(&$variables) {
+  $variables['headerSearch'] = Molecules::prepareHeaderSearch();
+}
+
+/**
+ * Implements hook_preprocess_page().
  *
  * Remove page search if we're using our search band in stacked layout.
  */
@@ -4473,6 +4528,13 @@ function mass_theme_preprocess_page(&$variables) {
       if (array_key_exists($bundle, $map)) {
         $variables['main_class'] = $map[$bundle];
       }
+
+      $cache_tags = [];
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      (new CacheableMetadata())->addCacheTags($cache_tags)
+        ->applyTo($variables);
 
       // Add class for org-type to main wrapper.
       if ($bundle === 'org_page' && $node->hasField('field_subtype') && !$node->field_subtype->isEmpty()) {
