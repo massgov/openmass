@@ -52,12 +52,16 @@
       {% set links = links|merge([secondaryPerson]) %}
     {% endif %}
   {% endif %}
+  {% set mobileImage = false %}
+  {% if node.field_subtype.value == 'Elected Official' %}
+    {% set mobileImage = true %}
+  {% endif %}
     {% include "@organisms/page-banner/page-banner.twig" with {
       "pageBanner": {
         "image": bannerImage,
-        "imageMobile": bannerImageMobile,
+        "imageMobile": mobileImage ? bannerImageMobile : '',
         "theme": "c-primary-alt",
-        "renderImageOnMobile": true,
+        "renderImageOnMobile": mobileImage,
         "pageHeader": {
           "title": node.title.value,
           "titleSubText": subtext,

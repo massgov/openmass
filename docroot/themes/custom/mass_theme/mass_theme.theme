@@ -680,7 +680,11 @@ function mass_theme_preprocess_node_org_page(&$variables) {
     // Prepare field_service_bg_wide, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_bg_wide')) {
       $variables['bannerImage'] = Helper::getFieldImageUrl($node, '800x400_fp', 'field_bg_wide');
-      $variables['bannerImageMobile'] = Helper::getFieldImageUrl($node, '480x240_fp', 'field_bg_wide');
+      if ($subtype = $node->field_subtype->value) {
+        if ($subtype == "Elected Official") {
+          $variables['bannerImageMobile'] = Helper::getFieldImageUrl($node, '480x240_fp', 'field_bg_wide');
+        }
+      }
     }
 
     if (!empty($cache_tags)) {
