@@ -142,9 +142,12 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == "report_d2d_redirects" && $view->getDisplay()->display['id'] == 'page_1') {
-    foreach ($query->where as $key_group_conditions => &$condition_group) {
-      // Call helper function to recursively alter conditions.
-      _redirect_recursively_alter_query_conditions($condition_group['conditions'], $query, $key_group_conditions);
+    if (function_exists('redirect_is_query_alter_required_and_trim_source_path') && function_exists('redirect_add_left_join_to_path_alias_table') && function_exists('redirect_alter_where_clause')) {
+      if (redirect_is_query_alter_required_and_trim_source_path($query)) {
+        // Call helper function to recursively alter conditions.
+        redirect_add_left_join_to_path_alias_table($query);
+        redirect_alter_where_clause($query);
+      }
     }
   }
 
