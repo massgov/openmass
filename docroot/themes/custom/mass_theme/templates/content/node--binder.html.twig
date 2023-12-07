@@ -95,14 +95,7 @@
       "pageHeader": {
         "title": label,
         "category": node.field_binder_binder_type.entity.label,
-        "optionalContents": [{
-          "path": "@atoms/11-text/paragraph.twig",
-          "data": {
-            "paragraph" : {
-              "text": node.field_binder_short_desc.value
-            }
-          }
-        }]
+        "description": node.field_binder_short_desc.value ?? ""
       }
     }
   } %}
