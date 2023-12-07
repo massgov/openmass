@@ -97,14 +97,7 @@
         "theme": "c-primary",
         "pageHeader": {
           "title": label,
-          "optionalContents": [{
-            "path": "@atoms/11-text/paragraph.twig",
-            "data": {
-              "paragraph" : {
-                "text": node.field_short_desc.value
-              }
-            }
-          }]
+          "description": node.field_short_desc.value ?? ''
         }
       }
     } %}
