@@ -1,3 +1,30 @@
+## [0.383.0] - December 5, 2023
+
+### Added
+  - DP-16045: Fix broken link when adding video
+  - DP-29928: Implement contextual search suggestions.
+  - DP-30874: Added csv download to advanced search.
+  - DP-30897: For future use, added field to include org parent in search filters and modified help text of related field.
+  - DP-8443: Added label to pull quote on info details pages.
+  
+### Changed
+  - DP-24290: Clarify the main navigation labels for screen reader users.
+  - DP-27538: Modified decorator class for SVG processor to add additional cache metadata.
+  - DP-30787: Change allowable size of info details header from 100 to 130 characters.
+  - DP-30904: DDEV nightcrawler fix, More robust deployment, Log deployments in New Relic
+  
+### Fixed
+  - DP-29819: Image style fix for images in rich text.
+  - DP-31045: Don't show line below iframe if caption is empty.
+  
+### Removed
+  - DP-30777: Don't prompt if author has just redirected node
+  
+
+## [0.382.1] - December 4, 2023
+
+### Fixed
+  - DP-30945: Disabled reverse proxy header changes to resolve issue affecting collections.
 
 
 ## [0.382.0] - November 21, 2023
