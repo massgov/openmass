@@ -14,6 +14,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_validation\Information\MassChildEntityWarningBuilder;
 use Drupal\node\NodeInterface;
@@ -165,26 +166,22 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 }
 
 function mass_scheduled_transitions_form_validate(array $form, FormStateInterface $form_state): void {
+  if ($form_state->getValue('transition') == 'publish') {
+    return;
+  }
+
   $entity = $form_state->getFormObject()->getEntity();
   if ($entity->getEntityTypeId() == 'scheduled_transition') {
     // We need to spelunk one level down when coming from the Reschedule form.
     $entity = $entity->getEntity();
   }
-  $preamble = "This page has published children and cannot be unpublished unless the child pages are moved to a new parent or unpublished.\n";
-  if ($children = \Drupal::service('class_resolver')
+  $children = \Drupal::service('class_resolver')
     ->getInstanceFromDefinition(MassChildEntityWarningBuilder::class)
-    ->buildChildEntityWarnings($entity, TRUE)) {
-    foreach ($children as $child) {
-      $items = $child->getList()['#items'];
-      if (!empty($items)) {
-        $items_string = implode(', ', $items);
-        $message = new PluralTranslatableMarkup(
-          count($items),
-          $preamble . '1 published child: ' . $items_string,
-          $preamble . '@count published children: ' . $items_string);
-        $form_state->setError($form['scheduled_transitions']['revision'], $message);
-      }
-    }
+    ->buildChildEntityWarnings($entity, TRUE);
+  if ($children) {
+    $message = "This page has published children and cannot be unpublished unless the child pages are moved to a new parent or unpublished. <a href=\":url\">Move children</a>\n";
+    $replacements = [':url' => Url::fromRoute('view.change_parents.page_1', ['node' => $entity->id()])->toString()];
+    $form_state->setError($form['scheduled_transitions']['revision'], t($message, $replacements));
   }
 }
 
