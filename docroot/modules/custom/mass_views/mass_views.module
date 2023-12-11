@@ -142,6 +142,11 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == "report_d2d_redirects" && $view->getDisplay()->display['id'] == 'page_1') {
+    // See DP-23382 for more info.
+    // The functions used below help to filter the view with the url alias
+    // instead of id.
+    // Note: THe functions are coming from the patch here
+    // https://www.drupal.org/project/redirect/issues/2981544
     if (function_exists('redirect_is_query_alter_required_and_trim_source_path') && function_exists('redirect_add_left_join_to_path_alias_table') && function_exists('redirect_alter_where_clause')) {
       if (redirect_is_query_alter_required_and_trim_source_path($query)) {
         // Call helper function to recursively alter conditions.
