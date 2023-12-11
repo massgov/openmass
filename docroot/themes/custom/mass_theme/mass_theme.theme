@@ -745,12 +745,7 @@ function mass_theme_preprocess_node_location(&$variables) {
 
     // If recommended quick actions field is populated, add to optional content.
     if (Helper::isFieldPopulated($node, 'field_links')) {
-      $optionalContents[] = [
-        'path' => '@organisms/by-author/key-actions.twig',
-        'data' => [
-          'keyActions' => Molecules::prepareKeyActions($node, 'field_links'),
-        ],
-      ];
+      $variables['keyActions'] = Molecules::prepareKeyActions($node, 'field_links');
     }
 
     // Send optional contents as a pageHeader option.
