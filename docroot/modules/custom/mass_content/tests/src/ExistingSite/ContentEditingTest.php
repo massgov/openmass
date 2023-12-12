@@ -65,8 +65,8 @@ class ContentEditingTest extends ExistingSiteBase {
   public function testSaveContent() {
     $this->drupalLogin($this->createEditor());
     $paths = self::QAG_PATHS;
+    $session = $this->getSession();
     foreach ($paths as $path) {
-      $session = $this->getSession();
       // Edit the node.
       $session->visit($path . '/edit');
       $this->assertEquals(200, $session->getStatusCode(), 'Failed to retrieve ' . $path . '/edit');
