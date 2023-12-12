@@ -20,8 +20,7 @@ final class TrashbinCommands extends DrushCommands {
     private TimeInterface $time) {
   }
 
-  public static function create(ContainerInterface $container): self
-  {
+  public static function create(ContainerInterface $container): self {
     $commandHandler = new static(
       $container->get('entity_type.manager'),
       $container->get('datetime.time'),
