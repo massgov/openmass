@@ -178,8 +178,9 @@ function mass_scheduled_transitions_form_validate(array $form, FormStateInterfac
   $children = \Drupal::service('class_resolver')
     ->getInstanceFromDefinition(MassChildEntityWarningBuilder::class)
     ->buildChildEntityWarnings($entity, TRUE);
-  if ($children) {
-    $message = "This page has published children and cannot be unpublished unless the child pages are moved to a new parent or unpublished. <a href=\":url\">Move children</a>\n";
+  $list = $children[0]->getList();
+  if (!empty($list['#items'])) {
+    $message = "This page has published children and cannot be unpublished unless the child pages are moved to a new parent or unpublished. <a href=\":url\">Move children</a>.";
     $replacements = [':url' => Url::fromRoute('view.change_parents.page_1', ['node' => $entity->id()])->toString()];
     $form_state->setError($form['scheduled_transitions']['revision'], t($message, $replacements));
   }
