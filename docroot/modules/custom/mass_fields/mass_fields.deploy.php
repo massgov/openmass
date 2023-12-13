@@ -68,7 +68,7 @@ function mass_fields_deploy_contextual_search_fields_default_values(&$sandbox) {
   $query->condition('nid', $nids_to_load, 'IN');
 
   if (empty($sandbox)) {
-    // Get a list of all nodes of type org_page.
+    // Get a list of specified nodes.
     $sandbox['progress'] = 0;
     $sandbox['current'] = 0;
     $count = clone $query;
