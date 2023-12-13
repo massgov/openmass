@@ -60,8 +60,8 @@ Feature: Location Landing Page Content type
     And I should see the text "Restrictions text" in the "details_content" region
     And I should see the text "Services text" in the "details_content" region
     And I should see the link "Reserve a Campsite" in the "key_actions" region
-    And I should see the link "Download a Park Map" in the "page_header_addons" region
-    And I should see the link "Download a Trail Map" in the "page_header_addons" region
+    And I should see the link "Download a Park Map" in the "key_actions" region
+    And I should see the link "Download a Trail Map" in the "key_actions" region
 
   Scenario: Verify that the location content type displays it's content correctly
     Given I am logged in as a user with the "administrator" role
