@@ -50,13 +50,20 @@ function trashbin_entity_operation_alter(array &$operations, EntityInterface $en
  * Implements hook_query_TAG_alter().
  *
  * Alter the entity reference query to remove trash nodes.
- *
- * @param \Drupal\Core\Database\Query\AlterableInterface $query
- *   The query.
  */
 function trashbin_query_entity_reference_alter(AlterableInterface $query) {
   if ($query->hasTag('node_access') && array_key_exists('node_field_data', $query->getTables())) {
     $query->leftJoin('content_moderation_state_field_data', 'cm', "base_table.nid=cm.content_entity_id and base_table.vid=cm.content_entity_revision_id and cm.content_entity_type_id='node'");
     $query->condition('cm.moderation_state', 'trash', '!=');
   }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * Returns only trashed entities when tagged accordingly.
+ */
+function trashbin_query_trashbin_only_trash_alter(AlterableInterface $query): void {
+  $query->addJoin('LEFT', 'content_moderation_state_field_data', 'md', 'md.content_entity_revision_id = base_table.vid');
+  $query->condition('md.moderation_state', 'trash', '=');
 }
