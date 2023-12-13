@@ -100,6 +100,8 @@ function mass_fields_deploy_contextual_search_fields_default_values(&$sandbox) {
         $node->set('field_include_parent_org_search', 1);
       }
       $node->setSyncing(TRUE);
+      $node->revision_log = "Deploy hook setting field_org_no_search_filter and field_include_parent_org_search to 1";
+      $node->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
       $node->save();
     }
     catch (\Exception $e) {
@@ -122,6 +124,8 @@ function mass_fields_deploy_contextual_search_fields_default_values(&$sandbox) {
               $latest_revision->set('field_include_parent_org_search', 1);
             }
             $latest_revision->setSyncing(TRUE);
+            $latest_revision->revision_log = "Deploy hook setting field_org_no_search_filter and field_include_parent_org_search to 1";
+            $latest_revision->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
             $latest_revision->save();
           }
           catch (\Exception $e) {
