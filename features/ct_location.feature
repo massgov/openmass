@@ -59,7 +59,7 @@ Feature: Location Landing Page Content type
     And I should see the text "Parking text" in the "details_content" region
     And I should see the text "Restrictions text" in the "details_content" region
     And I should see the text "Services text" in the "details_content" region
-    And I should see the link "Reserve a Campsite" in the "page_header_addons" region
+    And I should see the link "Reserve a Campsite" in the "key_actions" region
     And I should see the link "Download a Park Map" in the "page_header_addons" region
     And I should see the link "Download a Trail Map" in the "page_header_addons" region
 
