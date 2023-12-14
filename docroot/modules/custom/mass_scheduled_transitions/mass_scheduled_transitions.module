@@ -186,12 +186,12 @@ function mass_scheduled_transitions_validate_parent(array $form, FormStateInterf
 
   $parentList = $entity->getPrimaryParent();
   if (!$parentList->isEmpty()) {
-    $refs = $parentList->referencedEntities();;
+    $refs = $parentList->referencedEntities();
     $parent = $refs[0] ?? FALSE;
     if (!$parent) {
       $message = 'Unable to load the specified parent. <a href=":url">Edit this content</a> and add a published parent page.';
     }
-    elseif(!$parent->isPublished()) {
+    elseif (!$parent->isPublished()) {
       $message = 'The specified parent is not published. <a href=":url">Edit this content</a> and add a published parent page.';
     }
   }
