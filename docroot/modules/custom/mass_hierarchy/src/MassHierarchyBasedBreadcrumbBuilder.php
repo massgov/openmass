@@ -63,7 +63,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
       $collection = mass_content_get_collection_from_current_page();
       $breadcrumb->addCacheableDependency($collection);
       /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
-      $field_primary_parent = $collection->field_primary_parent;
+      $field_primary_parent = $collection->getPrimaryParent();
       /** @var \Drupal\node\Entity\Node[] */
       $referenced_entities = $field_primary_parent->referencedEntities();
       if (!$referenced_entities) {

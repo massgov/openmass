@@ -3,6 +3,7 @@
 namespace Drupal\mass_content\Entity\Bundle\node;
 
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList;
 use Drupal\mass_content_moderation\MassModerationTrait;
 use Drupal\mass_fields\MassCollectionTrait;
 use Drupal\mass_fields\MassOrganizationsTrait;
@@ -33,7 +34,7 @@ abstract class NodeBundle extends Node {
   /**
    * Get field_primary_parent value. Media doesn't have this field.
    */
-  public function getPrimaryParent(): ?FieldItemListInterface {
+  public function getPrimaryParent(): ?EntityReferenceHierarchyFieldItemList {
     return $this->hasField(self::PRIMARY_PARENT) ? $this->get(self::PRIMARY_PARENT) : NULL;
   }
 
