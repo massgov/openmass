@@ -15,8 +15,10 @@ use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_validation\Information\MassChildEntityWarningBuilder;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
@@ -169,12 +171,46 @@ function mass_scheduled_transitions_form_validate(array $form, FormStateInterfac
   if ($form_state->getValue('transition') == 'publish') {
     return;
   }
-
   $entity = $form_state->getFormObject()->getEntity();
   if ($entity->getEntityTypeId() == 'scheduled_transition') {
     // We need to spelunk one level down when coming from the Reschedule form.
     $entity = $entity->getEntity();
   }
+
+  mass_scheduled_transitions_validate_parent($form, $form_state, $entity);
+  mass_scheduled_transitions_validate_children($form, $form_state, $entity);
+}
+
+function mass_scheduled_transitions_validate_parent(array $form, FormStateInterface $form_state, NodeBundle $entity): void {
+  $message = '';
+
+  if (!$entity->isPrimaryParentRequired()) {
+    return;
+  }
+
+  $parentList = $entity->getPrimaryParent();
+  if (is_null($parentList) ||  $parentList->isEmpty()) {
+    $message = 'No parent specified. <a href=":url">Edit this content</a> and add a published parent page.';
+  }
+  else {
+    $value = $parentList->first()->getValue();
+    $target_id = $value['target_id'] ?? FALSE;
+    $parent = $target_id ? Node::load($target_id) : FALSE;
+    if (!$parent) {
+      $message = 'Unable to find and load the specified parent. <a href=":url">Edit this content</a> and add a published parent page.';
+    }
+    elseif(!$parent->isPublished()) {
+      $message = 'The specified parent is not published. <a href=":url">Edit this content</a> and add a published parent page.';
+    }
+  }
+  if ($message) {
+    $message = 'A published parent is required to publish this page. <a href=":url">Edit this content</a> and add a published parent page.';
+    $replacements = [':url' => $entity->toUrl('edit-form')->toString()];
+    $form_state->setError($form['scheduled_transitions']['revision'], t($message, $replacements));
+  }
+}
+
+function mass_scheduled_transitions_validate_children(array $form, FormStateInterface $form_state, NodeBundle $entity): void {
   $children = \Drupal::service('class_resolver')
     ->getInstanceFromDefinition(MassChildEntityWarningBuilder::class)
     ->buildChildEntityWarnings($entity, TRUE);

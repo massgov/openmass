@@ -16,37 +16,39 @@ class PublishChildWithUnpublishedParentConstraintValidator extends ConstraintVal
    * {@inheritdoc}
    */
   public function validate($entity, Constraint $constraint) {
+    $failed = FALSE;
     if (!isset($entity)) {
       return;
     }
 
     // When trying to publish an entity.
-    if ($entity->moderation_state->value != MassModeration::PUBLISHED) {
+    /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $entity */
+    if ($entity->getModerationState()->getString() != MassModeration::PUBLISHED) {
       return;
     }
 
-    // If the entity has a parent.
-    if (!($entity->field_primary_parent ?? FALSE) || !($entity->field_primary_parent[0] ?? FALSE)) {
+    if (!$entity->isPrimaryParentRequired()) {
       return;
     }
 
-    $value = $entity->field_primary_parent[0]->getValue();
-    $target_id = $value['target_id'] ?? FALSE;
-    $parent = $target_id ? Node::load($target_id) : FALSE;
-
-    // If we can load the parent sucessfully.
-    if (!$parent) {
-      return;
+    $parentList = $entity->getPrimaryParent();
+    if (is_null($parentList) ||  $parentList->isEmpty()) {
+      $failed = TRUE;
     }
-
-    $parent_state = $parent->moderation_state->value;
-
-    // The parent cannot be unpublished or in the trash.
-    if ($parent_state == MassModeration::PUBLISHED) {
-      return;
+    else {
+      $value = $parentList->first()->getValue();
+      $target_id = $value['target_id'] ?? FALSE;
+      $parent = $target_id ? Node::load($target_id) : FALSE;
+      if (!$parent) {
+        $failed = TRUE;
+      }
+      elseif (!$parent->isPublished()) {
+        $failed = TRUE;
+      }
     }
-
-    $this->context->addViolation(PublishChildWithUnpublishedParentConstraint::MESSAGE);
+    if ($failed) {
+      $this->context->addViolation(PublishChildWithUnpublishedParentConstraint::MESSAGE);
+    }
   }
 
 }
