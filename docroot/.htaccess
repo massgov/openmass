@@ -125,7 +125,6 @@ AddType application/octet-stream .rte
   RewriteCond %{ENV:IS_DDEV_PROJECT} !^$ [NC]
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
-  RewriteCond %{HTTP_HOST} ^mass\.local$
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 
