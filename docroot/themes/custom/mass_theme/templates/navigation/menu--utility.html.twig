@@ -22,6 +22,73 @@
 {%
 set googleLanguages = languages
 %}
+
+{% set contrastSettingsItem = {
+  "id": "contrast",
+  "text": "Contrast Settings",
+  "ariaLabelText": "View color contrast settings",
+  "icon": "contrast-eye",
+  "closeText": "Close",
+  "panels": [
+    {
+      "description": {
+        "richText": {
+          "rteElements": [
+            {
+              "path": "@atoms/11-text/paragraph.twig",
+              "data": {
+              "paragraph": {
+                "text": "We are testing Userway, a tool that will let you change color contrast and other visual styles. Push the button below to enable and an icon will appear in the lower right corner that will let you customize the appearance of the site."
+              }
+            }
+            },
+            {
+              "path": "@atoms/01-buttons/button.twig",
+              "data": {
+              "button": {
+                "text": "Enable Custom Styles",
+                "type": "button",
+                "usage": "secondary"
+              }
+            }
+            }
+          ]
+        }
+      },
+    },
+    {
+      "description": {
+        "richText": {
+          "rteElements": [
+            {
+              "path": "@molecules/forms/field-submit.twig",
+              "data": {
+              "fieldSubmit": {
+                "isForm": true,
+                "action": "https://search.mass.gov/",
+                "labelText": "If we can email you to ask about your experience with this feature, please add your email here.",
+                "inputText": {
+                  "required": false,
+                  "id": "userWay-signup",
+                  "name": "userWay-signup",
+                  "type": "email",
+                  "placeholder": ""
+                },
+                "buttonSearch": {
+                  "text": "Submit"
+                }
+              }
+            }
+            }
+          ]
+        }
+      }
+    }
+  ]
+} %}
+
+{% set items = [contrastSettingsItem] | merge(items) %}
+
 {%
 set utilityNav = {
   dropdown : {
