@@ -193,9 +193,8 @@ function mass_scheduled_transitions_validate_parent(array $form, FormStateInterf
     $message = 'No parent specified. <a href=":url">Edit this content</a> and add a published parent page.';
   }
   else {
-    $value = $parentList->first()->getValue();
-    $target_id = $value['target_id'] ?? FALSE;
-    $parent = $target_id ? Node::load($target_id) : FALSE;
+    $refs = $parentList->referencedEntities();;
+    $parent = $refs[0] ?? FALSE;
     if (!$parent) {
       $message = 'Unable to find and load the specified parent. <a href=":url">Edit this content</a> and add a published parent page.';
     }

@@ -36,9 +36,8 @@ class PublishChildWithUnpublishedParentConstraintValidator extends ConstraintVal
       $failed = TRUE;
     }
     else {
-      $value = $parentList->first()->getValue();
-      $target_id = $value['target_id'] ?? FALSE;
-      $parent = $target_id ? Node::load($target_id) : FALSE;
+      $refs = $parentList->referencedEntities();
+      $parent = $refs[0] ?? FALSE;
       if (!$parent) {
         $failed = TRUE;
       }
