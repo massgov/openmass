@@ -38,8 +38,4 @@ abstract class NodeBundle extends Node {
     return $this->hasField(self::PRIMARY_PARENT) ? $this->get(self::PRIMARY_PARENT) : NULL;
   }
 
-  public function isPrimaryParentRequired(): bool {
-    return $this->hasField(self::PRIMARY_PARENT) && $this->getFieldDefinition(self::PRIMARY_PARENT)->isRequired();
-  }
-
 }

@@ -184,10 +184,6 @@ function mass_scheduled_transitions_form_validate(array $form, FormStateInterfac
 function mass_scheduled_transitions_validate_parent(array $form, FormStateInterface $form_state, NodeBundle $entity): void {
   $message = '';
 
-  if (!$entity->isPrimaryParentRequired()) {
-    return;
-  }
-
   $parentList = $entity->getPrimaryParent();
   if (!$parentList->isEmpty()) {
     $refs = $parentList->referencedEntities();;
