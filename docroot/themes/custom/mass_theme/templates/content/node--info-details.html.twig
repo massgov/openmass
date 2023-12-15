@@ -89,29 +89,20 @@
     } %}
   {% endif %}
   {% if node.field_banner_image is not empty %}
-    {% include "@organisms/by-template/illustrated-header.twig" with {
-      "illustratedHeader": {
-        "bgImage": bgImage,
+    {% include "@organisms/page-banner/page-banner.twig" with {
+      "pageBanner": {
+        "image": bgImage,
         "bgPositionX": bgPosition['x'],
         "bgPositionY": bgPosition['y'],
-        "category": "",
-        "inverted": true,
+        "theme": "c-primary",
         "pageHeader": {
           "title": label,
-          "subTitle": "",
-          "optionalContents": [{
-            "path": "@atoms/11-text/paragraph.twig",
-            "data": {
-              "paragraph" : {
-                "text": node.field_short_desc.value
-              }
-            }
-          }]
+          "description": node.field_short_desc.value ?? ''
         }
       }
     } %}
   {% else %}
-  {% include "@organisms/by-template/page-header.twig" with {
+  {% include "@organisms/page-header/page-header.twig" with {
     "pageHeader": {
       "divider": false,
       "title": label,

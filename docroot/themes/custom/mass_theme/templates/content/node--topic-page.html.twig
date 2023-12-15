@@ -67,20 +67,14 @@
           } %}
         {% endfor %}
       {% endblock %}
-      {# {% block secondaryRelationship %}
-        {% for item in secondary %}
-          {% include "@atoms/item-link.twig" with {
-            "itemLink": {
-              "title": item.title,
-              "href": item.href
-            }
-          } %}
-        {% endfor %}
-      {% endblock %} #}
     {% endembed %}
   {% endif %}
-
-  {% include "@organisms/page-banner/page-banner.twig" %}
+  {% include "@organisms/page-header/page-header.twig" with {
+    "pageHeader": {
+      "title": node.label,
+      "underline": "TRUE",
+    }
+  } %}
 {% endblock %}
 
 {% block pageContent %}
