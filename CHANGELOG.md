@@ -1,3 +1,17 @@
+
+
+## [0.384.0] - December 12, 2023
+
+### Added
+  - DP-14520: Add Drush command for purging trashbin
+  - DP-17399: Change field label on location page from Primary location to Primary contact.
+  
+### Changed
+  - DP-24587: Make style corrections to topic page.
+  
+### Fixed
+  - DP-31078: Fix 500 errors on Mass.gov.
+  
 ## [0.383.0] - December 5, 2023
 
 ### Added
