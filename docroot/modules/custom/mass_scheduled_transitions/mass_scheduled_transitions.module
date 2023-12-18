@@ -204,7 +204,8 @@ function mass_scheduled_transitions_validate_parent(array $form, FormStateInterf
   }
 
   if ($message) {
-    $message = 'A published parent is required to publish this page. <a href=":url">Edit this content</a> and add a published parent page.';
+    $message = \Drupal\mass_validation\Plugin\Validation\Constraint\PublishChildWithUnpublishedParentConstraint::MESSAGE;
+    // $message = 'A published parent is required to publish this page. <a href=":url">Edit this content</a> and add a published parent page.';
     $replacements = [':url' => $entity->toUrl('edit-form')->toString()];
     $form_state->setError($form['scheduled_transitions']['revision'], t($message, $replacements));
   }
