@@ -27,8 +27,15 @@ class PublishChildWithUnpublishedParentConstraintValidator extends ConstraintVal
       return;
     }
 
+    if (!$entity->isPrimaryParentRequired()) {
+      return;
+    }
+
     $parentList = $entity->getPrimaryParent();
-    if (!$parentList->isEmpty()) {
+    if ($parentList->isEmpty()) {
+      $failed = TRUE;
+    }
+    else {
       $refs = $parentList->referencedEntities();
       $parent = $refs[0] ?? FALSE;
       if (!$parent) {

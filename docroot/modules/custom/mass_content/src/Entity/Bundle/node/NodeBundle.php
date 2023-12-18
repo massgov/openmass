@@ -38,4 +38,14 @@ abstract class NodeBundle extends Node {
     return $this->hasField(self::PRIMARY_PARENT) ? $this->get(self::PRIMARY_PARENT) : NULL;
   }
 
+  public function isPrimaryParentRequired(): bool {
+    if (!$this->hasField(self::PRIMARY_PARENT)) {
+      return FALSE;
+    }
+    $field_config = $this->getFieldDefinition(self::PRIMARY_PARENT);
+    // This code comes from RequireOnPublishValidator.
+    $required = $field_config->getThirdPartySetting('require_on_publish', 'require_on_publish', FALSE);
+    return $required;
+  }
+
 }

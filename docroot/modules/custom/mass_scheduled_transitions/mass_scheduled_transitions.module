@@ -182,19 +182,27 @@ function mass_scheduled_transitions_form_validate(array $form, FormStateInterfac
 }
 
 function mass_scheduled_transitions_validate_parent(array $form, FormStateInterface $form_state, NodeBundle $entity): void {
-  $message = '';
+  $message = FALSE;
+
+  if (!$entity->isPrimaryParentRequired()) {
+    return;
+  }
 
   $parentList = $entity->getPrimaryParent();
-  if (!$parentList->isEmpty()) {
+  if ($parentList->isEmpty()) {
+    $message = TRUE;
+  }
+  else {
     $refs = $parentList->referencedEntities();
     $parent = $refs[0] ?? FALSE;
     if (!$parent) {
-      $message = 'Unable to load the specified parent. <a href=":url">Edit this content</a> and add a published parent page.';
+      $message = TRUE;
     }
     elseif (!$parent->isPublished()) {
-      $message = 'The specified parent is not published. <a href=":url">Edit this content</a> and add a published parent page.';
+      $message = TRUE;
     }
   }
+
   if ($message) {
     $message = 'A published parent is required to publish this page. <a href=":url">Edit this content</a> and add a published parent page.';
     $replacements = [':url' => $entity->toUrl('edit-form')->toString()];
