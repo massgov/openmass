@@ -41,8 +41,8 @@ set pageHeader = {
   {% if content.field_action_header|render|trim is not empty or content.field_header_cta|render|trim is not empty %}
     {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
   {% else %}
-    {% include "@organisms/by-template/page-header.twig" %}
-    {% include "@organisms/by-template/page-header-addons.twig" %}
+    {% include "@organisms/page-header/page-header.twig" %}
+    {% include "@organisms/page-header/page-header-addons.twig" %}
   {% endif %}
   {% if content.field_action_banner|render|trim is not empty %}
     {{ content.field_action_banner|field_value }}
