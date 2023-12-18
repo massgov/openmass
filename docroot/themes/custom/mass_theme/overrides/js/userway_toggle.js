@@ -3,7 +3,7 @@
 
   Drupal.behaviors.userwayToggle = {
     attach: function (context) {
-      const selector = '#panel-contrast .ma__button--secondary';
+      var selector = '#panel-contrast .ma__button--secondary';
       once('userwayToggle', selector, context).forEach(function (button) {
         button.addEventListener('click', toggleUserWay);
       });
@@ -15,20 +15,21 @@
       updateButtonLabel();
 
       function toggleUserWay() {
-        const isEnabled = localStorage.getItem('userwayEnabled') === 'true';
+        var isEnabled = localStorage.getItem('userwayEnabled') === 'true';
         localStorage.setItem('userwayEnabled', !isEnabled);
         if (!isEnabled) {
           loadUserWay();
-        } else {
+        }
+        else {
           unloadUserWay();
         }
         updateButtonLabel();
       }
 
       function loadUserWay() {
-        const userwayScript = document.getElementById('userwayScript');
+        var userwayScript = document.getElementById('userwayScript');
         if (!userwayScript) {
-          const script = document.createElement('script');
+          var script = document.createElement('script');
           script.id = 'userwayScript';
           script.src = 'https://cdn.userway.org/widget.js';
           script.dataset.account = '8wSDGc4YEt';
@@ -42,8 +43,8 @@
       }
 
       function updateButtonLabel() {
-        const isEnabled = localStorage.getItem('userwayEnabled') === 'true';
-        const buttonText = isEnabled ? 'Disable Custom Styles' : 'Enable Custom Styles';
+        var isEnabled = localStorage.getItem('userwayEnabled') === 'true';
+        var buttonText = isEnabled ? 'Disable Custom Styles' : 'Enable Custom Styles';
         document.querySelectorAll(selector).forEach(function (button) {
           button.textContent = buttonText;
         });
