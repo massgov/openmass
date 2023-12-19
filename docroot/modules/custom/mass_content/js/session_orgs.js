@@ -51,7 +51,8 @@
                 sessionStorage.setItem('session_parent_orgs', parentOrgsFiltered.join(','));
               }
             }
-          } else {
+          }
+          else {
             sessionStorage.setItem('session_start', new Date().toString());
             if (orgsFiltered.length > 0) {
               sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
@@ -82,7 +83,8 @@
         });
         sessionStorage.setItem(key, resultFiltered.join(','));
       }
-    } else {
+    }
+    else {
       if (valuesFiltered.length > 0) {
         sessionStorage.setItem(key, valuesFiltered.join(','));
       }
