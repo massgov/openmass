@@ -16,38 +16,35 @@ class PublishChildWithUnpublishedParentConstraintValidator extends ConstraintVal
    * {@inheritdoc}
    */
   public function validate($entity, Constraint $constraint) {
-    $failed = FALSE;
     if (!isset($entity)) {
       return;
     }
 
     // When trying to publish an entity.
-    /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $entity */
-    if ($entity->getModerationState()->getString() != MassModeration::PUBLISHED) {
+    if ($entity->getModerationState()->value != MassModeration::PUBLISHED) {
       return;
     }
 
-    if (!$entity->isPrimaryParentRequired()) {
+    if (!$parentList = $entity->getPrimaryParent()) {
       return;
     }
 
-    $parentList = $entity->getPrimaryParent();
-    if ($parentList->isEmpty()) {
-      $failed = TRUE;
+    $refs = $parentList->referencedEntities();
+    $parent = $refs[0] ?? FALSE;
+
+    // If we can load the parent successfully.
+    if (!$parent) {
+      return;
     }
-    else {
-      $refs = $parentList->referencedEntities();
-      $parent = $refs[0] ?? FALSE;
-      if (!$parent) {
-        $failed = TRUE;
-      }
-      elseif (!$parent->isPublished()) {
-        $failed = TRUE;
-      }
+
+    $parent_state = $parent->getModerationState()->value;
+
+    // The parent cannot be unpublished or in the trash.
+    if ($parent_state == MassModeration::PUBLISHED) {
+      return;
     }
-    if ($failed) {
-      $this->context->addViolation(PublishChildWithUnpublishedParentConstraint::MESSAGE);
-    }
+
+    $this->context->addViolation(PublishChildWithUnpublishedParentConstraint::MESSAGE);
   }
 
 }
