@@ -5,79 +5,88 @@
    * Helper function to calculate the hours difference.
    */
   function diff_hours(dt2, dt1) {
-    // 36e5 is the scientific notation for 60*60*1000
     return Math.floor(Math.abs(dt2.getTime() - dt1.getTime()) / 36e5);
   }
 
   /**
-   * Sets session_orgs to storage based on the mg_organization value.
+   * Sets session_orgs and session_parent_orgs to storage based on the mg_organization and mg_parent_org values.
    */
   Drupal.behaviors.massContentOrgStore = {
     attach: function (context) {
-      // window.dataLayer[0].entityBundle stores content_type label.
       if (typeof window.dataLayer !== 'undefined' && typeof window.dataLayer[0].entityBundle !== 'undefined') {
         if (window.dataLayer[0].entityBundle !== 'topic_page') {
           var orgsFiltered = [];
+          var parentOrgsFiltered = [];
           var orgs = '';
+          var parentOrgs = '';
+
           if ($("meta[name='mg_organization']").length > 0) {
-            // Get data from the metatag element.
             orgs = $("meta[name='mg_organization']").attr('content');
             var orgsArr = orgs.split(',');
-            // Filter the array and keep only unique values.
             $.each(orgsArr, function (i, el) {
               if ($.inArray(el, orgsFiltered) === -1) {
                 orgsFiltered.push(el);
               }
             });
           }
-          // Set Session start time for each user.
+
+          if ($("meta[name='mg_parent_org']").length > 0) {
+            parentOrgs = $("meta[name='mg_parent_org']").attr('content');
+            var parentOrgsArr = parentOrgs.split(',');
+            $.each(parentOrgsArr, function (i, el) {
+              if ($.inArray(el, parentOrgsFiltered) === -1) {
+                parentOrgsFiltered.push(el);
+              }
+            });
+          }
+
           var sessionStart = sessionStorage.getItem('session_start');
           if (sessionStart && sessionStart.length > 0) {
-            // Remove session_orgs from storage only if the hours difference
-            // is more than 1 hour.
             if (diff_hours(new Date(), new Date(sessionStart)) >= 1) {
               sessionStorage.setItem('session_start', new Date().toString());
-              var sessionOrgs = sessionStorage.getItem('session_orgs');
-              if (sessionOrgs && sessionOrgs.length > 0) {
-                if (orgsFiltered.length > 0) {
-                  // Set session_orgs value to storage.
-                  sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
-                }
+              if (orgsFiltered.length > 0) {
+                sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
+              }
+              if (parentOrgsFiltered.length > 0) {
+                sessionStorage.setItem('session_parent_orgs', parentOrgsFiltered.join(','));
               }
             }
-          }
-          else {
-            // Set session_start value to storage.
+          } else {
             sessionStorage.setItem('session_start', new Date().toString());
-          }
-
-          var sessionOrgsExisting = sessionStorage.getItem('session_orgs');
-          if (sessionOrgsExisting && sessionOrgsExisting.length > 0) {
-            // Convert string to array to filter for unique values.
-            var existingValues = sessionOrgsExisting.split(',');
             if (orgsFiltered.length > 0) {
-              // Combine existing and new data together in 1 array.
-              var resultValues = existingValues.concat(orgsFiltered);
-              var resultFiltered = [];
-              // Filter the array and keep only unique values.
-              $.each(resultValues, function (i, el) {
-                if ($.inArray(el, resultFiltered) === -1) {
-                  resultFiltered.push(el);
-                }
-              });
-              // Set session_orgs value to storage.
-              sessionStorage.setItem('session_orgs', resultFiltered.join(','));
-            }
-          }
-          else {
-            if (orgsFiltered.length > 0) {
-              // Set session_orgs value to storage.
               sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
             }
+            if (parentOrgsFiltered.length > 0) {
+              sessionStorage.setItem('session_parent_orgs', parentOrgsFiltered.join(','));
+            }
           }
+
+          updateSessionStorage('session_orgs', orgsFiltered);
+          updateSessionStorage('session_parent_orgs', parentOrgsFiltered);
         }
       }
-
     }
   };
+
+  function updateSessionStorage(key, valuesFiltered) {
+    var existing = sessionStorage.getItem(key);
+    if (existing && existing.length > 0) {
+      var existingValues = existing.split(',');
+      if (valuesFiltered.length > 0) {
+        var resultValues = existingValues.concat(valuesFiltered);
+        var resultFiltered = [];
+        $.each(resultValues, function (i, el) {
+          if ($.inArray(el, resultFiltered) === -1) {
+            resultFiltered.push(el);
+          }
+        });
+        sessionStorage.setItem(key, resultFiltered.join(','));
+      }
+    } else {
+      if (valuesFiltered.length > 0) {
+        sessionStorage.setItem(key, valuesFiltered.join(','));
+      }
+    }
+  }
+
 })(jQuery, Drupal, drupalSettings);
