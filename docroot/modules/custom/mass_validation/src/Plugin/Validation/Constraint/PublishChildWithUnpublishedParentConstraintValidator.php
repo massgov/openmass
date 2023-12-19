@@ -3,7 +3,6 @@
 namespace Drupal\mass_validation\Plugin\Validation\Constraint;
 
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\node\Entity\Node;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
