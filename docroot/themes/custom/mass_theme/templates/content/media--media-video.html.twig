@@ -25,6 +25,7 @@
         {% if backButton %}
           {% include "@molecules/back-button.twig" %}
         {% endif %}
+        {% set video = video|merge({"level": "2"}) %}
         {% include "@atoms/09-media/video.twig" %}
         {% if backButton %}
           {% include "@molecules/back-button.twig" %}

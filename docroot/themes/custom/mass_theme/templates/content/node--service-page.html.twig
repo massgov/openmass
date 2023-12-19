@@ -121,6 +121,7 @@
 
   {% if introPageContent.video %}
     {% set video = introPageContent.video %}
+    {% set video = video|merge({"level": level}) %}
     {% include "@atoms/09-media/video.twig" %}
   {% endif %}
 {% endblock %}
