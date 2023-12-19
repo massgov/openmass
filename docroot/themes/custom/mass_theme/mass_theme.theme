@@ -677,19 +677,14 @@ function mass_theme_preprocess_node_org_page(&$variables) {
     // Slugified title.
     $variables['slugified_title'] = _mass_metatag_slugify(trim($page_title));
 
-    $subtype = $node->field_subtype->value;
-    if ($subtype === 'General Organization' ||
-      $subtype === 'Boards' ||
-      $node->field_banner_image->count() === 0) {
-      // Set static pageBanner properties to pass to prepare function.
-      $pageBanner_options = [
-        "layout" => "taper",
-        "icon" => NULL,
-      ];
-
-      // Make pageBanner data object available in twig template.
-      $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
-
+    // Prepare field_service_bg_wide, if it's populated.
+    if (Helper::isFieldPopulated($node, 'field_bg_wide')) {
+      $variables['bannerImage'] = Helper::getFieldImageUrl($node, '800x400_fp', 'field_bg_wide');
+      if ($subtype = $node->field_subtype->value) {
+        if ($subtype == "Elected Official") {
+          $variables['bannerImageMobile'] = Helper::getFieldImageUrl($node, '480x240_fp', 'field_bg_wide');
+        }
+      }
     }
 
     if (!empty($cache_tags)) {
@@ -1408,20 +1403,6 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
 
     // Make relationshipIndicatorPrimary data structure available in twig template.
     $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
-
-    // Set static pageBanner properties to pass to prepare function.
-    $pageBanner_options = [
-      'color' => 'white',
-      'underline' => TRUE,
-    ];
-
-    $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
-    // Make pageBanner data structure available in twig template.
-    $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
-
-    // Make sure images aren't visible in the page banner.
-    unset($variables['pageBanner']['bgWide']);
-    unset($variables['pageBanner']['bgNarrow']);
 
     // Make expandableContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
@@ -2723,9 +2704,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
 
   if (!empty($fields['subheading']) && Helper::isFieldPopulated($node, $fields['subheading'])) {
     $subCategory = [
-      'title' => Helper::fieldFullView($node, $fields['subheading']),
-      'level' => 3,
-      'tag' => 'div',
+      'title' => Helper::fieldFullView($node, $fields['subheading'])
     ];
   }
 
@@ -3248,7 +3227,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
 
   // Prepare field_service_bg_wide, if it's populated.
   if (Helper::isFieldPopulated($node, 'field_service_bg_wide')) {
-    $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, 'hero1600x400_fp', 'field_service_bg_wide');
+    $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, '800x400_fp', 'field_service_bg_wide');
   }
 
   // Prepare the First Time? key actions component, if field is populated.

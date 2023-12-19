@@ -57,7 +57,7 @@ class ImageStylesWarmer {
    * Declares warmUp method to be called outside of the class.
    */
   public function warmUp(FileInterface $file): void {
-    $initialImageStyles = ['action_banner_large_focal_point', 'hero1600x400_fp'];
+    $initialImageStyles = ['action_banner_large_focal_point', '800x400_fp', '480x240_fp'];
     $this->doWarmUp($file, $initialImageStyles);
   }
 

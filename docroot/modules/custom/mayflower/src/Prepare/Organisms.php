@@ -22,7 +22,7 @@ class Organisms {
    * @param array $options
    *   The object that contains static data, widgets, and optional content.
    *
-   * @see @organisms/by-template/page-header.twig
+   * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array of items.
@@ -488,108 +488,6 @@ class Organisms {
     }
 
     return $pressList;
-  }
-
-  /**
-   * Returns the variables structure required to render a page banner.
-   *
-   * @param object $entity
-   *   The object that contains the necessary fields.
-   * @param array $options
-   *   The object that contains static data and other options.
-   *
-   * @see @organisms/page-banner/page-banner.twig
-   *
-   * @return array
-   *   Returns an array of items that contains:
-   *    [
-   *      "bgWide":"/assets/images/placeholder/1600x400.png"
-   *      "bgNarrow":"/assets/images/placeholder/800x400.png",
-   *      "layout": "taper",
-   *      "icon": null,
-   *      "title": "Executive Office of Health and Human Services",
-   *      "titleSubText": "(EOHHS)"
-   *    ]
-   */
-  public static function preparePageBanner($entity, array $options = []) {
-    $pageBanner = [];
-    // Set defaults.
-    $options += [
-      'type' => '',
-    ];
-
-    // Create the map of all possible field names to use.
-    $map = [
-      'title' => ['title'],
-      'title_sub_text' => ['field_title_sub_text'],
-      'bg_wide' => [
-        'field_bg_wide',
-        'field_service_bg_wide',
-      ],
-      'bg_narrow' => [
-        'field_bg_narrow',
-      ],
-      'description' => ['field_lede', 'field_topic_lede', 'field_service_lede'],
-    ];
-
-    // Determines which field names to use from the map.
-    $fields = Helper::getMappedFields($entity, $map);
-
-    // @todo consider passing the image style in as an option.
-    // Use action_banner_* as default pageBanner image styles.
-    $image_style_wide = 'action_banner_large';
-    if ($entity->bundle() === 'org_page') {
-      $image_style_wide = 'action_banner_large_focal_point';
-    }
-    $image_style_narrow = 'action_banner_small';
-
-    // Get pageBanner size, use as flag to determine image style.
-    $pageBanner['layout'] = array_key_exists('layout', $options) ? $options['layout'] : '';
-
-    if (isset($fields['bg_wide'])) {
-      // Use helper function to get the image url of a given image style.
-      $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
-    }
-    if ($entity->bundle() !== 'org_page') {
-      if (isset($fields['bg_narrow'])) {
-        $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
-      }
-    }
-
-    // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
-    if (isset($options['icon'])) {
-      $pageBanner['icon'] = $options['icon'];
-    }
-    $pageBanner['color'] = array_key_exists('color', $options) ? $options['color'] : '';
-    $pageBanner['underline'] = array_key_exists('underline', $options) ? $options['underline'] : FALSE;
-
-    $pageBanner['title'] = $entity->{$fields['title']}->value;
-
-    $title_sub_text = '';
-    if (array_key_exists('title_sub_text', $fields)) {
-      if (Helper::isFieldPopulated($entity, $fields['title_sub_text'])) {
-        $title_sub_text = $entity->{$fields['title_sub_text']}->value;
-      }
-    }
-    $pageBanner['titleSubText'] = $title_sub_text;
-
-    $description = '';
-    if (array_key_exists('description', $fields)) {
-      if (Helper::isFieldPopulated($entity, $fields['description'])) {
-        if (!Helper::isFieldPopulated($entity, 'field_display_short_description')) {
-          $description = "";
-        }
-        elseif ($entity->field_display_short_description->value === '1') {
-          $description = $entity->{$fields['description']}->value;
-        }
-      }
-    }
-
-    if ($options['type'] != 'section landing') {
-      $pageBanner['description'] = $description;
-    }
-
-    return $pageBanner;
   }
 
   /**
