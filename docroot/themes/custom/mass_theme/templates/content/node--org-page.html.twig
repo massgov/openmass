@@ -16,14 +16,23 @@
   {% endif %}
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
-  {% if pageBanner and node.field_subtype.value == 'General Organization' or node.field_subtype.value == 'Boards' or node.field_banner_image is empty %}
-    {% include "@organisms/page-banner/page-banner.twig" %}
-  {% elseif node.field_banner_image is not empty %}
+  {% set subtext = node.field_title_sub_text is not empty ? node.field_title_sub_text.value : '' %}
+  {% set links = [] %}
+  {% if node.field_subtype.value == 'Elected Official' %}
     {% set personUrl = false %}
     {% if node.field_person_bio.entity.field_publish_bio_page.value %}
       {% set personUrl = url('entity.node.canonical', {
         'node': node.field_person_bio.target_id
       }) %}
+      {% set links = links|merge([
+        {
+          "text": node.field_person_bio.entity.field_person_first_name.value ~ " " ~ node.field_person_bio.entity.field_person_last_name.value,
+          "href": personUrl,
+          "inverse": true,
+          "description": node.field_person_bio.entity.field_person_role_title.value,
+          "info": "",
+        },
+      ]) %}
     {% endif %}
     {% set secondaryPerson = false %}
     {% if node.field_secondary_person_bio is not empty %}
@@ -36,119 +45,30 @@
       {% set secondaryPerson = {
         "text": node.field_secondary_person_bio.entity.field_person_first_name.value ~ " " ~ node.field_secondary_person_bio.entity.field_person_last_name.value,
         "href": secondaryUrl,
+        "inverse": true,
         "description": node.field_secondary_person_bio.entity.field_person_role_title.value,
         "info": ""
       } %}
+      {% set links = links|merge([secondaryPerson]) %}
     {% endif %}
-    {% set bannerImage = file_url(node.field_banner_image.entity.fileuri ?? '') %}
-    {% set subtext = node.field_title_sub_text is not empty ? node.field_title_sub_text.value : '' %}
+  {% endif %}
+  {% set mobileImage = false %}
+  {% if node.field_subtype.value == 'Elected Official' %}
+    {% set mobileImage = true %}
+  {% endif %}
     {% include "@organisms/page-banner/page-banner.twig" with {
       "pageBanner": {
-        "bgWide": bannerImage,
-        "bgNarrow": bannerImage,
-        "layout": "taper",
-        "renderImageOnMobile": true,
-        "icon": null,
-        "title": node.title.value,
-        "titleSubText": subtext,
-        "primaryLink": {
-          "text": node.field_person_bio.entity.field_person_first_name.value ~ " " ~ node.field_person_bio.entity.field_person_last_name.value,
-          "href": personUrl,
-          "description": node.field_person_bio.entity.field_person_role_title.value,
-          "info": "",
-        },
-        "secondaryLink": secondaryPerson,
-      },
-    }%}
-  {% endif %}
-
-  {# Org Nav - "I want to..." tab contents. #}
-{#  {% set iWantToTabContents = false %}#}
-{#  {% if content.extra_org_nav_featured_services|render or#}
-{#    content.extra_org_nav_featured_topics|render or#}
-{#    content.field_application_login_links|render %}#}
-{#    {% set iWantToTabContents = true %}#}
-{#  {% endif %}#}
-
-  {# Org Nav - About tab contents. #}
-{#  {% set aboutTabContents = {} %}#}
-{#  {% set subtype = node.field_subtype_value %}#}
-{#  {% if subtype == 'Elected Official' and content.extra_org_nav_more_agency_link|render %}#}
-{#    {% set aboutTabContents = aboutTabContents|merge({ moreAgencyLink: content.extra_org_nav_more_agency_link }) %}#}
-{#  {% elseif node.field_more_about_agency_link is not empty %}#}
-{#    {% set aboutTabContents = aboutTabContents|merge({ moreAgencyLink: content.field_more_about_agency_link }) %}#}
-{#  {% endif %}#}
-
-{#  {% if subtype == 'Boards' %}#}
-{#    #}{# Board members heading link with anchor to section (from Boards paragraph). #}
-{#    {% set boards_section_title = node.field_boards.entity.field_heading.value %}#}
-{#    {% if boards_section_title %}#}
-{#      {% set aboutTabContents = aboutTabContents|merge({ boardSectionTitle: boards_section_title }) %}#}
-{#    {% endif %}#}
-{#  {% elseif node.field_more_about_leadership is not empty %}#}
-{#    {% set aboutTabContents = aboutTabContents|merge({ moreAboutLeadership: content.field_more_about_leadership }) %}#}
-{#  {% endif %}#}
-
-{#  {% if node.field_org_directory_page is not empty %}#}
-{#    {% set aboutTabContents = aboutTabContents|merge({ orgDirectoryPage: content.field_org_directory_page  }) %}#}
-{#  {% endif %}#}
-
-{#  {% if node.field_career_opportunities is not empty %}#}
-{#    {% set aboutTabContents = aboutTabContents|merge({ careerOpportunities: content.field_career_opportunities  }) %}#}
-{#  {% endif %}#}
-
-  {# Org Nav - "Contact us" tab contents. #}
-{#  {% set contactUsTabContents = false %}#}
-{#  {% if content.extra_org_nav_contact_us|render or#}
-{#    node.field_org_directory_page is not empty or#}
-{#    node.field_get_updates_links is not empty or#}
-{#    node.field_public_records_link is not empty#}
-{#  %}#}
-{#    {% set contactUsTabContents = true %}#}
-{#  {% endif %}#}
-
-  {# Our Organizations. #}
-{#  {% set ourOrganizationsHasContent = false %}#}
-{#  {% if content.extra_org_nav_our_organizations is not empty %}#}
-{#    {% set ourOrganizationsHasContent = true %}#}
-{#  {% endif %}#}
-
-{#  #}{# News. #}
-{#  {% set newsHasContent = false %}#}
-{#  {% if content.extra_org_nav_news is not empty %}#}
-{#    {% set newsHasContent = true %}#}
-{#  {% endif %}#}
-
-{#  #}{# Locations. #}
-{#  {% set locationsHasContent = false %}#}
-{#  {% if content.extra_org_nav_locations is not empty %}#}
-{#    {% set locationsHasContent = true %}#}
-{#  {% endif %}#}
-
-{#  #}{# Events. #}
-{#  {% set eventsHasContent = false %}#}
-{#  {% if content.extra_org_nav_events is not empty %}#}
-{#    {% set eventsHasContent = true %}#}
-{#  {% endif %}#}
-
-{#  {% set orgNavTabs = [#}
-{#    iWantToTabContents,#}
-{#    aboutTabContents,#}
-{#    contactUsTabContents,#}
-{#    ourOrganizationsHasContent,#}
-{#    newsHasContent,#}
-{#    locationsHasContent,#}
-{#    eventsHasContent,#}
-{#  ] %}#}
-
-{#  {% set itemsWithContent = 0 %}#}
-{#  {% for item in orgNavTabs %}#}
-{#    {% if itemsWithContent < 2 %}#}
-{#      {% if item %}#}
-{#        {% set itemsWithContent = itemsWithContent + 1 %}#}
-{#      {% endif %}#}
-{#    {% endif %}#}
-{#  {% endfor %}#}
+        "image": bannerImage,
+        "imageMobile": mobileImage ? bannerImageMobile : '',
+        "theme": "c-primary-alt",
+        "renderImageOnMobile": mobileImage,
+        "pageHeader": {
+          "title": node.title.value,
+          "titleSubText": subtext,
+          "links": links
+        }
+      }
+    } %}
 
   {% embed "@organisms/by-template/organization-navigation.twig" with {
     organizationNavigation: {

@@ -50,8 +50,9 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
-  {% include "@organisms/by-template/page-header.twig" %}
-  {% include "@organisms/by-template/page-header-addons.twig" %}
+  {% include "@organisms/page-header/page-header.twig" %}
+  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {% include "@organisms/by-author/key-actions.twig" %}
   {#{% include "@organisms/by-author/location-banner.twig" %}#}
   {% embed "@organisms/by-author/location-banner.twig" with {
     "locationBanner": {

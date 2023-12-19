@@ -158,14 +158,14 @@ var jQueryLike = function (elemOrSelector, context) {
               if ($('.ma__illustrated-header').length) {
                 $this.insertAfter('.ma__illustrated-header');
               }
-              else if ($('.ma__page-header').length) {
-                $this.insertAfter('.ma__page-header');
-              }
               else if ($('.ma__organization-navigation').length) {
                 $this.insertAfter('.ma__organization-navigation');
               }
               else if ($('.ma__page-banner').length) {
                 $this.insertAfter('.ma__page-banner');
+              }
+              else if ($('.ma__page-header').length) {
+                $this.insertAfter('.ma__page-header');
               }
               else if ($('.pre-content').length) {
                 $this.insertAfter('.pre-content');
@@ -242,7 +242,7 @@ var jQueryLike = function (elemOrSelector, context) {
 
             $this.html(content);
             if (removeContainer) {
-              $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');
+              $this.find('.ma__container').removeClass('ma__container');
             }
             $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
           };
