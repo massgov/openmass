@@ -1051,11 +1051,6 @@ display:
         options:
           row_class: ''
           default_row_class: true
-          override: 1
-          sticky: 0
-          caption: ''
-          summary: ''
-          description: ''
           columns:
             user_bulk_form: user_bulk_form
             name: name
@@ -1067,145 +1062,150 @@ display:
             field_user_org: field_user_org
             revision_uid: revision_uid
             operations: operations
+          default: created
           info:
             user_bulk_form:
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             name:
-              sortable: 1
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             mail:
-              sortable: 1
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             status:
-              sortable: 1
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: priority-low
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             roles_target_id:
-              sortable: 1
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             created:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: priority-low
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             access:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: priority-low
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             field_user_org:
-              sortable: 1
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             revision_uid:
-              sortable: 1
+              sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
             operations:
               align: ''
               separator: ''
-              empty_column: 0
+              empty_column: false
               responsive: ''
-              has_aggr: 0
+              has_aggr: false
               aggr:
                 views_aggregator_first: views_aggregator_first
               aggr_par: ''
-              has_aggr_column: 0
+              has_aggr_column: false
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-          default: created
-          empty_table: 1
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: true
+          caption: ''
+          description: ''
           group_aggregation:
             group_aggregation_results: '0'
             grouping_field_class: ''
@@ -1214,7 +1214,7 @@ display:
             grouping_row_class: ''
           column_aggregation:
             totals_row_position:
-              2: '2'
+              2: 2
               1: 0
               3: 0
             totals_per_page: '1'
@@ -2130,7 +2130,7 @@ display:
             group_items: {  }
           reduce_duplicates: false
           vid: user_organization
-          type: select
+          type: textfield
           hierarchy: true
           limit: true
           error_message: true
