@@ -10,7 +10,7 @@ field_name: field_related_locations
 entity_type: node
 bundle: location
 label: 'Related Locations'
-description: 'Enter locations that are related to this one. Preference should be given to locations that offer similar services, followed by locations that are geographically related.'
+description: 'Enter a maximum of 3 Related Locations. Only 3 will appear on Mass.gov. Give preference to locations that offer similar services or are geographically related. If this location is shown on the map of a Service or Organization page, a link to "More locations" or "More parks" will appear below the Related Locations.'
 required: false
 translatable: false
 default_value: {  }
@@ -22,6 +22,7 @@ settings:
       location: location
     sort:
       field: _none
+      direction: ASC
     auto_create: false
     auto_create_bundle: ''
 field_type: entity_reference
