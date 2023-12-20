@@ -98,10 +98,28 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
           $matches[] = [
             'value' => $key,
             'label' => isset($entity_type_labels[$bundle]) ? $entity_type_labels[$bundle] . ': ' . $label : $label,
+            'bundle' => $bundle,
           ];
         }
       }
     }
+
+    // Custom sort function
+    usort($matches, function ($a, $b) {
+      // Define content type priority
+      $priority = ['org_page' => 1, 'topics_page' => 2, 'service_page' => 3];
+
+      // Get priorities based on bundle
+      // Priority 4: All other content types (default for those not explicitly mentioned)
+      $a_priority = $priority[$a['bundle']] ?? 4;
+      $b_priority = $priority[$b['bundle']] ?? 4;
+
+      // Sort by priority, then alphabetically if priorities are equal
+      if ($a_priority === $b_priority) {
+        return strcmp($a['label'], $b['label']);
+      }
+      return $a_priority - $b_priority;
+    });
 
     return $matches;
   }
