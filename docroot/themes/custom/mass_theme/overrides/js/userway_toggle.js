@@ -32,7 +32,7 @@
           var script = document.createElement('script');
           script.id = 'userwayScript';
           script.src = 'https://cdn.userway.org/widget.js';
-          script.dataset.account = '8wSDGc4YEt';
+          script.dataset.account = 'zgT5fBBncI;
           document.body.appendChild(script);
         }
       }
