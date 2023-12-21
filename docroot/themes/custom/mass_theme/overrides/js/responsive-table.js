@@ -1,6 +1,7 @@
 /**
  * @file
  * Support responsive tables in rte
+ * Test samples:  /info-details/qag-info-details-table-samples
  */
 
 (function ($) {
