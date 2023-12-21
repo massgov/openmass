@@ -23,6 +23,8 @@
 set googleLanguages = languages
 %}
 
+{{ attach_library('mass_theme/userway-form') }}
+
 {% set contrastSettingsItem = {
   "id": "contrast",
   "text": "Contrast Settings",
@@ -63,10 +65,24 @@ set googleLanguages = languages
         "richText": {
           "rteElements": [
             {
-              "path": "@custom_includes/userway-form.html.twig",
+              "path": "@molecules/forms/field-submit.twig",
               "data": {
-                "labelText": "If we can email you to ask about your experience with this feature, please add your email here.",
-                "buttonText": "Submit",
+                "fieldSubmit": {
+                  "isForm": true,
+                  "id": 'fsForm5560495',
+                  "action": "https://www.formstack.com/forms/index.php",
+                  "labelText": "If we can email you to ask about your experience with this feature, please submit your email.",
+                  "inputText": {
+                    "required": false,
+                    "id": "field156471056",
+                    "name": "field156471056",
+                    "type": "email",
+                    "placeholder": ""
+                  },
+                  "buttonSearch": {
+                    "text": "Submit"
+                  }
+                }
               }
             }
           ]
