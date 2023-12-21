@@ -16,10 +16,10 @@
       var captionText = $(userInputCaption).text();
       var captionSnippet = '<span class="ma__table__caption__content">' + captionText + '</span>';
 
-      $(table).find(".ma__table__caption").prepend(captionSnippet);
+      $(table).find('.ma__table__caption').prepend(captionSnippet);
       $(userInputCaption).remove();
       // Override JS in Mayflower when caption has content.
-      $(table).find(".ma__table__caption").removeClass("hide");
+      $(table).find('.ma__table__caption').removeClass('hide');
     }
 
     // Check table cell count for .ma__table--wide.
