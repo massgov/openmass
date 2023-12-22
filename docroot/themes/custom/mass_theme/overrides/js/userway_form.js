@@ -4,7 +4,7 @@
   Drupal.behaviors.userwayForm = {
     attach: function (context) {
       // Add localStorage value on button click.
-      $('button.ma__utility-nav__userway').click(function(e) {
+      $('button.ma__utility-nav__userway').click(function (e) {
         localStorage.setItem('massgovUserWay', true);
       });
 
