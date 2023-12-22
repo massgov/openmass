@@ -14,6 +14,7 @@ class ContentEditingTest extends ExistingSiteBase {
   use LoginTrait;
 
   const QAG_PATHS = [
+    "/forms/qag-form-with-file-uploads",
     "/audit/qag-binderaudit",
     "/report/qag-binderreport",
     "/qagcampaign-landing-with-solid-color-key-message-header",
@@ -23,7 +24,6 @@ class ContentEditingTest extends ExistingSiteBase {
     // @todo Giving a 404 on edit page
     // "/event/qag-event-general-past-2018-07-24t124500-0400-2018-07-24t134500-0400",
     "/executive-orders/no-1-qag-executiveorder",
-    "/forms/qag-form-with-file-uploads",
     "/guides/qag-guide",
     "/how-to/qag-request-help-with-a-computer-problem",
     "/info-details/qag-info-detail-with-landing-page-features",
