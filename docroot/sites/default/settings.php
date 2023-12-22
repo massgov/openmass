@@ -208,3 +208,8 @@ if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
   ini_set('memory_limit', '4096M');
 }
 
+// https://github.com/drush-ops/drush/issues/676#issuecomment-1136068584
+if (PHP_SAPI === 'cli') {
+  $databases['default']['default']['init_commands']['wait_timeout'] = 'SET SESSION wait_timeout = 3600';
+}
+
