@@ -1,53 +1,6 @@
 module.exports = async (page, scenario, viewport) => {
   console.log(`SCENARIO > ${scenario.label}: ${viewport.label}`);
 
-  await page.addStyleTag({
-    content: `
-      /* Disable animations. */
-      *, *::before, *::after {
-        animation-duration: 0s !important;
-        transition-duration: 0s !important;
-      }
-
-      /* Mask random homepage image. */
-      body.is-front .ma__search-banner {
-        background: none !important;
-      }
-
-      /* Hide the focus-visible border around the mobile menu */
-      .ma__header__hamburger__menu-button {
-        outline: none !important;
-      }
-
-      /* Hide the sticky toc */
-      #sticky-toc {
-        display: none !important;
-      }
-
-      /* Make sure sticky nav stays at the top */
-      /* @todo it'd be better to add a class to this which disables to functionality */
-      .ma__sticky-nav {
-        top: auto !important;
-        bottom: -15px !important;
-        position: absolute !important;
-        z-index: 80;
-      }
-
-      .ma__organization-navigation.stuck {
-        position: static !important;
-        top: auto !important;
-        left: auto !important;
-        width: auto !important;
-        margin-top: -20px !important;
-        z-index: auto !important;
-      }
-
-      .ma__org-page .pre-content {
-        padding-top: 0 !important;
-      }
-    `,
-  });
-
   await page.evaluate(async () => {
     // Undo the Google Optimize page-hiding snippet so we can access the page
     // before the 2s timeout. See https://developers.google.com/optimize.
