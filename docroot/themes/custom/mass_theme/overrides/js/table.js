@@ -10,8 +10,12 @@
   document.querySelectorAll('.ma__table').forEach(function (table) {
     // Set up assistive technology friendly tables.
     if ($(table).find('thead')) {
-      $(table).find('thead tr th').forEach(function (colHeader) {
-        $(colHeader).addAttr('scope', 'col');
+      console.log("hello");
+      $(table).querySelectorAll('thead th').forEach(function (colHeader) {
+          console.log("hello2");
+        if (!$(colHeader).hasAttribute('scope')) {
+          $(this).addAttr('scope', 'col');
+        }
       });
     }
 
