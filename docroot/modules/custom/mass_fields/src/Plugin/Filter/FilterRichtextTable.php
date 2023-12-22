@@ -27,9 +27,10 @@ class FilterRichtextTable extends FilterBase {
     <div class="ma__table--responsive__wrapper" id="' . $tableId . '" role="group" tabindex="-1">
     <table class="ma__table"><caption id="tbl-' . $tableId . '" class="ma__table__caption"><span class="ma__table__caption__scroll-info"> (Table in a horizontal scrolling container)</span></caption>';
     $tableWrapperBottom = '</table></div></div>';
+    $tableHeadingScope = '<th scope="col">';
 
-    $plainTableElements = ['<table>', '</table>'];
-    $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom];
+    $plainTableElements = ['<table>', '</table>', '<th>'];
+    $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
     $output = str_replace($plainTableElements, $responsiveTableElements, $text);
 
     return new FilterProcessResult($output);

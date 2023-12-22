@@ -4,21 +4,16 @@
  * Test samples:  /info-details/qag-info-details-table-samples
  */
 
+// Apply to all .ma__table.
 (function ($) {
   'use strict';
 
   document.querySelectorAll('.ma__table').forEach(function (table) {
     // Set up assistive technology friendly tables.
-    if ($(table).find('thead')) {
-      console.log("hello");
-      $(table).querySelectorAll('thead th').forEach(function (colHeader) {
-          console.log("hello2");
-        if (!$(colHeader).hasAttribute('scope')) {
-          $(this).addAttr('scope', 'col');
-        }
-      });
-    }
-
+    // 1. Add row scope for accessibility.
+    $(table).find('tbody th').forEach(function (rowHeader) {
+      $(rowHeader).attr('scope', 'row');
+    });
   });
 
 })(jQuery);
