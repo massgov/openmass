@@ -1,5 +1,20 @@
 
 
+## [0.385.0] - December 26, 2023
+
+### Changed
+  - DP-17759: Update help text on location page.
+  - DP-28433: Modify buttons on location page to use 3 across format.
+  - DP-30296: Convert content page banner to use new Mayflower components.
+  - DP-31123: More frequent clearing of news curated list View
+  - DP-31191: On the external link for collections content type, data type is no longer required.
+  - DP-31225: Max header length on info details section increased to 200.
+  
+### Added
+  - DP-31098: Change help text for org fields.
+  
+
+
 ## [0.384.0] - December 12, 2023
 
 ### Added
