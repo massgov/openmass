@@ -41,18 +41,7 @@
           }
 
           var sessionStart = sessionStorage.getItem('session_start');
-          if (sessionStart && sessionStart.length > 0) {
-            if (diff_hours(new Date(), new Date(sessionStart)) >= 1) {
-              sessionStorage.setItem('session_start', new Date().toString());
-              if (orgsFiltered.length > 0) {
-                sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
-              }
-              if (parentOrgsFiltered.length > 0) {
-                sessionStorage.setItem('session_parent_orgs', parentOrgsFiltered.join(','));
-              }
-            }
-          }
-          else {
+          if (!sessionStart || sessionStart.length <= 0 ||  diff_hours(new Date(), new Date(sessionStart)) >= 1) {
             sessionStorage.setItem('session_start', new Date().toString());
             if (orgsFiltered.length > 0) {
               sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
@@ -61,7 +50,6 @@
               sessionStorage.setItem('session_parent_orgs', parentOrgsFiltered.join(','));
             }
           }
-
           updateSessionStorage('session_orgs', orgsFiltered);
           updateSessionStorage('session_parent_orgs', parentOrgsFiltered);
         }
