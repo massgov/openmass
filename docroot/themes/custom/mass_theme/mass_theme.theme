@@ -617,7 +617,7 @@ function mass_theme_preprocess_node_form_page(&$variables) {
         $validate_script_url = parse_url($script_url, PHP_URL_HOST);
         $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
 
-        $query = ['no_style_strict' => 1];
+        $query = [];
         if ($node->field_form_embed->type === 'formstack') {
           $query['jsonp'] = 1;
         }
