@@ -59,4 +59,10 @@ function mass_content_moderation_form_views_bulk_operations_configure_action_alt
     $options_slim = array_intersect_key($options, array_flip(['trash', 'unpublished']));
     $form['state-wrapper']['state']['#options'] = $options_slim;
   }
+
+  $form['#submit'][] = 'mass_content_moderation_form_views_bulk_operations_configure_action_submit';
+}
+
+function mass_content_moderation_form_views_bulk_operations_configure_action_submit(&$form, FormStateInterface $form_state) {
+  // Unfortunately the state change is not available here.
 }
