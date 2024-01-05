@@ -1,0 +1,115 @@
+uuid: bb3bea86-5d4f-4b7a-81c7-e0d7a1c6c3c6
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.topic_page
+  module:
+    - content_moderation
+id: topic_page
+label: 'Topic Page'
+type: content_moderation
+type_settings:
+  states:
+    draft:
+      label: Draft
+      weight: -4
+      published: false
+      default_revision: false
+    needs_review:
+      label: 'Needs Review'
+      weight: -3
+      published: false
+      default_revision: false
+    prepublished_draft:
+      label: 'Prepublished Draft'
+      weight: -2
+      published: false
+      default_revision: false
+    prepublished_needs_review:
+      label: 'Prepublished Needs Review'
+      weight: -1
+      published: false
+      default_revision: false
+    published:
+      label: Published
+      weight: 0
+      published: true
+      default_revision: true
+    trash:
+      label: Trash
+      weight: 1
+      published: false
+      default_revision: true
+    unpublished:
+      label: Unpublished
+      weight: 2
+      published: false
+      default_revision: true
+  transitions:
+    move_to_trash:
+      label: 'Move to Trash'
+      from:
+        - draft
+        - needs_review
+        - prepublished_draft
+        - prepublished_needs_review
+        - published
+        - unpublished
+      to: trash
+      weight: 1
+    needs_review:
+      label: 'Needs Review'
+      from:
+        - draft
+        - needs_review
+        - published
+        - unpublished
+      to: needs_review
+      weight: -3
+    prepublished_draft:
+      label: 'Prepublished Draft'
+      from:
+        - prepublished_draft
+        - prepublished_needs_review
+      to: prepublished_draft
+      weight: -2
+    prepublished_needs_review:
+      label: 'Prepublished Needs Review'
+      from:
+        - prepublished_draft
+        - prepublished_needs_review
+      to: prepublished_needs_review
+      weight: -1
+    publish:
+      label: Publish
+      from:
+        - draft
+        - needs_review
+        - prepublished_draft
+        - prepublished_needs_review
+        - published
+        - trash
+      to: published
+      weight: 0
+    to_draft:
+      label: 'To Draft'
+      from:
+        - draft
+        - needs_review
+        - published
+        - unpublished
+      to: draft
+      weight: -4
+    unpublish:
+      label: Unpublish
+      from:
+        - published
+        - trash
+        - unpublished
+      to: unpublished
+      weight: 2
+  entity_types:
+    node:
+      - topic_page
+  default_moderation_state: prepublished_draft
