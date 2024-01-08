@@ -47,7 +47,7 @@
           // Set Session start time for each user.
           var sessionStart = sessionStorage.getItem('session_start');
           // Reset session_start, session_orgs and session_parent_orgs from storage at sessionStart or if the hours difference is more than 1 hour.
-          if (!sessionStart || sessionStart.length <= 0 ||  diff_hours(new Date(), new Date(sessionStart)) >= 1) {
+          if (!sessionStart || sessionStart.length <= 0 || diff_hours(new Date(), new Date(sessionStart)) >= 1) {
             sessionStorage.setItem('session_start', new Date().toString());
             if (orgsFiltered.length > 0) {
               sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
