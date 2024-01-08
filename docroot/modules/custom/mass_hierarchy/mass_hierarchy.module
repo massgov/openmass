@@ -13,6 +13,7 @@ use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
+use Drupal\mass_hierarchy\MassHierarchyBatch;
 use Drupal\mass_hierarchy\MassHierarchyRouteMatch;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
@@ -57,13 +58,11 @@ function mass_hierarchy_batch_alter(array &$batch): void {
   // Change the batch finished callback for admin/content view (and others).
   // https://massgov.atlassian.net/browse/DP-30765
   if (isset($batch['sets'][0]['finished'][0]) && $batch['sets'][0]['finished'][0] == 'Drupal\views_bulk_edit\Plugin\Action\ModifyEntityValues') {
-    $batch['sets'][0]['finished'] = 'mass_hierarchy_vbo_finished';
+    $batch['sets'][0]['finished'] = [
+      MassHierarchyBatch::class,
+      'finishedWrapper',
+    ];
   }
-}
-
-function mass_hierarchy_vbo_finished($success, array $results, array $operations): ?RedirectResponse {
-  Drupal::messenger()->addWarning('Unpublishing pages in bulk can break breadcrumbs on published children of those pages. It is important that you review the Pages with no published parents report to find and fix any issues.');
-  return ViewsBulkOperationsActionCompletedTrait::finished($success, $results, $operations);
 }
 
 /**
