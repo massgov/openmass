@@ -422,7 +422,7 @@ jobs:
       - fetch_drush_aliases
       - run:
           command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
-          no_output_timeout: 60m
+          no_output_timeout: 120m
       - jira/notify:
           environment: << parameters.target >>
           environment_type: development
