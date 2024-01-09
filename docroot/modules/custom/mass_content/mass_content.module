@@ -46,6 +46,7 @@ use Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle;
 use Drupal\mass_content\Entity\Bundle\node\TopicPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\UtilityDrawerBundle;
 use Drupal\mass_content\Entity\Bundle\user\UserBundle;
+use Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -1094,6 +1095,11 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
   // User
   if (isset($bundles['user']['user'])) {
     $bundles['user']['user']['class'] = UserBundle::class;
+  }
+
+  // Paragraph
+  if (isset($bundles['paragraph']['address'])) {
+    $bundles['paragraph']['address']['class'] = AddressBundle::class;
   }
 
 }

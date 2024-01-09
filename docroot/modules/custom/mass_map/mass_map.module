@@ -118,6 +118,7 @@ function mass_map_preprocess_node(&$variables) {
     if ($current_page = \Drupal::routeMatch()->getParameter('node')) {
       $variables['parent_label'] = $current_page->label();
     }
+    /** @var \Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle $address */
     $address = $node->field_ref_address->entity;
     $massMap = \Drupal::service('mass_map');
     $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);
@@ -125,12 +126,7 @@ function mass_map_preprocess_node(&$variables) {
     $variables['lon'] = $address->field_geofield->lon;
     $street_address = Helper::formatAddress($address->field_address_address);
     $variables['street_address'] = $street_address;
-    if (!$address->get('field_contact_directions_link')->isEmpty()) {
-      $variables['google_directions'] = $address->field_contact_directions_link->uri;
-    }
-    else {
-      $variables['google_directions'] = 'https://maps.google.com/?q=' . urlencode($street_address);
-    }
+    $variables['google_directions'] = $address->getDirectionsUrl();
     $variables['display_title'] = $node->field_display_title->value;
     $phone = $node->field_ref_phone_number->entity;
     $fax = $node->field_ref_fax_number->entity;
