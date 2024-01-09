@@ -11,40 +11,43 @@
   document.querySelectorAll('.ma__table').forEach(function (table) {
     // Set up assistive technology friendly tables.
     // Add row scope for accessibility.
+    var rowHeaders;
     $(table).find('tbody th').each(function () {
       $(this).attr('scope', 'row');
+      rowHeaders = true;
     });
 
     // Mobile format for table
     if ($(table).has('thead th').length > 0) {
       // 1. Set up mobile headers
-      $(table).find('thead th').each(function (hIndex) {
-        var headerLabel = $(this).text();
+      var headerLabels = [];
+      $(table).find('thead th').each(function (headerIndex) {
+        // var headerLabel = $(this).text();
+        headerLabels.push($(this).text());
+      });
+      var headerLevelCounts = headerLabels.length;
 
-        // Loop each row.
-        $(table).find('tbody tr').each(function () {
-          var targetCells = $(this).find('td');
+      // Loop each row.
+      $(table).find('tbody tr').each(function () {
+        var targetCells = $(this).find('td');
 
-          if ($(this).has("th").length > 0) {
-            hIndex--;
+        $(targetCells).each(function (cellIndex) {
+          var headerIndex = cellIndex;
+
+          if (rowHeaders) {
+            headerIndex = cellIndex + 1;
           }
 
-          // Find matching column cell in each row to apply data-label.
-          $(targetCells).each(function (cellIndex) {
-            if (cellIndex == hIndex && (headerLabel.length > 0)) {
-              $(this).attr("data-label", headerLabel);
-            }
-          });
+          var headerLabel = headerLabels[headerIndex];
+          $(this).attr("data-label", headerLabel);
         });
       });
     }
     else {
       // No row headers
-      if ($(window).width() < 621) {
-        $(table).find('tbody tr *').each(function () {
-          $(this).css('padding-left', '0');
-          $(this).css('width', '100%');
-        });
+      // Remove left space for headers with css.
+      if ($(window).width() < 781) {
+        $(table).addClass('no-headers');
       }
     }
   });
