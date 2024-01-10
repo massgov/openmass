@@ -9,12 +9,13 @@
   'use strict';
 
   document.querySelectorAll('.ma__table').forEach(function (table) {
+    var hasRowHeaders = false;
+
     // Set up assistive technology friendly tables.
     // Add row scope for accessibility.
-    var rowHeaders;
     $(table).find('tbody th').each(function () {
       $(this).attr('scope', 'row');
-      rowHeaders = true;
+      hasRowHeaders = true;
     });
 
     // Mobile format for table
@@ -25,7 +26,6 @@
         // var headerLabel = $(this).text();
         headerLabels.push($(this).text());
       });
-      var headerLevelCounts = headerLabels.length;
 
       // Loop each row.
       $(table).find('tbody tr').each(function () {
@@ -34,12 +34,12 @@
         $(targetCells).each(function (cellIndex) {
           var headerIndex = cellIndex;
 
-          if (rowHeaders) {
+          if (hasRowHeaders) {
             headerIndex = cellIndex + 1;
           }
 
           var headerLabel = headerLabels[headerIndex];
-          $(this).attr("data-label", headerLabel);
+          $(this).attr('data-label', headerLabel);
         });
       });
     }
