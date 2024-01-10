@@ -78,7 +78,7 @@
         {% endif %}
         {% if pageContent.video %}
           {% set video = pageContent.video %}
-          {% set video = video|merge({"level": level}) %}
+          {% set video = video|merge({"headingLevel": level}) %}
           {% include "@atoms/09-media/video.twig" %}
         {% endif %}
         {% if pageContent.richText %}
