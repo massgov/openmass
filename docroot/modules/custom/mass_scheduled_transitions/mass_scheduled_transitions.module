@@ -168,9 +168,6 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 }
 
 function mass_scheduled_transitions_form_validate(array $form, FormStateInterface $form_state): void {
-  if ($form_state->getValue('transition') == 'unpublish') {
-    return;
-  }
   $entity = $form_state->getFormObject()->getEntity();
   if ($entity->getEntityTypeId() == 'scheduled_transition') {
     // We need to spelunk one level down when coming from the Reschedule form.
@@ -185,6 +182,10 @@ function mass_scheduled_transitions_validate_parent(array $form, FormStateInterf
   $message = FALSE;
 
   if (!$entity->isPrimaryParentRequired()) {
+    return;
+  }
+
+  if ($form_state->getValue('transition') == 'unpublish') {
     return;
   }
 
@@ -212,6 +213,10 @@ function mass_scheduled_transitions_validate_parent(array $form, FormStateInterf
 }
 
 function mass_scheduled_transitions_validate_children(array $form, FormStateInterface $form_state, NodeBundle $entity): void {
+  if ($form_state->getValue('transition') == 'publish') {
+    return;
+  }
+
   $children = \Drupal::service('class_resolver')
     ->getInstanceFromDefinition(MassChildEntityWarningBuilder::class)
     ->buildChildEntityWarnings($entity, TRUE);
