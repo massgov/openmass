@@ -49,6 +49,12 @@
       if ($(window).width() < 781) {
         $(table).addClass('no-headers');
       }
+
+      $(window).on('resize', function () {
+        if ($(window).width() < 781) {
+          $(table).addClass('no-headers');
+        }
+      });
     }
 
 
