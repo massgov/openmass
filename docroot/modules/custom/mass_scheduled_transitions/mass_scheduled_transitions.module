@@ -168,7 +168,7 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 }
 
 function mass_scheduled_transitions_form_validate(array $form, FormStateInterface $form_state): void {
-  if ($form_state->getValue('transition') == 'publish') {
+  if ($form_state->getValue('transition') == 'unpublish') {
     return;
   }
   $entity = $form_state->getFormObject()->getEntity();
