@@ -22,6 +22,78 @@
 {%
 set googleLanguages = languages
 %}
+
+{{ attach_library('mass_theme/userway-form') }}
+
+{% set contrastSettingsItem = {
+  "id": "contrast",
+  "text": "Contrast Settings",
+  "ariaLabelText": "View color contrast settings",
+  "icon": "contrast-eye",
+  "closeText": "Close",
+  "panels": [
+    {
+      "description": {
+        "richText": {
+          "rteElements": [
+            {
+              "path": "@atoms/11-text/paragraph.twig",
+              "data": {
+                "paragraph": {
+                  "text": "We are testing UserWay, a tool that will let you change color contrast and other visual styles. Click the button below to open the settings."
+                }
+              }
+            },
+            {
+              "path": "@atoms/01-buttons/button.twig",
+              "data": {
+              "button": {
+                "text": "Open contrast settings",
+                "type": "button",
+                "usage": "secondary",
+                "theme": "c-primary-alt",
+                "class": "ma__utility-nav__userway"
+              }
+            }
+            }
+          ]
+        }
+      },
+    },
+    {
+      "description": {
+        "richText": {
+          "rteElements": [
+            {
+              "path": "@molecules/forms/field-submit.twig",
+              "data": {
+                "fieldSubmit": {
+                  "isForm": true,
+                  "id": 'fsForm5560495',
+                  "action": "https://www.formstack.com/forms/index.php",
+                  "labelText": "If we can email you to ask about your experience with this feature, please add your email.",
+                  "inputText": {
+                    "required": false,
+                    "id": "field156471056",
+                    "name": "field156471056",
+                    "type": "email",
+                    "placeholder": ""
+                  },
+                  "buttonSearch": {
+                    "text": "Submit"
+                  }
+                }
+              }
+            }
+          ]
+        },
+      },
+    },
+  ]
+} %}
+
+{% set items = [contrastSettingsItem] | merge(items) %}
+
 {%
 set utilityNav = {
   dropdown : {
