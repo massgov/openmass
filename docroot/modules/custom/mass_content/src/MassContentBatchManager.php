@@ -143,6 +143,70 @@ class MassContentBatchManager {
   }
 
   /**
+   * Process contextual search related field default values.
+   */
+  public static function processContextualSearchFields($id, ContentEntityBase $node, bool $do_not_include, bool $show_parent, $operation_details, &$context) {
+    // Don't spam all the users with content update emails.
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Turn off entity_hierarchy writes while processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    try {
+      if ($do_not_include) {
+        $node->set('field_org_no_search_filter', 1);
+      }
+      if ($show_parent) {
+        $node->set('field_include_parent_org_search', 1);
+      }
+      $node->setSyncing(TRUE);
+      $node->revision_log = "Drush command setting field_org_no_search_filter and field_include_parent_org_search to 1";
+      $node->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
+      $node->save();
+    }
+    catch (\Exception $e) {
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    }
+    if (!$node->isLatestRevision()) {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $query = $storage->getQuery()->accessCheck(FALSE);
+      $query->condition('nid', $node->id());
+      $query->latestRevision();
+      $rids = $query->execute();
+      foreach ($rids as $rid) {
+        $latest_revision = $storage->loadRevision($rid);
+        if (isset($latest_revision)) {
+          try {
+            if ($do_not_include) {
+              $latest_revision->set('field_org_no_search_filter', 1);
+            }
+            if ($show_parent) {
+              $latest_revision->set('field_include_parent_org_search', 1);
+            }
+            $latest_revision->setSyncing(TRUE);
+            $latest_revision->revision_log = "Deploy hook setting field_org_no_search_filter and field_include_parent_org_search to 1";
+            $latest_revision->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
+            $latest_revision->save();
+          }
+          catch (\Exception $e) {
+            \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+          }
+        }
+      }
+    }
+
+    // Store some results for post-processing in the 'finished' callback.
+    // The contents of 'results' will be available as $results in the
+    // 'finished' function (in this example, batch_example_finished()).
+    $context['results'][] = $id;
+
+    // Optional message displayed under the progressbar.
+    $context['message'] = t('Running Batch "@id" @details',
+      ['@id' => $id, '@details' => $operation_details]
+    );
+  }
+
+  /**
    * Batch Finished callback.
    *
    * @param bool $success
