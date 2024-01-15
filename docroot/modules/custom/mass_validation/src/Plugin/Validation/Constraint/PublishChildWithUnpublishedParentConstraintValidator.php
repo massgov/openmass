@@ -3,7 +3,6 @@
 namespace Drupal\mass_validation\Plugin\Validation\Constraint;
 
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\node\Entity\Node;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -21,25 +20,23 @@ class PublishChildWithUnpublishedParentConstraintValidator extends ConstraintVal
     }
 
     // When trying to publish an entity.
-    if ($entity->moderation_state->value != MassModeration::PUBLISHED) {
+    if ($entity->getModerationState()->value != MassModeration::PUBLISHED) {
       return;
     }
 
-    // If the entity has a parent.
-    if (!($entity->field_primary_parent ?? FALSE) || !($entity->field_primary_parent[0] ?? FALSE)) {
+    if (!$parentList = $entity->getPrimaryParent()) {
       return;
     }
 
-    $value = $entity->field_primary_parent[0]->getValue();
-    $target_id = $value['target_id'] ?? FALSE;
-    $parent = $target_id ? Node::load($target_id) : FALSE;
+    $refs = $parentList->referencedEntities();
+    $parent = $refs[0] ?? FALSE;
 
-    // If we can load the parent sucessfully.
+    // If we can load the parent successfully.
     if (!$parent) {
       return;
     }
 
-    $parent_state = $parent->moderation_state->value;
+    $parent_state = $parent->getModerationState()->value;
 
     // The parent cannot be unpublished or in the trash.
     if ($parent_state == MassModeration::PUBLISHED) {
