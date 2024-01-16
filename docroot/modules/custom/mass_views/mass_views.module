@@ -141,6 +141,20 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+
+  // DP-24989: alter the view to custom sort autocomplete results by bundle.
+  if ($view->id() == "link_field_autocomplete" && $view->getDisplay()->display['id'] == 'entity_reference') {
+    // Add a case statement to the sort criteria.
+    $order_case = "CASE
+                    WHEN node_field_data.type = 'org_page' THEN 1
+                    WHEN node_field_data.type = 'topic_page' THEN 2
+                    WHEN node_field_data.type = 'service_page' THEN 3
+                    ELSE 4
+                   END";
+
+    $query->addOrderBy(NULL, $order_case, 'ASC', 'custom_sort');
+  }
+
   if ($view->id() == "report_d2d_redirects" && $view->getDisplay()->display['id'] == 'page_1') {
     // See DP-23382 for more info.
     // The functions used below help to filter the view with the url alias

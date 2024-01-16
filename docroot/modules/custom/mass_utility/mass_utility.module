@@ -445,6 +445,19 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       $element['uri']['#description'] = 'Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".';
     }
 
+    // DP-24989: Override core link field widget to custom view to solve custom sorting by bundle.
+    if ($supportsInternal) {
+      if ($element['uri']['#type'] == 'entity_autocomplete') {
+        $element['uri']['#selection_handler'] = 'views';
+        $element['uri']['#selection_settings'] = [
+          'view' => [
+            'view_name' => 'link_field_autocomplete',
+            'display_name' => 'entity_reference',
+          ],
+        ];
+      }
+    }
+
     // Remove the domain from the field prefix for internal only links.
     if ($field_definition->getSetting('link_type') === 1) {
       if (isset($element['uri']['#field_prefix'])) {
