@@ -559,7 +559,28 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       }
     }
   }
+  elseif ($type == 'entity_reference_hierarchy') {
+
+    if (isset($element['target_id']['target_id']['#type']) && $element['target_id']['target_id']['#type'] == 'entity_autocomplete') {
+      $element['target_id']['target_id']['#selection_handler'] = 'views';
+      $element['target_id']['target_id']['#selection_settings'] = [
+        'view' => [
+          'view_name' => 'link_field_autocomplete',
+          'display_name' => 'entity_reference',
+        ],
+      ];
+    }
+  }
   elseif ($type == 'entity_reference') {
+    if (isset($element['target_id']['#type']) && $element['target_id']['#type'] == 'entity_autocomplete') {
+      $element['target_id']['#selection_handler'] = 'views';
+      $element['target_id']['#selection_settings'] = [
+        'view' => [
+          'view_name' => 'link_field_autocomplete',
+          'display_name' => 'entity_reference',
+        ],
+      ];
+    }
     if ($field_name == 'field_issuer_issuers') {
       if ($element['target_id']['#field_parents'][0] == 'field_advisory_issuer') {
         $element['target_id']['#ajax'] = [
