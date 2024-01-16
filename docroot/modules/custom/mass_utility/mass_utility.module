@@ -561,6 +561,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
   }
   elseif ($type == 'entity_reference_hierarchy') {
 
+    // / DP-24989: Override entity_reference_hierarchy field widget to custom view to solve custom sorting by bundle.
     if (isset($element['target_id']['target_id']['#type']) && $element['target_id']['target_id']['#type'] == 'entity_autocomplete') {
       $element['target_id']['target_id']['#selection_handler'] = 'views';
       $element['target_id']['target_id']['#selection_settings'] = [
@@ -572,6 +573,8 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
     }
   }
   elseif ($type == 'entity_reference') {
+
+    // DP-24989: Override core entity_reference field widget to custom view to solve custom sorting by bundle.
     if (isset($element['target_id']['#type']) && $element['target_id']['#type'] == 'entity_autocomplete') {
       $element['target_id']['#selection_handler'] = 'views';
       $element['target_id']['#selection_settings'] = [
