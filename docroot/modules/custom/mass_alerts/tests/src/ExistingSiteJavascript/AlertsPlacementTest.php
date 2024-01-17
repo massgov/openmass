@@ -151,7 +151,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
 
     $content_types_and_selectors = [];
     foreach ($bundles as $bundle) {
-      $content_types_and_selectors[$bundle] = '#main-content > div.pre-content > div.mass-alerts-block > div > section > h2 > button';
+      $content_types_and_selectors[$bundle] = '#main-content > div.pre-content div.mass-alerts-block > div > section > h2 > button';
     }
     $irregular_selectors = [
       'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > h2 > button',

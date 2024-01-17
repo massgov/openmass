@@ -1421,19 +1421,9 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
   if ($form_state->hasValue('field_subtype')) {
     $subtype = $form_state->getValue('field_subtype');
     if ($subtype[0]['value'] == 'Elected Official') {
-      $banner = $form_state->getValue('field_banner_image');
-      if (empty($banner[0]['fids'])) {
-        $form_state->setErrorByName('field_banner_image', t('The Banner Image is required.'));
-      }
       $bio = $form_state->getValue('field_person_bio');
       if (empty($bio[0]['target_id'])) {
         $form_state->setErrorByName('field_person_bio', t('The Person / Bio is required.'));
-      }
-    }
-    elseif ($subtype[0]['value'] == 'General Organization') {
-      $banner = $form_state->getValue('field_bg_wide');
-      if (empty($banner[0]['fids'])) {
-        $form_state->setErrorByName('field_bg_wide', t('The Banner Image (Desktop) is required.'));
       }
     }
   }

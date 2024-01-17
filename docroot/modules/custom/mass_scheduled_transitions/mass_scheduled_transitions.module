@@ -13,7 +13,12 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\PluralTranslatableMarkup;
+use Drupal\Core\Url;
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mass_validation\Information\MassChildEntityWarningBuilder;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
@@ -157,6 +162,69 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 
     // This checkbox is too confusing to show.
     $form['scheduled_transitions']['to_options']['recreate_non_default_head']['#access'] = FALSE;
+
+    $form['#validate'][] = 'mass_scheduled_transitions_form_validate';
+  }
+}
+
+function mass_scheduled_transitions_form_validate(array $form, FormStateInterface $form_state): void {
+  $entity = $form_state->getFormObject()->getEntity();
+  if ($entity->getEntityTypeId() == 'scheduled_transition') {
+    // We need to spelunk one level down when coming from the Reschedule form.
+    $entity = $entity->getEntity();
+  }
+
+  mass_scheduled_transitions_validate_parent($form, $form_state, $entity);
+  mass_scheduled_transitions_validate_children($form, $form_state, $entity);
+}
+
+function mass_scheduled_transitions_validate_parent(array $form, FormStateInterface $form_state, NodeBundle $entity): void {
+  $message = FALSE;
+
+  if (!$entity->isPrimaryParentRequired()) {
+    return;
+  }
+
+  if ($form_state->getValue('transition') == 'unpublish') {
+    return;
+  }
+
+  $parentList = $entity->getPrimaryParent();
+  if ($parentList->isEmpty()) {
+    $message = TRUE;
+  }
+  else {
+    $refs = $parentList->referencedEntities();
+    $parent = $refs[0] ?? FALSE;
+    if (!$parent) {
+      $message = TRUE;
+    }
+    elseif (!$parent->isPublished()) {
+      $message = TRUE;
+    }
+  }
+
+  if ($message) {
+    $message = \Drupal\mass_validation\Plugin\Validation\Constraint\PublishChildWithUnpublishedParentConstraint::MESSAGE;
+    // $message = 'A published parent is required to publish this page. <a href=":url">Edit this content</a> and add a published parent page.';
+    $replacements = [':url' => $entity->toUrl('edit-form')->toString()];
+    $form_state->setError($form['scheduled_transitions']['revision'], t($message, $replacements));
+  }
+}
+
+function mass_scheduled_transitions_validate_children(array $form, FormStateInterface $form_state, NodeBundle $entity): void {
+  if ($form_state->getValue('transition') == 'publish') {
+    return;
+  }
+
+  $children = \Drupal::service('class_resolver')
+    ->getInstanceFromDefinition(MassChildEntityWarningBuilder::class)
+    ->buildChildEntityWarnings($entity, TRUE);
+  $list = $children[0]->getList();
+  if (!empty($list['#items'])) {
+    $message = "This page has published children and cannot be unpublished unless the child pages are moved to a new parent or unpublished. <a href=\":url\">Move children</a>.";
+    $replacements = [':url' => Url::fromRoute('view.change_parents.page_1', ['node' => $entity->id()])->toString()];
+    $form_state->setError($form['scheduled_transitions']['revision'], t($message, $replacements));
   }
 }
 
@@ -183,6 +251,7 @@ function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_al
     $form['date']['#attributes']['max'] = $max_time;
   }
   $form['date']['#attributes']['min'] = (new DrupalDateTime())->format($html_date_format);
+  $form['#validate'][] = 'mass_scheduled_transitions_form_validate';
 }
 
 /**
