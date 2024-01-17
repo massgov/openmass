@@ -229,3 +229,30 @@ function mass_views_do_invalidate($entity): void {
     Cache::invalidateTags($tags);
   }
 }
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function mass_views_views_pre_render(ViewExecutable $view) {
+  // Check if this is the specific view you want to alter
+  if ($view->id() == 'collection_all') {
+    // Loop through the results
+    foreach ($view->result as $row) {
+      // Check if the row entity is a media entity
+      if ($row->_entity == NULL && $row->entity_type == 'media') {
+        // Access the fields of the row
+        foreach ($view->field as $field_id => $field) {
+          switch ($field_id) {
+            case 'title':
+            case 'field_news_lede':
+            case 'field_short_desc':
+            case 'field_how_to_lede':
+              unset($view->field[$field_id]);
+              break;
+          }
+        }
+      }
+    }
+  }
+}
+
