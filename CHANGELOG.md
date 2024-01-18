@@ -1,4 +1,11 @@
+## [0.385.1] - January 17, 2024
 
+### Fixed
+  - DP-31527: Fix non homepage missing hamburger menu
+
+### Changed
+  - DP-31527: Increase breakpoint for hamburger menu to prevent wrapping utility items
+  
 
 ## [0.385.0] - January 15, 2024
 
