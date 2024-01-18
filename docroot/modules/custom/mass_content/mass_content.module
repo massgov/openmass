@@ -820,7 +820,7 @@ function mass_content_query_collection_all_check_sort_value($value = '') {
 function _mass_content_collection_all_only_future_events(QueryPluginBase $query) {
   $collection = mass_content_get_collection_from_current_page();
   if ($collection) {
-  $only_future = $collection->field_show_only_future_events->value;
+    $only_future = $collection->field_show_only_future_events->value;
     if (!$only_future) {
       return;
     }
