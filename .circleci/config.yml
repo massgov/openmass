@@ -721,6 +721,13 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
+      - test:
+          name: test-percy
+          command: yarn run percy -b http://mass-web -c percy/.percy.js percy/post-release.json
+          requires: [ build ]
+          filters:
+            branches:
+              <<: *branch_ignore
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
