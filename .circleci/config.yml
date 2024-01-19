@@ -281,7 +281,7 @@ jobs:
         default: massgov/mysql-sanitized:latest
       command:
         type: enum
-        enum: ['phpunit', 'behat']
+        enum: ['phpunit', 'behat', 'percy']
     executor:
       name: base
       instance: << parameters.instance >>
@@ -322,6 +322,12 @@ jobs:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
             run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+      - when:
+          condition:
+            and:
+              - equal: [ percy, << parameters.command >> ]
+          steps:
+            run: 'su -s /bin/bash root -c "yarn run percy -b http://mass-web -c percy/.percy.js percy/post-release.json"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -723,7 +729,7 @@ workflows:
               <<: *branch_ignore
       - test:
           name: test-percy
-          command: yarn run percy -b http://mass-web -c percy/.percy.js percy/post-release.json
+          command: percy
           requires: [ build ]
           filters:
             branches:
