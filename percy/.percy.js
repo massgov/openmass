@@ -24,30 +24,33 @@ module.exports = {
       "www.youtube.com",
       "bam.nr-data.net",
       "maps.googleapis.com",
-      "9p83os0fkf.execute-api.us-east-1.amazonaws.com/v1/waittime",
+      // "9p83os0fkf.execute-api.us-east-1.amazonaws.com/v1/waittime",
       "player.vimeo.com",
-      "https://massgov.github.io/FWE/PondMaps/dfw-pond-maps-table.html"
+      // "https://massgov.github.io/FWE/PondMaps/dfw-pond-maps-table.html"
     ],
     networkIdleTimeout: 100,
     captureMockedServiceWorker: false,
     requestHeaders: {
       "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT
     },
+    cookies: {
+      "expirationDate": 1798790400,
+      "path": "/",
+      "name": "im-bypass",
+      "value": "true",
+      "hostOnly": false,
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": "Lax",
+    }
   },
   upload: {
     files: '**/*.{png,jpg,jpeg}',
     ignore: '',
     stripExtensions: false
   },
-  cookies: {
-    "expirationDate": 1798790400,
-    "path": "/",
-    "name": "im-bypass",
-    "value": "true",
-    "hostOnly": false,
-    "httpOnly": false,
-    "secure": false,
-    "session": false,
-    "sameSite": "Lax",
+  launchOptions: {
+    executable: '/usr/local/bin/'
   }
 }
