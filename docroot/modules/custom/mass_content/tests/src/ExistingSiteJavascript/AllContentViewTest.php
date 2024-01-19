@@ -292,15 +292,12 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    */
   protected function setUp(): void {
     // @todo Restore this test.
-    $this->markTestSkipped('Disabled in https://github.com/massgov/openmass/pull/1153');
+    // $this->markTestSkipped('Disabled in https://github.com/massgov/openmass/pull/1153');
 
     parent::setUp();
 
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
-    $admin->addRole('administrator');
-    $admin->activate();
-    $admin->save();
+    $admin = $this->createUser([], NULL, TRUE);
     $this->drupalLogin($admin);
 
     // Visiting the view.
