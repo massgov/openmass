@@ -232,7 +232,7 @@ function mass_scheduled_transitions_validate_children(array $form, FormStateInte
   if (!empty($list['#items'])) {
     $message = "This page has published children and cannot be unpublished unless the child pages are moved to a new parent or unpublished. <a href=\":url\">Move children</a>.";
     $replacements = [':url' => Url::fromRoute('view.change_parents.page_1', ['node' => $entity->id()])->toString()];
-    $form_state->setError($form['scheduled_transitions']['revision'], t($message, $replacements));
+    $form_state->setError($form, t($message, $replacements));
   }
 }
 
