@@ -16,6 +16,4 @@ class CollectionsBundle extends Term {
     return FALSE;
   }
 
-
-
 }
