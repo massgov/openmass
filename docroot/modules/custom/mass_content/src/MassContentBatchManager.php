@@ -173,7 +173,8 @@ class MassContentBatchManager {
       $query->condition('nid', $node->id());
       $query->latestRevision();
       $rids = $query->execute();
-      foreach ($rids as $rid) {
+      if ($rids) {
+        $rid = reset($rids);
         $latest_revision = $storage->loadRevision($rid);
         if (isset($latest_revision)) {
           try {
