@@ -1,3 +1,8 @@
+## [0.385.3] - January 22, 2024
+
+### Fixed
+- DP-31551: Avoid error when showing error on the reschedule transition form.
+
 ## [0.385.2] - January 19, 2024
 
 ### Fixed
