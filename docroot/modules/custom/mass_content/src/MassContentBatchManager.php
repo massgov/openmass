@@ -185,7 +185,7 @@ class MassContentBatchManager {
               $latest_revision->set('field_include_parent_org_search', 1);
             }
             $latest_revision->setSyncing(TRUE);
-            $latest_revision->revision_log = "Deploy hook setting field_org_no_search_filter and field_include_parent_org_search to 1";
+            $latest_revision->revision_log = "Drush command setting field_org_no_search_filter and field_include_parent_org_search to 1";
             $latest_revision->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
             $latest_revision->save();
           }
