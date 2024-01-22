@@ -113,7 +113,7 @@ module.exports = async (page, scenario, viewport) => {
 
   switch (scenario.label) {
     case 'InfoDetails1':
-      await page.waitForSelector('.cbFormErrorMarker');
+      await page.waitForSelector('.ma__fixed-feedback-button');
       break;
     case 'InfoDetailsImageWrapLeft':
     case 'InfoDetailsImageWrapRight':
