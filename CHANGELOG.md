@@ -1,3 +1,21 @@
+
+
+## [0.386.0] - January 22, 2024
+
+### Changed
+  - DP-24989: Change sort of autocomplete to put organizations, topics, services first.
+  - DP-30894: Populate contextual search field values.
+  - DP-31442: Rename 'Analytics New' to 'Analytics'.
+  
+### Added
+  - DP-29407: Add a heading and skip link to video component.
+  
+### Fixed
+  - DP-30532: Fix TOC - don't show "more" when there aren't more.
+  - DP-30820: Stop collection_all View from spamming the watchdog log.
+  - DP-31532: Backport of permission fix for media entity view needed by authors.
+  - DP-31551: Avoid error when showing error on the reschedule transition form
+  
 ## [0.385.1] - January 17, 2024
 
 ### Fixed
