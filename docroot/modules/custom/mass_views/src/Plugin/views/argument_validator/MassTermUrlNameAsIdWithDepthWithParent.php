@@ -164,16 +164,18 @@ class MassTermUrlNameAsIdWithDepthWithParent extends Entity {
         }
         // Get the parent term argument.
         $parent_argument = $this->view->args[$this->options['term_parent_value']];
-        // Load potential parent terms by argument.
-        $parent_terms = $this->termStorage->loadByProperties([
-          'field_url_name' => $parent_argument,
-        ]);
-        foreach ($parent_terms as $parent_term) {
-          if ($this->validateEntity($parent_term)) {
-            if (array_key_exists($parent_term->id(), $parents)) {
-              // Set the validation return to TRUE.
-              $returns['term_parent'] = TRUE;
-              break 2;
+        if ($parent_argument) {
+          // Load potential parent terms by argument.
+          $parent_terms = $this->termStorage->loadByProperties([
+            'field_url_name' => $parent_argument,
+          ]);
+          foreach ($parent_terms as $parent_term) {
+            if ($this->validateEntity($parent_term)) {
+              if (array_key_exists($parent_term->id(), $parents)) {
+                // Set the validation return to TRUE.
+                $returns['term_parent'] = TRUE;
+                break 2;
+              }
             }
           }
         }
