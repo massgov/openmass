@@ -112,6 +112,9 @@ module.exports = async (page, scenario, viewport) => {
   await page.waitForFunction(() => document.querySelectorAll('.js-ma-responsive-iframe iframe[height=auto]').length === 0);
 
   switch (scenario.label) {
+    case 'InfoDetails1':
+      await page.waitForSelector('.ma__fixed-feedback-button');
+      break;
     case 'InfoDetailsImageWrapLeft':
     case 'InfoDetailsImageWrapRight':
     case 'InfoDetailsImageNoWrapLeft':
