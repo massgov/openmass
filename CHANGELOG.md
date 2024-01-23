@@ -1,3 +1,25 @@
+## [0.386.0] - January 23, 2024
+
+### Changed
+  - DP-24989: Change sort of autocomplete to put organizations, topics, services first.
+  - DP-30894: Populate contextual search field values.
+  - DP-31442: Rename 'Analytics New' to 'Analytics'.
+
+### Added
+  - DP-29407: Add a heading and skip link to video component.
+
+### Fixed
+  - DP-30532: Fix TOC - don't show "more" when there aren't more.
+  - DP-30820: Stop collection_all View from spamming the watchdog log.
+  - DP-31106: Bump entity_usage_queue_tracking module for excess deletion fix
+  - DP-31532: Backport of permission fix for media entity view needed by authors.
+  - DP-31551: Avoid error when showing error on the reschedule transition form
+  - DP-31571: Fixed error causing the nightly Backstop snapshot job to fail.
+
+### Security
+  - DP-31535: Drupal core - Moderately critical - Denial of Service - SA-CORE-2024-001.
+
+
 ## [0.385.2] - January 19, 2024
 
 ### Fixed
