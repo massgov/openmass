@@ -37,7 +37,7 @@ class DebugCachability {
    * @param \Behat\Mink\Session $session
    */
   public function requestDebugCachabilityHeaders(Session $session): void {
-    $session->setRequestHeader(self::HEADER, 1);
+    $session->setRequestHeader(self::HEADER, "1");
   }
 
 }
