@@ -445,6 +445,20 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       $element['uri']['#description'] = 'Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".';
     }
 
+    // DP-24989: Override core link field widget to custom view to solve custom sorting by bundle.
+    if ($supportsInternal) {
+      // We are changing behaviour only when target type is node.
+      if ($element['uri']['#type'] == 'entity_autocomplete' && $element['uri']['#target_type'] == 'node') {
+        $element['uri']['#selection_handler'] = 'views';
+        $element['uri']['#selection_settings'] = [
+          'view' => [
+            'view_name' => 'link_field_autocomplete',
+            'display_name' => 'entity_reference',
+          ],
+        ];
+      }
+    }
+
     // Remove the domain from the field prefix for internal only links.
     if ($field_definition->getSetting('link_type') === 1) {
       if (isset($element['uri']['#field_prefix'])) {
@@ -546,7 +560,33 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       }
     }
   }
+  elseif ($type == 'entity_reference_hierarchy') {
+
+    // DP-24989: Override entity_reference_hierarchy field widget to custom view to solve custom sorting by bundle.
+    // We are changing behaviour only when target type is node.
+    if (isset($element['target_id']['target_id']['#type']) && $element['target_id']['target_id']['#type'] == 'entity_autocomplete' && $element['target_id']['target_id']['#target_type'] == 'node') {
+      $element['target_id']['target_id']['#selection_handler'] = 'views';
+      $element['target_id']['target_id']['#selection_settings'] = [
+        'view' => [
+          'view_name' => 'link_field_autocomplete',
+          'display_name' => 'entity_reference',
+        ],
+      ];
+    }
+  }
   elseif ($type == 'entity_reference') {
+
+    // DP-24989: Override core entity_reference field widget to custom view to solve custom sorting by bundle.
+    // We are changing behaviour only when target type is node.
+    if (isset($element['target_id']['#type']) && $element['target_id']['#type'] == 'entity_autocomplete' && $element['target_id']['#target_type'] == 'node') {
+      $element['target_id']['#selection_handler'] = 'views';
+      $element['target_id']['#selection_settings'] = [
+        'view' => [
+          'view_name' => 'link_field_autocomplete',
+          'display_name' => 'entity_reference',
+        ],
+      ];
+    }
     if ($field_name == 'field_issuer_issuers') {
       if ($element['target_id']['#field_parents'][0] == 'field_advisory_issuer') {
         $element['target_id']['#ajax'] = [
