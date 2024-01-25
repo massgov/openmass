@@ -1,3 +1,8 @@
+## [0.386.1] - January 25, 2024
+
+### Fixed
+  - DP-31612: HOTFIX for broken autocomplete for organization field on user create.
+
 ## [0.386.0] - January 23, 2024
 
 ### Changed
