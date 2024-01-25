@@ -1263,6 +1263,7 @@ class Molecules {
     return [
       'hasSuggestions' => $has_suggestions,
       'suggestedScopes' => $suggested_scopes,
+      'name' => 'header-search',
       'id' => 'header-search',
       'placeholder' => 'Search Mass.gov',
       'label' => 'Search terms',
