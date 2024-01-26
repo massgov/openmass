@@ -3894,7 +3894,7 @@ function mass_theme_preprocess_menu(&$variables) {
           $panels[] = $panel;
 
           $items[] = [
-            'id' => $item['id],
+            'id' => Html::cleanCssIdentifier($item['title']),
             'text' => $item['title'],
             'ariaLabelText' => $aria_label,
             'icon' => $icon,
