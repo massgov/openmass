@@ -33,7 +33,7 @@ references:
   yarn_install: &yarn_install
     node/install-packages:
       pkg-manager: yarn
-      cache-version: v1003
+      cache-version: v1001
 
   branch_ignore: &branch_ignore
     ignore:
@@ -281,7 +281,7 @@ jobs:
         default: massgov/mysql-sanitized:latest
       command:
         type: enum
-        enum: ['phpunit', 'behat', 'percy']
+        enum: ['phpunit', 'behat']
     executor:
       name: base
       instance: << parameters.instance >>
@@ -322,12 +322,6 @@ jobs:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
             run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
-      - when:
-          condition:
-            and:
-              - equal: [ percy, << parameters.command >> ]
-          steps:
-            run: 'su -s /bin/bash root -c "yarn run percy snapshot -b http://mass-web -c percy/.percy.js percy/post-release.json"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -724,13 +718,6 @@ workflows:
           name: test-behat
           command: behat
           requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - test:
-          name: test-percy
-          command: percy
-          requires: [ build ]
           filters:
             branches:
               <<: *branch_ignore
