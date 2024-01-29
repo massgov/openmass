@@ -43,9 +43,6 @@ module.exports = {
       "secure": false,
       "session": false,
       "sameSite": "Lax",
-    },
-    launchOptions: {
-      executable: 'docker://seleniarm/standalone-chromium:4.1.4-20220429'
     }
   },
   upload: {
