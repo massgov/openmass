@@ -1,3 +1,16 @@
+
+
+## [0.387.0] - January 29, 2024
+
+### Fixed
+  - DP-31366: Fixed sporadic issues with location listing search.
+  - DP-31620: News headlines on org pages are the same heading level as the "News" header.
+  - DP-31624: Make sure master and develop are up to date before merging a hotfix
+  
+### Added
+  - DP-31561: Add name attributes to forms.
+  - DP-31561: Add hidden fields to userway signup form for Formstack submission.
+  
 ## [0.386.1] - January 25, 2024
 
 ### Fixed
