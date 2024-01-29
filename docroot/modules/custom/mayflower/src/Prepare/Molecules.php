@@ -601,12 +601,7 @@ class Molecules {
 
       if ($type == 'address') {
         $address = Helper::formatAddress($entity->{$fields['value']}, $options);
-        if (!$entity->get('field_contact_directions_link')->isEmpty()) {
-          $item['link'] = $entity->field_contact_directions_link->uri;
-        }
-        else {
-          $item['link'] = 'https://maps.google.com/?q=' . urlencode($address);
-        }
+        $item['link'] = $entity->getDirectionsUrl();
         $item['value'] = $address;
         $item['info'] = t('Get directions to ') . $address;
 
@@ -1268,6 +1263,7 @@ class Molecules {
     return [
       'hasSuggestions' => $has_suggestions,
       'suggestedScopes' => $suggested_scopes,
+      'name' => 'header-search',
       'id' => 'header-search',
       'placeholder' => 'Search Mass.gov',
       'label' => 'Search terms',

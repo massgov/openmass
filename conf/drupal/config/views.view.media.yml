@@ -3,11 +3,11 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.media.field_internal_notes
     - field.storage.media.field_title
     - field.storage.media.field_upload_file
     - image.style.thumbnail
     - media.type.document
-    - taxonomy.vocabulary.user_organization
     - workflows.workflow.media_states
   module:
     - content_moderation
@@ -15,11 +15,9 @@ dependencies:
     - entity_browser
     - file
     - image
-    - link
     - media
     - rest
     - serialization
-    - taxonomy
     - user
     - views_autocomplete_filters
     - views_bulk_operations
@@ -1978,7 +1976,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - user.permissions
       tags:
         - 'config:field.storage.media.field_internal_notes'
@@ -2660,7 +2657,10 @@ display:
       defaults:
         fields: false
       display_description: ''
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: admin/content/media
       menu:
         type: tab

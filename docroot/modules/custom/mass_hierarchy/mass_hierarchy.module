@@ -13,9 +13,12 @@ use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
+use Drupal\mass_hierarchy\MassHierarchyBatch;
 use Drupal\mass_hierarchy\MassHierarchyRouteMatch;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionCompletedTrait;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -46,6 +49,20 @@ function mass_hierarchy_help($route_name, RouteMatchInterface $route_match) {
   }
 
   return $output;
+}
+
+/**
+ * Implements hook_batch_alter().
+ */
+function mass_hierarchy_batch_alter(array &$batch): void {
+  // Change the batch finished callback for admin/content view (and others).
+  // https://massgov.atlassian.net/browse/DP-30765
+  if (isset($batch['sets'][0]['finished'][0]) && $batch['sets'][0]['finished'][0] == 'Drupal\views_bulk_edit\Plugin\Action\ModifyEntityValues') {
+    $batch['sets'][0]['finished'] = [
+      MassHierarchyBatch::class,
+      'finishedWrapper',
+    ];
+  }
 }
 
 /**

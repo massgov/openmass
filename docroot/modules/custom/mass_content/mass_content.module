@@ -45,6 +45,8 @@ use Drupal\mass_content\Entity\Bundle\node\SitewideAlertBundle;
 use Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle;
 use Drupal\mass_content\Entity\Bundle\node\TopicPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\UtilityDrawerBundle;
+use Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle;
+use Drupal\mass_content\Entity\Bundle\taxonomy_term\CollectionsBundle;
 use Drupal\mass_content\Entity\Bundle\user\UserBundle;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
@@ -818,10 +820,10 @@ function mass_content_query_collection_all_check_sort_value($value = '') {
  */
 function _mass_content_collection_all_only_future_events(QueryPluginBase $query) {
   $collection = mass_content_get_collection_from_current_page();
-  $only_future = $collection->field_show_only_future_events->value;
-
-  if (!$only_future) {
-    return;
+  if ($collection) {
+    if (!$collection->showOnlyFutureEvents()) {
+      return;
+    }
   }
 
   $now = \Drupal::time()->getCurrentTime();
@@ -1094,6 +1096,16 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
   // User
   if (isset($bundles['user']['user'])) {
     $bundles['user']['user']['class'] = UserBundle::class;
+  }
+
+  // Paragraph
+  if (isset($bundles['paragraph']['address'])) {
+    $bundles['paragraph']['address']['class'] = AddressBundle::class;
+  }
+
+  // Taxonomy Term
+  if (isset($bundles['taxonomy_term']['collections'])) {
+    $bundles['taxonomy_term']['collections']['class'] = CollectionsBundle::class;
   }
 
 }
