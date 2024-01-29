@@ -43,6 +43,11 @@ module.exports = {
       "secure": false,
       "session": false,
       "sameSite": "Lax",
+    },
+    launchOptions: {
+      args: [
+        "--no-sandbox"
+      ]
     }
   },
   upload: {
