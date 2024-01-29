@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\mass_content\Entity\Bundle\taxonomy_term;
 
 use Drupal\taxonomy\Entity\Term;
