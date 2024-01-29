@@ -51,6 +51,6 @@ module.exports = {
     stripExtensions: false
   },
   launchOptions: {
-    executable: '/usr/local/bin/'
+    executable: 'docker://seleniarm/standalone-chromium:4.1.4-20220429'
   }
 }
