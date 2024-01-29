@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 set -e
+git fetch origin master
 git checkout develop
+git pull
 git merge origin/master
 git push
