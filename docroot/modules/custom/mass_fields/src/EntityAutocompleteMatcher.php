@@ -92,8 +92,10 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
           // Names containing commas or quotes must be wrapped in quotes.
           $key = Tags::encode($key);
           $entity = \Drupal::entityTypeManager()->getStorage($target_type)->load($entity_id);
-          if ($entity->getEntityType()->id() == 'node' && !$entity->isPublished()) {
-            $label .= " (unpublished)";
+          if ($entity) {
+            if ($entity->getEntityType()->id() == 'node' && !$entity->isPublished()) {
+              $label .= " (unpublished)";
+            }
           }
           $matches[] = [
             'value' => $key,
