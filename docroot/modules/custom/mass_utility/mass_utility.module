@@ -430,6 +430,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
   $field_definition = $context['items']->getFieldDefinition();
   $type = $field_definition->getType();
   $field_name = $field_definition->getName();
+  $target_bundles = $field_definition->getSettings()['handler_settings']['target_bundles'] ?? [];
   if ($type == 'google_map_field') {
     if ($field_name == 'field_lat_long') {
       $element['name']['#type'] = 'hidden';
@@ -454,6 +455,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
           'view' => [
             'view_name' => 'link_field_autocomplete',
             'display_name' => 'entity_reference',
+            'arguments' => [implode('+', $target_bundles)],
           ],
         ];
       }
@@ -570,6 +572,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         'view' => [
           'view_name' => 'link_field_autocomplete',
           'display_name' => 'entity_reference',
+          'arguments' => [implode('+', $target_bundles)],
         ],
       ];
     }
@@ -584,6 +587,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         'view' => [
           'view_name' => 'link_field_autocomplete',
           'display_name' => 'entity_reference',
+          'arguments' => [implode('+', $target_bundles)],
         ],
       ];
     }
