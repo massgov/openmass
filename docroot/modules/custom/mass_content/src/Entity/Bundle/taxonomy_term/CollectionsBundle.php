@@ -11,7 +11,7 @@ class CollectionsBundle extends Term {
 
   public function showOnlyFutureEvents(): bool {
     if (!$this->get('field_show_only_future_events')->isEmpty()) {
-      return (bool) $this->field_show_only_future_events->value;
+      return $this->field_show_only_future_events->value;
     }
     return FALSE;
   }
