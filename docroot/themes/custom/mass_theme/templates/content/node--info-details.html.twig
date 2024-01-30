@@ -227,7 +227,7 @@
 {% block sidebar %}
   {% if sideContent.contactList %}
     {% set contactList = sideContent.contactList %}
-    {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
+    {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level + 1 }) %}
     {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
     {% include "@organisms/by-author/contact-list.twig" %}
   {% endif %}
