@@ -1,5 +1,10 @@
 
 
+## [0.387.1] - January 31, 2024
+
+### Removed
+  - DP-24989: Removed custom code changes breaking autocomplete filtering
+
 ## [0.387.0] - January 29, 2024
 
 ### Fixed
@@ -15,6 +20,7 @@
 
 ### Fixed
   - DP-31612: HOTFIX for broken autocomplete for organization field on user create.
+
 
 ## [0.386.0] - January 23, 2024
 
