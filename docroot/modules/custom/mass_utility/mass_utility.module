@@ -576,7 +576,9 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
           'display_name' => 'entity_reference',
         ],
       ];
-      $element['uri']['#selection_settings']['view']['arguments'] = [implode('+', $target_bundles)];
+      if (!empty($target_bundles)) {
+        $element['uri']['#selection_settings']['view']['arguments'] = [implode('+', $target_bundles)];
+      }
     }
   }
   elseif ($type == 'entity_reference') {
@@ -591,7 +593,9 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
           'display_name' => 'entity_reference',
         ],
       ];
-      $element['uri']['#selection_settings']['view']['arguments'] = [implode('+', $target_bundles)];
+      if (!empty($target_bundles)) {
+        $element['uri']['#selection_settings']['view']['arguments'] = [implode('+', $target_bundles)];
+      }
     }
     if ($field_name == 'field_issuer_issuers') {
       if ($element['target_id']['#field_parents'][0] == 'field_advisory_issuer') {
