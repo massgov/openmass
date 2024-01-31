@@ -734,8 +734,7 @@ workflows:
           requires: [ build ]
           filters:
             branches:
-              only:
-                <<: *branch_ignore
+              <<: *branch_ignore
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
