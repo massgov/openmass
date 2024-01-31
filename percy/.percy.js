@@ -32,22 +32,6 @@ module.exports = {
     captureMockedServiceWorker: false,
     requestHeaders: {
       "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT
-    },
-    // cookies: {
-    //   "expirationDate": 1798790400,
-    //   "path": "/",
-    //   "name": "im-bypass",
-    //   "value": "true",
-    //   "hostOnly": false,
-    //   "httpOnly": false,
-    //   "secure": false,
-    //   "session": false,
-    //   "sameSite": "Lax",
-    // },
-    launchOptions: {
-      args: [
-        "--no-sandbox"
-      ]
     }
   },
   upload: {
