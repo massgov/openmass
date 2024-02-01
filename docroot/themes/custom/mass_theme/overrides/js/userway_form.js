@@ -20,17 +20,20 @@
         $form.ajaxForm({
           data: {jsonp: 1},
           dataType: 'script',
-          success: function (response) {
+        });
+
+        window['form' + $form.attr('id')] = {
+          onPostSubmit: function (message) {
             $form.addClass('hidden');
             $form.parent().append('<p>Thank you for providing your email.</p>');
           },
-          error: function (jqXHR, textStatus, errorThrown) {
+          onSubmitError: function (err) {
             // Handle error scenario
             $form.addClass('hidden');
             $form.parent().append('<p style="color: red;">Something went wrong. Please refresh the page and try again.</p>');
             $submitBtn.prop('disabled', false);
           }
-        });
+        };
       });
     }
   };
