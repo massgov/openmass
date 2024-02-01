@@ -58,13 +58,6 @@ function mass_decision_tree_preprocess_node(&$variables) {
       ->condition('field_decision_root_ref', $root_nid);
     $descendant_ids = $query->accessCheck(FALSE)->execute();
 
-    // Find all descendants which are reachable from the root node.
-    /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-    $descendant_manager = \Drupal::getContainer()->get('descendant_manager');
-    // This depth is arbitrarily set here to 20. If decision trees are created with a depth greater than 20, the
-    // nodes past 20 will be marked as orphans and have a message about not being reachable.
-    $direct_descendants = $descendant_manager->getChildrenFlat($root_nid, 20);
-
     // Iterate through the tree's descendants and format them.
     $steps = [];
     foreach (Node::loadMultiple($descendant_ids) as $descendant_node) {
@@ -175,10 +168,6 @@ function mass_decision_tree_preprocess_node(&$variables) {
         $descendant['editLink'] = $descendant_node->toUrl('edit-form')->toString();
       }
 
-      // If this isn't a direct descendant, label it as an orphan.
-      if (array_search($descendant_node->id(), $direct_descendants) === FALSE) {
-        $descendant['orphan'] = TRUE;
-      }
       $steps[$descendant_node->id()] = $descendant;
     }
 

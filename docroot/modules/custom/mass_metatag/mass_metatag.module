@@ -137,87 +137,99 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'dm_organizations':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $org_ids = $descendant_manager->getOrganizations($data['node']->id());
-          $organizations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($org_ids);
-          foreach ($organizations as $organization) {
-            $values[] = [
-              'name' => $organization->getTitle(),
-              'url' => $organization->toUrl('canonical', ['absolute' => TRUE])
-                ->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
+          $usage = \Drupal::service('entity_usage.usage');
+          if ($result = $usage->listReferencedEntities($data['node'])) {
+            if ($result['node']) {
+              $nids = array_keys($result['node']);
+              $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+              foreach ($nodes as $node) {
+                if ($node->bundle() == 'org_page') {
+                  $values[] = [
+                    'name' => $node->getTitle(),
+                    'url' => $node->toUrl('canonical', ['absolute' => TRUE])
+                      ->toString(),
+                  ];
+                  $replacements[$original] = json_encode($values);
+                }
+              }
+            }
           }
           break;
 
         case 'dm_services':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $service_ids = $descendant_manager->getServices($data['node']->id());
-          $services = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($service_ids);
-          foreach ($services as $service) {
-            $values[] = [
-              'name' => $service->getTitle(),
-              'url' => $service->toUrl('canonical', ['absolute' => TRUE])
-                ->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
+          $usage = \Drupal::service('entity_usage.usage');
+          if ($result = $usage->listReferencedEntities($data['node'])) {
+            if ($result['node']) {
+              $nids = array_keys($result['node']);
+              $nodes = \Drupal::entityTypeManager()
+                ->getStorage('node')
+                ->loadMultiple($nids);
+              foreach ($nodes as $node) {
+                if ($node->bundle() == 'service_page') {
+                  $values[] = [
+                    'name' => $node->getTitle(),
+                    'url' => $node->toUrl('canonical', ['absolute' => TRUE])
+                      ->toString(),
+                  ];
+                  $replacements[$original] = json_encode($values);
+                }
+              }
+            }
           }
           break;
 
         case 'dm_topics':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $topics_array = $descendant_manager->getTopics($data['node']->id());
-          // Collect all topic ids so we can batch load them.
-          $topic_ids = array_reduce($topics_array, function ($ids, $level_ids) {
-            return array_merge($ids, $level_ids);
-          }, []);
-          $topics = \Drupal::entityTypeManager()
-            ->getStorage('node')
-            ->loadMultiple($topic_ids);
-          foreach ($topics as $topic) {
-            $values[] = [
-              'name' => $topic->label(),
-              'url' => $topic->toUrl('canonical', ['absolute' => TRUE])->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
+          $usage = \Drupal::service('entity_usage.usage');
+          if ($result = $usage->listReferencedEntities($data['node'])) {
+            if ($result['node']) {
+              $nids = array_keys($result['node']);
+              $nodes = \Drupal::entityTypeManager()
+                ->getStorage('node')
+                ->loadMultiple($nids);
+              foreach ($nodes as $node) {
+                if ($node->bundle() == 'topic_page') {
+                  $values[] = [
+                    'name' => $node->getTitle(),
+                    'url' => $node->toUrl('canonical', ['absolute' => TRUE])
+                      ->toString(),
+                  ];
+                  $replacements[$original] = json_encode($values);
+                }
+              }
+            }
           }
           break;
 
         case 'dm_locations':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $ancestors_array = $descendant_manager->getParents($data['node']->id());
-          // Flatten the multilevel ancestors array by merging each set. This
-          // produces a single array ordered by level.
-          $ancestors_flat = array_reduce($ancestors_array, function ($flattened, $set) {
-            return array_merge($flattened, $set);
-          }, []);
-          // Filter to only locations, then grab the 'id' from each.
-          $location_ids = array_column(array_filter($ancestors_flat, function ($record) {
-            return $record['type'] === 'location';
-          }), 'id');
-          $locations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($location_ids);
-          foreach ($locations as $location) {
-            $values[] = [
-              'name' => $location->label(),
-              'url' => $location->toUrl('canonical', ['absolute' => TRUE])->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
+          $usage = \Drupal::service('entity_usage.usage');
+          if ($result = $usage->listReferencedEntities($data['node'])) {
+            if ($result['node']) {
+              $nids = array_keys($result['node']);
+              $nodes = \Drupal::entityTypeManager()
+                ->getStorage('node')
+                ->loadMultiple($nids);
+              foreach ($nodes as $node) {
+                if ($node->bundle() == 'location') {
+                  $values[] = [
+                    'name' => $node->getTitle(),
+                    'url' => $node->toUrl('canonical', ['absolute' => TRUE])
+                      ->toString(),
+                  ];
+                  $replacements[$original] = json_encode($values);
+                }
+              }
+            }
           }
           break;
 
         case 'dm_child_locations':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $descendants_array = $descendant_manager->getChildrenTree($data['node']->id(), 1);
-          $direct_location_descendants = array_filter($descendants_array, function ($descendant) {
-            return $descendant['type'] === 'location';
-          });
+          $location_nodes = Helper::getReferencedEntitiesFromSectionField($data['node'], [
+            'field_organization_sections',
+            'field_section_long_form_content',
+            'field_org_ref_locations',
+          ]);
           // If there are child locations, link to the Locations listing page.
-          if (count($direct_location_descendants)) {
+          if (count($location_nodes)) {
             $org_name = $data['node']->label();
             $values[] = [
               'name' => t('@org_name Locations', ['@org_name' => $org_name]),
