@@ -14,7 +14,7 @@ class MyContentTest extends ExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
     // An admin is needed.
-    $admin = $this->createUser([], null, true);
+    $admin = $this->createUser([], NULL, TRUE);
     $this->drupalLogin($admin);
   }
 
