@@ -323,9 +323,6 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->checkSelectFilterOptions('Publication status',
       ['- Any -', 'Published', 'Unpublished']
     );
-//    $this->checkSelectFilterOptions('Snoozed',
-//      ['All', 'Yes', 'No']
-//    );
     $this->checkSelectFilterOptions('Content type', $this->nodeTypeFilterOptions());
 
     // Checking textbox filters.
