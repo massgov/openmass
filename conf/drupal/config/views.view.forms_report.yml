@@ -4,7 +4,9 @@ status: true
 dependencies:
   config:
     - node.type.form_page
+    - user.role.administrator
     - user.role.author
+    - user.role.developer
     - user.role.editor
   module:
     - mass_bigquery
@@ -297,6 +299,8 @@ display:
           role:
             author: author
             editor: editor
+            developer: developer
+            administrator: administrator
       cache:
         type: tag
         options: {  }
