@@ -30,28 +30,13 @@ class FilterRichtextTable extends FilterBase {
     $tableWrapperBottom = '</table></div></div>';
     $tableHeadingScope = '<th scope="col">';
 
-    $nonNestedTableOpen = '/(?<!<td>)(?<!<td><p>&nbsp;<\/p>)<table>/';
-    $nonNestedTableClose = '/<\/table>(?!<\/td>)/';
-    $text = preg_replace($nonNestedTableOpen, $tableWrapperTop, $text);
-    $text = preg_replace($nonNestedTableClose, $tableWrapperBottom, $text);
-    // // When RTE adds <p>&nbsp;</p> to a table cell with a nested table.
-    // $text = preg_replace('/(?<!<td><p>&nbsp;<\/p>)<table>/', $tableWrapperTop, $text);
-    // $text = preg_replace('/<\/table>(?!<p>&nbsp;<\/p><\/td>)/', $tableWrapperBottom, $text);
-    // $nestedTablePatterns = ['/(?<!<td>)<table>/', '/(?<!<td><p>&nbsp;<\/p>)<table>/', '/<\/table>(?!<\/td>)/', '/<\/table>(?!<p>&nbsp;<\/p><\/td>)/'];
-    // $nestedTableOpenPatterns = ['/(?<!<td><p>\&nbsp;<\/p>)<table>/', '/(?<!<td>)<table>/'];
-    // $nestedTableClosePatterns = ['/<\/table>(?!<p>\&nbsp;<\/p><\/td>)/', '/<\/table>(?!<\/td>)/'];
-    // $text = preg_replace($nestedTableOpenPatterns, $tableWrapperTop, $text);
-    // $text = preg_replace($nestedTableClosePatterns, $tableWrapperBottom, $text);
+    // Exclude nesting tables from the string replacement.
+    $plainTableElements = ['/(?<!\<td>\s\s+\<p>&nbsp;\<\/p>\s\s+)<table>/', '/<\/table>(?!<\/td>)/', '<th>'];
+    // $plainTableElements = ['<table>', </table>, '<th>'];
+    $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
 
-
-    // $nonNestedTables = [$tableWrapperTop, $tableWrapperBottom];
-    // $cleanTables = preg_replace($nestedTablePatterns, $nonNestedTables, $text);
-
-    // $plainTableElements = [$nonNestedTableOpen, $nonNestedTableClose, '<th>'];
-    // $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
-    // $output = str_replace($plainTableElements, $responsiveTableElements, $tableCleaning2);
-    $output = str_replace('<th>', $tableHeadingScope, $text);
-
+    $output = preg_replace($plainTableElements, $responsiveTableElements, $text);
+    // $output = str_replace($plainTableElements, $responsiveTableElements, $text);
 
     return new FilterProcessResult($output);
 
