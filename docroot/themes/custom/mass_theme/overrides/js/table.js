@@ -38,8 +38,8 @@
             headerIndex = cellIndex + 1;
           }
 
-          var headerLabel = headerLabels[headerIndex];
-          $(this).attr('data-label', headerLabel);
+          // var headerLabel = headerLabels[headerIndex];
+          // $(this).attr('data-label', headerLabel);
         });
       });
     }
