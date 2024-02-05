@@ -13,6 +13,9 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
 
+  private \Behat\Mink\Element\NodeElement $view;
+  private \Behat\Mink\Element\DocumentElement $page;
+
   /**
    * {@inheritdoc}
    */
