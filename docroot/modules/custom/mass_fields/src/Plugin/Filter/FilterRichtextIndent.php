@@ -25,16 +25,18 @@ class FilterRichtextIndent extends FilterBase {
 
     // Prep table for indentation + responsive.
     // Unique ID per table for accessibility to establish pairing between the buttons and the table container for responsible table.
-    $tableId = uniqid();
-    $tableWrapperTop = '<div class="ma__rich-text__indent ma__table--responsive js-ma-responsive-table" data-ma-heading-parent="H' . $parentHeadingNum . '">
-    <div class="ma__table--responsive__wrapper" id="' . $tableId . '"  role="group" tabindex="-1">
-    <table class="ma__table"><caption id="tbl-' . $tableId . '" class="ma__table__caption"><span class="ma__table__caption__scroll-info"> (Table in a horizontal scrolling container)</span></caption>';
-    $tableWrapperBottom = '</table></div></div>';
+    // $tableId = uniqid();
+    // $tableWrapperTop = '<div class="ma__rich-text__indent ma__table--responsive js-ma-responsive-table" data-ma-heading-parent="H' . $parentHeadingNum . '">
+    // <div class="ma__table--responsive__wrapper" id="' . $tableId . '"  role="group" tabindex="-1">
+    // <table class="ma__table"><caption id="tbl-' . $tableId . '" class="ma__table__caption"><span class="ma__table__caption__scroll-info"> (Table in a horizontal scrolling container)</span></caption>';
+    // $tableWrapperBottom = '</table></div></div>';
 
     // Test for all container elements available in the editor.
+    // $nonNestedTableOpen = '/(?<!<td>)<table>/';
+    // $nonNestedTableClose = '/</table>(?!</td>)/';
     $plainElements = [
       '<h3>', '<h4>', '<h5>', '<h6>', '<p>', '<ul>', '<ol>', '<blockquote>',
-      '<table>', '</table>', '<drupal-entity',
+      '<drupal-entity',
     ];
 
     $defaultIndentedElements = [
@@ -52,7 +54,7 @@ class FilterRichtextIndent extends FilterBase {
     ];
 
     // Initial replacement.
-    $initialConversion = str_replace($plainElements, $defaultIndentedElements, $text);
+    $initialConversion = preg_replace($plainElements, $defaultIndentedElements, $text);
 
     // Add delimiters to the string.
     $initialConversion = str_replace('<h', '*<h', $initialConversion);
