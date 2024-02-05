@@ -694,7 +694,10 @@ function mass_fields_paragraph_view(array &$build, EntityInterface $entity, Enti
       $item['#options']['manual_description'] = $build['field_listitemdoc_desc_manual'];
       $item['#field_name'] = 'extra_list_manual_desc';
       // Vary the cache by the SHA of the description so that updating the description updates the display.
-      $item['#cache']['keys'][] = sha1($entity->field_listitemdoc_desc_manual->value);
+      if (!$entity->getManualDescription()->isEmpty()) {
+        $item['#cache']['keys'][] = sha1($entity->getManualDescription()->value);
+      }
+
       $build['extra_list_manual_desc'][] = $item;
     }
   }
