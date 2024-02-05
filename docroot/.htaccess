@@ -122,6 +122,7 @@ AddType application/octet-stream .rte
   RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
   # Redirect HTTP to HTTPS in DDEV environment (but not http://web).
+  RewriteCond %{ENV:IS_DDEV_PROJECT} !^$ [NC]
   RewriteCond %{HTTP_HOST} ^mass.local$
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
