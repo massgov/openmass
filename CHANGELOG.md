@@ -1,5 +1,22 @@
 
 
+## [0.388.0] - February 5, 2024
+
+### Fixed
+  - DP-14430: MF legacy global nav expansion bug.
+  - DP-31525: Language in parentenses incorrect for docs on curated list.
+  - DP-31649: Change sidebar heading level on Info details content type.
+  
+### Added
+  - DP-28253: Adding Editoria11y accessibility check module for testers only.
+  - DP-31681: A view showing form pages that are configured to show the success message on the same page.
+  
+### Changed
+  - DP-30525: Unskip Content view tests, add tests for My Content, All Documents
+  - DP-31625: r403 should only redirect on edit.mass.gov
+  
+
+
 ## [0.387.1] - January 31, 2024
 
 ### Removed
