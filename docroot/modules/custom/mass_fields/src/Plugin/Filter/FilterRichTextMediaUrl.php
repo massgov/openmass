@@ -2,10 +2,12 @@
 
 namespace Drupal\mass_fields\Plugin\Filter;
 
-use Drupal\Component\Utility\Html;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
-use Drupal\media\Entity\Media;
+use Drupal\mass_fields\MassUrlReplacementService;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 
 /**
  * Filters lang attributes in the rich text.
@@ -16,66 +18,50 @@ use Drupal\media\Entity\Media;
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE,
  * )
  */
-class FilterRichTextMediaUrl extends FilterBase {
+class FilterRichTextMediaUrl extends FilterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The URL replacement service.
+   *
+   * @var \Drupal\mass_fields\MassUrlReplacementService
+   */
+  protected MassUrlReplacementService $urlReplacementService;
+
+  /**
+   * Constructs a new FilterMyModuleProcessUrls.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\mass_fields\MassUrlReplacementService $urlReplacementService
+   *   The URL replacement service.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, MassUrlReplacementService $urlReplacementService) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->urlReplacementService = $urlReplacementService;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('mass_fields.url_replacement_service')
+    );
+  }
 
   /**
    * {@inheritdoc}
    */
   public function process($text, $langcode) {
-    $document = Html::load($text);
-    $xpath = new \DOMXPath($document);
-
-    // Selects all <a> elements with 'href' attribute
-    // containing 'media/' or 'sites/default/files/documents/'
-    $xpathQuery = "//a[contains(@href, 'media/') or contains(@href, 'sites/default/files/documents/')]";
-    $anchors = $xpath->query($xpathQuery);
-
-    foreach ($anchors as $anchor) {
-      // Extract the 'href' attribute value
-      $href = $anchor->getAttribute('href');
-
-      // Check for 'media/[id]' or 'media/[id]/download' pattern and extract ID
-      if (preg_match('/media\/([0-9]+)(\/download)?/', $href, $matches)) {
-        // Extracted media ID
-        $mediaId = $matches[1];
-
-        // Check if '/download' part is present
-        $downloadPart = $matches[2] ?? '';
-        // Load the media entity by ID
-        $mediaEntity = Media::load($mediaId);
-        if ($mediaEntity) {
-          // Replace the href with a media URL
-          $mediaUrl = $mediaEntity->toUrl()->toString();
-
-          // Construct the new URL, preserving '/download'
-          // if it was part of the original URL
-          $newUrl = $mediaUrl . $downloadPart;
-          $anchor->setAttribute('href', $newUrl);
-        }
-      }
-      // Logic for 'sites/default/files/documents/[dynamic path]'
-      elseif (preg_match('/sites\/default\/files\/documents\/(.+)/', $href, $matches)) {
-        $filePath = urldecode('public://documents/' . $matches[1]);
-        $files = \Drupal::entityTypeManager()->getStorage('file')->loadByProperties(['uri' => $filePath]);
-        $file = reset($files);
-
-        if ($file) {
-          // Check if there's a media entity referencing this file
-          $media = \Drupal::entityTypeManager()->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
-          $mediaEntity = reset($media);
-
-          if ($mediaEntity) {
-            // Replace the href with a media URL.
-            // Note: We always want to concat download string to the URL.
-            $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
-            $anchor->setAttribute('href', $mediaUrl);
-          }
-        }
-      }
-    }
-    $modified_text = HTML::serialize($document);
-
-    return new FilterProcessResult($modified_text);
+    $processedText = $this->urlReplacementService->processText($text);
+    return new FilterProcessResult($processedText);
   }
 
 }

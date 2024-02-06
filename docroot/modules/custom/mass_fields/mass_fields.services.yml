@@ -7,3 +7,6 @@ services:
   mass_fields.autocomplete_matcher:
     class: Drupal\mass_fields\EntityAutocompleteMatcher
     arguments: ['@plugin.manager.entity_reference_selection', '@entity_type.manager']
+
+  mass_fields.url_replacement_service:
+    class: Drupal\mass_fields\MassUrlReplacementService

@@ -17,6 +17,8 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_entity_insert().
@@ -1076,6 +1078,25 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
           ];
           break;
 
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function mass_fields_entity_presave(EntityInterface $entity) {
+  if ($entity instanceof Node || $entity instanceof Paragraph) {
+    // Get the URL replacement service.
+    $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
+
+    foreach ($entity->getFields() as $field) {
+      $fieldType = $field->getFieldDefinition()->getType();
+      if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
+        foreach ($field as $item) {
+          $item->value = $urlReplacementService->processText($item->value);
+        }
       }
     }
   }
