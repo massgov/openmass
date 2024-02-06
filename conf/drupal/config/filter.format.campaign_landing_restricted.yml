@@ -1,7 +1,10 @@
 uuid: 985a9f66-0832-45e1-a606-da0b113b4876
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - linkit
+    - mass_fields
 name: 'Campaign Landing Restricted'
 format: campaign_landing_restricted
 weight: 0
@@ -34,3 +37,9 @@ filters:
     weight: -11
     settings:
       title: false
+  filter_richtext_media_url:
+    id: filter_richtext_media_url
+    provider: mass_fields
+    status: true
+    weight: 0
+    settings: {  }
