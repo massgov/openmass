@@ -3,12 +3,30 @@
 namespace Drupal\mass_fields;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\media\Entity\Media;
 
 /**
  * Service for handling URL replacements in text.
  */
 class MassUrlReplacementService {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a new UrlReplacementService object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
+   */
+  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * Processes text to replace specific URLs.
@@ -40,7 +58,7 @@ class MassUrlReplacementService {
         // Check if '/download' part is present
         $downloadPart = $matches[2] ?? '';
         // Load the media entity by ID
-        $mediaEntity = Media::load($mediaId);
+        $mediaEntity = $this->entityTypeManager->getStorage('media')->load($mediaId);
         if ($mediaEntity) {
           // Replace the href with a media URL
           $mediaUrl = $mediaEntity->toUrl()->toString();
@@ -54,12 +72,12 @@ class MassUrlReplacementService {
       // Logic for 'sites/default/files/documents/[dynamic path]'
       elseif (preg_match('/sites\/default\/files\/documents\/(.+)/', $href, $matches)) {
         $filePath = urldecode('public://documents/' . $matches[1]);
-        $files = \Drupal::entityTypeManager()->getStorage('file')->loadByProperties(['uri' => $filePath]);
+        $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
         $file = reset($files);
 
         if ($file) {
           // Check if there's a media entity referencing this file
-          $media = \Drupal::entityTypeManager()->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
+          $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
           $mediaEntity = reset($media);
 
           if ($mediaEntity) {
