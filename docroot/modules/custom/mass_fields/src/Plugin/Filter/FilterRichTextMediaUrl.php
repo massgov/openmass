@@ -2,10 +2,9 @@
 
 namespace Drupal\mass_fields\Plugin\Filter;
 
-
 use Drupal\Component\Utility\Html;
-use Drupal\filter\Plugin\FilterBase;
 use Drupal\filter\FilterProcessResult;
+use Drupal\filter\Plugin\FilterBase;
 use Drupal\media\Entity\Media;
 
 /**
