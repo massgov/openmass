@@ -8,7 +8,6 @@ use Drupal\filter\Plugin\FilterBase;
 use Drupal\mass_fields\MassUrlReplacementService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-
 /**
  * Filters lang attributes in the rich text.
  *
