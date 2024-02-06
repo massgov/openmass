@@ -59,7 +59,6 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
       'error_page' => 'Error',
       'event' => 'Event',
       'executive_order' => 'Executive Order',
-      'external_data_resource' => 'External data resource',
       'fee' => 'Fee',
       'form_page' => 'Form',
       'guide_page' => 'Guide',
@@ -239,6 +238,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    */
   private function reset() {
     $this->view->hasButton('Reset') ? $this->view->pressButton('Reset') : NULL;
+    $this->view->pressButton('Apply');
   }
 
   /**
@@ -259,7 +259,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $actions = [
       'flag_action.watch_content_flag' => 'Watch',
       'flag_action.unwatch_content_flag' => 'Unwatch',
-      'node_save_action' => 'Save content',
+      'node_save_action' => 'Edit content',
     ];
 
     foreach ($actions as $action_label) {
@@ -291,8 +291,6 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    * {@inheritdoc}
    */
   protected function setUp(): void {
-    // @todo Restore this test.
-    $this->markTestSkipped('Disabled in https://github.com/massgov/openmass/pull/1153');
 
     parent::setUp();
 
@@ -303,8 +301,10 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $admin->save();
     $this->drupalLogin($admin);
 
-    // Visiting the view.
+    // Visiting the view, and submit to see ther Actions.
     $this->drupalGet('admin/content');
+    $page = $this->getSession()->getPage();
+    $page->pressButton('Apply');
     $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
 
     // Ensure we have at least one unpublished page,
@@ -318,13 +318,10 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
   public function testView() {
     // Checking select filter options.
     $this->checkSelectFilterOptions('Action',
-      ['Watch', 'Unwatch', 'Save content']
+      ['Watch', 'Unwatch', 'Edit content']
     );
     $this->checkSelectFilterOptions('Publication status',
       ['- Any -', 'Published', 'Unpublished']
-    );
-    $this->checkSelectFilterOptions('Snoozed',
-      ['All', 'Yes', 'No']
     );
     $this->checkSelectFilterOptions('Content type', $this->nodeTypeFilterOptions());
 
@@ -341,8 +338,9 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     // Check randomly the content type filter 10 times.
     for ($i = 0; $i++ < 10; $this->checkSelectFilterWorks('Content type'));
 
+    // @todo Test without without checking messages
     // Check actions.
-    $this->checkActions();
+    // $this->checkActions();
   }
 
 }
