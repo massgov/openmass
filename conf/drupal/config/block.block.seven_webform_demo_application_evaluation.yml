@@ -1,0 +1,38 @@
+uuid: aedfa452-bc8b-4aa1-aca1-f8d6c8f906bf
+langcode: en
+status: true
+dependencies:
+  config:
+    - webform.webform.demo_application_evaluation
+  module:
+    - webform
+  theme:
+    - seven
+  enforced:
+    module:
+      - webform_demo_application_evaluation
+_core:
+  default_config_hash: 18wwKueFG2XVQ2stBBcUtZa8UONbmPvW8NFukpGRe7M
+id: seven_webform_demo_application_evaluation
+theme: seven
+region: content
+weight: 5
+provider: null
+plugin: webform_block
+settings:
+  id: webform_block
+  label: 'Demo: Application Evaluation'
+  label_display: '0'
+  provider: webform
+  webform_id: demo_application_evaluation
+  default_data: ''
+  redirect: false
+  lazy: false
+visibility:
+  webform:
+    id: webform
+    webforms:
+      demo_application: demo_application
+    negate: false
+    context_mapping:
+      webform_submission: '@webform.webform_submission_route_context:webform_submission'
