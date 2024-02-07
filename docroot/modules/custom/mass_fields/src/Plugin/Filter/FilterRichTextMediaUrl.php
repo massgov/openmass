@@ -9,7 +9,7 @@ use Drupal\mass_fields\MassUrlReplacementService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Filters lang attributes in the rich text.
+ * Filters media links in the rich text.
  *
  * @Filter(
  *   id = "filter_richtext_media_url",
@@ -27,7 +27,7 @@ class FilterRichTextMediaUrl extends FilterBase implements ContainerFactoryPlugi
   protected MassUrlReplacementService $urlReplacementService;
 
   /**
-   * Constructs a new FilterMyModuleProcessUrls.
+   * Constructs a new FilterRichTextMediaUrl.
    *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
@@ -60,7 +60,10 @@ class FilterRichTextMediaUrl extends FilterBase implements ContainerFactoryPlugi
    */
   public function process($text, $langcode) {
     $processedText = $this->urlReplacementService->processText($text);
-    return new FilterProcessResult($processedText);
+    if ($processedText['changed']) {
+      return new FilterProcessResult($processedText['text']);
+    }
+    return new FilterProcessResult($text);
   }
 
 }

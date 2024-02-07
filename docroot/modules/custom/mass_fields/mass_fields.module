@@ -1095,7 +1095,10 @@ function mass_fields_entity_presave(EntityInterface $entity) {
       $fieldType = $field->getFieldDefinition()->getType();
       if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
         foreach ($field as $item) {
-          $item->value = $urlReplacementService->processText($item->value);
+          $processed = $urlReplacementService->processText($item->value);
+          if ($processed['changed']) {
+            $item->value = $processed['text'];
+          }
         }
       }
     }
