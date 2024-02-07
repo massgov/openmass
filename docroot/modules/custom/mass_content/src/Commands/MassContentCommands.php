@@ -459,7 +459,7 @@ class MassContentCommands extends DrushCommands {
   }
 
   /**
-   * Search and replace media URLs
+   * Search and replace media URLs.
    *
    * @command mass-content:search-replace-media
    *
@@ -468,7 +468,6 @@ class MassContentCommands extends DrushCommands {
   public function searchAndReplaceMedia() {
     $entityTypes = ['node', 'paragraph'];
     foreach ($entityTypes as $entityType) {
-     
       // Retrieve the last processed ID from the state or default to 0
       $lastProcessedId = \Drupal::state()->get("mass_content.last_processed_id.{$entityType}", 0);
 
