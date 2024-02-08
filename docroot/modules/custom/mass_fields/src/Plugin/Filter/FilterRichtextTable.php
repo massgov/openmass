@@ -29,20 +29,24 @@ class FilterRichtextTable extends FilterBase {
     $tableHeadingScope = '<th scope="col">';
 
     // In RTE, '<p>&nbsp;</p>' is added as a cell is clicked. When a table is added to the cell the empty paragraph remains.
+    // Also, any spaces, not `&nbsp;`, added during authoring activities remain in the table cell.
+    // Search and replace feature doesn't work with spaces as it doesn't see "exact match" to replace.
     // Need to clean up spaces before and after nested tables in their parent <td> to avoid
     // Warning: preg_replace(): Compilation failed: lookbehind assertion
-    $text = preg_replace('/<td>\s\s+\<p>&nbsp;\<\/p>\s\s+<table>/', '/<td><table>/', $text);
-    $text = preg_replace('/<\/table>\s\s+\<p>&nbsp;<\/p>\s\s+<\/td>/', '/<\/table><\/td>/', $text);
+    // preg_replace with these regex work as tested in the online regex validator for PHP,
+    // not working in Drupal. No replacement happens. Empty paragraphs and spaces remain.
+    $spaceInCellWithNestedTable = ['/<td>\s\s+\<p>&nbsp;\<\/p>\s\s+<table>/', '/<\/table><p>&nbsp;<\/p>\s\s+<\/td>/'];
+    $noSpace = ['/<td><table>/', '/<\/table><\/td>/'];
+    $text = preg_replace($spaceInCellWithNestedTable, $noSpace, $text);
 
     // Exclude nesting tables (<table> in <td>) from the string replacement.
-    // the lookahead and lookback are not working in Drupal:
-    // '/(?<!\<td>\<p>&nbsp;\<\/p>)<table>/` and '/<\/table>(?!\<\/td>)/'
-    // As regex, they work as tested in the online regex validator for PHP.
-    $plainTableElements = ['/(?<!\<td>\<p>&nbsp;\<\/p>)<table>/', '/<\/table>(?!\<\/td>)/', '/<th>/'];
+    // preg_replace with these regex work as tested in the online regex validator for PHP,
+    $plainTableElements = ['/(?<!\<td>)<table>/', '/<\/table>(?!\<\/td>)/', '/<th>/'];
     $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
 
+    // not working in Drupal. Replacement happens to both nested and non-nested tables.
+    // partially because of the failure of  the prior preg_repalcement to remove spaces and empty paragraphs for nested table containers.
     $output = preg_replace($plainTableElements, $responsiveTableElements, $text);
-    // $output = str_replace($plainTableElements, $responsiveTableElements, $text);
 
     return new FilterProcessResult($output);
 
