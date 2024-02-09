@@ -328,7 +328,7 @@ jobs:
               - equal: [ percy, << parameters.command >> ]
           steps:
             - run: 'apt-get update && apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxfixes3 libxrandr2 libgbm1 libasound2'
-            - run: 'su -s /bin/bash root -c "yarn run percy snapshot -b http://localhost percy/post-release.json"'
+            - run: 'su -s /bin/bash root -c "yarn run percy snapshot -b http://localhost --disallowed-hostname foresee.com --disallowed-hostname www.youtube.com percy/post-release.json"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
