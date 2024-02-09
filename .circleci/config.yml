@@ -732,9 +732,6 @@ workflows:
           name: test-percy
           command: percy
           requires: [ build ]
-          filters:
-            branches:
-              <<: *branch_ignore
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
