@@ -333,8 +333,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Check status filter.
     $this->checkSelectFilterWorks('Publication status', 'Published');
-    // @todo Figure why this fails only in CI.
-    // $this->checkSelectFilterWorks('Publication status', 'Unpublished');
+    $this->checkSelectFilterWorks('Publication status', 'Unpublished');
 
     // Check randomly the content type filter 10 times.
     for ($i = 0; $i++ < 10; $this->checkSelectFilterWorks('Content type'));
