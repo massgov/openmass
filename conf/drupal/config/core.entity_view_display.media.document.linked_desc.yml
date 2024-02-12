@@ -28,30 +28,30 @@ content:
   calculated_file_size:
     settings: {  }
     third_party_settings: {  }
-    weight: 3
+    weight: 2
     region: content
   content_moderation_control:
     settings: {  }
     third_party_settings: {  }
-    weight: 0
+    weight: -20
     region: content
   extra_file_extension:
     settings: {  }
     third_party_settings: {  }
-    weight: 5
+    weight: 100
     region: content
   extra_file_icon:
     settings: {  }
     third_party_settings: {  }
-    weight: 4
+    weight: 100
     region: content
   field_document_listing_desc:
     type: string
-    label: hidden
+    label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 2
+    weight: 1
     region: content
   field_title:
     type: string
@@ -59,7 +59,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 1
+    weight: 0
     region: content
   generated_file_extension:
     settings: {  }
@@ -68,15 +68,6 @@ content:
     region: content
   generated_file_icon_twig_path:
     weight: 100
-    region: content
-  langcode:
-    type: language
-    label: hidden
-    settings:
-      link_to_entity: false
-      native_language: false
-    third_party_settings: {  }
-    weight: 6
     region: content
 hidden:
   computed_manual_description: true
@@ -95,6 +86,7 @@ hidden:
   field_size: true
   field_start_date: true
   field_upload_file: true
+  langcode: true
   name: true
   thumbnail: true
   uid: true

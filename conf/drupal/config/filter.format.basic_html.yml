@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   module:
+    - datatables_cdn
     - editor
     - entity_embed
     - linkit
@@ -18,9 +19,9 @@ filters:
     id: filter_html
     provider: filter
     status: true
-    weight: 0
+    weight: -7
     settings:
-      allowed_html: '<a href hreflang data-entity-type data-entity-uuid data-entity-substitution> <sup> <sub> <em> <strong> <cite> <blockquote cite> <code> <ul start type class> <ol start type> <li> <dl> <dt> <dd> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <p> <br> <span> <img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <table> <caption> <tbody> <thead> <tfoot> <th> <td> <tr> <drupal-entity data-entity-type data-entity-uuid data-entity-substitution data-entity-embed-display data-entity-embed-display-settings data-align data-caption data-embed-button title alt>'
+      allowed_html: '<a href hreflang data-entity-type data-entity-uuid data-entity-substitution> <sup> <sub> <em> <strong> <cite> <blockquote cite> <code> <ul start type class> <ol start type> <li> <dl> <dt> <dd> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <p> <br> <span> <img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <table> <caption> <tbody> <thead> <tfoot> <th> <td> <tr> <drupal-entity data-entity-type data-entity-uuid data-entity-substitution data-entity-embed-display data-entity-embed-display-settings data-align data-caption data-embed-button title alt data-langcode>'
       filter_html_help: false
       filter_html_nofollow: false
   filter_align:
@@ -61,7 +62,7 @@ filters:
     id: filter_richtext
     provider: mass_fields
     status: true
-    weight: 7
+    weight: -6
     settings: {  }
   linkit:
     id: linkit
@@ -92,5 +93,11 @@ filters:
     id: filter_richtext_lang
     provider: mass_fields
     status: true
-    weight: -50
+    weight: -3
+    settings: {  }
+  datatables:
+    id: datatables
+    provider: datatables_cdn
+    status: true
+    weight: 0
     settings: {  }
