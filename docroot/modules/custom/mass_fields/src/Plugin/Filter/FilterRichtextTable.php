@@ -30,22 +30,22 @@ class FilterRichtextTable extends FilterBase {
 
     // In RTE, '<p>&nbsp;</p>' is added as a cell is clicked. When a table is added to the cell the empty paragraph remains.
     // Also, any spaces, not `&nbsp;`, added during authoring activities remain in the table cell.
-    // Search and replace feature doesn't work with spaces as it doesn't see "exact match" to replace.
-    // Need to clean up spaces before and after nested tables in their parent <td> to avoid
+    // Need to clean up '<p>&nbsp;</p>' and spaces before and after nested tables in their parent <td> for the last preg_replace.
+    // regex for spaces cannot included to lookback and lookahead because it causes the warning in Drupal -
     // Warning: preg_replace(): Compilation failed: lookbehind assertion
-    // preg_replace with these regex work as tested in the online regex validator for PHP,
-    // not working in Drupal. No replacement happens. Empty paragraphs and spaces remain.
-    $spaceInCellWithNestedTable = ['/<td>\s\s+\<p>&nbsp;\<\/p>\s\s+<table>/', '/<\/table><p>&nbsp;<\/p>\s\s+<\/td>/'];
-    $noSpace = ['/<td><table>/', '/<\/table><\/td>/'];
-    $text = preg_replace($spaceInCellWithNestedTable, $noSpace, $text);
 
-    // Exclude nesting tables (<table> in <td>) from the string replacement.
-    // preg_replace with these regex work as tested in the online regex validator for PHP,
-    $plainTableElements = ['/(?<!\<td>)<table>/', '/<\/table>(?!\<\/td>)/', '/<th>/'];
+    // Step 1: remove '<p>&nbsp;</p>' from the rich text input.
+    $text = str_replace('<p>&nbsp;</p>', '', $text);
+    // Step 2: remove spaces in the cell with nested tables.
+    $spaceInCellWithNestedTable = ['/<td>\s\s+<table>/', '/<\/table>\s\s+<\/td>/'];
+    $cleanNestedTable = ['<td><table>', '</table></td>'];
+    $text = preg_replace($spaceInCellWithNestedTable, $cleanNestedTable, $text);
+
+    $plainTableElements = ['/(?<!<td>)<table>/', '/<\/table>(?!<\/td>)/', '/<th>/'];
     $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
 
-    // not working in Drupal. Replacement happens to both nested and non-nested tables.
-    // partially because of the failure of  the prior preg_repalcement to remove spaces and empty paragraphs for nested table containers.
+    // Step 3: Add responsive table wrappers to non-nested tables.
+    //         Add scope to th of all tables, nested and non-nested.
     $output = preg_replace($plainTableElements, $responsiveTableElements, $text);
 
     return new FilterProcessResult($output);

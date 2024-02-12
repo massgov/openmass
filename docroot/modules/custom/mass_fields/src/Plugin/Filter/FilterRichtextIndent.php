@@ -56,7 +56,7 @@ class FilterRichtextIndent extends FilterBase {
     ];
 
     // Initial replacement.
-    $initialConversion = preg_replace($plainElements, $defaultIndentedElements, $text);
+    $initialConversion = str_replace($plainElements, $defaultIndentedElements, $text);
 
     // Add delimiters to the string.
     $initialConversion = str_replace('<h', '*<h', $initialConversion);
