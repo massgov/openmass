@@ -262,3 +262,32 @@ function mass_views_do_invalidate($entity): void {
     Cache::invalidateTags($tags);
   }
 }
+
+/**
+ * Implements hook_views_pre_render().
+ *
+ * Unset the collections_all view field rendering if we are dealing with media entity.
+ */
+function mass_views_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'collection_all') {
+    foreach ($view->result as $row) {
+      // Check if the row entity is a media entity
+      if ($row->_entity == NULL && $row->entity_type == 'media') {
+        // If the $row is of type media we should unset the fields below, since the
+        // views system will try load the entity and access the fields that media entity
+        // doesn't have. This is a unique/complex view that is rendering 2 entities node/media
+        // (initially overridden here docroot/modules/custom/mass_content/mass_content.module:924)
+        foreach ($view->field as $field_id => $field) {
+          switch ($field_id) {
+            case 'title':
+            case 'field_news_lede':
+            case 'field_short_desc':
+            case 'field_how_to_lede':
+              unset($view->field[$field_id]);
+              break;
+          }
+        }
+      }
+    }
+  }
+}
