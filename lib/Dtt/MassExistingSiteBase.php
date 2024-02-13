@@ -11,6 +11,7 @@ class MassExistingSiteBase extends ExistingSiteBase {
   protected static array $uncacheableDynamicPagePatterns = [
     '/admin/.*',
     '/*edit.*',
+    '/user/logout.*',
   ];
 
   /**
