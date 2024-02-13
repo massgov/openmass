@@ -12,6 +12,7 @@ class MassExistingSiteBase extends ExistingSiteBase {
     '/admin/.*',
     '/*edit.*',
     '/user/logout.*',
+    '/collections.*',
   ];
 
   /**
