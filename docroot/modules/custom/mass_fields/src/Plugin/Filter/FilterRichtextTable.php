@@ -35,7 +35,7 @@ class FilterRichtextTable extends FilterBase {
     // Warning: preg_replace(): Compilation failed: lookbehind assertion
 
     // Step 1: remove '<p>&nbsp;</p>' from the rich text input.
-    $text = str_replace('<p>&nbsp;</p>', '', $text);
+    $text = preg_replace('/<p>((\s|\xc2\xa0|&nbsp;)*?)<\/p>/', '', $text);
     // Step 2: remove spaces in the cell with nested tables.
     $spaceInCellWithNestedTable = ['/<td>\s\s+<table>/', '/<\/table>\s\s+<\/td>/'];
     $cleanNestedTable = ['<td><table>', '</table></td>'];
