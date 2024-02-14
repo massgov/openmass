@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_caching\ExistingSite;
 
 use Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber;
+use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
@@ -31,13 +32,11 @@ class StaleCachingTest extends MassExistingSiteBase {
    */
   public function testStaleHeadersPresentForAnonymous() {
     $node = $this->createNode([
-      'type' => 'page',
-      'path' => [
-        'alias' => '/foo-foo',
-      ],
+      'type' => 'org_page',
+      'title' => 'Test Organization',
+      'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    $node->save();
-    $this->drupalGet('foo-foo');
+    $this->drupalGet($node->toUrl()->toString());
     $headers = $this->getSession()->getResponseHeaders();
 
     // Test that anonymous users have stale headers and the value is correct.
@@ -49,7 +48,7 @@ class StaleCachingTest extends MassExistingSiteBase {
     $account = $this->createUser();
     $this->drupalLogin($account);
 
-    $this->drupalGet('foo-foo');
+    $this->drupalGet($node->toUrl()->toString());
     $headers = $this->getSession()->getResponseHeaders();
     $this->assertStringNotContainsString('stale-if-error', $headers['Cache-Control'][0]);
     $this->assertStringNotContainsString('stale-while-revalidate', $headers['Cache-Control'][0]);
