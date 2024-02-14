@@ -12,6 +12,8 @@ class MassExistingSiteBase extends ExistingSiteBase {
     'admin/.*',
     '/*edit.*',
     'user/logout.*',
+    // @todo Upgrade to drupal 10.2 and then remove the line below.
+    // That gets us the fix from https://www.drupal.org/project/drupal/issues/2352175.
     '/collections.*',
   ];
 
