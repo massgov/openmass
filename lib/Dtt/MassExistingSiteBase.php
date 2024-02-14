@@ -9,9 +9,9 @@ class MassExistingSiteBase extends ExistingSiteBase {
   use ExpectsCacheableResponseTrait;
 
   protected static array $uncacheableDynamicPagePatterns = [
-    '/admin/.*',
+    'admin/.*',
     '/*edit.*',
-    '/user/.*',
+    'user/logout.*',
     '/collections.*',
   ];
 
