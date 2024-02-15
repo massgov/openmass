@@ -4,15 +4,15 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\mass_content\EntitySorter;
 use Drupal\node\Entity\Node;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Tests EntitySorter.
  *
  * @group existing-site
  */
-class EntitySorterTest extends ExistingSiteBase {
+class EntitySorterTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
 
