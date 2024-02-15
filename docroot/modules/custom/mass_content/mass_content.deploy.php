@@ -191,7 +191,6 @@ function mass_content_banner_helper($node, string $content_type) {
   }
 }
 
-
 /**
  * Migrate Card paragraph link field label into the Card header text field.
  */
