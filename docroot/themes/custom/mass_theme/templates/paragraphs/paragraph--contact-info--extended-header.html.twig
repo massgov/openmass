@@ -49,7 +49,7 @@
     {% set address_values = content.field_address[0]['#context']['value']|split(', ') %}
     {% set location_name =  address_values[0] %}
     <p>{{ content.field_address|field_value }}</p>
-    <a class="ma__content-link " href="{{ address_url }}" title="{{ 'Directions to '|t ~ location_name }}">{{ 'Directions'|t }} <span class="ma__visually-hidden">to {{ location_name }}</span></a>
+    <a class="ma__content-link " href="{{ address_url }}" title="{{ 'Directions to '|t ~ location_name }}">{{ 'Directions'|t }} <span class="ma__visually-hidden">&nbsp; to {{ location_name }}</span></a>
   {% elseif content.field_phone|render|trim is not empty %}
     <div>
       {% if content.field_label|render|trim is not empty %}
