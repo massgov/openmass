@@ -242,30 +242,34 @@
         var wrongBundleAlertId = 'hierarchy-node-wrong-bundle-alert';
 
         var alertBox =
-          '<div ' +
-          ' id="' + wrongBundleAlertId + '" ' +
+          "<div " +
+          ' id="' +
+          wrongBundleAlertId +
+          '" ' +
           ' role="contentinfo" ' +
           ' aria-label="Alert" ' +
           ' class="messages messages--error"> ' +
-          ' <h2 class="visually-hidden">Status message</h2> ' +
-          ' <div>' +
-          ' Moving this page to a parent of this content type is not allowed. ' +
-          ' Please move the row in red to a different content type. ' +
-          ' See knowledge base for more information about what types are allowed.' +
-          ' </div>' +
+          ' <h2 class="ma__visually-hidden">Status message</h2> ' +
+          " <div>" +
+          " Moving this page to a parent of this content type is not allowed. " +
+          " Please move the row in red to a different content type. " +
+          " See knowledge base for more information about what types are allowed." +
+          " </div>" +
           ' <div class="form-actions">' +
           '   <div class="button" id="hierarchyDismissAlert">Got it</div>' +
-          ' </div>' +
-          '</div>';
+          " </div>" +
+          "</div>";
 
         var alertBoxWrapper =
-          '<div ' +
-          ' id="' + wrongBundleAlertId + '--wrapper" ' +
+          "<div " +
+          ' id="' +
+          wrongBundleAlertId +
+          '--wrapper" ' +
           ' role="contentinfo" ' +
-          ' >' +
-          ' <h2 class="visually-hidden">Status message</h2> ' +
+          " >" +
+          ' <h2 class="ma__visually-hidden">Status message</h2> ' +
           alertBox +
-          '</div>';
+          "</div>";
 
         // Remove once data and class on already alerted rows
         // that currently are not wrong.
@@ -311,14 +315,18 @@
         }
 
         var messageBox =
-          '<div ' +
-          ' id="' + wrongMessageId + '" ' +
+          "<div " +
+          ' id="' +
+          wrongMessageId +
+          '" ' +
           ' role="contentinfo" ' +
           ' aria-label="Status message" ' +
-          ' class="messages messages--error ' + hierarchyMessagesClass + '"> ' +
-          ' <h2 class="visually-hidden">Status message</h2> ' +
+          ' class="messages messages--error ' +
+          hierarchyMessagesClass +
+          '"> ' +
+          ' <h2 class="ma__visually-hidden">Status message</h2> ' +
           message +
-          '</div>';
+          "</div>";
 
         // Only create one wrong bundle message.
         if ($('#' + wrongMessageId).length === 0) {

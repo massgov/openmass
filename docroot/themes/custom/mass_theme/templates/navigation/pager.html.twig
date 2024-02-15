@@ -34,7 +34,7 @@
 {% if items %}
   <div class="ma__pagination">
     <div class="ma__pagination__container">
-      <h4 id="pagination-heading" class="visually-hidden">{{ 'Pagination'|t }}</h4>
+      <h4 id="pagination-heading" class="ma__visually-hidden">{{ 'Pagination'|t }}</h4>
       {# Print previous item if we are not on the first page. #}
       {% if items.previous %}
         <a href="{{ items.previous.href }}"
@@ -56,7 +56,7 @@
           {% set title = 'Go to page @key'|t({'@key': key}) %}
         {% endif %}
         <a href="{{ item.href }}" class="ma__pagination__page js-pagination-page {{ current == key ? ' is-active' : '' }}" data-page="{{- key -}}" aria-label="Go to Page {{- key -}}" {{ item.attributes|without('href', 'title') }}>
-            <span class="visually-hidden">{{ current == key ? 'Current page'|t : 'Page '|t }} </span>
+            <span class="ma__visually-hidden">{{ current == key ? 'Current page'|t : 'Page '|t }} </span>
             {{- key -}}
         </a>
       {% endfor %}
