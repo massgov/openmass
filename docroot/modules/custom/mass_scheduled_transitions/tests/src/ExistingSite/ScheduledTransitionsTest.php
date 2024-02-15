@@ -6,12 +6,12 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\workflows\Entity\Workflow;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Class ScheduledTransitionsTest.
  */
-class ScheduledTransitionsTest extends ExistingSiteBase {
+class ScheduledTransitionsTest extends MassExistingSiteBase {
 
   const FORMAT = 'Y-m-d';
 

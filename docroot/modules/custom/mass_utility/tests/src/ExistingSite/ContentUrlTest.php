@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_utility\ExistingSite;
 
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Tests url aliases of unpublished and published content.
  */
-class ContentUrlTest extends ExistingSiteBase {
+class ContentUrlTest extends MassExistingSiteBase {
 
   /**
    * New unpublished content gets url alias with special string suffixed to it.

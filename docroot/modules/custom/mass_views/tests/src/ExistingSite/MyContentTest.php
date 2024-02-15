@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\mass_views\ExistingSite;
 
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
-class MyContentTest extends ExistingSiteBase {
+class MyContentTest extends MassExistingSiteBase {
 
   use LoginTrait;
 
