@@ -243,9 +243,7 @@
 
         var alertBox =
           '<div ' +
-          ' id="' +
-          wrongBundleAlertId +
-          '" ' +
+          ' id="' + wrongBundleAlertId + '" ' +
           ' role="contentinfo" ' +
           ' aria-label="Alert" ' +
           ' class="messages messages--error"> ' +
@@ -261,10 +259,7 @@
           '</div>';
 
         var alertBoxWrapper =
-          '<div ' +
-          ' id="' +
-          wrongBundleAlertId +
-          '--wrapper" ' +
+          '<div ' + ' id="' + wrongBundleAlertId + '--wrapper" ' +
           ' role="contentinfo" ' +
           ' >' +
           ' <h2 class="ma__visually-hidden">Status message</h2> ' +
