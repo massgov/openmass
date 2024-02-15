@@ -466,6 +466,9 @@ class MassContentCommands extends DrushCommands {
    * @aliases msrm
    */
   public function searchAndReplaceMedia() {
+    // Don't spam all the users with content update emails.
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
     $entityTypes = ['node', 'paragraph'];
     foreach ($entityTypes as $entityType) {
       // Retrieve the last processed ID from the state or default to 0
