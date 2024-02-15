@@ -5,14 +5,14 @@ namespace Drupal\Tests\mass_entity_usage\ExistingSite;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_entity_usage\UsageTrackingBlocker;
 use Drupal\paragraphs\Entity\Paragraph;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests to ensure block tracking for entity usage works as expected.
  */
-class UsageTrackingBlockerTest extends ExistingSiteBase {
+class UsageTrackingBlockerTest extends MassExistingSiteBase {
 
   use LoginTrait;
   use MediaCreationTrait;

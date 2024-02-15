@@ -3,15 +3,15 @@
 namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Verify media functionality.
  *
  * @group mass_media
  */
-class MediaDeleteTest extends ExistingSiteBase {
+class MediaDeleteTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
 
