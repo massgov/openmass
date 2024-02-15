@@ -5,6 +5,10 @@
  * Implementations of hook_deploy_NAME() for Mass Content.
  */
 
+use Drupal\Core\Url;
+use Drupal\mayflower\Helper;
+use Drupal\node\Entity\Node;
+
 /**
  * Set focal point on the service page banner images.
  */
@@ -184,5 +188,75 @@ function mass_content_banner_helper($node, string $content_type) {
   if ($changed) {
     $node->setSyncing(TRUE);
     $node->save();
+  }
+}
+
+
+/**
+ * Migrate Card paragraph link field label into the Card header text field.
+ */
+function mass_content_deploy_card_label_migration(&$sandbox) {
+  $query = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
+  $query->condition('type', 'card');
+
+  if (empty($sandbox)) {
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $pids = $query->condition('id', $sandbox['current'], '>')
+    ->sort('id')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+
+  $paragraphs = $paragraph_storage->loadMultiple($pids);
+
+  // Turn off entity_hierarchy writes while processing the item.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  foreach ($paragraphs as $paragraph) {
+    $sandbox['current'] = $paragraph->id();
+    try {
+      if (!Helper::isParagraphOrphan($paragraph)) {
+        if (!$paragraph->get('field_card_link')->isEmpty()) {
+          $title = $paragraph->get('field_card_link')->title;
+          if (!$title) {
+            $uri = $paragraph->get('field_card_link')->uri;
+            $url = Url::fromUri($uri);
+            if (!$url->isExternal() && $url->getRouteName() == 'entity.node.canonical') {
+              $route_params = $url->getRouteParameters();
+              if ($route_params['node']) {
+                if ($node = Node::load($route_params['node'])) {
+                  $title = $node->getTitle();
+                }
+              }
+            }
+          }
+          $paragraph->set('field_card_header', $title);
+          $paragraph->save();
+        }
+      }
+    }
+    catch (\Exception $e) {
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    }
+
+    $sandbox['progress']++;
+  }
+  $memory_cache->deleteAll();
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    // Turn on entity_hierarchy writes after processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('Card paragraph link field label into the Card header text field migration has been completed.');
   }
 }
