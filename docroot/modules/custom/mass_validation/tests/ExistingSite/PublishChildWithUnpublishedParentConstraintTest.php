@@ -5,13 +5,13 @@ namespace Drupal\Tests\mass_validation\ExistingSite;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_validation\Plugin\Validation\Constraint\PublishChildWithUnpublishedParentConstraint;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Class PublishChildWithUnpublishedParentConstraintTest.
  */
-class PublishChildWithUnpublishedParentConstraintTest extends ExistingSiteBase {
+class PublishChildWithUnpublishedParentConstraintTest extends MassExistingSiteBase {
 
   use LoginTrait;
 

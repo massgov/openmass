@@ -6,11 +6,11 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
-class DocumentTranslationTest extends ExistingSiteBase {
+class DocumentTranslationTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
   use LoginTrait;

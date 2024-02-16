@@ -39,11 +39,11 @@ class FormEmbedWidget extends WidgetBase {
       '#title' => $this->t('Form success message'),
       '#default_value' => $type,
       '#options' => [
-        'formstack' => 'Formstack with success message on same page',
         'formstack_reload' => 'Formstack with success message on separate page',
+        'formstack' => 'Formstack with success message on same page',
       ],
       '#required' => TRUE,
-      '#description' => 'By default, the form success message is on the same page as the form. But, <strong>if your form includes file uploads or has text fields that could collect as many as 1000 characters combined, you MUST use a separate success page</strong> to avoid errors. In those cases, choose "Formstack with success message on separate page" from the dropdown menu below. Next, publish an Information Details page that contains the message users should see if the form is submitted successfully. In the right column of that page under "Search Status," check the option to exclude the success page from search. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the public URL of the success page you published (starting with http://www.mass.gov).',
+      '#description' => '<strong>You MUST use a separate success page</strong> to avoid errors. The success page can be an Information Details page that contains the message users should see if the form is submitted successfully. On that page, in the right column of that page under "Search Status," check the option to exclude the success page from search. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the public URL of the success page you published (starting with http://www.mass.gov).',
     ];
     $element['#element_validate'] = [[get_called_class(), 'validate']];
 

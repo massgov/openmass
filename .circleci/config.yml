@@ -482,7 +482,7 @@ jobs:
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
       # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
-      - image: backstopjs/backstopjs:6.1.4
+      - image: backstopjs/backstopjs:6.3.3
     steps:
       - checkout
       - run:
@@ -587,6 +587,7 @@ jobs:
             - run:
                 name: Verify Artifacts
                 command: |
+                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
