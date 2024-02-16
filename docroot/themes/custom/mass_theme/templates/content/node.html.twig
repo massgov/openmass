@@ -95,7 +95,7 @@
 
 {# Produce the .pre-content div if either the twig block or the theme region is present #}
 {% if _preContent is not empty or pre_content %}
-  <div class="pre-content">
+  <div class="pre-content" lang="en" dir="ltr">
     {{ pre_content }}
     {{ _preContent|raw }}
   </div>
@@ -120,7 +120,7 @@
 
 {# Produce the .post-content div if either the twig block or the theme region is present #}
 {% if _postContent is not empty or post_content %}
-  <div class="post-content">
+  <div class="post-content" lang="en" dir="ltr">
     {{ _postContent|raw }}
     {{ post_content }}
   </div>
