@@ -4466,15 +4466,15 @@ function mass_theme_preprocess_html(&$variables) {
 
   $node = \Drupal::request()->attributes->get('node');
   if (!empty($node) && $node instanceof NodeInterface) {
-    /** @var \Drupal\Core\Template\Attribute $html_attribute */
-    $html_attribute = $variables['html_attributes'];
+    /** @var \Drupal\Core\Template\Attribute $html_attributes */
+    $html_attributes = $variables['html_attributes'];
     $language = \Drupal::languageManager()->getLanguage($node->get('langcode')->value);
-    if ($html_attribute->hasAttribute('lang')) {
-      $html_attribute->removeAttribute('lang');
-      $html_attribute->removeAttribute('dir');
-      $html_attribute->setAttribute('lang', $language->getId());
-      $html_attribute->setAttribute('dir', $language->getDirection());
-      $variables['html_attributes'] = $html_attribute;
+    if ($html_attributes->hasAttribute('lang')) {
+      $html_attributes->removeAttribute('lang');
+      $html_attributes->removeAttribute('dir');
+      $html_attributes->setAttribute('lang', $language->getId());
+      $html_attributes->setAttribute('dir', $language->getDirection());
+      $variables['html_attributes'] = $html_attributes;
     }
   }
 
