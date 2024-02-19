@@ -1,5 +1,15 @@
 
 
+## [0.390.0] - February 19, 2024
+
+### Added
+  - DP-30638: Assert dynamic page cacheability during tests
+  
+### Changed
+  - DP-31678: Search and replace /media and /files URLs with /doc URLs in content.
+  
+
+
 ## [0.389.0] - February 12, 2024
 
 ### Changed
