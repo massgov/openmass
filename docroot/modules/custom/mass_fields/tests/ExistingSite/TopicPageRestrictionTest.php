@@ -5,13 +5,13 @@ namespace Drupal\Tests\mass_fields\ExistingSite;
 use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests restrictions on Topic Pages.
  */
-class TopicPageRestrictionTest extends ExistingSiteBase {
+class TopicPageRestrictionTest extends MassExistingSiteBase {
 
   use LoginTrait;
 

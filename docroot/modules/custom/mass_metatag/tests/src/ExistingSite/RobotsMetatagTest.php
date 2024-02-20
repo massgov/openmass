@@ -4,13 +4,13 @@ namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Robots metatag tests.
  */
-class RobotsMetatagTest extends ExistingSiteBase {
+class RobotsMetatagTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
 

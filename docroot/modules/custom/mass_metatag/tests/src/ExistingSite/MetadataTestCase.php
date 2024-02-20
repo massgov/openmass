@@ -4,12 +4,13 @@ namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Behat\Mink\Element\DocumentElement;
 use Drupal\Core\Entity\ContentEntityInterface;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Base test class for metadata checking.
  */
-abstract class MetadataTestCase extends ExistingSiteBase {
+abstract class MetadataTestCase extends MassExistingSiteBase {
 
   private $debug = FALSE;
 
