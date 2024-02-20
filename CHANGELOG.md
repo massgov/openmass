@@ -1,5 +1,40 @@
 
 
+## [0.389.0] - February 12, 2024
+
+### Changed
+  - DP-24989: Change sort of autocomplete to put organizations, topics, services first.
+  - DP-31767: Improve master-to-develop merge during a deployment
+  - DP-31820: Updated help text for form embed field to tell authors to always use separate success page.
+  
+### Fixed
+  - DP-31033: Fix form page content type blocking styling from Formstack v4 by removing the query parameter, and removed broken `jsonp` parameter
+  - DP-31616: Pass missing `id` value and add `aria-controls` to utility nav items.
+  - DP-31671: Fix local dev for test running for selenium-chrome
+  - DP-31795: Fixed publication status filter on Content view.
+  
+### Added
+  - DP-31737: Add Burmese language
+  
+
+
+## [0.388.0] - February 5, 2024
+
+### Fixed
+  - DP-14430: MF legacy global nav expansion bug.
+  - DP-31525: Language in parentenses incorrect for docs on curated list.
+  - DP-31649: Change sidebar heading level on Info details content type.
+  
+### Added
+  - DP-28253: Adding Editoria11y accessibility check module for testers only.
+  - DP-31681: A view showing form pages that are configured to show the success message on the same page.
+  
+### Changed
+  - DP-30525: Unskip Content view tests, add tests for My Content, All Documents
+  - DP-31625: r403 should only redirect on edit.mass.gov
+  
+
+
 ## [0.387.1] - January 31, 2024
 
 ### Removed

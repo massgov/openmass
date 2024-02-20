@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 set -e
-git fetch origin master
+git checkout master
+git pull
 git checkout develop
 git pull
-git merge origin/master
+git merge master
 git push
