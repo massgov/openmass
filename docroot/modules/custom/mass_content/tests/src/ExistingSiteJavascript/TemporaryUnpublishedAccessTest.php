@@ -24,10 +24,12 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
    */
   private function generateLink(): void {
     $this->getCurrentPage()->find('css', '#edit-access-unpublished-settings summary')->click();
-    $links_count_before = count($this->getCurrentPage()->findAll('css', '#edit-access-unpublished-settings table tbody tr a.clipboard-button'));
+    $links_count_before = count($this->getCurrentPage()->findAll('css', '#edit-access-unpublished-settings table tbody tr li.copy a'));
+    $table_row_count = count($this->getCurrentPage()->findAll('css', '#edit-access-unpublished-settings table tbody > tr'));
     $this->getCurrentPage()->pressButton('Get link');
-    $this->assertSession()->assertWaitOnAjaxRequest(30000);
-    $links_count_after = count($this->getCurrentPage()->findAll('css', '#edit-access-unpublished-settings table tbody tr a.clipboard-button'));
+    // We rely on table row count, wait for the new row to be added.
+    $this->assertSession()->waitForElement('css', '#edit-access-unpublished-settings table tbody tr:nth-child(' . $table_row_count + 1 . ') li.copy a');
+    $links_count_after = count($this->getCurrentPage()->findAll('css', '#edit-access-unpublished-settings table tbody tr li.copy a'));
     $this->assertEquals($links_count_before + 1, $links_count_after);
   }
 
