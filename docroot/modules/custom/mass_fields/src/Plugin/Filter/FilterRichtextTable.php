@@ -28,24 +28,16 @@ class FilterRichtextTable extends FilterBase {
     $tableWrapperBottom = '</table></div></div>';
     $tableHeadingScope = '<th scope="col">';
 
-    // In RTE, '<p>&nbsp;</p>' is added as a cell is clicked. When a table is added to the cell the empty paragraph remains.
-    // Also, any spaces, not `&nbsp;`, added during authoring activities remain in the table cell.
-    // Need to clean up '<p>&nbsp;</p>' and spaces before and after nested tables in their parent <td> for the last preg_replace.
-    // regex for spaces cannot included to lookback and lookahead because it causes the warning in Drupal -
-    // Warning: preg_replace(): Compilation failed: lookbehind assertion
-
     // Step 1: remove '<p>&nbsp;</p>' from the rich text input.
     $text = preg_replace('/<p>(\s|\xc2\xa0|&nbsp;)<\/p>/', '', $text);
     // Step 2: remove spaces in the cell with nested tables.
     $spaceInCellWithNestedTable = ['/<td>\s\s+<table>/', '/<\/table>\s\s+<\/td>/'];
     $cleanNestedTable = ['<td><table>', '</table></td>'];
     $text = preg_replace($spaceInCellWithNestedTable, $cleanNestedTable, $text);
-
-    $plainTableElements = ['/(?<!<td>)<table>/', '/<\/table>(?!<\/td>)/', '/<th>/'];
-    $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
-
     // Step 3: Add responsive table wrappers to non-nested tables.
     //         Add scope to th of all tables, nested and non-nested.
+    $plainTableElements = ['/(?<!<td>)<table>/', '/<\/table>(?!<\/td>)/', '/<th>/'];
+    $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
     $output = preg_replace($plainTableElements, $responsiveTableElements, $text);
 
     return new FilterProcessResult($output);
