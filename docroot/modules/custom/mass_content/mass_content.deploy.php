@@ -212,8 +212,6 @@ function mass_content_deploy_card_label_migration(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
-  $memory_cache = \Drupal::service('entity.memory_cache');
-
   $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
 
   $paragraphs = $paragraph_storage->loadMultiple($pids);
@@ -250,7 +248,6 @@ function mass_content_deploy_card_label_migration(&$sandbox) {
 
     $sandbox['progress']++;
   }
-  $memory_cache->deleteAll();
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
