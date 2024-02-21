@@ -5,12 +5,12 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\node\NodeInterface;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Tests EventManager.
  */
-class EventManagerTest extends ExistingSiteBase {
+class EventManagerTest extends MassExistingSiteBase {
 
   private $org;
   private $event1;

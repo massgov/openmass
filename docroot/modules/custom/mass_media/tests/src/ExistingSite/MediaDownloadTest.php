@@ -4,15 +4,15 @@ namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Verify media functionality.
  *
  * @group mass_media
  */
-class MediaDownloadTest extends ExistingSiteBase {
+class MediaDownloadTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
 

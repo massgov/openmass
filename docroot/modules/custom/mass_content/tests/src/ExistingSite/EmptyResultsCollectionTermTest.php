@@ -4,7 +4,7 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\taxonomy\Entity\Vocabulary;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Tests collection_all view empty text.
@@ -14,7 +14,7 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
  *
  * @group existing-site
  */
-class EmptyResultsCollectionTermTest extends ExistingSiteBase {
+class EmptyResultsCollectionTermTest extends MassExistingSiteBase {
 
   /**
    * Tests the empty text for the collection_all view.
