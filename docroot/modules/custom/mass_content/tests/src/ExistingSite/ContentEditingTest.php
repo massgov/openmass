@@ -3,13 +3,13 @@
 namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures editor can save the nodes.
  */
-class ContentEditingTest extends ExistingSiteBase {
+class ContentEditingTest extends MassExistingSiteBase {
 
   use LoginTrait;
 

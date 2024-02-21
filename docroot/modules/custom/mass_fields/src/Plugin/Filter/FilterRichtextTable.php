@@ -24,7 +24,7 @@ class FilterRichtextTable extends FilterBase {
     $tableId = uniqid();
 
     $tableWrapperTop = '<div class="ma__table--responsive js-ma-responsive-table">
-    <nav class="ma__table__horizontal-nav"><button class="ma__table__horizontal-nav__left" aria-controls="' . $tableId . '"><span class="visually-hidden">Scroll left</span></button><div class="clip-scrollbar"><div class="ma__scroll-indicator"><div class="ma__scroll-indicator--bar" aria-controls="' . $tableId . '" role="scrollbar" aria-orientation="horizontal"><div class="ma__scroll-indicator__button"></div></div></div></div><button class="ma__table__horizontal-nav__right" aria-controls="' . $tableId . '"><span class="visually-hidden">Scroll right</span></button>
+    <nav class="ma__table__horizontal-nav"><button class="ma__table__horizontal-nav__left" aria-controls="' . $tableId . '"><span class="ma__visually-hidden">Scroll left</span></button><div class="clip-scrollbar"><div class="ma__scroll-indicator"><div class="ma__scroll-indicator--bar" aria-controls="' . $tableId . '" role="scrollbar" aria-orientation="horizontal"><div class="ma__scroll-indicator__button"></div></div></div></div><button class="ma__table__horizontal-nav__right" aria-controls="' . $tableId . '"><span class="ma__visually-hidden">Scroll right</span></button>
     </nav>
     <div class="ma__table--responsive__wrapper" id="' . $tableId . '">
     <table>';

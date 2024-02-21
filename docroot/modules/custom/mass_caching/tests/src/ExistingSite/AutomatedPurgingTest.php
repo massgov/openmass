@@ -5,12 +5,12 @@ namespace Drupal\Tests\mass_alerts\ExistingSite;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\PrivateStream;
 use Drupal\file\Entity\File;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Tests our extended purging functionality.
  */
-class AutomatedPurgingTest extends ExistingSiteBase {
+class AutomatedPurgingTest extends MassExistingSiteBase {
 
   /**
    * {@inheritdoc}
