@@ -195,6 +195,7 @@ function mass_content_banner_helper($node, string $content_type) {
  * Migrate Card paragraph link field label into the Card header text field.
  */
 function mass_content_deploy_card_label_migration(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
   $query = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
   $query->condition('type', 'card');
 
