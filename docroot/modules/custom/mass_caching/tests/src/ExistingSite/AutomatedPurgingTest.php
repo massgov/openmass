@@ -3,8 +3,10 @@
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\StreamWrapper\PrivateStream;
 use Drupal\file\Entity\File;
+use Drupal\mass_caching\ManualPurger;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**
@@ -39,13 +41,34 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
     $this->markEntityForCleanup($file);
     $relative = $file->createFileUrl(TRUE);
     // Make URL the same way that ManualPurger::purgePath() does it.
-    $absolute = sprintf('%s://%s%s', 'http', 'stage.mass.gov', $relative);
-    $this->assertCount(1, $this->getInvalidations('url', $absolute));
+    $schemas = Settings::get('mass_caching.schemes', [
+      parse_url(\Drupal::request()->getUri(), PHP_URL_SCHEME),
+    ]);
+    $hosts = Settings::get('mass_caching.hosts');
+    $invalidations = [];
+    foreach ($schemas as $schema) {
+      foreach ($hosts as $host) {
+        $absolute = sprintf('%s://%s%s', $schema, $host, $relative);
+        $invalidations[] = $this->getInvalidations('uri', $absolute);
+      }
+    }
+
+    // We expect this to be 2 for each host,
+    // both edit.stage.mass.gov and stage.mass.gov
+    $this->assertCount(2, $invalidations);
     $file->set('uri', 'public://llama-44.txt');
     $file->save();
     $relative = $file->createFileUrl(TRUE);
-    $absolute = sprintf('%s://%s%s', 'http', 'stage.mass.gov', $relative);
-    $this->assertCount(1, $this->getInvalidations('url', $absolute));
+    $invalidations = [];
+    foreach ($schemas as $schema) {
+      foreach ($hosts as $host) {
+        $absolute = sprintf('%s://%s%s', $schema, $host, $relative);
+        $invalidations[] = $this->getInvalidations('uri', $absolute);
+      }
+    }
+    // We expect this to be 2 for each host,
+    // both edit.stage.mass.gov and stage.mass.gov
+    $this->assertCount(2, $invalidations);
   }
 
   /**
@@ -76,12 +99,33 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
         'alias' => '/foo-foo',
       ],
     ]);
-    $absolute = $node->toUrl('canonical', ['base_url' => 'http://stage.mass.gov', 'absolute' => TRUE])->toString();
-    $this->assertCount(1, $this->getInvalidations('url', $absolute));
+    $schemas = Settings::get('mass_caching.schemes', [
+      parse_url(\Drupal::request()->getUri(), PHP_URL_SCHEME),
+    ]);
+    $hosts = Settings::get('mass_caching.hosts');
+    $invalidations = [];
+    foreach ($schemas as $schema) {
+      foreach ($hosts as $host) {
+        $absolute = $node->toUrl('canonical', ['base_url' => "$schema://$host", 'absolute' => TRUE])->toString();
+        $invalidations[] = $this->getInvalidations('uri', $absolute);
+      }
+    }
+    // We expect this to be 2 for each host,
+    // both edit.stage.mass.gov and stage.mass.gov
+    $this->assertCount(2, $invalidations);
     $node->path->alias = '/foo-bar';
     $node->save();
-    $absolute = $node->toUrl('canonical', ['base_url' => 'http://stage.mass.gov', 'absolute' => TRUE])->toString();
-    $this->assertCount(1, $this->getInvalidations('url', $absolute));
+
+    $invalidations = [];
+    foreach ($schemas as $schema) {
+      foreach ($hosts as $host) {
+        $absolute = $node->toUrl('canonical', ['base_url' => "$schema://$host", 'absolute' => TRUE])->toString();
+        $invalidations[] = $this->getInvalidations('uri', $absolute);
+      }
+    }
+    // We expect this to be 2 for each host,
+    // both edit.stage.mass.gov and stage.mass.gov
+    $this->assertCount(2, $invalidations);
   }
 
   /**
