@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Block for flagging links available to editors/authors.
  *
  * @Block(
- *   id="",
+ *   id="mass_flagging",
  *   admin_label="Content Flags",
  *   category = @Translation("Flags"),
  *   context_definitions = {
@@ -30,26 +30,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class MassFlaggingLinks extends BlockBase implements ContainerFactoryPluginInterface {
 
-  /**
-   * The current route.
-   *
-   * @var \Drupal\Core\Routing\CurrentRouteMatch
-   */
-  private $routeMatch;
-
-  /**
-   * Our custom link builder.
-   *
-   * @var \Drupal\mass_flagging\Service\MassFlaggingFlagContentLinkBuilder
-   */
-  private $linkBuilder;
-
-  /**
-   * The flag service.
-   *
-   * @var \Drupal\flag\FlagServiceInterface
-   */
-  private $flagService;
+  private CurrentRouteMatch $routeMatch;
+  private MassFlaggingFlagContentLinkBuilder $linkBuilder;
+  private FlagServiceInterface $flagService;
 
   /**
    * {@inheritdoc}
