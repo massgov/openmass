@@ -3,11 +3,15 @@
 namespace Drupal\mass_flagging\Plugin\Block;
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Annotation\ContextDefinition as ContextDefinitionAnnotation;
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\Context\ContextDefinition;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\flag\FlagServiceInterface;
 use Drupal\mass_flagging\Service\MassFlaggingFlagContentLinkBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -16,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Block for flagging links available to editors/authors.
  *
  * @Block(
- *   id="mass_flagging",
+ *   id="",
  *   admin_label="Content Flags",
  *   category = @Translation("Flags"),
  *   context_definitions = {
