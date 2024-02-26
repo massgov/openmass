@@ -474,7 +474,6 @@ jobs:
     resource_class: xlarge
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
-      # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
       - image: backstopjs/backstopjs:6.3.3
     steps:
       - checkout
@@ -501,8 +500,8 @@ jobs:
       - run:
           name: Archive Reference Screenshots
           command: |
-            sudo apt-get update
-            sudo apt-get install zip -y
+            apt-get update
+            apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
