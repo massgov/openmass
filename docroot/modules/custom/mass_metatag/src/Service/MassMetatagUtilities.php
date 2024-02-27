@@ -88,6 +88,12 @@ class MassMetatagUtilities {
           // Only add the referenced orgs if they have not already been
           // checked.
           if (!in_array($org_page->id(), $checked_orgs)) {
+            if ($parent_meta) {
+              $result[$org_page->id()] = [
+                'title' => $org_page->getTitle(),
+                'uuid' => $org_page->uuid(),
+              ];
+            }
             $orgs[] = $org_page;
           }
         }
