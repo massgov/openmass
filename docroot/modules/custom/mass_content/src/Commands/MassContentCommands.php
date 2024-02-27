@@ -6,7 +6,9 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\mass_fields\MassUrlReplacementService;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\DrushCommands;
@@ -22,7 +24,7 @@ class MassContentCommands extends DrushCommands {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  private EntityTypeManagerInterface $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * {@inheritdoc}
@@ -454,6 +456,87 @@ class MassContentCommands extends DrushCommands {
     }
 
     return $bundles;
+  }
+
+  /**
+   * Search and replace media URLs.
+   *
+   * @command mass-content:search-replace-media
+   *
+   * @aliases msrm
+   */
+  public function searchAndReplaceMedia() {
+    // Don't spam all the users with content update emails.
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    $entityTypes = ['node', 'paragraph'];
+    foreach ($entityTypes as $entityType) {
+      // Retrieve the last processed ID from the state or default to 0
+      $lastProcessedId = \Drupal::state()->get("mass_content.last_processed_id.{$entityType}", 0);
+
+      // Determine the ID field name based on the entity type
+      $idFieldName = $entityType === 'node' ? 'nid' : 'id';
+      $storage = $this->entityTypeManager->getStorage($entityType);
+      $ids = $storage->getQuery()
+        ->condition($idFieldName, $lastProcessedId, '>')
+        ->sort($idFieldName)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
+      $changedEntities = 0;
+      foreach ($ids as $id) {
+        // After successfully processing the entity, update the last processed ID
+        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
+        $entity = $storage->load($id);
+        if ($entity) {
+          $changed = FALSE;
+          foreach ($entity->getFields() as $field) {
+            $fieldType = $field->getFieldDefinition()->getType();
+            if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
+              foreach ($field as $item) {
+                $processed = $urlReplacementService->processText($item->value);
+                if ($processed['changed']) {
+                  $item->value = $processed['text'];
+                  $changed = TRUE;
+                }
+              }
+            }
+          }
+          if ($changed) {
+            if (method_exists($entity, 'setRevisionLogMessage')) {
+              $entity->setNewRevision();
+              $entity->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+              $entity->setRevisionCreationTime(\Drupal::time()
+                ->getRequestTime());
+            }
+            $entity->save();
+            $changedEntities++;
+
+            if ($entityType == 'paragraph') {
+              $node = Helper::getParentNode($entity);
+              $this->output()
+                ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
+                  '@type' => ucfirst($entityType),
+                  '@bundle' => $entity->bundle(),
+                  '@id' => $entity->id(),
+                  '@nid' => $node ? $node->id() : 'N/A',
+                ]));
+            }
+            else {
+              $this->output()
+                ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
+                  '@type' => ucfirst($entityType),
+                  '@bundle' => $entity->bundle(),
+                  '@id' => $entity->id()
+                ]));
+            }
+          }
+        }
+      }
+
+      $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
+    }
   }
 
 }

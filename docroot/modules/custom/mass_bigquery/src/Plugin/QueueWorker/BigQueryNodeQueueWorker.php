@@ -31,6 +31,7 @@ class BigQueryNodeQueueWorker extends QueueWorkerBase implements ContainerFactor
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database, BigqueryStorageInterface $bigquery_storage) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->database = $database;
     $this->bigqueryStorage = $bigquery_storage;
   }
