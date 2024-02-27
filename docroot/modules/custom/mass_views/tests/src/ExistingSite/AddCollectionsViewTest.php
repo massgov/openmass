@@ -8,14 +8,14 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests add media to collections bulk.
  */
-class AddCollectionsViewTest extends ExistingSiteBase {
+class AddCollectionsViewTest extends MassExistingSiteBase {
 
   use LoginTrait;
   use MediaCreationTrait;

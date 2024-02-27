@@ -15,7 +15,7 @@ Feature: Form Page Content type
       | field_form_embed:type  | formstack |
       | field_form_embed:value | "<script type="text/javascript" src="http://example.formstack.com/script?nojquery=1"></script><noscript><a href="http://example.formstack.com/noscript" title="Online Form">Test</a></noscript><div><a href="http://example.com/link" title="Web Form Creator">Web Form Creator</a></div>" |
       | moderation_state       | published |
-    Then I should see a script element with the source "http://example.formstack.com/script?nojquery=1&no_style_strict=1&jsonp=1"
+    Then I should see a script element with the source "http://example.formstack.com/script?nojquery=1"
 
   Scenario: Formstack URLs are output correctly when using the formstack_reload type
     Given I am viewing a "form_page" content:
@@ -23,7 +23,7 @@ Feature: Form Page Content type
       | field_form_embed:type  | formstack_reload |
       | field_form_embed:value | "<script type="text/javascript" src="http://example.formstack.com/script?nojquery=1"></script><noscript><a href="http://example.formstack.com/noscript" title="Online Form">Test</a></noscript><div><a href="http://example.com/link" title="Web Form Creator">Web Form Creator</a></div>" |
       | moderation_state       | published |
-    Then I should see a script element with the source "http://example.formstack.com/script?nojquery=1&no_style_strict=1"
+    Then I should see a script element with the source "http://example.formstack.com/script?nojquery=1"
 
   Scenario: Verify that pathauto patterns are applied to Form Page nodes.
     Given I am viewing an "form_page" content with the title "Test Form Page"

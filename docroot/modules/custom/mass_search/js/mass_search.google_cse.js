@@ -35,7 +35,7 @@
  *  Required Markup:
  *
  * <div class="ma__suggestions-container js-suggestions-container">
- <div class="visually-hidden js-suggestions-help" role="status"  aria-live="polite"></div>
+ <div class="ma__visually-hidden js-suggestions-help" role="status"  aria-live="polite"></div>
  <input
  id="..."
  class="..."

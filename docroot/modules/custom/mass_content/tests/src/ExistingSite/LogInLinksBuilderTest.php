@@ -4,12 +4,12 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\mass_content\LogInLinksBuilder;
 use Drupal\node\NodeInterface;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Tests LoginLinksBuilder functionality.
  */
-class LogInLinksBuilderTest extends ExistingSiteBase {
+class LogInLinksBuilderTest extends MassExistingSiteBase {
 
   private const LINKS_1 = [
     ['title' => 'number 1', 'uri' => 'https://example.link/number-1'],

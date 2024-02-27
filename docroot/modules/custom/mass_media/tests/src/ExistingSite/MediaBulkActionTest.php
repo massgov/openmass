@@ -7,14 +7,14 @@ namespace Drupal\Tests\mass_media\ExistingSite;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\user\Entity\User;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.
  */
-class MediaBulkActionTest extends ExistingSiteBase {
+class MediaBulkActionTest extends MassExistingSiteBase {
   const PUBLISH_ACTION = '3';
   const RESTRICT_ACTION = '4';
   const TRASH_ACTION = '5';

@@ -9,13 +9,13 @@ use Drupal\mass_utility\DebugCachability;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests basic alert functionality, including JSONAPI customizations.
  */
-class EmergencyAlertsTest extends ExistingSiteBase {
+class EmergencyAlertsTest extends MassExistingSiteBase {
 
   use LoginTrait;
 

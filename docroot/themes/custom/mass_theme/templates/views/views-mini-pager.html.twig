@@ -15,19 +15,19 @@
 {% if items %}
   <div class="ma__pagination">
     <nav class="ma__pagination__container">
-      <h4 id="pagination-heading" class="visually-hidden">{{ 'Pagination'|t }}</h4>
+      <h4 id="pagination-heading" class="ma__visually-hidden">{{ 'Pagination'|t }}</h4>
       {# Print previous item if we are not on the first page. #}
       {% if items.previous %}
         <a href="{{ items.previous.href }}" class="ma__pagination__prev js-pagination-prev {% if pagination.prev.disabled %}disabled{% endif %}"
-        aria-label="Go to {{ items.previous.text|default('Previous'|t) }} page" 
+        aria-label="Go to {{ items.previous.text|default('Previous'|t) }} page"
         rel="prev"{{ items.previous.attributes|without('href', 'title', 'rel') }}>
           {{ items.previous.text|default('‹ Previous'|t) }}
         </a>
       {% endif %}
       {# Print next item if we are not on the last page. #}
       {% if items.next %}
-        <a href="{{ items.next.href }}" 
-        class="ma__pagination__next js-pagination-next {% if pagination.next.disabled %}disabled{% endif %}" 
+        <a href="{{ items.next.href }}"
+        class="ma__pagination__next js-pagination-next {% if pagination.next.disabled %}disabled{% endif %}"
         aria-label="Go to {{ items.next.text|default('Next'|t) }} page"
         rel="next"{{ items.next.attributes|without('href', 'title', 'rel') }}>
         {{ items.next.text|default('Next ›'|t) }}
