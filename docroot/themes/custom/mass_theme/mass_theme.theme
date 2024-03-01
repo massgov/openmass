@@ -456,7 +456,8 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
         'groups' => [
           'accordion' => FALSE,
           'isExpanded' => FALSE,
-          'order' => ['phone', 'online', 'more_info'],
+          'address_check' => TRUE,
+          'order' => ['address', 'phone', 'online', 'more_info'],
         ],
       ];
       $sidebar['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
