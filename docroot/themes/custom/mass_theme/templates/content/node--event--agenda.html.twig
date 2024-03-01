@@ -42,7 +42,7 @@
   {# Update header to only print the properties needed for Agenda page, eg title and time of event. #}
   {% set pageHeader = pageHeader|merge({'title': "Agenda for " ~ (pageHeader.title)}) %}
   {% set pageHeader = pageHeader|merge({'category': ""}) %}
-  {% set pageHeader = pageHeader|merge({'optionalContents': (pageHeader.optionalContents|slice(0,1)) }) %}
+  {% set pageHeader = pageHeader|merge({'optionalContents': (pageHeader.optionalContents|slice(0, 1))}) %}
   {% set pageHeader = pageHeader|merge({'divider': false}) %}
 
   {% include "@organisms/page-header/page-header.twig" %}
@@ -83,10 +83,10 @@
       {% set date = pageHeader.optionalContents[0].data.eventTeaser.date.startDate %}
       {% set location = render_var(optionSection.data.contactUs.groups[0].items[0].value) %}
       {% set sideContentEventListing = {
-        "sidebarHeading":{
+        "sidebarHeading": {
         "title": "Related Event"
         },
-        "events":[{
+        "events": [{
           "title": {
             "href": render_var(url('<current>')),
             "text": node.label,
@@ -113,7 +113,7 @@
 
     {% set sideContentRelated = {
       'sidebarHeading': {
-        'title' : "Related",
+        'title': "Related",
       },
       'stacked': true,
       'links': [
@@ -126,6 +126,6 @@
       ]
     } %}
     {% set linkList = sideContentRelated %}
-    {% include "@organisms/by-author/link-list.twig"%}
+    {% include "@organisms/by-author/link-list.twig" %}
   {% endif %}
 {% endblock %}

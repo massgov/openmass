@@ -79,10 +79,10 @@
 {% endif %}
 
 {% set contactInfoFields = [
-  content.field_ref_address|merge({'#level': level + 1 }),
-  content.field_ref_phone_number|merge({'#level': level + 1 }),
-  content.field_ref_fax_number|merge({'#level': level + 1 }),
-  content.field_ref_links|merge({'#level': level + 1 })
+  content.field_ref_address|merge({'#level': level + 1}),
+  content.field_ref_phone_number|merge({'#level': level + 1}),
+  content.field_ref_fax_number|merge({'#level': level + 1}),
+  content.field_ref_links|merge({'#level': level + 1})
 ] %}
 {% set availableContactGroups = [] %}
 {% for contactInfoField in contactInfoFields %}
@@ -95,14 +95,14 @@
   {% set secondaryItems = true %}
 {% endif %}
 {% embed "@molecules/contact-us.twig" with {
-  "contactUs":{
+  "contactUs": {
     "accordion": false,
     "isExpanded": false,
     "columns": false,
     "showMore": true,
     "hideSecondary": not secondaryItems,
     "level": level,
-    "subTitle" : {
+    "subTitle": {
       "text": node.field_display_title.value
     }
   }
@@ -139,4 +139,4 @@
   {% endblock %}
 {% endembed %}
 
-{{ content | without('field_display_title', 'field_contact_more_info_link', 'field_ref_phone_number', 'field_ref_links', 'field_ref_fax_number', 'field_ref_address') }}
+{{ content|without('field_display_title', 'field_contact_more_info_link', 'field_ref_phone_number', 'field_ref_links', 'field_ref_fax_number', 'field_ref_address') }}

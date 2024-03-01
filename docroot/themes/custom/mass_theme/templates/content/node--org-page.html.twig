@@ -84,7 +84,7 @@
 {% endblock %}
 
 {% block main %}
-  <div class="main-content{{ _sidebar is not empty ? ' main-content--two': ' main-content--full'}}">
+  <div class="main-content{{ _sidebar is not empty ? ' main-content--two' : ' main-content--full' }}">
     <div class="page-content">
       {# Short Description #}
       {% if node.field_hide_short_description is not defined or node.field_hide_short_description.0.value == 0 %}
@@ -111,7 +111,7 @@
             "stackedRowSection": heading,
             "stackedRow": {
               "borderless": true,
-              "modifier" : "no-sidebar"
+              "modifier": "no-sidebar"
             },
             "externalSidebar": true
           } %}
@@ -130,7 +130,7 @@
                     {% endif %}
 
                     {% if node.field_get_updates_links is not empty %}
-                      {% for key,value in node.field_get_updates_links.value %}
+                      {% for key, value in node.field_get_updates_links.value %}
                         <li class="ma__link-list__item">
                           {{ content.field_get_updates_links[key] }}
                         </li>
@@ -138,7 +138,7 @@
                     {% endif %}
 
                     {% if node.field_public_records_link is not empty %}
-                      {% for key,value in node.field_public_records_link.value %}
+                      {% for key, value in node.field_public_records_link.value %}
                         <li class="ma__link-list__item">
                           {{ content.field_public_records_link[key] }}
                         </li>

@@ -38,15 +38,15 @@
 #}
 <ul class="ma__section-links__items">
   {# Render 4 callout links, alphabetically #}
-  {% for item in items|slice(0,4) %}
+  {% for item in items|slice(0, 4) %}
     {%
       set list = {
-        text:item.content['#title'],
+        text: item.content['#title'],
         href: (external_link_url is not empty) ? external_link_url : item.content['#url'].toString()
       }
     %}
     <li class="ma__section-links__item">
-      <a href="{{list.href}}" class="ma__section-links__link">{{list.text}}<span role="presentation"></span></a>
+      <a href="{{ list.href }}" class="ma__section-links__link">{{ list.text }}<span role="presentation"></span></a>
     </li>
   {% endfor %}
 </ul>

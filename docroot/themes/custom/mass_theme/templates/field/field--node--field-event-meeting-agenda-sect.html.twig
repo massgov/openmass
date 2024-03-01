@@ -43,7 +43,7 @@
 {# Create url for Read more link. #}
 {% set agenda_url = render_var(url('<current>')) ~ '/agenda' %}
 {# Set display count to determine if more link is displayed. #}
-{% set decorativeLink = agenda_display_items_count > 1 ? {'text': 'Read Full Agenda', 'href': (agenda_url) } : {} %}
+{% set decorativeLink = agenda_display_items_count > 1 ? {'text': 'Read Full Agenda', 'href': (agenda_url)} : {} %}
 {%
   set richText = {
     'compHeading': {
@@ -57,7 +57,7 @@
 {% extends "@organisms/by-author/rich-text.twig" %}
 {% block rteElements %}
   {# Only render one meeting minute sections. #}
-  {% for item in items | slice(0,1) %}
+  {% for item in items|slice(0, 1) %}
     {{ item }}
   {% endfor %}
 {% endblock %}

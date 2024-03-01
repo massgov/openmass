@@ -31,10 +31,10 @@
   {% if items %}
     {% for item in items %}
       <li{{ item.attributes.addClass('ma__footer-links__item') }}>
-	{{ link(item.title, item.url, { 'class':['ma__footer-links__link'] }) }}
-	{% if item.below %}
-	  {{ menus.menu_links(item.below, attributes, menu_level + 1) }}
-	{% endif %}
+    {{ link(item.title, item.url, {'class': ['ma__footer-links__link']}) }}
+    {% if item.below %}
+      {{ menus.menu_links(item.below, attributes, menu_level + 1) }}
+    {% endif %}
       </li>
     {% endfor %}
   {% endif %}
