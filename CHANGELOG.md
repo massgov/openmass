@@ -1,5 +1,21 @@
 
 
+## [0.390.0] - February 26, 2024
+
+### Changed
+  - DP-30528: Adjust target size for breadcrumbs home and    footnotes to meet WCAG 2.2.
+  - DP-31678: Search and replace /media and /files URLs with /doc URLs in content.
+  - DP-31679: Fix userway contrast settings feedbackform in UtilityNav.
+  - DP-31780: Add space to screen reader only text containers where screen readers announce the text sequentially as a part of its parent container's last word.
+  
+### Added
+  - DP-30638: Assert dynamic page cacheability during tests
+  
+### Fixed
+  - DP-31877: Fix textarea js conflicts with Formstack.
+  
+
+
 ## [0.389.0] - February 12, 2024
 
 ### Changed
