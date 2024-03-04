@@ -4,6 +4,7 @@ namespace Drupal\mass_content\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\taxonomy\Entity\Vocabulary;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
@@ -11,7 +12,7 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
  *
  * @group existing-site
  */
-class ExternalOrganizationOnCollectionTermPageTest extends ExistingSiteBase {
+class ExternalOrganizationOnCollectionTermPageTest extends MassExistingSiteBase {
 
   /**
    * Test External Organization rendering on Collection Term pages.

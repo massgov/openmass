@@ -474,8 +474,7 @@ jobs:
     resource_class: xlarge
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
-      # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
-      - image: backstopjs/backstopjs:6.1.4
+      - image: backstopjs/backstopjs:6.3.3
     steps:
       - checkout
       - run:
@@ -501,8 +500,8 @@ jobs:
       - run:
           name: Archive Reference Screenshots
           command: |
-            sudo apt-get update
-            sudo apt-get install zip -y
+            apt-get update
+            apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
@@ -580,6 +579,7 @@ jobs:
             - run:
                 name: Verify Artifacts
                 command: |
+                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
@@ -1192,9 +1192,6 @@ workflows:
     jobs:
       - backstop_reference:
           target: prod
-          filters:
-            branches:
-              only: develop
 
   # See https://support.circleci.com/hc/en-us/articles/12419710425499-How-to-Manually-Trigger-a-Scheduled-Pipeline
   backstop_snapshot:

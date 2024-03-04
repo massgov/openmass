@@ -771,14 +771,35 @@ class Molecules {
       'title' => ['field_display_title', 'field_media_contact_name'],
     ];
 
-    // Determines which fieldnames to use from the map.
+    // Determines which field names to use from the map.
     $referenced_fields = Helper::getMappedFields($entity, $reference_map);
 
     $groups = [];
 
+    // If the address_check isset we only show
+    // address if the other ones are empty.
+    // This is working on "How to" pages sidebar.
+    if (isset($options['address_check'])) {
+      if (!empty($referenced_fields)) {
+        $available_fields = [];
+        foreach ($referenced_fields as $id => $field) {
+          if (Helper::isFieldPopulated($entity, $field)) {
+            $available_fields[$id] = $field;
+          }
+        }
+      }
+    }
+
     if (!empty($referenced_fields)) {
       foreach ($referenced_fields as $id => $field) {
         if (Helper::isFieldPopulated($entity, $field)) {
+          if (isset($options['address_check'])) {
+            if (array_key_exists('phone', $available_fields) || array_key_exists('online', $available_fields)) {
+              if ($id == 'address') {
+                continue;
+              }
+            }
+          }
           // If the field type is a link, get the link data and flag
           // 'is_more_info' to TRUE, so it can be prepared in
           // ::prepareContactGroup().
@@ -908,9 +929,9 @@ class Molecules {
         'type' => 'CivicStructure',
       ],
       'schemaContactInfo' => $contactInfo,
-      'accordion' => isset($options['accordion']) ? $options['accordion'] : FALSE,
-      'isExpanded' => isset($options['isExpanded']) ? $options['isExpanded'] : FALSE,
-      'level' => isset($options['level']) ? $options['level'] : '',
+      'accordion' => $options['accordion'] ?? FALSE,
+      'isExpanded' => $options['isExpanded'] ?? FALSE,
+      'level' => $options['level'] ?? '',
       // @todo Needs validation if empty or not.
       'subTitle' => $title,
       'groups' => $groups,
@@ -1263,6 +1284,7 @@ class Molecules {
     return [
       'hasSuggestions' => $has_suggestions,
       'suggestedScopes' => $suggested_scopes,
+      'name' => 'header-search',
       'id' => 'header-search',
       'placeholder' => 'Search Mass.gov',
       'label' => 'Search terms',

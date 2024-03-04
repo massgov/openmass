@@ -8,14 +8,14 @@ use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Class EntityUsageTest.
  */
-class EntityUsageTest extends ExistingSiteBase {
+class EntityUsageTest extends MassExistingSiteBase {
 
   use LoginTrait;
   use MediaCreationTrait;
