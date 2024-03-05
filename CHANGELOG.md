@@ -22,7 +22,7 @@
   
 ### Added
   - DP-31966: fixed kbarticle broken link on orgpage elected officials.
-  
+  - DP-31982: Org type field and Org type taxonomy - to be used and populated later  
 
 
 ## [0.390.0] - February 26, 2024
