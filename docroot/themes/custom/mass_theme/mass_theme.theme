@@ -7343,18 +7343,20 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   $links_group = [];
   foreach ($variables['org_components'] as $key => &$org_component) {
 
+    /** @var Drupal\paragraphs\Entity\Paragraph */
+    $org_component_paragraph = &$org_component[0];
 
 
-    if ($container->field_hide_heading->value == 1) {
-      //   $org_component_paragraph['panda'] = 'apple';
-      // $org_component[0]['panda'] = 'kiwi';
-       print('<h4>HIDE HEADING</h4>');
+
+    // If parent heading is hidden, addjust child's heading level.
+    if ($container->field_hide_heading->value == 0) {
+      dump($org_component_paragraph);
+      // $org_component_paragraph['#values']['heading_level'] = 100;
     }
 
 
-    /** @var Drupal\paragraphs\Entity\Paragraph */
-    $org_component_paragraph = &$org_component[0];
-  if (
+
+    if (
       is_object($org_component_paragraph) &&
       $org_component_paragraph->getType() == 'flexible_link_group' &&
       $org_component_paragraph->field_display_type->value == 'links'
@@ -7368,7 +7370,7 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   }
 
 
-    dump($variables);
+    // dump($variables);
 
   _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables, 'org');
 
