@@ -7352,8 +7352,9 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     // Child templates are set up to incease propagated heading level (#level or level) by 1 for their heading level.
     // So, pass a value as 'current parent heading level - 1' (= 1)
     // Need to add a new array item for 'heading_level' which originally does not exist.
-    if ($container->field_hide_heading->value == 0) {
+    if ($container->field_hide_heading->value == 1) {
       // $org_component_paragraph['#values']['heading_level'] = 1;
+      print("<p>no heading</p>");
     }
 
 

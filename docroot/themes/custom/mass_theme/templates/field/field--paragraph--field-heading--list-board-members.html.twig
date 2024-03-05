@@ -38,15 +38,9 @@
  * @ingroup themeable
  */
 #}
-<h3 style="color: purple;">ELEMENT - element['#level']:  {{ element['#level'] }}</h3>
 
-{# {{ dump(element) }} #}
-
-{% if element['#level'] is not empty %}
-  {% set level = element['#level'] + 1 %}
-{% else %}
-  {% set level = 2 %}
-{% endif %}
+{# Set top heading level for the component. #}
+{% set level = elements['#level'] ? (elements['#level'] + 1) : 3 %}
 
 {% for item in items %}
   <div class="ma__stacked-row__container" id="board-members">
