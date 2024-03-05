@@ -5088,20 +5088,15 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
       $numOfSections = ++$index;
       $variables['numOfSections'] = $numOfSections;
       $link = Helper::separatedLinks($p, 'field_card_link');
-      $seeAll = [
-        'href' => $link[0]['href'],
-        'text' => 'more',
-      ];
       $sectionLinks[] = [
         'title' => [
-          'href' => $link[0]['href'],
-          'text' => $link[0]['text'],
+          'href' => $link[0]['href'] ?? '',
+          'text' => $p->get('field_card_header')->value,
         ],
         'level' => 3,
         'type' => '',
         'description' => Helper::fieldFullView($p, 'field_content'),
         'links' => '',
-        'seeAll' => $seeAll,
       ];
       $sections = ['sections' => $sectionLinks];
     }
