@@ -24,6 +24,7 @@ dependencies:
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_organization_sections
+    - field.field.node.org_page.field_organization_type
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
@@ -124,9 +125,9 @@ third_party_settings:
         - field_intended_audience
         - group_test_fieldset_group
         - field_parent
-        - field_org_no_search_filter
         - group_organization_parent_mass_g
         - field_billing_organization
+        - field_organization_type
       label: Overview
       region: content
       parent_name: group_node_edit_form
@@ -261,7 +262,7 @@ content:
       conditional_fields: {  }
   field_billing_organization:
     type: dynamic_entity_reference_options_select
-    weight: 137
+    weight: 136
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -279,7 +280,7 @@ content:
     third_party_settings: {  }
   field_career_opportunities:
     type: link_default
-    weight: 12
+    weight: 11
     region: content
     settings:
       placeholder_url: ''
@@ -374,7 +375,7 @@ content:
     third_party_settings: {  }
   field_more_about_leadership:
     type: entity_reference_autocomplete
-    weight: 10
+    weight: 9
     region: content
     settings:
       match_operator: CONTAINS
@@ -384,14 +385,14 @@ content:
     third_party_settings: {  }
   field_org_always_show_help_page:
     type: boolean_checkbox
-    weight: 135
+    weight: 136
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_org_directory_page:
     type: link_default
-    weight: 11
+    weight: 10
     region: content
     settings:
       placeholder_url: ''
@@ -423,6 +424,12 @@ content:
       add_mode: button
       form_display_mode: default
       default_paragraph_type: section_long_form
+    third_party_settings: {  }
+  field_organization_type:
+    type: options_buttons
+    weight: 137
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
@@ -485,7 +492,7 @@ content:
     third_party_settings: {  }
   field_public_records_link:
     type: link_default
-    weight: 13
+    weight: 12
     region: content
     settings:
       placeholder_url: ''

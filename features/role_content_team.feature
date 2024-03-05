@@ -29,7 +29,6 @@ Feature: Content Administrator
     And I should have access to "/node/add/stacked_layout"
     And I should have access to "/node/add/topic_page"
     And I should have access to "/node/add/contact_information"
-    And I should have access to "/node/add/guide_page"
     And I should have access to "/node/add/how_to_page"
     And I should have access to "/node/add/location"
     And I should have access to "/node/add/org_page"
