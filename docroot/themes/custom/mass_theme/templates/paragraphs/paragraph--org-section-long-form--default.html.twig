@@ -68,23 +68,6 @@
             {% endblock %}
           {% endembed %}
         {% else %}
-
-          <h4>org_component</h4>
-          {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 0 %}
-
-             <p style="color: orange; font-weight: 800;">hide the heading </p>
-             {# <p style="color: purple; font-weight: 800;">value output: {{ org_component[0][0] }}</p> #}
-
-             {# {% set org_component[0]['#level'] = 3 %} #}
-            {# {% set org_component = org_component|merge(
-                    [{'#level': '100',}]
-              ) %} #}
-
-          {% endif %}
-
-
-          {# {{ dump(org_component[0]) }} #}
-
           {{ org_component[0]|view }}
         {% endif %}
       {% endfor %}

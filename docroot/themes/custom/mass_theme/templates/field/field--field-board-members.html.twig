@@ -38,10 +38,7 @@
 #}
 
 {# Set top heading level for the component. #}
-{% set level = 2 %}
-{% if element['#level'] is not empty %}
-  {% set level = element['#level'] %}
-{% endif %}
+{% set level = elements['#level'] ? (elements['#level'] + 1) : 2 %}
 
 {% for item in items %}
   {{ item.content|merge({'#level': level }) }}

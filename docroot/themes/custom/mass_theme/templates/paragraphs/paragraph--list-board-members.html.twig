@@ -40,10 +40,7 @@
 #}
 
 {# Set top heading level for the component. #}
-{% set level = 2 %}
-{% if elements['#level'] is not empty %}
-  {% set level = elements['#level'] %}
-{% endif %}
+{% set level = elements['#level'] ? (elements['#level'] + 1) : 2 %}
 
 {# The total number of board members to initially show. #}
 {% set totalShown = 8 %}
