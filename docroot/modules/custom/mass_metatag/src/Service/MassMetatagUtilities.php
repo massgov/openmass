@@ -89,6 +89,14 @@ class MassMetatagUtilities {
           // checked.
           if (!in_array($org_page->id(), $checked_orgs)) {
             $orgs[] = $org_page;
+            if ($parent_meta) {
+              $result[$node->field_parent->entity->id()] = [
+                'title' => $node->field_parent->entity->getTitle(),
+                'uuid' => $node->field_parent->entity->uuid(),
+              ];
+            } else {
+              $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+            }
           }
         }
       }
