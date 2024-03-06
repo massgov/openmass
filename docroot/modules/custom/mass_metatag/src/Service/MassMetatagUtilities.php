@@ -94,7 +94,7 @@ class MassMetatagUtilities {
                 'title' => $node->field_parent->entity->getTitle(),
                 'uuid' => $node->field_parent->entity->uuid(),
               ];
-            } 
+            }
             else {
               $result[] = $this->slugify(trim($node->field_parent->entity->label()));
             }
