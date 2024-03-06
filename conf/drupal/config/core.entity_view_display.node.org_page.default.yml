@@ -24,6 +24,7 @@ dependencies:
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_organization_sections
+    - field.field.node.org_page.field_organization_type
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
@@ -298,6 +299,14 @@ content:
       link: ''
     third_party_settings: {  }
     weight: 50
+    region: content
+  field_organization_type:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 141
     region: content
   field_organizations:
     type: entity_reference_label

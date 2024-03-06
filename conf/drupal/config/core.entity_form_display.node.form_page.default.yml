@@ -66,9 +66,10 @@ third_party_settings:
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: open
-        description: ''
+        description: "<p>See our <a href=\"https://www.mass.gov/kb/forms\">Forms page in the knowledge base</a> for more information.</p>\r\n\r\n<p>There are important <a href=\"https://www.mass.gov/kb/form-use-policy\">acceptable use guidelines</a> that MUST be followed for all forms. <strong>Do not collect, transmit, or store any personal information unless your legal and IT leadership review and approve</strong>.</p>"
         required_fields: true
 id: node.form_page.default
 targetEntityType: node
@@ -180,6 +181,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
