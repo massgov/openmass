@@ -18,14 +18,13 @@
         if (dataLayer.entityBundle !== 'topic_page') {
           var orgsFiltered = [];
           var parentOrgsFiltered = [];
-          var orgs = '';
           var parentOrgs = '';
 
           // Get related organizations from the dataLayer object.
-          const dataLayerOrgs = dataLayer.entityField_organizations
+          var dataLayerOrgs = dataLayer.entityField_organizations;
           if (typeof dataLayerOrgs !== 'undefined') {
             $.each(dataLayerOrgs, function (nid, orgAttributes) {
-              var orgNodeString = `${orgAttributes['slug']}:${nid}`
+              var orgNodeString = orgAttributes['slug'] + ':' + nid;
               if ($.inArray(orgNodeString, orgsFiltered) === -1) {
                 orgsFiltered.push(orgNodeString);
               }
