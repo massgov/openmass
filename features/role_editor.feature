@@ -11,7 +11,6 @@ Feature: Editor Role
     Then I should see the dashboard tabs
     Then I should have access to "/node/add"
     And I should have access to "/node/add/contact_information"
-    And I should have access to "/node/add/guide_page"
     And I should have access to "/node/add/how_to_page"
     And I should have access to "/node/add/location"
     And I should have access to "/node/add/org_page"
@@ -54,45 +53,38 @@ Feature: Editor Role
     And the select list "#edit-moderation-state-0-state" should contain the option "trash"
 
 
-  Scenario: Ensure Editors can create, edit and otherwise manage News, Event, Form, Rules and Guide nodes.
+  Scenario: Ensure Editors can create, edit and otherwise manage News, Event, Form, and Rules nodes.
     Then the "editor" role should have the permissions:
       | Permission                      |
       | create event content            |
       | create news content             |
       | create form_page content        |
-      | create guide_page content       |
       | create rules content            |
       | edit any event content          |
       | edit any news content           |
-      | edit any guide_page content     |
       | edit any form_page content      |
       | edit any rules content          |
       | edit own event content          |
       | edit own news content           |
       | edit own form_page content      |
-      | edit own guide_page content     |
       | edit own rules content          |
       | revert event revisions          |
       | revert news revisions           |
       | revert form_page revisions      |
-      | revert guide_page revisions     |
       | revert rules revisions          |
       | view event revisions            |
       | view news revisions             |
       | view form_page revisions        |
-      | view guide_page revisions       |
       | view rules revisions            |
     Then the "editor" role should not have the permissions:
       | Permission               |
       | delete any event content        |
       | delete any news content         |
       | delete any form_page content    |
-      | delete any guide_page content   |
       | delete any rules content        |
       | delete own event content        |
       | delete own news content         |
       | delete own form_page content    |
-      | delete own guide_page content   |
       | delete own rules content        |
 
   Scenario: Ensure Editors can create, edit and otherwise manage Person nodes.

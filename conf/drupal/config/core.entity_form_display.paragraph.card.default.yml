@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.card.field_card_header
     - field.field.paragraph.card.field_card_link
     - field.field.paragraph.card.field_content
     - paragraphs.paragraphs_type.card
@@ -14,9 +15,17 @@ targetEntityType: paragraph
 bundle: card
 mode: default
 content:
+  field_card_header:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_card_link:
     type: link_default
-    weight: -99
+    weight: 1
     region: content
     settings:
       placeholder_url: ''
@@ -24,7 +33,7 @@ content:
     third_party_settings: {  }
   field_content:
     type: text_textarea
-    weight: -98
+    weight: 2
     region: content
     settings:
       rows: 5
