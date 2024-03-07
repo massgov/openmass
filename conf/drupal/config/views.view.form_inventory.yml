@@ -9,10 +9,14 @@ dependencies:
     - field.storage.node.field_reusable_label
     - node.type.form_page
   module:
+    - csv_serialization
     - mass_bigquery
     - mass_fields
     - node
+    - rest
+    - serialization
     - user
+    - views_data_export
 id: form_inventory
 label: 'Form inventory'
 module: views
@@ -998,6 +1002,54 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:field.storage.node.field_collections'
+        - 'config:field.storage.node.field_form_embed'
+        - 'config:field.storage.node.field_organizations'
+        - 'config:field.storage.node.field_reusable_label'
+  data_export_1:
+    id: data_export_1
+    display_title: 'Data export'
+    display_plugin: data_export
+    position: 2
+    display_options:
+      style:
+        type: data_export
+        options:
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+            use_serializer_encode_only: false
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
+      path: admin/report/form-inventory-download
+      displays:
+        page_1: page_1
+        default: '0'
+      filename: form-inventory.csv
+      automatic_download: true
+      redirect_path: /admin/report/form-inventory
+      store_in_public_file_directory: false
+      custom_redirect_path: true
+      redirect_to_display: none
+      include_query_params: true
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - request_format
         - 'user.node_grants:view'
         - user.permissions
       tags:
