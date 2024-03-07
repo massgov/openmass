@@ -105,7 +105,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           $page = $session->getPage();
           // @codingStandardsIgnoreLine
           /** @noinspection NullPointerExceptionInspection */
-          $page->find('css', '.ma__toc__toc__toggle')->click();
+          $page->find('css', 'div.ma__toc--overlay > div.ma__toc__toc__title > button.ma__toc__toc__toggle')->click();
           // CSS :visible seems to be true during the menu fade in, but before
           // the elements are clickable. We defer to the slower implementation
           // to let the browser determine when an element is ready to interact
