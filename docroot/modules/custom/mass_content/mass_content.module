@@ -1172,6 +1172,8 @@ function mass_content_views_pre_view(ViewExecutable $view, $display_id, array &$
  * Implements hook_entity_embed_alter().
  */
 function mass_content_entity_embed_alter(array &$build, EntityInterface $entity, array &$context) {
+  // Removes alt and title attribute from the article tag.
+  // See more on DP-28012
   if (isset($build['#attributes']['alt'])) {
     unset($build['#attributes']['alt']);
   }
