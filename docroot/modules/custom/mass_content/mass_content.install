@@ -64,7 +64,8 @@ function mass_content_update_9003() {
     $term->save();
 
     return t('Created "@name" term in "@vocabulary" vocabulary.', ['@name' => $term_name, '@vocabulary' => $vocabulary]);
-  } else {
+  }
+  else {
     // Term already exists, so we do not need to create it.
     return t('The term "@name" already exists in "@vocabulary" vocabulary.', ['@name' => $term_name, '@vocabulary' => $vocabulary]);
   }
