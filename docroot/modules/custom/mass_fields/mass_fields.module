@@ -1012,8 +1012,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
 
         case 'iframe':
           $dependee_field_name = 'field_iframe_height_config';
-          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
-
+          $selector = sprintf('input[name="%s[%d][subform][%s][%d][subform][%s]"]', $element['#field_parents'][0], $element['#field_parents'][1], $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
           // Dependent fields.
           $element['subform']['field_verify_iframe_100_confirm']['widget']['value']['#states'] = [
             'required' => [
