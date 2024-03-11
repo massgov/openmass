@@ -76,7 +76,7 @@
         {% endfor %}
         {% if content.field_rules_download|render is not empty %}
           {# Using the field_rules_download view mode to display the URL for doucments in this section. #}
-          {%  embed "@organisms/by-author/form-downloads.twig" with {
+          {% embed "@organisms/by-author/form-downloads.twig" with {
             "formDownloads": {
               "compHeading": {
                 "title": "Downloads",

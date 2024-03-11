@@ -27,14 +27,14 @@
       {% set links = links|merge([content]) %}
     {% endfor %}
 
-    {% set item  = {
+    {% set item = {
         "collapsibleHeader": {
             "title": flexible_link.title,
             "description": flexible_link.description,
             "headingLevel": 3
           },
           "expanded": flexible_link.expanded,
-          "includes" : links
+          "includes": links
         }
     %}
 

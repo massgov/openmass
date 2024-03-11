@@ -78,7 +78,7 @@
   {% set secondaryItems = true %}
 {% endif %}
 {% embed "@molecules/contact-us.twig" with {
-  "contactUs":{
+  "contactUs": {
     "accordion": false,
     "isExpanded": false,
     "columns": false,
@@ -88,20 +88,20 @@
 } %}
   {% block primaryContactGroups %}
     {% if node.field_ref_address is not empty %}
-      {{ content.field_ref_address|merge({'#level': level }) }}
+      {{ content.field_ref_address|merge({'#level': level}) }}
     {% endif %}
     {% if node.field_ref_phone_number is not empty %}
-      {{ content.field_ref_phone_number|merge({'#level': level }) }}
+      {{ content.field_ref_phone_number|merge({'#level': level}) }}
     {% endif %}
   {% endblock %}
 
   {% block secondaryContactGroups %}
     {% if secondaryItems %}
       {% if node.field_ref_links is not empty %}
-        {{ content.field_ref_links|merge({'#level': level }) }}
+        {{ content.field_ref_links|merge({'#level': level}) }}
       {% endif %}
       {% if node.field_ref_fax_number is not empty %}
-        {{ content.field_ref_fax_number|merge({'#level': level }) }}
+        {{ content.field_ref_fax_number|merge({'#level': level}) }}
       {% endif %}
       {% if node.field_contact_more_info_link is not empty %}
         <div class="ma__contact-us__more-info">

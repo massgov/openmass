@@ -37,12 +37,12 @@
  */
 #}
 
-{#Show first 2 contact groups outside of accordion#}
+{# Show first 2 contact groups outside of accordion #}
 {% for contactGroup in contactGroups[:2] %}
   {% include "@molecules/contact-group.twig" %}
 {% endfor %}
 
-{#Show 3rd+ contact groups inside of accordion (if they exist) #}
+{# Show 3rd+ contact groups inside of accordion (if they exist) #}
 {% if contactGroups|length > 2 %}
   <div class="ma__contact-us__extra js-accordion-content">
     {% for contactGroup in contactGroups[2:last] %}
