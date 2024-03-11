@@ -36,19 +36,19 @@
  * @ingroup themeable
  */
 #}
-{% if layout =='full_width' %}
+{% if layout == 'full_width' %}
   <div class="ma__page-header__intro">
     <section class="ma__rich-text js-ma-rich-text">
       {{ content.field_contact_info|field_value }}
     </section>
   </div>
-{% elseif layout =='column_left' %}
+{% elseif layout == 'column_left' %}
   <section class="ma__header-contact js-accordion">
     <div class="ma__header-contact__container">
       <div class="ma__header-contact__column">
         {{ content.field_contact_info|field_value }}
       </div>
-{% elseif layout =='column_right' %}
+{% elseif layout == 'column_right' %}
       <div class="ma__header-contact__column js-accordion-content">
         {{ content.field_contact_info|field_value }}
       </div>

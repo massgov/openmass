@@ -99,9 +99,9 @@
   {% set organizations = [node.field_external_organization.value] %}
 {% endif %}
 {% include "@molecules/general-teaser.twig" with {
-  "generalTeaser" : {
+  "generalTeaser": {
     "eyebrow": eyebrow,
-    "title" : {
+    "title": {
       "href": node.field_externaldata_url.0.uri ?: '#',
       "text": label,
       "info": "",
@@ -113,7 +113,7 @@
     "contents": [{
       "path": "@atoms/11-text/paragraph.twig",
       "data": {
-        "paragraph" : {
+        "paragraph": {
           "text": node.field_externaldata_description.value ?: ''
         }
       }

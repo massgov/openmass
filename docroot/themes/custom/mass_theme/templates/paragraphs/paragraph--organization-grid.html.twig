@@ -37,20 +37,20 @@
  */
 #}
 {% embed "@organisms/by-author/image-link-list.twig" with {
-    "imageLinkList" : {
+    "imageLinkList": {
       "blocks": true,
       "itemPluralName": "organizations",
       "description": {
         "rteElements": [{
           "path": "@atoms/11-text/paragraph.twig",
           "data": {
-            "paragraph" : {
+            "paragraph": {
               "text": content.field_summary
             }
           }
         }]
       },
-      "totalLinks": paragraph.field_org_grid_org | length,
+      "totalLinks": paragraph.field_org_grid_org|length,
       "sectionClass": 'ma__our-organizations',
     }
   } %}
