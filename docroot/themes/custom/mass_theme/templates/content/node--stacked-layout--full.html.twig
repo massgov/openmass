@@ -10,7 +10,7 @@
 set pageBanner = {
   'bgWide': file_url(node.field_photo.entity.fileuri ?? ''),
   'bgNarrow': file_url(node.field_photo.entity.fileuri ?? ''),
-  'size':'large',
+  'size': 'large',
   'icon': '',
   'title': label|field_value,
   'titleSubText': node.field_label.value ? "(" ~ node.field_label.value ~ ")" : ''
@@ -27,7 +27,7 @@ set illustratedHeader = {
     'rteElements': [{
       'path': '@atoms/11-text/raw-html.twig',
       'data': {
-        'rawHtml' : {
+        'rawHtml': {
           'content': content.field_lede|field_value
         }
       }
@@ -61,7 +61,7 @@ set suggestedPages = {
       {% if content.field_lede|field_value is not empty or
             content.field_action_header|field_value is not empty or
             content.field_header_cta|field_value is not empty %}
-        {% set actionHeader = { 'divider': true } %}
+        {% set actionHeader = {'divider': true} %}
         {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
       {% endif %}
     {% else %}

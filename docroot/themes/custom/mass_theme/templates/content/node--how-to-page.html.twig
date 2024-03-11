@@ -178,7 +178,7 @@
               {# Below is the section for Downloads. #}
               {% if content.field_how_to_files|render is not empty %}
                 {# Using the field_how_to_files view mode to display the URL for doucments in this section. #}
-                {%  embed "@organisms/by-author/form-downloads.twig" with {
+                {% embed "@organisms/by-author/form-downloads.twig" with {
                   "formDownloads": {
                     "compHeading": {
                       "title": (field_customize_header_text and node.field_downloads_header is not empty) ? node.field_downloads_header.value : "Downloads",
@@ -234,8 +234,8 @@
             {% block sidebar %}
               {% if sidebar.linkList %}
                 {% set linkList = sidebar.linkList %}
-                {% set compHeading = linkList.compHeading|merge({'level': level }) %}
-                {% set linkList = linkList|merge({'compHeading': compHeading }) %}
+                {% set compHeading = linkList.compHeading|merge({'level': level}) %}
+                {% set linkList = linkList|merge({'compHeading': compHeading}) %}
                 {% include "@organisms/by-author/link-list.twig" %}
               {% endif %}
             {% endblock %}
