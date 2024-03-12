@@ -923,6 +923,14 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
               $selector => ['value' => 'color'],
             ],
           ];
+          $element['subform']['field_image']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
           break;
         case 'org_section_long_form':
           $dependee_field_name = 'field_hide_heading';
