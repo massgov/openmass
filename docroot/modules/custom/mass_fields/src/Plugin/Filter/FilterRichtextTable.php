@@ -28,14 +28,17 @@ class FilterRichtextTable extends FilterBase {
     $tableWrapperBottom = '</table></div></div>';
     $tableHeadingScope = '<th scope="col">';
 
-    // Step 1: remove '<p>&nbsp;</p>' from the rich text input.
+    // Step 1:
+    // Remove '<p>&nbsp;</p>' from the rich text input.
     $text = preg_replace('/<p>(\s|\xc2\xa0|&nbsp;)<\/p>/', '', $text);
-    // Step 2: remove spaces in the cell with nested tables.
+    // Step 2:
+    // Remove spaces in the cell with nested tables.
     $spaceInCellWithNestedTable = ['/<td>\s\s+<table>/', '/<\/table>\s\s+<\/td>/'];
     $cleanNestedTable = ['<td><table>', '</table></td>'];
     $text = preg_replace($spaceInCellWithNestedTable, $cleanNestedTable, $text);
-    // Step 3: Add responsive table wrappers to non-nested tables.
-    //         Add scope to th of all tables, nested and non-nested.
+    // Step 3:
+    // Add responsive table wrappers to non-nested tables.
+    // Add scope to th of all tables, nested and non-nested.
     $plainTableElements = ['/(?<!<td>)<table>/', '/<\/table>(?!<\/td>)/', '/<th>/'];
     $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
     $output = preg_replace($plainTableElements, $responsiveTableElements, $text);
