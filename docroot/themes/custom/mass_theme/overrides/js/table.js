@@ -37,9 +37,6 @@
           if (hasRowHeaders) {
             headerIndex = cellIndex + 1;
           }
-
-          // var headerLabel = headerLabels[headerIndex];
-          // $(this).attr('data-label', headerLabel);
         });
       });
     }
@@ -64,10 +61,7 @@
       // table-responsive.twig L.12
       var userInputCaption = $(table).find('caption:not(.ma__table__caption)');
       // 2nd test prevents empty caption content container. Otherwise add extra space at the top of the table.
-      if (
-        $(table).find('caption:not(.ma__table__caption)') &&
-        $(table).find('caption:not(.ma__table__caption)').text().length > 0
-      ) {
+      if ($(userInputCaption) && $(userInputCaption).text().length > 0) {
         var captionText = $(userInputCaption).text();
         var captionSnippet =
           '<span class="ma__table__caption__content">' +
