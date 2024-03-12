@@ -22,7 +22,7 @@
   {% set showToc = FALSE %}
 {% endif %}
 {% if showToc %}
-  {% if sectionCount >=2 %}
+  {% if sectionCount >= 2 %}
     {% set overviewPreContentVisible = TRUE %}
   {% elseif sectionCount < 2 %}
     {% set overviewPageContentVisible = TRUE %}
@@ -124,7 +124,6 @@
     {% endif %}
   {% endif %}
 
-
   {% if showToc %}
     {% include "@organisms/by-template/sticky-toc.twig" with {
       "stickyTOC": {
@@ -190,7 +189,7 @@
           }
         }]
       }
-    }%}
+    } %}
   {% endif %}
 
   {% if table_rows %}
@@ -198,13 +197,13 @@
       "listingTable": {
         "rows": table_rows
       }
-    }%}
+    } %}
   {% endif %}
 
   {% set relatedClass = not no_sidebar ? 'hidden-desktop' %}
   {% if sideContent and sideContent.linkList %}
     {% set linkList = sideContent.linkList %}
-    {% set linkList = linkList|merge({'sectionClass': relatedClass,'sidebarHeading': {
+    {% set linkList = linkList|merge({'sectionClass': relatedClass, 'sidebarHeading': {
       'title': linkList.sidebarHeading.title,
       'titleContext': linkList.sidebarHeading.titleContext,
       'level': level
@@ -227,8 +226,8 @@
 {% block sidebar %}
   {% if sideContent.contactList %}
     {% set contactList = sideContent.contactList %}
-    {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level + 1 }) %}
-    {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+    {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level + 1}) %}
+    {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
     {% include "@organisms/by-author/contact-list.twig" %}
   {% endif %}
   {% if sideContent.linkList %}

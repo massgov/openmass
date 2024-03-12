@@ -52,7 +52,7 @@
 
   {% block stackedRowContentOverride %}
     {# Heading #}
-    {{ content.field_heading|merge({'#level': level }) }}
+    {{ content.field_heading|merge({'#level': level}) }}
 
     {# Board members (sections) #}
     {% embed '@organisms/by-author/teaser-listing-group.twig' with {
@@ -71,9 +71,9 @@
         <section class="ma__teaser-listing">
           <div class="ma__teaser-listing__container js-accordion">
             <div class="ma__teaser-listing ma__teaser-listing__featured-items">
-              {{ content.field_featured_board_members|merge({'#level': level }) }}
+              {{ content.field_featured_board_members|merge({'#level': level}) }}
             </div>
-            {{ content.field_board_members|merge({'#level': level }) }}
+            {{ content.field_board_members|merge({'#level': level}) }}
           </div>
         </section>
       {% endblock %}
