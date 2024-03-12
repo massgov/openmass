@@ -247,7 +247,7 @@
           ' role="contentinfo" ' +
           ' aria-label="Alert" ' +
           ' class="messages messages--error"> ' +
-          ' <h2 class="visually-hidden">Status message</h2> ' +
+          ' <h2 class="ma__visually-hidden">Status message</h2> ' +
           ' <div>' +
           ' Moving this page to a parent of this content type is not allowed. ' +
           ' Please move the row in red to a different content type. ' +
@@ -259,11 +259,10 @@
           '</div>';
 
         var alertBoxWrapper =
-          '<div ' +
-          ' id="' + wrongBundleAlertId + '--wrapper" ' +
+          '<div ' + ' id="' + wrongBundleAlertId + '--wrapper" ' +
           ' role="contentinfo" ' +
           ' >' +
-          ' <h2 class="visually-hidden">Status message</h2> ' +
+          ' <h2 class="ma__visually-hidden">Status message</h2> ' +
           alertBox +
           '</div>';
 
@@ -312,11 +311,15 @@
 
         var messageBox =
           '<div ' +
-          ' id="' + wrongMessageId + '" ' +
+          ' id="' +
+          wrongMessageId +
+          '" ' +
           ' role="contentinfo" ' +
           ' aria-label="Status message" ' +
-          ' class="messages messages--error ' + hierarchyMessagesClass + '"> ' +
-          ' <h2 class="visually-hidden">Status message</h2> ' +
+          ' class="messages messages--error ' +
+          hierarchyMessagesClass +
+          '"> ' +
+          ' <h2 class="ma__visually-hidden">Status message</h2> ' +
           message +
           '</div>';
 

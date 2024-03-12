@@ -1,5 +1,46 @@
 
 
+## [0.391.0] - March 4, 2024
+
+### Changed
+  - DP-30655: Correct the heading level for side contact item.
+  - DP-31690: Change card component on info details page.
+  - DP-31793: Add outline to page alerts and change icon and color to improve accessibility
+  - DP-31798: A11y - Hide the map from keyboard and AT users.
+  - DP-31955: Don't generate the list container when suggested page items are not available to list.
+  - DP-31994: Added help text and guidelines message to top of form edit page.
+  - DP-32056: Guide content type is deprecated. New guides cannot be created. Use info details instead.
+  
+### Fixed
+  - DP-31233: Fix CircleCI failures
+  - DP-31866: Fix mosaic link styles.
+  - DP-31925: Eliminate horizontal scrolling on org page.
+  - DP-31942: nightly_backstop_snapshot failing due to missing sudo
+  - DP-31948: Fix data pull from BigQuery intro Drupal.
+  - DP-31971: Fix contact on how-to page.
+  - DP-32030: BUG contact field on location page allows all types.
+  
+### Added
+  - DP-31966: fixed kbarticle broken link on orgpage elected officials.
+  - DP-31982: Org type field and Org type taxonomy - to be used and populated later  
+
+
+## [0.390.0] - February 26, 2024
+
+### Changed
+  - DP-30528: Adjust target size for breadcrumbs home and    footnotes to meet WCAG 2.2.
+  - DP-31678: Search and replace /media and /files URLs with /doc URLs in content.
+  - DP-31679: Fix userway contrast settings feedbackform in UtilityNav.
+  - DP-31780: Add space to screen reader only text containers where screen readers announce the text sequentially as a part of its parent container's last word.
+  
+### Added
+  - DP-30638: Assert dynamic page cacheability during tests
+  
+### Fixed
+  - DP-31877: Fix textarea js conflicts with Formstack.
+  
+
+
 ## [0.389.0] - February 12, 2024
 
 ### Changed

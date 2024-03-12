@@ -13,43 +13,43 @@
 {% set level = 1 %}
 
 {% block preContent %}
-	{# If the contextual navigation should be set for this node, then add it. #}
-	{% if node.computed_log_in_links is not empty %}
-		{{ contextual_log_in_links }}
-	{% endif %}
+    {# If the contextual navigation should be set for this node, then add it. #}
+    {% if node.computed_log_in_links is not empty %}
+        {{ contextual_log_in_links }}
+    {% endif %}
 
-	{# Check if primary indicator content exists. #}
-	{% set primaryIndicators = null %}
-	{% set primaryRelationshipContent = null %}
-	{#
-	  {% if content.computed_related_to[0] %}
-	    {% set primaryIndicators = { "label": "part of" } %}
-	    {% set primaryRelationshipContent = content.computed_related_to %}
-	  {% endif %}
-	  #}
-	{% set secondaryIndicators = false %}
-	{% if content.field_organizations is not empty %}
-		{% set secondaryIndicators = {
+    {# Check if primary indicator content exists. #}
+    {% set primaryIndicators = null %}
+    {% set primaryRelationshipContent = null %}
+    {#
+      {% if content.computed_related_to[0] %}
+        {% set primaryIndicators = { "label": "part of" } %}
+        {% set primaryRelationshipContent = content.computed_related_to %}
+      {% endif %}
+      #}
+    {% set secondaryIndicators = false %}
+    {% if content.field_organizations is not empty %}
+        {% set secondaryIndicators = {
       "icon": "building",
       "label": "offered by",
       "groupAfter": 3
     } %}
-	{% endif %}
+    {% endif %}
 
-	{% embed "@molecules/relationship-indicators.twig" with {
+    {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
       "pageTitle": node.label,
       "primary": primaryIndicators,
       "secondary": secondaryIndicators
     }
   } %}
-		{% block primaryRelationship %}
-			{{ primaryRelationshipContent }}
-		{% endblock %}
-		{% block secondaryRelationship %}
-			{{ content.field_organizations }}
-		{% endblock %}
-	{% endembed %}
+        {% block primaryRelationship %}
+            {{ primaryRelationshipContent }}
+        {% endblock %}
+        {% block secondaryRelationship %}
+            {{ content.field_organizations }}
+        {% endblock %}
+    {% endembed %}
   {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
       "image": content.field_guide_page_bg_wide[0],
@@ -61,7 +61,7 @@
       }
     }
   } %}
-	{% include "@organisms/by-template/sticky-toc.twig" with {
+    {% include "@organisms/by-template/sticky-toc.twig" with {
     "stickyTOC": {
       "title": "Table of Contents"|t,
       "parent": "#main-content",
@@ -71,19 +71,19 @@
 {% endblock %}
 
 {% block stackedRowContent %}
-	{# Increase heading number by 1 from the parent heading. #}
-	{% set level = level + 1 %}
-	{{ content.field_guide_page_sections }}
+    {# Increase heading number by 1 from the parent heading. #}
+    {% set level = level + 1 %}
+    {{ content.field_guide_page_sections }}
 {% endblock %}
 
 {% block postContent %}
-	{% if content.field_image_credit is not empty %}
-		{{ content.field_image_credit }}
-	{% endif %}
-	{% if node.field_guide_page_related_guides.value %}
-		{% include "@organisms/by-author/suggested-pages.twig" %}
-	{% endif %}
-	{{ content.extra_org_feedback_form }}
+    {% if content.field_image_credit is not empty %}
+        {{ content.field_image_credit }}
+    {% endif %}
+    {% if node.field_guide_page_related_guides.value %}
+        {% include "@organisms/by-author/suggested-pages.twig" %}
+    {% endif %}
+    {{ content.extra_org_feedback_form }}
 {% endblock %}
 
 {% block footer %}{% endblock %}

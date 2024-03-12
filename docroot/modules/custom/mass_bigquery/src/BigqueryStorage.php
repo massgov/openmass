@@ -104,7 +104,7 @@ class BigqueryStorage implements BigqueryStorageInterface {
 
     do {
       $query = $this->entityQuery
-        ->condition('type', $types, 'IN')
+        ->condition('type', $types, 'IN')->accessCheck(FALSE)
         ->range($start, $batch);
       $ids = $query->execute();
       if (!empty($ids)) {

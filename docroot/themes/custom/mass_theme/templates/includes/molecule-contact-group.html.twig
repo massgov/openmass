@@ -9,34 +9,34 @@
 <div class="ma__contact-group">
   <h5 class="ma__contact-group__name">
     {% include contactGroup.icon %}
-    <span>{{contactGroup.name}}</span>
+    <span>{{ contactGroup.name }}</span>
   </h5>
   {% for item in contactGroup.items %}
     <div>
       {% if item.label %}
-        <span class="ma__contact-group__label">{{item.label}}</span>
+        <span class="ma__contact-group__label">{{ item.label }}</span>
       {% endif %}
       {% if item.type == "phone" %}
-        <a href="tel:{{item.link}}" class="ma__content-link ma__content-link--phone">{{item.value}}</a>
+        <a href="tel:{{ item.link }}" class="ma__content-link ma__content-link--phone">{{ item.value }}</a>
       {% elseif item.type == "fax" %}
-        {{item.value}}
+        {{ item.value }}
       {% elseif item.type == "email" %}
-        <a href="mailto:{{item.link}}" class="ma__content-link">{{item.value}}</a>
+        <a href="mailto:{{ item.link }}" class="ma__content-link">{{ item.value }}</a>
       {% elseif item.type == "online" %}
-        <a href="{{item.link}}" class="ma__content-link">{{item.value}}</a>
+        <a href="{{ item.link }}" class="ma__content-link">{{ item.value }}</a>
       {% elseif item.type == "address" %}
         <div class="ma__contact-group__address">
-          {{item.value|nl2br|raw}}
+          {{ item.value|nl2br|raw }}
         </div>
         {% if item.link %}
-          <a href="{{item.link}}" class="ma__content-link ma__content-link--chevron">Directions</a>
+          <a href="{{ item.link }}" class="ma__content-link ma__content-link--chevron">Directions</a>
         {% endif %}
       {% else %}
-        {{item.value}}
+        {{ item.value }}
       {% endif %}
     </div>
     {% if item.details %}
-      <p class="ma__contact-group__details">{{item.details}}</p>
+      <p class="ma__contact-group__details">{{ item.details }}</p>
     {% endif %}
   {% endfor %}
 </div>

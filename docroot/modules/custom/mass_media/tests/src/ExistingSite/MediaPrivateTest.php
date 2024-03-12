@@ -5,13 +5,13 @@ namespace Drupal\Tests\mass_media\ExistingSite;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Tests moving files into and out of the private filesystem on media update.
  */
-class MediaPrivateTest extends ExistingSiteBase {
+class MediaPrivateTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
 

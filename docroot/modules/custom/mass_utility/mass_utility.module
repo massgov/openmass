@@ -581,18 +581,20 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
 
     // DP-24989: Override core entity_reference field widget to custom view to solve custom sorting by bundle.
     if (isset($element['target_id']['#type']) && $element['target_id']['#target_type'] == 'node' && $element['target_id']['#type'] == 'entity_autocomplete') {
-
-      $target_bundles = isset($element['target_id']['#selection_settings']['target_bundles']) ? implode('+', $element['target_id']['#selection_settings']['target_bundles']) : 'all';
-      $element['target_id']['#selection_handler'] = 'views';
-      $element['target_id']['#selection_settings'] = [
-        'view' => [
-          'view_name' => 'link_field_autocomplete',
-          'display_name' => 'entity_reference',
-          'arguments' => [
-            'type' => $target_bundles,
+      // If the element is already using views to populate results, we leave it as is.
+      if ($element['target_id']['#selection_handler'] != 'views') {
+        $target_bundles = isset($element['target_id']['#selection_settings']['target_bundles']) ? implode('+', $element['target_id']['#selection_settings']['target_bundles']) : 'all';
+        $element['target_id']['#selection_handler'] = 'views';
+        $element['target_id']['#selection_settings'] = [
+          'view' => [
+            'view_name' => 'link_field_autocomplete',
+            'display_name' => 'entity_reference',
+            'arguments' => [
+              'type' => $target_bundles,
+            ],
           ],
-        ],
-      ];
+        ];
+      }
     }
     if ($field_name == 'field_issuer_issuers') {
       if ($element['target_id']['#field_parents'][0] == 'field_advisory_issuer') {
