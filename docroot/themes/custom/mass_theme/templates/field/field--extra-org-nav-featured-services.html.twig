@@ -70,10 +70,9 @@
     href: '#what-would-you-like-to-do',
     text: 'See more actions & services'|t,
   } %}
-  {% set linkList = linkList|merge({ more: more }) %}
+  {% set linkList = linkList|merge({more: more}) %}
 {% endif %}
 
 {% include '@organisms/by-author/link-list.twig' with {
   linkList: linkList,
 } %}
-

@@ -49,7 +49,7 @@
         <div class="ma__sections-3up__container">
           {% block sectionLinks %}
             {% for sectionLinks in sectionThreeUp.sections %}
-              {% set sectionLinks = sectionLinks|merge({'level': linkHeading }) %}
+              {% set sectionLinks = sectionLinks|merge({'level': linkHeading}) %}
               {% include "@molecules/section-links.twig" with sectionLinks %}
             {% endfor %}
           {% endblock %}

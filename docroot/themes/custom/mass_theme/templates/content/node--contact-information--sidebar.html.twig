@@ -79,30 +79,30 @@
 {% endif %}
 
 {% embed "@molecules/contact-us.twig" with {
-  "contactUs":{
+  "contactUs": {
     "subTitle": {
-      "href":"",
+      "href": "",
       "text": node.field_display_title.value
     }
   }
-}%}
+} %}
   {% block contactGroups %}
     <div class="ma__contact-us__content js-accordion-content">
       <div class="ma__contact-us__content-wrap">
         {% if node.field_ref_phone_number is not empty %}
-          {{ content.field_ref_phone_number|merge({'#level': level }) }}
+          {{ content.field_ref_phone_number|merge({'#level': level}) }}
         {% endif %}
         {% if node.field_ref_links is not empty %}
-          {{ content.field_ref_links|merge({'#level': level }) }}
+          {{ content.field_ref_links|merge({'#level': level}) }}
         {% endif %}
         {% if node.field_ref_fax_number is not empty %}
-          {{ content.field_ref_fax_number|merge({'#level': level }) }}
+          {{ content.field_ref_fax_number|merge({'#level': level}) }}
         {% endif %}
         {% if node.field_ref_address is not empty %}
-          {{ content.field_ref_address|merge({'#level': level }) }}
+          {{ content.field_ref_address|merge({'#level': level}) }}
         {% endif %}
       </div>
     </div>
   {% endblock %}
 {% endembed %}
-{{ content | without('field_display_title', 'field_ref_phone_number', 'field_ref_links', 'field_ref_fax_number', 'field_ref_address') }}
+{{ content|without('field_display_title', 'field_ref_phone_number', 'field_ref_links', 'field_ref_fax_number', 'field_ref_address') }}

@@ -30,7 +30,7 @@
   {% set level = 1 %}
   {% set positionTop = TRUE %}
 {% endif %}
-{% set bgImage = (paragraph.field_background_type.value == 'image') ? content.field_image|render : NULL  %}
+{% set bgImage = (paragraph.field_background_type.value == 'image') ? content.field_image|render : NULL %}
 {# Based on background type option, define variable for background color.
    When background has a solid color, not image, use backgroundColor value. #}
 {% if paragraph.field_background_type.value == 'color' %}

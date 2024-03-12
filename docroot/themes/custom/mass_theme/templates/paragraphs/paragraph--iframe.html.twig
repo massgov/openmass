@@ -39,9 +39,9 @@
 {% set caption = null %}
 {% if paragraph.field_iframe_caption.value is not empty %}
   {% set caption = {
-    '#type':   'processed_text',
-    '#text':    paragraph.field_iframe_caption.value ?: '',
-    '#format':  paragraph.field_iframe_caption.format ?: 'basic_html',
+    '#type': 'processed_text',
+    '#text': paragraph.field_iframe_caption.value ?: '',
+    '#format': paragraph.field_iframe_caption.format ?: 'basic_html',
   } %}
 {% endif %}
 {% include "@atoms/09-media/figure--iframe.twig" with {
@@ -59,4 +59,3 @@
     }
   }
 } %}
-

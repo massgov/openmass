@@ -77,7 +77,6 @@
   {% set _preContent = block('preContent')|trim %}
 {% endif %}
 
-
 {% if block('sidebar') is defined %}
 {% set _sidebar = block('sidebar')|trim %}
 {% endif %}
@@ -102,10 +101,10 @@
 {% endif %}
 
 {% block main %}
-  <div class="main-content{{ _sidebar is not empty ? ' main-content--two': ' main-content--full'}}">
+  <div class="main-content{{ _sidebar is not empty ? ' main-content--two' : ' main-content--full' }}">
     <div class="page-content">
       {% block pageContent %}
-	      {{ content }}
+          {{ content }}
       {% endblock %}
     </div>
     {% if _sidebar is not empty %}

@@ -39,9 +39,9 @@
 {% set banner_style = collection is not empty and (collection.description|render is not empty or collection.bg_color != "#FFF") %}
 
 {% set primaryRelationshipContent = content.field_primary_parent %}
-{% set primaryIndicators = { "label": "part of" } %}
+{% set primaryIndicators = {"label": "part of"} %}
 {% set secondaryIndicators = banner_style ? {} : {
-    "label":  term.field_organizations is not empty ? "offered by" : "",
+    "label": term.field_organizations is not empty ? "offered by" : "",
     "icon": "building",
     "groupAfter": 3
   }
@@ -86,7 +86,7 @@
     {% endif %}
   {% endset %}
 
-  {% set collection = (collection ?: [])|merge({"content" : collection_content}) %}
+  {% set collection = (collection ?: [])|merge({"content": collection_content}) %}
 
   {% include "@organisms/by-template/collection-header.twig" %}
 {% endif %}
@@ -129,7 +129,6 @@
     {{ attachment_after }}
     {{ more }}
   </section>
-
 
   {{ feed_icons }}
 </div>

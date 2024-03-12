@@ -1,6 +1,6 @@
 {{ attach_library('mass_feedback_form/feedback-form') }}
 <div id="feedback" data-mass-feedback-form>
-  <h2 class="visually-hidden">{{ 'Feedback'|t }}</h2>
+  <h2 class="ma__visually-hidden">{{ 'Feedback'|t }}</h2>
   <form method="post" novalidate action="https://www.formstack.com/forms/index.php" class="fsForm {# fsSingleColumn fsMaxCol1 #}" id="fsForm2521317">
 
     <input type="hidden" name="form" value="2521317" />
@@ -60,9 +60,9 @@ NOTE:
     <input type="hidden" id="field58154059" name="field58154059" value="{{ node_id }}" />
     <input type="hidden" id="field57432673" name="field57432673" value="{{ node_id }}" />
 
-    <fieldset{#  id="label47054416" #}>
-      <legend{#  class="fsLabel requiredLabel fsLabelVertical" #}>
-        Did you find what you were looking for on this webpage?<span> * <span class="visually-hidden">required</span></span>
+    <fieldset{# id="label47054416" #}>
+      <legend{# class="fsLabel requiredLabel fsLabelVertical" #}>
+        Did you find what you were looking for on this webpage?<span> * <span class="ma__visually-hidden">required</span></span>
       </legend>
 
       <div class="ma__input-group__items ma__input-group__items--inline">
@@ -86,35 +86,35 @@ NOTE:
 
     {# SHOW THIS WHEN "NO" IS SELECTED ABOVE #}
     <fieldset class="radio-no hide">
-      <label {# id="label47054414" class="fsLabel requiredLabel"  #}for="field47054414">If "No," please tell us what you were looking for:<span> * <span class="visually-hidden">required</span></span></label>
+      <label {# id="label47054414" class="fsLabel requiredLabel" #}for="field47054414">If "No," please tell us what you were looking for:<span> * <span class="ma__visually-hidden">required</span></span></label>
       <textarea id="field47054414"
-                class="fsField required {# fsTextAreaMaxLength #}"
+                class="ma__textarea fsField required {# fsTextAreaMaxLength #}"
                 name="field47054414"
                 aria-required="true"
                 maxlength="10000"
                 disabled="disabled"
                 aria-describedby="feedback-note"></textarea>
       {# character counter is added to DOM. #}
-      <div id="feedback-note" class="ma__disclaimer{#  fsSupporting #}">We use your feedback to help us improve this site but we are not able to respond directly. <strong>Please do not include personal or contact information.</strong> If you need a response, please locate the contact information elsewhere on this page or in the footer.</div>
+      <div id="feedback-note" class="ma__disclaimer{# fsSupporting #}">We use your feedback to help us improve this site but we are not able to respond directly. <strong>Please do not include personal or contact information.</strong> If you need a response, please locate the contact information elsewhere on this page or in the footer.</div>
     </fieldset>
 
     {# SHOW THIS WHEN "YES" IS SELECTED ABOVE #}
     <fieldset class="radio-yes hide">
       {# No .fsLabel necessary, this is optinal field. #}
-      <label{#  id="label52940022" class="fsLabel" #} for="field52940022">Is there anything else you would like to tell us?</label>
+      <label{# id="label52940022" class="fsLabel" #} for="field52940022">Is there anything else you would like to tell us?</label>
       <textarea id="field52940022"
-                {# class="fsField" #}
+                class="ma__textarea fsField"
                 name="field52940022"
                 maxlength="10000"
                 disabled="disabled"
                 aria-describedby="feedback-note2"></textarea>
-      <div id="feedback-note2" class="ma__disclaimer{#  fsSupporting #}">We use your feedback to help us improve this site but we are not able to respond directly. <strong>Please do not include personal or contact information.</strong> If you need a response, please locate the contact information elsewhere on this page or in the footer.</div>
+      <div id="feedback-note2" class="ma__disclaimer{# fsSupporting #}">We use your feedback to help us improve this site but we are not able to respond directly. <strong>Please do not include personal or contact information.</strong> If you need a response, please locate the contact information elsewhere on this page or in the footer.</div>
     </fieldset>
 
     <p class="ma__info-container"><a href="/info-details/report-abuse-or-request-urgent-assistance">If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here</a>.</p>
 
 {# THESE BUTTON ARE NOT USED AT ALL:  THEY SHOULD BE SAFE TO REMOVE #}
-{#       <button type="button" id="fsPreviousButton2521317" class="fsPreviousButton" value="Previous Page" style="display:none;" aria-label="Previous">
+{# <button type="button" id="fsPreviousButton2521317" class="fsPreviousButton" value="Previous Page" style="display:none;" aria-label="Previous">
         <span class="fsFull">Previous</span><span class="fsSlim">&larr;</span>
       </button>
 
