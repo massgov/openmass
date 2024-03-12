@@ -1412,6 +1412,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
           $paragraph_error_string = 'field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform]';
           _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
           _mass_validation_validate_mosaic_items($form_state, $paragraph);
+          _mass_validation_validate_custom_iframe($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
         }
