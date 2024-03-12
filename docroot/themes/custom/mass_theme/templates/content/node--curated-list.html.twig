@@ -17,7 +17,6 @@
     {{ contextual_log_in_links }}
   {% endif %}
 
-
   {% set primaryIndicators = null %}
   {% set primaryRelationshipContent = null %}
   {% set secondaryIndicators = false %}
@@ -80,7 +79,6 @@
   {% include "@organisms/page-header/page-header.twig" %}
   {% include "@organisms/page-header/page-header-addons.twig" %}
 
-
   {% include "@organisms/by-template/sticky-toc.twig" with {
     "stickyTOC": {
       "title": "Table of Contents"|t,
@@ -134,7 +132,7 @@
       {% block featuredItems %}
         {# Pass through the level setting with Drupal render array values. #}
         {% if content.field_related_links is not empty %}
-          {{ content.field_related_links|merge({'#level': level }) }}
+          {{ content.field_related_links|merge({'#level': level}) }}
         {% endif %}
       {% endblock %}
     {% endembed %}

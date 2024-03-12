@@ -34,7 +34,7 @@
                   {% if type.description %}
                     {% if type.node_type_url %}
                       <div class="live-example">
-                        <a href="{{ type.node_type_url}}" class="live-example-link">View live example</a>
+                        <a href="{{ type.node_type_url }}" class="live-example-link">View live example</a>
                       </div>
                     {% endif %}
                     <div class="description">{{ type.description }}</div>
@@ -42,7 +42,7 @@
                   {% if type.node_type_long_description %}
                     <div class="long-description">
                       <h4>The {{ type.label }} type is good for:</h4>
-                      <div>{{ type.node_type_long_description |raw}}</div>
+                      <div>{{ type.node_type_long_description|raw }}</div>
                     </div>
                   {% endif %}
                 </div>
@@ -60,8 +60,6 @@
 {% else %}
   <p>
     {% set create_content = path('node.type_add') %}
-    {% trans %}
       You have not created any content types yet. Go to the <a href="{{ create_content }}">content type creation page</a> to add a new content type.
-    {% endtrans %}
   </p>
 {% endif %}

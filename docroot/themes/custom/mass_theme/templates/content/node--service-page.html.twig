@@ -95,13 +95,12 @@
   } %}
 {% endblock %}
 
-
 {# Increase heading number from the parent heading. #}
 {% set level = level + 1 %}
 
 {% block pageContentIntro %}
   {% if content.field_service_body|render is not empty %}
-    {# NOTE: teaser-text conditionally also includes "@atoms/decorative-link.twig" but Service Page teaser-text does  #}
+    {# NOTE: teaser-text conditionally also includes "@atoms/decorative-link.twig" but Service Page teaser-text does #}
     {# not use a "learn more / read more" sort of link, so we don't pass any "decorativeLink" values to the template. #}
     {% include "@organisms/by-author/teaser-text.twig" with {
       "teaserText": {
@@ -110,7 +109,7 @@
           "rteElements": [{
             "path": "@atoms/11-text/paragraph.twig",
             "data": {
-              "paragraph" : {
+              "paragraph": {
                 "text": content.field_service_body
               }
             }

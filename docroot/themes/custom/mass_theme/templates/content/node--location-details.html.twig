@@ -81,7 +81,7 @@
               'title': keyActions.compHeading.title,
               'titleContext': keyActions.compHeading.titleContext,
               'level': level,
-              'id': keyActions.compHeading.id }}) %}
+              'id': keyActions.compHeading.id}}) %}
         {% include "@organisms/by-author/key-actions.twig" %}
       {% endif %}
       {% if pageContent[i]['formDownloads'] %}
@@ -90,7 +90,7 @@
               'title': formDownloads.compHeading.title,
               'titleContext': formDownloads.compHeading.titleContext,
               'level': level,
-              'id': formDownloads.compHeading.id }}) %}
+              'id': formDownloads.compHeading.id}}) %}
         {% include "@organisms/by-author/form-downloads.twig" %}
       {% endif %}
       {% if pageContent[i]['actionMap'] %}
@@ -99,7 +99,7 @@
               'title': googleMap.compHeading.title,
               'titleContext': googleMap.compHeading.titleContext,
               'level': level,
-              'id': googleMap.compHeading.id }}) %}
+              'id': googleMap.compHeading.id}}) %}
         {% include "@molecules/google-map.twig" %}
         {{ attach_library('mass_map/google-map-api') }}
       {% endif %}
@@ -117,7 +117,7 @@
       'titleContext': linkList.compHeading.titleContext,
       'sidebar': true
      }) %}
-    {% set linkList = linkList|merge({'compHeading': compHeading }) %}
+    {% set linkList = linkList|merge({'compHeading': compHeading}) %}
     {% include "@organisms/by-author/link-list.twig" %}
   {% endif %}
 {% endblock %}
