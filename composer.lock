@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cda5f649de350bf02c1b88c5950b3f30",
+    "content-hash": "2f69c7e46ce39bcb1f7c239d8ace4d2b",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -23816,16 +23816,16 @@
         },
         {
             "name": "weitzman/drupal-test-traits",
-            "version": "2.2.0",
+            "version": "dev-entity-crawler",
             "source": {
                 "type": "git",
-                "url": "git@gitlab.com:weitzman/drupal-test-traits.git",
-                "reference": "9ef44f5cd5eef942c84f2d2ffd21734944d566f8"
+                "url": "https://gitlab.com/mstrelan/drupal-test-traits.git",
+                "reference": "edc64e277705c0eae2c7cfd2db22708641a43943"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/weitzman%2Fdrupal-test-traits/repository/archive.zip?sha=9ef44f5cd5eef942c84f2d2ffd21734944d566f8",
-                "reference": "9ef44f5cd5eef942c84f2d2ffd21734944d566f8",
+                "url": "https://gitlab.com/api/v4/projects/mstrelan%2Fdrupal-test-traits/repository/archive.zip?sha=edc64e277705c0eae2c7cfd2db22708641a43943",
+                "reference": "edc64e277705c0eae2c7cfd2db22708641a43943",
                 "shasum": ""
             },
             "require": {
@@ -23854,7 +23854,28 @@
                     "weitzman\\DrupalTestTraits\\": "src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "si": [
+                    "drush si -yv --db-url=${SIMPLETEST_DB} --account-name=admin --account-pass=password standard"
+                ],
+                "phpcs": [
+                    "phpcs -n -s src tests"
+                ],
+                "phpcbf": [
+                    "phpcbf --standard=PSR2 -n src tests"
+                ],
+                "lint": [
+                    "parallel-lint src tests"
+                ],
+                "unit": [
+                    "phpunit --colors --bootstrap=src/bootstrap-fast.php --printer '\\Drupal\\Tests\\Listeners\\HtmlOutputPrinter' tests"
+                ],
+                "test": [
+                    "@lint",
+                    "@cs",
+                    "@unit"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -23865,7 +23886,10 @@
                 }
             ],
             "description": "Traits for testing Drupal sites that have user content (versus unpopulated sites).",
-            "time": "2023-10-13T22:55:15+00:00"
+            "support": {
+                "source": "https://gitlab.com/mstrelan/drupal-test-traits/-/tree/entity-crawler"
+            },
+            "time": "2024-03-12T22:14:57+00:00"
         },
         {
             "name": "weitzman/logintrait",
@@ -23914,6 +23938,12 @@
             "version": "dev-3.x",
             "alias": "2.0",
             "alias_normalized": "2.0.0.0"
+        },
+        {
+            "package": "weitzman/drupal-test-traits",
+            "version": "dev-entity-crawler",
+            "alias": "2.x-dev",
+            "alias_normalized": "2.9999999.9999999.9999999-dev"
         }
     ],
     "minimum-stability": "dev",
@@ -23931,7 +23961,8 @@
         "drupal/views_taxonomy_term_name_into_id": 15,
         "furf/jquery-ui-touch-punch": 20,
         "massgov/mayflower-artifacts": 20,
-        "drupaltest/queue-runner-trait": 20
+        "drupaltest/queue-runner-trait": 20,
+        "weitzman/drupal-test-traits": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
