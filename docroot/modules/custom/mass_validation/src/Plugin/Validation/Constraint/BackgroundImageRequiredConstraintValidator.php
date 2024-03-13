@@ -6,6 +6,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class BackgroundImageRequiredConstraintValidator extends ConstraintValidator {
+
   public function validate($items, Constraint $constraint) {
     $field_image = $items->getValue();
     $paragraph = $items->getEntity();
@@ -15,4 +16,5 @@ class BackgroundImageRequiredConstraintValidator extends ConstraintValidator {
       }
     }
   }
+
 }
