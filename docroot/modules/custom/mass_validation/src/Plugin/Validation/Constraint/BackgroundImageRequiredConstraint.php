@@ -13,5 +13,7 @@ use Symfony\Component\Validator\Constraint;
  * )
  */
 class BackgroundImageRequiredConstraint extends Constraint {
+
   public $message = 'Background Image is required.';
+
 }
