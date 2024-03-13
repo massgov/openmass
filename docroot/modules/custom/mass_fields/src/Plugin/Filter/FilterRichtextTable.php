@@ -21,18 +21,27 @@ class FilterRichtextTable extends FilterBase {
    */
   public function process($text, $langcode) {
     // Unique ID per table for accessibility to establish pairing between the buttons and the table container for responsible table.
+    // Exclude nested tables.
     $tableId = uniqid();
 
-    $tableWrapperTop = '<div class="ma__table--responsive js-ma-responsive-table">
-    <nav class="ma__table__horizontal-nav"><button class="ma__table__horizontal-nav__left" aria-controls="' . $tableId . '"><span class="ma__visually-hidden">Scroll left</span></button><div class="clip-scrollbar"><div class="ma__scroll-indicator"><div class="ma__scroll-indicator--bar" aria-controls="' . $tableId . '" role="scrollbar" aria-orientation="horizontal"><div class="ma__scroll-indicator__button"></div></div></div></div><button class="ma__table__horizontal-nav__right" aria-controls="' . $tableId . '"><span class="ma__visually-hidden">Scroll right</span></button>
-    </nav>
-    <div class="ma__table--responsive__wrapper" id="' . $tableId . '">
-    <table>';
+    $tableWrapperTop = '<div class="ma__table--responsive js-ma-responsive-table"><div class="ma__table--responsive__wrapper" id="' . $tableId . '" role="group" tabindex="-1"><table class="ma__table"><caption id="tbl-' . $tableId . '" class="ma__table__caption"><span class="ma__table__caption__scroll-info"> Note: Table has hidden columns, scroll horizontally to see more.</span></caption>';
     $tableWrapperBottom = '</table></div></div>';
+    $tableHeadingScope = '<th scope="col">';
 
-    $plainTableElements = ['<table>', '</table>'];
-    $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom];
-    $output = str_replace($plainTableElements, $responsiveTableElements, $text);
+    // Step 1:
+    // Remove '<p>&nbsp;</p>' from the rich text input.
+    $text = preg_replace('/<p>(\s|\xc2\xa0|&nbsp;)<\/p>/', '', $text);
+    // Step 2:
+    // Remove spaces in the cell with nested tables.
+    $spaceInCellWithNestedTable = ['/<td>\s\s+<table>/', '/<\/table>\s\s+<\/td>/'];
+    $cleanNestedTable = ['<td><table>', '</table></td>'];
+    $text = preg_replace($spaceInCellWithNestedTable, $cleanNestedTable, $text);
+    // Step 3:
+    // Add responsive table wrappers to non-nested tables.
+    // Add scope to th of all tables, nested and non-nested.
+    $plainTableElements = ['/(?<!<td>)<table>/', '/<\/table>(?!<\/td>)/', '/<th>/'];
+    $responsiveTableElements = [$tableWrapperTop, $tableWrapperBottom, $tableHeadingScope];
+    $output = preg_replace($plainTableElements, $responsiveTableElements, $text);
 
     return new FilterProcessResult($output);
 
