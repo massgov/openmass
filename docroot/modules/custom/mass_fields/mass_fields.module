@@ -923,7 +923,18 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
               $selector => ['value' => 'color'],
             ],
           ];
+          $element['subform']['field_use_half_image']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
           $element['subform']['field_image']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'image'],
+            ],
             'visible' => [
               $selector => ['value' => 'image'],
             ],
