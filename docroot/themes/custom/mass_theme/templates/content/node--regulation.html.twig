@@ -80,17 +80,17 @@
               'level': level,
               'sub': '',
               'id': richText.title.compHeading.id,
-              'centered': '' }}) %}
+              'centered': ''}}) %}
           {% endif %}
           {% if richText.richTextContent %}
-              {% set richText = richText|merge({'rteElements': richText.richTextContent.rteElements }) %}
+              {% set richText = richText|merge({'rteElements': richText.richTextContent.rteElements}) %}
           {% endif %}
           {% include "@organisms/by-author/rich-text.twig" %}
         {% endfor %}
       {% endif %}
         {% if content.field_regulation_download|render is not empty %}
           {# Using the field_regulation_download view mode to display the URL for doucments in this section. #}
-          {%  embed "@organisms/by-author/form-downloads.twig" with {
+          {% embed "@organisms/by-author/form-downloads.twig" with {
             "formDownloads": {
               "compHeading": {
                 "title": "Downloads",
@@ -111,7 +111,7 @@
             'title': contactList.compHeading.title,
             'titleContext': contactList.compHeading.titleContext,
             'level': level,
-            'id': contactList.compHeading.id }}) %}
+            'id': contactList.compHeading.id}}) %}
           {% include "@organisms/by-author/contact-list.twig" %}
         {% endif %}
         {% if mainContent.footnoteList %}

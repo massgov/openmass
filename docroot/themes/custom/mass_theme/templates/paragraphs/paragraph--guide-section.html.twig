@@ -149,7 +149,7 @@
     {# Downloads/Section Links #}
     {% if (content.field_guide_section_downloads|render is not empty)
         or (content.field_guide_section_link|render is not empty) %}
-      {%  embed "@organisms/by-author/form-downloads.twig" with {
+      {% embed "@organisms/by-author/form-downloads.twig" with {
           "formDownloads": {
             "compHeading": {
               "title": "Additional Resources",

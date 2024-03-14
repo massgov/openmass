@@ -39,34 +39,33 @@
 <div class="ma__contact-us__contact">
   {% if content.field_phone|field_value is not empty %}
     <div>
-      <b>{{content.field_label|field_value}}</b> <a class="ma__contact-us__phone" href="tel:+1{{phone_clean}}">{{content.field_phone|field_value}}</a>
+      <b>{{ content.field_label|field_value }}</b> <a class="ma__contact-us__phone" href="tel:+1{{ phone_clean }}">{{ content.field_phone|field_value }}</a>
     </div>
   {% endif %}
   {% if content.field_fax|field_value is not empty %}
     <div>
-      <b>{{content.field_label|field_value}}</b> <a class="ma__contact-us__phone"  href="tel:+1{{fax_clean}}">{{content.field_fax|field_value}}</a>
+      <b>{{ content.field_label|field_value }}</b> <a class="ma__contact-us__phone"  href="tel:+1{{ fax_clean }}">{{ content.field_fax|field_value }}</a>
     </div>
   {% endif %}
   {% if content.field_email|field_value is not empty %}
     <div>
-      <b>{{content.field_label|field_value}}</b> <a class="ma__contact-us__email" href="mailto:{{content.field_email|field_value}}">{{content.field_email|field_value}}</a>
+      <b>{{ content.field_label|field_value }}</b> <a class="ma__contact-us__email" href="mailto:{{ content.field_email|field_value }}">{{ content.field_email|field_value }}</a>
     </div>
   {% endif %}
 </div>
 {% if content.field_address|field_value is not empty %}
   <div class="ma__contact-us__address">
-    {{content.field_address|field_value}}
+    {{ content.field_address|field_value }}
   </div>
 {% endif %}
 {% if content.field_link|field_value is not empty %}
-  <p>{{content.field_link|field_value}}</p>
+  <p>{{ content.field_link|field_value }}</p>
 {% endif %}
 {% if content.field_branch_locations|field_value is not empty %}
-    <p>{{content.field_branch_locations|field_value}}</p>
+    <p>{{ content.field_branch_locations|field_value }}</p>
 {% endif %}
 {% if content.field_ref_hours|field_value is not empty %}
   <div class="ma__contact-us__hours">
-    {{content.field_ref_hours|field_value}}
+    {{ content.field_ref_hours|field_value }}
   </div>
 {% endif %}
-

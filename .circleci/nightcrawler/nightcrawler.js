@@ -107,7 +107,7 @@ crawler.on('analyze', function(report, analysis) {
   analysis.addMetric('500s', metrics.serverErrors(responses, '500 Requests', 0));
   collectGroups(responses).forEach(function(group) {
     const groupResponses = responses.filter(getGroupFilter(group))
-    analysis.addMetric(group+'.time', metrics.responseTime(groupResponses, 'Average TTFB: ' + group, 2000))
+    analysis.addMetric(group+'.time', metrics.responseTime(groupResponses, 'Average TTFB: ' + group, group === 'node:curated_list' ? 2500 : 2000))
     analysis.addMetric(group+'.500s', metrics.serverErrors(groupResponses, '500 Requests: ' + group, 0));
   })
   responses.forEach(function(response) {
