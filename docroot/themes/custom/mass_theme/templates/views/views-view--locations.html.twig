@@ -74,19 +74,21 @@
   {% endif %}
   <div class="main-content main-content--full">
     <div class="page-content">
-      <section class="ma__location-listing js-location-listing leaflet">
+      <div class="ma__location-listing js-location-listing leaflet">
         <div class="ma__location-listing__filters">
-          <div class="ma__location-filters">
+          <section class="ma__location-filters">
+            <h2 class="ma__visually-hidden">Location listing filters</h2>
             <form class="js-location-filters leaflet">
               <div class="ma__location-filters__row">
                 <div class="ma__location-filters__by-location js-filter-by-location" data-ma-place-bounds-sw-lat="{{ swLat }}" data-ma-place-bounds-sw-lng="{{ swLng }}" data-ma-place-bounds-ne-lat="{{ neLat }}" data-ma-place-bounds-ne-lng="{{ neLng }}">
-                  <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code</label>
+                  <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code </label>
                   <div class="ma__error-msg">Please select an address in the suggestions. Hit ENTER or start typing to show suggestions.</div>
                   <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code"
                       data-type="text" autocomplete="off" value="{{ helper }}">
                 </div>
               </div>
-              <div class="ma__location-filters__by-tags  js-filter-by-tags">
+              <fieldset class="ma__location-filters__by-tags  js-filter-by-tags">
+                <legend class="ma__visually-hidden">Other options</legend>
                 <div class="ma__location-filters__tag">
                   <span class="ma__input-checkbox">
                     <input type="checkbox" value="wheelchair" id="wheelchair" {% if icons %}checked{% endif %}>
@@ -94,7 +96,7 @@
                     <label for="wheelchair"><span>Wheelchair accessible</span></label>
                   </span>
                 </div>
-              </div>
+              </fieldset>
               <div class="ma__location-filters__buttons">
                 <button class="ma__button ma__location-filters__submit js-location-filters__submit" type="submit">Submit</button>
               </div>
@@ -102,22 +104,27 @@
             <div class="hidden">
               {{ exposed }}
             </div>
-          </div>
+          </section>
         </div>
         <div class="ma__location-listing__columns">
           <div class="ma__location-listing__container">
-            <div class="ma__location-listing__map" aria-label="{{ leafletMap.title }}">
-              <a href="#location-listing-results" aria-describedby="sr-info">skip to the location listing</a>
-              <div id="sr-info" style="display: none;">For screen reader users, we suggest skip the map and go to the location listing for a better user experience.  Currently, the map is not accessible yet for a comprehensive experience.</div>
+            <div class="ma__location-listing__map">
+              <h2 class="ma__visually-hidden">{{ leafletMap.title }}</h2>
+              <div id="sr-info" class="ma__visually-hidden">
+                Note for screen reader users, we suggest skip the following interactive map and go to the location listing for a better user experience.
+                Currently, the map is not accessible yet for a comprehensive experience.
+              </div>
+              <a href="#location-listing-results">skip to the location listing</a>
               <div class="ma__location-listing__sticky js-location-listing-map">
                 {% set leafletMap = leafletMap %}
                 {% include "@molecules/map-leaflet.twig" %}
               </div>
             </div>
-            <div id="location-listing-results" class="ma__location-listing__results js-location-listing-results">
+            <div class="ma__location-listing__results js-location-listing-results">
+              <h2 id="location-listing-results" class="ma__visually-hidden">Location Listing Results</h2>
               <div class="ma__results-heading js-results-heading">
                 <div class="ma__results-heading__container">
-                  <h2 class="ma__results-heading__title">{{ header }}</h2>
+                  <div class="ma__results-heading__title">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></div>
                   <div class="ma__results-heading__tags">
                     {% if helper %}
                       <button type="button" class="ma__results-heading__tag js-results-heading-tag" data-ma-filter-type="location">{{ helper }}</button>
@@ -132,10 +139,10 @@
                 </div>
               </div>
 
-              <section class="ma__image-promos js-image-promos">
+              <ul class="ma__image-promos js-image-promos">
                 {{ rows }}
                 {{ empty }}
-              </section>
+              </ul>
               <div class="attachment">
                 <div class="views-summary">
                   {{ pager }}
@@ -144,7 +151,7 @@
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   </div>
 </div>
