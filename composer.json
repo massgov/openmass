@@ -297,6 +297,7 @@
         "imbo/behat-api-extension": "^2.0",
         "kint-php/kint": "^5",
         "phpspec/prophecy-phpunit": "^2",
+        "vincentlanglet/twig-cs-fixer": "^2.5",
         "weitzman/drupal-test-traits": "^2",
         "weitzman/logintrait": "^1"
     },
@@ -306,7 +307,8 @@
         }
     },
     "scripts": {
-        "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom"
+        "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
+        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -444,7 +446,7 @@
                 "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2022-05-05/quick_node_clone-permissions_not_respected-2979426-34.patch"
             },
             "drupal/views_bulk_edit": {
-                "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2020-11-20/3024419-invalid-form-control-24.patch",
+                "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2024-01-10/views_bulk_edit-3024419-fix_required_fields-57.patch",
                 "Hide revision checkbox from the form": "patches/DP-25205_hide_revision_checkbox_from_views_bulk_edit_form.patch"
             }
         },

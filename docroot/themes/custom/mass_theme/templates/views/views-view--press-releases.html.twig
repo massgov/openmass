@@ -37,9 +37,9 @@
 {{ attach_library('mass_theme/views-view--press-releases') }}
 
 {% set primaryRelationshipContent = content.field_primary_parent %}
-{% set primaryIndicators = { "label": "part of" } %}
+{% set primaryIndicators = {"label": "part of"} %}
 {% set secondaryIndicators = banner_style ? {} : {
-  "label":  term.field_organizations is not empty ? "offered by" : "",
+  "label": term.field_organizations is not empty ? "offered by" : "",
   "icon": "building",
   "groupAfter": 3
 }
@@ -101,7 +101,6 @@
     {{ attachment_after }}
     {{ more }}
   </section>
-
 
   {{ feed_icons }}
 </div>
