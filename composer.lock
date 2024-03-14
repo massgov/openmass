@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2f69c7e46ce39bcb1f7c239d8ace4d2b",
+    "content-hash": "d536908aabd40762f62e68fc29b7731c",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -23816,21 +23816,22 @@
         },
         {
             "name": "weitzman/drupal-test-traits",
-            "version": "dev-entity-crawler",
+            "version": "2.x-dev",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/mstrelan/drupal-test-traits.git",
-                "reference": "ffecdbd0c205a8fdf9507d9c89faa3c3a3c958ea"
+                "url": "https://gitlab.com/weitzman/drupal-test-traits.git",
+                "reference": "65061696e7c2173d12df514fd0767f1a7aa2bc80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/mstrelan%2Fdrupal-test-traits/repository/archive.zip?sha=ffecdbd0c205a8fdf9507d9c89faa3c3a3c958ea",
-                "reference": "ffecdbd0c205a8fdf9507d9c89faa3c3a3c958ea",
+                "url": "https://gitlab.com/api/v4/projects/weitzman%2Fdrupal-test-traits/repository/archive.zip?sha=65061696e7c2173d12df514fd0767f1a7aa2bc80",
+                "reference": "65061696e7c2173d12df514fd0767f1a7aa2bc80",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "installer-paths": {
@@ -23854,28 +23855,7 @@
                     "weitzman\\DrupalTestTraits\\": "src"
                 }
             },
-            "scripts": {
-                "si": [
-                    "drush si -yv --db-url=${SIMPLETEST_DB} --account-name=admin --account-pass=password standard"
-                ],
-                "phpcs": [
-                    "phpcs -n -s src tests"
-                ],
-                "phpcbf": [
-                    "phpcbf --standard=PSR2 -n src tests"
-                ],
-                "lint": [
-                    "parallel-lint src tests"
-                ],
-                "unit": [
-                    "phpunit --colors --bootstrap=src/bootstrap-fast.php --printer '\\Drupal\\Tests\\Listeners\\HtmlOutputPrinter' tests"
-                ],
-                "test": [
-                    "@lint",
-                    "@cs",
-                    "@unit"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -23887,9 +23867,10 @@
             ],
             "description": "Traits for testing Drupal sites that have user content (versus unpopulated sites).",
             "support": {
-                "source": "https://gitlab.com/mstrelan/drupal-test-traits/-/tree/entity-crawler"
+                "issues": "https://gitlab.com/weitzman/drupal-test-traits/-/issues",
+                "source": "https://gitlab.com/weitzman/drupal-test-traits/-/tree/2.x"
             },
-            "time": "2024-03-13T14:36:35-04:00"
+            "time": "2024-03-14T20:07:13+00:00"
         },
         {
             "name": "weitzman/logintrait",
@@ -23938,12 +23919,6 @@
             "version": "dev-3.x",
             "alias": "2.0",
             "alias_normalized": "2.0.0.0"
-        },
-        {
-            "package": "weitzman/drupal-test-traits",
-            "version": "dev-entity-crawler",
-            "alias": "2.x-dev",
-            "alias_normalized": "2.9999999.9999999.9999999-dev"
         }
     ],
     "minimum-stability": "dev",
