@@ -5,17 +5,19 @@ namespace Drupal\mass_admin_pages\Plugin\Block;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 
 /**
  * Provides a block for the intro text on the node add page.
- *
- * @Block(
- *   id = "help_support_block",
- *   admin_label = @Translation("Help and support")
- * )
  */
+#[Block(
+  id: 'help_support_block',
+  admin_label: new TranslatableMarkup('Help and support'),
+  category: new TranslatableMarkup('Mass.gov'),
+)]
 class HelpBlock extends BlockBase {
 
   /**
