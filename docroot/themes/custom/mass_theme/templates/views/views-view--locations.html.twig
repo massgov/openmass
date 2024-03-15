@@ -82,7 +82,7 @@
               <div class="ma__location-filters__row">
                 <div class="ma__location-filters__by-location js-filter-by-location" data-ma-place-bounds-sw-lat="{{ swLat }}" data-ma-place-bounds-sw-lng="{{ swLng }}" data-ma-place-bounds-ne-lat="{{ neLat }}" data-ma-place-bounds-ne-lng="{{ neLng }}">
                   <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code </label>
-                  <div class="ma__error-msg" id="error-input">Please select an address in the suggestions. Hit ENTER or start typing to show suggestions.</div>
+                  <div id="error-input" class="ma__error-msg" id="error-input">Please select an address in the suggestions. Hit ENTER or start typing to show suggestions.</div>
                   <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code"
                       data-type="text" autocomplete="off" value="{{ helper }}" aria-describedby="error-input">
                 </div>
@@ -120,14 +120,14 @@
                 {% include "@molecules/map-leaflet.twig" %}
               </div>
             </div>
-            <section id="location-listing-results" class="ma__location-listing__results js-location-listing-results">
-              <h2 class="ma__visually-hidden">Location Listing Results</h2>
+            <div class="ma__location-listing__results js-location-listing-results">
+              <h2 id="location-listing-results" class="ma__visually-hidden">Location Listing</h2>
               <div class="ma__results-heading js-results-heading">
                 <div class="ma__results-heading__container">
                   <div class="ma__results-heading__title" role="status">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></div>
                   {% if icons or helper %}
                     <fieldset class="ma__results-heading__tags">
-                      <legend class="ma__visually-hidden">Hit the following filter option buttons to remove the filters.</legend>
+                      <legend class="ma__visually-hidden">Clear the active filters with the following buttons.</legend>
                     {% if helper %}
                       <button type="button" class="ma__results-heading__tag js-results-heading-tag" data-ma-filter-type="location">{{ helper }}</button>
                     {% endif %}
@@ -149,7 +149,7 @@
                   {{ pager }}
                 </div>
               </div>
-            </section>
+            </div>
           </div>
         </div>
       </div>
