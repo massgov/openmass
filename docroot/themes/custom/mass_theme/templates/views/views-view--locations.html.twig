@@ -83,8 +83,19 @@
                 <div class="ma__location-filters__by-location js-filter-by-location" data-ma-place-bounds-sw-lat="{{ swLat }}" data-ma-place-bounds-sw-lng="{{ swLng }}" data-ma-place-bounds-ne-lat="{{ neLat }}" data-ma-place-bounds-ne-lng="{{ neLng }}">
                   <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code </label>
                   <div id="error-input" class="ma__error-msg" id="error-input">Please select an address in the suggestions. Hit ENTER or start typing to show suggestions.</div>
-                  <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code"
-                      data-type="text" autocomplete="off" value="{{ helper }}" aria-describedby="error-input">
+                  <input class="ma__input pac-target-input"
+                         name="filter-by-location"
+                         id="filter-by-location"
+                         type="text"
+                         placeholder="City, town, or ZIP code"
+                         data-type="text"
+                         autocomplete="off"
+                         value="{{ helper }}"
+                         role="combobox"
+                         aria-expanded="false"
+                         aria-controls="filter-loction-options"
+                         aria-owns="filter-loction-options"
+                         aria-describedby="error-input">
                 </div>
               </div>
               <fieldset class="ma__location-filters__by-tags  js-filter-by-tags">
