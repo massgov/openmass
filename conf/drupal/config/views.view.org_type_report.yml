@@ -3,9 +3,10 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_include_parent_org_search
+    - field.storage.node.field_billing_organization
     - field.storage.node.field_org_no_search_filter
     - field.storage.node.field_organization_type
+    - field.storage.node.field_organizations
     - field.storage.node.field_parent
     - node.type.org_page
     - taxonomy.vocabulary.organization_type
@@ -14,6 +15,7 @@ dependencies:
     - workflows.workflow.topic_page
   module:
     - content_moderation
+    - dynamic_entity_reference
     - mass_bigquery
     - node
     - taxonomy
@@ -365,6 +367,132 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        field_organizations:
+          id: field_organizations
+          table: node__field_organizations
+          field: field_organizations
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Organization(s)
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_billing_organization:
+          id: field_billing_organization
+          table: node__field_billing_organization
+          field: field_billing_organization
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Billing organization'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: dynamic_entity_reference_label
+          settings:
+            link: false
+          group_column: ''
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         status:
           id: status
           table: node_field_data
@@ -561,71 +689,6 @@ display:
           admin_label: ''
           plugin_id: field
           label: "Don't use this organization as a search filter"
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: boolean
-          settings:
-            format: yes-no
-            format_custom_false: ''
-            format_custom_true: ''
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        field_include_parent_org_search:
-          id: field_include_parent_org_search
-          table: node__field_include_parent_org_search
-          field: field_include_parent_org_search
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: field
-          label: 'Include the parent organization in search filter for pages associated with this organization'
           exclude: false
           alter:
             alter_text: false
@@ -1355,58 +1418,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        field_include_parent_org_search_value:
-          id: field_include_parent_org_search_value
-          table: node__field_include_parent_org_search
-          field: field_include_parent_org_search_value
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: boolean
-          operator: '='
-          value: All
-          group: 1
-          exposed: true
-          expose:
-            operator_id: ''
-            label: 'Include the parent organization in search filter for pages associated with this organization'
-            description: ''
-            use_operator: false
-            operator: field_include_parent_org_search_value_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: field_include_parent_org_search_value
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -1418,27 +1429,21 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            node_bulk_form: node_bulk_form
-            title: title
+            views_bulk_operations_bulk_form: views_bulk_operations_bulk_form
             nid: nid
-            type: type
-            name: name
+            title: title
+            field_organization_type: field_organization_type
+            field_parent: field_parent
+            field_organizations: field_organizations
+            field_billing_organization: field_billing_organization
             status: status
-            changed: changed
             moderation_state: moderation_state
-            score: score
             pageviews: pageviews
+            field_org_no_search_filter_1: field_org_no_search_filter_1
             operations: operations
-          default: changed
+          default: '-1'
           info:
-            node_bulk_form:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            title:
-              sortable: true
-              default_sort_order: asc
+            views_bulk_operations_bulk_form:
               align: ''
               separator: ''
               empty_column: false
@@ -1450,15 +1455,34 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            type:
+            title:
               sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            name:
+            field_organization_type:
               sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_parent:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_organizations:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_billing_organization:
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
@@ -1471,22 +1495,8 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            changed:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
             moderation_state:
               sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            score:
-              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
@@ -1495,6 +1505,13 @@ display:
             pageviews:
               sortable: true
               default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_org_no_search_filter_1:
+              sortable: false
+              default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
@@ -1567,9 +1584,10 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
-        - 'config:field.storage.node.field_include_parent_org_search'
+        - 'config:field.storage.node.field_billing_organization'
         - 'config:field.storage.node.field_org_no_search_filter'
         - 'config:field.storage.node.field_organization_type'
+        - 'config:field.storage.node.field_organizations'
         - 'config:field.storage.node.field_parent'
         - 'config:workflow_list'
   page_1:
@@ -1638,8 +1656,9 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
-        - 'config:field.storage.node.field_include_parent_org_search'
+        - 'config:field.storage.node.field_billing_organization'
         - 'config:field.storage.node.field_org_no_search_filter'
         - 'config:field.storage.node.field_organization_type'
+        - 'config:field.storage.node.field_organizations'
         - 'config:field.storage.node.field_parent'
         - 'config:workflow_list'
