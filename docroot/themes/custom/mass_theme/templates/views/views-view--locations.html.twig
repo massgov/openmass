@@ -124,18 +124,19 @@
               <h2 class="ma__visually-hidden">Location Listing Results</h2>
               <div class="ma__results-heading js-results-heading">
                 <div class="ma__results-heading__container">
-                  <div class="ma__results-heading__title">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></div>
-                  <div class="ma__results-heading__tags">
+                  <div class="ma__results-heading__title" role="status">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></div>
+                  {% if icons or helper %}
+                    <fieldset class="ma__results-heading__tags">
+                      <legend class="ma__visually-hidden">The filter options that you selected</legend>
                     {% if helper %}
                       <button type="button" class="ma__results-heading__tag js-results-heading-tag" data-ma-filter-type="location">{{ helper }}</button>
                     {% endif %}
                     {% if icons %}
                       <button type="button" class="ma__results-heading__tag js-results-heading-tag" data-ma-filter-type="tag">{{ 'Wheelchair accessible'|t }}</button>
                     {% endif %}
-                    {% if icons or helper %}
                       <button type="button" class="ma__results-heading__clear js-results-heading-clear">Clear all</button>
-                    {% endif %}
-                  </div>
+                    </fieldset>
+                  {% endif %}
                 </div>
               </div>
 
