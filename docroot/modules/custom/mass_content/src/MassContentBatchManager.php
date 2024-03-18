@@ -141,7 +141,7 @@ class MassContentBatchManager {
       ['@id' => $id, '@details' => $operation_details]
     );
   }
-  
+
   /**
    * Batch Finished callback.
    *
