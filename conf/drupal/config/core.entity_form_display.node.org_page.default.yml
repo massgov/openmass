@@ -13,7 +13,6 @@ dependencies:
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
-    - field.field.node.org_page.field_include_parent_org_search
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
@@ -222,20 +221,6 @@ third_party_settings:
         id: ''
         description: ''
         required_fields: true
-    group_organization_parent_mass_g:
-      children:
-        - field_include_parent_org_search
-      label: 'Organization parent Mass.gov search filter'
-      region: content
-      parent_name: group_overview
-      weight: 135
-      format_type: fieldset
-      format_settings:
-        classes: ''
-        show_empty_fields: true
-        id: ''
-        description: ''
-        required_fields: true
 id: node.org_page.default
 targetEntityType: node
 bundle: org_page
@@ -343,13 +328,6 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
-  field_include_parent_org_search:
-    type: boolean_checkbox
-    weight: 136
-    region: content
-    settings:
-      display_label: true
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
