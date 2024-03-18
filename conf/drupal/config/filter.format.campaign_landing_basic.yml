@@ -1,11 +1,19 @@
 uuid: 1efc3038-3cbb-499c-9eff-f03e16952a49
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - linkit
 name: 'Campaign Landing Basic'
 format: campaign_landing_basic
 weight: 0
 filters:
+  filter_autop:
+    id: filter_autop
+    provider: filter
+    status: true
+    weight: 0
+    settings: {  }
   filter_html:
     id: filter_html
     provider: filter
@@ -15,12 +23,6 @@ filters:
       allowed_html: '<em> <strong> <a href hreflang data-entity-type data-entity-uuid data-entity-substitution>'
       filter_html_help: true
       filter_html_nofollow: false
-  filter_autop:
-    id: filter_autop
-    provider: filter
-    status: true
-    weight: 0
-    settings: {  }
   filter_htmlcorrector:
     id: filter_htmlcorrector
     provider: filter
