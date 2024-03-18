@@ -16,14 +16,15 @@
 
     if ($('#filter-loction-options').children().length > 0) {
       $(this).attr('aria-expanded', 'true');
-    } else {
+    }
+    else {
       $(this).attr('aria-expanded', 'false');
     }
 
     console.log($(this).attr('aria-expanded'));
   });
 
-  $('.pac-item').click(function () {
+  $('.pac-item').on('click', function () {
     console.log('close');
 
     // if ($('#filter-loction-options').children().length === 0) {
