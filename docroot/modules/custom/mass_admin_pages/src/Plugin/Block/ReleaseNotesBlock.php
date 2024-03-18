@@ -2,19 +2,21 @@
 
 namespace Drupal\mass_admin_pages\Plugin\Block;
 
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
 /**
  * Provides a block for the intro text on the node add page.
- *
- * @Block(
- *   id = "release_notes_block",
- *   admin_label = @Translation("Release notes")
- * )
  */
+#[Block(
+  id: 'release_notes_block',
+  admin_label: new TranslatableMarkup('Release notes'),
+  category: new TranslatableMarkup('Mass.gov'),
+)]
 class ReleaseNotesBlock extends BlockBase {
 
   /**

@@ -101,14 +101,14 @@ class MediaBulkActionTest extends MassExistingSiteBase {
     $this->drupalGet('admin/ma-dash/documents');
 
     // Trigger search to get some results.
-    $this->submitForm([], $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
+    $this->submitForm([], (string) $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
 
     $edit = [
       'action' => $action,
       'views_bulk_operations_bulk_form[0]' => TRUE,
     ];
-    $this->submitForm($edit, $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
-    $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
+    $this->submitForm($edit, (string) $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
+    $this->submitForm([], (string) $this->t('Execute action'), 'views-bulk-operations-confirm-action');
     $page = $this->getSession()->getPage();
     $page->waitFor(3, function () use ($page) {
       return $page->hasContent('Your changes have been successfully made.');
