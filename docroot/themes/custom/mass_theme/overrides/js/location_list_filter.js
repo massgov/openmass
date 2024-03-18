@@ -11,8 +11,8 @@
   }, 250);
 
   // Update option box status.
-  $('#filter-by-location').change(function () {
-    console.log('open');
+  $('#filter-by-location').keyup(function () {
+    console.log('keyup');
 
     if ($('#filter-loction-options').children().length > 0) {
       $(this).attr('aria-expanded', 'true');
@@ -24,13 +24,15 @@
     console.log($(this).attr('aria-expanded'));
   });
 
+  console.log('orange');
+
   $('.pac-item').on('click', function () {
-    console.log('close');
+    console.log('selected');
 
     // if ($('#filter-loction-options').children().length === 0) {
-      $(this).attr('aria-expanded', 'false');
+    $(this).attr('aria-expanded', 'false');
 
-      console.log($(this).attr('aria-expanded'));
+    console.log($(this).attr('aria-expanded'));
     // }
   });
 
