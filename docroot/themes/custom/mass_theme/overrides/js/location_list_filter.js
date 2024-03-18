@@ -16,19 +16,21 @@
 
     if ($('#filter-loction-options').children().length > 0) {
       $(this).attr('aria-expanded', 'true');
+    } else {
+      $(this).attr('aria-expanded', 'false');
     }
 
     console.log($(this).attr('aria-expanded'));
   });
 
-  $('#filter-by-location').focusout(function () {
+  $('.pac-item').click(function () {
     console.log('close');
 
-    if ($('#filter-loction-options').children().length === 0) {
+    // if ($('#filter-loction-options').children().length === 0) {
       $(this).attr('aria-expanded', 'false');
 
       console.log($(this).attr('aria-expanded'));
-    }
+    // }
   });
 
 })(jQuery, Drupal);
