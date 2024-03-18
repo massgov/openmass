@@ -24,16 +24,22 @@
     console.log($(this).attr('aria-expanded'));
   });
 
-  console.log('orange');
+  // $('.pac-item').on('click', function () {
+  //   console.log('selected');
 
-  $('.pac-item').on('click', function () {
-    console.log('selected');
+  //   // if ($('#filter-loction-options').children().length === 0) {
 
-    // if ($('#filter-loction-options').children().length === 0) {
-    $(this).attr('aria-expanded', 'false');
 
-    console.log($(this).attr('aria-expanded'));
-    // }
+  //   console.log($(this).attr('aria-expanded'));
+  //   // }
+  // });
+
+  $('.pac-item').each(function (i) {
+    i.on('click', function () {
+      console.log('selected');
+      $('#filter-by-location').attr('aria-expanded', 'false');
+    });
   });
+
 
 })(jQuery, Drupal);
