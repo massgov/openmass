@@ -9,25 +9,24 @@
   }
 
   /**
-   * Sets session_orgs and session_parent_orgs to storage based on the mg_organization and mg_parent_org values.
+   * Sets session_orgs and session_parent_orgs to storage based on the dataLayer.entityField_organizations and mg_parent_org values.
    */
   Drupal.behaviors.massContentOrgStore = {
     attach: function (context) {
       if (typeof window.dataLayer !== 'undefined' && typeof window.dataLayer[0].entityBundle !== 'undefined') {
-        if (window.dataLayer[0].entityBundle !== 'topic_page') {
+        var dataLayer = window.dataLayer[0];
+        if (dataLayer.entityBundle !== 'topic_page') {
           var orgsFiltered = [];
           var parentOrgsFiltered = [];
-          var orgs = '';
           var parentOrgs = '';
 
-          if ($("meta[name='mg_organization']").length > 0) {
-            // Get data from the metatag element.
-            orgs = $("meta[name='mg_organization']").attr('content');
-            // Filter the array and keep only unique values.
-            var orgsArr = orgs.split(',');
-            $.each(orgsArr, function (i, el) {
-              if ($.inArray(el, orgsFiltered) === -1) {
-                orgsFiltered.push(el);
+          // Get related organizations from the dataLayer object.
+          var dataLayerOrgs = dataLayer.entityField_organizations;
+          if (typeof dataLayerOrgs !== 'undefined') {
+            $.each(dataLayerOrgs, function (nid, orgAttributes) {
+              var orgNodeString = orgAttributes['slug'] + ':' + nid;
+              if ($.inArray(orgNodeString, orgsFiltered) === -1) {
+                orgsFiltered.push(orgNodeString);
               }
             });
           }

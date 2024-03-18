@@ -273,6 +273,8 @@ jobs:
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
+      # Lint Twig
+      - run: composer twigcs -- --no-interaction
 
   test:
     parameters:

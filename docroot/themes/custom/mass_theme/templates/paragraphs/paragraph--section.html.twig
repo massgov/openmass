@@ -61,7 +61,7 @@
 
 {% if (paragraph.field_section_downloads is not empty) or (paragraph.field_section_links is not empty) %}
   {# See mass_fields.module for the calculation of content.more below. #}
-  {%  embed "@organisms/by-author/form-downloads.twig" with {
+  {% embed "@organisms/by-author/form-downloads.twig" with {
     "formDownloads": {
       "compHeading": {
         "title": "Additional Resources",
@@ -79,4 +79,3 @@
   {% endembed %}
 
 {% endif %}
-

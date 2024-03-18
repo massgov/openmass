@@ -1,4 +1,4 @@
-{% set heading = { } %}
+{% set heading = {} %}
 {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 0 %}
   {% set heading = {
     "title": (content.field_service_section_heading|field_value),
@@ -7,7 +7,7 @@
   } %}
 {% endif %}
 
-{# // @TODO hide the title, overflow hidden to service section  #}
+{# // @TODO hide the title, overflow hidden to service section #}
 
 {% set section_style_class = section_style == 'enhanced' ? 'service-section--enhanced' : 'service-section--simple' %}
 {% set hide_title_class = hide_heading ? 'service-section--hidden-title' : '' %}
@@ -18,7 +18,7 @@
       "stackedRowSection": heading,
       "stackedRow": {
         "borderless": true,
-        "modifier" : "no-sidebar"
+        "modifier": "no-sidebar"
       },
       "externalSidebar": true
     } %}
@@ -66,7 +66,7 @@
             {% endblock %}
           {% endembed %}
         {% elseif service_component.group == 'contained' %}
-          {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent' : 'om__contained-component'} %}
+          {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}
             {% block rteElements %}
               {{ service_component.items|view }}
             {% endblock %}
