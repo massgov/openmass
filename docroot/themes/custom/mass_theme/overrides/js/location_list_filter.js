@@ -6,4 +6,20 @@
   setTimeout(function () {
     $('.pac-container').attr('id', 'filter-loction-options');
   }, 250);
+
+  // Update option box status.
+  // $('#filter-by-location').change(function () {
+  //   if ($('#filter-loction-options').children().length > 0) {
+  //     $(this).attr('aria-expanded', 'true');
+  //   }
+  // });
+
+  $('#filter-loction-options').childrenchildren().change(function () {
+    var locationOptionField = $('#filter-by-location');
+    if ($(this).length > 0) {
+      locationOptionField.attr('aria-expanded', 'true');
+    } else {
+      locationOptionField.attr('aria-expanded', 'false');
+    }
+  });
 })(jQuery, Drupal);
