@@ -1,9 +1,11 @@
 <?php
 
-namespace Drupal\mass_utility\Commands;
+namespace Drupal\mass_utility\Drush\Commands;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\File\FileSystem;
+use Drupal\Core\File\FileSystemInterface;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\Finder\Finder;
 
@@ -16,9 +18,7 @@ use Symfony\Component\Finder\Finder;
  */
 class FileSystemCommands extends DrushCommands {
 
-  private $database;
-
-  private $fileSystem;
+  use AutowireTrait;
 
   private $batch = [];
 
@@ -55,17 +55,8 @@ class FileSystemCommands extends DrushCommands {
     'description' => 'Snapshot index of filesystem created by drush ma:update-file-list',
   ];
 
-  /**
-   * FileSystemCommands constructor.
-   *
-   * @param \Drupal\Core\Database\Connection $database
-   *   The Drupal database.
-   * @param \Drupal\Core\File\FileSystem $file_system
-   *   The Drupal filesystem.
-   */
-  public function __construct(Connection $database, FileSystem $file_system) {
-    $this->database = $database;
-    $this->fileSystem = $file_system;
+  public function __construct(protected Connection $database, protected FileSystemInterface $file_system) {
+    parent::__construct();
   }
 
   /**

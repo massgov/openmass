@@ -12,23 +12,33 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
+use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
+use Drush\Runtime\DependencyInjection;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use MassGov\Drush\Attributes\OptionsetDeploy;
 use MassGov\Drush\Attributes\ValidateCircleciToken;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Filesystem\Path;
 
-class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
+class DeployCommands extends DrushCommands {
 
+  use AutowireTrait;
   use SiteAliasManagerAwareTrait;
 
+  public function __construct(
+    #[Autowire(service: DependencyInjection::SITE_ALIAS_MANAGER)]
+    protected $siteAliasManager
+  ) {
+    parent::__construct();
+  }
 
   // Set the PHP version to use when deploying to Acquia environments.
   public const PHP_VERSION = '8.2';
