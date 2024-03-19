@@ -82,7 +82,9 @@
               <div class="ma__location-filters__row">
                 <div class="ma__location-filters__by-location js-filter-by-location" data-ma-place-bounds-sw-lat="{{ swLat }}" data-ma-place-bounds-sw-lng="{{ swLng }}" data-ma-place-bounds-ne-lat="{{ neLat }}" data-ma-place-bounds-ne-lng="{{ neLng }}">
                   <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code </label>
-                  <div id="error-input" class="ma__error-msg" id="error-input">Please select an address in the suggestions. Hit ENTER or start typing to show suggestions.</div>
+                  {# When the error message '#error-input' is visible, '#sr-note' is announced following the error message. #}
+                  <div id="error-input" class="ma__error-msg" id="error-input">Please select an address in the suggestions.</div>
+                  <div id="sr-note" class="ma__visually-hidden" aria-hidden="true">After typing a city, town or zip code, use down arrow key to navigate suggested options. Hit Enter to select an option.</div>
                   {# Some aria-attributes are omitted since they are not recognized by AT.
                      It seems Google code overrides them. #}
                   <input class="ma__input pac-target-input"
@@ -97,7 +99,6 @@
                          aria-describedby="sr-note">
                 </div>
               </div>
-              <p id="sr-note" class="ma__visually-hidden" aria-hidden="true">After typing a city, town or zip code, use down arrow key to navigate options. Hit Enter to select an option.</p>
               <fieldset class="ma__location-filters__by-tags  js-filter-by-tags">
                 <legend class="ma__visually-hidden">Other options</legend>
                 <div class="ma__location-filters__tag">
