@@ -2,11 +2,13 @@
 
 namespace Drupal\mass_alerts\Plugin\Block;
 
+use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
@@ -14,25 +16,16 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a mayflower Block for @organisms/by-template/ajax-pattern.
- *
- * @Block(
- *   id = "mass_alerts_block",
- *   admin_label = @Translation("Alerts block"),
- *   category = @Translation("Mass.gov"),
- * )
  */
+#[Block(
+  id: 'mass_alerts_block',
+  admin_label: new TranslatableMarkup('Alerts block'),
+  category: new TranslatableMarkup('Mass.gov'),
+)]
 class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFactoryPluginInterface {
 
-  /**
-   * Drupal\Core\Routing\CurrentRouteMatch definition.
-   *
-   * @var \Drupal\Core\Routing\CurrentRouteMatch
-   */
-  protected $routeMatch;
+  protected CurrentRouteMatch $routeMatch;
 
-  /**
-   * AlertsBlock constructor.
-   */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->routeMatch = $route_match;

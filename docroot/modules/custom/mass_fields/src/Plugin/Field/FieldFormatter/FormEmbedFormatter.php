@@ -6,7 +6,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 
 /**
- * Plugin implementation of the 'entity_user_access_f' formatter.
+ * Plugin implementation of the 'form_embed' formatter.
  *
  * @FieldFormatter(
  *   id = "form_embed",
