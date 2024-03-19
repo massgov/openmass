@@ -89,13 +89,14 @@
                          type="text"
                          placeholder="City, town, or ZIP code"
                          data-type="text"
-                         autocomplete="off"
+                         autocomplete="list"
                          {# value="{{ helper }}" #}
                          role="combobox"
                          aria-expanded="false"
                          aria-controls="filter-loction-options"
-                         aria-owns="filter-loction-options"
-                         aria-describedby="error-input">
+                         {# aria-owns="filter-loction-options" #}
+                         aria-describedby="inst error-input">
+                  <p id="inst" aria-hidden="true">After typing a city, town or zip code, use down arrow key to navigate options. Hit Enter to select an option.</p>
                 </div>
               </div>
               <fieldset class="ma__location-filters__by-tags  js-filter-by-tags">

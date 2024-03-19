@@ -4,7 +4,8 @@
   // its associated input field .ma__input pac-target-input.
   // '.pac-container' is an element by Google code.
   setTimeout(function () {
-    $('.pac-container').attr('id', 'filter-loction-options');
+    // eslint-disable-next-line quotes
+    $('.pac-container:nth-child(2)').attr('id', 'filter-loction-options');
   }, 250);
 
   // Update option box status.
@@ -19,14 +20,12 @@
     console.log($(this).attr('aria-expanded'));
   });
 
-  // $('.pac-item').on('click', function () {
-  //   console.log('selected');
+  // $('.pac-container').each(function (i) {
+  //   i.on('click', function() {
+  //   console.log('clicked');
 
-  //   // if ($('#filter-loction-options').children().length === 0) {
-
-
-  //   console.log($(this).attr('aria-expanded'));
-  //   // }
+  //    $('#filter-by-location').attr('aria-expanded', 'false');
+  //   $(this).css('border', '3px solid red');
   // });
 
   $('.pac-item').each(function (i) {
