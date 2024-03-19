@@ -412,6 +412,7 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_mosaic_items($form_state, $paragraph);
       _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
+      _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
     }
   }
 }
