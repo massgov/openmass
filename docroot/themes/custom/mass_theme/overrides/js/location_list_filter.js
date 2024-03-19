@@ -1,8 +1,5 @@
 (function ($, Drupal) {
   ('use strict');
-
-  console.log('apple');
-
   // Add id to location listing filter combobox options to pair with
   // its associated input field .ma__input pac-target-input.
   // '.pac-container' is an element by Google code.
@@ -12,8 +9,6 @@
 
   // Update option box status.
   $('#filter-by-location').keyup(function () {
-    console.log('keyup');
-
     if ($('#filter-loction-options').children().length > 0) {
       $(this).attr('aria-expanded', 'true');
     }
@@ -36,6 +31,7 @@
 
   $('.pac-item').each(function (i) {
     i.on('click', function () {
+      $(this).css('background', 'orange');
       console.log('selected');
       $('#filter-by-location').attr('aria-expanded', 'false');
     });
