@@ -72,4 +72,19 @@
 
     }
   };
+
+  // Set focus on the button when the page is refreshed with the filter options.
+  $(document).ready(function () {
+    if ($(location).attr('href').contains('?icons=')) {
+      $('.js-location-filters__submit').focus();
+    }
+  });
+
+  // Set focus on the input field when the error message is displayed.
+  $('.js-location-filters__submit').on('click', function () {
+    if ($('.ma__error-msg').hasClass('has-error')) {
+      $('#filter-by-location').focus();
+    }
+  });
+
 })(jQuery, Drupal);
