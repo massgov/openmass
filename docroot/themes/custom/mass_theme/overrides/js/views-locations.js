@@ -82,8 +82,15 @@
 
   // Set focus on the input field when the error message is displayed.
   $('.js-location-filters__submit').on('click', function () {
-    if ($('.ma__error-msg').hasClass('has-error')) {
-      $('#filter-by-location').focus();
+    var locationField = $('#filter-by-location');
+    if (!$(locationField).val()) {
+      $(locationField).attr('aria-invalid', 'true');
+      $(locationField).attr('aria-describedby', 'error-input sr-note');
+      $(locationField).focus();
+    }
+    else {
+      $(locationField).removeAttr('aria-invalid');
+      $(locationField).attr('aria-describedby', 'sr-note');
     }
   });
 
