@@ -1,5 +1,19 @@
 
 
+## [0.393.0] - March 19, 2024
+
+### Changed
+  - DP-31828: Upgrade to Drupal 10.2
+  - DP-32010: Org contact logo too large on mobile.
+  - DP-32201: Changed the questionable parent report to be based on content types and not labels.
+  
+### Added
+  - DP-32072: Test the alert detail page using symfony crawler
+  - DP-32094: Form inventory view for internal use.
+  - DP-32169: Added org type report view for internal use.
+  
+
+
 ## [0.392.0] - March 12, 2024
 
 ### Added
