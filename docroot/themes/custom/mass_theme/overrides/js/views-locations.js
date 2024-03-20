@@ -75,14 +75,12 @@
 
   // Set focus on the button when the page is refreshed with the filter options.
   $(document).ready(function () {
-  // $(window).on('load', function () {
-    console.log($(location).attr('href'));
-    console.log('origin');
-    console.log($(location).attr('origin'));
-    console.log('path');
-    console.log($(location).attr('path'));
     var searchParams = new URLSearchParams(window.location.search);
-    console.log(searchParams.has('?icons='));
+    console.log(searchParams.has('icons'));
+    console.log(searchParams.has('helper'));
+    console.log(searchParams.has('lat'));
+    console.log(searchParams.has('lng'));
+
     if ($(location).attr('href').contains('?icons=')) {
       console.log('apple');
       $('.js-location-filters__submit').focus();
