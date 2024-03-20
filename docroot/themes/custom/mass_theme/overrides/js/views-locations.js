@@ -46,6 +46,9 @@
         }
 
         $('.views-exposed-form .form-submit').trigger('click');
+
+        // Error message handling
+        errorMessageHandling();
       });
 
       $('.js-results-heading-tag', context).on('click', function (e) {
@@ -79,17 +82,17 @@
   });
 
   // Set focus on the input field when the error message is displayed.
-  $('.js-location-filters__submit').on('click', function (e) {
-    errorMessageHandling();
-  });
-  // For VoiceOver:  Added since VO doens't recognize click event.
-  $('.js-location-filters__submit').on('keydown', function (e) {
-    // console.log(e.key);
-    // console.log(e.code);
-    if (e.key === 'control' + 'alt' + '') {
-      errorMessageHandling();
-    }
-  });
+  // $('.js-location-filters__submit').on('click', function (e) {
+  //   errorMessageHandling();
+  // });
+  // // For VoiceOver:  Added since VO doens't recognize click event.
+  // $('.js-location-filters__submit').on('keydown', function (e) {
+  //   // console.log(e.key);
+  //   // console.log(e.code);
+  //   if (e.key === 'control' + 'alt' + '') {
+  //     errorMessageHandling();
+  //   }
+  // });
 
   function errorMessageHandling() {
     var locationField = $('#filter-by-location');
