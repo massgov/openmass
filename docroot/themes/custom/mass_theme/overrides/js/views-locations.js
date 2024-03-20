@@ -79,21 +79,32 @@
   });
 
   // Set focus on the input field when the error message is displayed.
-  $('.js-location-filters__submit').on('click', function () {
+  $('.js-location-filters__submit').on('click', function (e) {
+    errorMessageHandling();
+  });
+  // For VoiceOver:  Added since VO doens't recognize click event.
+  $('.js-location-filters__submit').on('keydown', function (e) {
+    // console.log(e.key);
+    // console.log(e.code);
+    if (e.key === 'control' + 'alt' + '') {
+      errorMessageHandling();
+    }
+  });
+
+  function errorMessageHandling() {
     var locationField = $('#filter-by-location');
     $(locationField).attr('aria-invalid', 'true');
     if ($('#error-input').hasClass('has-error')) {
-      if ($(locationField).val() !== '') {// Need to be expressively 'empty'.
+      if ($(locationField).val() !== '') {
+        // Need to be expressively 'empty'.
         $(locationField).attr('aria-describedby', 'error-input sr-note-error');
-      }
-      else {
+      } else {
         $(locationField).attr('aria-describedby', 'error-input sr-note');
       }
       $(locationField).focus();
-    }
-    else {
+    } else {
       $(locationField).removeAttr('aria-invalid');
       $(locationField).attr('aria-describedby', 'sr-note');
     }
-  });
+  }
 })(jQuery, Drupal);
