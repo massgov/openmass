@@ -99,13 +99,12 @@
   $(filterButton).on('click', function (e) {
     errorMessageHandling();
   });
-  // For VoiceOver:  Added since VO doens't recognize click event.
+  // Adjustment for VoiceOver.
   $(filterButton).on('keydown', function (e) {
     if (e.key === 'control' + 'alt' + '') {
       errorMessageHandling();
     }
-
-    if (e.key === 'ArrowDown') {
+    if (e.key === 'control' + 'alt' + 'ArrowRight') {
       $(this).removeAttr('aria-describedby');
     }
   });
