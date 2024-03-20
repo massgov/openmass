@@ -77,15 +77,15 @@
   $(document).ready(function () {
     var searchParams = new URLSearchParams(window.location.search);
     if (searchParams.has('icons')) {
-      console.log("apple");
-      $(".js-location-filters__submit").focus();
+      $('.js-location-filters__submit').focus();
     }
   });
 
   // Set focus on the input field when the error message is displayed.
   $('.js-location-filters__submit').on('click', function () {
     var locationField = $('#filter-by-location');
-    if (!$(locationField).val()) {
+    // if (!$(locationField).val()) {
+    if ($('#error-input').hasClass('has-error')) {
       $(locationField).attr('aria-invalid', 'true');
       $(locationField).attr('aria-describedby', 'error-input sr-note');
       $(locationField).focus();
