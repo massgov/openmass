@@ -23,7 +23,6 @@ class MassSerializerCommands extends DrushCommands {
 
   public function __construct(
     protected CacheEndpoint $cacheEndpoint,
-    #[Autowire(service: DependencyInjection::SITE_ALIAS_MANAGER)]
     private SiteAliasManagerInterface $siteAliasManager
   ) {
     parent::__construct();
