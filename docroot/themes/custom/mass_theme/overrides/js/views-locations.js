@@ -79,7 +79,8 @@
     var searchParams = new URLSearchParams(window.location.search);
     if (!$('#error-input').hasClass('has-error') && searchParams.has('icons')) {
       $(filterButton).focus();
-      $(filterButton).attr('aria-describedby', 'sr - note - refresh');
+      // Tell sr users the new listing is rendered.
+      $(filterButton).attr('aria-describedby', 'sr-note-refresh');
     }
   });
 
