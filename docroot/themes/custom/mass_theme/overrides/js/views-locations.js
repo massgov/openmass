@@ -34,14 +34,16 @@
 
         if (!location) {
           $('.views-exposed-form input[type="text"]').val('');
-        } else {
+        }
+        else {
           $('.views-exposed-form [name="helper"]').val(location);
         }
 
         if (wheelchair) {
           var option = $('.views-exposed-form [name="icons"] option')[1];
           $('.views-exposed-form [name="icons"]').val(option.value);
-        } else {
+        }
+        else {
           $('.views-exposed-form [name="icons"]').val('All');
         }
 
@@ -54,7 +56,8 @@
 
         if ($(this).data('ma-filter-type') === 'location') {
           $form.find('input').val('');
-        } else {
+        }
+        else {
           $form.find('input').prop('checked', false);
         }
 
@@ -67,23 +70,31 @@
         $form.find('input').val('').prop('checked', false);
         $form.trigger('submit');
       });
-    },
+    }
   };
 
   // Set focus on the button when the page is refreshed with the filter options.
+  var filterButton = $('.js-location-filters__submit');
   $(document).ready(function () {
     var searchParams = new URLSearchParams(window.location.search);
     if (!$('#error-input').hasClass('has-error') && searchParams.has('icons')) {
-      $('.js-location-filters__submit').focus();
+      $(filterButton).focus();
+      $(filterButton).attr('aria-describedby', 'sr - note - refresh');
+    }
+  });
+
+  $(filterButton).on('focusout', function (e) {
+    if ($(this).attr()) {
+      $(this).removeAttr('aria-describedby');
     }
   });
 
   // Set focus on the input field when the error message is displayed.
-  $('.js-location-filters__submit').on('click', function (e) {
+  $(filterButton).on('click', function (e) {
     errorMessageHandling();
   });
   // For VoiceOver:  Added since VO doens't recognize click event.
-  $('.js-location-filters__submit').on('keydown', function (e) {
+  $(filterButton).on('keydown', function (e) {
     if (e.key === 'control' + 'alt' + '') {
       errorMessageHandling();
     }
@@ -96,11 +107,13 @@
       if ($(locationField).val() !== '') {
         // Need to be expressively 'empty'.
         $(locationField).attr('aria-describedby', 'error-input sr-note-error');
-      } else {
+      }
+      else {
         $(locationField).attr('aria-describedby', 'error-input sr-note');
       }
       $(locationField).focus();
-    } else {
+    }
+    else {
       $(locationField).removeAttr('aria-invalid');
       $(locationField).attr('aria-describedby', 'sr-note');
     }
