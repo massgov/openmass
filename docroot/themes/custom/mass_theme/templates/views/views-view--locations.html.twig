@@ -87,6 +87,8 @@
                      #sr-note gives SR users more necessary info than the second sentense since the component is unable to notify when suggestions become ready. #}
                   <div id="error-input" class="ma__error-msg" id="error-input">Please select an address in the suggestions. <span aria-hidden="true">Start typing to show suggestions.</span></div>
                   <div id="sr-note" class="ma__visually-hidden" aria-hidden="true">As you type, the suggested options are generated right away. Navigate them with down arrow key.  Hit Enter to select an option.</div>
+                  {# Partial error message for SR users when the field has suggestions. #}
+                  <div id="sr-note-error" class="ma__visually-hidden" aria-hidden="true">Navigate the suggested options with down arrow key.  For new suggestions, clear the field and start typing. Hit Enter to select an option.</div>
                   {# Some aria attributes, e.g., aria-expanded, are omitted since they are not recognized by AT.
                      It seems Google code overrides them. #}
                   <input class="ma__input pac-target-input"
