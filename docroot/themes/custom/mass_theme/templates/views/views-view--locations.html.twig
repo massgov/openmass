@@ -84,8 +84,8 @@
                   <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code </label>
                   {# When the error message '#error-input' is visible, '#sr-note' is announced following the error message. #}
                   <div id="error-input" class="ma__error-msg" id="error-input">Please select an address in the suggestions.</div>
-                  <div id="sr-note" class="ma__visually-hidden" aria-hidden="true">After typing a city, town or zip code, use down arrow key to navigate suggested options. Hit Enter to select an option.</div>
-                  {# Some aria-attributes are omitted since they are not recognized by AT.
+                  <div id="sr-note" class="ma__visually-hidden" aria-hidden="true">As you type, the suggested options are generated right away. Navigate them with down arrow key.  Hit Enter to select an option.</div>
+                  {# Some aria attributes, e.g., aria-expanded, are omitted since they are not recognized by AT.
                      It seems Google code overrides them. #}
                   <input class="ma__input pac-target-input"
                          name="filter-by-location"

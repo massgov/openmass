@@ -74,8 +74,8 @@
   };
 
   // Set focus on the button when the page is refreshed with the filter options.
-  // $(document).ready(function () {
-  $(window).on('load', function () {
+  $(document).ready(function () {
+  // $(window).on('load', function () {
     console.log($(location).attr("href"));
     if ($(location).attr('href').contains('?icons=')) {
       console.log('apple');
