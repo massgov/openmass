@@ -84,6 +84,11 @@
     else {
       header2 = $('.ma__results-heading__title').text();
     }
+    console.log('header 1');
+    console.log(header1);
+    console.log('header 2');
+    console.log(header2);
+
 
     var searchParams = new URLSearchParams(window.location.search);
     if (!$('#error-input').hasClass('has-error') && searchParams.has('icons')) {
