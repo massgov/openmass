@@ -77,12 +77,12 @@
   var filterButton = $('.js-location-filters__submit');
   $(document).ready(function () {
     var referrer = document.referrer.substr(document.referrer.lastIndexOf('?') + 1);
+    referrer = '?' + referrer;
     var searchParams = new URLSearchParams(window.location.search);
     if (!$('#error-input').hasClass('has-error') && searchParams.has('icons')) {
       $(filterButton).focus();
 
       // Tell sr users the new listing is rendered.
-      referrer = '?' + referrer;
       if (searchParams !== referrer) {
         $(filterButton).attr('aria-describedby', 'sr-note-refresh');
       }
@@ -103,6 +103,10 @@
   $(filterButton).on('keydown', function (e) {
     if (e.key === 'control' + 'alt' + '') {
       errorMessageHandling();
+    }
+
+    if (e.key === 'ArrowDown') {
+      $(this).removeAttr('aria-describedby');
     }
   });
 
