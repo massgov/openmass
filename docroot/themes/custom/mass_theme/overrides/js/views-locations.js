@@ -75,32 +75,16 @@
 
   // Set focus on the button when the page is refreshed with the filter options.
   var filterButton = $('.js-location-filters__submit');
-  var header1 = '';
-  var header2 = '';
   $(document).ready(function () {
-    if (header1 === '') {
-      console.log('first run');
-      header1 = $('.ma__results-heading__title').text();
-    }
-    else {
-      console.log('second run');
-      header2 = $('.ma__results-heading__title').text();
-    }
-    console.log('header 1');
-    console.log(header1);
-    console.log('header 2');
-    console.log(header2);
-    // console.log(header2 !== '');
+    var referrer = document.referrer.substr(document.referrer.lastIndexOf('?') + 1);
     var searchParams = new URLSearchParams(window.location.search);
     if (!$('#error-input').hasClass('has-error') && searchParams.has('icons')) {
       $(filterButton).focus();
 
       // Tell sr users the new listing is rendered.
-      if (header2 !== '' && header1 !== header2) {
+      referrer = '?' + referrer;
+      if (searchParams !== referrer) {
         $(filterButton).attr('aria-describedby', 'sr-note-refresh');
-
-        header1 = header2;
-        header2 = '';
       }
     }
   });
