@@ -83,8 +83,7 @@
     var locationField = $('#filter-by-location');
     $(locationField).attr('aria-invalid', 'true');
     if ($('#error-input').hasClass('has-error')) {
-      if (!$(locationField).val()) {
-        // has suggestions
+      if ($(locationField).val() !== '') {// Need to be expressively 'empty'.
         $(locationField).attr('aria-describedby', 'error-input sr-note-error');
       }
       else {
