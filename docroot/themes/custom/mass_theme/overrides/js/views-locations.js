@@ -101,11 +101,14 @@
   });
   // Adjustment for VoiceOver.
   $(filterButton).on('keydown', function (e) {
-    if (e.key === 'control' + 'alt' + '') {
+    // Click
+    if (e.key === 'Control' + 'Alt' + '') {
       errorMessageHandling();
     }
-    if (e.key === 'control' + 'alt' + 'ArrowRight') {
-      $(this).removeAttr('aria-describedby');
+    // Move away from the button
+    if (e.key === 'Control' + 'Alt' + 'ArrowRight' ||
+        e.key === 'Control' + 'Alt' + 'ArrowLeft') {
+      $(filterButton).removeAttr('aria-describedby');
     }
   });
 
