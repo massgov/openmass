@@ -8,23 +8,21 @@
   Drupal.behaviors.viewsLocations = {
     attach: function (context, settings) {
       // We hook off of the document-level view ajax event
-      $(document)
-        .ajaxComplete(function (e, xhr, settings) {
-          if (settings.url === '/views/ajax?_wrapper_format=drupal_ajax') {
-            var DOMContentLoaded_event = document.createEvent('Event');
-            DOMContentLoaded_event.initEvent('DOMContentLoaded', true, true);
-            window.document.dispatchEvent(DOMContentLoaded_event);
-          }
-        })
-        .on('ma:GoogleMaps:placeChanged', function (event, place) {
-          $('.views-exposed-form input[type="text"]').val('');
-          if (place.geometry && place.geometry.location) {
-            var lat = place.geometry.location.lat();
-            var lng = place.geometry.location.lng();
-            $('.views-exposed-form [name="lat"]').val(lat);
-            $('.views-exposed-form [name="lng"]').val(lng);
-          }
-        });
+      $(document).ajaxComplete(function (e, xhr, settings) {
+        if (settings.url === '/views/ajax?_wrapper_format=drupal_ajax') {
+          var DOMContentLoaded_event = document.createEvent('Event');
+          DOMContentLoaded_event.initEvent('DOMContentLoaded', true, true);
+          window.document.dispatchEvent(DOMContentLoaded_event);
+        }
+      }).on('ma:GoogleMaps:placeChanged', function (event, place) {
+        $('.views-exposed-form input[type="text"]').val('');
+        if (place.geometry && place.geometry.location) {
+          var lat = place.geometry.location.lat();
+          var lng = place.geometry.location.lng();
+          $('.views-exposed-form [name="lat"]').val(lat);
+          $('.views-exposed-form [name="lng"]').val(lng);
+        }
+      });
 
       $('form.js-location-filters', context).on('submit', function (e) {
         e.preventDefault();
@@ -90,7 +88,7 @@
   });
 
   $(filterButton).on('focusout', function (e) {
-    if ($(this).attr()) {
+    if ($(this).attr('aria-describedby')) {
       $(this).removeAttr('aria-describedby');
     }
   });
@@ -104,24 +102,25 @@
     if (e.ctrlKey + e.altKey) {
       // VO keys
       // Click
-      if (e.key === "") {
+      if (e.key === '') {
         errorMessageHandling();
       }
       // Move away from the button
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        if ($(this).attr("aria-describedby")) {
-          $(this).removeAttr("aria-describedby");
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        if ($(this).attr('aria-describedby')) {
+          $(this).removeAttr('aria-describedby');
         }
       }
-    } else {
+    }
+    else {
       // When VO keys are already held down.
       // Click
-      if (e.key === "") {
+      if (e.key === '') {
         errorMessageHandling();
       }
       // Move away from the button
-      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        $(filterButton).removeAttr("aria-describedby");
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        $(filterButton).removeAttr('aria-describedby');
       }
     }
   });
