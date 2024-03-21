@@ -2,21 +2,19 @@
 
 namespace Drupal\mass_superset\Plugin\Block;
 
-use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a block with a query for Top Priorities.
+ *
+ * @Block(
+ *   id = "top_priorities_block",
+ *   admin_label = @Translation("Top Priorities"),
+ * )
  */
-#[Block(
-  id: 'top_priorities_block',
-  admin_label: new TranslatableMarkup('Top Priorities'),
-  category: new TranslatableMarkup('Mass.gov'),
-)]
 class TopPrioritiesBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   protected $formBuilder;

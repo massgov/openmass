@@ -2,20 +2,20 @@
 
 namespace Drupal\mass_content_moderation\Plugin\Action;
 
-use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Restore Action to move items from Trash to Unpublished state.
+ *
+ * @Action(
+ *   id = "mass_content_moderation_restore_action",
+ *   label = @Translation("Restore item from trash"),
+ *   type = ""
+ * )
  */
-#[Action(
-  id: "mass_content_moderation_restore_action",
-  label: new TranslatableMarkup('Restore item from trash')
-)]
 class RestoreAction extends ViewsBulkOperationsActionBase {
 
   use StringTranslationTrait;

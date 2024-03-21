@@ -2,9 +2,7 @@
 
 namespace Drupal\mass_feedback_form\Plugin\Block;
 
-use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * @file
@@ -13,12 +11,12 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Provides a 'NodeFeedbackContainer' block.
+ *
+ * @Block(
+ *   id = "node_feedback_container",
+ *   admin_label = @Translation("Node Feedback Container")
+ * )
  */
-#[Block(
-  id: 'node_feedback_container',
-  admin_label: new TranslatableMarkup('Node Feedback Container'),
-  category: new TranslatableMarkup('Mass.gov'),
-)]
 class NodeFeedbackContainer extends BlockBase {
 
   /**

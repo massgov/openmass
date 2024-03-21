@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Drupal\mass_media\Plugin\Action;
 
-use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Updates the moderation state of a media item to Published.
+ *
+ * @Action(
+ *   id = "mass_media_publish",
+ *   label = @Translation("Moderation: Publish media"),
+ *   type = "media"
+ * )
  */
-#[Action(
-  id: "mass_media_publish",
-  label: new TranslatableMarkup('Moderation: Publish media'),
-  type: 'media'
-)]
 class MediaModerationStatePublish extends ViewsBulkOperationsActionBase {
 
   use MediaModerationStateActionTrait;

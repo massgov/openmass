@@ -2,22 +2,22 @@
 
 namespace Drupal\mass_hierarchy\Plugin\Action;
 
-use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Changes a parent field with another, checking allowed parent types first.
  *
  * @see https://www.drupal.org/docs/contributed-modules/views-bulk-operations-vbo/creating-a-new-action#s-2-action-class
+ *
+ * @Action(
+ *   id = "mass_hierarchy_change_parent",
+ *   label = @Translation("Change parent"),
+ *   type = ""
+ * )
  */
-#[Action(
-  id: "mass_hierarchy_change_parent",
-  label: new TranslatableMarkup('Change parent'),
-)]
 class ChangeParentAction extends ViewsBulkOperationsActionBase {
 
   use StringTranslationTrait;

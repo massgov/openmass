@@ -2,18 +2,17 @@
 
 namespace Drupal\mass_admin_pages\Plugin\Block;
 
-use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Provides a block for searching/filtering content types on the node add page.
+ *
+ * @Block(
+ *   id = "add_content_search",
+ *   admin_label = @Translation("Add Content Search"),
+ *   category = @Translation("Mass Admin Pages"),
+ * )
  */
-#[Block(
-  id: 'add_content_search',
-  admin_label: new TranslatableMarkup("Add Content Search"),
-  category: new TranslatableMarkup('Mass Admin Pages'),
-)]
 class AddContentSearch extends BlockBase {
 
   /**

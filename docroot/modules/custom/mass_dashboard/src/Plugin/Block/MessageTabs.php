@@ -3,7 +3,6 @@
 namespace Drupal\mass_dashboard\Plugin\Block;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\MessagesBlockPluginInterface;
 use Drupal\Core\Cache\CacheableMetadata;
@@ -12,17 +11,16 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a combination of messages and tabs for the site.
+ *
+ * @Block(
+ *   id = "message_tabs",
+ *   admin_label = @Translation("Messages & Tabs"),
+ * )
  */
-#[Block(
-  id: 'message_tabs',
-  admin_label: new TranslatableMarkup('Messages & Tabs'),
-  category: new TranslatableMarkup('Mass.gov'),
-)]
 class MessageTabs extends BlockBase implements ContainerFactoryPluginInterface, MessagesBlockPluginInterface {
 
   private $localTaskManager;

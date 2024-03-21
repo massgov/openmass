@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Drupal\mass_workbench_ui\Plugin\Block;
 
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
@@ -14,17 +13,16 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a Block that displays the revision state.
+ *
+ * @Block(
+ *   id = "current_revision",
+ *   admin_label = @Translation("Current revision state"),
+ * )
  */
-#[Block(
-  id: 'current_revision',
-  admin_label: new TranslatableMarkup('Current revision state'),
-  category: new TranslatableMarkup('Mass.gov'),
-)]
 class WorkbenchModerationCurrentState extends BlockBase implements ContainerFactoryPluginInterface {
 
   private $routeMatch;

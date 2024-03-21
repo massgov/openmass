@@ -2,18 +2,16 @@
 
 namespace Drupal\mass_admin_pages\Plugin\Block;
 
-use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 
 /**
  * Provides a block for the intro text on the node add page.
+ *
+ * @Block(
+ *   id = "request_support_link_block",
+ *   admin_label = @Translation("Request support link")
+ * )
  */
-#[Block(
-  id: 'request_support_link_block',
-  admin_label: new TranslatableMarkup('Request support link'),
-  category: new TranslatableMarkup('Mass.gov'),
-)]
 class SupportTicketBlock extends BlockBase {
 
   /**

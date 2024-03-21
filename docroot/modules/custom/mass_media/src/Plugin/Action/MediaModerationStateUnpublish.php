@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Drupal\mass_media\Plugin\Action;
 
-use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Updates the moderation state of a media item to Unpublished.
+ *
+ * @Action(
+ *   id = "mass_media_unpublish",
+ *   label = @Translation("Moderation: Unpublish media"),
+ *   type = "media"
+ * )
  */
-#[Action(
-  id: "mass_media_unpublish",
-  label: new TranslatableMarkup('Moderation: Unpublish media'),
-  type: 'media'
-)]
 class MediaModerationStateUnpublish extends ViewsBulkOperationsActionBase {
 
   use MediaModerationStateActionTrait;

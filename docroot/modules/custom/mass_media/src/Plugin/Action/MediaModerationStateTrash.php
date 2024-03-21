@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace Drupal\mass_media\Plugin\Action;
 
-use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Updates the moderation state of a media item to Trash.
+ *
+ * @Action(
+ *   id = "mass_media_trash",
+ *   label = @Translation("Moderation: Trash media"),
+ *   type = "media"
+ * )
  */
-#[Action(
-  id: "mass_media_trash",
-  label: new TranslatableMarkup('Moderation: Trash media'),
-  type: 'media'
-)]
 class MediaModerationStateTrash extends ViewsBulkOperationsActionBase {
 
   use MediaModerationStateActionTrait;
