@@ -101,16 +101,25 @@
   });
   // Adjustment for VoiceOver.
   $(filterButton).on('keydown', function (e) {
-    console.log(e.key);
-    // Click
-    if (e.key === 'Control' + 'Alt' + '') {
-      errorMessageHandling();
+    if (e.ctrlKey + e.altKey) {// VO keys
+      // Click
+      if (e.key === '') {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        $(filterButton).removeAttr('aria-describedby');
+      }
     }
-    // Move away from the button
-    if (e.key === 'Control' + 'Alt' + 'ArrowRight' ||
-        e.key === 'Control' + 'Alt' + 'ArrowLeft') {
-      console.log('apple');
-      $(filterButton).removeAttr('aria-describedby');
+    else {// When VO keys are already held down.
+      // Click
+      if (e.key === '') {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        $(filterButton).removeAttr('aria-describedby');
+      }
     }
   });
 
