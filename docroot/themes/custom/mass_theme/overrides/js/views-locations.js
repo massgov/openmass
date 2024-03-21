@@ -101,11 +101,28 @@
   });
   // Adjustment for VoiceOver.
   $(filterButton).on('keydown', function (e) {
-    if (e.key === 'control' + 'alt' + '') {
-      errorMessageHandling();
-    }
-    if (e.key === 'control' + 'alt' + 'ArrowRight') {
-      $(this).removeAttr('aria-describedby');
+    if (e.ctrlKey + e.altKey) {
+      // VO keys
+      // Click
+      if (e.key === "") {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        if ($(this).attr("aria-describedby")) {
+          $(this).removeAttr("aria-describedby");
+        }
+      }
+    } else {
+      // When VO keys are already held down.
+      // Click
+      if (e.key === "") {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        $(filterButton).removeAttr("aria-describedby");
+      }
     }
   });
 
