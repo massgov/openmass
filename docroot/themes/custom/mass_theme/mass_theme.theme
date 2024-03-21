@@ -6040,11 +6040,11 @@ function mass_theme_preprocess_views_view(&$variables) {
 
   // Add a class to the submit button.
   if (isset($variables['exposed']['actions']['submit'])) {
-    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button-submit';
+    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button-submit';
   }
   // Add a class to the reset button.
   if (isset($variables['exposed']['actions']['reset'])) {
-    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--quaternary ma__button-reset';
+    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button--quaternary ma__button-reset';
   }
 
   // Optionally, run node-type-specific preprocess functions, like
