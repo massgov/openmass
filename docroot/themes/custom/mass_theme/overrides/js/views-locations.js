@@ -108,7 +108,9 @@
       }
       // Move away from the button
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
-        $(filterButton).removeAttr('aria-describedby');
+        if ($(this).attr('aria-describedby')) {
+          $(this).removeAttr('aria-describedby');
+        }
       }
     }
     else {// When VO keys are already held down.
