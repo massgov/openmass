@@ -90,7 +90,7 @@
   });
 
   $(filterButton).on('focusout', function (e) {
-    if ($(this).attr()) {
+    if ($(this).attr('aria-describedby')) {
       $(this).removeAttr('aria-describedby');
     }
   });
