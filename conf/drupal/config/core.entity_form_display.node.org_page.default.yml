@@ -122,12 +122,12 @@ third_party_settings:
         - field_org_page_thumbnail
         - field_application_login_links
         - field_social_links
-        - field_intended_audience
-        - group_test_fieldset_group
-        - field_parent
         - group_organization_parent_mass_g
-        - field_billing_organization
         - field_organization_type
+        - field_parent
+        - group_test_fieldset_group
+        - field_billing_organization
+        - field_intended_audience
       label: Overview
       region: content
       parent_name: group_node_edit_form
@@ -214,7 +214,7 @@ third_party_settings:
       label: 'Mass.gov Organization search filter'
       region: content
       parent_name: group_overview
-      weight: 133
+      weight: 135
       format_type: fieldset
       format_settings:
         classes: ''
@@ -228,7 +228,7 @@ third_party_settings:
       label: 'Organization parent Mass.gov search filter'
       region: content
       parent_name: group_overview
-      weight: 135
+      weight: 132
       format_type: fieldset
       format_settings:
         classes: ''
@@ -353,7 +353,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 132
+    weight: 137
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -427,7 +427,7 @@ content:
     third_party_settings: {  }
   field_organization_type:
     type: options_buttons
-    weight: 137
+    weight: 133
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -458,12 +458,33 @@ content:
           dependee: field_organization_type
           settings:
             state: required
+            reset: false
             condition: value
             grouping: AND
-            values_set: 1
+            values_set: 3
             value: ''
-            values: {  }
-            value_form: {  }
+            values: "95271\r\n95276"
+            value_form:
+              -
+                target_id: '95271'
+            effect: show
+            effect_options: {  }
+            selector: ''
+        dec3d8e3-d78e-4710-9605-f7245fa9f542:
+          entity_type: node
+          bundle: org_page
+          dependee: field_organization_type
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 3
+            value: ''
+            values: "95261\r\n95276\r\n95281\r\n95271"
+            value_form:
+              -
+                target_id: null
             effect: show
             effect_options: {  }
             selector: ''
