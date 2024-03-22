@@ -142,6 +142,11 @@ class EmergencyAlertsTest extends MassExistingSiteBase {
     $this->drupalGet('/alerts/page/' . $org_node->id());
     $headers = $session->getResponseHeaders();
     $this->assertStringContainsString('HIT', $headers[DynamicPageCacheSubscriber::HEADER][0]);
+
+    // Test that the alert details page has the field content.
+    $crawler = $this->getRenderedEntityCrawler($node);
+    $this->assertStringContainsString($node->label(), $crawler->text());
+    $this->assertStringContainsString($alert_message_text, $crawler->text());
   }
 
   /**
