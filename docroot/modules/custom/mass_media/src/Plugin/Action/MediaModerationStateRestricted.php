@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\mass_media\Plugin\Action;
 
+use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\file\Entity\File;
 use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
@@ -13,13 +15,12 @@ use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Updates the moderation state of a media item to Restricted.
- *
- * @Action(
- *   id = "mass_media_restricted",
- *   label = @Translation("Moderation: Restrict media"),
- *   type = "media"
- * )
  */
+#[Action(
+  id: "mass_media_restricted",
+  label: new TranslatableMarkup('Moderation: Restrict media'),
+  type: 'media'
+)]
 class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
 
   use MediaModerationStateActionTrait;

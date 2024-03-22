@@ -1,5 +1,21 @@
 
 
+## [0.392.0] - March 12, 2024
+
+### Added
+  - DP-15165: Start linting Twig files in CI
+  - DP-32029: Add Public Wifi location icon to location page.
+  
+### Fixed
+  - DP-31233: Fixed flaky accordion test.
+  - DP-31923: Hamburger Menu Bug on mobile.
+  - DP-32116: Updated patch to fix bulk edits
+  
+### Changed
+  - DP-32091: Modify session_orgs to include org node ids
+  
+
+
 ## [0.391.0] - March 4, 2024
 
 ### Changed
