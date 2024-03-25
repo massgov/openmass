@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mass_redirects\Commands;
+namespace Drupal\mass_redirects\Drush\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
@@ -17,14 +17,19 @@ use Drupal\mayflower\Helper;
 use Drupal\redirect\RedirectRepository;
 use Drupal\text\Plugin\Field\FieldType\TextLongItem;
 use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 class MassRedirectsCommands extends DrushCommands {
+
+  use AutowireTrait;
 
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected Connection $connection,
+    #[Autowire(service: 'redirect.repository')]
     protected RedirectRepository $redirectRepository
   ) {
     parent::__construct();
