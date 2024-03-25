@@ -7,3 +7,4 @@ services:
   mass_entity_usage.queue_batch_manager:
     class: Drupal\mass_entity_usage\EntityUsageQueueBatchManager
     arguments: [ '@entity_type.manager', '@string_translation', '@config.factory' ]
+  Drupal\mass_entity_usage\EntityUsageQueueBatchManager: '@mass_entity_usage.queue_batch_manager'

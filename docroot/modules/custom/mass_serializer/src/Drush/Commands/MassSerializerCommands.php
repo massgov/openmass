@@ -1,34 +1,31 @@
 <?php
 
-namespace Drupal\mass_serializer\Commands;
+namespace Drupal\mass_serializer\Drush\Commands;
 
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
+use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Drupal\mass_serializer\CacheEndpoint;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
+use Drush\Runtime\DependencyInjection;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Class MassSerializerCommands.
  *
  * @package Drupal\mass_serializer\Commands
  */
-class MassSerializerCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
+class MassSerializerCommands extends DrushCommands {
 
-  use SiteAliasManagerAwareTrait;
+  use AutowireTrait;
 
-  /**
-   * Cache endpoint service.
-   *
-   * @var \Drupal\mass_serializer\CacheEndpoint
-   */
-  protected $cacheEndpoint;
-
-  /**
-   * MassSerializerCommands constructor.
-   */
-  public function __construct(CacheEndpoint $cacheEndpoint) {
-    $this->cacheEndpoint = $cacheEndpoint;
+  public function __construct(
+    protected CacheEndpoint $cacheEndpoint,
+    private SiteAliasManagerInterface $siteAliasManager
+  ) {
+    parent::__construct();
   }
 
   /**
@@ -91,7 +88,7 @@ class MassSerializerCommands extends DrushCommands implements SiteAliasManagerAw
     $processed = 0;
     foreach ($tids as $tid) {
       $this->logger()->debug('Calling mserc drush command with organization id: ' . $tid);
-      $process = Drush::drush($this->siteAliasManager()->getSelf(), 'mserc', [$machine_name, $tid], Drush::redispatchOptions());
+      $process = Drush::drush($this->siteAliasManager->getSelf(), 'mserc', [$machine_name, $tid], Drush::redispatchOptions());
       $process->mustRun();
       $processed++;
 
