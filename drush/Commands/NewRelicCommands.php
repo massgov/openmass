@@ -7,7 +7,7 @@ use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Drush\Attributes as CLI;
 use Drush\Commands\DrushCommands;
 
-class NewRelicCommands extends DrushCommands
+final class NewRelicCommands extends DrushCommands
 {
 
   #[CLI\Option(name: 'nrname', description: 'New Relic transaction name.')]
