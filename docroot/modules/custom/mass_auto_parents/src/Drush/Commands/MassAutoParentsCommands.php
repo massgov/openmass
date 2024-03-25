@@ -1,8 +1,9 @@
 <?php
 
-namespace Drupal\mass_auto_parents\Commands;
+namespace Drupal\mass_auto_parents\Drush\Commands;
 
 use Drupal\mass_auto_parents\MassAutoParentsBatchManager;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -11,28 +12,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class MassAutoParentsCommands extends DrushCommands {
 
-  /**
-   * The Mass Auto Parents batch manager.
-   *
-   * @var \Drupal\mass_auto_parents\MassAutoParentsBatchManager
-   */
-  protected $batchManager;
+  use AutowireTrait;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(MassAutoParentsBatchManager $batch_manager) {
+  public function __construct(protected MassAutoParentsBatchManager $batchManager) {
     parent::__construct();
-    $this->batchManager = $batch_manager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('mass_auto_parents.batch_manager'),
-    );
   }
 
   /**
