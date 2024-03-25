@@ -16,32 +16,10 @@
       if (typeof window.dataLayer !== 'undefined' && typeof window.dataLayer[0].entityBundle !== 'undefined') {
         var dataLayer = window.dataLayer[0];
         if (dataLayer.entityBundle !== 'topic_page') {
-          var orgsFiltered = [];
-          var parentOrgsFiltered = [];
-          var parentOrgs = '';
 
           // Get related organizations from the dataLayer object.
-          var dataLayerOrgs = dataLayer.entityField_organizations;
-          if (typeof dataLayerOrgs !== 'undefined') {
-            $.each(dataLayerOrgs, function (nid, orgAttributes) {
-              var orgNodeString = orgAttributes['slug'] + ':' + nid;
-              if ($.inArray(orgNodeString, orgsFiltered) === -1) {
-                orgsFiltered.push(orgNodeString);
-              }
-            });
-          }
-
-          if ($("meta[name='mg_parent_org']").length > 0) {
-            // Get data from the metatag element.
-            parentOrgs = $("meta[name='mg_parent_org']").attr('content');
-            // Filter the array and keep only unique values.
-            var parentOrgsArr = parentOrgs.split(',');
-            $.each(parentOrgsArr, function (i, el) {
-              if ($.inArray(el, parentOrgsFiltered) === -1) {
-                parentOrgsFiltered.push(el);
-              }
-            });
-          }
+          var orgsFiltered = getFilteredOrgString(dataLayer, 'entityField_organizations');
+          var parentOrgsFiltered = getFilteredOrgString(dataLayer, 'entityField_org_parent');
 
           // Set Session start time for each user.
           var sessionStart = sessionStorage.getItem('session_start');
@@ -61,6 +39,28 @@
       }
     }
   };
+
+  /**
+   * Get a filtered list of slug:nid orgs.
+   * @param {object} dataLayer - The dataLayer object from the window.
+   * @param {string} dataLayerKey - The key to grab from the dataLayer object.
+   *
+   * @return {string[]} A list of orgs formatted as slug:nid
+   */
+  function getFilteredOrgString(dataLayer, dataLayerKey) {
+    // Get related organizations from the dataLayer object.
+    var dataLayerValue = dataLayer[dataLayerKey];
+    var filtered = [];
+    if (typeof dataLayerValue !== 'undefined') {
+      $.each(dataLayerValue, function (nid, orgAttributes) {
+        var orgNodeString = orgAttributes['slug'] + ':' + nid;
+        if ($.inArray(orgNodeString, filtered) === -1) {
+          filtered.push(orgNodeString);
+        }
+      });
+    }
+    return filtered;
+  }
 
   // Set session storage to passed arrays with unique values.
   function updateSessionStorage(key, valuesFiltered) {
