@@ -2,3 +2,4 @@ services:
   mass_auto_parents.batch_manager:
     class: Drupal\mass_auto_parents\MassAutoParentsBatchManager
     arguments: [ '@entity_type.manager' ]
+  Drupal\mass_auto_parents\MassAutoParentsBatchManager: '@mass_auto_parents.batch_manager'

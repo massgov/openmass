@@ -1,16 +1,18 @@
 <?php
 
-namespace Drupal\mass_content\Commands;
+namespace Drupal\mass_content\Drush\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mass_fields\MassUrlReplacementService;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 
@@ -19,18 +21,13 @@ use Drush\Drush;
  */
 class MassContentCommands extends DrushCommands {
 
-  /**
-   * Entity type service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
+  use AutowireTrait;
 
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
-    $this->entityTypeManager = $entityTypeManager;
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected LoggerChannelFactoryInterface $loggerChannelFactory
+  ) {
+    parent::__construct();
   }
 
   /**
