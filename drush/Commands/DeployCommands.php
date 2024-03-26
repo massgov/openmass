@@ -25,11 +25,11 @@ use MassGov\Drush\Attributes\OptionsetDeploy;
 use MassGov\Drush\Attributes\ValidateCircleciToken;
 use Symfony\Component\Filesystem\Path;
 
+#[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
 class DeployCommands extends DrushCommands {
 
   use AutowireTrait;
 
-  #[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
   public function __construct(
     protected SiteAliasManagerInterface $siteAliasManager
   ) {
