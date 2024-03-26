@@ -1263,12 +1263,8 @@ class Molecules {
             if ($parent) {
               if ($parent->hasField('field_org_no_search_filter')) {
                 if ($parent->field_org_no_search_filter->value != 1) {
-                  if ($org->hasField('field_include_parent_org_search')) {
-                    if ($org->field_include_parent_org_search->value == 1) {
-                      $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
-                      $suggested_scopes[] = trim($parent->label());
-                    }
-                  }
+                  $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
+                  $suggested_scopes[] = trim($parent->label());
                 }
               }
             }
