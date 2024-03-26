@@ -50,6 +50,7 @@
     "wrap": paragraph.field_iframe_wrapping.value ? TRUE : FALSE,
     "size": paragraph.field_iframe_display_size.value,
     "iframe": {
+      "customClass": paragraph.field_iframe_height_config.value is same as('iframe resizer') ? 'js-iframe-resizer' : '',
       "src": paragraph.field_url.uri,
       "title": paragraph.field_iframe_accessibility_title.value,
       "height": paragraph.field_iframe_height_config.value is same as('ratio') ? null : iframe_height,

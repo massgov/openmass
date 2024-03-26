@@ -1,9 +1,10 @@
 <?php
 
-namespace Drupal\mass_migrate\Commands;
+namespace Drupal\mass_migrate\Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Drupal\mass_migrate\MassMigrateBatchManager;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -12,28 +13,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class MassMigrateCommands extends DrushCommands {
 
-  /**
-   * The Mass Migrate batch manager.
-   *
-   * @var \Drupal\mass_migrate\MassMigrateBatchManager
-   */
-  protected $batchManager;
+  use AutowireTrait;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(MassMigrateBatchManager $batch_manager) {
+  public function __construct(protected MassMigrateBatchManager $batch_manager) {
     parent::__construct();
-    $this->batchManager = $batch_manager;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('mass_migrate.batch_manager'),
-    );
   }
 
   /**
