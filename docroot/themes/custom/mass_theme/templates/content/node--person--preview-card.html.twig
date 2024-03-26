@@ -73,9 +73,10 @@
 #}
 
 {# Set top heading level for the page. #}
-{% set level = 2 %}
 {% if elements['#level'] is not empty %}
-  {% set level = elements['#level'] %}
+  {% set level = elements['#level'] + 1 %}
+{% else %}
+  {% set level = 3 %}
 {% endif %}
 
 {# Get the eyebrow value from the field on the referencing paragraph. #}
