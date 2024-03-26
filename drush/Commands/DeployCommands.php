@@ -14,6 +14,7 @@ use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
@@ -28,6 +29,7 @@ class DeployCommands extends DrushCommands {
 
   use AutowireTrait;
 
+  #[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
   public function __construct(
     protected SiteAliasManagerInterface $siteAliasManager
   ) {
