@@ -11,13 +11,12 @@ use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAlias;
-use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
+use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
-use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
@@ -25,10 +24,15 @@ use MassGov\Drush\Attributes\OptionsetDeploy;
 use MassGov\Drush\Attributes\ValidateCircleciToken;
 use Symfony\Component\Filesystem\Path;
 
-class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
+class DeployCommands extends DrushCommands {
 
-  use SiteAliasManagerAwareTrait;
+  use AutowireTrait;
 
+  public function __construct(
+    protected SiteAliasManagerInterface $siteAliasManager
+  ) {
+    parent::__construct();
+  }
 
   // Set the PHP version to use when deploying to Acquia environments.
   public const PHP_VERSION = '8.2';
@@ -48,25 +52,17 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   ];
 
   const VALIDATE_CIRCLECI_TOKEN = 'validate-circleci-token';
-
   const CI_BACKSTOP_SNAPSHOT = 'ma:ci:backstop-snapshot';
-
   const CI_BACKSTOP_COMPARE = 'ma:ci:backstop-compare';
-
   const MA_BACKUP = 'ma:backup';
-
   const LATEST_BACKUP_URL = 'ma:latest-backup-url';
-
   const MA_RELEASE = 'ma:release';
-
   const MA_DEPLOY = 'ma:deploy';
-
   const TUGBOAT_REBUILD = 'ma:tugboat-rebuild';
-
-  public string $site = 'prod:massgov';
-
   const TUGBOAT_REPO = '612e50fcbaa70da92493eef8';
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
+
+  public string $site = 'prod:massgov';
 
   /**
    * Run Backstop Snapshot at CircleCI; save result for ma:backstop-reference.
@@ -168,7 +164,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   #[CLI\Argument(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
   #[CLI\Usage(name: 'drush ma:backup prod', description: 'Initiate a database backup in production.')]
   public function createBackup($target) {
-    $env = $this->siteAliasManager()->getAlias($target);
+    $env = $this->siteAliasManager->getAlias($target);
     $cloudapi = $this->getClient();
     $backup = new DatabaseBackups($cloudapi);
     $response = $backup->create($env->get('uuid'), 'massgov');
@@ -186,7 +182,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   #[CLI\Argument(name: 'type', description: 'Backup type. Recognized values: ondemand, daily.')]
   #[CLI\Usage(name: 'drush ma:latest-backup-url prod', description: 'Fetch a link to the latest database backup from production.')]
   public function latestBackupUrl($target, $type = null) {
-    $env = $this->siteAliasManager()->getAlias($target);
+    $env = $this->siteAliasManager->getAlias($target);
     $cloudapi = $this->getClient();
     $backup = new DatabaseBackups($cloudapi);
     $backups = $backup->getAll($env->get('uuid'), 'massgov');
@@ -266,7 +262,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[OptionsetDeploy]
   public function deploy(string $target, string $git_ref, array $options) {
-    $self = $this->siteAliasManager()->getSelf();
+    $self = $this->siteAliasManager->getSelf();
 
     // For production deployments, prompt user. If they say no, exit.
     $is_prod = ($target === 'prod');
@@ -280,7 +276,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'time' => $this->getTimestamp(),
     ]);
 
-    $targetRecord = $this->siteAliasManager()->get('@' . $target);
+    $targetRecord = $this->siteAliasManager->get('@' . $target);
 
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
