@@ -14,6 +14,7 @@ use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
@@ -28,6 +29,7 @@ class DeployCommands extends DrushCommands {
 
   use AutowireTrait;
 
+  #[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
   public function __construct(
     protected SiteAliasManagerInterface $siteAliasManager
   ) {
@@ -261,7 +263,7 @@ class DeployCommands extends DrushCommands {
   #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
   #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[OptionsetDeploy]
-  public function deploy(string $target, string $git_ref, array $options) {
+  public function deploy(string $target, string $git_ref, array $options = []) {
     $self = $this->siteAliasManager->getSelf();
 
     // For production deployments, prompt user. If they say no, exit.
