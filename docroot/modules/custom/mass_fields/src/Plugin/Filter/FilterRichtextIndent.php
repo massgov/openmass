@@ -11,7 +11,7 @@ use Drupal\filter\Plugin\FilterBase;
  * @Filter(
  *   id = "filter_richtext_indent",
  *   title = @Translation("Add css hooks to indent each child heading and its nested contents"),
- *   type = Drupal\filter\Plugin\FilterInterface::TYPE_MARKUP_LANGUAGE,
+ *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_IRREVERSIBLE,
  * )
  */
 class FilterRichtextIndent extends FilterBase {
