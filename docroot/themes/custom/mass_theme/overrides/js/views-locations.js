@@ -3,7 +3,7 @@
  *
  */
 (function ($, Drupal) {
-  'use strict';
+  ('use strict');
 
   Drupal.behaviors.viewsLocations = {
     attach: function (context, settings) {
@@ -72,4 +72,75 @@
 
     }
   };
+
+  // Set focus on the button when the page is refreshed with the filter options.
+  var filterButton = $('.js-location-filters__submit');
+  $(document).ready(function () {
+    var referrer = document.referrer.substr(document.referrer.lastIndexOf('?') + 1);
+    referrer = '?' + referrer;
+    var searchParams = new URLSearchParams(window.location.search);
+    if (!$('#error-input').hasClass('has-error') && searchParams.has('icons')) {
+      $(filterButton).focus();
+
+      // Tell sr users the new listing is rendered.
+      if (searchParams !== referrer) {
+        $(filterButton).attr('aria-describedby', 'sr-note-refresh');
+      }
+    }
+  });
+
+  $(filterButton).on('focusout', function (e) {
+    if ($(this).attr('aria-describedby')) {
+      $(this).removeAttr('aria-describedby');
+    }
+  });
+
+  // Set focus on the input field when the error message is displayed.
+  $(filterButton).on('click', function (e) {
+    errorMessageHandling();
+  });
+  // Adjustment for VoiceOver.
+  $(filterButton).on('keydown', function (e) {
+    if (e.ctrlKey + e.altKey) {// VO keys
+      // Click
+      if (e.key === '') {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        if ($(this).attr('aria-describedby')) {
+          $(this).removeAttr('aria-describedby');
+        }
+      }
+    }
+    else {// When VO keys are already held down.
+      // Click
+      if (e.key === '') {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        $(filterButton).removeAttr('aria-describedby');
+      }
+    }
+  });
+
+  function errorMessageHandling() {
+    var locationField = $('#filter-by-location');
+    $(locationField).attr('aria-invalid', 'true');
+    if ($('#error-input').hasClass('has-error')) {
+      if ($(locationField).val() !== '') {
+        // Need to be expressively 'empty'.
+        $(locationField).attr('aria-describedby', 'error-input sr-note-error');
+      }
+      else {
+        $(locationField).attr('aria-describedby', 'error-input sr-note');
+      }
+      $(locationField).focus();
+    }
+    else {
+      $(locationField).removeAttr('aria-invalid');
+      $(locationField).attr('aria-describedby', 'sr-note');
+    }
+  }
 })(jQuery, Drupal);
