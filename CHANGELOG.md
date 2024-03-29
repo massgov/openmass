@@ -1,5 +1,33 @@
 
 
+## [0.393.0] - March 26, 2024
+
+### Changed
+  - DP-28012: A11y - Remove article alt title.
+  - DP-31828: Upgrade to Drupal 10.2
+  - DP-32003: Decrease header alerts spacing and minimize wrapping on mobile.
+  - DP-32010: Org contact logo too large on mobile.
+  - DP-32043: Autowire our custom Drush commandfilesAutowire our custom Drush commandfiles
+  - DP-32068: Log in button style improvement.
+  - DP-32109: Accomodate 'iframe resizer' with our iframe paragraph.
+  - DP-32201: Changed the questionable parent report to be based on content types and not labels.
+  - DP-32203: Change behavior of search filter dropdown options on org page.
+  - DP-32245: Modify session_parent_orgs to include org node ids
+  - DP-32271: On org page, org type field now required. Org parent field required for certain org types
+  
+### Added
+  - DP-32072: Test the alert detail page using symfony crawler
+  - DP-32094: Form inventory view for internal use.
+  - DP-32169: Added org type report view for internal use.
+  - DP-32269: Include organization_type in the dataLayer configuration
+  - DP-32270: Live accessibility checking for authors and editors added using Editoria11y module
+  
+### Fixed
+  - DP-32233: Tabledrag.js issue Drupal 10.2.
+  - DP-32255: Location page 'location subtitle' not appearing on published page.
+  
+
+
 ## [0.392.0] - March 12, 2024
 
 ### Added
