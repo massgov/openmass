@@ -896,7 +896,7 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
 
 function mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
   if (isset($element['alt'])) {
-    $text = 'Screen readers announce the alt text first, then the text label together as a link label.  Use alt text to provide supplemental information to the text label to help screen reader users better understand what’s on the linked page.  If the text label describes the linked page enough, omit the alt text.';
+    $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
     $element['alt']['#description'] = new \Drupal\Core\StringTranslation\TranslatableMarkup($text);
   }
   return $element;
