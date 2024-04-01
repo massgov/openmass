@@ -7,27 +7,22 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\memcache\Driver\MemcacheDriverFactory;
 use Drupal\memcache\DrupalMemcacheFactory;
 use Drush\Attributes as CLI;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Glob;
 
 /**
  * Memcache debugging commands.
  */
-class MemcacheCommands extends DrushCommands {
+final class MemcacheCommands extends DrushCommands {
+
+  use AutowireTrait;
 
   public function __construct(
+    #[Autowire('memcache.factory')]
     private MemcacheDriverFactory $factory
   ) {
     parent::__construct();
-  }
-
-  public static function create(ContainerInterface $container): self
-  {
-    $commandHandler = new static(
-      $container->get('memcache.factory'),
-    );
-
-    return $commandHandler;
   }
 
   private function getMemcached(): \Memcached {
@@ -177,4 +172,3 @@ class MemcacheCommands extends DrushCommands {
     return sprintf('%s%%', $denominator > 0 ? round($numerator / $denominator * 100, 1) : 0);
   }
 }
-

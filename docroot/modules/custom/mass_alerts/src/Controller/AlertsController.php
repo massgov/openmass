@@ -242,7 +242,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $hide_message = $node->get('field_alert_hide_message')->getString();
 
         if ($severity == 'informational_notice') {
-          $icon = 'input-warning';
+          $icon = 'alert';
           $iconLabel = 'notice';
         }
         else {

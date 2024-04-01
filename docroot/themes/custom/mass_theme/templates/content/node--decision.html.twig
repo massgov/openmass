@@ -87,7 +87,7 @@
       {% endif %}
       {% if content.field_decision_download|render is not empty %}
         {# Using the field_decision_download view mode to display the URL for doucments in this section. #}
-        {%  embed "@organisms/by-author/form-downloads.twig" with {
+        {% embed "@organisms/by-author/form-downloads.twig" with {
           "formDownloads": {
             "compHeading": {
               "title": "Downloads",
@@ -108,7 +108,7 @@
           'title': contactList.compHeading.title,
           'titleContext': contactList.compHeading.titleContext,
           'level': level,
-          'id': contactList.compHeading.id }}) %}
+          'id': contactList.compHeading.id}}) %}
         {% include "@organisms/by-author/contact-list.twig" %}
       {% endif %}
       {% if mainContent.footnoteList %}
@@ -123,20 +123,20 @@
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
+        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
         {% include "@organisms/by-author/contact-list.twig" %}
       {% endif %}
       {% if sideContent.pressListing %}
         {% set pressListing = sideContent.pressListing %}
-        {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level }) %}
-        {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading }) %}
+        {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level}) %}
+        {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading}) %}
         {% include "@organisms/by-author/press-listing.twig" %}
       {% endif %}
       {% if sideContent.eventListing %}
         {% set eventListing = sideContent.eventListing %}
-        {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level }) %}
-        {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading }) %}
+        {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level}) %}
+        {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading}) %}
         {% include "@organisms/by-author/event-listing.twig" %}
       {% endif %}
     </aside>

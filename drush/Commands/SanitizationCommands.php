@@ -20,7 +20,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Extra sanitization commands for drush sql:sanitize.
  */
-class SanitizationCommands extends DrushCommands {
+final class SanitizationCommands extends DrushCommands {
+
+  use AutowireTrait;
 
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
@@ -28,17 +30,6 @@ class SanitizationCommands extends DrushCommands {
     protected Connection $database
   ) {
     parent::__construct();
-  }
-
-  public static function create(ContainerInterface $container): self
-  {
-    $commandHandler = new static(
-      $container->get('entity_type.manager'),
-      $container->get('entity_field.manager'),
-      $container->get('database')
-    );
-
-    return $commandHandler;
   }
 
   /**

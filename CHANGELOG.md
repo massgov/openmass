@@ -1,5 +1,90 @@
 
 
+## [0.393.0] - March 26, 2024
+
+### Changed
+  - DP-28012: A11y - Remove article alt title.
+  - DP-31828: Upgrade to Drupal 10.2
+  - DP-32003: Decrease header alerts spacing and minimize wrapping on mobile.
+  - DP-32010: Org contact logo too large on mobile.
+  - DP-32043: Autowire our custom Drush commandfilesAutowire our custom Drush commandfiles
+  - DP-32068: Log in button style improvement.
+  - DP-32109: Accomodate 'iframe resizer' with our iframe paragraph.
+  - DP-32201: Changed the questionable parent report to be based on content types and not labels.
+  - DP-32203: Change behavior of search filter dropdown options on org page.
+  - DP-32245: Modify session_parent_orgs to include org node ids
+  - DP-32271: On org page, org type field now required. Org parent field required for certain org types
+  
+### Added
+  - DP-32072: Test the alert detail page using symfony crawler
+  - DP-32094: Form inventory view for internal use.
+  - DP-32169: Added org type report view for internal use.
+  - DP-32269: Include organization_type in the dataLayer configuration
+  - DP-32270: Live accessibility checking for authors and editors added using Editoria11y module
+  
+### Fixed
+  - DP-32233: Tabledrag.js issue Drupal 10.2.
+  - DP-32255: Location page 'location subtitle' not appearing on published page.
+  
+
+
+## [0.392.0] - March 12, 2024
+
+### Added
+  - DP-15165: Start linting Twig files in CI
+  - DP-32029: Add Public Wifi location icon to location page.
+  
+### Fixed
+  - DP-31233: Fixed flaky accordion test.
+  - DP-31923: Hamburger Menu Bug on mobile.
+  - DP-32116: Updated patch to fix bulk edits
+  
+### Changed
+  - DP-32091: Modify session_orgs to include org node ids
+  
+
+
+## [0.391.0] - March 4, 2024
+
+### Changed
+  - DP-30655: Correct the heading level for side contact item.
+  - DP-31690: Change card component on info details page.
+  - DP-31793: Add outline to page alerts and change icon and color to improve accessibility
+  - DP-31798: A11y - Hide the map from keyboard and AT users.
+  - DP-31955: Don't generate the list container when suggested page items are not available to list.
+  - DP-31994: Added help text and guidelines message to top of form edit page.
+  - DP-32056: Guide content type is deprecated. New guides cannot be created. Use info details instead.
+  
+### Fixed
+  - DP-31233: Fix CircleCI failures
+  - DP-31866: Fix mosaic link styles.
+  - DP-31925: Eliminate horizontal scrolling on org page.
+  - DP-31942: nightly_backstop_snapshot failing due to missing sudo
+  - DP-31948: Fix data pull from BigQuery intro Drupal.
+  - DP-31971: Fix contact on how-to page.
+  - DP-32030: BUG contact field on location page allows all types.
+  
+### Added
+  - DP-31966: fixed kbarticle broken link on orgpage elected officials.
+  - DP-31982: Org type field and Org type taxonomy - to be used and populated later  
+
+
+## [0.390.0] - February 26, 2024
+
+### Changed
+  - DP-30528: Adjust target size for breadcrumbs home and    footnotes to meet WCAG 2.2.
+  - DP-31678: Search and replace /media and /files URLs with /doc URLs in content.
+  - DP-31679: Fix userway contrast settings feedbackform in UtilityNav.
+  - DP-31780: Add space to screen reader only text containers where screen readers announce the text sequentially as a part of its parent container's last word.
+  
+### Added
+  - DP-30638: Assert dynamic page cacheability during tests
+  
+### Fixed
+  - DP-31877: Fix textarea js conflicts with Formstack.
+  
+
+
 ## [0.389.0] - February 12, 2024
 
 ### Changed

@@ -456,7 +456,8 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
         'groups' => [
           'accordion' => FALSE,
           'isExpanded' => FALSE,
-          'order' => ['phone', 'online', 'more_info'],
+          'address_check' => TRUE,
+          'order' => ['address', 'phone', 'online', 'more_info'],
         ],
       ];
       $sidebar['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
@@ -5087,20 +5088,15 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
       $numOfSections = ++$index;
       $variables['numOfSections'] = $numOfSections;
       $link = Helper::separatedLinks($p, 'field_card_link');
-      $seeAll = [
-        'href' => $link[0]['href'],
-        'text' => 'more',
-      ];
       $sectionLinks[] = [
         'title' => [
-          'href' => $link[0]['href'],
-          'text' => $link[0]['text'],
+          'href' => $link[0]['href'] ?? '',
+          'text' => $p->get('field_card_header')->value,
         ],
         'level' => 3,
         'type' => '',
         'description' => Helper::fieldFullView($p, 'field_content'),
         'links' => '',
-        'seeAll' => $seeAll,
       ];
       $sections = ['sections' => $sectionLinks];
     }
@@ -6044,11 +6040,11 @@ function mass_theme_preprocess_views_view(&$variables) {
 
   // Add a class to the submit button.
   if (isset($variables['exposed']['actions']['submit'])) {
-    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button-submit';
+    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button-submit';
   }
   // Add a class to the reset button.
   if (isset($variables['exposed']['actions']['reset'])) {
-    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--quaternary ma__button-reset';
+    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button--quaternary ma__button-reset';
   }
 
   // Optionally, run node-type-specific preprocess functions, like

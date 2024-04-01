@@ -25,7 +25,6 @@ Feature: Author Role
     Then I should have access to "/admin/content"
     And I should have access to "/node/add"
     And I should have access to "/node/add/contact_information"
-#    Then I should have access to "/node/add/guide_page"
 #    Then I should have access to "/node/add/how_to_page"
 #    Then I should have access to "/node/add/location"
     And I should have access to "/node/add/org_page"
@@ -62,39 +61,32 @@ Feature: Author Role
       | create event content            |
       | create news content             |
       | create form_page content        |
-      | create guide_page content       |
       | create rules content            |
       | edit any event content          |
       | edit any news content           |
-      | edit any guide_page content     |
       | edit any form_page content      |
       | edit any rules content          |
       | edit own event content          |
       | edit own news content           |
       | edit own form_page content      |
-      | edit own guide_page content     |
       | edit own rules content          |
       | view event revisions            |
       | view news revisions             |
       | view form_page revisions        |
-      | view guide_page revisions       |
       | view rules revisions            |
     Then the "author" role should not have the permissions:
       | Permission                      |
       | delete any event content        |
       | delete any news content         |
       | delete any form_page content    |
-      | delete any guide_page content   |
       | delete any rules content        |
       | delete own event content        |
       | delete own news content         |
       | delete own form_page content    |
-      | delete own guide_page content   |
       | delete own rules content        |
       | revert event revisions          |
       | revert news revisions           |
       | revert form_page revisions      |
-      | revert guide_page revisions     |
       | revert rules revisions          |
 
   Scenario: Ensure authors can create, edit and otherwise manage Person nodes.

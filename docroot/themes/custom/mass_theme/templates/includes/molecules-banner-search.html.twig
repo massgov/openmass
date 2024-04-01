@@ -4,7 +4,7 @@
  * Partial for google custom search form. Requires searchFormId to be passed.
  */
 #}
-  {#{{ kint(searchFormId) }}#}
+  {# {{ kint(searchFormId) }} #}
 {% block content %}
 <form class="ma__search-banner__form" action="https://search.mass.gov/" role="search" name="homepage-search">
   <div class="ma__search-banner__input js-suggestions-container">
@@ -14,14 +14,14 @@
         class="ma__header-search__input"
         autocomplete="off"
         placeholder="Search Mass.gov"
-        type="search" 
+        type="search"
         inputmode="search"
         aria-label="search the site"
     />
   </div>
   <button class="ma__search-banner__button" type="submit">
     <span>Search</span>
-    {{ icon('search')}}
+    {{ icon('search') }}
   </button>
 </form>
 {% endblock %}

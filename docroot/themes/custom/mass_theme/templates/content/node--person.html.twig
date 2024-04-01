@@ -53,7 +53,6 @@
 </div>
 {% endblock %}
 
-
 {% set mainContent = {
   richText: {
     rteElements: [{
@@ -97,7 +96,7 @@
   {% endif %}
 {% endblock %}
 
-{##
+{# #
  # Use a contact node if one is present and either the 'source' field is not
  # set or it's set to 'contact', otherwise output the individual fields.
  #}
@@ -122,12 +121,11 @@
         {{ content.field_ref_phone }}
         {{ content.field_ref_fax }}
         {# Pass through the level setting with Drupal render array values. #}
-        {{ content.field_ref_links|merge({'#level': level }) }}
+        {{ content.field_ref_links|merge({'#level': level}) }}
       {% endblock %}
     {% endembed %}
   {% endif %}
 {% endblock %}
-
 
 {% block inlineSidebar %}
   {{ block('personImage') }}
@@ -147,5 +145,3 @@
 {% endblock %}
 
 {% block footer %}{% endblock %}
-
-
