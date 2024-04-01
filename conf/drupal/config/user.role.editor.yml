@@ -3,6 +3,8 @@ langcode: en
 status: true
 dependencies:
   config:
+    - media.type.document
+    - media.type.media_video
     - node.type.advisory
     - node.type.alert
     - node.type.binder
@@ -255,6 +257,8 @@ permissions:
   - 'revert advisory revisions'
   - 'revert alert revisions'
   - 'revert all revisions'
+  - 'revert any document media revisions'
+  - 'revert any media_video media revisions'
   - 'revert binder revisions'
   - 'revert campaign_landing revisions'
   - 'revert contact_information revisions'
@@ -312,6 +316,7 @@ permissions:
   - 'use topic_page transition to_draft'
   - 'view advisory revisions'
   - 'view alert revisions'
+  - 'view all media revisions'
   - 'view all revisions'
   - 'view all scheduled transitions'
   - 'view analytics pages'
