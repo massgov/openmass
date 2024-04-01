@@ -55,6 +55,7 @@ class ExecutiveOrderMetadataTest extends MetadataTestCase {
       'mg_type' => 'executive-order',
       'mg_date' => '20121231',
       'mg_organization' => 'testorgpage',
+      'twitter:card' => 'summary',
     ]);
   }
 

@@ -69,6 +69,7 @@ class HowToPageMetadataTest extends MetadataTestCase {
         '@context' => 'https://schema.org',
         '@type' => 'ApplyAction',
         '@id' => $uri . '#how-to',
+        'twitter:card' => 'summary',
         'name' => 'Test How To',
         'location' => [
           [
