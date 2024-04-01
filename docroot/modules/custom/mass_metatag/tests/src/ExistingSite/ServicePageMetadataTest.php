@@ -68,6 +68,7 @@ class ServicePageMetadataTest extends MetadataTestCase {
         'name' => 'Test Service Page',
         'description' => 'Test Lede',
         'potentialAction' => [],
+        'twitter:card' => 'summary_large_image',
         'areaServed' => [
           '@type' => 'AdministrativeArea',
           'name' => 'Massachusetts',
