@@ -6,6 +6,8 @@ dependencies:
     - field.storage.node.field_billing_organization
     - field.storage.node.field_parent
     - field.storage.node.field_primary_parent
+    - field.storage.taxonomy_term.field_billing_customer_code
+    - field.storage.taxonomy_term.field_billing_customer_group
     - media.type.document
   module:
     - csv_serialization
@@ -15,6 +17,7 @@ dependencies:
     - node
     - rest
     - serialization
+    - taxonomy
     - user
     - views_data_export
 id: report_of_documents_by_org
@@ -852,6 +855,132 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        field_billing_customer_group:
+          id: field_billing_customer_group
+          table: taxonomy_term__field_billing_customer_group
+          field: field_billing_customer_group
+          relationship: taxonomy_term__field_billing_organization
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Billing customer group'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: false
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_billing_customer_code:
+          id: field_billing_customer_code
+          table: taxonomy_term__field_billing_customer_code
+          field: field_billing_customer_code
+          relationship: taxonomy_term__field_billing_organization
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Billing customer code'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: false
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       style:
         type: data_export
         options:
@@ -868,7 +997,27 @@ display:
             use_serializer_encode_only: false
       defaults:
         title: false
+        relationships: false
         fields: false
+      relationships:
+        field_organizations:
+          id: field_organizations
+          table: media__field_organizations
+          field: field_organizations
+          relationship: none
+          group_type: group
+          admin_label: 'field_organizations: Content'
+          plugin_id: standard
+          required: true
+        taxonomy_term__field_billing_organization:
+          id: taxonomy_term__field_billing_organization
+          table: node__field_billing_organization
+          field: taxonomy_term__field_billing_organization
+          relationship: field_organizations
+          group_type: group
+          admin_label: 'field_billing_organization: Taxonomy term'
+          plugin_id: standard
+          required: false
       display_description: ''
       display_extenders:
         metatag_display_extender:
@@ -895,6 +1044,8 @@ display:
         - 'config:field.storage.node.field_billing_organization'
         - 'config:field.storage.node.field_parent'
         - 'config:field.storage.node.field_primary_parent'
+        - 'config:field.storage.taxonomy_term.field_billing_customer_code'
+        - 'config:field.storage.taxonomy_term.field_billing_customer_group'
   page_1:
     id: page_1
     display_title: 'First org - page'
