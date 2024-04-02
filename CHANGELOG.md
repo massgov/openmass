@@ -1,5 +1,22 @@
 
 
+## [0.394.0] - April 2, 2024
+
+### Changed
+  - DP-31837: Editoria11y configuration has been changed to reduce false positives.
+  - DP-31886: a11y - Make mosaic item image alt text optional
+  - DP-32081: Remove "Restore to published state" button on trash page
+  - DP-32283: Filter by keyword no longer matches body text
+  - DP-32333: Content admins have access to view Editoria11y reports and reset dismissals.
+  - DP-32345: Label change for date on regulation type.
+  - DP-32425: Removed document type field which was unused.
+  
+### Added
+  - DP-32224: Add metadata for media entities to display file type and size in search.
+  - DP-32273: Add organization parent to dataLayer
+  
+
+
 ## [0.393.0] - March 26, 2024
 
 ### Changed
