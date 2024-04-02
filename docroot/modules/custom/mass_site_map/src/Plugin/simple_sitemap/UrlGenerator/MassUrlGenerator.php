@@ -140,6 +140,18 @@ class MassUrlGenerator extends EntityUrlGenerator {
               ];
             }
           }
+          if ($file_type = $file->getMimeType()) {
+            $data['pagemap']['metatags'][] = [
+              'name' => 'mg_file_type',
+              'value' => $file_type,
+            ];
+          }
+          if ($file_size = $file->getSize()) {
+            $data['pagemap']['metatags'][] = [
+              'name' => 'mg_file_size',
+              'value' => $file_size,
+            ];
+          }
         }
       }
     }
