@@ -70,13 +70,11 @@
       }
     } %}
 
-  {% embed "@organisms/by-template/organization-navigation.twig" with {
-    organizationNavigation: {
-      orgNavTitle: node.label,
-      orgNavAbbrev: '',
-      orgId: slugified_title,
-      orgSearch: true,
-      orgNav: org_nav
+  {% embed "@molecules/sticky-nav.twig" with {
+    stickyNav: {
+      titleContext: node.label,
+      horizontalLayout: true,
+      anchorLinks: org_nav
     },
   } %}
   {% endembed %}
