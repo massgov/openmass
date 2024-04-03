@@ -323,6 +323,73 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
+#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+            - run:
+                # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
+                name: Run functional tests
+                command: |
+                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
+          path: /var/www/code/output
+      - store_artifacts:
+          # DTT saves page output for all requests.
+          path: /var/www/code/docroot/sites/simpletest/browser_output
+      - store_artifacts:
+          # Save Junit files for timing inspection.
+          path: /tmp/test-results
+
+  test-parallel:
+    parameters:
+      instance:
+        type: string
+        default: massgov/mysql-sanitized:latest
+      command:
+        type: enum
+        enum: [ 'phpunit', 'behat' ]
+    executor:
+      name: base
+      instance: << parameters.instance >>
+    parallelism: 3
+    steps:
+      - attach_workspace: { at: /var/www }
+      - *vendor_bin_add_path
+      - run: { name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true }
+      - run:
+          name: Update host file
+          command: echo '127.0.0.1 mass.local' >> /etc/hosts
+      - run:
+          name: Wait for mysql
+          command: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Run drush updatedb and cim.
+      - run: drush deploy
+      # Get an overview
+      - run: drush status
+      - run: cat /proc/cpuinfo
+      - run: cat /proc/meminfo
+      # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
+      - run:
+          name: Ensure no differences between between config on disk and config in Drupal.
+          # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
+          command: drush --no config:export --diff
+      # Ensure files and DTT directories are writable by www-data
+      - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      # Run DTT or Behat test command
+      - when:
+          condition:
+            and:
+              - equal: [ behat, << parameters.command >> ]
+          steps:
+            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      - when:
+          condition:
+            and:
+              - equal: [ phpunit, << parameters.command >> ]
+          steps:
             run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
