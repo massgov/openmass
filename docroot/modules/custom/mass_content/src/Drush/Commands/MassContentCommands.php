@@ -457,8 +457,6 @@ class MassContentCommands extends DrushCommands {
           }
         }
         if (!$entity->isLatestRevision()) {
-          dump($entity->id());
-          exit();
           $storage = \Drupal::entityTypeManager()->getStorage($entityType);
           $query = $storage->getQuery()->accessCheck(FALSE);
           $query->condition($idFieldName, $entity->id());
