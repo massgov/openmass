@@ -409,9 +409,8 @@ class MassContentCommands extends DrushCommands {
 
       $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
       $changedEntities = 0;
+      $changed_revisions = 0;
       foreach ($ids as $id) {
-        // After successfully processing the entity, update the last processed ID
-        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
         $entity = $storage->load($id);
         if ($entity) {
           $changed = FALSE;
@@ -457,9 +456,69 @@ class MassContentCommands extends DrushCommands {
             }
           }
         }
+        if (!$entity->isLatestRevision()) {
+          dump($entity->id());
+          exit();
+          $storage = \Drupal::entityTypeManager()->getStorage($entityType);
+          $query = $storage->getQuery()->accessCheck(FALSE);
+          $query->condition($idFieldName, $entity->id());
+          $query->latestRevision();
+          $rids = $query->execute();
+          foreach ($rids as $rid) {
+            $latest_revision = $storage->loadRevision($rid);
+            if (isset($latest_revision)) {
+              $changed = FALSE;
+              $entity = $latest_revision;
+              foreach ($entity->getFields() as $field) {
+                $fieldType = $field->getFieldDefinition()->getType();
+                if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
+                  foreach ($field as $item) {
+                    $processed = $urlReplacementService->processText($item->value);
+                    if ($processed['changed']) {
+                      $item->value = $processed['text'];
+                      $changed = TRUE;
+                    }
+                  }
+                }
+              }
+              if ($changed) {
+                if (method_exists($entity, 'setRevisionLogMessage')) {
+                  $entity->setNewRevision();
+                  $entity->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                  $entity->setRevisionCreationTime(\Drupal::time()
+                    ->getRequestTime());
+                }
+                $entity->save();
+                $changed_revisions++;
+
+                if ($entityType == 'paragraph') {
+                  $node = Helper::getParentNode($entity);
+                  $this->output()
+                    ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
+                      '@type' => ucfirst($entityType),
+                      '@bundle' => $entity->bundle(),
+                      '@id' => $entity->id(),
+                      '@nid' => $node ? $node->id() : 'N/A',
+                    ]));
+                }
+                else {
+                  $this->output()
+                    ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
+                      '@type' => ucfirst($entityType),
+                      '@bundle' => $entity->bundle(),
+                      '@id' => $entity->id()
+                    ]));
+                }
+              }
+            }
+          }
+        }
+        // After successfully processing the entity, update the last processed ID
+        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
       }
 
       $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
+      $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changed_revisions, '@type' => $entityType]));
     }
   }
 
