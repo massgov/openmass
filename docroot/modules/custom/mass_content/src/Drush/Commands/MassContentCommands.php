@@ -512,7 +512,7 @@ class MassContentCommands extends DrushCommands {
           }
         }
         // After successfully processing the entity, update the last processed ID
-        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
+        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
       }
 
       $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
