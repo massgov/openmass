@@ -462,7 +462,7 @@ class MassContentCommands extends DrushCommands {
           $query->condition($idFieldName, $entity->id());
           $query->latestRevision();
           $rids = $query->execute();
-          foreach ($rids as $rid) {
+          foreach ($rids as $rid => $value) {
             $latest_revision = $storage->loadRevision($rid);
             if (isset($latest_revision)) {
               $changed = FALSE;
@@ -512,11 +512,11 @@ class MassContentCommands extends DrushCommands {
           }
         }
         // After successfully processing the entity, update the last processed ID
-        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
+        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
       }
 
       $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
-      $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changed_revisions, '@type' => $entityType]));
+      $this->output()->writeln(t('Processed @count @type entity revisions.', ['@count' => $changed_revisions, '@type' => $entityType]));
     }
   }
 
