@@ -29,8 +29,8 @@ class MassLanguageManager extends ConfigurableLanguageManager {
    */
   public function getCurrentLanguage($type = LanguageInterface::TYPE_INTERFACE) {
     if ($type == LanguageInterface::TYPE_CONTENT) {
-      if ($id = \Drupal::routeMatch()->getParameter('media')->Id()) {
-        $media = \Drupal::entityTypeManager()->getStorage('media')->load($id);
+      $media = \Drupal::routeMatch()->getParameter('media');
+      if ($media) {
         return $media->language();
       }
     }
