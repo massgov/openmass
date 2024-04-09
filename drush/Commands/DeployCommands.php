@@ -290,9 +290,13 @@ class DeployCommands extends DrushCommands {
       $url = $process->getOutput();
       $this->logger()->success('Backup URL retrieved.');
 
-      // Download the latest backup.
-      // Directory set by https://jira.mass.gov/browse/DP-12823.
-      $tmp =  Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
+      // Download the latest backup. Use tmpdir as per https://docs.acquia.com/acquia-cloud-platform/manage-apps/files/system-files
+      $tmp = getenv('TMPDIR');
+      // Remove this if() after we are fully on Acquia Cloud Next.
+      if ($tmp == '/mnt/tmp/massgov') {
+        // Directory set by https://jira.mass.gov/browse/DP-12823.
+        $tmp = Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
+      }
       $bash = ['wget', '-q', '--continue', trim($url), "--output-document=$tmp"];
       $process = Drush::siteProcess($targetRecord, $bash);
       $process->mustRun($process->showRealtime());
