@@ -307,7 +307,7 @@ class DeployCommands extends DrushCommands {
       // $bash = '-e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" ' . $tmp . ' | drush -vvv sql:cli';
       $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $tmp];
       $process = Drush::siteProcess($targetRecord, $bash);
-      $process->disableOutput();
+      // $process->disableOutput();
       $process->mustRun();
       $this->logger()->success('Database imported from backup.');
 
