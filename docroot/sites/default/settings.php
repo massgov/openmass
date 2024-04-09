@@ -213,3 +213,6 @@ if (PHP_SAPI === 'cli') {
   $databases['default']['default']['init_commands']['wait_timeout'] = 'SET SESSION wait_timeout = 3600';
 }
 
+if (extension_loaded('newrelic')) { // Ensure PHP agent is available
+  newrelic_disable_autorum();
+}
