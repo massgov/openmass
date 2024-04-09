@@ -1,5 +1,17 @@
 
 
+## [0.395.0] - April 9, 2024
+
+### Changed
+  - DP-32065: Adjust legend spacing of Feedback component.
+  - DP-32381: Fix event URLs in backstop lists
+  
+### Added
+  - DP-32344: Added New Relic Browser script.
+  - DP-32444: Internal views used for cost reporting.
+  
+
+
 ## [0.394.0] - April 2, 2024
 
 ### Changed
