@@ -302,10 +302,16 @@ class DeployCommands extends DrushCommands {
       $process->mustRun();
       $this->logger()->success('Dropped all tables.');
 
+      // Get mysql connection. `sql:connect` stopped working in Acquia Cloud Next
+      $process = Drush::drush($targetRecord, 'sql:connect');
+      $process->mustRun();
+      $mysql_connect = $process->getOutput();
+      $this->logger()->success('Got mysql connect string.');
+
       // Import the latest backup.
       // $bash = ['zgrep', '--line-buffered', '-v', '-e', '^INSERT INTO \`cache_', '-e', '^INSERT INTO \`migrate_map_', '-e', "^INSERT INTO \`config_log", '-e', "^INSERT INTO \`key_value_expire", '-e', "^INSERT INTO \`sessions", $tmp, Shell::op('|'), Path::join($targetRecord->root(), '../vendor/bin/drush'), '-r', $targetRecord->root(), '-v', 'sql:cli'];
       // $bash = '-e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" ' . $tmp . ' | drush -vvv sql:cli';
-      $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $tmp];
+      $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $tmp, $mysql_connect];
       $process = Drush::siteProcess($targetRecord, $bash);
       // $process->disableOutput();
       $process->mustRun();

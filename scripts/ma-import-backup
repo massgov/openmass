@@ -9,4 +9,4 @@
 
 ################################################################################
 
-zgrep --line-buffered -v -e "^INSERT INTO \`cache_" -e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" $1 | `drush sql:connect`
+zgrep --line-buffered -v -e "^INSERT INTO \`cache_" -e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" $1 | $2
