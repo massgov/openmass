@@ -78,12 +78,24 @@
   $(document).ready(function () {
     var referrer = document.referrer.substr(document.referrer.lastIndexOf('?') + 1);
     referrer = '?' + referrer;
-    var searchParams = new URLSearchParams(window.location.search);
-    if (!$('#error-input').hasClass('has-error') && searchParams.has('icons')) {
-      $(filterButton).focus();
+    var urlParams = new URLSearchParams(window.location.search);
+    if (!$('#error-input').hasClass('has-error')) {
+      if (urlParams.has('icons=')) {// with filter options
+        if (urlParams.has('page=')) {
+          $('#location-listing-results').focus();
+        }
+        else {
+          $(filterButton).focus();
+        }
+      }
+      else {// no filter options
+        if (urlParams.has('page=')) {
+          $('#location-listing-results').focus();
+        }
+      }
 
       // Tell sr users the new listing is rendered.
-      if (searchParams !== referrer) {
+      if (urlParams !== referrer) {
         $(filterButton).attr('aria-describedby', 'sr-note-refresh');
       }
     }
@@ -127,20 +139,23 @@
 
   function errorMessageHandling() {
     var locationField = $('#filter-by-location');
-    $(locationField).attr('aria-invalid', 'true');
-    if ($('#error-input').hasClass('has-error')) {
-      if ($(locationField).val() !== '') {
-        // Need to be expressively 'empty'.
-        $(locationField).attr('aria-describedby', 'error-input sr-note-error');
+    setTimeout(function () {
+      if ($('#error-input').hasClass('has-error')) {
+        $(locationField).attr('aria-invalid', 'true');
+        if ($(locationField).val() !== '') {
+          // Need to be expressively 'empty'.
+          $(locationField).attr(
+            'aria-describedby',
+            'error-input sr-note-error'
+          );
+        } else {
+          $(locationField).attr('aria-describedby', 'error-input sr-note');
+        }
+        $(locationField).focus();
+      } else {
+        $(locationField).removeAttr('aria-invalid');
+        $(locationField).attr('aria-describedby', 'sr-note');
       }
-      else {
-        $(locationField).attr('aria-describedby', 'error-input sr-note');
-      }
-      $(locationField).focus();
-    }
-    else {
-      $(locationField).removeAttr('aria-invalid');
-      $(locationField).attr('aria-describedby', 'sr-note');
-    }
+    }, 100);
   }
 })(jQuery, Drupal);
