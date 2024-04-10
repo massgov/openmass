@@ -83,7 +83,6 @@
       if (urlParams.has('icons')) {
         // with filter options
         if (urlParams.has('page')) {
-          console.log('MATCH');
           $('#displayedResultRange').focus();
           // $('#location-listing-results').focus();
         }
@@ -93,9 +92,9 @@
       }
       else {
         // no filter options
-        console.log('NO FILTER');
-        if (urlParams.has('page=')) {
-          console.log('MATCH');
+        // console.log('NO FILTER');
+        if (urlParams.has('page')) {
+          // console.log('MATCH');
           $('#displayedResultRange').focus();
         }
       }
