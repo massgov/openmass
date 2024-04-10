@@ -84,7 +84,6 @@
         // with filter options
         if (urlParams.has('page')) {
           $('#displayedResultRange').focus();
-          // $('#location-listing-results').focus();
         }
         else {
           $(filterButton).focus();
@@ -92,9 +91,9 @@
       }
       else {
         // no filter options
-        // console.log('NO FILTER');
+        console.log('NO FILTER');
         if (urlParams.has('page')) {
-          // console.log('MATCH');
+          console.log('MATCH');
           $('#displayedResultRange').focus();
         }
       }
