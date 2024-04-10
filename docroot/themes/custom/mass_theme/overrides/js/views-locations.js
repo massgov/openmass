@@ -79,13 +79,6 @@
     var referrer = document.referrer.substr(document.referrer.lastIndexOf('?') + 1);
     referrer = '?' + referrer;
     var urlParams = new URLSearchParams(window.location.search);
-    console.log(urlParams);
-    console.log('ICONS');
-    console.log(urlParams.has('icons'));
-    console.log('PAGE');
-    console.log(urlParams.has('page'));
-    console.log('LOCATIONS');
-    console.log(urlParams.has('locations'));
     if ((urlParams.size > 0) && !$('#error-input').hasClass('has-error')) {
       if (urlParams.has('icons')) {
         // with filter options
@@ -101,14 +94,14 @@
       else {
         // no filter options
         console.log('NO FILTER');
-        console.log(window.location.search);
-        console.log(urlParams.values);
-        console.log(urlParams.has('page='));
         if (urlParams.has('page=')) {
           console.log('MATCH');
           $('#displayedResultRange').focus();
         }
       }
+
+      console.log('FOCUS');
+      console.log(document.activeElement);
 
       // Tell sr users the new listing is rendered.
       if (urlParams !== referrer) {

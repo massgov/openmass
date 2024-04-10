@@ -138,10 +138,10 @@
               </div>
             </div>
             <div class="ma__location-listing__results js-location-listing-results">
-              <h2 id="location-listing-results" class="ma__visually-hidden">Location Listing</h2>
+              <h2 id="location-listing-results" class="ma__visually-hidden" tabindex="-1">Location Listing</h2>
               <div class="ma__results-heading js-results-heading">
                 <div class="ma__results-heading__container">
-                  <a id="displayedResultRange" class="ma__results-heading__title" role="status">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></a>
+                  <div id="displayedResultRange" class="ma__results-heading__title" role="status" tabindex="-1">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></div>
                   {% if icons or helper %}
                     <fieldset class="ma__results-heading__tags">
                       <legend class="ma__visually-hidden">Clear the active filters with the following buttons.</legend>
