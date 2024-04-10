@@ -117,10 +117,10 @@
   {% endif %}
 {% endblock %}
 <main role="main" id="main-content" tabindex="-1"{% if main_class %} class="{{ main_class }}"{% endif %}>{# Keeping tabindex for accessibility purposes #}
-  <div id="content-alerts" lang="en" dir="ltr"></div>
+  <div id="content-alerts" lang="en" dir="ltr" translate="no"></div>
   {% block preContent %}
     {% if page.pre_content %}
-      <div class="pre-content" lang="en" dir="ltr">
+      <div class="pre-content" lang="en" dir="ltr" translate="no">
       {{ page.pre_content }}
       </div>
     {% endif %}
@@ -128,7 +128,7 @@
   {{ page.content }}
   {% block postContent %}
     {% if page.post_content %}
-      <div class="post-content" lang="en" dir="ltr">
+      <div class="post-content" lang="en" dir="ltr" translate="no">
       {{ page.post_content }}
       </div>
     {% endif %}

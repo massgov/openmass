@@ -12,12 +12,12 @@
 
   {% block preContent %}
     {% if page.pre_content %}
-      <div class="pre-content" lang="en" dir="ltr">
+      <div class="pre-content" lang="en" dir="ltr" translate="no">
       {{ page.pre_content }}
       </div>
     {% endif %}
     {{ attach_library('mass_theme/simple') }}
-      <div class="user-login" lang="en" dir="ltr">
+      <div class="user-login" lang="en" dir="ltr" translate="no">
         {{ parent() }}
         <h1 class="ma__page-title">{{ page['#title'] }}</h1>
   {% endblock %}

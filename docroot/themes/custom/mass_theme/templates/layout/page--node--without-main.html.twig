@@ -65,7 +65,7 @@
   {% set header_class = ' ma__header--hidden' %}
 {% endif %}
 {% if header_version_mixed %}
-  <header class="ma__header__hamburger ma__header__mixed{{ header_class }}" id="header" lang="en" dir="ltr">
+  <header class="ma__header__hamburger ma__header__mixed{{ header_class }}" id="header" lang="en" dir="ltr" translate="no">
     <div class="menu-overlay"></div>
     <a class="ma__header__hamburger__skip-nav ma__visually-hidden focusable" href="#main-content">
       {{ 'Skip to main content'|t }}
@@ -89,7 +89,7 @@
     {{ page.header|without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
   </header>
 {% else %}
-  <header class="ma__header__hamburger{{ header_class }}" id="header" lang="en" dir="ltr">
+  <header class="ma__header__hamburger{{ header_class }}" id="header" lang="en" dir="ltr" translate="no">
     <div class="menu-overlay"></div>
     <a class="ma__header__hamburger__skip-nav" href="#main-content">
       {{ 'Skip to main content'|t }}

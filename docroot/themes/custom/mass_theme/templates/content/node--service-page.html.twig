@@ -162,13 +162,13 @@
 {% block schemaContent %}
   {# Produce the .post-content div if either the twig block or the theme region is present #}
   {% if _postContent is not empty or post_content %}
-    <div class="post-content" lang="en" dir="ltr">
+    <div class="post-content" lang="en" dir="ltr" translate="no">
       {{ _postContent|raw }}
       {{ post_content }}
     </div>
   {% endif %}
 
-  <div class="post-content" lang="en" dir="ltr">
+  <div class="post-content" lang="en" dir="ltr" translate="no">
     {{ content.extra_org_feedback_form }}
   </div>
 {% endblock %}
