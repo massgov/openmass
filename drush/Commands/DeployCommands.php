@@ -15,6 +15,8 @@ use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
+use Drush\Commands\core\SiteCommands;
+use Drush\Commands\core\SshCommands;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
@@ -290,7 +292,8 @@ class DeployCommands extends DrushCommands {
       $url = $process->getOutput();
       $this->logger()->success('Backup URL retrieved.');
 
-      // Download the latest backup. Use tmpdir as per https://docs.acquia.com/acquia-cloud-platform/manage-apps/files/system-files
+      // Download the latest backup.
+      // Use tmp dir as per https://docs.acquia.com/acquia-cloud-platform/manage-apps/files/system-files
       $tmp = Path::join('/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
       $bash = ['wget', '-q', '--continue', trim($url), "--output-document=$tmp"];
       $process = Drush::siteProcess($targetRecord, $bash);
@@ -298,7 +301,7 @@ class DeployCommands extends DrushCommands {
       $this->logger()->success('Database downloaded from backup.');
 
       // Drop all tables.
-      $process = Drush::drush($targetRecord, 'sql:drop');
+      $process = Drush::drush($targetRecord, 'sql:drop', [], ['no-interaction' => TRUE]);
       $process->mustRun();
       $this->logger()->success('Dropped all tables.');
 
@@ -309,10 +312,8 @@ class DeployCommands extends DrushCommands {
       $this->logger()->success('Got mysql connect string.');
 
       // Import the latest backup.
-      // $bash = ['zgrep', '--line-buffered', '-v', '-e', '^INSERT INTO \`cache_', '-e', '^INSERT INTO \`migrate_map_', '-e', "^INSERT INTO \`config_log", '-e', "^INSERT INTO \`key_value_expire", '-e', "^INSERT INTO \`sessions", $tmp, Shell::op('|'), Path::join($targetRecord->root(), '../vendor/bin/drush'), '-r', $targetRecord->root(), '-v', 'sql:cli'];
-      // $bash = '-e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" ' . $tmp . ' | drush -vvv sql:cli';
-      $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $tmp, $mysql_connect];
-      $process = Drush::siteProcess($targetRecord, $bash);
+      $zgrep = 'zgrep --line-buffered -v -e "^INSERT INTO \`cache_" -e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions"';
+      $process = Drush::drush($targetRecord, SshCommands::SSH, ["$zgrep $tmp | $mysql_connect"], ['cd' => '..']);
       // $process->disableOutput();
       $process->mustRun();
       $this->logger()->success('Database imported from backup.');
