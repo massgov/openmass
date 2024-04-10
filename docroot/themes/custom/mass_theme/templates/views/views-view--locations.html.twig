@@ -141,7 +141,7 @@
               <h2 id="location-listing-results" class="ma__visually-hidden">Location Listing</h2>
               <div class="ma__results-heading js-results-heading">
                 <div class="ma__results-heading__container">
-                  <div class="ma__results-heading__title" role="status">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></div>
+                  <a id="displayedResultRange" class="ma__results-heading__title" role="status">{{ header }} <span class="ma__visually-hidden">&nbsp; for {{ pageHeader.title }}</span></a>
                   {% if icons or helper %}
                     <fieldset class="ma__results-heading__tags">
                       <legend class="ma__visually-hidden">Clear the active filters with the following buttons.</legend>
@@ -156,11 +156,14 @@
                   {% endif %}
                 </div>
               </div>
-
+            {% if rows %}
               <ul class="ma__image-promos js-image-promos">
+            {% endif %}
                 {{ rows }}
                 {{ empty }}
+            {% if rows %}
               </ul>
+            {% endif %}
               <div class="attachment">
                 <div class="views-summary">
                   {{ pager }}
