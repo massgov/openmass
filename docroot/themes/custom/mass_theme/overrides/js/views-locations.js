@@ -148,11 +148,13 @@
             'aria-describedby',
             'error-input sr-note-error'
           );
-        } else {
+        }
+        else {
           $(locationField).attr('aria-describedby', 'error-input sr-note');
         }
         $(locationField).focus();
-      } else {
+      }
+      else {
         $(locationField).removeAttr('aria-invalid');
         $(locationField).attr('aria-describedby', 'sr-note');
       }
