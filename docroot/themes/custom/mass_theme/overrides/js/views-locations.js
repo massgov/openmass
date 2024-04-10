@@ -79,7 +79,6 @@
     var referrer = document.referrer.substr(document.referrer.lastIndexOf('?') + 1);
     referrer = '?' + referrer;
     var urlParams = new URLSearchParams(window.location.search);
-    var urlParams = new searchParams(window.location.search);
     console.log(urlParams);
     console.log('ICONS');
     console.log(urlParams.has('icons'));
