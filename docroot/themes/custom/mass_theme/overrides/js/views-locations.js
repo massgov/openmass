@@ -86,18 +86,18 @@
       if (urlParams.has('icons')) {
         // with filter options
         if (urlParams.has('page')) {
-          setFocusForVO($displayedResultRange);
+          setFocusForVO('#displayedResultRange', $displayedResultRange);
           $displayedResultRange.focus();
         }
         else {
-          setFocusForVO($filterButton);
+          setFocusForVO('#filterButton', $filterButton);
           $filterButton.focus();
         }
       }
       else {
         // no filter options
         if (urlParams.has('page')) {
-          setFocusForVO($displayedResultRange);
+          setFocusForVO('#displayedResultRange', $displayedResultRange);
           $displayedResultRange.focus();
         }
       }
@@ -172,39 +172,30 @@
   }
 
   // Enfoce focus() with VO.
-  function setFocusForVO(focusTarget) {
+  function setFocusForVO(position, focusTarget) {
     var device = window.navigator.userAgent;
     if (device.indexOf('Macintosh') !== -1 ||
         device.indexOf('iPhone') !== -1 ||
         device.indexOf('iPad') !== -1) {
 
       setTimeout(function () {
-        if (document.activeElement !== focusTarget) {
-          focusTarget.focus();
+        window.location.hash = position;
+      }, 3000);
+
+      var focusInterval = 10; // ms, time between function calls
+      var focusTotalRepetitions = 100; // number of repetitions
+
+      // focusTarget.attr('tabindex', 0);
+      focusTarget.blur();
+
+      var focusRepetitions = 0;
+      var interval = window.setInterval(function () {
+        focusTarget.focus();
+        focusRepetitions++;
+        if (focusRepetitions >= focusTotalRepetitions) {
+          window.clearInterval(interval);
         }
-        console.log('ONE SECOND');
-      }, 1000);
-
-      // var focusInterval = 10; // ms, time between function calls
-      // var focusTotalRepetitions = 100; // number of repetitions
-
-      // focusTarget.attr("tabindex", 0);
-      // focusTarget.blur();
-
-      // var focusRepetitions = 0;
-      // var interval = window.setInterval(function () {
-      //   focusTarget.focus();
-      //   focusRepetitions++;
-      //   if (focusRepetitions >= focusTotalRepetitions) {
-      //     window.clearInterval(interval);
-      //   }
-      // }, focusInterval);
-
-      // console.log($focusTarget.attr('tabindex'));
-
-      // setTimeout(function () {
-      //   focusTarget.focus();
-      // }, 100);
+      }, focusInterval);
     }
   }
 })(jQuery, Drupal);
