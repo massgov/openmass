@@ -178,26 +178,30 @@
         device.indexOf('iPhone') !== -1 ||
         device.indexOf('iPad') !== -1) {
 
-      var focusInterval = 10;
-      var focusTotalRepetitions = 100;
+          setTimeout(function () {
+            focusTarget.focus();
+          }, 1000);
 
-      focusTarget.attr('tabindex', 0);
-      focusTarget.blur();
+          // var focusInterval = 10; // ms, time between function calls
+          // var focusTotalRepetitions = 100; // number of repetitions
 
-      var focusRepetitions = 0;
-      var interval = window.setInterval(function () {
-        focusTarget.focus();
-        focusRepetitions++;
-        if (focusRepetitions >= focusTotalRepetitions) {
-          window.clearInterval(interval);
+          // focusTarget.attr("tabindex", 0);
+          // focusTarget.blur();
+
+          // var focusRepetitions = 0;
+          // var interval = window.setInterval(function () {
+          //   focusTarget.focus();
+          //   focusRepetitions++;
+          //   if (focusRepetitions >= focusTotalRepetitions) {
+          //     window.clearInterval(interval);
+          //   }
+          // }, focusInterval);
+
+          // console.log($focusTarget.attr('tabindex'));
+
+          // setTimeout(function () {
+          //   focusTarget.focus();
+          // }, 100);
         }
-      }, focusInterval);
-
-      // console.log($focusTarget.attr('tabindex'));
-
-      // setTimeout(function () {
-      //   focusTarget.focus();
-      // }, 100);
-    }
   }
 })(jQuery, Drupal);
