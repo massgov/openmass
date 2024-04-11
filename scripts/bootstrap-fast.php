@@ -31,10 +31,3 @@ if (class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) 
 $class_loader->addPsr4('Drupal\Tests\mass_metatag\\', "$root/modules/custom/mass_metatag/tests/src");
 $class_loader->addPsr4('Drupal\Tests\paragraphs\\', "$root/modules/contrib/paragraphs/tests/src");
 $class_loader->addPsr4('Drupal\mass_schema_web_page\\', "$root/modules/custom/mass_schema_metatag/mass_schema_web_page/src");
-$map = [
-  'Drupal\node\NodeInterface', "$root/docroot/core/modules/node/src/NodeInterface.php",
-  'Drupal\media\MediaInterface', "$root/docroot/core/modules/media/src/MediaInterface.php",
-];
-$class_loader->addClassMap($map);
-//$class_loader->addPsr4('Drupal\node\\', "$root/docroot/core/modules/node/src");
-//$class_loader->addPsr4('Drupal\media\\', "$root/docroot/core/modules/media/src");
