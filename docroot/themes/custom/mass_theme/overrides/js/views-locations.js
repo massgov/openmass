@@ -80,8 +80,7 @@
     referrer = '?' + referrer;
     var urlParams = new URLSearchParams(window.location.search);
     if ((urlParams.size > 0) && !$('#error-input').hasClass('has-error')) {
-      if (urlParams.has('icons')) {
-        // with filter options
+      if (urlParams.has('icons')) { // with filter options
         if (urlParams.has('page')) {
           $('#displayedResultRange').focus();
         }
@@ -89,17 +88,11 @@
           $(filterButton).focus();
         }
       }
-      else {
-        // no filter options
-        console.log('NO FILTER');
+      else { // no filter options
         if (urlParams.has('page')) {
-          console.log('MATCH');
           $('#displayedResultRange').focus();
         }
       }
-
-      console.log('FOCUS');
-      console.log(document.activeElement);
 
       // Tell sr users the new listing is rendered.
       if (urlParams !== referrer) {
