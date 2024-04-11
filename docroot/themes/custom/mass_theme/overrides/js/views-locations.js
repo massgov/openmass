@@ -70,7 +70,7 @@
         $form.find('input').val('').prop('checked', false);
         $form.trigger('submit');
       });
-    },
+    }
   };
 
   // Set focus on the button when the page is refreshed with the filter options.
