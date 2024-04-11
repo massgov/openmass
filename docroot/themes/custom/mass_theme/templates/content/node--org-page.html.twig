@@ -69,15 +69,16 @@
         }
       }
     } %}
-
-  {% embed "@molecules/sticky-nav.twig" with {
-    stickyNav: {
-      titleContext: node.label,
-      horizontalLayout: true,
-      anchorLinks: org_nav
-    },
-  } %}
-  {% endembed %}
+  <div class="ma__details__sticky-nav">
+    {% embed "@molecules/sticky-nav.twig" with {
+      stickyNav: {
+        titleContext: node.label,
+        horizontalLayout: true,
+        anchorLinks: org_nav
+      },
+    } %}
+    {% endembed %}
+  </div>
 
 {% endblock %}
 
