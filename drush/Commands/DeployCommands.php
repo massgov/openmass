@@ -6,6 +6,7 @@ use AcquiaCloudApi\Connector\Client;
 use AcquiaCloudApi\Connector\Connector;
 use AcquiaCloudApi\Endpoints\Code;
 use AcquiaCloudApi\Endpoints\DatabaseBackups;
+use AcquiaCloudApi\Endpoints\Databases;
 use AcquiaCloudApi\Endpoints\Environments;
 use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
@@ -15,6 +16,8 @@ use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
+use Drush\Commands\core\SiteCommands;
+use Drush\Commands\core\SshCommands;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
@@ -264,7 +267,6 @@ class DeployCommands extends DrushCommands {
   #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[OptionsetDeploy]
   public function deploy(string $target, string $git_ref, array $options = []) {
-    $self = $this->siteAliasManager->getSelf();
 
     // For production deployments, prompt user. If they say no, exit.
     $is_prod = ($target === 'prod');
@@ -282,41 +284,14 @@ class DeployCommands extends DrushCommands {
 
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
-      // This section resembles ma-refresh-local --db-prep-only. Don't call that
-      // since we can't easily make Cloud API calls from Acquia servers, and we
-      // don't need to sanitize here.
-      $process = Drush::drush($self, self::LATEST_BACKUP_URL, ['prod']);
-      $process->mustRun();
-      $url = $process->getOutput();
-      $this->logger()->success('Backup URL retrieved.');
-
-      // Download the latest backup.
-      // Directory set by https://jira.mass.gov/browse/DP-12823.
-      $tmp =  Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
-      $bash = ['wget', '-q', '--continue', trim($url), "--output-document=$tmp"];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->mustRun($process->showRealtime());
-      $this->logger()->success('Database downloaded from backup.');
-
-      // Drop all tables.
-      $process = Drush::drush($targetRecord, 'sql:drop');
-      $process->mustRun();
-      $this->logger()->success('Dropped all tables.');
-
-      // Import the latest backup.
-      // $bash = ['zgrep', '--line-buffered', '-v', '-e', '^INSERT INTO \`cache_', '-e', '^INSERT INTO \`migrate_map_', '-e', "^INSERT INTO \`config_log", '-e', "^INSERT INTO \`key_value_expire", '-e', "^INSERT INTO \`sessions", $tmp, Shell::op('|'), Path::join($targetRecord->root(), '../vendor/bin/drush'), '-r', $targetRecord->root(), '-v', 'sql:cli'];
-      // $bash = '-e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" ' . $tmp . ' | drush -vvv sql:cli';
-      $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $tmp];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->disableOutput();
-      $process->mustRun();
-      $this->logger()->success('Database imported from backup.');
-
-      // Delete tmp file.
-      $bash = ['test', '-f', $tmp, Shell::op('&&'), 'rm', $tmp];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->mustRun();
-      $this->logger()->success('Temporary file deleted. ' . $tmp);
+      $env_from = $this->siteAliasManager->getAlias('prod');
+      $env_target = $this->siteAliasManager->getAlias($target);
+      $cloudapi = $this->getClient();
+      $databases = new Databases($cloudapi);
+      $operationResponse = $databases->copy($env_from->get('uuid'), 'massgov', $env_target->get('uuid'));
+      $href = $operationResponse->links->notification->href;
+      /** @noinspection PhpParamsInspection */
+      $this->waitForTaskToComplete(basename($href), 30);
     }
 
     if ($options['skip-maint'] == FALSE) {
@@ -339,7 +314,7 @@ class DeployCommands extends DrushCommands {
     $operationResponse = (new Code($this->getClient()))->switch($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
     /** @noinspection PhpParamsInspection */
-    $this->waitForTaskToComplete(basename($href));
+    $this->waitForTaskToComplete(basename($href), 15);
 
     // Run deploy steps.
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
@@ -498,7 +473,7 @@ class DeployCommands extends DrushCommands {
    *
    * @throws \Exception
    */
-  public function waitForTaskToComplete(string $uuid) {
+  public function waitForTaskToComplete(string $uuid, int $interval = 5) {
     $client = $this->getClient();
 
     while (TRUE) {
@@ -511,8 +486,8 @@ class DeployCommands extends DrushCommands {
         throw new \Exception(dt("!desc - Notification !uuid failed.", ['!desc' => $notification->description, '!uuid' => $uuid]));
       }
       else {
-        $this->logger()->notice(dt('!desc: Will re-check Notification !uuid for completion in 5 seconds.', ['!desc' => $notification->description, '!uuid' => $uuid]));
-        sleep(5);
+        $this->logger()->notice(dt('!desc: Will re-check Notification !uuid for completion in !interval seconds.', ['!desc' => $notification->description, '!uuid' => $uuid, '!interval' => $interval]));
+        sleep($interval);
       }
     }
   }
