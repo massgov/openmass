@@ -181,8 +181,8 @@
       setTimeout(function () {
         // window.location.hash = position;
 
-        var focusInterval = 10; // ms, time between function calls
-        var focusTotalRepetitions = 100; // number of repetitions
+        // var focusInterval = 10; // ms, time between function calls
+        // var focusTotalRepetitions = 10; // number of repetitions
 
         // focusTarget.attr('tabindex', 0);
         focusTarget.blur();
@@ -198,8 +198,8 @@
           if (focusRepetitions >= focusTotalRepetitions) {
             window.clearInterval(interval);
           }
-        }, focusInterval);
-      }, 1000);
+        // }, focusInterval);
+      }, 1500);
     }
   }
 })(jQuery, Drupal);
