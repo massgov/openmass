@@ -184,7 +184,7 @@
           // Tell sr users the new listing is rendered.
           $filterButton.attr('aria-describedby', 'sr-note-refresh');
         }
-      }, 1200);
+      }, 1300);
     }
   }
 })(jQuery, Drupal);
