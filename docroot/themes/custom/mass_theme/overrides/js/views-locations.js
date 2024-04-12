@@ -195,7 +195,7 @@
             window.clearInterval(interval);
           }
         }, focusInterval);
-      }, 3000);
+      }, 2000);
 
       // var focusInterval = 10; // ms, time between function calls
       // var focusTotalRepetitions = 100; // number of repetitions
