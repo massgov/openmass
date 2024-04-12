@@ -196,7 +196,7 @@
           window.location.hash = '#displayedResultRange';
           $displayedResultRange.attr('tabindex', '0');
         }
-      }, 1200);
+      }, 1150);
     }
   }
 })(jQuery, Drupal);
