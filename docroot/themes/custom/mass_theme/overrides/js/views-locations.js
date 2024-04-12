@@ -86,18 +86,18 @@
       if (urlParams.has('icons')) {
         // with filter options
         if (urlParams.has('page')) {
-          setFocusForVO('#displayedResultRange', $displayedResultRange);
+          setFocusForVO($displayedResultRange);
           $displayedResultRange.focus();
         }
         else {
-          setFocusForVO('#filterButton', $filterButton);
+          setFocusForVO($filterButton);
           $filterButton.focus();
         }
       }
       else {
         // no filter options
         if (urlParams.has('page')) {
-          setFocusForVO('#displayedResultRange', $displayedResultRange);
+          setFocusForVO($displayedResultRange);
           $displayedResultRange.focus();
         }
       }
@@ -172,43 +172,18 @@
   }
 
   // Enfoce focus() with VO.
-  function setFocusForVO(position, focusTarget) {
+  function setFocusForVO(focusTarget) {
     var device = window.navigator.userAgent;
     if (device.indexOf('Macintosh') !== -1 ||
         device.indexOf('iPhone') !== -1 ||
         device.indexOf('iPad') !== -1) {
 
       setTimeout(function () {
-        // window.location.hash = position;
-
-        // var focusInterval = 10; // ms, time between function calls
-        // var focusTotalRepetitions = 10; // number of repetitions
-
-        // focusTarget.blur();
-
-        // var focusRepetitions = 0;
-        // var interval = window.setInterval(function () {
-        //   focusTarget.focus();
-
-        //   if (focusTarget === '#filterButton') {
-        //     // Tell sr users the new listing is rendered.
-        //     $filterButton.attr('aria-describedby', 'sr-note-refresh');
-        //   }
-
-        //   focusRepetitions++;
-        //   if (focusRepetitions >= focusTotalRepetitions) {
-        //     window.clearInterval(interval);
-        //   }
-        // }, focusInterval);
-
-
         focusTarget.focus();
-
-        if (focusTarget === '#filterButton') {
+        if (focusTarget === $filterButton) {
           // Tell sr users the new listing is rendered.
           $filterButton.attr('aria-describedby', 'sr-note-refresh');
         }
-
       }, 1200);
     }
   }
