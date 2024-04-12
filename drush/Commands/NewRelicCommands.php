@@ -29,7 +29,7 @@ final class NewRelicCommands extends DrushCommands
     }
     $annotationData = $commandData->annotationData();
     $commandName = $annotationData['command'];
-    $name = $commandData->input()->getOption('nrname') ?: $commandName;
+    $name = $commandData->input()->hasOption('nrname') ? $commandData->input()->getOption('nrname') : $commandName;
     newrelic_name_transaction("cli.drush.$name");
   }
 }
