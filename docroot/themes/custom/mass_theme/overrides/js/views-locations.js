@@ -199,7 +199,7 @@
             window.clearInterval(interval);
           }
         }, focusInterval);
-      }, 1500);
+      }, 1000);
     }
   }
 })(jQuery, Drupal);
