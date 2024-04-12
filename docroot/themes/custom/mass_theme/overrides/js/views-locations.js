@@ -200,7 +200,7 @@
             window.clearInterval(interval);
           }
         }, focusInterval);
-      }, 1100);
+      }, 1200);
     }
   }
 })(jQuery, Drupal);
