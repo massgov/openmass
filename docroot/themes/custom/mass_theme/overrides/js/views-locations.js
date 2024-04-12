@@ -194,9 +194,9 @@
         }
         else {
           window.location.hash = '#displayedResultRange';
-          $displayedResultRange.attr('tabindex', '0');
+          $displayedResultRange.attr('tabindex', '1');
         }
-      }, 1150);
+      }, 1130);
     }
   }
 })(jQuery, Drupal);
