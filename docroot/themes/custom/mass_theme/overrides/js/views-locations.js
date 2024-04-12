@@ -196,7 +196,7 @@
           window.location.hash = '#displayedResultRange';
           setTimeout(function () {
             $displayedResultRange.attr('tabindex', '1');
-          }, 100);
+          }, 200);
         }
       }, 1130);
     }
