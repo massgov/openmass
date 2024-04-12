@@ -184,7 +184,10 @@
           // Tell sr users the new listing is rendered.
           $filterButton.attr('aria-describedby', 'sr-note-refresh');
         }
-      }, 1300);
+        else {
+          window.location.hash = '#displayedResultRange';
+        }
+      }, 1200);
     }
   }
 })(jQuery, Drupal);
