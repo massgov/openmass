@@ -190,27 +190,16 @@
         var focusRepetitions = 0;
         var interval = window.setInterval(function () {
           focusTarget.focus();
+          // Tell sr users the new listing is rendered.
+          // if (urlParams !== referrer) {
+          $filterButton.attr('aria-describedby', 'sr-note-refresh');
+          // }
           focusRepetitions++;
           if (focusRepetitions >= focusTotalRepetitions) {
             window.clearInterval(interval);
           }
         }, focusInterval);
-      }, 2000);
-
-      // var focusInterval = 10; // ms, time between function calls
-      // var focusTotalRepetitions = 100; // number of repetitions
-
-      // // focusTarget.attr('tabindex', 0);
-      // focusTarget.blur();
-
-      // var focusRepetitions = 0;
-      // var interval = window.setInterval(function () {
-      //   focusTarget.focus();
-      //   focusRepetitions++;
-      //   if (focusRepetitions >= focusTotalRepetitions) {
-      //     window.clearInterval(interval);
-      //   }
-      // }, focusInterval);
+      }, 1500);
     }
   }
 })(jQuery, Drupal);
