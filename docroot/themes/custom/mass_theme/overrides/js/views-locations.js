@@ -181,25 +181,34 @@
       setTimeout(function () {
         // window.location.hash = position;
 
-        var focusInterval = 10; // ms, time between function calls
-        var focusTotalRepetitions = 10; // number of repetitions
+        // var focusInterval = 10; // ms, time between function calls
+        // var focusTotalRepetitions = 10; // number of repetitions
 
-        focusTarget.blur();
+        // focusTarget.blur();
 
-        var focusRepetitions = 0;
-        var interval = window.setInterval(function () {
-          focusTarget.focus();
+        // var focusRepetitions = 0;
+        // var interval = window.setInterval(function () {
+        //   focusTarget.focus();
 
-          if (focusTarget === '#filterButton') {
-            // Tell sr users the new listing is rendered.
-            $filterButton.attr('aria-describedby', 'sr-note-refresh');
-          }
+        //   if (focusTarget === '#filterButton') {
+        //     // Tell sr users the new listing is rendered.
+        //     $filterButton.attr('aria-describedby', 'sr-note-refresh');
+        //   }
 
-          focusRepetitions++;
-          if (focusRepetitions >= focusTotalRepetitions) {
-            window.clearInterval(interval);
-          }
-        }, focusInterval);
+        //   focusRepetitions++;
+        //   if (focusRepetitions >= focusTotalRepetitions) {
+        //     window.clearInterval(interval);
+        //   }
+        // }, focusInterval);
+
+
+        focusTarget.focus();
+
+        if (focusTarget === '#filterButton') {
+          // Tell sr users the new listing is rendered.
+          $filterButton.attr('aria-describedby', 'sr-note-refresh');
+        }
+
       }, 1200);
     }
   }
