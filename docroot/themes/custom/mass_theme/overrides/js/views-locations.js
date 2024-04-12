@@ -75,13 +75,13 @@
 
   // Set focus on the button when the page is refreshed with the filter options.
   var $filterButton = $('.js-location-filters__submit');
+  var $displayedResultRange = $('#displayedResultRange');
   $(document).ready(function () {
     var referrer = document.referrer.substr(
       document.referrer.lastIndexOf('?') + 1
     );
     referrer = '?' + referrer;
     var urlParams = new URLSearchParams(window.location.search);
-    var $displayedResultRange = $('#displayedResultRange');
     if (urlParams.size > 0 && !$('#error-input').hasClass('has-error')) {
       if (urlParams.has('icons')) {
         // with filter options
@@ -99,6 +99,8 @@
         if (urlParams.has('page')) {
           setFocusForVO($displayedResultRange);
           $displayedResultRange.focus();
+          // Visual focus indication for keyboard users.
+          $displayedResultRange.attr('tabindex', '0');
         }
       }
 
@@ -112,6 +114,12 @@
   $filterButton.on('focusout', function (e) {
     if ($(this).attr('aria-describedby')) {
       $(this).removeAttr('aria-describedby');
+    }
+  });
+
+  $displayedResultRange.on('focusout', function (e) {
+    if ($(this).attr('tabindex') === '0') {
+      $(this).attr('tabindex', '-1');
     }
   });
 
@@ -186,6 +194,7 @@
         }
         else {
           window.location.hash = '#displayedResultRange';
+          $displayedResultRange.attr('tabindex', '0');
         }
       }, 1200);
     }
