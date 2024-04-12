@@ -187,17 +187,17 @@
         // focusTarget.attr('tabindex', 0);
         focusTarget.blur();
 
-        var focusRepetitions = 0;
-        var interval = window.setInterval(function () {
-          focusTarget.focus();
-          // Tell sr users the new listing is rendered.
-          // if (urlParams !== referrer) {
-          $filterButton.attr('aria-describedby', 'sr-note-refresh');
-          // }
-          focusRepetitions++;
-          if (focusRepetitions >= focusTotalRepetitions) {
-            window.clearInterval(interval);
-          }
+        // var focusRepetitions = 0;
+        // var interval = window.setInterval(function () {
+        focusTarget.focus();
+        // Tell sr users the new listing is rendered.
+        // if (urlParams !== referrer) {
+        $filterButton.attr('aria-describedby', 'sr-note-refresh');
+        // }
+        // focusRepetitions++;
+        // if (focusRepetitions >= focusTotalRepetitions) {
+        //   window.clearInterval(interval);
+        // }
         // }, focusInterval);
       }, 1500);
     }
