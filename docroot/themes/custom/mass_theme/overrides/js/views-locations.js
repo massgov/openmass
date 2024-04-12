@@ -193,9 +193,11 @@
           $filterButton.attr('aria-describedby', 'sr-note-refresh');
         }
         else {
-          window.location.hash = '#displayedResultRange';
+          $displayedResultRange.attr('tabindex', '1');
+
+          // Override VO cursor position.
           setTimeout(function () {
-            $displayedResultRange.attr('tabindex', '1');
+            window.location.hash = '#displayedResultRange';
           }, 200);
         }
       }, 1130);
