@@ -51,21 +51,6 @@
     <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSans-VF-subset.woff2?version=1') }}" as="font" crossorigin/>
 
     <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSansItalic-VF-subset.woff2?version=1') }}" as="font" crossorigin/>
-    {# Browser support banner #}
-    <script>
-      var $buoop = {
-        required:{e:11,c:41,f:33,o:15,s:5},
-        api:2021.07,
-        text: "<b>Your browser ({brow_name}) is too old.</b> Things may not look or work right.  <a{up_but}>Update browser</a>  <a{ignore_but}>Ignore</a>"
-      };
-      function $buo_f(){
-      var e = document.createElement("script");
-      e.src = "//browser-update.org/update.min.js";
-      document.body.appendChild(e);
-      };
-      try {document.addEventListener("DOMContentLoaded", $buo_f,false)}
-      catch(e){window.attachEvent("onload", $buo_f)}
-    </script>
   </head>
   <body{{ attributes.addClass(body_classes) }}>
     <svg-sprite-placeholder>
