@@ -28,12 +28,12 @@ use Drupal\media\MediaInterface;
  * @throws \Drupal\Core\Entity\EntityStorageException
  */
 function mass_media_media_update(EntityInterface $entity) {
-  if ($entity->get('field_upload_file')->isEmpty()) {
+  if ($entity->getUploadFile()->isEmpty()) {
     return;
   }
 
-  $target_new = $entity->field_upload_file->target_id;
-  $target_original = $entity->original->field_upload_file->target_id;
+  $target_new = $entity->getUploadFile()->target_id;
+  $target_original = $entity->original->getUploadFile()->target_id;
   if (empty($target_original) || $target_original == $target_new) {
     return;
   }
@@ -240,7 +240,7 @@ function mass_media_media_presave(MediaInterface $entity) {
 
     // Loads file.
     /** @var \Drupal\file\Entity\File $file */
-    $file = File::load($entity->field_upload_file->target_id);
+    $file = File::load($entity->getUploadFile()->target_id);
     if ($file) {
       $file_uri = $file->getFileUri();
       /** @var \Drupal\Core\File\FileSystem $file_system */
