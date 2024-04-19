@@ -42,17 +42,9 @@
   Change Links' format to 'Separtae link text(with computed title) and URL to get link text.
 #}
 {% for item in items %}
-
-{# {{ dump(item.content) }} #}
   {% set linkText = item.content['#title']['#markup'] ? item.content['#title']['#markup'] : item.content['#title'] %}
   {# Add the laptop icon to form page links. #}
   {% set linkIcon = ('/forms/' in item.content['#url_title']) ? 'laptop' : item.content['#icon'] %}
-
-  {# {% if not(item.content['#icon']) and ('/download' in item.content['#url_title']) %}
-    <p>No file icon</p>
-  {% endif %} #}
-
-
   {% set linkFormat = ('/forms/' in item.content['#url_title']) ? 'form' : item.content['#format'] %}
   {% set linkContext = ('/forms/' in item.content['#url_title']) ? 'Link to an online form' %}
   {% include "@molecules/download-link.twig" with {
@@ -69,48 +61,4 @@
         "format": linkFormat
       }
     } %}
-
-  {# {% set inlineLinks = "inlineLinks": {
-      "ariaLabel": "Available Translations",
-      "links": [{
-        "text": "English",
-        "href": "#",
-        "info": "",
-        "lang_label": "English"
-      },
-        {
-          "text": "Español",
-          "href": "#",
-          "info": "",
-          "lang_label": "Spanish"
-        },
-        {
-          "text": "漢語",
-          "href": "#",
-          "info": "",
-          "lang_label": "Chinese"
-        },
-        {
-          "text": "Português",
-          "href": "#",
-          "info": "",
-          "lang_label": "Portuguese"
-        }] %}
-
-  {% include "@molecules/download-link-multilang.twig" with {
-    "downloadLink": {
-      "iconSize": item.content['#icon_size'],
-      "icon": linkIcon,
-      "decorativeLink": {
-        "text": linkText,
-        "href": item.content['#url_title'],
-        "info": "",
-        "labelContext": linkContext
-      },
-      "size": item.content['#size'],
-      "format": linkFormat,
-      "language": "",
-      "inlineLinks": inlinLinks
-    }
-  } %}#}
 {% endfor %}
