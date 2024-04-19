@@ -49,16 +49,16 @@
   {% set linkContext = ('/forms/' in item.content['#url_title']) ? 'Link to an online form' %}
   {% include "@molecules/download-link.twig" with {
     "downloadLink": {
-        "iconSize": item.content['#icon_size'],
-        "icon": linkIcon,
-        "decorativeLink": {
-          "text": linkText,
-          "href": item.content['#url_title'],
-          "info": "",
-          "labelContext": linkContext
-        },
-        "size": item.content['#size'],
-        "format": linkFormat
-      }
+      "iconSize": item.content['#icon_size'],
+      "icon": linkIcon,
+      "decorativeLink": {
+        "text": linkText,
+        "href": item.content['#url_title'],
+        "info": "",
+        "labelContext": linkContext
+      },
+      "size": item.content['#size'],
+      "format": linkFormat
+    }
     } %}
 {% endfor %}
