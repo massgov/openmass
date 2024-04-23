@@ -1,0 +1,36 @@
+diff --git a/js/csv-field.js b/js/csv-field.js
+index cc711ad..cbf7bb4 100644
+--- a/js/csv-field.js
++++ b/js/csv-field.js
+@@ -71,7 +71,7 @@
+                     // by default collapse details row
+                     settings.columns = [
+                       {
+-                        className: "dtr-control",
++                        className: "dtr-control dtr-hidden",
+                         orderable: false,
+                         data: null,
+                         title: "",
+@@ -92,7 +92,21 @@
+                   settings.columns.push({ title: headerData[i] });
+                 }
+ 
+-                $(table).DataTable(settings);
++                $(table).DataTable({
++                  ...settings,
++                  headerCallback: function(thead, data, start, end, display) {
++                    let el = $(thead).find('th.dtr-hidden');
++                    $(el).addClass('ma__visually-hidden');
++                    $(el).css('max-width', '4px');
++                    $(el).css('position', 'initial');
++                    $(el).css('white-space', 'nowrap');
++                    $(el).css('pointer-events', 'none');
++                    $(el).css('color', 'transparent');
++                    $(el).removeAttr('aria-label');
++                    $(el).text('a column of expand buttons (see additional information of each row)');
++                  }
++                });
++
+               } else {
+                 var lines = parsed.data,
+                   output = [],

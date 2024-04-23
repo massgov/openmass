@@ -1,5 +1,23 @@
 
 
+## [0.395.0] - April 16, 2024
+
+### Changed
+  - DP-16738: Deployments on Acquia Cloud Next
+  - DP-32065: Adjust legend spacing of Feedback component.
+  - DP-32198: Parallelize our PHPUnit tests (improve speed)
+  - DP-32381: Fix event URLs in backstop lists
+  - DP-32474: Adjust activity images on location pages.
+  
+### Added
+  - DP-32344: Added New Relic Browser script.
+  - DP-32444: Internal views used for cost reporting.
+  
+### Removed
+  - DP-32429: Remove browsercheck code from openmass.
+  
+
+
 ## [0.394.0] - April 2, 2024
 
 ### Changed
