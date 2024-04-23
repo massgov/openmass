@@ -1,5 +1,23 @@
 
 
+## [0.396.0] - April 23, 2024
+
+### Removed
+  - DP-31592: Disabled Media Diff UI and Entity Diff UI.
+  
+### Fixed
+  - DP-31888: Home page news headings jump from h2 to h5 (and is a link).
+  - DP-32499: Review accessiblility issue with CSV table feature.
+  - DP-32826: Fixed OpenCage geocoding
+  
+### Added
+  - DP-32053: Added revision processing to the search and replace document links drush command.
+  
+### Changed
+  - DP-32528: Changed conditional display of org parent to include constitutional / elected type. Modified internal org type view to allow more conditions..
+  
+
+
 ## [0.395.0] - April 16, 2024
 
 ### Changed

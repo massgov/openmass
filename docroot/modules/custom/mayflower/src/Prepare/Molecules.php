@@ -1444,6 +1444,18 @@ class Molecules {
       $file = $entity->field_upload_file->entity;
       if ($file instanceof File) {
         $itsAFile = TRUE;
+        if ($entity->isDefaultRevision()) {
+          // Create media entity download link rather than linking directly to file.
+          $href = Url::fromRoute(
+            'media_entity_download.download',
+            [
+              'media' => $entity->id(),
+            ]
+          );
+        }
+        else {
+          $href = $file->createFileUrl();
+        }
       }
     }
 
@@ -1456,19 +1468,6 @@ class Molecules {
       $title = !empty($entity->field_title->value) ? $entity->field_title->value : $file->getFilename();
       $file_info = new \SplFileInfo($file->getFilename());
       $file_extension = $file_info->getExtension();
-      // Create media entity download link rather than linking directly to file.
-      $mid = $entity->mid->getValue();
-      if ($mid !== NULL) {
-        $media_id = $mid[0]['value'];
-      }
-      if (isset($media_id)) {
-        $href = Url::fromRoute(
-          'media_entity_download.download',
-          [
-            'media' => $media_id,
-          ]
-        );
-      }
       switch (strtolower($file_extension)) {
         case 'pdf':
         case 'docx':
