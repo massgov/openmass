@@ -27,8 +27,13 @@ final class NewRelicCommands extends DrushCommands {
     $annotationData = $commandData->annotationData();
     $commandName = $annotationData['command'];
     $name = $commandData->input()->hasOption('nrname') ? $commandData->input()->getOption('nrname') : $commandName;
-    newrelic_name_transaction("cli.drush.$name");
-    $this->logger()->info('New Relic transaction sent to agent.');
+    $success = newrelic_name_transaction("cli.drush.$name");
+    if (!$success) {
+      $this->logger()->error('Failed to set New Relic transaction name.');
+    }
+    else {
+      $this->logger()->info('New Relic transaction name set.');
+    }
   }
 
 }
