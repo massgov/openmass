@@ -165,7 +165,7 @@ class Molecules {
         if ($entity->{$fields['image']}->alt) {
           $alt = $entity->{$fields['image']}->alt;
         }
-        else {
+        else if (isset($options['alt'])) {
           $alt = $options['alt'];
         }
 
