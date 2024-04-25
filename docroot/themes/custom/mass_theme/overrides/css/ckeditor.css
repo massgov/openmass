@@ -143,10 +143,30 @@
 }
 
 .ck-content h2,
-.ck-content h4,
-.ck-content h5,
-.ck-content h6 {
-  font-weight: 600;
+.ck-content h3,
+.ck-content h4 {
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.ck-content h2:after,
+.ck-content h3:after,
+.ck-content h4:after {
+  content: "";
+  height: 3px;
+  position: absolute;
+  bottom: 0;
+  left: 0.075em;
+  transform: skew(-30deg);
+  width: 1.85em;
+  background-color: rgba(56, 133, 87, .5);
+}
+
+.ck-content h2 a,
+.ck-content h3 a,
+.ck-content h4 a {
+  border: none;
+  color: #141414;
 }
 
 .ck-content h5 {
