@@ -5131,6 +5131,7 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
     $pressListing_options = [
       'numOfSecondaryItems' => $numItems,
       'displayImages' => Helper::fieldValue($paragraph, 'field_org_show_news_images'),
+      'level' => 3,
     ];
     $secondaryItems = $paragraph->recent_news->range(0, $numItems + 1)->referencedEntities();
     $press_listing = Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags);
