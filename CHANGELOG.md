@@ -1,5 +1,17 @@
 
 
+## [0.397.0] - April 30, 2024
+
+### Changed
+  - DP-31802: Accessibility improvement for the location listing page.
+  - DP-32394: Show yellow "Unpublished draft" warning for pages in a "in review" state.
+  
+### Fixed
+  - DP-32279: Bug - 'edit.mass.gov' upper left button doesn't work when nav icons in left margin.
+  - DP-32933: Fix misc noncritical errors.
+  
+
+
 ## [0.396.0] - April 23, 2024
 
 ### Removed
