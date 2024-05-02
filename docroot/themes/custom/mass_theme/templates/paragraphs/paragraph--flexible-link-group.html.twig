@@ -1,3 +1,9 @@
+
+{% if heading_level is not empty %}
+  {% set level = heading_level %}
+{% else %}
+  {% set level = 3 %}
+{% endif %}
 {% if (display_type == 'links') %}
   {% set items = [] %}
   {% for flexible_link in flexible_links_group %}
@@ -31,7 +37,7 @@
         "collapsibleHeader": {
             "title": flexible_link.title,
             "description": flexible_link.description,
-            "headingLevel": 3
+            "headingLevel": level
           },
           "expanded": flexible_link.expanded,
           "includes": links
@@ -83,7 +89,7 @@
     'calloutLinksThreeUp': {
       "headingText": flexible_links_group.0.title,
       "headingDescription": flexible_links_group.0.description,
-      "headingLevel": "3",
+      "headingLevel": level,
       'calloutLinks': calloutLinks
     }
   } %}

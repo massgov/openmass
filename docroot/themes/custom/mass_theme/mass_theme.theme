@@ -7513,6 +7513,16 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
       }
     }
   }
+
+  if ($flexible_lg->parent_field_name->value == 'field_service_section_content') {
+    $level = "2";
+    if ($parent_paragraph = Paragraph::load($flexible_lg->parent_id->value)) {
+      if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
+        $level = "3";
+      }
+    }
+    $variables['heading_level'] = $level;
+  }
 }
 
 /**
