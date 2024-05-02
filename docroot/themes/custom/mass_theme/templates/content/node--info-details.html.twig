@@ -23,13 +23,15 @@
 {% endif %}
 {% if showToc %}
   {% if sectionCount >= 2 %}
-    {% set overviewPreContentVisible = TRUE %}
-  {% elseif sectionCount < 2 %}
     {% set overviewPageContentVisible = TRUE %}
     {% set overviewPreContentVisible = FALSE %}
+  {% elseif sectionCount < 2 %}
+    {% set overviewPageContentVisible = FALSE %}
+    {% set overviewPreContentVisible = TRUE %}
   {% endif %}
 {% elseif not showToc %}
   {% set overviewPageContentVisible = TRUE %}
+  {% set overviewPreContentVisible = FALSE %}
 {% endif %}
 
 {# Build optional last update row. #}
