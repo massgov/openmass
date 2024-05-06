@@ -53,19 +53,21 @@ class EventsController extends ControllerBase {
     // @see mass_fields_entity_clear_referenced().
     $metadata = CacheableMetadata::createFromObject($node);
 
+    $more_link = FALSE;
+    if ($this->eventManager->getPastCount($node) > 0) {
+      $more_link = [
+        'text' => $node->bundle() === 'event' ? t('See past related events') : t('See past events'),
+        'href' => Url::fromRoute('mass_more_lists.events_past', ['node' => $node->id()]),
+      ];
+    }
+    $breadcrumb = $this->breadcrumb->build($this->routeMatch)->toRenderable();
+    if ($node->hasField('field_organizations')) {
+      $organizations = $node->field_organizations->view();
+    }
+
     if ($events = $this->eventManager->getUpcoming($node, -1)) {
       $metadata->setCacheMaxAge($this->eventManager->getMaxAge($node));
-      $more_link = FALSE;
-      if ($this->eventManager->getPastCount($node) > 0) {
-        $more_link = [
-          'text' => $node->bundle() === 'event' ? t('See past related events') : t('See past events'),
-          'href' => Url::fromRoute('mass_more_lists.events_past', ['node' => $node->id()]),
-        ];
-      }
-      $breadcrumb = $this->breadcrumb->build($this->routeMatch)->toRenderable();
-      if ($node->hasField('field_organizations')) {
-        $organizations = $node->field_organizations->view();
-      }
+
       $build = [
         '#title' => $node->bundle() === 'event' ? t('Upcoming events related to @name', ['@name' => $node->label()]) : t('Upcoming events for @name', ['@name' => $node->label()]),
         '#related' => [
@@ -84,10 +86,29 @@ class EventsController extends ControllerBase {
       // Any time an event is added, updated, or deleted, recalculate this to see if it has changed.
       $metadata->addCacheTags(['node_list:event']);
       $metadata->applyTo($build);
-
-      return $build;
+      
     }
-    throw new CacheableNotFoundHttpException($metadata);
+    else {
+      $build = [
+        '#title' => $node->bundle() === 'event' ? t('No upcoming events related to @name', ['@name' => $node->label()]) : t('No upcoming events for @name', ['@name' => $node->label()]),
+        '#related' => [
+          [
+            'text' => $node->label(),
+            'href' => $node->toUrl(),
+          ],
+        ],
+        '#breadcrumb' => $breadcrumb,
+        '#organizations' => $organizations,
+        '#theme' => 'events_page__upcoming',
+        '#events' => [],
+        '#parent' => $node,
+        '#more_link' => $more_link,
+      ];
+      // Any time an event is added, updated, or deleted, recalculate this to see if it has changed.
+      $metadata->addCacheTags(['node_list:event']);
+      $metadata->applyTo($build);
+    }
+    return $build;
   }
 
   /**
