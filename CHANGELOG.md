@@ -1,5 +1,98 @@
 
 
+## [0.397.0] - April 30, 2024
+
+### Changed
+  - DP-31802: Accessibility improvement for the location listing page.
+  - DP-32394: Show yellow "Unpublished draft" warning for pages in a "in review" state.
+  
+### Fixed
+  - DP-32279: Bug - 'edit.mass.gov' upper left button doesn't work when nav icons in left margin.
+  - DP-32933: Fix misc noncritical errors.
+  
+
+
+## [0.396.0] - April 23, 2024
+
+### Removed
+  - DP-31592: Disabled Media Diff UI and Entity Diff UI.
+  
+### Fixed
+  - DP-31888: Home page news headings jump from h2 to h5 (and is a link).
+  - DP-32499: Review accessiblility issue with CSV table feature.
+  - DP-32826: Fixed OpenCage geocoding
+  
+### Added
+  - DP-32053: Added revision processing to the search and replace document links drush command.
+  
+### Changed
+  - DP-32528: Changed conditional display of org parent to include constitutional / elected type. Modified internal org type view to allow more conditions..
+  
+
+
+## [0.395.0] - April 16, 2024
+
+### Changed
+  - DP-16738: Deployments on Acquia Cloud Next
+  - DP-32065: Adjust legend spacing of Feedback component.
+  - DP-32198: Parallelize our PHPUnit tests (improve speed)
+  - DP-32381: Fix event URLs in backstop lists
+  - DP-32474: Adjust activity images on location pages.
+  
+### Added
+  - DP-32344: Added New Relic Browser script.
+  - DP-32444: Internal views used for cost reporting.
+  
+### Removed
+  - DP-32429: Remove browsercheck code from openmass.
+  
+
+
+## [0.394.0] - April 2, 2024
+
+### Changed
+  - DP-31837: Editoria11y configuration has been changed to reduce false positives.
+  - DP-31886: a11y - Make mosaic item image alt text optional
+  - DP-32081: Remove "Restore to published state" button on trash page
+  - DP-32283: Filter by keyword no longer matches body text
+  - DP-32333: Content admins have access to view Editoria11y reports and reset dismissals.
+  - DP-32345: Label change for date on regulation type.
+  - DP-32425: Removed document type field which was unused.
+  
+### Added
+  - DP-32224: Add metadata for media entities to display file type and size in search.
+  - DP-32273: Add organization parent to dataLayer
+  
+
+
+## [0.393.0] - March 26, 2024
+
+### Changed
+  - DP-28012: A11y - Remove article alt title.
+  - DP-31828: Upgrade to Drupal 10.2
+  - DP-32003: Decrease header alerts spacing and minimize wrapping on mobile.
+  - DP-32010: Org contact logo too large on mobile.
+  - DP-32043: Autowire our custom Drush commandfilesAutowire our custom Drush commandfiles
+  - DP-32068: Log in button style improvement.
+  - DP-32109: Accomodate 'iframe resizer' with our iframe paragraph.
+  - DP-32201: Changed the questionable parent report to be based on content types and not labels.
+  - DP-32203: Change behavior of search filter dropdown options on org page.
+  - DP-32245: Modify session_parent_orgs to include org node ids
+  - DP-32271: On org page, org type field now required. Org parent field required for certain org types
+  
+### Added
+  - DP-32072: Test the alert detail page using symfony crawler
+  - DP-32094: Form inventory view for internal use.
+  - DP-32169: Added org type report view for internal use.
+  - DP-32269: Include organization_type in the dataLayer configuration
+  - DP-32270: Live accessibility checking for authors and editors added using Editoria11y module
+  
+### Fixed
+  - DP-32233: Tabledrag.js issue Drupal 10.2.
+  - DP-32255: Location page 'location subtitle' not appearing on published page.
+  
+
+
 ## [0.392.0] - March 12, 2024
 
 ### Added

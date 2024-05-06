@@ -1,16 +1,18 @@
 <?php
 
-namespace Drupal\mass_content\Commands;
+namespace Drupal\mass_content\Drush\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mass_fields\MassUrlReplacementService;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 
@@ -19,18 +21,13 @@ use Drush\Drush;
  */
 class MassContentCommands extends DrushCommands {
 
-  /**
-   * Entity type service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
+  use AutowireTrait;
 
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
-    $this->entityTypeManager = $entityTypeManager;
+  public function __construct(
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected LoggerChannelFactoryInterface $loggerChannelFactory
+  ) {
+    parent::__construct();
   }
 
   /**
@@ -369,79 +366,6 @@ class MassContentCommands extends DrushCommands {
   }
 
   /**
-   * Populate contextual search related field default values.
-   *
-   * @command mass-content:populate-search-fields
-   *
-   * @aliases mpsf
-   */
-  public function populateContextualSearchFields() {
-    // 1. Log the start of the script.
-    $this->logger()->info('Update nodes batch operations start');
-
-    // 2. Retrieve the nodes.
-    $storage = $this->entityTypeManager->getStorage('node');
-
-    $do_not_include_search_nids = [102151, 279281, 279391, 279421, 280801, 280841, 280891, 280911, 281166, 281201, 281276, 281411, 281456, 287771, 286861, 287811, 287841, 288221, 288231, 597581, 603051, 297131, 297136, 297146, 297166, 297176, 297226, 297236, 389236, 297506, 297546, 297716, 297726, 297741, 297761, 298191, 298201, 298261, 298271, 298291, 298511, 298516, 298616, 298791, 505031, 298881, 299621, 299616, 299511, 298531, 298536, 298541, 298546, 26951, 298551, 298556, 298561, 298571, 22331, 383086, 298581, 298586, 298591, 298211, 298216, 298221, 298226, 298231, 298236, 298241, 298246, 298251, 298256, 298186, 298006, 298011, 298026, 298031, 298036, 298041, 297791, 311511, 297801, 297811, 297806, 297816, 297826, 297831, 297836, 297841, 505026, 297671, 297666, 297661, 297651, 297631, 790306, 297616, 297601, 297591, 297301, 297446, 297441, 297431, 297421, 297416, 297411, 297401, 297396, 297246, 297391, 487206, 287871, 314251, 635851, 34161, 298566, 535211, 622806, 412921, 119191, 344641, 184756, 798351, 263216, 14066, 6096, 6516];
-    $show_parent_nids = [705346, 408791, 790226, 342871, 514371, 415871, 685541, 468571, 22826, 51951, 418061, 64866, 571991, 646046, 790506, 14686, 683761, 13626, 47751, 528126, 15091, 74746, 629876, 609336, 71546, 144916, 71416, 74466, 6801, 511121, 13726, 409611, 507841, 74116, 13891, 205351, 27511, 488491];
-    $nids = array_unique(array_merge($do_not_include_search_nids, $show_parent_nids));
-
-    // 3. Create the operations array for the batch.
-    $operations = [];
-    $numOperations = 0;
-    $batchId = 1;
-    if (!empty($nids)) {
-      $this->output()->writeln("Preparing batches for " . count($nids) . " nodes.");
-      foreach ($nids as $nid) {
-        if ($node = $storage->load($nid)) {
-          $do_not_include = FALSE;
-          $show_parent = FALSE;
-          if (in_array($nid, $do_not_include_search_nids)) {
-            $do_not_include = TRUE;
-          }
-          if (in_array($nid, $show_parent_nids)) {
-            $show_parent = TRUE;
-          }
-          // Prepare the operation. Here we could do other operations on nodes.
-          $this->output()->writeln("Preparing batch: " . $batchId);
-          $operations[] = [
-            '\Drupal\mass_content\MassContentBatchManager::processContextualSearchFields',
-            [
-              $batchId,
-              $node,
-              $do_not_include,
-              $show_parent,
-              t('Updating node @nid', ['@nid' => $nid]),
-            ],
-          ];
-          $batchId++;
-          $numOperations++;
-        }
-      }
-    }
-    else {
-      $this->logger()->warning(dt('No nodes of this type @type to process', ['@type' => 'service_page']));
-    }
-    // 4. Create the batch.
-    $batch = [
-      'title' => t('Updating @num node(s)', ['@num' => $numOperations]),
-      'operations' => $operations,
-      'finished' => '\Drupal\mass_content\MassContentBatchManager::processNodeFinished',
-    ];
-    // 5. Add batch operations as new batch sets.
-    batch_set($batch);
-    // 6. Process the batch sets.
-    drush_backend_batch_process();
-    // 6. Show some information.
-    $this->logger()->notice("Batch operations end.");
-    // 7. Log some information.
-    $this->logger()->info('Update batch operations end.');
-
-    // Turn on entity_hierarchy writes after processing the item.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-  }
-
-  /**
    * Get all content type bundle names.
    */
   public function getEntityBundles($type) {
@@ -485,9 +409,8 @@ class MassContentCommands extends DrushCommands {
 
       $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
       $changedEntities = 0;
+      $changed_revisions = 0;
       foreach ($ids as $id) {
-        // After successfully processing the entity, update the last processed ID
-        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
         $entity = $storage->load($id);
         if ($entity) {
           $changed = FALSE;
@@ -533,9 +456,67 @@ class MassContentCommands extends DrushCommands {
             }
           }
         }
+        if (!$entity->isLatestRevision()) {
+          $storage = \Drupal::entityTypeManager()->getStorage($entityType);
+          $query = $storage->getQuery()->accessCheck(FALSE);
+          $query->condition($idFieldName, $entity->id());
+          $query->latestRevision();
+          $rids = $query->execute();
+          foreach ($rids as $rid => $value) {
+            $latest_revision = $storage->loadRevision($rid);
+            if (isset($latest_revision)) {
+              $changed = FALSE;
+              $entity = $latest_revision;
+              foreach ($entity->getFields() as $field) {
+                $fieldType = $field->getFieldDefinition()->getType();
+                if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
+                  foreach ($field as $item) {
+                    $processed = $urlReplacementService->processText($item->value);
+                    if ($processed['changed']) {
+                      $item->value = $processed['text'];
+                      $changed = TRUE;
+                    }
+                  }
+                }
+              }
+              if ($changed) {
+                if (method_exists($entity, 'setRevisionLogMessage')) {
+                  $entity->setNewRevision();
+                  $entity->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                  $entity->setRevisionCreationTime(\Drupal::time()
+                    ->getRequestTime());
+                }
+                $entity->save();
+                $changed_revisions++;
+
+                if ($entityType == 'paragraph') {
+                  $node = Helper::getParentNode($entity);
+                  $this->output()
+                    ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
+                      '@type' => ucfirst($entityType),
+                      '@bundle' => $entity->bundle(),
+                      '@id' => $entity->id(),
+                      '@nid' => $node ? $node->id() : 'N/A',
+                    ]));
+                }
+                else {
+                  $this->output()
+                    ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
+                      '@type' => ucfirst($entityType),
+                      '@bundle' => $entity->bundle(),
+                      '@id' => $entity->id()
+                    ]));
+                }
+              }
+            }
+          }
+        }
+        // After successfully processing the entity, update the last processed ID
+        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
       }
 
       $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
+      $this->output()->writeln(t('Processed @count @type entity revisions.', ['@count' => $changed_revisions, '@type' => $entityType]));
     }
   }
 

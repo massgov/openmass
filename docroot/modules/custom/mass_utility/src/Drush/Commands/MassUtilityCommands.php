@@ -1,44 +1,31 @@
 <?php
 
-namespace Drupal\mass_utility\Commands;
+namespace Drupal\mass_utility\Drush\Commands;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Utils\StringUtils;
 use GuzzleHttp\Exception\RequestException;
+use Psr\Http\Client\ClientInterface;
 
-class MassUtilityCommands extends DrushCommands {
+final class MassUtilityCommands extends DrushCommands {
 
-  /**
-   * Database Connection.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected $database;
+  use AutowireTrait;
 
-  /**
-   * The messenger service.
-   *
-   * @var \Drupal\Core\Messenger\MessengerInterface
-   */
-  protected $messenger;
-
-  /**
-   * Constructs a new MassUtilityCommands object.
-   *
-   * @param \Drupal\Core\Database\Connection $connection
-   *   The database connection.
-   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
-   *   The messenger.
-   */
-  public function __construct(Connection $connection, MessengerInterface $messenger) {
-    $this->database = $connection;
-    $this->messenger = $messenger;
+  public function __construct(
+    protected Connection $connection,
+    protected MessengerInterface $messenger,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected ClientInterface $httpClient
+  ) {
+    parent::__construct();
   }
 
   /**
@@ -59,7 +46,7 @@ class MassUtilityCommands extends DrushCommands {
    */
   public function saveNode($node_types, array $options = ['set-moderation-state' => FALSE]) {
     $node_types = StringUtils::csvToArray($node_types);
-    $node_bundles = \Drupal::entityTypeManager()
+    $node_bundles = $this->entityTypeManager
       ->getStorage('node_type')
       ->loadMultiple();
     // Exit if user provided node_types do not match a node_bundle.
@@ -104,7 +91,7 @@ class MassUtilityCommands extends DrushCommands {
     // Iterate on all the IDs passed to the command.
     $media_entity_ids = StringUtils::csvToArray($media_entity_ids);
     foreach ($media_entity_ids as $media_entity_id) {
-      $entity = \Drupal::service('entity_type.manager')->getStorage('media')->load($media_entity_id);
+      $entity = $this->entityTypeManager->getStorage('media')->load($media_entity_id);
       $isMediaEntity = ($entity instanceof EntityInterface && $entity->getEntityTypeId() === 'media') ? TRUE : FALSE;
       // Act only on media entities.
       if ($isMediaEntity) {
@@ -112,7 +99,7 @@ class MassUtilityCommands extends DrushCommands {
         if (is_numeric($fid)) {
           // Ensure that the file is not used elsewhere, that it only references
           // one media entity, the expected one.
-          $file = \Drupal::service('entity_type.manager')->getStorage('file')->load($fid);
+          $file = $this->entityTypeManager->getStorage('file')->load($fid);
           $fileUsage = \Drupal::service('file.usage')->listUsage($file);
           // NOTE: In the final check below we use "==" and not "==="
           // because the media id sometimes gets picked as a string array key
@@ -179,7 +166,7 @@ class MassUtilityCommands extends DrushCommands {
       ->toString();
     $ping_url = "http://www.google.com/webmasters/tools/ping?sitemap={$sitemap_url}";
     try {
-      $request = \Drupal::httpClient()->get($ping_url);
+      $request = $this->httpClient->get($ping_url);
       $this->logger()->notice(dt('Submitted the sitemap to %url and received response @code.', ['%url' => $ping_url, '@code' => $request->getStatusCode()]));
     }
     catch (RequestException $ex) {

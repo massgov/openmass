@@ -883,6 +883,27 @@ function mass_fields_field_widget_single_element_entity_reference_paragraphs_for
 
 /**
  * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
+ *
+ * See https://massgov.atlassian.net/browse/DP-31886
+ *
+ * Approach comes from https://stackoverflow.com/a/66096376/265501https://stackoverflow.com/a/66096376/265501.
+ */
+function mass_fields_field_widget_single_element_image_image_form_alter(&$element, FormStateInterface $form_state, $context) {
+  if (in_array($element['#field_name'], ['field_featured_item_highlight', 'field_featured_item_image'])) {
+    $element['#process'][] = 'mass_fields_image_widget_alt_help_text_process';
+  }
+}
+
+function mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
+  if (isset($element['alt'])) {
+    $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
+    $element['alt']['#description'] = new \Drupal\Core\StringTranslation\TranslatableMarkup($text);
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
 function mass_fields_field_widget_single_element_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);

@@ -1,12 +1,13 @@
 <?php
 
-namespace Drupal\mass_utility\Commands;
+namespace Drupal\mass_utility\Drush\Commands;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\FieldConfigInterface;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 
 /**
@@ -21,11 +22,9 @@ use Drush\Commands\DrushCommands;
  *
  * @todo Link fields are not normalized.
  */
-class FileCommands extends DrushCommands {
+final class FileCommands extends DrushCommands {
 
-  private $database;
-
-  private $manager;
+  use AutowireTrait;
 
   private $batch = [];
 
@@ -47,17 +46,8 @@ class FileCommands extends DrushCommands {
     ],
   ];
 
-  /**
-   * FileCommands constructor.
-   *
-   * @param \Drupal\Core\Database\Connection $database
-   *   The Drupal database service.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The Drupal entity type manager service.
-   */
-  public function __construct(Connection $database, EntityTypeManagerInterface $entityTypeManager) {
-    $this->database = $database;
-    $this->manager = $entityTypeManager;
+  public function __construct(protected Connection $database, protected EntityTypeManagerInterface $entityTypeManager) {
+    parent::__construct();
   }
 
   /**
