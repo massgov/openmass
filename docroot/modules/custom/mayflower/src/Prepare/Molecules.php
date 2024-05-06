@@ -1929,7 +1929,7 @@ class Molecules {
         ],
       ];
     }
-    $result =  [
+    $result = [
       'eyebrow' => $eyebrow,
       'title' => [
         'href' => !empty($options['url']) ? $options['url'] : $url,
