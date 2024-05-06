@@ -1,5 +1,70 @@
 
 
+## [0.397.0] - April 30, 2024
+
+### Changed
+  - DP-31802: Accessibility improvement for the location listing page.
+  - DP-32394: Show yellow "Unpublished draft" warning for pages in a "in review" state.
+  
+### Fixed
+  - DP-32279: Bug - 'edit.mass.gov' upper left button doesn't work when nav icons in left margin.
+  - DP-32933: Fix misc noncritical errors.
+  
+
+
+## [0.396.0] - April 23, 2024
+
+### Removed
+  - DP-31592: Disabled Media Diff UI and Entity Diff UI.
+  
+### Fixed
+  - DP-31888: Home page news headings jump from h2 to h5 (and is a link).
+  - DP-32499: Review accessiblility issue with CSV table feature.
+  - DP-32826: Fixed OpenCage geocoding
+  
+### Added
+  - DP-32053: Added revision processing to the search and replace document links drush command.
+  
+### Changed
+  - DP-32528: Changed conditional display of org parent to include constitutional / elected type. Modified internal org type view to allow more conditions..
+  
+
+
+## [0.395.0] - April 16, 2024
+
+### Changed
+  - DP-16738: Deployments on Acquia Cloud Next
+  - DP-32065: Adjust legend spacing of Feedback component.
+  - DP-32198: Parallelize our PHPUnit tests (improve speed)
+  - DP-32381: Fix event URLs in backstop lists
+  - DP-32474: Adjust activity images on location pages.
+  
+### Added
+  - DP-32344: Added New Relic Browser script.
+  - DP-32444: Internal views used for cost reporting.
+  
+### Removed
+  - DP-32429: Remove browsercheck code from openmass.
+  
+
+
+## [0.394.0] - April 2, 2024
+
+### Changed
+  - DP-31837: Editoria11y configuration has been changed to reduce false positives.
+  - DP-31886: a11y - Make mosaic item image alt text optional
+  - DP-32081: Remove "Restore to published state" button on trash page
+  - DP-32283: Filter by keyword no longer matches body text
+  - DP-32333: Content admins have access to view Editoria11y reports and reset dismissals.
+  - DP-32345: Label change for date on regulation type.
+  - DP-32425: Removed document type field which was unused.
+  
+### Added
+  - DP-32224: Add metadata for media entities to display file type and size in search.
+  - DP-32273: Add organization parent to dataLayer
+  
+
+
 ## [0.393.0] - March 26, 2024
 
 ### Changed
