@@ -86,7 +86,7 @@ class EventsController extends ControllerBase {
       // Any time an event is added, updated, or deleted, recalculate this to see if it has changed.
       $metadata->addCacheTags(['node_list:event']);
       $metadata->applyTo($build);
-      
+
     }
     else {
       $build = [
