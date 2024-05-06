@@ -48,7 +48,7 @@ class RulesMetadataTest extends MetadataTestCase {
       'mg_date' => '20121231',
       'mg_type' => 'testtype',
       'mg_organization' => 'testorgpage',
-      'twitter:card' => 'summary',
+      'twitter:card' => 'summary_large_image',
     ]);
   }
 

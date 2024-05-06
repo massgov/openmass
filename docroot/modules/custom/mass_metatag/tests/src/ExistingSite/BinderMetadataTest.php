@@ -9,7 +9,8 @@ use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 /**
  * Binder metadata tests.
  */
-class BinderMetadataTest extends MetadataTestCase {
+class
+BinderMetadataTest extends MetadataTestCase {
 
   use TestContentTrait;
 
@@ -54,7 +55,7 @@ class BinderMetadataTest extends MetadataTestCase {
       'mg_organization' => 'testorgpage',
       // @todo This doesn't seem like the correct value.
       'mg_contact_details' => 'Test Contact - admin',
-      'twitter:card' => 'summary',
+      'twitter:card' => 'summary_large_image',
     ]);
   }
 
