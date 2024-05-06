@@ -9,8 +9,7 @@ use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 /**
  * Binder metadata tests.
  */
-class
-BinderMetadataTest extends MetadataTestCase {
+class BinderMetadataTest extends MetadataTestCase {
 
   use TestContentTrait;
 
