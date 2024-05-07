@@ -51,6 +51,7 @@ class NewsMetadataTest extends MetadataTestCase {
       'mg_date' => '20121231',
       'mg_type' => 'press-release',
       'mg_organization' => 'testorgpage',
+      'twitter:card' => 'summary_large_image',
     ]);
   }
 
