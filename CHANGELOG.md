@@ -1,4 +1,7 @@
+## [0.397.1] - May 7, 2024
 
+### Changed
+  - Reverted DP-32394: Show yellow "Unpublished draft" warning for pages in a "in review" state.
 
 ## [0.397.0] - April 30, 2024
 
