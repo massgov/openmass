@@ -21,18 +21,6 @@
 {% if node.field_hide_table_of_contents.value == "1" %}
   {% set showToc = FALSE %}
 {% endif %}
-{% if showToc %}
-  {% if sectionCount >= 2 %}
-    {% set overviewPageContentVisible = TRUE %}
-    {% set overviewPreContentVisible = FALSE %}
-  {% elseif sectionCount < 2 %}
-    {% set overviewPageContentVisible = FALSE %}
-    {% set overviewPreContentVisible = TRUE %}
-  {% endif %}
-{% elseif not showToc %}
-  {% set overviewPageContentVisible = TRUE %}
-  {% set overviewPreContentVisible = FALSE %}
-{% endif %}
 
 {# Build optional last update row. #}
 {% if content.field_info_details_last_updated.0 %}
@@ -114,7 +102,6 @@
   } %}
   {% endif %}
 
-  {% if overviewPreContentVisible %}
     {% if content.field_info_detail_overview|render|trim is not empty %}
       {% embed "@organisms/by-author/rich-text.twig" with {
         "richText": {}
@@ -124,7 +111,6 @@
         {% endblock %}
       {% endembed %}
     {% endif %}
-  {% endif %}
 
   {% if showToc %}
     {% include "@organisms/by-template/sticky-toc.twig" with {
@@ -149,18 +135,6 @@
 {% endblock %}
 
 {% block pageContent %}
-
-  {% if overviewPageContentVisible %}
-    {% if content.field_info_detail_overview|render|trim is not empty %}
-      {% embed "@organisms/by-author/rich-text.twig" with {
-        "richText": {}
-      } %}
-        {% block rteElements %}
-          {{ content.field_info_detail_overview }}
-        {% endblock %}
-      {% endembed %}
-    {% endif %}
-  {% endif %}
 
   {{ content.field_info_details_sections }}
 
