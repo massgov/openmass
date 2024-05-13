@@ -12,7 +12,7 @@ index 746bed441a..8f7b81c32a 100644
    plugin.manager.menu.contextual_link:
      class: Drupal\Core\Menu\ContextualLinkManager
 diff --git a/core/lib/Drupal/Core/Menu/LocalTaskManager.php b/core/lib/Drupal/Core/Menu/LocalTaskManager.php
-index 6fb8bdfe93..58aad4b292 100644
+index 6fb8bdfe93..5426213aea 100644
 --- a/core/lib/Drupal/Core/Menu/LocalTaskManager.php
 +++ b/core/lib/Drupal/Core/Menu/LocalTaskManager.php
 @@ -18,6 +18,7 @@
@@ -56,24 +56,22 @@ index 6fb8bdfe93..58aad4b292 100644
      $this->alterInfo('local_tasks');
      $this->setCacheBackend($cache, 'local_task_plugins:' . $language_manager->getCurrentLanguage()->getId(), ['local_task']);
    }
-@@ -217,6 +225,10 @@ public function getLocalTasksForRoute($route_name) {
+@@ -217,6 +225,9 @@ public function getLocalTasksForRoute($route_name) {
              // reference like &$task_info causes bugs.
              $definitions[$plugin_id]['base_route'] = $definitions[$task_info['parent_id']]['base_route'];
            }
 +          if (!isset($task_info['route_name'])) {
 +            $this->logger->error('Local task "@plugin" is missing a route name', ['@plugin' => $plugin_id]);
-+            die;
 +          }
            if ($route_name == $task_info['route_name']) {
              if (!empty($task_info['base_route'])) {
                $base_routes[$task_info['base_route']] = $task_info['base_route'];
-@@ -235,6 +247,10 @@ public function getLocalTasksForRoute($route_name) {
+@@ -235,6 +246,9 @@ public function getLocalTasksForRoute($route_name) {
            // Find all the plugins with the same root and that are at the top
            // level or that have a visible parent.
            foreach ($definitions as $plugin_id => $task_info) {
 +            if (!isset($task_info['base_route'])) {
 +              $this->logger->error('Local task "@plugin" is missing a base route', ['@plugin' => $plugin_id]);
-+              die;
 +            }
              if (!empty($base_routes[$task_info['base_route']]) && (empty($task_info['parent_id']) || !empty($parents[$task_info['parent_id']]))) {
                // Concat '> ' with root ID for the parent of top-level tabs.
