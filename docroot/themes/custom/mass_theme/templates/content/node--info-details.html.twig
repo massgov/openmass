@@ -102,15 +102,15 @@
   } %}
   {% endif %}
 
-    {% if content.field_info_detail_overview|render|trim is not empty %}
-      {% embed "@organisms/by-author/rich-text.twig" with {
-        "richText": {}
-      } %}
-        {% block rteElements %}
-          {{ content.field_info_detail_overview }}
-        {% endblock %}
-      {% endembed %}
-    {% endif %}
+  {% if content.field_info_detail_overview|render|trim is not empty %}
+    {% embed "@organisms/by-author/rich-text.twig" with {
+      "richText": {}
+    } %}
+      {% block rteElements %}
+        {{ content.field_info_detail_overview }}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
 
   {% if showToc %}
     {% include "@organisms/by-template/sticky-toc.twig" with {
