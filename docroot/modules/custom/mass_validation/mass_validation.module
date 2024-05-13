@@ -1654,7 +1654,7 @@ function mass_validation_form_alter(&$form, FormStateInterface $form_state, $for
   if ($form_state->getFormObject() instanceof EntityForm) {
     if ($entity = $form_state->getFormObject()->getEntity()) {
       if ($entity instanceof Media || $entity instanceof Node) {
-        if (!$entity->isNew() && $entity->get('moderation_state')->getString() != MassModeration::PUBLISHED) {
+        if (!$entity->isNew() && $entity->get('moderation_state')->getString() == MassModeration::DRAFT) {
           $entity_label = $entity->getEntityTypeId();
           $route_name = "entity." . $entity_label . ".version_history";
           $url = Url::fromRoute($route_name, [$entity_label => $entity->id()]);

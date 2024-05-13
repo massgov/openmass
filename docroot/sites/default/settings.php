@@ -92,7 +92,7 @@ $configureMemcache = function($settings) use ($app_root, $site_path, $class_load
 
   // Acquia doesn't recommend these in memcache and we are seeing Revision confusion at https://edit.mass.gov/info-details/covid-19-response-reporting/revisions
   // $settings['cache']['bins']['entity'] = 'cache.backend.memcache';
-  $settings['cache']['bins']['render'] = 'cache.backend.memcache';
+  // $settings['cache']['bins']['render'] = 'cache.backend.memcache';
 
   $settings['cache']['bins']['menu'] = 'cache.backend.memcache';
   // All other cache bins are stored in the database.
