@@ -1,3 +1,17 @@
+
+
+## [0.398.0] - May 14, 2024
+
+### Changed
+  - DP-28830: D10 upgrade packages - CKEditor5.
+  - DP-31672: Changed metadata config to use large image twitter card on a number of content types.
+  - DP-32001: Enlarge the close button for the map marker popup to meet WCAG2.2. Darken the button color to meet the minimum required color contrast.
+  - DP-32013: Add an underline to links (not decorative links) in the contact component matching the RT link style.
+  - DP-32286: Always show the future events page for orgs.
+  
+### Fixed
+  - DP-32426: Fix A11y heading issue on news page.
+  
 ## [0.397.2] - May 9, 2024
 
 ### Changed
