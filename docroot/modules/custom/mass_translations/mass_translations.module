@@ -84,7 +84,8 @@ function mass_translations_preprocess_media(&$variables) {
     }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    (new CacheableMetadata())->addCacheTags($cache_tags)
+    $metadata = CacheableMetadata::createFromRenderArray($variables);
+    $metadata->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
 }
@@ -149,7 +150,8 @@ function mass_translations_preprocess_node(&$variables) {
     }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    (new CacheableMetadata())->addCacheTags($cache_tags)
+    $metadata = CacheableMetadata::createFromRenderArray($variables);
+    $metadata->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
 }

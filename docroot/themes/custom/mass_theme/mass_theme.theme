@@ -1585,8 +1585,9 @@ function mass_theme_preprocess_node_info_details(&$variables) {
 
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
   // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-  (new CacheableMetadata())->addCacheTags($cache_tags)
-    ->applyTo($variables);
+  $metadata = CacheableMetadata::createFromRenderArray($variables);
+  $metadata->addCacheTags($cache_tags);
+  $metadata->applyTo($variables);
 }
 
 /**
@@ -3808,8 +3809,10 @@ function mass_theme_preprocess_block(&$variables) {
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
       // Add cache context for the current URL path.
       $cache_contexts = ['url.path'];
-      (new CacheableMetadata())->addCacheTags($cache_tags)->addCacheContexts($cache_contexts)
-        ->applyTo($variables);
+      $metadata = CacheableMetadata::createFromRenderArray($variables);
+      $metadata->addCacheTags($cache_tags);
+      $metadata->addCacheContexts($cache_contexts);
+      $metadata->applyTo($variables);
     }
     else {
       $variables['headerSearch'] = Molecules::prepareHeaderSearch();
@@ -3976,8 +3979,9 @@ function mass_theme_preprocess_node(&$variables) {
     $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    (new CacheableMetadata())->addCacheTags($cache_tags)
-      ->applyTo($variables);
+    $metadata = CacheableMetadata::createFromRenderArray($variables);
+    $metadata->addCacheTags($cache_tags);
+    $metadata->applyTo($variables);
   }
 
   // Retrieve view mode.
@@ -4530,8 +4534,9 @@ function mass_theme_preprocess_page(&$variables) {
       $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-      (new CacheableMetadata())->addCacheTags($cache_tags)
-        ->applyTo($variables);
+      $metadata = CacheableMetadata::createFromRenderArray($variables);
+      $metadata->addCacheTags($cache_tags);
+      $metadata->applyTo($variables);
 
       // Add class for org-type to main wrapper.
       if ($bundle === 'org_page' && $node->hasField('field_subtype') && !$node->field_subtype->isEmpty()) {
@@ -5149,8 +5154,9 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
 
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-      (new CacheableMetadata())->addCacheTags($cache_tags)
-        ->applyTo($variables);
+      $metadata = CacheableMetadata::createFromRenderArray($variables);
+      $metadata->addCacheTags($cache_tags);
+      $metadata->applyTo($variables);
     }
   }
 }
@@ -5816,8 +5822,9 @@ function mass_theme_preprocess_paragraph__contact_group(&$variables) {
 function mass_theme_preprocess_paragraph__contact_info(&$variables) {
   $paragraph = $variables['paragraph'];
   // Ensure contact changes invalidate this render.
-  (new CacheableMetadata())->addCacheableDependency($paragraph)
-    ->applyTo($variables);
+  $metadata = CacheableMetadata::createFromRenderArray($variables);
+  $metadata->addCacheableDependency($paragraph);
+  $metadata->applyTo($variables);
   $field_address = $paragraph->get('field_address');
 
   if ($field_address->count() > 0) {
@@ -7259,8 +7266,9 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
 
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    (new CacheableMetadata())->addCacheTags($cache_tags)
-      ->applyTo($variables);
+    $metadata = CacheableMetadata::createFromRenderArray($variables);
+    $metadata->addCacheTags($cache_tags);
+    $metadata->applyTo($variables);
   }
 }
 
