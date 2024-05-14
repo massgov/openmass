@@ -3,26 +3,28 @@
  *
  */
 (function ($, Drupal) {
-  'use strict';
+  ('use strict');
 
   Drupal.behaviors.viewsLocations = {
     attach: function (context, settings) {
       // We hook off of the document-level view ajax event
-      $(document).ajaxComplete(function (e, xhr, settings) {
-        if (settings.url === '/views/ajax?_wrapper_format=drupal_ajax') {
-          var DOMContentLoaded_event = document.createEvent('Event');
-          DOMContentLoaded_event.initEvent('DOMContentLoaded', true, true);
-          window.document.dispatchEvent(DOMContentLoaded_event);
-        }
-      }).on('ma:GoogleMaps:placeChanged', function (event, place) {
-        $('.views-exposed-form input[type="text"]').val('');
-        if (place.geometry && place.geometry.location) {
-          var lat = place.geometry.location.lat();
-          var lng = place.geometry.location.lng();
-          $('.views-exposed-form [name="lat"]').val(lat);
-          $('.views-exposed-form [name="lng"]').val(lng);
-        }
-      });
+      $(document)
+        .ajaxComplete(function (e, xhr, settings) {
+          if (settings.url === '/views/ajax?_wrapper_format=drupal_ajax') {
+            var DOMContentLoaded_event = document.createEvent('Event');
+            DOMContentLoaded_event.initEvent('DOMContentLoaded', true, true);
+            window.document.dispatchEvent(DOMContentLoaded_event);
+          }
+        })
+        .on('ma:GoogleMaps:placeChanged', function (event, place) {
+          $('.views-exposed-form input[type="text"]').val('');
+          if (place.geometry && place.geometry.location) {
+            var lat = place.geometry.location.lat();
+            var lng = place.geometry.location.lng();
+            $('.views-exposed-form [name="lat"]').val(lat);
+            $('.views-exposed-form [name="lng"]').val(lng);
+          }
+        });
 
       $('form.js-location-filters', context).on('submit', function (e) {
         e.preventDefault();
@@ -48,7 +50,6 @@
         $('.views-exposed-form .form-submit').trigger('click');
       });
 
-
       $('.js-results-heading-tag', context).on('click', function (e) {
         e.preventDefault();
         var $form = $('form.js-location-filters');
@@ -69,7 +70,137 @@
         $form.find('input').val('').prop('checked', false);
         $form.trigger('submit');
       });
-
     }
   };
+
+  // Set focus on the button when the page is refreshed with the filter options.
+  var $filterButton = $('.js-location-filters__submit');
+  var $displayedResultRange = $('#displayedResultRange');
+  $(document).ready(function () {
+    var referrer = document.referrer.substr(
+      document.referrer.lastIndexOf('?') + 1
+    );
+    referrer = '?' + referrer;
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.size > 0 && !$('#error-input').hasClass('has-error')) {
+      if (urlParams.has('icons')) {
+        // with filter options
+        if (urlParams.has('page')) {
+          setFocusForVO($displayedResultRange);
+          $displayedResultRange.focus();
+        }
+        else {
+          setFocusForVO($filterButton);
+          $filterButton.focus();
+        }
+      }
+      else {
+        // no filter options
+        if (urlParams.has('page')) {
+          setFocusForVO($displayedResultRange);
+          $displayedResultRange.focus();
+          // Visual focus indication for keyboard users.
+          $displayedResultRange.attr('tabindex', '0');
+        }
+      }
+
+      // Tell sr users the new listing is rendered.
+      if (urlParams !== referrer) {
+        $filterButton.attr('aria-describedby', 'sr-note-refresh');
+      }
+    }
+  });
+
+  $filterButton.on('focusout', function (e) {
+    if ($(this).attr('aria-describedby')) {
+      $(this).removeAttr('aria-describedby');
+    }
+  });
+
+  $displayedResultRange.on('focusout', function (e) {
+    if ($(this).attr('tabindex') === '0') {
+      $(this).attr('tabindex', '-1');
+    }
+  });
+
+  // Set focus on the input field when the error message is displayed.
+  $filterButton.on('click', function (e) {
+    errorMessageHandling();
+  });
+  // Adjustment for VoiceOver.
+  $filterButton.on('keydown', function (e) {
+    if (e.ctrlKey + e.altKey) {
+      // VO keys
+      // Click
+      if (e.key === '') {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        if ($(this).attr('aria-describedby')) {
+          $(this).removeAttr('aria-describedby');
+        }
+      }
+    }
+    else {
+      // When VO keys are already held down.
+      // Click
+      if (e.key === '') {
+        errorMessageHandling();
+      }
+      // Move away from the button
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        $filterButton.removeAttr('aria-describedby');
+      }
+    }
+  });
+
+  function errorMessageHandling() {
+    var $locationField = $('#filter-by-location');
+    setTimeout(function () {
+      if ($('#error-input').hasClass('has-error')) {
+        $locationField.attr('aria-invalid', 'true');
+        if ($locationField.val() !== '') {
+          // Need to be expressively 'empty'.
+          $locationField.attr(
+            'aria-describedby',
+            'error-input sr-note-error'
+          );
+        }
+        else {
+          $locationField.attr('aria-describedby', 'error-input sr-note');
+        }
+        $locationField.focus();
+      }
+      else {
+        $locationField.removeAttr('aria-invalid');
+        $locationField.attr('aria-describedby', 'sr-note');
+      }
+    }, 100);
+  }
+
+  // Enfoce focus() with VO.
+  function setFocusForVO(focusTarget) {
+    var device = window.navigator.userAgent;
+    if (device.indexOf('Macintosh') !== -1 ||
+        device.indexOf('iPhone') !== -1 ||
+        device.indexOf('iPad') !== -1) {
+
+      setTimeout(function () {
+        focusTarget.focus();
+        if (focusTarget === $filterButton) {
+          // Tell sr users the new listing is rendered.
+          $filterButton.attr('aria-describedby', 'sr-note-refresh');
+        }
+        else {
+          $displayedResultRange.attr('tabindex', '1');
+
+          // Override VO cursor position.
+          setTimeout(function () {
+            window.location.hash = '#displayedResultRange';
+          }, 200);
+        }
+      }, 1130);
+    }
+  }
 })(jQuery, Drupal);
