@@ -1,3 +1,8 @@
+## [0.397.3] - May 13, 2024
+
+### Changed
+- Add logging to check if local task routes are missing.
+
 ## [0.397.2] - May 9, 2024
 
 ### Changed
