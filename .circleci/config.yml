@@ -302,10 +302,10 @@ jobs:
           command: ./acli pull:db massgov.test --no-interaction -vvv
           environment:
             # Specify the local creds for the benefit of pull:db.
-            ACLI_DB_HOST: $MYSQL_HOST
-            ACLI_DB_NAME: $MYSQL_DATABASE
-            ACLI_DB_USER: $MYSQL_USER
-            ACLI_DB_PASSWORD: $MYSQL_PASSWORD
+            ACLI_DB_HOST: ${MYSQL_HOST}
+            ACLI_DB_NAME: ${MYSQL_DATABASE}
+            ACLI_DB_USER: ${MYSQL_USER}
+            ACLI_DB_PASSWORD: ${MYSQL_PASSWORD}
           no_output_timeout: 60m
       # Run drush updatedb and cim.
       - run: drush deploy
