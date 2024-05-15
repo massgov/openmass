@@ -296,9 +296,9 @@ jobs:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Import DB from Acquia
-      - run: curl -OL https://github.com/acquia/cli/releases/latest/download/acli.phar && chmod +x acli.phar
+      - run: curl -OL https://github.com/acquia/cli/releases/latest/download/acli.phar && mv acli.phar acli && chmod +x acli
       - run: acli -n auth:login --key="${AC_API2_KEY}" --secret="${AC_API2_SECRET}"
-      - run: acli pull:db massgov.prod --no-interaction -vvv
+      - run: acli pull:db massgov.test --no-interaction -vvv
       # Run drush updatedb and cim.
       - run: drush deploy
       # Clear out email addresses and misc.
