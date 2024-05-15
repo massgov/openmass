@@ -3,8 +3,8 @@ type: drupal10
 docroot: docroot
 php_version: "8.2"
 webserver_type: apache-fpm
-omit_containers:
-  - db
+#omit_containers:
+#  - db
 disable_settings_management: true
 router_http_port: "80"
 router_https_port: "443"
@@ -13,10 +13,10 @@ project_tld: local
 use_dns_when_possible: true
 web_environment:
   - DOCKER_ENV=devel
-  - MYSQL_USER=circle
-  - MYSQL_PASSWORD=circle
-  - MYSQL_DATABASE=circle
-  - MYSQL_HOST=dbmass
+  - MYSQL_USER=db
+  - MYSQL_PASSWORD=db
+  - MYSQL_DATABASE=db
+  - MYSQL_HOST=db
   - MEMCACHED_HOST=memcached
   - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   - DTT_BASE_URL=https://web
@@ -27,6 +27,10 @@ web_environment:
   # Acquia Cloud - v2
   - AC_API2_KEY
   - AC_API2_SECRET
+  # ACLI
+  - ACQUIA_API_KEY=$AC_API2_KEY
+  - ACQUIA_API_SECRET=$AC_API2_SECRET
+  - ACQUIA_ENVIRONMENT_ID=massgov.dev
   # New Relic. Needed for deployments.
   - MASS_NEWRELIC_APPLICATION
   - MASS_NEWRELIC_KEY
@@ -36,3 +40,5 @@ web_environment:
 hooks:
   pre-start:
     - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, CircleCI, GitHub, and New Relic  CLI tools."
+  post-import-db:
+#    - exec: drush sql:sanitize -y
