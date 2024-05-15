@@ -62,6 +62,11 @@ executors:
           MYSQL_PASSWORD: circle
           MYSQL_DATABASE: circle
           MYSQL_HOST: 127.0.0.1
+          # Specify the local creds for the benefit of pull:db.
+          ACLI_DB_HOST: $MYSQL_HOST
+          ACLI_DB_NAME: $MYSQL_DATABASE
+          ACLI_DB_USER: $MYSQL_USER
+          ACLI_DB_PASSWORD: $MYSQL_PASSWORD
           MEMCACHED_HOST: 127.0.0.1
           DTT_BASE_URL: http://mass.local
           DTT_API_URL: http://mass.local:9222
@@ -300,12 +305,6 @@ jobs:
       - run: ./acli -n auth:login --key="${AC_API2_KEY}" --secret="${AC_API2_SECRET}"
       - run:
           command: ./acli pull:db massgov.test --no-interaction -vvv
-          environment:
-            # Specify the local creds for the benefit of pull:db.
-            ACLI_DB_HOST: ${MYSQL_HOST}
-            ACLI_DB_NAME: ${MYSQL_DATABASE}
-            ACLI_DB_USER: ${MYSQL_USER}
-            ACLI_DB_PASSWORD: ${MYSQL_PASSWORD}
           no_output_timeout: 60m
       # Run drush updatedb and cim.
       - run: drush deploy
