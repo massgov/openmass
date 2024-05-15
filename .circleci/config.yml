@@ -66,10 +66,7 @@ executors:
           DTT_BASE_URL: http://mass.local
           DTT_API_URL: http://mass.local:9222
           BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-      - image: << parameters.instance >>
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_API_KEY
+      - image: cimg/mysql:5.7
         environment:
           MYSQL_USER: circle
           MYSQL_PASSWORD: circle
@@ -298,8 +295,14 @@ jobs:
       - run:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Import DB from Acquia
+      - run: curl -OL https://github.com/acquia/cli/releases/latest/download/acli.phar && chmod +x acli.phar
+      - run: acli -n auth:login --key="${AC_API2_KEY}" --secret="${AC_API2_SECRET}"
+      - run: acli pull:db massgov.prod --no-interaction -vvv
       # Run drush updatedb and cim.
       - run: drush deploy
+      # Clear out email addresses and misc.
+      - run: drush sql:sanitize -y
       # Get an overview
       - run: drush status
       - run: cat /proc/cpuinfo
