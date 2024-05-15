@@ -3,8 +3,6 @@ type: drupal10
 docroot: docroot
 php_version: "8.2"
 webserver_type: apache-fpm
-#omit_containers:
-#  - db
 disable_settings_management: true
 router_http_port: "80"
 router_https_port: "443"
@@ -30,7 +28,7 @@ web_environment:
   # ACLI
   - ACQUIA_API_KEY=$AC_API2_KEY
   - ACQUIA_API_SECRET=$AC_API2_SECRET
-  - ACQUIA_ENVIRONMENT_ID=massgov.dev
+  - ACQUIA_ENVIRONMENT_ID=massgov.prod
   # New Relic. Needed for deployments.
   - MASS_NEWRELIC_APPLICATION
   - MASS_NEWRELIC_KEY
@@ -41,4 +39,4 @@ hooks:
   pre-start:
     - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, CircleCI, GitHub, and New Relic  CLI tools."
   post-import-db:
-#    - exec: drush sql:sanitize -y
+    - exec: drush sql:sanitize -y
