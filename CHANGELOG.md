@@ -1,3 +1,104 @@
+## [0.397.2] - May 9, 2024
+
+### Changed
+- Move render cache to the database for easier debugging.
+
+## [0.397.1] - May 7, 2024
+
+### Changed
+  - Reverted DP-32394: Show yellow "Unpublished draft" warning for pages in a "in review" state.
+
+## [0.397.0] - April 30, 2024
+
+### Changed
+  - DP-31802: Accessibility improvement for the location listing page.
+  - DP-32394: Show yellow "Unpublished draft" warning for pages in a "in review" state.
+
+### Fixed
+  - DP-32279: Bug - 'edit.mass.gov' upper left button doesn't work when nav icons in left margin.
+  - DP-32933: Fix misc noncritical errors.
+
+
+
+## [0.396.0] - April 23, 2024
+
+### Removed
+  - DP-31592: Disabled Media Diff UI and Entity Diff UI.
+
+### Fixed
+  - DP-31888: Home page news headings jump from h2 to h5 (and is a link).
+  - DP-32499: Review accessiblility issue with CSV table feature.
+  - DP-32826: Fixed OpenCage geocoding
+
+### Added
+  - DP-32053: Added revision processing to the search and replace document links drush command.
+
+### Changed
+  - DP-32528: Changed conditional display of org parent to include constitutional / elected type. Modified internal org type view to allow more conditions..
+
+
+
+## [0.395.0] - April 16, 2024
+
+### Changed
+  - DP-16738: Deployments on Acquia Cloud Next
+  - DP-32065: Adjust legend spacing of Feedback component.
+  - DP-32198: Parallelize our PHPUnit tests (improve speed)
+  - DP-32381: Fix event URLs in backstop lists
+  - DP-32474: Adjust activity images on location pages.
+
+### Added
+  - DP-32344: Added New Relic Browser script.
+  - DP-32444: Internal views used for cost reporting.
+
+### Removed
+  - DP-32429: Remove browsercheck code from openmass.
+
+
+
+## [0.394.0] - April 2, 2024
+
+### Changed
+  - DP-31837: Editoria11y configuration has been changed to reduce false positives.
+  - DP-31886: a11y - Make mosaic item image alt text optional
+  - DP-32081: Remove "Restore to published state" button on trash page
+  - DP-32283: Filter by keyword no longer matches body text
+  - DP-32333: Content admins have access to view Editoria11y reports and reset dismissals.
+  - DP-32345: Label change for date on regulation type.
+  - DP-32425: Removed document type field which was unused.
+
+### Added
+  - DP-32224: Add metadata for media entities to display file type and size in search.
+  - DP-32273: Add organization parent to dataLayer
+
+
+
+## [0.393.0] - March 26, 2024
+
+### Changed
+  - DP-28012: A11y - Remove article alt title.
+  - DP-31828: Upgrade to Drupal 10.2
+  - DP-32003: Decrease header alerts spacing and minimize wrapping on mobile.
+  - DP-32010: Org contact logo too large on mobile.
+  - DP-32043: Autowire our custom Drush commandfilesAutowire our custom Drush commandfiles
+  - DP-32068: Log in button style improvement.
+  - DP-32109: Accomodate 'iframe resizer' with our iframe paragraph.
+  - DP-32201: Changed the questionable parent report to be based on content types and not labels.
+  - DP-32203: Change behavior of search filter dropdown options on org page.
+  - DP-32245: Modify session_parent_orgs to include org node ids
+  - DP-32271: On org page, org type field now required. Org parent field required for certain org types
+
+### Added
+  - DP-32072: Test the alert detail page using symfony crawler
+  - DP-32094: Form inventory view for internal use.
+  - DP-32169: Added org type report view for internal use.
+  - DP-32269: Include organization_type in the dataLayer configuration
+  - DP-32270: Live accessibility checking for authors and editors added using Editoria11y module
+
+### Fixed
+  - DP-32233: Tabledrag.js issue Drupal 10.2.
+  - DP-32255: Location page 'location subtitle' not appearing on published page.
+
 
 
 ## [0.392.0] - March 12, 2024
@@ -5,15 +106,15 @@
 ### Added
   - DP-15165: Start linting Twig files in CI
   - DP-32029: Add Public Wifi location icon to location page.
-  
+
 ### Fixed
   - DP-31233: Fixed flaky accordion test.
   - DP-31923: Hamburger Menu Bug on mobile.
   - DP-32116: Updated patch to fix bulk edits
-  
+
 ### Changed
   - DP-32091: Modify session_orgs to include org node ids
-  
+
 
 
 ## [0.391.0] - March 4, 2024
@@ -26,7 +127,7 @@
   - DP-31955: Don't generate the list container when suggested page items are not available to list.
   - DP-31994: Added help text and guidelines message to top of form edit page.
   - DP-32056: Guide content type is deprecated. New guides cannot be created. Use info details instead.
-  
+
 ### Fixed
   - DP-31233: Fix CircleCI failures
   - DP-31866: Fix mosaic link styles.
@@ -35,10 +136,10 @@
   - DP-31948: Fix data pull from BigQuery intro Drupal.
   - DP-31971: Fix contact on how-to page.
   - DP-32030: BUG contact field on location page allows all types.
-  
+
 ### Added
   - DP-31966: fixed kbarticle broken link on orgpage elected officials.
-  - DP-31982: Org type field and Org type taxonomy - to be used and populated later  
+  - DP-31982: Org type field and Org type taxonomy - to be used and populated later
 
 
 ## [0.390.0] - February 26, 2024
@@ -48,13 +149,13 @@
   - DP-31678: Search and replace /media and /files URLs with /doc URLs in content.
   - DP-31679: Fix userway contrast settings feedbackform in UtilityNav.
   - DP-31780: Add space to screen reader only text containers where screen readers announce the text sequentially as a part of its parent container's last word.
-  
+
 ### Added
   - DP-30638: Assert dynamic page cacheability during tests
-  
+
 ### Fixed
   - DP-31877: Fix textarea js conflicts with Formstack.
-  
+
 
 
 ## [0.389.0] - February 12, 2024
@@ -63,16 +164,16 @@
   - DP-24989: Change sort of autocomplete to put organizations, topics, services first.
   - DP-31767: Improve master-to-develop merge during a deployment
   - DP-31820: Updated help text for form embed field to tell authors to always use separate success page.
-  
+
 ### Fixed
   - DP-31033: Fix form page content type blocking styling from Formstack v4 by removing the query parameter, and removed broken `jsonp` parameter
   - DP-31616: Pass missing `id` value and add `aria-controls` to utility nav items.
   - DP-31671: Fix local dev for test running for selenium-chrome
   - DP-31795: Fixed publication status filter on Content view.
-  
+
 ### Added
   - DP-31737: Add Burmese language
-  
+
 
 
 ## [0.388.0] - February 5, 2024
@@ -81,15 +182,15 @@
   - DP-14430: MF legacy global nav expansion bug.
   - DP-31525: Language in parentenses incorrect for docs on curated list.
   - DP-31649: Change sidebar heading level on Info details content type.
-  
+
 ### Added
   - DP-28253: Adding Editoria11y accessibility check module for testers only.
   - DP-31681: A view showing form pages that are configured to show the success message on the same page.
-  
+
 ### Changed
   - DP-30525: Unskip Content view tests, add tests for My Content, All Documents
   - DP-31625: r403 should only redirect on edit.mass.gov
-  
+
 
 
 ## [0.387.1] - January 31, 2024
@@ -103,11 +204,11 @@
   - DP-31366: Fixed sporadic issues with location listing search.
   - DP-31620: News headlines on org pages are the same heading level as the "News" header.
   - DP-31624: Make sure master and develop are up to date before merging a hotfix
-  
+
 ### Added
   - DP-31561: Add name attributes to forms.
   - DP-31561: Add hidden fields to userway signup form for Formstack submission.
-  
+
 ## [0.386.1] - January 25, 2024
 
 ### Fixed
