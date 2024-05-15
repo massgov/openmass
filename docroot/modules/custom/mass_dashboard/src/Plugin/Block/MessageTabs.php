@@ -64,11 +64,9 @@ class MessageTabs extends BlockBase implements ContainerFactoryPluginInterface, 
     $cacheability = new CacheableMetadata();
     $primary = $this->localTaskManager->getLocalTasks($this->routeMatch->getRouteName(), 0);
     $secondary = $this->localTaskManager->getLocalTasks($this->routeMatch->getRouteName(), 1);
-    $local_tasks = CacheableMetadata::createFromObject($this->localTaskManager);
     $cacheability = $cacheability
       ->merge($primary['cacheability'])
-      ->merge($secondary['cacheability'])
-      ->merge($local_tasks);
+      ->merge($secondary['cacheability']);
 
     $tabs = [
       '#theme' => 'mass_dashboard_tabs',
