@@ -76,13 +76,13 @@
              {# <p style="color: purple; font-weight: 800;">{{ org_component[0]['#entityTypeId'].value }}</p> #}
 
              {# {% set org_component[0]['#level'] = 1 %} #}
-             {% set org_component = org_component|merge([
+             {# {% set org_component = org_component|merge([
                   {'#level': 1,}
-              ]) %}
+              ]) %} #}
 
           {% endif %}
 
-          {{ dump(org_component) }}
+          {# {{ dump(org_component) }} #}
 
 
           {{ org_component[0]|view }}

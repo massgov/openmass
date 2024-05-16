@@ -37,13 +37,8 @@
  *
  * @ingroup themeable
  */
-#}
-
 {# Set top heading level for the component. #}
-{% set level = 2 %}
-{% if elements['#level'] is not empty %}
-  {% set level = elements['#level'] %}
-{% endif %}
+{% set level = elements['#level'] ? : 3 %}
 
 {# Set the display if the position is vacant. #}
 {% if paragraph.field_position_is_vacant.value %}
@@ -85,6 +80,8 @@
     {{ content.field_person|merge({'#level': level }) }}
   {% else %}
     <li class="ma__teaser-listing__item">
+    PARAGRAPH:
+    <h3 style="color: red;">elements['#level'] {{ elements['#level'] }} : level {{ level }}</h3>
       {{ content.field_person|merge({'#level': level }) }}
     </li>
   {% endif %}
