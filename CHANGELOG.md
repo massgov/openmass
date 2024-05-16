@@ -1,3 +1,8 @@
+## [0.397.4] - May 14, 2024
+
+### Fixed
+- Fixed potential render cache issues where cache is applied to existing render arrays.
+
 ## [0.397.3] - May 13, 2024
 
 ### Changed
