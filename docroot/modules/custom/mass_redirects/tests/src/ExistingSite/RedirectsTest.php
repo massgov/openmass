@@ -23,6 +23,13 @@ class RedirectsTest extends MassExistingSiteBase {
   private $sourcePaths;
 
   /**
+   * Un-cacheable dynamic page patterns.
+   */
+  protected static array $uncacheableDynamicPagePatterns = [
+    'orgs/*',
+  ];
+
+  /**
    * Create an editor and a node with url redirects.
    */
   protected function setUp(): void {

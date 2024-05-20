@@ -1,3 +1,19 @@
+## [0.397.5] - May 17, 2024
+
+### Changed
+- Added render cache debugging to edit.mass.gov requests
+- Move data,menu cache bins to database backend. Also no more ChainedFast backend
+
+## [0.397.4] - May 16, 2024
+
+### Fixed
+- Fixed potential render cache issues where cache is applied to existing render arrays.
+
+## [0.397.3] - May 13, 2024
+
+### Changed
+- Add logging to check if local task routes are missing.
+
 ## [0.397.2] - May 9, 2024
 
 ### Changed
