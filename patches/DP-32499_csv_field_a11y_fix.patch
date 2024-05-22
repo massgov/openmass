@@ -1,5 +1,5 @@
 diff --git a/js/csv-field.js b/js/csv-field.js
-index cc711ad..cbf7bb4 100644
+index bf1738c..73b424d 100644
 --- a/js/csv-field.js
 +++ b/js/csv-field.js
 @@ -71,7 +71,7 @@
@@ -11,26 +11,61 @@ index cc711ad..cbf7bb4 100644
                          orderable: false,
                          data: null,
                          title: "",
-@@ -92,7 +92,21 @@
-                   settings.columns.push({ title: headerData[i] });
+@@ -95,6 +95,17 @@
+                   if (settings.hideSearchingData === 1 && settings.hideSearchingData === 1) {
+                     var dtable = $(table).DataTable({
+                       ...settings,
++                      headerCallback: function(thead, data, start, end, display) {
++                        let el = $(thead).find('th.dtr-hidden');
++                        $(el).addClass('ma__visually-hidden');
++                        $(el).css('max-width', '4px');
++                        $(el).css('position', 'initial');
++                        $(el).css('white-space', 'nowrap');
++                        $(el).css('pointer-events', 'none');
++                        $(el).css('color', 'transparent');
++                        $(el).removeAttr('aria-label');
++                        $(el).text('a column of expand buttons (see additional information of each row)');
++                      },
+                       search: {
+                         return: true
+                       }
+@@ -133,11 +144,37 @@
+                     });
+                   }
+                   else {
+-                    $(table).DataTable(settings);
++                    $(table).DataTable({
++                      ...settings,
++                      headerCallback: function(thead, data, start, end, display) {
++                        let el = $(thead).find('th.dtr-hidden');
++                        $(el).addClass('ma__visually-hidden');
++                        $(el).css('max-width', '4px');
++                        $(el).css('position', 'initial');
++                        $(el).css('white-space', 'nowrap');
++                        $(el).css('pointer-events', 'none');
++                        $(el).css('color', 'transparent');
++                        $(el).removeAttr('aria-label');
++                        $(el).text('a column of expand buttons (see additional information of each row)');
++                      }
++                    });
+                   }
                  }
- 
--                $(table).DataTable(settings);
-+                $(table).DataTable({
-+                  ...settings,
-+                  headerCallback: function(thead, data, start, end, display) {
-+                    let el = $(thead).find('th.dtr-hidden');
-+                    $(el).addClass('ma__visually-hidden');
-+                    $(el).css('max-width', '4px');
-+                    $(el).css('position', 'initial');
-+                    $(el).css('white-space', 'nowrap');
-+                    $(el).css('pointer-events', 'none');
-+                    $(el).css('color', 'transparent');
-+                    $(el).removeAttr('aria-label');
-+                    $(el).text('a column of expand buttons (see additional information of each row)');
-+                  }
-+                });
-+
+                 else {
+-                  $(table).DataTable(settings);
++                  $(table).DataTable({
++                    ...settings,
++                    headerCallback: function(thead, data, start, end, display) {
++                      let el = $(thead).find('th.dtr-hidden');
++                      $(el).addClass('ma__visually-hidden');
++                      $(el).css('max-width', '4px');
++                      $(el).css('position', 'initial');
++                      $(el).css('white-space', 'nowrap');
++                      $(el).css('pointer-events', 'none');
++                      $(el).css('color', 'transparent');
++                      $(el).removeAttr('aria-label');
++                      $(el).text('a column of expand buttons (see additional information of each row)');
++                    }
++                  });
+                 }
                } else {
                  var lines = parsed.data,
-                   output = [],
