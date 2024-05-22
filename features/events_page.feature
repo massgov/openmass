@@ -8,14 +8,14 @@ Feature: Organization Events Page
     # Create an org and verify that it doesn't show events at all
     Given I am viewing a published "org_page" with the title "Events Test Org"
     Given I am on "/orgs/events-test-org/events"
-    Then the response status code should be 404
+    Then the response status code should be 200
     Given I am on "/orgs/events-test-org/events/past"
     Then the response status code should be 404
 
     # Create a past event and verify that it appears correctly.
     Given an event "Org Past Event" referencing org_page "Events Test Org" happening at "now -1 day"
     Given I am on "/orgs/events-test-org/events"
-    Then the response status code should be 404
+    Then the response status code should be 200
     Given I am on "/orgs/events-test-org/events/past"
     Then I should see "Org Past Event"
     And I should not see "See upcoming events"

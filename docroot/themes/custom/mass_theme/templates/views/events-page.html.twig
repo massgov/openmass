@@ -80,31 +80,33 @@
   </div>
   <div class="main-content main-content--full">
     <div class="page-content">
-      {% block pageContent %}
-        {% set eventListingInteractive = {
-          maxItems: 10,
-          resultsHeading: {
-            numResults: '1-' ~ events|length,
-            totalResults: events|length
-          },
-          eventListing: {
+      {% if events %}
+        {% block pageContent %}
+          {% set eventListingInteractive = {
             maxItems: 10,
-            events: events
-          },
-          pagination: {
-            next: {
-              text: 'Next',
-              disabled: pages|length < 2
+            resultsHeading: {
+              numResults: '1-' ~ events|length,
+              totalResults: events|length
             },
-            prev: {
-              text: 'Previous',
-              disabled: true
+            eventListing: {
+              maxItems: 10,
+              events: events
             },
-            pages: pages
-          }
-        } %}
-        {% include "@organisms/by-author/event-listing-interactive.twig" %}
-      {% endblock %}
+            pagination: {
+              next: {
+                text: 'Next',
+                disabled: pages|length < 2
+              },
+              prev: {
+                text: 'Previous',
+                disabled: true
+              },
+              pages: pages
+            }
+          } %}
+          {% include "@organisms/by-author/event-listing-interactive.twig" %}
+        {% endblock %}
+      {% endif %}
     </div>
   </div>
   <div class="post-content" lang="en" dir="ltr" translate="no">

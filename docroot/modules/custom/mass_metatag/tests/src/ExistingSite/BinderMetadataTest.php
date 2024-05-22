@@ -54,6 +54,7 @@ class BinderMetadataTest extends MetadataTestCase {
       'mg_organization' => 'testorgpage',
       // @todo This doesn't seem like the correct value.
       'mg_contact_details' => 'Test Contact - admin',
+      'twitter:card' => 'summary_large_image',
     ]);
   }
 
