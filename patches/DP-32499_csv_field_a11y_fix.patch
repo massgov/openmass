@@ -1,5 +1,5 @@
 diff --git a/js/csv-field.js b/js/csv-field.js
-index bf1738c..73b424d 100644
+index a14e262..a4cca8c 100644
 --- a/js/csv-field.js
 +++ b/js/csv-field.js
 @@ -71,7 +71,7 @@
@@ -11,12 +11,14 @@ index bf1738c..73b424d 100644
                          orderable: false,
                          data: null,
                          title: "",
-@@ -95,6 +95,17 @@
-                   if (settings.hideSearchingData === 1 && settings.hideSearchingData === 1) {
-                     var dtable = $(table).DataTable({
+@@ -97,7 +97,18 @@
                        ...settings,
+                       search: {
+                         return: true
+-                      }
++                      },
 +                      headerCallback: function(thead, data, start, end, display) {
-+                        let el = $(thead).find('th.dtr-hidden');
++                        var el = $(thead).find('th.dtr-hidden');
 +                        $(el).addClass('ma__visually-hidden');
 +                        $(el).css('max-width', '4px');
 +                        $(el).css('position', 'initial');
@@ -26,10 +28,19 @@ index bf1738c..73b424d 100644
 +                        $(el).removeAttr('aria-label');
 +                        $(el).text('a column of expand buttons (see additional information of each row)');
 +                      },
-                       search: {
-                         return: true
-                       }
-@@ -133,11 +144,37 @@
+                     });
+ 
+                     // Clear search input and redraw table
+@@ -117,7 +128,7 @@
+                     $(table).siblings('.dataTables_info').hide();
+                     $(table).css('border-bottom', 'unset');
+                     var $search = $(table).parent().find('input[type="search"]');
+-                    var $button = $('<button type="submit" class="dt-search-submit" value="Submit">Submit</button>').insertAfter($search);
++                    var $button = $('<button type="submit" class="dt-search-submit ma__button   ma__button--secondary  ma__button--lowercase" value="Submit">Submit</button>').insertAfter($search);
+ 
+                     // Event listener to show rows only when a search is performed
+                     dtable.on('search.dt', function(e) {
+@@ -145,11 +156,37 @@
                      });
                    }
                    else {
