@@ -9,6 +9,7 @@ use Drupal\Core\Block\MessagesBlockPluginInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Menu\LocalTaskManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -64,22 +65,27 @@ class MessageTabs extends BlockBase implements ContainerFactoryPluginInterface, 
     $cacheability = new CacheableMetadata();
     $primary = $this->localTaskManager->getLocalTasks($this->routeMatch->getRouteName(), 0);
     $secondary = $this->localTaskManager->getLocalTasks($this->routeMatch->getRouteName(), 1);
+    $local_tasks = CacheableMetadata::createFromObject($this->localTaskManager);
     $cacheability = $cacheability
       ->merge($primary['cacheability'])
-      ->merge($secondary['cacheability']);
+      ->merge($secondary['cacheability'])
+      ->merge($local_tasks);
 
     $tabs = [
       '#theme' => 'mass_admin_toolbar_tabs',
       '#primary' => count(Element::getVisibleChildren($primary['tabs'])) > 1 ? $primary['tabs'] : [],
       '#secondary' => count(Element::getVisibleChildren($secondary['tabs'])) > 1 ? $secondary['tabs'] : [],
     ];
-    $cacheability->applyTo($tabs);
 
-    return [
+    $build = [
       '#theme' => 'mass_admin_toolbar_message_tabs',
       '#messages' => ['#type' => 'status_messages'],
       '#tabs' => $tabs,
     ];
+
+    $cacheability->applyTo($build);
+
+    return $build;
   }
 
 }
