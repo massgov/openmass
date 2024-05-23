@@ -1294,7 +1294,6 @@ function _mass_validation_validate_custom_flexible_links(FormStateInterface $for
   $subtype = $paragraph['subform']['field_display_type'][0]['value'];
   if ($subtype == 'links') {
     if (empty($paragraph['subform']['field_flexible_link_group_title'][0]['value'])) {
-      dump($paragraph_error_string);
       $form_state->setErrorByName(
         $paragraph_error_string . '[field_flexible_link_group_title][0][value',
         t('Link group title" field is required.')
