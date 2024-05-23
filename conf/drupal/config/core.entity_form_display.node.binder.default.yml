@@ -176,12 +176,15 @@ content:
           dependee: field_data_flag
           settings:
             state: visible
-            condition: checked
+            reset: false
+            condition: value
             grouping: AND
             values_set: 1
             value: ''
             values: {  }
-            value_form: {  }
+            value_form:
+              -
+                value: data
             effect: show
             effect_options: {  }
             selector: ''
@@ -348,7 +351,8 @@ content:
           dependee: field_data_flag
           settings:
             state: visible
-            condition: checked
+            reset: false
+            condition: value
             grouping: AND
             values_set: 1
             value: ''
@@ -427,6 +431,7 @@ content:
           dependee: field_data_flag
           settings:
             state: visible
+            reset: false
             condition: value
             grouping: AND
             values_set: 1
