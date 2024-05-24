@@ -52,18 +52,18 @@ class TopPrioritiesForm extends FormBase {
    *
    * @var \Drupal\Core\Database\Connection
    */
-  protected $dataservice;
+  protected $database;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(AccountProxyInterface $account, EntityTypeManagerInterface $entity_type_manager, PathValidator $path, DateFormatter $date_formatter, Connection $dataservice) {
+  public function __construct(AccountProxyInterface $account, EntityTypeManagerInterface $entity_type_manager, PathValidator $path, DateFormatter $date_formatter, Connection $database) {
     $this->account = $account;
     // User fields aren't available in account we have to use entityTypeManager.
     $this->entityTypeManager = $entity_type_manager;
     $this->path = $path;
-    $this->date_formatter = $date_formatter;
-    $this->database = $dataservice;
+    $this->dateFormatter = $date_formatter;
+    $this->database = $database;
   }
 
   /**
@@ -213,11 +213,11 @@ class TopPrioritiesForm extends FormBase {
       ];
 
       $row['nos_per_1000'] = [
-        '#title' => round($result->nos_per_1000_cleaned, 1),
+        '#title' => $result->nos_per_1000_cleaned ? round($result->nos_per_1000_cleaned, 1) : 'N/A',
         '#type' => 'link',
         '#url' => $feedback_url,
         '#attributes' => [
-          'class' => round($result->nos_per_1000_cleaned, 1) >= 6 ? 'red-link' : '',
+          'class' => $result->nos_per_1000_cleaned ? (round($result->nos_per_1000_cleaned, 1) >= 6 ? 'red-link' : '') : '',
         ],
       ];
 
@@ -232,7 +232,7 @@ class TopPrioritiesForm extends FormBase {
       ];
 
       $row['last_revised'] = [
-        '#markup' => $this->date_formatter->format($result->changed, 'short_date_only'),
+        '#markup' => $this->dateFormatter->format($result->changed, 'short_date_only'),
       ];
 
       $form['table_wrapper']['results_table'][] = $row;

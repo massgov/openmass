@@ -101,7 +101,7 @@
     {{ content.field_ref_phone_number }}
     {{ content.field_ref_fax_number }}
     {# Pass through the level setting with Drupal render array values. #}
-    {{ content.field_ref_links|merge({'#level': level }) }}
+    {{ content.field_ref_links|merge({'#level': level}) }}
 
     {# The application login links from the referencing organization page. #}
     {% if content.application_login_links|render is not empty %}
@@ -119,4 +119,3 @@
     {% endif %}
   {% endblock %}
 {% endembed %}
-

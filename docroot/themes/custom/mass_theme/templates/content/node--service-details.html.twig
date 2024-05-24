@@ -53,7 +53,7 @@
     } %}
   {% endif %}
 
-  {% include "@organisms/by-template/page-header.twig" with {
+  {% include "@organisms/page-header/page-header.twig" with {
       "pageHeader": {
         "title": node.label,
         "subTitle": content.field_service_detail_lede,
@@ -83,8 +83,8 @@
 
 {% block sidebar %}
   {# Pass through the level setting with Drupal render array values. #}
-  {{ content.field_service_detail_contact|merge({'#level': level }) }}
-  {{ content.field_service_detail_links_5|merge({'#level': level }) }}
+  {{ content.field_service_detail_contact|merge({'#level': level}) }}
+  {{ content.field_service_detail_links_5|merge({'#level': level}) }}
 {% endblock %}
 
 {% block postContent %}

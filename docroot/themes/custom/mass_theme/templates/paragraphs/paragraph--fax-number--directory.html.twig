@@ -39,7 +39,7 @@
  */
 #}
 {% set number = paragraph.field_fax.value %}
-{% set number_formated = '+1' ~ number | replace({'-': "", '+': "", ' ': "", '(': "", ')': ""}) %}
+{% set number_formated = '+1' ~ number|replace({'-': "", '+': "", ' ': "", '(': "", ')': ""}) %}
 {% set details = false %}
 {% if paragraph.field_caption is not empty %}
   {% set details = content.field_caption %}
@@ -47,7 +47,7 @@
 {% include "@molecules/contact/contact-item.twig" with {
   "item": {
     "type": "fax",
-    "label": "Fax:" | t,
+    "label": "Fax:"|t,
     "address": "",
     "link": {
       "href": number_formated,

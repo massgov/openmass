@@ -12,6 +12,7 @@ use Drupal\link\Plugin\Field\FieldType\LinkItem;
 use Drupal\mayflower\Helper;
 use Drupal\media\MediaInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 
 /**
@@ -164,7 +165,7 @@ class Molecules {
         if ($entity->{$fields['image']}->alt) {
           $alt = $entity->{$fields['image']}->alt;
         }
-        else {
+        elseif (isset($options['alt'])) {
           $alt = $options['alt'];
         }
 
@@ -600,12 +601,7 @@ class Molecules {
 
       if ($type == 'address') {
         $address = Helper::formatAddress($entity->{$fields['value']}, $options);
-        if (!$entity->get('field_contact_directions_link')->isEmpty()) {
-          $item['link'] = $entity->field_contact_directions_link->uri;
-        }
-        else {
-          $item['link'] = 'https://maps.google.com/?q=' . urlencode($address);
-        }
+        $item['link'] = $entity->getDirectionsUrl();
         $item['value'] = $address;
         $item['info'] = t('Get directions to ') . $address;
 
@@ -775,14 +771,35 @@ class Molecules {
       'title' => ['field_display_title', 'field_media_contact_name'],
     ];
 
-    // Determines which fieldnames to use from the map.
+    // Determines which field names to use from the map.
     $referenced_fields = Helper::getMappedFields($entity, $reference_map);
 
     $groups = [];
 
+    // If the address_check isset we only show
+    // address if the other ones are empty.
+    // This is working on "How to" pages sidebar.
+    if (isset($options['address_check'])) {
+      if (!empty($referenced_fields)) {
+        $available_fields = [];
+        foreach ($referenced_fields as $id => $field) {
+          if (Helper::isFieldPopulated($entity, $field)) {
+            $available_fields[$id] = $field;
+          }
+        }
+      }
+    }
+
     if (!empty($referenced_fields)) {
       foreach ($referenced_fields as $id => $field) {
         if (Helper::isFieldPopulated($entity, $field)) {
+          if (isset($options['address_check'])) {
+            if (array_key_exists('phone', $available_fields) || array_key_exists('online', $available_fields)) {
+              if ($id == 'address') {
+                continue;
+              }
+            }
+          }
           // If the field type is a link, get the link data and flag
           // 'is_more_info' to TRUE, so it can be prepared in
           // ::prepareContactGroup().
@@ -912,9 +929,9 @@ class Molecules {
         'type' => 'CivicStructure',
       ],
       'schemaContactInfo' => $contactInfo,
-      'accordion' => isset($options['accordion']) ? $options['accordion'] : FALSE,
-      'isExpanded' => isset($options['isExpanded']) ? $options['isExpanded'] : FALSE,
-      'level' => isset($options['level']) ? $options['level'] : '',
+      'accordion' => $options['accordion'] ?? FALSE,
+      'isExpanded' => $options['isExpanded'] ?? FALSE,
+      'level' => $options['level'] ?? '',
       // @todo Needs validation if empty or not.
       'subTitle' => $title,
       'groups' => $groups,
@@ -1072,6 +1089,12 @@ class Molecules {
         if (isset($locations[$entity->id()])) {
           $location = $locations[$entity->id()];
           $location_link = Link::fromTextAndUrl($location->label(), $location->toUrl());
+
+          $location_url = Helper::getEntityUrl($location)['href'];
+          // Use a decorative link to match Mayflower
+          $location_decorative_link = '<span class="ma__decorative-link"><a href="'
+                      . $location_url . '">' . $location_link->getText() .
+                      ' <svg aria-hidden="true" id="SvgjsSvg1000" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="16" height="18" viewBox="0 0 16 18"><defs id="SvgjsDefs1001"></defs><path id="SvgjsPath1007" d="M983.721 1887.28L983.721 1887.28L986.423 1890L986.423 1890L986.423 1890L983.721 1892.72L983.721 1892.72L978.318 1898.17L975.617 1895.45L979.115 1891.92L971.443 1891.92L971.443 1888.0700000000002L979.103 1888.0700000000002L975.617 1884.5500000000002L978.318 1881.8300000000002Z " transform="matrix(1,0,0,1,-971,-1881)"></path></svg></a></span>';
         }
 
         if (!$address = Helper::formatAddress($addressEntity->field_address_address)) {
@@ -1085,7 +1108,7 @@ class Molecules {
           ],
           'infoWindow' => [
             // If Contacts are mapped to Locations, provide link to Location.
-            'name' => $location_link ? $location_link->toString() : Helper::fieldValue($addressEntity, 'field_label'),
+            'name' => $location_link ? $location_decorative_link : Helper::fieldValue($addressEntity, 'field_label'),
             'phone' => $phone_number,
             'fax' => $fax_number,
             'email' => $link,
@@ -1199,6 +1222,74 @@ class Molecules {
       'data' => [
         'actionMap' => Molecules::prepareGoogleMap($entity),
       ],
+    ];
+  }
+
+  /**
+   * Returns the variables structure required to render headerSearch.
+   *
+   * @param object|null $entity
+   *   The object that contains the fields.
+   * @param array &$cache_tags
+   *   The array of node cache tags.
+   *
+   * @return array
+   *   Returns an array of items that contains:
+   *    [[
+   *      "path": "@molecules/action-map.twig",
+   *      "data": "[actionMap",
+   *
+   * @see @molecules/header-search.twig
+   */
+  public static function prepareHeaderSearch(object $entity = NULL, array &$cache_tags = []) {
+    $has_suggestions = FALSE;
+    $suggested_scopes = [];
+    $orgs = [];
+    if ($entity instanceof NodeInterface) {
+
+      if ($entity->bundle() === 'org_page') {
+        $orgs[] = $entity;
+      }
+
+      if ($entity->hasField('field_organizations')) {
+        if (!$entity->get('field_organizations')->isEmpty()) {
+          $org_field_values = $entity->get('field_organizations')->referencedEntities();
+          $orgs = array_merge($orgs, $org_field_values);
+        }
+      }
+
+      if (!empty($orgs)) {
+        foreach ($orgs as $org) {
+          if ($org->hasField('field_org_no_search_filter')) {
+            if ($org->field_org_no_search_filter->value != 1) {
+              $cache_tags = array_merge($cache_tags, $org->getCacheTags());
+              $suggested_scopes[] = trim($org->label());
+            }
+            $parent = $org->field_parent->entity;
+            if ($parent) {
+              if ($parent->hasField('field_org_no_search_filter')) {
+                if ($parent->field_org_no_search_filter->value != 1) {
+                  $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
+                  $suggested_scopes[] = trim($parent->label());
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    if (!empty($suggested_scopes)) {
+      $has_suggestions = TRUE;
+      $suggested_scopes = array_unique($suggested_scopes);
+    }
+
+    return [
+      'hasSuggestions' => $has_suggestions,
+      'suggestedScopes' => $suggested_scopes,
+      'name' => 'header-search',
+      'id' => 'header-search',
+      'placeholder' => 'Search Mass.gov',
+      'label' => 'Search terms',
     ];
   }
 
@@ -1359,6 +1450,18 @@ class Molecules {
       $file = $entity->field_upload_file->entity;
       if ($file instanceof File) {
         $itsAFile = TRUE;
+        if ($entity->isDefaultRevision()) {
+          // Create media entity download link rather than linking directly to file.
+          $href = Url::fromRoute(
+            'media_entity_download.download',
+            [
+              'media' => $entity->id(),
+            ]
+          );
+        }
+        else {
+          $href = $file->createFileUrl();
+        }
       }
     }
 
@@ -1371,19 +1474,6 @@ class Molecules {
       $title = !empty($entity->field_title->value) ? $entity->field_title->value : $file->getFilename();
       $file_info = new \SplFileInfo($file->getFilename());
       $file_extension = $file_info->getExtension();
-      // Create media entity download link rather than linking directly to file.
-      $mid = $entity->mid->getValue();
-      if ($mid !== NULL) {
-        $media_id = $mid[0]['value'];
-      }
-      if (isset($media_id)) {
-        $href = Url::fromRoute(
-          'media_entity_download.download',
-          [
-            'media' => $media_id,
-          ]
-        );
-      }
       switch (strtolower($file_extension)) {
         case 'pdf':
         case 'docx':
@@ -1544,8 +1634,8 @@ class Molecules {
     $endTimestamp = $entity->{$fields['date']}->end_value;
 
     // Format the dates and times according to style guide.
-    list($startDateTime, $startDate, $startTime) = Helper::getMayflowerDate($startTimestamp);
-    list($endDateTime, $endDate, $endTime) = Helper::getMayflowerDate($endTimestamp);
+    [$startDateTime, $startDate, $startTime] = Helper::getMayflowerDate($startTimestamp);
+    [$endDateTime, $endDate, $endTime] = Helper::getMayflowerDate($endTimestamp);
 
     /*
      * Set up the date summary for single day events.
@@ -1839,8 +1929,7 @@ class Molecules {
         ],
       ];
     }
-
-    return [
+    $result = [
       'eyebrow' => $eyebrow,
       'title' => [
         'href' => !empty($options['url']) ? $options['url'] : $url,
@@ -1853,6 +1942,10 @@ class Molecules {
       'description' => $description,
       'image' => $image,
     ];
+    if (isset($options['level'])) {
+      $result['level'] = $options['level'];
+    }
+    return $result;
   }
 
   /**

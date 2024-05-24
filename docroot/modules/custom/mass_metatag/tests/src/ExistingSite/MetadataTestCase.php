@@ -4,12 +4,13 @@ namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Behat\Mink\Element\DocumentElement;
 use Drupal\Core\Entity\ContentEntityInterface;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Base test class for metadata checking.
  */
-abstract class MetadataTestCase extends ExistingSiteBase {
+abstract class MetadataTestCase extends MassExistingSiteBase {
 
   private $debug = FALSE;
 
@@ -84,7 +85,7 @@ abstract class MetadataTestCase extends ExistingSiteBase {
       'og:site_name' => 'Mass.gov',
       'og:url' => $entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
       'og:type' => 'website',
-      'twitter:card' => 'summary',
+      'twitter:card' => 'summary_large_image',
       'twitter:site' => '@massgov',
       'twitter:site:id' => '16264003',
       'twitter:title' => $entity->label(),

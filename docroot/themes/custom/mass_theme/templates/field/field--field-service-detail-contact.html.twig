@@ -47,7 +47,7 @@
 {% embed "@organisms/contact/contact-list.twig" with {
   "contactList": {
     "viewSpecific": false,
-    "compHeading":{
+    "compHeading": {
       "title": "Contact",
       "sub": false,
       "color": "",
@@ -57,19 +57,19 @@
       "sidebar": true,
       "level": level
     },
-    "contacts":{
+    "contacts": {
       "showMore": true,
       "hideSecondary": not secondaryItems
     }
   }
-}%}
+} %}
   {% block contactListContacts %}
     {# Increase heading number by 1 from the parent heading. #}
     {% set level = level + 1 %}
 
     {% for item in items %}
       {# Pass through the level setting with Drupal render array values. #}
-      {{ item.content|merge({'#level': level }) }}
+      {{ item.content|merge({'#level': level}) }}
     {% endfor %}
   {% endblock %}
 {% endembed %}

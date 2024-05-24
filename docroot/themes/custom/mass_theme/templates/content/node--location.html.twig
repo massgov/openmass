@@ -50,15 +50,16 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
-  {% include "@organisms/by-template/page-header.twig" %}
-  {% include "@organisms/by-template/page-header-addons.twig" %}
-  {#{% include "@organisms/by-author/location-banner.twig" %}#}
+  {% include "@organisms/page-header/page-header.twig" %}
+  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {% include "@organisms/by-author/key-actions.twig" %}
+  {# {% include "@organisms/by-author/location-banner.twig" %} #}
   {% embed "@organisms/by-author/location-banner.twig" with {
     "locationBanner": {
       "bgTitle": "",
       "bgNarrow": content.field_bg_narrow
     }
-  }%}
+  } %}
     {% block map %}
       {{ content.extra_contact_info_static_map }}
     {% endblock %}
@@ -201,13 +202,13 @@
   {% set level = level + 1 %}
   <aside class="sidebar sidebar--colored">
     {% if sidebarContact %}
-      {% set coloredHeading = sidebarContact.coloredHeading|merge({'level': level }) %}
-      {% set sidebarContact = sidebarContact|merge({'coloredHeading': coloredHeading }) %}
+      {% set coloredHeading = sidebarContact.coloredHeading|merge({'level': level}) %}
+      {% set sidebarContact = sidebarContact|merge({'coloredHeading': coloredHeading}) %}
       {% include "@organisms/by-author/sidebar-contact.twig" %}
     {% endif %}
     {% if eventListing %}
-      {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level }) %}
-      {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading }) %}
+      {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level}) %}
+      {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading}) %}
       {% include "@organisms/by-author/event-listing.twig" %}
     {% endif %}
     {# include "@organisms/by-author/sidebar-widget.twig" #}
@@ -221,10 +222,10 @@
      {{ content.field_image_credit }}
   {% endif %}
   {% if suggestedPages %}
-    <div id="{{suggestedPages.compHeading.id}}" class="ma-suggested-locations">
+    <div id="{{ suggestedPages.compHeading.id }}" class="ma-suggested-locations">
       {% include "@organisms/by-author/suggested-pages.twig" %}
     </div>
   {% endif %}
-  {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
+  {# {% include "@organisms/by-template/breadcrumbs.twig" %} #}
   {{ content.extra_org_feedback_form }}
 {% endblock %}

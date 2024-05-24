@@ -273,6 +273,8 @@ jobs:
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
+      # Lint Twig
+      - run: composer twigcs -- --no-interaction
 
   test:
     parameters:
@@ -285,6 +287,7 @@ jobs:
     executor:
       name: base
       instance: << parameters.instance >>
+    parallelism: 4
     steps:
       - attach_workspace: {at: /var/www}
       - *vendor_bin_add_path
@@ -321,7 +324,13 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+            - run:
+                # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
+                name: Run functional tests
+                command: |
+                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -366,7 +375,22 @@ jobs:
       - run:
           command: "php scripts/ma-mayflower-develop.php"
 
-  # Post-release merge from master to develop.
+  # Log a new release in New Relic
+  new_relic_change_tracking:
+    docker:
+      - image: cimg/php:8.2-node
+    parameters:
+      version:
+        type: string
+    steps:
+      # Install NR CLI
+      - run: curl -Ls "https://download.newrelic.com/install/newrelic-cli/scripts/install.sh" | bash
+      # https://docs.newrelic.com/docs/change-tracking/change-tracking-cli/
+      # https://circleci.com/docs/variables/#built-in-environment-variables
+      # The GUID is for the mass.gov prod entity. Browse all entities with `newrelic apm application search --name mass.gov`
+      - run: NEW_RELIC_API_KEY=$MASS_NEWRELIC_KEY newrelic entity deployment create --accountId $MASS_NEWRELIC_APPLICATION --guid MTUyMjA0MXxBUE18QVBQTElDQVRJT058NzIwNjAyNjQz --version << parameters.version >> --commit $CIRCLE_SHA1 --deepLink $CIRCLE_BUILD_URL
+
+      # Post-release merge from master to develop.
   master_to_develop:
     working_directory: /tmp/code
     docker:
@@ -459,8 +483,7 @@ jobs:
     resource_class: xlarge
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
-      # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
-      - image: backstopjs/backstopjs:6.1.4
+      - image: backstopjs/backstopjs:6.3.3
     steps:
       - checkout
       - run:
@@ -486,8 +509,8 @@ jobs:
       - run:
           name: Archive Reference Screenshots
           command: |
-            sudo apt-get update
-            sudo apt-get install zip -y
+            apt-get update
+            apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
@@ -565,6 +588,7 @@ jobs:
             - run:
                 name: Verify Artifacts
                 command: |
+                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
@@ -949,7 +973,7 @@ workflows:
             branches:
               only: master
 
-  # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
+  # This deploys the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
     when: << pipeline.parameters.webhook >>
     jobs:
@@ -1055,13 +1079,27 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop_test:
-          name: backstop-prod-no-maint
-          requires: [deploy-tag-prod-acquia-no-maint]
-          target: prod
-          reference: test
-          list: post-release
-          viewport: desktop
+      - new_relic_change_tracking:
+          name: new-relic-change-tracking-prod-maint
+          requires: [deploy-tag-prod-acquia-maint]
+          version: $CIRCLE_TAG
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - new_relic_change_tracking:
+          name: new-relic-change-tracking-prod-no-maint
+          requires: [ deploy-tag-prod-acquia-no-maint ]
+          version: $CIRCLE_TAG
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - master_to_develop:
+          name: master-to-develop-prod-no-maint
+          requires: [ deploy-tag-prod-acquia-no-maint ]
           filters:
             branches:
               ignore: /.*/
@@ -1163,9 +1201,6 @@ workflows:
     jobs:
       - backstop_reference:
           target: prod
-          filters:
-            branches:
-              only: develop
 
   # See https://support.circleci.com/hc/en-us/articles/12419710425499-How-to-Manually-Trigger-a-Scheduled-Pipeline
   backstop_snapshot:
@@ -1215,6 +1250,15 @@ workflows:
           requires: [ deploy-cd-refresh-db ]
           target: cd
           samples: 450
+
+  # @todo remove. for PR testing via manual pipeline trigger.
+  new_relic_testing:
+    when:
+      and:
+        - equal: [ new_relic_testing, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - new_relic_change_tracking:
+          version: $CIRCLE_SHA1
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:

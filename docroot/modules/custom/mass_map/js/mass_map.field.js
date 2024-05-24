@@ -64,6 +64,8 @@
   };
 })(jQuery, Drupal);
 
+// For LeafletMap infoWindow content, 'infoWindow' is not used.
+// See L.1103 of modules/custom/mayflower/src/Prepare/Molecules.php.
 var infoWindow = function (infoWindow) {
   'use strict';
   var info = '';

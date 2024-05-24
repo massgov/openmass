@@ -13,16 +13,16 @@
 
 {% embed "@organisms/by-author/curated-person.twig" with {
   "curatedPerson": {
-    "name" : {
+    "name": {
       "text": content.field_display_title,
       "href": node.field_contact_more_info_link is empty ? "" : content.field_contact_more_info_link[0]['#url'],
       "info": "",
       "level": ""
     },
-    "title" : {
+    "title": {
       "text": ''
     },
-    "desc" : {
+    "desc": {
       "text": content.field_plain_description
     }
   }
@@ -55,10 +55,10 @@
       } %}
         {% block groupItems %}
           {# Pass through the level setting with Drupal render array values. #}
-          {{ content.field_ref_links|merge({'#level': level }) }}
+          {{ content.field_ref_links|merge({'#level': level}) }}
         {% endblock %}
       {% endembed %}
     {% endif %}
   {% endblock %}
 {% endembed %}
-{{ content | without('field_plain_description', 'field_contact_more_info_link', 'field_ref_fax_number', 'field_ref_links', 'field_ref_phone_number', 'field_ref_address', 'field_display_title') }}
+{{ content|without('field_plain_description', 'field_contact_more_info_link', 'field_ref_fax_number', 'field_ref_links', 'field_ref_phone_number', 'field_ref_address', 'field_display_title') }}

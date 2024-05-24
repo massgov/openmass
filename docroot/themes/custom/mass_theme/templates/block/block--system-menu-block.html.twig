@@ -37,7 +37,7 @@
 <ul{{ attributes.addClass('ma__footer-links__items') }}{{ attributes.setAttribute('aria-label', configuration.label) }}>
   {# Label. If not displayed, we still provide it for screen readers. #}
   {% if not configuration.label_display %}
-    {% set title_attributes = title_attributes.addClass('visually-hidden') %}
+    {% set title_attributes = title_attributes.addClass('ma__visually-hidden') %}
   {% endif %}
   {{ title_prefix }}
   {{ title_suffix }}

@@ -5,9 +5,11 @@ namespace Drush\Commands;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
 use Drush\Commands\DrushCommands;
 
-class NewRelicCommands extends DrushCommands
+#[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
+final class NewRelicCommands extends DrushCommands
 {
 
   #[CLI\Option(name: 'nrname', description: 'New Relic transaction name.')]

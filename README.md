@@ -12,12 +12,12 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 
 1. Move into the project directory: `cd openmass`
 
-1. Create a `.env` file in the ~/.ddev dir of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
+1. Create a `.env` file in the ~/.ddev dir of the project by copying the example file shipped with the `openmass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
-    $ cp .env.example .env
+    $ cp .ddev/.env.example .ddev/.env
     ```
 
-### Docker (optional)
+### DDEV and Docker
 
 1. [Install DDEV](https://ddev.readthedocs.io/en/stable/). On Windows, use the WSL2 method. Most of us use Colima as the Docker provider.
 1. Inject your ssh keys into the container via `ddev auth ssh`. [Read more about ddev CLI](https://ddev.readthedocs.io/en/stable/users/cli-usage/).
@@ -33,9 +33,9 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
     ```
 
 ###### Notes
-- The site is browseable at https://mass.local
+- The site is browseable at the URL reported by `ddev describe`. Thats usually https://mass.local
 - It takes a a minute for the `dbmass` container start up.
-- [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). create a `.ddev/config.personal.yml` file and add whatever you need.
+- [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). create a `.ddev/config.local.yml` file and add whatever you need.
 - Similarly, rename [.ddev/.env.example](https://github.com/massgov/openmass/blob/develop/.ddev/.env.example) to `.env` in order to use ARM containers suitable for the Apple M1 Macs. This is also how you specify the less sanitized variant of our database.
 - Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
 - Use `ddev service enable backstop` to start the backstop image locally. Same for `selenium-chrome`.

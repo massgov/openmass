@@ -111,7 +111,6 @@ class Helper {
       if (!empty($style_name) && ($style = ImageStyle::load($style_name))) {
         $uri = $image->getFileUri();
         switch ($entity->bundle()) {
-          case 'org_page':
           case 'info_details':
             if ($style_name == 'action_banner_large_focal_point') {
               $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
@@ -125,14 +124,16 @@ class Helper {
             }
             break;
 
+          case 'org_page':
           case 'service_page':
-            if ($style_name == 'hero1600x400_fp') {
+            if ($style_name == '800x400_fp' || $style_name == '480x240_fp') {
               $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
               $style_uri = $style->buildUri($uri);
               $url = $style->buildUrl($uri);
               if (!file_exists($style_uri) || !$stream_wrapper_manager->isValidUri($style_uri)) {
                 // Fallback style if the focal point style is not generated.
-                $url = $image->createFileUrl();
+                $style->createDerivative($uri, $style_uri);
+                $url = $style->buildUrl($uri);
               }
             }
             break;
@@ -1076,7 +1077,7 @@ class Helper {
    *   The array of node cache tags.
    *
    * @see @organisms/contact/contact-us.twig
-   * @see @organisms/by-template/page-header.twig
+   * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
@@ -1120,7 +1121,7 @@ class Helper {
    *   An array of options for header contact.
    *
    * @see @organisms/contact/contact-us.twig
-   * @see @organisms/by-template/page-header.twig
+   * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:

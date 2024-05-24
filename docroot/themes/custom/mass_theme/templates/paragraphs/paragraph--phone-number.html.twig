@@ -39,7 +39,7 @@
  */
 #}
 {% set number = paragraph.field_phone.value %}
-{% set number_formated = '+1' ~ number | replace({'-': "", '+': "", ' ': "", '(': "", ')': ""}) %}
+{% set number_formated = '+1' ~ number|replace({'-': "", '+': "", ' ': "", '(': "", ')': ""}) %}
 {% set details = false %}
 {% if paragraph.field_caption is not empty %}
   {% set details = content.field_caption %}

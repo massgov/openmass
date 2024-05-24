@@ -34,6 +34,21 @@ use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
+ * Implements hook_preprocess_HOOK() for setting classes.
+ */
+function mass_theme_preprocess_filter_caption(&$variables) {
+  if (str_contains($variables['node'], 'embedded_half_width')) {
+    $class_name = 'half-width-parent';
+  }
+  elseif (str_contains($variables['node'], 'embedded_full_width')) {
+    $class_name = 'full-width-parent';
+  }
+  if (isset($class_name)) {
+    $variables['classes'] = isset($variables['classes']) && !empty($variables['classes']) ? $variables['classes'] . ' ' . $class_name : $class_name;
+  }
+}
+
+/**
  * Implements hook_theme_suggestions_alter().
  */
 function mass_theme_theme_suggestions_paragraph_alter(array &$suggestions, array $variables) {
@@ -441,7 +456,8 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
         'groups' => [
           'accordion' => FALSE,
           'isExpanded' => FALSE,
-          'order' => ['phone', 'online', 'more_info'],
+          'address_check' => TRUE,
+          'order' => ['address', 'phone', 'online', 'more_info'],
         ],
       ];
       $sidebar['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
@@ -602,12 +618,8 @@ function mass_theme_preprocess_node_form_page(&$variables) {
         $validate_script_url = parse_url($script_url, PHP_URL_HOST);
         $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
 
-        $query = ['no_style_strict' => 1];
-        if ($node->field_form_embed->type === 'formstack') {
-          $query['jsonp'] = 1;
-        }
         if (str_ends_with($validate_script_url, "formstack.com")) {
-          $variables['form_url'] = Url::fromUri($script_url, ['query' => $query])->toString();
+          $variables['form_url'] = Url::fromUri($script_url);
         }
         if (str_ends_with($validate_noscript_url, "formstack.com")) {
           $variables['form_url_noscript'] = $noscript_url;
@@ -662,19 +674,14 @@ function mass_theme_preprocess_node_org_page(&$variables) {
     // Slugified title.
     $variables['slugified_title'] = _mass_metatag_slugify(trim($page_title));
 
-    $subtype = $node->field_subtype->value;
-    if ($subtype === 'General Organization' ||
-      $subtype === 'Boards' ||
-      $node->field_banner_image->count() === 0) {
-      // Set static pageBanner properties to pass to prepare function.
-      $pageBanner_options = [
-        "layout" => "taper",
-        "icon" => NULL,
-      ];
-
-      // Make pageBanner data object available in twig template.
-      $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
-
+    // Prepare field_service_bg_wide, if it's populated.
+    if (Helper::isFieldPopulated($node, 'field_bg_wide')) {
+      $variables['bannerImage'] = Helper::getFieldImageUrl($node, '800x400_fp', 'field_bg_wide');
+      if ($subtype = $node->field_subtype->value) {
+        if ($subtype == "Elected Official") {
+          $variables['bannerImageMobile'] = Helper::getFieldImageUrl($node, '480x240_fp', 'field_bg_wide');
+        }
+      }
     }
 
     if (!empty($cache_tags)) {
@@ -730,12 +737,7 @@ function mass_theme_preprocess_node_location(&$variables) {
 
     // If recommended quick actions field is populated, add to optional content.
     if (Helper::isFieldPopulated($node, 'field_links')) {
-      $optionalContents[] = [
-        'path' => '@organisms/by-author/key-actions.twig',
-        'data' => [
-          'keyActions' => Molecules::prepareKeyActions($node, 'field_links'),
-        ],
-      ];
+      $variables['keyActions'] = Molecules::prepareKeyActions($node, 'field_links');
     }
 
     // Send optional contents as a pageHeader option.
@@ -1399,20 +1401,6 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Make relationshipIndicatorPrimary data structure available in twig template.
     $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
-    // Set static pageBanner properties to pass to prepare function.
-    $pageBanner_options = [
-      'color' => 'white',
-      'underline' => TRUE,
-    ];
-
-    $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
-    // Make pageBanner data structure available in twig template.
-    $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
-
-    // Make sure images aren't visible in the page banner.
-    unset($variables['pageBanner']['bgWide']);
-    unset($variables['pageBanner']['bgNarrow']);
-
     // Make expandableContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
     foreach ($node->field_topic_content_cards as $index => $section) {
@@ -1511,7 +1499,6 @@ function mass_theme_preprocess_node_info_details(&$variables) {
 
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
-    $variables['sectionCount'] = $node->field_info_details_sections->count();
 
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
@@ -1597,7 +1584,8 @@ function mass_theme_preprocess_node_info_details(&$variables) {
 
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
   // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-  (new CacheableMetadata())->addCacheTags($cache_tags)
+  CacheableMetadata::createFromRenderArray($variables)
+    ->addCacheTags($cache_tags)
     ->applyTo($variables);
 }
 
@@ -2713,9 +2701,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
 
   if (!empty($fields['subheading']) && Helper::isFieldPopulated($node, $fields['subheading'])) {
     $subCategory = [
-      'title' => Helper::fieldFullView($node, $fields['subheading']),
-      'level' => 3,
-      'tag' => 'div',
+      'title' => Helper::fieldFullView($node, $fields['subheading'])
     ];
   }
 
@@ -3238,7 +3224,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
 
   // Prepare field_service_bg_wide, if it's populated.
   if (Helper::isFieldPopulated($node, 'field_service_bg_wide')) {
-    $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, 'hero1600x400_fp', 'field_service_bg_wide');
+    $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, '800x400_fp', 'field_service_bg_wide');
   }
 
   // Prepare the First Time? key actions component, if field is populated.
@@ -3809,6 +3795,32 @@ function mass_theme_preprocess_block(&$variables) {
   // Get base_path into our block.twig templates
   // http://data.agaric.com/how-get-base-path-your-drupal-8-site-twig-template
   $variables['base_path'] = base_path();
+
+  if ($variables['elements']['#id'] == 'mainnavigation_3' || $variables['elements']['#id'] == 'mainnavigation_2') {
+    // Get the node object.
+    $node = \Drupal::routeMatch()->getParameter('node');
+
+    // Check if the current page is a node page.
+    if ($node instanceof NodeInterface) {
+      $cache_tags = [];
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      // Add cache context for the current URL path.
+      $cache_contexts = ['url.path'];
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
+        ->addCacheContexts($cache_contexts)
+        ->applyTo($variables);
+    }
+    else {
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch();
+    }
+  }
+  if ($variables['elements']['#id'] == 'mainnavigation_3') {
+    // Override the ID since this block is used on mobile screens.
+    $variables['headerSearch']['id'] = 'header-search-mobile';
+  }
 }
 
 /**
@@ -3881,6 +3893,7 @@ function mass_theme_preprocess_menu(&$variables) {
           $panels[] = $panel;
 
           $items[] = [
+            'id' => Html::cleanCssIdentifier(mb_strtolower($item['title'])),
             'text' => $item['title'],
             'ariaLabelText' => $aria_label,
             'icon' => $icon,
@@ -3959,6 +3972,16 @@ function mass_theme_add_regions_to_node($allowed_regions, &$variables) {
  */
 function mass_theme_preprocess_node(&$variables) {
   $node = $variables['node'];
+
+  if ($node->bundle() == 'error_page') {
+    $cache_tags = [];
+    $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    CacheableMetadata::createFromRenderArray($variables)
+      ->addCacheTags($cache_tags)
+      ->applyTo($variables);
+  }
 
   // Retrieve view mode.
   $view_mode = $variables['view_mode'];
@@ -4453,6 +4476,13 @@ function mass_theme_preprocess_html(&$variables) {
 
 /**
  * Implements hook_preprocess_page().
+ */
+function mass_theme_preprocess_page__simple(&$variables) {
+  $variables['headerSearch'] = Molecules::prepareHeaderSearch();
+}
+
+/**
+ * Implements hook_preprocess_page().
  *
  * Remove page search if we're using our search band in stacked layout.
  */
@@ -4498,6 +4528,14 @@ function mass_theme_preprocess_page(&$variables) {
       if (array_key_exists($bundle, $map)) {
         $variables['main_class'] = $map[$bundle];
       }
+
+      $cache_tags = [];
+      $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
+        ->applyTo($variables);
 
       // Add class for org-type to main wrapper.
       if ($bundle === 'org_page' && $node->hasField('field_subtype') && !$node->field_subtype->isEmpty()) {
@@ -5054,20 +5092,15 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
       $numOfSections = ++$index;
       $variables['numOfSections'] = $numOfSections;
       $link = Helper::separatedLinks($p, 'field_card_link');
-      $seeAll = [
-        'href' => $link[0]['href'],
-        'text' => 'more',
-      ];
       $sectionLinks[] = [
         'title' => [
-          'href' => $link[0]['href'],
-          'text' => $link[0]['text'],
+          'href' => $link[0]['href'] ?? '',
+          'text' => $p->get('field_card_header')->value,
         ],
         'level' => 3,
         'type' => '',
         'description' => Helper::fieldFullView($p, 'field_content'),
         'links' => '',
-        'seeAll' => $seeAll,
       ];
       $sections = ['sections' => $sectionLinks];
     }
@@ -5102,6 +5135,7 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
     $pressListing_options = [
       'numOfSecondaryItems' => $numItems,
       'displayImages' => Helper::fieldValue($paragraph, 'field_org_show_news_images'),
+      'level' => 3,
     ];
     $secondaryItems = $paragraph->recent_news->range(0, $numItems + 1)->referencedEntities();
     $press_listing = Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags);
@@ -5120,7 +5154,8 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
 
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-      (new CacheableMetadata())->addCacheTags($cache_tags)
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
         ->applyTo($variables);
     }
   }
@@ -5787,7 +5822,8 @@ function mass_theme_preprocess_paragraph__contact_group(&$variables) {
 function mass_theme_preprocess_paragraph__contact_info(&$variables) {
   $paragraph = $variables['paragraph'];
   // Ensure contact changes invalidate this render.
-  (new CacheableMetadata())->addCacheableDependency($paragraph)
+  CacheableMetadata::createFromRenderArray($variables)
+    ->addCacheableDependency($paragraph)
     ->applyTo($variables);
   $field_address = $paragraph->get('field_address');
 
@@ -6011,11 +6047,11 @@ function mass_theme_preprocess_views_view(&$variables) {
 
   // Add a class to the submit button.
   if (isset($variables['exposed']['actions']['submit'])) {
-    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button-submit';
+    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button-submit';
   }
   // Add a class to the reset button.
   if (isset($variables['exposed']['actions']['reset'])) {
-    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--quaternary ma__button-reset';
+    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button--quaternary ma__button-reset';
   }
 
   // Optionally, run node-type-specific preprocess functions, like
@@ -7230,7 +7266,8 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
 
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    (new CacheableMetadata())->addCacheTags($cache_tags)
+    CacheableMetadata::createFromRenderArray($variables)
+      ->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
 }

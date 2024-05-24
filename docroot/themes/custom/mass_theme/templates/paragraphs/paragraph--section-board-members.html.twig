@@ -61,7 +61,6 @@
   } %}
 {% endif %}
 
-
 {% if paragraph.field_heading.value and paragraph.field_description.value %}
   {% embed '@organisms/by-author/teaser-listing.twig' with {
     teaserListing: {
@@ -81,7 +80,7 @@
        {# Board members #}
       {% if content.field_board_members is not empty and teaserListing.expandable %}
         <ul class="ma__teaser-listing__items ma__teaser-listing__2-col-grid">
-          {{ content.field_board_members|merge({'#level': level }) }}
+          {{ content.field_board_members|merge({'#level': level}) }}
         </ul>
       {% endif %}
     {% endblock %}
@@ -90,7 +89,7 @@
 {% else %}
   {% if content.field_board_members is not empty %}
     <ul class="ma__teaser-listing ma__teaser-listing__items ma__teaser-listing__2-col-grid">
-      {{ content.field_board_members|merge({'#level': level }) }}
+      {{ content.field_board_members|merge({'#level': level}) }}
     </ul>
   {% endif %}
 {% endif %}

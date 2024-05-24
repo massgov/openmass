@@ -6,18 +6,21 @@ use AcquiaCloudApi\Connector\Client;
 use AcquiaCloudApi\Connector\Connector;
 use AcquiaCloudApi\Endpoints\Code;
 use AcquiaCloudApi\Endpoints\DatabaseBackups;
+use AcquiaCloudApi\Endpoints\Databases;
 use AcquiaCloudApi\Endpoints\Environments;
 use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAlias;
-use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
+use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
+use Drush\Boot\DrupalBootLevels;
+use Drush\Commands\core\SiteCommands;
+use Drush\Commands\core\SshCommands;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\Log\DrushLoggerManager;
-use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
@@ -25,10 +28,16 @@ use MassGov\Drush\Attributes\OptionsetDeploy;
 use MassGov\Drush\Attributes\ValidateCircleciToken;
 use Symfony\Component\Filesystem\Path;
 
-class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
+#[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
+class DeployCommands extends DrushCommands {
 
-  use SiteAliasManagerAwareTrait;
+  use AutowireTrait;
 
+  public function __construct(
+    protected SiteAliasManagerInterface $siteAliasManager
+  ) {
+    parent::__construct();
+  }
 
   // Set the PHP version to use when deploying to Acquia environments.
   public const PHP_VERSION = '8.2';
@@ -48,25 +57,17 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   ];
 
   const VALIDATE_CIRCLECI_TOKEN = 'validate-circleci-token';
-
   const CI_BACKSTOP_SNAPSHOT = 'ma:ci:backstop-snapshot';
-
   const CI_BACKSTOP_COMPARE = 'ma:ci:backstop-compare';
-
   const MA_BACKUP = 'ma:backup';
-
   const LATEST_BACKUP_URL = 'ma:latest-backup-url';
-
   const MA_RELEASE = 'ma:release';
-
   const MA_DEPLOY = 'ma:deploy';
-
   const TUGBOAT_REBUILD = 'ma:tugboat-rebuild';
-
-  public string $site = 'prod:massgov';
-
   const TUGBOAT_REPO = '612e50fcbaa70da92493eef8';
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
+
+  public string $site = 'prod:massgov';
 
   /**
    * Run Backstop Snapshot at CircleCI; save result for ma:backstop-reference.
@@ -168,7 +169,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   #[CLI\Argument(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
   #[CLI\Usage(name: 'drush ma:backup prod', description: 'Initiate a database backup in production.')]
   public function createBackup($target) {
-    $env = $this->siteAliasManager()->getAlias($target);
+    $env = $this->siteAliasManager->getAlias($target);
     $cloudapi = $this->getClient();
     $backup = new DatabaseBackups($cloudapi);
     $response = $backup->create($env->get('uuid'), 'massgov');
@@ -186,7 +187,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   #[CLI\Argument(name: 'type', description: 'Backup type. Recognized values: ondemand, daily.')]
   #[CLI\Usage(name: 'drush ma:latest-backup-url prod', description: 'Fetch a link to the latest database backup from production.')]
   public function latestBackupUrl($target, $type = null) {
-    $env = $this->siteAliasManager()->getAlias($target);
+    $env = $this->siteAliasManager->getAlias($target);
     $cloudapi = $this->getClient();
     $backup = new DatabaseBackups($cloudapi);
     $backups = $backup->getAll($env->get('uuid'), 'massgov');
@@ -265,10 +266,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
   #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[OptionsetDeploy]
-  public function deploy(string $target, string $git_ref, array $options) {
-    $self = $this->siteAliasManager()->getSelf();
+  public function deploy(string $target, string $git_ref, array $options = []) {
 
-    // For production deployments, prompt the user if they are sure. If they say no, exit.
+    // For production deployments, prompt user. If they say no, exit.
     $is_prod = ($target === 'prod');
     if ($is_prod) {
       $this->confirmProd();
@@ -277,58 +277,33 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success('Starting deployment of {revision} to {target} at {time}', [
       'target' => $target,
       'revision' => $git_ref,
-      'time' => $this->getTimestamp()
+      'time' => $this->getTimestamp(),
     ]);
 
-    $targetRecord = $this->siteAliasManager()->get('@' . $target);
+    $targetRecord = $this->siteAliasManager->get('@' . $target);
 
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
-      // This section resembles ma-refresh-local --db-prep-only. We don't call that
-      // since we can't easily make Cloud API calls from Acquia servers, and we
-      // don't need to sanitize here.
-      $process = Drush::drush($self, self::LATEST_BACKUP_URL, ['prod']);
-      $process->mustRun();
-      $url = $process->getOutput();
-      $this->logger()->success('Backup URL retrieved.');
-
-      // Download the latest backup.
-      // Directory set by https://jira.mass.gov/browse/DP-12823.
-      $tmp =  Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
-      $bash = ['wget', '-q', '--continue', trim($url), "--output-document=$tmp"];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->mustRun($process->showRealtime());
-      $this->logger()->success('Database downloaded from backup.');
-
-      // Drop all tables.
-      $process = Drush::drush($targetRecord, 'sql:drop');
-      $process->mustRun();
-      $this->logger()->success('Dropped all tables.');
-
-      // Import the latest backup.
-      // $bash = ['zgrep', '--line-buffered', '-v', '-e', '^INSERT INTO \`cache_', '-e', '^INSERT INTO \`migrate_map_', '-e', "^INSERT INTO \`config_log", '-e', "^INSERT INTO \`key_value_expire", '-e', "^INSERT INTO \`sessions", $tmp, Shell::op('|'), Path::join($targetRecord->root(), '../vendor/bin/drush'), '-r', $targetRecord->root(), '-v', 'sql:cli'];
-      // $bash = '-e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" ' . $tmp . ' | drush -vvv sql:cli';
-      $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $tmp];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->disableOutput();
-      $process->mustRun();
-      $this->logger()->success('Database imported from backup.');
-
-      // Delete tmp file.
-      $bash = ['test', '-f', $tmp, Shell::op('&&'), 'rm', $tmp];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->mustRun();
-      $this->logger()->success('Temporary file deleted. ' . $tmp);
+      $env_from = $this->siteAliasManager->getAlias('prod');
+      $env_target = $this->siteAliasManager->getAlias($target);
+      $cloudapi = $this->getClient();
+      $databases = new Databases($cloudapi);
+      $operationResponse = $databases->copy($env_from->get('uuid'), 'massgov', $env_target->get('uuid'));
+      $href = $operationResponse->links->notification->href;
+      /** @noinspection PhpParamsInspection */
+      $this->waitForTaskToComplete(basename($href), 30);
     }
 
     if ($options['skip-maint'] == FALSE) {
-      // Turn on Maint mode.
-      // @todo change to `drush maint:set` after Drush 11.5 is deployed to Prod.
-      $args = array('system.maintenance_mode', 1);
-      $state_options = array('input-format' => 'integer');
-      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
-      $process->mustRun();
-      $this->logger()->success("Maintenance mode enabled in $target.");
+      try {
+        // Turn on Maint mode.
+        $process = Drush::drush($targetRecord, 'maint:set', [1]);
+        $process->mustRun();
+        $this->logger()->success("Maintenance mode enabled in $target.");
+      }
+      catch (\Exception $e) {
+        $this->logger()->info('Unable to set maintenance mode. Proceeding - ' . $e->getMessage());
+      }
     }
 
     // We need to set the PHP version before we deploy the code, as the new
@@ -339,7 +314,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $operationResponse = (new Code($this->getClient()))->switch($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
     /** @noinspection PhpParamsInspection */
-    $this->waitForTaskToComplete(basename($href));
+    $this->waitForTaskToComplete(basename($href), 15);
 
     // Run deploy steps.
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
@@ -356,19 +331,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Extra cache rebuild completed at $target.");
     }
 
-    if ($options['skip-maint'] == FALSE) {
+    if (!$options['skip-maint']) {
       // Disable Maintenance mode.
-      $args = array('system.maintenance_mode', '0');
-      $state_options = ['input-format' => 'integer'];
-      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
+      $process = Drush::drush($targetRecord, 'maint:set', [0]);
       $process->mustRun();
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
 
-    if ($is_prod) {
-      // Log a new deployment at New Relic.
-      $this->newRelic($git_ref, getenv('AC_API_USER'), getenv('MASS_NEWRELIC_APPLICATION'), getenv('MASS_NEWRELIC_KEY'));
-    }
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
 
@@ -383,7 +352,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   #[CLI\Command(name: self::TUGBOAT_REBUILD, aliases: ['ma:tbrb'])]
   #[CLI\Argument(name: 'branch', description: 'A branch name')]
-  public function tugboatRebuild(string $branch) {
+  public function tugboatRebuild(string $branch): void {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -425,7 +394,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * Validate the target name.
    */
   #[CLI\Hook(type: HookManager::ARGUMENT_VALIDATOR)]
-  public function validate(CommandData $commandData) {
+  public function validate(CommandData $commandData): void {
     if (!$commandData->input()->hasArgument('target')) {
       return;
     }
@@ -437,11 +406,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   /**
    * Lookup the Preview corresponding to the specified branch.
-   *
-   * @param $branch
-   * @param $property
-   *
-   * @return ?string
    */
   public function getTugboatPreviewForBranch(string $branch, string $property = 'id'): ?string {
     // Get all previews.
@@ -457,7 +421,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
     }
 
-    $previews = json_decode((string)$response->getBody(), TRUE);
+    $previews = json_decode((string) $response->getBody(), TRUE);
     foreach ($previews as $preview) {
       if ($preview['provider_ref']['head']['ref'] == $branch || $preview->provider_id == "refs/heads/$branch") {
         $this->logger()->info("Fetched preview for branch $branch.");
@@ -504,12 +468,12 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   /**
    * Loop and re-check until a given task is complete.
    *
-   * @param str $uuid
+   * @param $uuid
    *   The Notification UUID.
    *
    * @throws \Exception
    */
-  public function waitForTaskToComplete($uuid) {
+  public function waitForTaskToComplete(string $uuid, int $interval = 5) {
     $client = $this->getClient();
 
     while (TRUE) {
@@ -522,50 +486,20 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
         throw new \Exception(dt("!desc - Notification !uuid failed.", ['!desc' => $notification->description, '!uuid' => $uuid]));
       }
       else {
-        $this->logger()->notice(dt('!desc: Will re-check Notification !uuid for completion in 5 seconds.', ['!desc' => $notification->description, '!uuid' => $uuid]));
-        sleep(5);
+        $this->logger()->notice(dt('!desc: Will re-check Notification !uuid for completion in !interval seconds.', ['!desc' => $notification->description, '!uuid' => $uuid, '!interval' => $interval]));
+        sleep($interval);
       }
     }
   }
 
   /**
-   * Post new deployment to New Relic.
-   */
-  public function newRelic($git_ref, $email, $application, $api_key) {
-    $cmd = <<<EOT
-curl -X POST 'https://api.newrelic.com/v2/applications/$application/deployments.json' \
-     -H 'Api-Key:$api_key' -i \
-     -H 'Content-Type: application/json' \
-     -d \
-'{
-  "deployment": {
-    "revision": "$git_ref",
-    "changelog": "",
-    "description": "",
-    "user": "$email"
-  }
-}'
-EOT;
-    if (!Drush::shell($cmd)) {
-      $this->logger()->warning('Failed to create a Deployment at New Relic');
-    }
-  }
-
-  /**
    * Get a string representing the current time in EST.
-   *
-   * @return string
    */
-  private function getTimestamp() {
+  private function getTimestamp(): string {
     return (new \DateTime('now', new \DateTimeZone('America/New_York')))->format('Y-m-d g:i:s A');
   }
 
-  /**
-   * @return string|void
-   * @throws \Drush\Exceptions\UserAbortException
-   */
-  protected function confirmProd(): void
-  {
+  protected function confirmProd(): void {
     if (!$this->io()
       ->confirm('This is a Production deployment. Are you damn sure?')) {
       throw new UserAbortException();
@@ -574,8 +508,6 @@ EOT;
 
   /**
    * Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
-   *
-   * @return \GuzzleHttp\HandlerStack
    */
   protected function getStack(): \GuzzleHttp\HandlerStack {
     $stack = HandlerStack::create();
@@ -583,21 +515,14 @@ EOT;
     return $stack;
   }
 
-  /**
-   * @return array|false|string
-   */
-  protected function getTokenCircle() {
+  protected function getTokenCircle(): false|string {
     return getenv('CIRCLECI_PERSONAL_API_TOKEN');
   }
 
   /**
    * Return success message about how to view a Pipeline at CircleCI.
-   *
-   * @param array $body
-   *
-   * @return string
    */
-  private function getSuccessMessage($body): string {
+  private function getSuccessMessage(array $body): string {
     return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
   }
 
@@ -606,12 +531,6 @@ EOT;
    *
    * Acquia treats the PHP version as a setting in the environment, and not
    * configuration as a part of a build.
-   *
-   * @param \Consolidation\SiteAlias\SiteAlias $targetRecord
-   * @param string $version
-   *
-   * @return void
-   * @throws \Exception
    */
   private function setPhpVersion(SiteAlias $targetRecord, string $version): void {
     $environmentUuid = $targetRecord->get('uuid');
@@ -624,13 +543,13 @@ EOT;
 
     $this->logger()->info("{name} is currently set to PHP {version}", [
       'name' => $targetRecord->name(),
-      'version'=> $currentVersion,
+      'version' => $currentVersion,
     ]);
 
     if ($version !== $currentVersion) {
       $this->logger()->info("Switching {name} to PHP {version}", [
         'name' => $targetRecord->name(),
-        'version'=> $version,
+        'version' => $version,
       ]);
       $modifyResponse = (new Environments($this->getClient()))->update($environmentUuid, ['version' => $version]);
       /** @noinspection PhpParamsInspection */
@@ -650,8 +569,6 @@ EOT;
    *
    * @throws \RuntimeException
    *   Thrown when a Drush logger is not set.
-   *
-   * @return \Drush\Log\DrushLoggerManager
    */
   protected function logger(): DrushLoggerManager {
     $logger = parent::logger();
@@ -671,10 +588,10 @@ EOT;
    * @param string $ci_branch
    *   The branch being built.
    *
-   * @return string
+   * @return
    *   The Tugboat URL to test against.
    */
-  private function getTugboatUrl($tugboat_url_option, string $ci_branch): string {
+  private function getTugboatUrl(mixed $tugboat_url_option, string $ci_branch): string {
     if ($tugboat_url_option === TRUE || empty($tugboat_url_option)) {
       $branch = $ci_branch;
       if ($branch === 'develop') {

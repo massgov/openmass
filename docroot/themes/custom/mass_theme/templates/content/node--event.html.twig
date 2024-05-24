@@ -42,8 +42,8 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
-  {% include "@organisms/by-template/page-header.twig" %}
-  {% include "@organisms/by-template/page-header-addons.twig" %}
+  {% include "@organisms/page-header/page-header.twig" %}
+  {% include "@organisms/page-header/page-header-addons.twig" %}
 {% endblock %}
 
 {% block main %}
@@ -93,8 +93,8 @@
         {# Only display event_meeting_minutes if there are populated sections. #}
         {% if content.field_event_meeting_minutes[0] %}
           {% set minutes_section = {
-          'minutes_items_count' : (minutes_display_items_count),
-          'items' : content.field_event_meeting_minutes|field_value
+          'minutes_items_count': (minutes_display_items_count),
+          'items': content.field_event_meeting_minutes|field_value
           } %}
           {% include "@custom_fields/field--node--field-event-meeting-minutes.html.twig" with minutes_section %}
         {% elseif content.field_event_minutes_download %}
@@ -104,8 +104,8 @@
         {# Only display meeting_agenda_sect if there are populated sections. #}
         {% if content.field_event_meeting_agenda_sect[0] %}
           {% set agenda_section = {
-          'agenda_items_count' : (agenda_display_items_count),
-          'items' : content.field_event_meeting_agenda_sect|field_value
+          'agenda_items_count': (agenda_display_items_count),
+          'items': content.field_event_meeting_agenda_sect|field_value
           } %}
           {% include "@custom_fields/field--node--field-event-meeting-agenda-sect.html.twig" with agenda_section %}
         {% elseif content.field_event_agenda_download %}
@@ -174,8 +174,8 @@
         {% endif %}
         {% if sideContent.mediaContact %}
           {% set contactList = sideContent.mediaContact %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
+        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
         {% endif %}
       {% endblock %}
     </aside>
@@ -197,4 +197,3 @@
   {% endif %}
   {{ content.extra_org_feedback_form }}
 {% endblock %}
-

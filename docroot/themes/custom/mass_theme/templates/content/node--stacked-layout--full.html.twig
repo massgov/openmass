@@ -10,7 +10,7 @@
 set pageBanner = {
   'bgWide': file_url(node.field_photo.entity.fileuri ?? ''),
   'bgNarrow': file_url(node.field_photo.entity.fileuri ?? ''),
-  'size':'large',
+  'size': 'large',
   'icon': '',
   'title': label|field_value,
   'titleSubText': node.field_label.value ? "(" ~ node.field_label.value ~ ")" : ''
@@ -27,7 +27,7 @@ set illustratedHeader = {
     'rteElements': [{
       'path': '@atoms/11-text/raw-html.twig',
       'data': {
-        'rawHtml' : {
+        'rawHtml': {
           'content': content.field_lede|field_value
         }
       }
@@ -56,12 +56,12 @@ set suggestedPages = {
   {% if search_band == false %}
     {# Use ORG header if checked. #}
     {% if node.field_use_alt_header.value %}
-      {% include '@organisms/page-banner/page-banner.twig' %}
+      {% include '@organisms/legacy-page-banner/page-banner-legacy.twig' %}
       {# If extened header items are used, use action header. #}
       {% if content.field_lede|field_value is not empty or
             content.field_action_header|field_value is not empty or
             content.field_header_cta|field_value is not empty %}
-        {% set actionHeader = { 'divider': true } %}
+        {% set actionHeader = {'divider': true} %}
         {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
       {% endif %}
     {% else %}
@@ -71,7 +71,7 @@ set suggestedPages = {
         {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
       {% else %}
         {# Use illustrated header as default. #}
-        {% include '@organisms/by-template/illustrated-header.twig' %}
+        {% include '@organisms/illustrated-header/illustrated-header.twig' %}
       {% endif %}
     {% endif %}
     {% if content.field_action_banner|render|trim is not empty %}

@@ -23,6 +23,7 @@ dependencies:
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_organization_sections
+    - field.field.node.org_page.field_organization_type
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
@@ -77,7 +78,6 @@ third_party_settings:
         - group_organization_name
         - field_ref_contact_info_1
         - field_bg_wide
-        - field_banner_image
         - field_image_credit
         - field_primary_parent
         - field_organizations
@@ -121,11 +121,12 @@ third_party_settings:
         - field_org_page_thumbnail
         - field_application_login_links
         - field_social_links
-        - field_intended_audience
+        - group_organization_parent_mass_g
+        - field_organization_type
         - field_parent
-        - field_org_no_search_filter
-        - field_field_org_no_search_filter
+        - group_test_fieldset_group
         - field_billing_organization
+        - field_intended_audience
       label: Overview
       region: content
       parent_name: group_node_edit_form
@@ -206,6 +207,34 @@ third_party_settings:
         open: true
         description: 'This is an automatic section that appears only when there are links in the Navigation Menu tab. Any links there should be moved elsewhere on the page and then the automatic section will no longer appear.'
         required_fields: true
+    group_test_fieldset_group:
+      children:
+        - field_org_no_search_filter
+      label: 'Mass.gov Organization search filter'
+      region: content
+      parent_name: group_overview
+      weight: 135
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        description: ''
+        required_fields: true
+    group_organization_parent_mass_g:
+      children:
+        - field_include_parent_org_search
+      label: 'Organization parent Mass.gov search filter'
+      region: content
+      parent_name: group_overview
+      weight: 132
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        description: ''
+        required_fields: true
 id: node.org_page.default
 targetEntityType: node
 bundle: org_page
@@ -219,32 +248,6 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-  field_banner_image:
-    type: image_image
-    weight: 10
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        69ea8f14-56d8-4b66-986e-1dc6102de0d9:
-          entity_type: node
-          bundle: org_page
-          dependee: field_subtype
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'Elected Official'
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_bg_wide:
     type: image_focal_point
     weight: 9
@@ -255,24 +258,7 @@ content:
       preview_link: true
       offsets: '75,50'
     third_party_settings:
-      conditional_fields:
-        14d3d7ee-bc6e-491e-9134-bc1bcb861bb9:
-          entity_type: node
-          bundle: org_page
-          dependee: field_subtype
-          settings:
-            state: '!visible'
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'Elected Official'
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_billing_organization:
     type: dynamic_entity_reference_options_select
     weight: 136
@@ -293,7 +279,7 @@ content:
     third_party_settings: {  }
   field_career_opportunities:
     type: link_default
-    weight: 12
+    weight: 11
     region: content
     settings:
       placeholder_url: ''
@@ -301,7 +287,7 @@ content:
     third_party_settings: {  }
   field_feedback_com_link:
     type: link_default
-    weight: 107
+    weight: 134
     region: content
     settings:
       placeholder_url: ''
@@ -359,13 +345,13 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 132
+    weight: 137
     region: content
     settings: {  }
     third_party_settings: {  }
   field_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 2
     region: content
     settings:
       sidebar: true
@@ -381,7 +367,7 @@ content:
     third_party_settings: {  }
   field_more_about_leadership:
     type: entity_reference_autocomplete
-    weight: 10
+    weight: 9
     region: content
     settings:
       match_operator: CONTAINS
@@ -391,14 +377,14 @@ content:
     third_party_settings: {  }
   field_org_always_show_help_page:
     type: boolean_checkbox
-    weight: 108
+    weight: 136
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_org_directory_page:
     type: link_default
-    weight: 11
+    weight: 10
     region: content
     settings:
       placeholder_url: ''
@@ -431,6 +417,12 @@ content:
       form_display_mode: default
       default_paragraph_type: section_long_form
     third_party_settings: {  }
+  field_organization_type:
+    type: options_buttons
+    weight: 133
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
     weight: 13
@@ -443,14 +435,51 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 133
+    weight: 134
     region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        7a83e992-6c09-439a-a6f2-524fc24dbdfb:
+          entity_type: node
+          bundle: org_page
+          dependee: field_organization_type
+          settings:
+            state: required
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 3
+            value: ''
+            values: "95271\r\n95276"
+            value_form:
+              -
+                target_id: '95271'
+            effect: show
+            effect_options: {  }
+            selector: ''
+        dec3d8e3-d78e-4710-9605-f7245fa9f542:
+          entity_type: node
+          bundle: org_page
+          dependee: field_organization_type
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 3
+            value: ''
+            values: "95261\r\n95276\r\n95281\r\n95271\r\n95256"
+            value_form:
+              -
+                target_id: null
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_person_bio:
     type: entity_reference_autocomplete
     weight: 145
@@ -492,7 +521,7 @@ content:
     third_party_settings: {  }
   field_public_records_link:
     type: link_default
-    weight: 13
+    weight: 12
     region: content
     settings:
       placeholder_url: ''
@@ -595,14 +624,14 @@ content:
     third_party_settings: {  }
   field_urgent_warning:
     type: boolean_checkbox
-    weight: 110
+    weight: 137
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -625,20 +654,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 7
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 8
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -677,12 +706,13 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_banner_image: true
   field_constituent_communication: true
   field_org_sentence_phrasing: true
   langcode: true

@@ -20,9 +20,67 @@ figure figcaption {
   margin: 0;
 }
 
+figure.full-width-parent {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+figure.half-width-parent {
+  margin-left: 0;
+  margin-right: 0;
+  max-width: 50%;
+}
+
+figure.half-width-parent.align-left {
+  margin-right: 1em;
+}
+
+figure.half-width-parent.align-right {
+  margin-left: 1em;
+}
+
+figure.align-right > article.half-width {
+  max-width: 100%;
+}
+
+figure.align-left > article.half-width {
+  max-width: 100%;
+}
+
+article.full-width {
+  max-width: 100%;
+}
+
+.align-right.half-width,
+.align-left.half-width {
+  max-width: 50%;
+}
+
+.align-right.full-width,
+.align-left.full-width {
+  width: 100%;
+}
+
 .align-right img,
 .align-left img {
-  width: 100%;
+  max-width: 100%;
+}
+
+@media (max-width: 620px) {
+  figure.half-width-parent.align-left {
+    margin-right: 0;
+  }
+
+  figure.half-width-parent.align-right {
+    margin-left: 0;
+  }
+
+  figure.half-width-parent,
+  .align-right.half-width,
+  .align-left.half-width {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 /*make google-map-field same height as parent*/
@@ -52,4 +110,8 @@ figure figcaption {
 /* Set FormStack form direction if it has rtl class */
 form.fsForm.rtl {
   direction: rtl;
+}
+
+.page-content--intro .ma__video__skip-link {
+  background-color: #fff;
 }

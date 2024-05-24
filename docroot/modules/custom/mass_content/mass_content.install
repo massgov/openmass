@@ -1,0 +1,93 @@
+<?php
+
+use Drupal\Core\Config\FileStorage;
+
+/**
+ * Change field_section_long_form_heading char count to 255.
+ */
+function mass_content_update_9002() {
+  $entity_type_id = 'paragraph';
+  $field_name = 'field_section_long_form_heading';
+  $new_length = 255;
+  $name = 'field.storage.' . $entity_type_id . "." . $field_name;
+
+  // Get the current settings
+  $result = \Drupal::database()->query(
+    'SELECT data FROM {config} WHERE name = :name',
+    [':name' => $name]
+  )->fetchField();
+  $data = unserialize($result);
+  $data['settings']['max_length'] = $new_length;
+
+  // Write settings back to the database.
+  \Drupal::database()->update('config')
+    ->fields(['data' => serialize($data)])
+    ->condition('name', $name)
+    ->execute();
+
+  // Update the value column in both
+  // the _data and _revision tables for the field
+  $table = $entity_type_id . "__" . $field_name;
+  // This is the revision table for the field in paragraph
+  $table_revision = 'paragraph_r__8e196b0e1c';
+  $new_field = ['type' => 'varchar', 'length' => $new_length];
+  $col_name = $field_name . '_value';
+  \Drupal::database()->schema()->changeField($table, $col_name, $col_name, $new_field);
+  \Drupal::database()->schema()->changeField($table_revision, $col_name, $col_name, $new_field);
+}
+
+/**
+ * Creates 'Public Wifi' term in 'location_icon' vocabulary.
+ */
+function mass_content_update_9003() {
+  $vocabulary = 'location_icon';
+  $term_name = 'Public WiFi';
+  $field_sprite_name_value = 'wifi';
+
+  // Load the vocabulary to ensure it exists.
+  $vocabulary_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_vocabulary');
+  if (!$vocabulary_storage->load($vocabulary)) {
+    return t('Vocabulary @vocabulary does not exist.', ['@vocabulary' => $vocabulary]);
+  }
+
+  // Check if the term already exists to avoid duplicates.
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $terms = $term_storage->loadByProperties([
+    'name' => $term_name,
+    'vid' => $vocabulary,
+  ]);
+
+  if (empty($terms)) {
+    // Create the term since it does not exist.
+    $term = $term_storage->create([
+      'vid' => $vocabulary,
+      'name' => $term_name,
+      'field_sprite_name' => $field_sprite_name_value,
+    ]);
+    $term->save();
+
+    return t('Created "@name" term in "@vocabulary" vocabulary.', ['@name' => $term_name, '@vocabulary' => $vocabulary]);
+  }
+  else {
+    // Term already exists, so we do not need to create it.
+    return t('The term "@name" already exists in "@vocabulary" vocabulary.', ['@name' => $term_name, '@vocabulary' => $vocabulary]);
+  }
+}
+
+/**
+ * Imports "views.view.content_user_org" configuration from a custom directory.
+ */
+function mass_content_update_10001() {
+  // Define the custom directory path relative to the Drupal root.
+  $custom_directory = DRUPAL_ROOT . '/../conf/drupal/config';
+
+  // Create a new FileStorage object for the custom directory.
+  $storage = new FileStorage($custom_directory);
+
+  // Check if our configuration exists in the specified directory.
+  if ($storage->exists('views.view.content_user_org')) {
+    $config_data = $storage->read('views.view.content_user_org');
+    // Import the configuration.
+    \Drupal::configFactory()->getEditable('views.view.content_user_org')->setData($config_data)->save(TRUE);
+  }
+}

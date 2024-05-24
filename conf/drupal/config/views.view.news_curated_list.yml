@@ -192,7 +192,7 @@ display:
       cache:
         type: custom_tag
         options:
-          custom_tag: 'node:{{ raw_arguments.nid }}'
+          custom_tag: "node:{{ raw_arguments.nid }}\r\nnode_list:news"
       empty: {  }
       sorts:
         field_date_published_value:
@@ -230,7 +230,6 @@ display:
           default_argument_type: fixed
           default_argument_options:
             argument: ''
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -362,7 +361,10 @@ display:
         relationships: true
         fields: true
       display_description: ''
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: node/%/news
     cache_metadata:
       max-age: -1

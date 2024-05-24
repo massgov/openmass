@@ -7,14 +7,14 @@ namespace Drupal\Tests\mass_media\ExistingSite;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\user\Entity\User;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.
  */
-class MediaBulkActionTest extends ExistingSiteBase {
+class MediaBulkActionTest extends MassExistingSiteBase {
   const PUBLISH_ACTION = '3';
   const RESTRICT_ACTION = '4';
   const TRASH_ACTION = '5';
@@ -101,14 +101,14 @@ class MediaBulkActionTest extends ExistingSiteBase {
     $this->drupalGet('admin/ma-dash/documents');
 
     // Trigger search to get some results.
-    $this->submitForm([], $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
+    $this->submitForm([], (string) $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
 
     $edit = [
       'action' => $action,
       'views_bulk_operations_bulk_form[0]' => TRUE,
     ];
-    $this->submitForm($edit, $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
-    $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
+    $this->submitForm($edit, (string) $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
+    $this->submitForm([], (string) $this->t('Execute action'), 'views-bulk-operations-confirm-action');
     $page = $this->getSession()->getPage();
     $page->waitFor(3, function () use ($page) {
       return $page->hasContent('Your changes have been successfully made.');

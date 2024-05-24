@@ -19,6 +19,7 @@ services:
   mass_serializer.cache_endpoint:
     class: Drupal\mass_serializer\CacheEndpoint
     arguments: ['@mass_serializer.render_endpoint', '@path_alias.manager', '@logger.channel.default']
+  Drupal\mass_serializer\CacheEndpoint: '@mass_serializer.cache_endpoint'
 
   mass_serializer.render_endpoint:
     class: Drupal\mass_serializer\RenderEndpoint

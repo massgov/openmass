@@ -1,5 +1,5 @@
 name: mass
-type: drupal9
+type: drupal10
 docroot: docroot
 php_version: "8.2"
 webserver_type: apache-fpm
@@ -19,7 +19,7 @@ web_environment:
   - MYSQL_HOST=dbmass
   - MEMCACHED_HOST=memcached
   - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
-  - DTT_BASE_URL=http://mass-web
+  - DTT_BASE_URL=https://web
   - MASS_PURGERS
   - MASS_MAILCHIMP
 #  - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
@@ -35,4 +35,4 @@ web_environment:
   - LOWER_ENVIR_AUTH_PASS
 hooks:
   pre-start:
-    - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, CircleCI, and GitHub CLI tools."
+    - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, CircleCI, GitHub, and New Relic  CLI tools."
