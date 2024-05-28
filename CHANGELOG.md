@@ -1,5 +1,18 @@
 
 
+## [0.399.0] - May 28, 2024
+
+### Fixed
+  - DP-32118: Verify and fix conditional fields.
+  - DP-33120: Document title in breadcrumb when editing doesn't update when title changes.
+  - DP-33162: Error when creating flexible links on Org page.
+  - DP-33216: Updated google_tag module config to add setting for new consent mode.
+  
+### Changed
+  - DP-33143: Refactoring breadcrumb rendering functionality.
+  
+
+
 ## [0.398.0] - May 21, 2024
 
 ### Changed
