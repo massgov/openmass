@@ -119,7 +119,7 @@ class MassUrlReplacementService {
         $filePath = urldecode('public://' . $matches[1]);
         $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
         $file = reset($files);
-        
+
         if ($file) {
           // Check if there's a media entity referencing this file
           $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
