@@ -46,7 +46,6 @@ third_party_settings:
     group_bio_page:
       children:
         - field_person_headshot
-        - field_state_organization_tax
         - body
         - field_social_links
       label: 'Bio Page'
@@ -79,8 +78,8 @@ third_party_settings:
         - title
         - field_person_type
         - field_person_profile_image
-        - field_plain_description
         - field_medium_image
+        - field_plain_description
         - field_person_first_name
         - field_person_last_name
         - field_person_role_title
@@ -171,7 +170,7 @@ content:
     third_party_settings: {  }
   field_medium_image:
     type: image_image
-    weight: 11
+    weight: 10
     region: content
     settings:
       progress_indicator: throbber
@@ -201,6 +200,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
@@ -288,7 +288,7 @@ content:
     third_party_settings: {  }
   field_plain_description:
     type: string_textfield
-    weight: 10
+    weight: 11
     region: content
     settings:
       size: 60
