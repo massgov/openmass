@@ -1,4 +1,8 @@
+## [0.398.1] - May 28, 2024
+- Change tabs and status messages implementation from custom to the core variant.
 
+### Changed
+- DP-28830: D10 upgrade packages - CKEditor5.
 
 ## [0.398.0] - May 21, 2024
 
@@ -8,11 +12,11 @@
   - DP-32001: Enlarge the close button for the map marker popup to meet WCAG2.2. Darken the button color to meet the minimum required color contrast.
   - DP-32013: Add an underline to links (not decorative links) in the contact component matching the RT link style.
   - DP-32286: Always show the future events page for orgs.
-  
+
 ### Fixed
   - DP-32285: Bug - overview appears below TOC when only one section with rich text including H2s.
   - DP-32426: Fix A11y heading issue on news page.
-  
+
 ## [0.397.5] - May 17, 2024
 
 ### Changed
