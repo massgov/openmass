@@ -50,6 +50,7 @@
 {% set onlineContactGroup = false %}
 {% set faxContactGroup = false %}
 {% set moreLink = false %}
+{% set image = false %}
 
 {% if contactNode.field_ref_address is not empty %}
   {% set addressContactGroup = true %}
@@ -66,6 +67,9 @@
 {% if contactNode.field_contact_more_info_link is not empty %}
   {% set moreLink = true %}
 {% endif %}
+{% if org_logo is not empty %}
+  {% set image = true %}
+{% endif %}
 
 {% embed "@organisms/contact/contact-row.twig" with {
   "contactRow": {
@@ -73,7 +77,8 @@
     "phoneContactGroup": phoneContactGroup,
     "onlineContactGroup": onlineContactGroup,
     "faxContactGroup": faxContactGroup,
-    "moreLink": moreLink
+    "moreLink": moreLink,
+    "image": image
   }
 } %}
   {% block addressContactGroup %}
@@ -96,5 +101,8 @@
         "info": ""
       }
     } %}
+  {% endblock %}
+  {% block contactImage %}
+    {{ org_logo }}
   {% endblock %}
 {% endembed %}
