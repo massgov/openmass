@@ -102,17 +102,16 @@
   } %}
   {% endif %}
 
-  {% if content.field_info_detail_overview|render|trim is not empty %}
-    {% embed "@organisms/by-author/rich-text.twig" with {
-      "richText": {}
-    } %}
-      {% block rteElements %}
-        {{ content.field_info_detail_overview }}
-      {% endblock %}
-    {% endembed %}
-  {% endif %}
-
   {% if showToc %}
+    {% if content.field_info_detail_overview|render|trim is not empty %}
+      {% embed "@organisms/by-author/rich-text.twig" with {
+        "richText": {}
+      } %}
+        {% block rteElements %}
+          {{ content.field_info_detail_overview }}
+        {% endblock %}
+      {% endembed %}
+    {% endif %}
     {% include "@organisms/by-template/sticky-toc.twig" with {
       "stickyTOC": {
         "title": "Table of Contents"|t,
@@ -133,9 +132,18 @@
    {{ content.field_info_details_header_media }}
   {% endif %}
 {% endblock %}
-
 {% block pageContent %}
-
+  {% if showToc == false %}
+    {% if content.field_info_detail_overview|render|trim is not empty %}
+      {% embed "@organisms/by-author/rich-text.twig" with {
+        "richText": {}
+      } %}
+        {% block rteElements %}
+          {{ content.field_info_detail_overview }}
+        {% endblock %}
+      {% endembed %}
+    {% endif %}
+  {% endif %}
   {{ content.field_info_details_sections }}
 
   {% if mainContent.contactList %}
