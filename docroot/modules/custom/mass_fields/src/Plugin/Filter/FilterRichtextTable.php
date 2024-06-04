@@ -24,7 +24,8 @@ class FilterRichtextTable extends FilterBase {
     // Exclude nested tables.
     $tableId = uniqid();
 
-    $tableWrapperTop = '<div class="ma__table--responsive js-ma-responsive-table"><div class="ma__table--responsive__wrapper" id="' . $tableId . '" role="group" tabindex="-1"><table class="ma__table"> <div class="ma__table__caption__scroll-info" aria-hidden="true"><div class="ma__table__caption__scroll-info-text">{{icon('scroll')}} Scroll to see more {{icon('scroll')}}</div></div>';
+    $scrollIcon = '<svg aria-hidden="true" focusable="false"><symbol xmlns="http://www.w3.org/2000/svg" width="18" height="15" viewBox="0 0 18 15" aria-hidden="true" version="1.1" id="70cfa838b00a7c795375278daf204043.2"><path d="m17.917 7.522-7.884 7.39-2.3-2.156 5.581-5.234-5.582-5.234 2.3-2.157 7.885 7.39Z"></path><path d="m10.06 7.522-7.884 7.39-2.3-2.156 5.581-5.234-5.582-5.234 2.3-2.157 7.885 7.39Z"></path></symbol></svg>';
+    $tableWrapperTop = '<div class="ma__table--responsive js-ma-responsive-table"><div class="ma__table--responsive__wrapper" id="' . $tableId . '" role="group" tabindex="-1"><table class="ma__table"> <div class="ma__table__caption__scroll-info" aria-hidden="true"><div class="ma__table__caption__scroll-info-text">' . $scrollIcon . 'Scroll to see more' . $scrollIcon . '</div></div>';
     $tableWrapperBottom = '</table></div></div>';
     $tableHeadingScope = '<th scope="col">';
 
