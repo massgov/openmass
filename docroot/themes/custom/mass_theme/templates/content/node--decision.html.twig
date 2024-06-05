@@ -108,7 +108,7 @@
           'title': contactList.compHeading.title,
           'titleContext': contactList.compHeading.titleContext,
           'level': level,
-          'id': contactList.compHeading.id }}) %}
+          'id': contactList.compHeading.id}}) %}
         {% include "@organisms/contact/contact-list.twig" %}
       {% endif %}
       {% if mainContent.footnoteList %}
@@ -123,8 +123,8 @@
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
+        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
         {% include "@organisms/contact/contact-list.twig" %}
       {% endif %}
       {% if sideContent.pressListing %}
