@@ -61,18 +61,9 @@
       // table-responsive.twig L.12
       var userInputCaption = $(table).find('caption:not(.ma__table__caption)');
       // 2nd test prevents empty caption content container. Otherwise add extra space at the top of the table.
-      if ($(userInputCaption) && $(userInputCaption).text().length > 0) {
-        var captionText = $(userInputCaption).text();
-        var captionSnippet =
-          '<span class="ma__table__caption__content">' +
-          captionText +
-          '</span>';
-
-        $(table).find('.ma__table__caption').prepend(captionSnippet);
-        $(userInputCaption).remove();
-        // Override JS in Mayflower when caption has content.
-        $(table).find('.ma__table__caption').removeClass('hide');
-      }
+      // if ($(userInputCaption) && $(userInputCaption).text().length > 0) {
+      $(userInputCaption).addClass('ma__table__caption');
+      // }
 
       // Check table cell count for .ma__table--wide.
       // table-responsive.twig L.4
