@@ -299,6 +299,7 @@ class Molecules {
       'instagram',
       'medium',
       'youtube',
+      'vimeo',
     ];
 
     foreach ($links as $link) {
