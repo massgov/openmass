@@ -425,6 +425,19 @@ class MassContentCommands extends DrushCommands {
                 }
               }
             }
+            elseif ($fieldType === 'link') {
+              foreach ($field as $item) {
+                if ($item->uri) {
+                  if (strpos($item->uri, 'internal:') === 0) {
+                    $url = substr($item->uri, strlen('internal:'));
+                    $processed = $urlReplacementService->processLink($url);
+                    if ($processed['changed']) {
+                      $item->uri = 'internal:' . $processed['link'];
+                    }
+                  }
+                }
+              }
+            }
           }
           if ($changed) {
             if (method_exists($entity, 'setRevisionLogMessage')) {
@@ -475,6 +488,19 @@ class MassContentCommands extends DrushCommands {
                     if ($processed['changed']) {
                       $item->value = $processed['text'];
                       $changed = TRUE;
+                    }
+                  }
+                }
+                elseif ($fieldType === 'link') {
+                  foreach ($field as $item) {
+                    if ($item->uri) {
+                      if (strpos($item->uri, 'internal:') === 0) {
+                        $url = substr($item->uri, strlen('internal:'));
+                        $processed = $urlReplacementService->processLink($url);
+                        if ($processed['changed']) {
+                          $item->uri = 'internal:' . $processed['link'];
+                        }
+                      }
                     }
                   }
                 }
