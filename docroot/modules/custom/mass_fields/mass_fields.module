@@ -1145,6 +1145,19 @@ function mass_fields_entity_presave(EntityInterface $entity) {
           }
         }
       }
+      elseif ($fieldType === 'link') {
+        foreach ($field as $item) {
+          if ($item->uri) {
+            if (strpos($item->uri, 'internal:') === 0) {
+              $url = substr($item->uri, strlen('internal:'));
+              $processed = $urlReplacementService->processLink($url);
+              if ($processed['changed']) {
+                $item->uri = 'internal:' . $processed['link'];
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
