@@ -4,7 +4,6 @@ namespace Drupal\mass_fields;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\media\Entity\Media;
 
 /**
  * Service for handling URL replacements in text.
@@ -155,87 +154,86 @@ class MassUrlReplacementService {
 
     // Check for 'media/[id]' or 'media/[id]/download' pattern and extract ID
     if (preg_match('/media\/([0-9]+)(\/download)?(\?.*)?$/', $link, $matches)) {
-        // Extracted media ID
-        $mediaId = $matches[1];
+      // Extracted media ID
+      $mediaId = $matches[1];
 
-        // Check if '/download' part is present
-        $downloadPart = $matches[2] ?? '';
+      // Check if '/download' part is present
+      $downloadPart = $matches[2] ?? '';
 
-        // Capture any existing query string
-        $queryString = $matches[3] ?? '';
+      // Capture any existing query string
+      $queryString = $matches[3] ?? '';
 
-        // Load the media entity by ID
-        $mediaEntity = $this->entityTypeManager->getStorage('media')->load($mediaId);
+      // Load the media entity by ID
+      $mediaEntity = $this->entityTypeManager->getStorage('media')->load($mediaId);
+      if ($mediaEntity) {
+        // Replace the href with a media URL
+        $mediaUrl = $mediaEntity->toUrl()->toString();
+
+        // Construct the new URL, preserving '/download'
+        // if it was part of the original URL
+        $newUrl = $mediaUrl . $downloadPart . $queryString;
+        $link = $newUrl;
+        $changed = TRUE;
+      }
+    }
+    // Logic for 'sites/default/files/documents/[dynamic path]'
+    elseif (preg_match('/sites\/default\/files\/documents\/(.+)/', $link, $matches)) {
+      $filePath = urldecode('public://documents/' . $matches[1]);
+      $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
+      $file = reset($files);
+
+      if ($file) {
+        // Check if there's a media entity referencing this file
+        $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
+        $mediaEntity = reset($media);
+
         if ($mediaEntity) {
-          // Replace the href with a media URL
-          $mediaUrl = $mediaEntity->toUrl()->toString();
-
-          // Construct the new URL, preserving '/download'
-          // if it was part of the original URL
-          $newUrl = $mediaUrl . $downloadPart . $queryString;
-          $link = $newUrl;
+          // Replace the href with a media URL.
+          // Note: We always want to concat download string to the URL.
+          $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
+          $link = $mediaUrl;
           $changed = TRUE;
         }
       }
-    // Logic for 'sites/default/files/documents/[dynamic path]'
-    elseif (preg_match('/sites\/default\/files\/documents\/(.+)/', $link, $matches)) {
-        $filePath = urldecode('public://documents/' . $matches[1]);
-        $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
-        $file = reset($files);
-
-        if ($file) {
-          // Check if there's a media entity referencing this file
-          $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
-          $mediaEntity = reset($media);
-
-          if ($mediaEntity) {
-            // Replace the href with a media URL.
-            // Note: We always want to concat download string to the URL.
-            $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
-            $link = $mediaUrl;
-            $changed = TRUE;
-          }
-        }
-      }
+    }
     elseif (preg_match('/files\/documents\/(.+)/', $link, $matches)) {
-        $filePath = urldecode('public://documents/' . $matches[1]);
-        $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
-        $file = reset($files);
+      $filePath = urldecode('public://documents/' . $matches[1]);
+      $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
+      $file = reset($files);
+      if ($file) {
+        // Check if there's a media entity referencing this file
+        $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
+        $mediaEntity = reset($media);
 
-        if ($file) {
-          // Check if there's a media entity referencing this file
-          $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
-          $mediaEntity = reset($media);
-
-          if ($mediaEntity) {
-            // Replace the href with a media URL.
-            // Note: We always want to concat download string to the URL.
-            $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
-            $link = $mediaUrl;
-            $changed = TRUE;
-          }
+        if ($mediaEntity) {
+          // Replace the href with a media URL.
+          // Note: We always want to concat download string to the URL.
+          $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
+          $link = $mediaUrl;
+          $changed = TRUE;
         }
       }
+    }
     // Logic for 'files/[dynamic path]' excluding 'files/documents/'
     elseif (preg_match('/files\/(?!documents\/)(.+)/', $link, $matches)) {
-        $filePath = urldecode('public://' . $matches[1]);
-        $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
-        $file = reset($files);
+      $filePath = urldecode('public://' . $matches[1]);
+      $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
+      $file = reset($files);
 
-        if ($file) {
-          // Check if there's a media entity referencing this file
-          $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
-          $mediaEntity = reset($media);
+      if ($file) {
+        // Check if there's a media entity referencing this file
+        $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
+        $mediaEntity = reset($media);
 
-          if ($mediaEntity) {
-            // Replace the href with a media URL.
-            // Note: We always want to concat download string to the URL.
-            $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
-            $link = $mediaUrl;
-            $changed = TRUE;
-          }
+        if ($mediaEntity) {
+          // Replace the href with a media URL.
+          // Note: We always want to concat download string to the URL.
+          $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
+          $link = $mediaUrl;
+          $changed = TRUE;
         }
       }
+    }
     return [
       'changed' => $changed,
       'link' => $link,
