@@ -23,7 +23,6 @@
       // 1. Set up mobile headers
       var headerLabels = [];
       $(table).find('thead th').each(function (headerIndex) {
-        // var headerLabel = $(this).text();
         headerLabels.push($(this).text());
       });
 
@@ -44,8 +43,7 @@
 
     // Responsive tables
     if ($(table).closest('.js-responsive-table')) {
-      // Copy captions authors entered into Mayflower template format.
-      // table-responsive.twig L.12
+      // Add a class to caption matching table-responsive.twig L.12 to apply the styles.
       $(table).find('caption:not(.ma__table__caption)').addClass('ma__table__caption');
 
       // Check table cell count for .ma__table--wide.
