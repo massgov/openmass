@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\file\FileInterface;
 use Drupal\mass_caching\AkamaiPurger;
@@ -245,4 +246,15 @@ function _mass_caching_uri_is_private(FileInterface $file) {
   $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
   $destination_scheme = $stream_wrapper_manager::getScheme($file->getFileUri());
   return $destination_scheme === 'private';
+}
+
+/**
+ * Implements hook_block_view_alter().
+ *
+ * Disable caching of local tasks due to
+ */
+function mass_caching_block_view_alter(&$build, BlockPluginInterface $block) {
+  if ($build['#id'] == 'mass_theme_tabs') {
+    $build['#cache']['max-age'] = 0;
+  }
 }
