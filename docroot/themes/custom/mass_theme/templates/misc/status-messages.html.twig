@@ -21,8 +21,9 @@
  *   - class: HTML classes.
  */
 #}
-
+{{ attach_library('seven/classy.messages') }}
 {% block messages %}
+  <div class="mass-dashboard-tabs__messages">
 {% for type, messages in message_list %}
   {%
     set classes = [
@@ -53,4 +54,5 @@
   {# Remove type specific classes. #}
   {% set attributes = attributes.removeClass(classes) %}
 {% endfor %}
+  </div>
 {% endblock messages %}

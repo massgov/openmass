@@ -13,12 +13,6 @@
   {# Check if primary indicator content exists. #}
   {% set primaryIndicators = null %}
   {% set primaryRelationshipContent = null %}
-  {#
-  {% if content.computed_related_to[0] %}
-    {% set primaryIndicators = { "label": "part of" } %}
-    {% set primaryRelationshipContent = content.computed_related_to %}
-  {% endif %}
-  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty and not is_blog_post %}
     {% set secondaryIndicators = {

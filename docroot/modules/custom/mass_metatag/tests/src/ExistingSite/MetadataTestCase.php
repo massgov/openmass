@@ -85,7 +85,7 @@ abstract class MetadataTestCase extends MassExistingSiteBase {
       'og:site_name' => 'Mass.gov',
       'og:url' => $entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
       'og:type' => 'website',
-      'twitter:card' => 'summary',
+      'twitter:card' => 'summary_large_image',
       'twitter:site' => '@massgov',
       'twitter:site:id' => '16264003',
       'twitter:title' => $entity->label(),

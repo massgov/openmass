@@ -67,6 +67,7 @@ class AdvisoryMetadataTest extends MetadataTestCase {
       'mg_date' => '20121231',
       'mg_organization' => 'testorgpage,testorgpagetwo',
       'mg_type' => 'testtype',
+      'twitter:card' => 'summary_large_image',
     ]);
   }
 
