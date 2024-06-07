@@ -251,7 +251,7 @@ function _mass_caching_uri_is_private(FileInterface $file) {
 /**
  * Implements hook_block_view_alter().
  *
- * Disable caching of local tasks due to
+ * Disable caching of local tasks due to https://massgov.atlassian.net/browse/DP-33081.
  */
 function mass_caching_block_view_alter(&$build, BlockPluginInterface $block) {
   if ($build['#id'] == 'mass_theme_tabs') {
