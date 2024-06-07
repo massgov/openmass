@@ -97,17 +97,11 @@ function _add_description_display_before(&$variables) {
     $variables['description_display'] = 'before';
   }
 
-  if (isset($variables)) {
-    if (isset($variables['type'])) {
-      if ($variables['type'] == 'checkbox') {
-        if ($parents = $variables['element']['#parents']) {
-          if ($last = end($parents)) {
-            if ($last == 'autolink') {
-              $variables['description_display'] = 'after';
-            }
-          }
-        }
-      }
+  if (isset($variables['type']) && $variables['type'] == 'checkbox') {
+    $parents = $variables['element']['#parents'] ?? [];
+    $last_parent = end($parents);
+    if ($last_parent == 'autolink') {
+      $variables['description_display'] = 'after';
     }
   }
 
