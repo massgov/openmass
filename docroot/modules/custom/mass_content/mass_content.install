@@ -91,3 +91,13 @@ function mass_content_update_10001() {
     \Drupal::configFactory()->getEditable('views.view.content_user_org')->setData($config_data)->save(TRUE);
   }
 }
+
+/**
+ * Reset state variables used by search and replace media URLs drush command.
+ */
+function mass_content_update_10002() {
+  $entityTypes = ['node', 'paragraph'];
+  foreach ($entityTypes as $entityType) {
+    \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
+  }
+}
