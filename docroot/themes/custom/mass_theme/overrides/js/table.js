@@ -40,30 +40,13 @@
         });
       });
     }
-    else {
-      // No row headers
-      // Remove left space for headers with css.
-      if ($(window).width() < 781) {
-        $(table).addClass('no-headers');
-      }
-
-      $(window).on('resize', function () {
-        if ($(window).width() < 781) {
-          $(table).addClass('no-headers');
-        }
-      });
-    }
 
 
     // Responsive tables
     if ($(table).closest('.js-responsive-table')) {
       // Copy captions authors entered into Mayflower template format.
       // table-responsive.twig L.12
-      var userInputCaption = $(table).find('caption:not(.ma__table__caption)');
-      // 2nd test prevents empty caption content container. Otherwise add extra space at the top of the table.
-      // if ($(userInputCaption) && $(userInputCaption).text().length > 0) {
-      $(userInputCaption).addClass('ma__table__caption');
-      // }
+      $(table).find('caption:not(.ma__table__caption)').addClass('ma__table__caption');
 
       // Check table cell count for .ma__table--wide.
       // table-responsive.twig L.4
