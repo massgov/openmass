@@ -24,7 +24,8 @@ class FilterRichtextTable extends FilterBase {
     // Exclude nested tables.
     $tableId = uniqid();
 
-    $tableWrapperTop = '<div class="ma__table--responsive js-ma-responsive-table"><div class="ma__table--responsive__wrapper" id="' . $tableId . '" role="group" tabindex="-1"><table class="ma__table"><caption id="tbl-' . $tableId . '" class="ma__table__caption"><span class="ma__table__caption__scroll-info"> Note: Table has hidden columns, scroll horizontally to see more.</span></caption>';
+    $scrollIcon = '<svg aria-hidden="true" focusable="false" width="18" height="15"><path d="m17.917 7.522-7.884 7.39-2.3-2.156 5.581-5.234-5.582-5.234 2.3-2.157 7.885 7.39Z"></path><path d="m10.06 7.522-7.884 7.39-2.3-2.156 5.581-5.234-5.582-5.234 2.3-2.157 7.885 7.39Z"></path></svg>';
+    $tableWrapperTop = '<div class="ma__table--responsive js-ma-responsive-table"><div class="ma__table--responsive__wrapper" id="' . $tableId . '" role="group" tabindex="-1"><table class="ma__table"> <div class="ma__table__caption__scroll-info" aria-hidden="true"><div class="ma__table__caption__scroll-info-text">' . $scrollIcon . 'Scroll to see more' . $scrollIcon . '</div></div>';
     $tableWrapperBottom = '</table></div></div>';
     $tableHeadingScope = '<th scope="col">';
 

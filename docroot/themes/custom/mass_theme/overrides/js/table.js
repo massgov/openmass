@@ -23,7 +23,6 @@
       // 1. Set up mobile headers
       var headerLabels = [];
       $(table).find('thead th').each(function (headerIndex) {
-        // var headerLabel = $(this).text();
         headerLabels.push($(this).text());
       });
 
@@ -40,39 +39,12 @@
         });
       });
     }
-    else {
-      // No row headers
-      // Remove left space for headers with css.
-      if ($(window).width() < 781) {
-        $(table).addClass('no-headers');
-      }
-
-      $(window).on('resize', function () {
-        if ($(window).width() < 781) {
-          $(table).addClass('no-headers');
-        }
-      });
-    }
 
 
     // Responsive tables
     if ($(table).closest('.js-responsive-table')) {
-      // Copy captions authors entered into Mayflower template format.
-      // table-responsive.twig L.12
       var userInputCaption = $(table).find('caption:not(.ma__table__caption)');
-      // 2nd test prevents empty caption content container. Otherwise add extra space at the top of the table.
-      if ($(userInputCaption) && $(userInputCaption).text().length > 0) {
-        var captionText = $(userInputCaption).text();
-        var captionSnippet =
-          '<span class="ma__table__caption__content">' +
-          captionText +
-          '</span>';
-
-        $(table).find('.ma__table__caption').prepend(captionSnippet);
-        $(userInputCaption).remove();
-        // Override JS in Mayflower when caption has content.
-        $(table).find('.ma__table__caption').removeClass('hide');
-      }
+      $(userInputCaption).addClass('ma__table__caption');
 
       // Check table cell count for .ma__table--wide.
       // table-responsive.twig L.4
