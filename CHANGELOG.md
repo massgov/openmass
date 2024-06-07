@@ -1,5 +1,27 @@
 
 
+## [0.399.0] - June 4, 2024
+
+### Changed
+  - DP-32007: Add an underline to doownload links matching the RTE link style.
+  - DP-33143: Refactoring breadcrumb rendering functionality.
+  - DP-33275: Added help text to document add/edit page to remind users to submit documents for archiving to State Library.
+  - DP-33281: Fix right column to appear closer to top of page when no table of contents.
+  
+### Fixed
+  - DP-32118: Verify and fix conditional fields.
+  - DP-33120: Document title in breadcrumb when editing doesn't update when title changes.
+  - DP-33135: Fix Feedback form HelpTip empty buttons.
+  - DP-33162: Error when creating flexible links on Org page.
+  - DP-33216: Updated google_tag module config to add setting for new consent mode.
+  - DP-33309: Full screen mode with Rich text editor - buttons not working.
+  
+## [0.398.1] - May 28, 2024
+- Change tabs and status messages implementation from custom to the core variant.
+
+### Changed
+- DP-28830: D10 upgrade packages - CKEditor5.
+
 ## [0.398.0] - May 21, 2024
 
 ### Changed
@@ -8,11 +30,11 @@
   - DP-32001: Enlarge the close button for the map marker popup to meet WCAG2.2. Darken the button color to meet the minimum required color contrast.
   - DP-32013: Add an underline to links (not decorative links) in the contact component matching the RT link style.
   - DP-32286: Always show the future events page for orgs.
-  
+
 ### Fixed
   - DP-32285: Bug - overview appears below TOC when only one section with rich text including H2s.
   - DP-32426: Fix A11y heading issue on news page.
-  
+
 ## [0.397.5] - May 17, 2024
 
 ### Changed

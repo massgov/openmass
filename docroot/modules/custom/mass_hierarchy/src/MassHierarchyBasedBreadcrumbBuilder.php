@@ -10,6 +10,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
+use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\node\Entity\Node;
 
 /**
@@ -21,8 +22,14 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
-    if ($this->adminContext->isAdminRoute($route_match->getRouteObject()) && $route_match->getRouteName() !== 'entity.node.edit_form') {
-      return FALSE;
+
+    if ($this->adminContext->isAdminRoute($route_match->getRouteObject())) {
+      if ($route_match->getRouteName() === 'entity.media.edit_form' && $route_match->getParameter('media') instanceof DocumentBundle) {
+        return TRUE;
+      }
+      elseif ($route_match->getRouteName() !== 'entity.node.edit_form') {
+        return FALSE;
+      }
     }
 
     if ($route_match->getRouteName() == 'view.collection_all.page_all') {
@@ -76,6 +83,15 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     }
 
     $breadcrumb->addCacheableDependency($route_entity);
+    if ($route_entity instanceof DocumentBundle) {
+      $links = [];
+      $text = $route_entity->field_title->value;
+      $links[] = Link::fromTextAndUrl($text, $route_entity->toUrl());
+      array_unshift($links, Link::createFromRoute(new TranslatableMarkup('Home'), '<front>'));
+      $breadcrumb->setLinks($links);
+      return $breadcrumb;
+    }
+
     $entity_type = $route_entity->getEntityTypeId();
     $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
     $ancestors = $storage->findAncestors($this->nodeKeyFactory->fromEntity($route_entity));
