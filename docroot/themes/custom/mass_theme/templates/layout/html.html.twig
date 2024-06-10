@@ -29,6 +29,13 @@
 <!DOCTYPE html>
 <html{{ html_attributes }} >
   <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-MPHNMQ');</script>
+    <!-- End Google Tag Manager -->
 
     {% include directory ~ "/templates/alerts/polyfills.html.twig" %}
     {% include directory ~ "/templates/alerts/fetch.html.twig" %}
@@ -53,6 +60,10 @@
     <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSansItalic-VF-subset.woff2?version=1') }}" as="font" crossorigin/>
   </head>
   <body{{ attributes.addClass(body_classes) }}>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MPHNMQ"
+                      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <svg-sprite-placeholder>
 
     {{ page_top }}
