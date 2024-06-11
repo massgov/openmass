@@ -1,5 +1,24 @@
 
 
+## [0.400.0] - June 11, 2024
+
+### Changed
+  - DP-33081: Disable caching of local tasks block on mass_theme
+  
+### Added
+  - DP-33206: Enable URL link labels for CSV table component.
+  - DP-33218: Add social media icon for Vimeo.
+  
+### Removed
+  - DP-33231: Removed the google_tag module and moved tag placement to custom code.
+  
+### Fixed
+  - DP-33344: Determine why /files/ URLs still exist in some rich text fields.
+  - DP-33478: Fix JS issue related to status messages.
+  - DP-33499: Fixed issue with missing menubar during full text rich text editor on cloned page.
+  
+
+
 ## [0.399.0] - June 4, 2024
 
 ### Changed
