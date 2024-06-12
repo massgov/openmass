@@ -94,13 +94,7 @@
     {{ contactNode.field_ref_fax_number|view|merge({'#level': level}) }}
   {% endblock %}
   {% block moreLink %}
-    {% include "@atoms/decorative-link.twig" with {
-      "decorativeLink": {
-        "href": contactNode.field_contact_more_info_link[0]['#url_title'],
-        "text": contactNode.field_contact_more_info_link[0]['#title'],
-        "info": ""
-      }
-    } %}
+    {% include "@atoms/decorative-link.twig" with {{ content.field_contact_more_info_link }} %}
   {% endblock %}
   {% block contactImage %}
     {{ org_logo }}
