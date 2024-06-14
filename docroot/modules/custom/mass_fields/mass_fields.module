@@ -1133,6 +1133,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
 function mass_fields_entity_presave(EntityInterface $entity) {
   if ($entity instanceof Node || $entity instanceof Paragraph) {
     // Get the URL replacement service.
+    /** @var  $urlReplacementService \Drupal\mass_fields\MassUrlReplacementService */
     $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
 
     foreach ($entity->getFields() as $field) {
@@ -1151,6 +1152,12 @@ function mass_fields_entity_presave(EntityInterface $entity) {
             if (strpos($item->uri, 'internal:') === 0) {
               $url = substr($item->uri, strlen('internal:'));
               $processed = $urlReplacementService->processLink($url);
+              if ($processed['changed']) {
+                $item->uri = 'internal:' . $processed['link'];
+              }
+            }
+            elseif (preg_match('/(^.*mass.gov\/)(media\/([0-9]+)\/download|files\/)/', $item->uri)) {
+              $processed = $urlReplacementService->processLink($item->uri);
               if ($processed['changed']) {
                 $item->uri = 'internal:' . $processed['link'];
               }

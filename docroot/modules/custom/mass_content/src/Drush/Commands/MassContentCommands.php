@@ -393,7 +393,7 @@ class MassContentCommands extends DrushCommands {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-    $entityTypes = ['node', 'paragraph'];
+    $entityTypes = ['paragraph'];
     foreach ($entityTypes as $entityType) {
       // Retrieve the last processed ID from the state or default to 0
       $lastProcessedId = \Drupal::state()->get("mass_content.last_processed_id.{$entityType}", 0);
@@ -403,6 +403,7 @@ class MassContentCommands extends DrushCommands {
       $storage = $this->entityTypeManager->getStorage($entityType);
       $ids = $storage->getQuery()
         ->condition($idFieldName, $lastProcessedId, '>')
+        ->condition('type', 'flexible_link_group')
         ->sort($idFieldName)
         ->accessCheck(FALSE)
         ->execute();
@@ -431,6 +432,12 @@ class MassContentCommands extends DrushCommands {
                   if (strpos($item->uri, 'internal:') === 0) {
                     $url = substr($item->uri, strlen('internal:'));
                     $processed = $urlReplacementService->processLink($url);
+                    if ($processed['changed']) {
+                      $item->uri = 'internal:' . $processed['link'];
+                    }
+                  }
+                  elseif (preg_match('/(^.*mass.gov\/)(media\/([0-9]+)\/download|files\/)/', $item->uri)) {
+                    $processed = $urlReplacementService->processLink($item->uri);
                     if ($processed['changed']) {
                       $item->uri = 'internal:' . $processed['link'];
                     }
