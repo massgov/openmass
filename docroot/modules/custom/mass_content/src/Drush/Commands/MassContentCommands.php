@@ -393,7 +393,7 @@ class MassContentCommands extends DrushCommands {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-    $entityTypes = ['paragraph'];
+    $entityTypes = ['node', 'paragraph'];
     foreach ($entityTypes as $entityType) {
       // Retrieve the last processed ID from the state or default to 0
       $lastProcessedId = \Drupal::state()->get("mass_content.last_processed_id.{$entityType}", 0);
@@ -403,7 +403,6 @@ class MassContentCommands extends DrushCommands {
       $storage = $this->entityTypeManager->getStorage($entityType);
       $ids = $storage->getQuery()
         ->condition($idFieldName, $lastProcessedId, '>')
-        ->condition('type', 'flexible_link_group')
         ->sort($idFieldName)
         ->accessCheck(FALSE)
         ->execute();
