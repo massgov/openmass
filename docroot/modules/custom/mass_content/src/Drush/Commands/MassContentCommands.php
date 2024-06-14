@@ -507,6 +507,12 @@ class MassContentCommands extends DrushCommands {
                           $item->uri = 'internal:' . $processed['link'];
                         }
                       }
+                      elseif (preg_match('/(^.*mass.gov\/)(media\/([0-9]+)\/download|files\/)/', $item->uri)) {
+                        $processed = $urlReplacementService->processLink($item->uri);
+                        if ($processed['changed']) {
+                          $item->uri = 'internal:' . $processed['link'];
+                        }
+                      }
                     }
                   }
                 }
