@@ -61,29 +61,6 @@
         }
       });
 
-      // Custom event reloads page to update results with URL query params.
-      // @see MassFeedbackLoopTagModalForm::submitModalFormAjax()
-      $(window).on('submitModalFormAjax.massFeedbackLoop', function () {
-        // Gets query params of active pager element.
-        var activePagerItemParams = new URLSearchParams(
-          $('nav.pager li.is-active a').attr('href')
-        );
-        // Gets query params of current page URL.
-        var locationParams = new URLSearchParams(this.location.search);
-        // Gets 'page' values from query params.
-        var activePagerItemPage = activePagerItemParams.get('page');
-        var locationPage = locationParams.get('page');
-        // Reloads page when 'page' query param matches active pager element,
-        // but is not first results page (?page=0), after filters are altered.
-        if (
-          locationPage
-          && parseInt(locationPage, 10) !== 0
-          && activePagerItemPage === locationPage
-        ) {
-          this.location.reload();
-        }
-      });
-
       // Open / close functionality for the survey.
       $('#feedback-table', context).on('click', '.survey-toggle', function () {
         var $parentRow = $(this).closest('tr');

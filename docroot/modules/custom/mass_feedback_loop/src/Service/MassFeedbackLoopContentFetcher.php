@@ -447,9 +447,6 @@ class MassFeedbackLoopContentFetcher {
           '#markup' => $this->t('Tags'),
         ],
       ];
-      // Adds an additional empty column to match results column count.
-      // Needed for the 'Add Tag' results column.
-      $table['#header'][] = [];
     }
 
     // Builds table rows from feedback.
@@ -509,80 +506,10 @@ class MassFeedbackLoopContentFetcher {
           }
 
           if (empty($limit_fields) || in_array('tags', $limit_fields)) {
-            // Builds Tags section.
-            $feedback_tags = [];
-            if (isset($feedback['tags']) && !empty($tags = $feedback['tags'])) {
-              foreach ($tags as $tag) {
-                // Creates link to Remove Tag form with necessary data as arguments.
-                $url = Url::fromRoute(
-                  'mass_feedback_loop.open_modal_tag_form',
-                  [
-                    'action' => 'remove',
-                    'comment_id' => $feedback['id'],
-                    'tag_id' => $tag['tag_id'],
-                    'tag_unique_id' => $tag['id'],
-                  ],
-                  [
-                    'attributes' => [
-                      'class' => [
-                        'link-open-modal-remove-tag',
-                        'use-ajax',
-                      ],
-                      'data-dialog-type' => 'modal',
-                      'title' => $this->t('Remove tag'),
-                    ],
-                  ]
-                );
-                $link = Link::fromTextAndUrl($this->t('Remove tag'), $url)->toString();
-                $unique_feedback_tag_id = "feedback-$feedback[id]-tag-$tag[tag_id]";
-                $feedback_tags[] = [
-                  '#prefix' => "<div class='button' id='$unique_feedback_tag_id'>",
-                  '#markup' => $all_tags[$tag['tag_id']] . ' ' . $link,
-                  '#suffix' => '</div>',
-                ];
-              }
-            }
-            else {
-              // When there are no tags to show, instead of using the `#empty` form item-list property, we let there be
-              // one item in the list called "Not tagged". This way a list "ul" element is rendered, which helps in
-              // showing new tags added via ajax later.
-              $feedback_tags[] = [
-                '#markup' => '<span id="feedback-' . $feedback['id'] . '-not-tagged">Not tagged</span>',
-              ];
-            }
+            $feedback_tags = implode(', ', $feedback['tags']);
 
-            // Creates item list to render tag-related content.
             $row['tags'] = [
-              '#type' => 'markup',
-              '#theme' => 'item_list',
-              '#list_type' => 'ul',
-              '#attributes' => [
-                'id' => 'feedback-tags-list',
-                'class' => [
-                  'feedback-' . $feedback['id'] . '-tags-list',
-                ],
-              ],
-              '#items' => $feedback_tags,
-            ];
-
-            // Creates link for adding a tag.
-            $row['add_tag'] = [
-              '#type' => 'link',
-              '#title' => $this->t('Add tag'),
-              // Creates link to Add Tag form with necessary data as arguments.
-              '#url' => Url::fromRoute('mass_feedback_loop.open_modal_tag_form', [
-                'action' => 'add',
-                'comment_id' => $feedback['id'],
-              ]),
-              '#attributes' => [
-                'class' => [
-                  'link-open-modal-add-tag',
-                  'use-ajax',
-                  'button',
-                ],
-                'data-dialog-type' => 'modal',
-                'title' => $this->t('Add tag'),
-              ],
+              '#markup' => $feedback_tags,
             ];
           }
 
