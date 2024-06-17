@@ -48,8 +48,6 @@ class MassFeedbackLoopContentFetcher {
   const EXTERNAL_API_CONFIG = [
     'api_endpoints' => [
       'feedback_endpoint' => 'feedback/',
-      'tags_endpoint' => 'tags/',
-      'tag_lookup_endpoint' => 'tag_lookup/',
       'label_lookup_endpoint' => 'labels/',
     ],
     'api_headers' => [
@@ -171,42 +169,12 @@ class MassFeedbackLoopContentFetcher {
   }
 
   /**
-   * Fetches all tags from Mass.gov API.
-   *
-   * @return array
-   *   Array of all existing tags in human-readable format, keyed by ID.
-   */
-  public function fetchAllTags() {
-    try {
-      $request = $this->httpClient->get(self::EXTERNAL_API_CONFIG['api_endpoints']['tag_lookup_endpoint'], [
-        'json' => [
-          'author_id' => $this->currentUser->id(),
-        ],
-      ]);
-      $response = Json::decode($request->getBody());
-      $tags = [];
-      foreach ($response as $tag) {
-        if (!empty($tag['tag_id']) && !empty($tag['tag_name'])) {
-          $tags[$tag['tag_id']] = $tag['tag_name'];
-        }
-      }
-      // Sorts array values alphabetically.
-      asort($tags);
-      return $tags;
-    }
-    catch (RequestException $e) {
-      $this->handleRequestException($e);
-      return [];
-    }
-  }
-
-  /**
    * Fetches feedback from Mass.gov API.
    *
    * @param array $feedback_api_params
    *   Parameters to be sent to the feedback API's fetch feedback endpoint.
    *   Possible keys: 'org_id', 'node_id', 'author_id', 'date_from',
-   *   'date_to', 'tag_id', 'info_found', 'sort_by', 'page'.
+   *   'date_to', 'info_found', 'sort_by', 'page'.
    *
    * @return array
    *   Decoded JSON data.
@@ -283,67 +251,6 @@ class MassFeedbackLoopContentFetcher {
   }
 
   /**
-   * Adds a tag to a piece of feedback via the external API.
-   *
-   * @param int $comment_id
-   *   Comment ID number.
-   * @param int $tag_id
-   *   Tag ID number.
-   */
-  public function addTag($comment_id, $tag_id) {
-    try {
-      $this->httpClient->post(self::EXTERNAL_API_CONFIG['api_endpoints']['tags_endpoint'], [
-        'json' => [
-          'comment_id' => $comment_id,
-          'tag_id' => $tag_id,
-          'author_id' => $this->currentUser->id(),
-        ],
-      ]);
-    }
-    catch (RequestException $e) {
-      $this->handleRequestException($e);
-    }
-  }
-
-  /**
-   * Removes a tag from a piece of feedback via the external API.
-   *
-   * @param int $comment_id
-   *   Comment ID number.
-   * @param int $tag_id
-   *   Tag ID number.
-   * @param int $tag_unique_id
-   *   Unique tag ID number (generated on a per-feedback basis).
-   */
-  public function removeTag($comment_id, $tag_id, $tag_unique_id) {
-    try {
-      $this->httpClient->delete(self::EXTERNAL_API_CONFIG['api_endpoints']['tags_endpoint'], [
-        'json' => [
-          'comment_id' => $comment_id,
-          'tag_id' => $tag_id,
-          'id' => $tag_unique_id,
-          'author_id' => $this->currentUser->id(),
-        ],
-      ]);
-    }
-    catch (RequestException $e) {
-      $this->handleRequestException($e);
-    }
-  }
-
-  /**
-   * Custom exception handler for making requests to external API.
-   *
-   * @param \GuzzleHttp\Exception\RequestException $e
-   *   Exception object.
-   */
-  protected function handleRequestException(RequestException $e) {
-    // Throws error in case of httpClient request failure.
-    $this->logger->error($e->getRequest()->getMethod() . ' ' . $e->getRequest()->getUri() . ':<br/>' . $e->getResponse()->getBody());
-    throw new NotFoundHttpException();
-  }
-
-  /**
    * Helper function to format URL query parameters for the feeedback API.
    *
    * @param array $params
@@ -388,8 +295,6 @@ class MassFeedbackLoopContentFetcher {
    *
    * @param array $results
    *   Array of feedback data from external API.
-   * @param array $all_tags
-   *   Array of all existing tags in human-readable format, keyed by ID.
    * @param bool $is_watching_content
    *   Boolean to check whether user is currently watching content.
    * @param array $limit_fields
@@ -398,7 +303,7 @@ class MassFeedbackLoopContentFetcher {
    * @return array
    *   Render array.
    */
-  public function buildFeedbackTable(array $results, array $all_tags, $is_watching_content = TRUE, array $limit_fields = []) {
+  public function buildFeedbackTable(array $results, $is_watching_content = TRUE, array $limit_fields = []) {
     // Builds base table.
     $table = [
       '#type' => 'table',
@@ -438,14 +343,6 @@ class MassFeedbackLoopContentFetcher {
           '#markup' => $this->t('Feedback Text'),
         ],
         'class' => ['feedback-wide'],
-      ];
-    }
-
-    if (empty($limit_fields) || in_array('tags', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Tags'),
-        ],
       ];
     }
 
@@ -502,14 +399,6 @@ class MassFeedbackLoopContentFetcher {
             $row['text'] = [
               '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span>',
               '#wrapper_attributes' => ['class' => 'survey-response'],
-            ];
-          }
-
-          if (empty($limit_fields) || in_array('tags', $limit_fields)) {
-            $feedback_tags = implode(', ', $feedback['tags']);
-
-            $row['tags'] = [
-              '#markup' => $feedback_tags,
             ];
           }
 

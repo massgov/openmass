@@ -9,7 +9,6 @@
   Drupal.behaviors.massFeedbackLoop = {
     attach: function attach(context, settings) {
       var $filterByPage = $('#edit-filter-by-page', context);
-      var $filterByTag = $('#edit-filter-by-tag', context);
 
       // Updates 'tablesort' CSS classes based on current sorting values.
       $('th span[data-sort-by]', context).removeClass(function (index, className) {
@@ -43,21 +42,11 @@
         $(this).attr('href', url.search);
       });
 
-      // Triggers rebuild of feedback table via event on <select> element.
-      // Related AJAX events can be found in this module's main form:
-      // @see MassFeedbackLoopAuthorInterfaceForm
-      $filterByPage.on('change', function () {
-        if (!$(this).val()) {
-          $filterByTag.trigger('change');
-        }
-      });
-
       // Prevents form submission via 'Enter' key press.
       // Triggers rebuild of feedback table via event on <select> element.
       $filterByPage.on('keypress', function (e) {
         if (e.keyCode === 13) {
           e.preventDefault();
-          $filterByTag.trigger('change');
         }
       });
 
