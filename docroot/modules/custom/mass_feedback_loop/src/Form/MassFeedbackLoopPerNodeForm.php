@@ -32,7 +32,6 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
    */
   public function __construct(MassFeedbackLoopContentFetcher $content_fetcher) {
     $this->contentFetcher = $content_fetcher;
-    $this->request = $this->getRequest();
   }
 
   /**
