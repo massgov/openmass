@@ -23,10 +23,13 @@ class MassContentCommands extends DrushCommands {
 
   use AutowireTrait;
 
+  protected $externalDownloadMatch;
+
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerChannelFactoryInterface $loggerChannelFactory
   ) {
+    $this->externalDownloadMatch = '/(https:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)\/download|files\/)/';
     parent::__construct();
   }
 
@@ -426,19 +429,21 @@ class MassContentCommands extends DrushCommands {
               }
             }
             elseif ($fieldType === 'link') {
-              foreach ($field as $item) {
+              foreach ($field as $key => $item) {
                 if ($item->uri) {
                   if (strpos($item->uri, 'internal:') === 0) {
                     $url = substr($item->uri, strlen('internal:'));
                     $processed = $urlReplacementService->processLink($url);
                     if ($processed['changed']) {
-                      $item->uri = 'internal:' . $processed['link'];
+                      $item->value = 'internal:' . $processed['link'];
+                      $changed = TRUE;
                     }
                   }
-                  elseif (preg_match('/(^.*mass.gov\/)(media\/([0-9]+)\/download|files\/)/', $item->uri)) {
+                  elseif (preg_match($this->externalDownloadMatch, $item->uri)) {
                     $processed = $urlReplacementService->processLink($item->uri);
                     if ($processed['changed']) {
-                      $item->uri = 'internal:' . $processed['link'];
+                      $item->value = 'internal:' . $processed['link'];
+                      $changed = TRUE;
                     }
                   }
                 }
@@ -498,19 +503,21 @@ class MassContentCommands extends DrushCommands {
                   }
                 }
                 elseif ($fieldType === 'link') {
-                  foreach ($field as $item) {
+                  foreach ($field as $key => $item) {
                     if ($item->uri) {
                       if (strpos($item->uri, 'internal:') === 0) {
                         $url = substr($item->uri, strlen('internal:'));
                         $processed = $urlReplacementService->processLink($url);
                         if ($processed['changed']) {
-                          $item->uri = 'internal:' . $processed['link'];
+                          $item->value = 'internal:' . $processed['link'];
+                          $changed = TRUE;
                         }
                       }
-                      elseif (preg_match('/(^.*mass.gov\/)(media\/([0-9]+)\/download|files\/)/', $item->uri)) {
+                      elseif (preg_match($this->externalDownloadMatch, $item->uri)) {
                         $processed = $urlReplacementService->processLink($item->uri);
                         if ($processed['changed']) {
-                          $item->uri = 'internal:' . $processed['link'];
+                          $item->value = 'internal:' . $processed['link'];
+                          $changed = TRUE;
                         }
                       }
                     }
