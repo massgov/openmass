@@ -3,6 +3,8 @@ langcode: en
 status: true
 dependencies:
   module:
+    - mass_bigquery
+    - mass_views
     - node
     - view_custom_table
     - views_autocomplete_filters
@@ -153,7 +155,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: 'Entity type'
+          label: 'Content type'
           exclude: false
           alter:
             alter_text: false
@@ -270,6 +272,63 @@ display:
           admin_label: ''
           plugin_id: numeric
           label: 'Issue count'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+        pageviews:
+          id: pageviews
+          table: mass_bigquery_data
+          field: pageviews
+          relationship: entity_id
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          label: 'Page views'
           exclude: false
           alter:
             alter_text: false
@@ -527,7 +586,7 @@ display:
           entity_field: status
           plugin_id: boolean
           operator: '='
-          value: All
+          value: '1'
           group: 1
           exposed: true
           expose:
@@ -633,6 +692,67 @@ display:
             group_items: {  }
       style:
         type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            entity_id: entity_id
+            title: title
+            entity_type: entity_type
+            status: status
+            result_name_count: result_name_count
+            pageviews: pageviews
+          default: pageviews
+          info:
+            entity_id:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            title:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            entity_type:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            status:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            result_name_count:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            pageviews:
+              sortable: true
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
       row:
         type: fields
       query:
