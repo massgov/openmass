@@ -464,29 +464,27 @@ display:
             default_group_multiple: {  }
             group_items: {  }
         field_organizations_target_id:
-          id: field_organizations_target_id
-          table: node__field_organizations
-          field: field_organizations_target_id
+          id: node_org_filter
+          table: node_field_data
+          field: node_org_filter
           relationship: entity_id
           group_type: group
           admin_label: ''
-          plugin_id: numeric
+          entity_type: node
+          plugin_id: mass_views_node_org_filter
           operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
+          value: null
           group: 1
           exposed: true
           expose:
-            operator_id: field_organizations_target_id_op
-            label: Organization(s)
+            operator_id: ''
+            label: Organization
             description: ''
             use_operator: false
-            operator: field_organizations_target_id_op
+            operator: node_org_filter_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: field_organizations_target_id
+            identifier: node_org_filter
             required: false
             remember: false
             multiple: false
@@ -503,12 +501,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
+              external_data_resource_manager: '0'
           is_grouped: false
           group_info:
             label: ''
