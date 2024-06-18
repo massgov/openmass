@@ -6,6 +6,7 @@ dependencies:
     - mass_bigquery
     - mass_views
     - node
+    - user
     - view_custom_table
     - views_autocomplete_filters
     - views_porter_stemmer
@@ -396,18 +397,21 @@ display:
             offset: false
             offset_label: Offset
       exposed_form:
-        type: basic
+        type: input_required_on_request
         options:
           submit_button: Apply
-          reset_button: false
+          reset_button: 0
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
+          expose_sort_order: 1
           sort_asc_label: Asc
           sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on "Apply" to see results'
+          text_input_required_format: basic_html
       access:
-        type: none
-        options: {  }
+        type: perm
+        options:
+          perm: 'use mass dashboard'
       cache:
         type: tag
         options: {  }
@@ -785,6 +789,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user.permissions
       tags: {  }
   page_1:
     id: page_1
@@ -804,4 +809,5 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user.permissions
       tags: {  }
