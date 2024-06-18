@@ -1,0 +1,24 @@
+uuid: f7baecee-a30a-45cf-a8be-c99f4d4240b7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_sitewide_alert_timestamp
+    - paragraphs.paragraphs_type.sitewide_alert_message
+  module:
+    - datetime
+id: paragraph.sitewide_alert_message.field_sitewide_alert_timestamp
+field_name: field_sitewide_alert_timestamp
+entity_type: paragraph
+bundle: sitewide_alert_message
+label: 'Alert message timestamp'
+description: 'Optional. For sitewide alerts, this date is shown with each alert message.'
+required: false
+translatable: false
+default_value:
+  -
+    default_date_type: now
+    default_date: now
+default_value_callback: ''
+settings: {  }
+field_type: datetime

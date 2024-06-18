@@ -1,0 +1,22 @@
+uuid: ef02cd74-bfcc-46dd-a04f-5f85946b3d8f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: decision_tree
+label: 'Decision tree'
+type: 'canonical_entities:node'
+pattern: '/decision-tree/[node:title]'
+selection_criteria:
+  67010549-8022-47c2-97eb-198b77ef604a:
+    id: 'entity_bundle:node'
+    negate: false
+    uuid: 67010549-8022-47c2-97eb-198b77ef604a
+    context_mapping:
+      node: node
+    bundles:
+      decision_tree: decision_tree
+selection_logic: and
+weight: -5
+relationships: {  }

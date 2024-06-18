@@ -1,0 +1,29 @@
+uuid: f312fd09-dbe8-4f0d-bc79-6bf39be1de09
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_person_bio
+    - node.type.org_page
+    - node.type.person
+id: node.org_page.field_person_bio
+field_name: field_person_bio
+entity_type: node
+bundle: org_page
+label: 'Person / Bio'
+description: 'Link to a Person item. If the Person item you want to add does not yet exist, you will need to <a href="/node/add/person" target="_blank">create it</a> first. This Person item generates the name, title, image, and link on the Elected Official page. <a href="https://mass.gov/massorgbiokb" target="_blank">Learn more about Elected Official Pages.</a>'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: mass_select_filter
+  handler_settings:
+    target_bundles:
+      person: person
+    sort:
+      field: title
+      direction: ASC
+    auto_create: 0
+    auto_create_bundle: ''
+field_type: entity_reference

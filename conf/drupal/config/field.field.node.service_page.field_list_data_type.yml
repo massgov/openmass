@@ -1,0 +1,29 @@
+uuid: 11e93118-5c62-46ac-ad38-cad06e4fdfe9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_list_data_type
+    - node.type.service_page
+    - taxonomy.vocabulary.tx_details_data_type
+id: node.service_page.field_list_data_type
+field_name: field_list_data_type
+entity_type: node
+bundle: service_page
+label: 'Data type'
+description: "Choose the data type that applies to this page.<br/><br/> \r\n<b>Data resource:</b> A report.<br/> \r\n<b>Dataset:</b> A body of structured information describing some topic(s) of interest. A dataset usually comprises a description of the data and one or multiple data resources, which can be in various formats.<br/> \r\n<b>Data catalog:</b> A collection of datasets that covers one or more topics. For example, an open data portal or a curated dataset listing across multiple topics. "
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      tx_details_data_type: tx_details_data_type
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

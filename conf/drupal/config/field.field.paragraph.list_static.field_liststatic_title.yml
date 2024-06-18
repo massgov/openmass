@@ -1,0 +1,32 @@
+uuid: 966ba93b-7275-4bfa-9a5e-82a7d5004eee
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_liststatic_title
+    - paragraphs.paragraphs_type.list_static
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.list_static.field_liststatic_title
+field_name: field_liststatic_title
+entity_type: paragraph
+bundle: list_static
+label: 'List title'
+description: 'The title of your list. if you have only one list, this title will not appear. If you have more than one list, it will appear as the subheader for your list on the page and as a clickable link in the contents section at the top of the page.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

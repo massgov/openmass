@@ -1,0 +1,28 @@
+uuid: ed6d551c-2b44-4ba9-97bf-68489918a0b8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ref_location_details_page
+    - node.type.location_details
+    - paragraphs.paragraphs_type.recommended_activity
+id: paragraph.recommended_activity.field_ref_location_details_page
+field_name: field_ref_location_details_page
+entity_type: paragraph
+bundle: recommended_activity
+label: 'Details Page'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      location_details: location_details
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

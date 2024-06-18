@@ -1,0 +1,29 @@
+uuid: d3e33f91-0495-4b8a-b6b9-0a35e693c857
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_video
+    - media.type.media_video
+    - paragraphs.paragraphs_type.video_with_header
+id: paragraph.video_with_header.field_video
+field_name: field_video
+entity_type: paragraph
+bundle: video_with_header
+label: Video
+description: '<a href="https://www.mass.gov/kb/adding-videos-to-pages" target="_blank">Need help adding a video?</a>'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      media_video: media_video
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

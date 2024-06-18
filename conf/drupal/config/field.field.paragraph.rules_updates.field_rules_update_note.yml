@@ -1,0 +1,32 @@
+uuid: 5a08cc27-e5bf-40d6-8670-69905067eeb2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_rules_update_note
+    - paragraphs.paragraphs_type.rules_updates
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.rules_updates.field_rules_update_note
+field_name: field_rules_update_note
+entity_type: paragraph
+bundle: rules_updates
+label: 'Update text'
+description: 'Enter a description of this update, e.g. “Amended 1/1/2000, effective 2/1/2000.” '
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

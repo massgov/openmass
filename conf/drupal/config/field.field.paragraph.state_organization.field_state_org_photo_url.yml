@@ -1,0 +1,32 @@
+uuid: 242965ed-adcc-48a5-9ab8-4ceb05d5cd8b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_state_org_photo_url
+    - paragraphs.paragraphs_type.state_organization
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.state_organization.field_state_org_photo_url
+field_name: field_state_org_photo_url
+entity_type: paragraph
+bundle: state_organization
+label: 'URL to image'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

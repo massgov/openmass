@@ -1,0 +1,32 @@
+uuid: ad4012ff-9051-4811-8a5f-37fd27ffa23d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_iframe_accessibility_title
+    - paragraphs.paragraphs_type.iframe
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.iframe.field_iframe_accessibility_title
+field_name: field_iframe_accessibility_title
+entity_type: paragraph
+bundle: iframe
+label: 'Title for Accessibility'
+description: 'Describe what this iFrame shows.  This is not visible in the page.  Screenreaders will read this title.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

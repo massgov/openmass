@@ -1,0 +1,28 @@
+uuid: 8df6a2e6-4ff0-4e70-b3d5-cc9e0cb55d40
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_how_to_taxo_action_type
+    - node.type.how_to_page
+    - taxonomy.vocabulary.action_type
+id: node.how_to_page.field_how_to_taxo_action_type
+field_name: field_how_to_taxo_action_type
+entity_type: node
+bundle: how_to_page
+label: 'Action type'
+description: 'Please select the action for this page. The action should describe a single task that you can do on this page, and the title of the page should start with a verb. Keep the title as short as possible and use plain language. Use sentence case.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      action_type: action_type
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

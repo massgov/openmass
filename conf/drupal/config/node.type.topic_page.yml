@@ -1,0 +1,34 @@
+uuid: 3f6fafe3-4a7e-4153-a743-0eb0e25691c7
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  mass_content_api:
+    parents: null
+    children:
+      - field_topic_content_cards>field_content_card_link_cards
+    linking_pages:
+      - 'field_topic_content_cards>*'
+      - field_topic_ref_related_topics
+  mass_admin_pages:
+    node_type_long_description: ''
+    node_type_url: ''
+    node_type_category: service_suite
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_topic-page.svg
+  node_title_help_text:
+    title_help: ''
+name: 'Topic Page'
+type: topic_page
+description: '<p>A high-level navigation page. Display a collection of links to other Topic pages, Services & other Mass.gov or external resources.</p><p><a href="https://www.mass.gov/kb/topic-pages" target="_blank">Learn more about Topic pages</a></p>'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

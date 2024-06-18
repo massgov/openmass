@@ -1,0 +1,36 @@
+uuid: 7a6c2e8c-aeec-4500-a718-873cc4d48bcf
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  mass_content_api:
+    parents: null
+    children:
+      - field_multiple_answers>field_answer_path
+    linking_pages:
+      - 'field_multiple_answers>*'
+      - field_decision_root_ref
+      - field_description
+      - field_more_info>field_more_info_text
+  mass_admin_pages:
+    node_type_long_description: ''
+    node_type_url: ''
+    node_type_category: decision_tree
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_decision-branch.svg
+  node_title_help_text:
+    title_help: ''
+name: 'Decision Tree Branch'
+type: decision_tree_branch
+description: '<p>Ask a question that leads a user to either another Decision Tree Branch or to a Decision Tree Conclusion.</p><p><a href="https://www.mass.gov/kb/decision-tree-branches" target="_blank">Learn more about Decision Tree branches.</a></p>'
+help: '<p>Making a decision tree is complex. It is important that you read our <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/decision-tree-beta" target="_blank">knowledge base article</a> before attempting to build one. <em>This content type is currently in beta.</em></p>'
+new_revision: true
+preview_mode: 1
+display_submitted: false

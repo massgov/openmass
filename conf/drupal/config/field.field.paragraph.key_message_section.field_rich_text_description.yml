@@ -1,0 +1,33 @@
+uuid: 9330d5b0-4ab6-40f1-a7cd-e9660603ba3b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_rich_text_description
+    - paragraphs.paragraphs_type.key_message_section
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    campaign_landing_restricted: campaign_landing_restricted
+    basic_html: '0'
+    campaign_custom_html: '0'
+    campaign_landing_basic: '0'
+    mailchimp: '0'
+    restricted_html: '0'
+    rules_of_court_section: '0'
+    full_html: '0'
+    plain_text: '0'
+id: paragraph.key_message_section.field_rich_text_description
+field_name: field_rich_text_description
+entity_type: paragraph
+bundle: key_message_section
+label: Description
+description: 'Optional. Expand on the Key message title in 1 or 2 sentences. We suggest that you use either a Subtitle or a Description. Note that selecting the bullet list icon will not show bullets on the page, but can be used to display a horizontal list of terms.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

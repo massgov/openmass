@@ -1,0 +1,27 @@
+uuid: 87649126-f6bb-406e-bffd-6fdfce2bd52c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_csv_file
+    - paragraphs.paragraphs_type.csv_table
+  module:
+    - csv_field
+id: paragraph.csv_table.field_csv_file
+field_name: field_csv_file
+entity_type: paragraph
+bundle: csv_table
+label: File
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: 'csv/[date:custom:Y]-[date:custom:m]'
+  file_extensions: csv
+  max_filesize: '10 MB'
+  description_field: true
+field_type: csv_file

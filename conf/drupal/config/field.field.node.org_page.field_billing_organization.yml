@@ -1,0 +1,71 @@
+uuid: 905073c5-0d13-4e5c-8cee-76ad15fb03d8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_billing_organization
+    - node.type.org_page
+    - taxonomy.vocabulary.billing_organizations
+  module:
+    - dynamic_entity_reference
+id: node.org_page.field_billing_organization
+field_name: field_billing_organization
+entity_type: node
+bundle: org_page
+label: 'Billing organization'
+description: 'Choose the billing organization that will be used for all content that has this organization listed as the first organization in the Organization(s) field.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  taxonomy_term:
+    handler: 'default:taxonomy_term'
+    handler_settings:
+      target_bundles:
+        billing_organizations: billing_organizations
+      sort:
+        field: name
+        direction: asc
+      auto_create: false
+      auto_create_bundle: ''
+  access_token:
+    handler: 'default:access_token'
+    handler_settings: {  }
+  contact_message:
+    handler: 'default:contact_message'
+    handler_settings: {  }
+  node:
+    handler: 'default:node'
+    handler_settings: {  }
+  crop:
+    handler: 'default:crop'
+    handler_settings: {  }
+  menu_link_content:
+    handler: 'default:menu_link_content'
+    handler_settings: {  }
+  file:
+    handler: 'default:file'
+    handler_settings: {  }
+  flagging:
+    handler: 'default:flagging'
+    handler_settings: {  }
+  media:
+    handler: 'default:media'
+    handler_settings: {  }
+  paragraph:
+    handler: 'default:paragraph'
+    handler_settings: {  }
+  redirect:
+    handler: 'default:redirect'
+    handler_settings: {  }
+  user:
+    handler: 'default:user'
+    handler_settings: {  }
+  user_ref_access:
+    handler: 'default:user_ref_access'
+    handler_settings: {  }
+  content_moderation_state:
+    handler: 'default:content_moderation_state'
+    handler_settings: {  }
+field_type: dynamic_entity_reference

@@ -1,0 +1,38 @@
+uuid: 70968e47-9bd8-4833-a2ef-17be353f0265
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_featured_item_highlight
+    - paragraphs.paragraphs_type.featured_item
+  module:
+    - image
+id: paragraph.featured_item.field_featured_item_highlight
+field_name: field_featured_item_highlight
+entity_type: paragraph
+bundle: featured_item
+label: 'Highlight Image'
+description: 'This is used on the mosaic in the desktop and tablet version as a portrait-oriented image if this item is the top left (position 1) featured item. It should have dimensions of 396 x 660.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'png gif jpg jpeg'
+  max_filesize: ''
+  max_resolution: ''
+  min_resolution: 396x660
+  alt_field: true
+  alt_field_required: false
+  title_field: false
+  title_field_required: false
+  default_image:
+    uuid: ''
+    alt: ''
+    title: ''
+    width: null
+    height: null
+field_type: image

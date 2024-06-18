@@ -1,0 +1,32 @@
+uuid: 316c8823-4eec-463f-bdb0-b45805851e5d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_description
+    - paragraphs.paragraphs_type.section_board_members
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.section_board_members.field_description
+field_name: field_description
+entity_type: paragraph
+bundle: section_board_members
+label: Description
+description: 'You may optionally add a description for this group of board members.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

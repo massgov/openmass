@@ -1,0 +1,157 @@
+uuid: 1b722da7-4615-4cf5-8e56-b94d96657c06
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_header_cta
+    - node.type.stacked_layout
+    - paragraphs.paragraphs_type.icon
+    - paragraphs.paragraphs_type.iframe
+    - paragraphs.paragraphs_type.image
+  module:
+    - entity_reference_revisions
+id: node.stacked_layout.field_header_cta
+field_name: field_header_cta
+entity_type: node
+bundle: stacked_layout
+label: 'Call to Action'
+description: 'The Call to Action can contain bits of actionable or fast-reference data for users.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      icon: icon
+      iframe: iframe
+      image: image
+    target_bundles_drag_drop:
+      1up_stacked_band:
+        weight: 43
+        enabled: false
+      2up_stacked_band:
+        weight: 44
+        enabled: false
+      3_up_content:
+        weight: 45
+        enabled: false
+      3_up_text:
+        weight: 46
+        enabled: false
+      action_address:
+        weight: 32
+        enabled: false
+      action_address_info:
+        weight: 33
+        enabled: false
+      action_area:
+        weight: 34
+        enabled: false
+      action_set:
+        weight: 50
+        enabled: false
+      action_step:
+        weight: 35
+        enabled: false
+      action_step_numbered:
+        weight: 36
+        enabled: false
+      action_step_numbered_list:
+        weight: 37
+        enabled: false
+      activities:
+        weight: 38
+        enabled: false
+      activity:
+        weight: 39
+        enabled: false
+      callout_alert:
+        weight: 40
+        enabled: false
+      callout_button:
+        weight: 41
+        enabled: false
+      callout_link:
+        weight: 42
+        enabled: false
+      completion_time:
+        weight: 43
+        enabled: false
+      contact:
+        weight: 44
+        enabled: false
+      contact_group:
+        weight: 45
+        enabled: false
+      contact_info:
+        weight: 46
+        enabled: false
+      emergency_alert:
+        weight: 63
+        enabled: false
+      file_download:
+        weight: 47
+        enabled: false
+      full_bleed:
+        weight: 48
+        enabled: false
+      hours:
+        weight: 49
+        enabled: false
+      icon:
+        weight: 50
+        enabled: true
+      icon_link:
+        weight: 68
+        enabled: false
+      icon_links:
+        weight: 69
+        enabled: false
+      iframe:
+        weight: 51
+        enabled: true
+      image:
+        weight: 71
+        enabled: true
+      location_information:
+        weight: 52
+        enabled: false
+      map:
+        weight: 53
+        enabled: false
+      pull_quote:
+        weight: 54
+        enabled: false
+      quick_action:
+        weight: 55
+        enabled: false
+      related_content:
+        weight: 76
+        enabled: false
+      related_link:
+        weight: 56
+        enabled: false
+      rich_text:
+        weight: 57
+        enabled: false
+      search_band:
+        weight: 79
+        enabled: false
+      slideshow:
+        weight: 58
+        enabled: false
+      stacked_band:
+        weight: 59
+        enabled: false
+      stat:
+        weight: 60
+        enabled: false
+      subhead:
+        weight: 61
+        enabled: false
+      video:
+        weight: 62
+        enabled: false
+field_type: entity_reference_revisions

@@ -1,0 +1,32 @@
+uuid: c476c89e-f1fb-4d84-aaa4-c96a76fda308
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_plain_description
+    - node.type.person
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.person.field_plain_description
+field_name: field_plain_description
+entity_type: node
+bundle: person
+label: Description
+description: 'The description is shown when a contact appears in a curated list. Limit of 375 characters.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,28 @@
+uuid: 2183a686-cd70-41e2-9f95-b5fbf882b48f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_guide_section_downloads
+    - media.type.document
+    - paragraphs.paragraphs_type.guide_section_3up
+id: paragraph.guide_section_3up.field_guide_section_downloads
+field_name: field_guide_section_downloads
+entity_type: paragraph
+bundle: guide_section_3up
+label: Downloads
+description: 'Upload any important forms that apply to this section.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,32 @@
+uuid: e6acc348-753c-4304-a711-5102006bd662
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_rules_listing_desc
+    - node.type.rules
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.rules.field_rules_listing_desc
+field_name: field_rules_listing_desc
+entity_type: node
+bundle: rules
+label: 'Listing description'
+description: 'Enter a short description (< 320) characters that may be used in curated lists and search results.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

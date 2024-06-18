@@ -1,0 +1,29 @@
+uuid: 4d5429b1-65ac-4814-bccd-dc2180763a21
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_collections
+    - node.type.topic_page
+    - taxonomy.vocabulary.collections
+id: node.topic_page.field_collections
+field_name: field_collections
+entity_type: node
+bundle: topic_page
+label: Collections
+description: 'Optional. Most content will not be in a collection. Only add content to a collection if the collection creator has approved it. <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing/collections-beta" target="_blank">Learn more about collections.</a><br/><br/>If this field is empty, then this page is not in a collection. Use the "Browse collections and topics" button to select any collections, topics, and sub topics for this content'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      collections: collections
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

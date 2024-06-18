@@ -1,0 +1,33 @@
+uuid: ba9282d7-1371-4c98-a0de-f417763bfccc
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - paragraphs
+id: paragraph.field_listdynamic_sort
+field_name: field_listdynamic_sort
+entity_type: paragraph
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: alpha
+      label: 'Alphabetical A-Z'
+    -
+      value: alpha_reverse
+      label: 'Reverse alphabetical Z to A'
+    -
+      value: desc
+      label: 'Date created, newest first'
+    -
+      value: asc
+      label: 'Date created, oldest first'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

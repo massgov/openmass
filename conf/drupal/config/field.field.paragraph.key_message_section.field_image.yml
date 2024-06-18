@@ -1,0 +1,38 @@
+uuid: cd856ee1-0c1d-49d0-84f8-2a969ea6d229
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_image
+    - paragraphs.paragraphs_type.key_message_section
+  module:
+    - image
+id: paragraph.key_message_section.field_image
+field_name: field_image
+entity_type: paragraph
+bundle: key_message_section
+label: 'Background Image'
+description: "Recommended image size is 2560 x 1280. Follow these guidelines to ensure high contrast and readability for text over images because users with vision deficiencies often have difficulty reading text that does not clearly standout against the background.\r\n<br><ol>\r\n<li>Select an overlay color that will provide adequate contrast. For dark images, choose a light overlay. For bright images, consider a dark overlay.</li>\r\n<li>Select high quality images to enhance quality with the overlay.</li>\r\n<li>Avoid images with too much noise or distracting patterns and textures.</li>\r\n<li>Test your pages and ensure that the text is clearly readable and legible.</li>\r\n<li>Choose a decorative image that does not need text explanation.  This is a background image and no ALT text is provided for visitors using a screenreader. If there is any text in the image, the text should be repeated in the content of the key message row.</li>\r\n</ol>"
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'png gif jpg jpeg'
+  max_filesize: ''
+  max_resolution: ''
+  min_resolution: 1200x600
+  alt_field: false
+  alt_field_required: true
+  title_field: false
+  title_field_required: false
+  default_image:
+    uuid: ''
+    alt: ''
+    title: ''
+    width: null
+    height: null
+field_type: image

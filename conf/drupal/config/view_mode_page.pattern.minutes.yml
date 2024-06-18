@@ -1,0 +1,23 @@
+uuid: 1bba6c46-7575-4888-bd02-ceee3bbc163a
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: minutes
+label: Minutes
+type: 'canonical_entities:node'
+pattern: '%/minutes'
+view_mode: minutes
+selection_criteria:
+  ac6710c7-d597-4231-801b-c69d72992f72:
+    id: 'entity_bundle:node'
+    bundles:
+      event: event
+    negate: false
+    context_mapping:
+      node: node
+    uuid: ac6710c7-d597-4231-801b-c69d72992f72
+selection_logic: and
+weight: -5
+relationships: {  }

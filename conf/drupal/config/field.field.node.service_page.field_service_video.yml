@@ -1,0 +1,29 @@
+uuid: 1a13b1c1-1302-4696-8b6d-36c550aaa64d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_service_video
+    - media.type.media_video
+    - node.type.service_page
+id: node.service_page.field_service_video
+field_name: field_service_video
+entity_type: node
+bundle: service_page
+label: 'Video link'
+description: 'Legacy field, not recommended for further use.  Videos added here will display near the top of the service page. We will phase this field out and recommend you instead add any video in a service section on the content tab. Videos added there can be placed anywhere on the page.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      media_video: media_video
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

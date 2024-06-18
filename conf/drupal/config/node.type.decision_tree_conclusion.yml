@@ -1,0 +1,37 @@
+uuid: 8e791f47-176b-4964-8764-3ac90e5ace3f
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  mass_content_api:
+    parents: null
+    children:
+      - field_add_video>field_video
+      - field_decision_actions
+    linking_pages:
+      - 'field_add_video>*'
+      - field_decision_actions
+      - field_decision_root_ref
+      - field_description
+  mass_admin_pages:
+    node_type_long_description: ''
+    node_type_url: ''
+    node_type_category: decision_tree
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_decision-conclusion.svg
+  node_title_help_text:
+    title_help: ''
+name: 'Decision Tree Conclusion'
+type: decision_tree_conclusion
+description: '<p>Provide users with the proper information based on the answers they''ve provided while navigating a Decision Tree.</p><p><a href="https://www.mass.gov/kb/decision-tree-conclusions" target="_blank">Learn more about Decision Tree conclusions.</a></p>'
+help: '<p>Making a decision tree is complex. It is important that you read our <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/decision-tree-beta" target="_blank">knowledge base article</a> before attempting to build one. <em>This content type is currently in beta.</em></p>'
+new_revision: true
+preview_mode: 1
+display_submitted: false

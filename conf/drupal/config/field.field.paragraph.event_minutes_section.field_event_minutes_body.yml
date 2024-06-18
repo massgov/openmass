@@ -1,0 +1,29 @@
+uuid: 4cdb1f48-ba04-49c5-b62b-7834e97eaf59
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_event_minutes_body
+    - paragraphs.paragraphs_type.event_minutes_section
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: paragraph.event_minutes_section.field_event_minutes_body
+field_name: field_event_minutes_body
+entity_type: paragraph
+bundle: event_minutes_section
+label: 'Minutes section body'
+description: 'Add the text for this section of the minutes.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

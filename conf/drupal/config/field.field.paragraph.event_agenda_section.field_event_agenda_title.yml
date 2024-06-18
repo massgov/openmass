@@ -1,0 +1,32 @@
+uuid: 8ff7e3e5-649b-4ee6-94b7-b6ebfb62c77e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_event_agenda_title
+    - paragraphs.paragraphs_type.event_agenda_section
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.event_agenda_section.field_event_agenda_title
+field_name: field_event_agenda_title
+entity_type: paragraph
+bundle: event_agenda_section
+label: 'Agenda section heading'
+description: "Add a heading for this section.  If you don't want a heading, you can leave this blank."
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

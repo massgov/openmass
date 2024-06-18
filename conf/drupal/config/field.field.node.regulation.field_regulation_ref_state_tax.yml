@@ -1,0 +1,28 @@
+uuid: a7f9598a-4e6c-4d00-be2a-b953bfa0e29a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_regulation_ref_state_tax
+    - node.type.regulation
+    - taxonomy.vocabulary.advisory_publish_state
+id: node.regulation.field_regulation_ref_state_tax
+field_name: field_regulation_ref_state_tax
+entity_type: node
+bundle: regulation
+label: 'Regulation status'
+description: 'Optional. Indicate the status of this regulation, such as Draft, Working Draft, or Proposed.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      advisory_publish_state: advisory_publish_state
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: advisory_publish_state
+field_type: entity_reference

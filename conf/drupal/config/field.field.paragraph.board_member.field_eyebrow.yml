@@ -1,0 +1,32 @@
+uuid: 857d9e07-9a50-4ab0-a777-88f996f72e34
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_eyebrow
+    - paragraphs.paragraphs_type.board_member
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.board_member.field_eyebrow
+field_name: field_eyebrow
+entity_type: paragraph
+bundle: board_member
+label: 'Board role'
+description: 'Enter the role of this person on this board. Examples: Chairman, Executive Director, Board Member, Commissioner'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

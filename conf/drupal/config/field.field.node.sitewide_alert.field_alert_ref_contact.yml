@@ -1,0 +1,29 @@
+uuid: 7932e225-17b2-4daf-ae84-fc4957a68ee8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alert_ref_contact
+    - node.type.contact_information
+    - node.type.sitewide_alert
+id: node.sitewide_alert.field_alert_ref_contact
+field_name: field_alert_ref_contact
+entity_type: node
+bundle: sitewide_alert
+label: Contact
+description: 'Optional. Select a contact information item to appear in the sidebar on the Alert Detail page. You may need to <a href="node/add/contact_information">create it</a> before adding it here.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

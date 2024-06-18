@@ -1,0 +1,85 @@
+uuid: 03ad909a-a79b-43a0-b2c2-548a554eab07
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node-edit-how-to-page
+label: node-edit-how-to-page
+module: node
+routes:
+  -
+    route_name: custom.route
+tips:
+  what-is-a-how-to-page-:
+    id: what-is-a-how-to-page-
+    plugin: text
+    label: 'What is a How-to Page?'
+    weight: -100
+    position: top-start
+    attributes: null
+    body: 'The How-to Page helps users do something. It’s an essential part of the service suite, since needing to accomplish something is one of the main reasons users visit Mass.gov. Even if they’re looking for information, they usually need that information in order to achieve some goal. <br><br>When you author a How-to page, you’re describing the steps users need to take to do what they want to do. <br><br><u><a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/how-to-pages" target="_blank"> Learn more about authoring How-tos.</a></u> <br><br>Continue with your How-to tour by clicking "Next."'
+  make-sure-you-click-through-all-the-tabs-:
+    id: make-sure-you-click-through-all-the-tabs-
+    plugin: text
+    label: 'Make sure you click through all the tabs.'
+    weight: -99
+    position: bottom-start
+    selector: .horizontal-tab-button-1
+    body: 'Before you can save a draft of a How-to Page, you’ll need to fill out the required fields, which are marked with red asterisks.'
+  service-name:
+    id: service-name
+    plugin: text
+    label: 'Action type'
+    weight: -98
+    position: bottom-start
+    selector: .form-item-field-how-to-taxo-action-type
+    body: 'For example, you’ll have to tell Mass.gov what type of action users who visit this How-to page will take. What you pick here will affect the headings when you publish your How-to.'
+  title-and-short-description:
+    id: title-and-short-description
+    plugin: text
+    label: 'Title and short description'
+    weight: -97
+    position: bottom-start
+    selector: '#edit-title-wrapper'
+    body: 'You’ll also need a title and a short description, or lede. These are especially important for search engines like Google. Try to use the same language your audience would when they search for your content with Google or Yahoo!.'
+  revision-log:
+    id: revision-log
+    plugin: text
+    label: 'Revision log'
+    weight: -96
+    position: left-start
+    selector: '#edit-revision-log-0-value'
+    body: 'If you author content collaboratively with other authors, use this section to let collaborators know what work you’ve done. <br><br>Anything you write here will be saved to the revision log, which you can access by clicking “Revisions” in the upper right. The “Revisions” tab will only be available after you have saved a draft.'
+  temporary-access-to-unpublished-content:
+    id: temporary-access-to-unpublished-content
+    plugin: text
+    label: 'Temporary access to unpublished content'
+    weight: -95
+    position: left-start
+    selector: '#edit-enable-restricted-content'
+    body: 'If you need to share your work with a reviewer who does not have a login to the CMS, you can allow temporary access to unpublished content. This option will only be available <strong>after</strong> you have saved a draft. <br><br><u><a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/temporary-unpublished-access" target="_blank">To learn how to do this, read our resource on temporary access.</a></u>'
+  saving-drafts-and-publishing:
+    id: saving-drafts-and-publishing
+    plugin: text
+    label: 'Saving drafts and publishing'
+    weight: -94
+    position: top-start
+    selector: .node-form-footer
+    body: 'After you’ve filled out the required fields, you can save your work. If you select <strong>"Prepublished Draft,"</strong> your work will be saved, but it will not be live on the internet. Only CMS users who are logged in will be able to see it.'
+  saving-drafts-and-publishing-con-t-:
+    id: saving-drafts-and-publishing-con-t-
+    plugin: text
+    label: 'Saving drafts and publishing (continued)'
+    weight: -93
+    position: top-start
+    selector: .node-form-footer
+    body: 'You can also pick: <br><br><strong>"Prepublished Needs Review."</strong> This saves a draft of your content and marks it as needing review. Other CMS users (like anyone who has to approve your work) will be able to search for and find it in the "Needs Review" menu. <br><br><strong>"Published."</strong> This publishes your work. Anybody who has the URL will be able get to your content. It will also be searchable on Mass.gov.'
+  want-more-help-authoring-how-tos-:
+    id: want-more-help-authoring-how-tos-
+    plugin: text
+    label: 'Was this tour helpful? '
+    weight: -92
+    position: top-start
+    attributes: null
+    body: 'Your feedback is important to us. <u><a href="https://massgov.service-now.com/sp?id=sc_cat_item&sys_id=0bb8e784dbec0700f132fb37bf9619fe" target="_blank">Take 1 minute to tell us what you think by commenting in a Service Now request.</a></u>'

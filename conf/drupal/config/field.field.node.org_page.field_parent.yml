@@ -1,0 +1,28 @@
+uuid: fce5988d-9cd4-4936-ac6b-0b66555c5f10
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_parent
+    - node.type.org_page
+id: node.org_page.field_parent
+field_name: field_parent
+entity_type: node
+bundle: org_page
+label: 'Organization parent'
+description: "Choose the parent organization if you want this organization's content to appear in a filtered search within a parent organization. You should only enter the parent that is directly above the current organization. For example, for the Bureau of Health Professions Licensure within the Department of Public Health, enter the Department of Public Health as the parent organization on the bureau's org page.  This field is important for search and reporting. "
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: mass_select_filter
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: 0
+    auto_create_bundle: ''
+field_type: entity_reference

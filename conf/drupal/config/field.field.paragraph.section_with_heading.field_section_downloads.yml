@@ -1,0 +1,28 @@
+uuid: 92dd798d-4494-441b-8a21-7807c0fced7a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_section_downloads
+    - media.type.document
+    - paragraphs.paragraphs_type.section_with_heading
+id: paragraph.section_with_heading.field_section_downloads
+field_name: field_section_downloads
+entity_type: paragraph
+bundle: section_with_heading
+label: Downloads
+description: 'Upload or add any important forms or documents that apply to this section.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: _none
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

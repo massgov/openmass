@@ -1,0 +1,39 @@
+uuid: 1acaa02c-7734-4cf0-be29-20fc738ccc18
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_geofield
+    - paragraphs.paragraphs_type.address
+  module:
+    - geocoder_field
+    - geofield
+third_party_settings:
+  geocoder_field:
+    method: geocode
+    weight: 0
+    field: field_address_address
+    hidden: false
+    disabled: false
+    providers:
+      - opencage
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: empty
+      status_message: true
+      log: true
+    skip_not_empty_value: false
+id: paragraph.address.field_geofield
+field_name: field_geofield
+entity_type: paragraph
+bundle: address
+label: Geofield
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  backend: geofield_backend_default
+field_type: geofield

@@ -1,0 +1,30 @@
+uuid: 0207be5d-5307-4a0c-897b-e016abb53b2b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_event_address_type
+field_name: field_event_address_type
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: unique
+      label: 'Unique address'
+    -
+      value: 'contact info'
+      label: 'Address from contact information item'
+    -
+      value: none
+      label: 'No address required'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

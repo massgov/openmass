@@ -1,0 +1,23 @@
+uuid: ee289180-b6fb-4f9f-be2a-1630397f5472
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_links
+    - node.type.location
+  module:
+    - link
+id: node.location.field_links
+field_name: field_links
+entity_type: node
+bundle: location
+label: 'Quick Actions'
+description: "If you've chosen a page on Mass.gov, leave the Link text empty to automatically use the title of that page. If you prefer to use a different title, or for any external link, please enter the text that will be made into a link."
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 1
+  link_type: 17
+field_type: link

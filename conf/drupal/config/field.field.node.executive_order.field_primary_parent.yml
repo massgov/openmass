@@ -1,0 +1,54 @@
+uuid: 161dbab5-5763-4e42-b8b6-c4f147a8ea03
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_primary_parent
+    - node.type.binder
+    - node.type.campaign_landing
+    - node.type.curated_list
+    - node.type.decision_tree
+    - node.type.executive_order
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.info_details
+    - node.type.org_page
+    - node.type.service_page
+  module:
+    - entity_hierarchy
+    - require_on_publish
+third_party_settings:
+  require_on_publish:
+    require_on_publish: true
+id: node.executive_order.field_primary_parent
+field_name: field_primary_parent
+entity_type: node
+bundle: executive_order
+label: 'Parent page'
+description: '<p>Choose the parent for the current page. Parents are higher-level pages that link to child pages that contain more detailed content. Normally, you will want to make sure that you have a link on the parent to this page. Learn more about the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing/parent-page-field-and-breadcrumb-based-navigation" target="_blank">Parent page field</a>.</p> <p>The breadcrumb that this field will generate is shown below. If you select a new parent, the breadcrumb that would result in is shown.</p> '
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      binder: binder
+      curated_list: curated_list
+      decision_tree: decision_tree
+      guide_page: guide_page
+      how_to_page: how_to_page
+      info_details: info_details
+      org_page: org_page
+      campaign_landing: campaign_landing
+      service_page: service_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: binder
+  weight_min: -50
+  weight_max: 50
+  weight_label: Weight
+field_type: entity_reference_hierarchy

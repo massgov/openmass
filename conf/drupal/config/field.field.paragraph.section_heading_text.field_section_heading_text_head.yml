@@ -1,0 +1,32 @@
+uuid: aa9e98da-7caf-4d32-a4d5-ac0e112bbb20
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_section_heading_text_head
+    - paragraphs.paragraphs_type.section_heading_text
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.section_heading_text.field_section_heading_text_head
+field_name: field_section_heading_text_head
+entity_type: paragraph
+bundle: section_heading_text
+label: Heading
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

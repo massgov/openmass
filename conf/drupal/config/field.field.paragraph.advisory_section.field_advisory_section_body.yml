@@ -1,0 +1,29 @@
+uuid: 6d182434-ed57-49b3-82a3-3fab78d71dc6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_advisory_section_body
+    - paragraphs.paragraphs_type.advisory_section
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: paragraph.advisory_section.field_advisory_section_body
+field_name: field_advisory_section_body
+entity_type: paragraph
+bundle: advisory_section
+label: 'Section Body'
+description: 'Enter the text of this advisory section.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

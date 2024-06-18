@@ -1,0 +1,23 @@
+uuid: f6bb6cbf-e455-40cb-ac3a-c16c5e31516d
+langcode: en
+status: true
+dependencies:
+  module:
+    - ctools
+    - media
+id: documents
+label: Documents
+type: 'canonical_entities:media'
+pattern: 'doc/[media:field_title]'
+selection_criteria:
+  3925c9c6-08c0-44d1-bba8-6427d67ba42c:
+    id: 'entity_bundle:media'
+    negate: false
+    uuid: 3925c9c6-08c0-44d1-bba8-6427d67ba42c
+    context_mapping:
+      media: media
+    bundles:
+      document: document
+selection_logic: and
+weight: -5
+relationships: {  }

@@ -1,0 +1,32 @@
+uuid: 0bd50da4-b0ba-4cdb-8049-225fa40dbe62
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_regulation_cmr_chapter
+    - node.type.regulation
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.regulation.field_regulation_cmr_chapter
+field_name: field_regulation_cmr_chapter
+entity_type: node
+bundle: regulation
+label: 'CMR chapter number'
+description: 'A number to the right of “CMR” in the number of the regulation. This represents the chapter of the regulation. You may include decimals and letters in the chapter number.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

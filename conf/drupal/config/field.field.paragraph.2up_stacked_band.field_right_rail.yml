@@ -1,0 +1,150 @@
+uuid: c6c5715b-0bbd-4a96-b613-f24835062a71
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_right_rail
+    - paragraphs.paragraphs_type.2up_stacked_band
+    - paragraphs.paragraphs_type.contact_group
+    - paragraphs.paragraphs_type.icon_links
+    - paragraphs.paragraphs_type.iframe
+    - paragraphs.paragraphs_type.quick_action
+    - paragraphs.paragraphs_type.related_content
+    - paragraphs.paragraphs_type.related_link
+    - paragraphs.paragraphs_type.subhead
+  module:
+    - entity_reference_revisions
+id: paragraph.2up_stacked_band.field_right_rail
+field_name: field_right_rail
+entity_type: paragraph
+bundle: 2up_stacked_band
+label: 'Right rail'
+description: 'This will take up 30% of this row.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      contact_group: contact_group
+      iframe: iframe
+      quick_action: quick_action
+      related_link: related_link
+      icon_links: icon_links
+      subhead: subhead
+      related_content: related_content
+    target_bundles_drag_drop:
+      1up_stacked_band:
+        weight: 32
+        enabled: false
+      2up_stacked_band:
+        weight: 33
+        enabled: false
+      action_address:
+        weight: 34
+        enabled: false
+      action_address_info:
+        weight: 35
+        enabled: false
+      action_area:
+        weight: 36
+        enabled: false
+      action_step:
+        weight: 37
+        enabled: false
+      action_step_numbered:
+        weight: 38
+        enabled: false
+      action_step_numbered_list:
+        weight: 39
+        enabled: false
+      activities:
+        weight: 44
+        enabled: false
+      activity:
+        weight: 45
+        enabled: false
+      callout_alert:
+        weight: 40
+        enabled: false
+      callout_button:
+        weight: 41
+        enabled: false
+      callout_link:
+        weight: 42
+        enabled: false
+      completion_time:
+        weight: 43
+        enabled: false
+      contact:
+        weight: 44
+        enabled: false
+      contact_group:
+        weight: 45
+        enabled: true
+      contact_info:
+        weight: 46
+        enabled: false
+      emergency_alert:
+        weight: 55
+        enabled: false
+      file_download:
+        weight: 47
+        enabled: false
+      full_bleed:
+        weight: 48
+        enabled: false
+      hours:
+        weight: 49
+        enabled: false
+      icon:
+        weight: 50
+        enabled: false
+      icon_link:
+        weight: 57
+        enabled: false
+      icon_links:
+        weight: 58
+        enabled: true
+      iframe:
+        weight: 51
+        enabled: true
+      location_information:
+        weight: 52
+        enabled: false
+      map:
+        weight: 53
+        enabled: false
+      pull_quote:
+        weight: 54
+        enabled: false
+      quick_action:
+        weight: 55
+        enabled: true
+      related_content:
+        weight: 67
+        enabled: true
+      related_link:
+        weight: 56
+        enabled: true
+      rich_text:
+        weight: 57
+        enabled: false
+      slideshow:
+        weight: 58
+        enabled: false
+      stacked_band:
+        weight: 59
+        enabled: false
+      stat:
+        weight: 60
+        enabled: false
+      subhead:
+        weight: 61
+        enabled: true
+      video:
+        weight: 62
+        enabled: false
+field_type: entity_reference_revisions

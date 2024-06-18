@@ -1,0 +1,22 @@
+uuid: 5a09943b-c2bf-4bf6-9f10-ab6ab15a3d31
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: campaign_landing
+label: 'Campaign Landing'
+type: 'canonical_entities:node'
+pattern: '[node:title]'
+selection_criteria:
+  7067b6db-f497-40db-8dfc-44e03edbde4d:
+    id: 'entity_bundle:node'
+    negate: false
+    uuid: 7067b6db-f497-40db-8dfc-44e03edbde4d
+    context_mapping:
+      node: node
+    bundles:
+      campaign_landing: campaign_landing
+selection_logic: and
+weight: -5
+relationships: {  }

@@ -1,0 +1,32 @@
+uuid: 57128384-34b3-4917-8ac5-16b96b5eabe9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_external_org_name
+    - paragraphs.paragraphs_type.external_organization
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.external_organization.field_external_org_name
+field_name: field_external_org_name
+entity_type: paragraph
+bundle: external_organization
+label: 'Name '
+description: 'Please provide the external organization’s name. This will appear in the signee box at the top of the page and in the bio area after the main text.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

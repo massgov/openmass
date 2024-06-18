@@ -1,0 +1,29 @@
+uuid: cbed02fa-6c8f-42b6-8f46-0a9c9769188c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_data_topic
+    - node.type.external_data_resource
+    - taxonomy.vocabulary.data_topic
+id: node.external_data_resource.field_data_topic
+field_name: field_data_topic
+entity_type: node
+bundle: external_data_resource
+label: 'Data topic'
+description: 'Choose data topics and subtopics that apply to this page.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      data_topic: data_topic
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

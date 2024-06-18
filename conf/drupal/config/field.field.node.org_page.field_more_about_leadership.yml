@@ -1,0 +1,29 @@
+uuid: d0ec14bd-5ab2-4328-9062-36f18b56828c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_more_about_leadership
+    - node.type.org_page
+    - node.type.person
+id: node.org_page.field_more_about_leadership
+field_name: field_more_about_leadership
+entity_type: node
+bundle: org_page
+label: 'More about leadership'
+description: 'Consider moving this link to your contact section or any section with an overview of the organization.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      person: person
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

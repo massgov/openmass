@@ -1,0 +1,109 @@
+_core:
+  default_config_hash: blfmQx2l-O0o6lCjybd2SQ2mMo0Qv7USRev0G4O--QE
+mirror_operations:
+  'view scheduled transition': update
+  'add scheduled transition': update
+  'reschedule scheduled transitions': update
+automation:
+  cron_create_queue_items: false
+bundles:
+  -
+    entity_type: media
+    bundle: document
+  -
+    entity_type: node
+    bundle: action
+  -
+    entity_type: node
+    bundle: advisory
+  -
+    entity_type: node
+    bundle: alert
+  -
+    entity_type: node
+    bundle: binder
+  -
+    entity_type: node
+    bundle: campaign_landing
+  -
+    entity_type: node
+    bundle: contact_information
+  -
+    entity_type: node
+    bundle: curated_list
+  -
+    entity_type: node
+    bundle: decision
+  -
+    entity_type: node
+    bundle: decision_tree
+  -
+    entity_type: node
+    bundle: decision_tree_branch
+  -
+    entity_type: node
+    bundle: decision_tree_conclusion
+  -
+    entity_type: node
+    bundle: event
+  -
+    entity_type: node
+    bundle: executive_order
+  -
+    entity_type: node
+    bundle: external_data_resource
+  -
+    entity_type: node
+    bundle: fee
+  -
+    entity_type: node
+    bundle: form_page
+  -
+    entity_type: node
+    bundle: guide_page
+  -
+    entity_type: node
+    bundle: how_to_page
+  -
+    entity_type: node
+    bundle: info_details
+  -
+    entity_type: node
+    bundle: location
+  -
+    entity_type: node
+    bundle: location_details
+  -
+    entity_type: node
+    bundle: news
+  -
+    entity_type: node
+    bundle: org_page
+  -
+    entity_type: node
+    bundle: page
+  -
+    entity_type: node
+    bundle: person
+  -
+    entity_type: node
+    bundle: regulation
+  -
+    entity_type: node
+    bundle: rules
+  -
+    entity_type: node
+    bundle: service_page
+  -
+    entity_type: node
+    bundle: sitewide_alert
+  -
+    entity_type: node
+    bundle: stacked_layout
+  -
+    entity_type: node
+    bundle: topic_page
+message_transition_latest: 'Scheduled transition: transitioning latest revision from [scheduled-transitions:from-state] to [scheduled-transitions:to-state]'
+message_transition_historical: 'Scheduled transition: copied revision #[scheduled-transitions:from-revision-id] and changed from [scheduled-transitions:from-state] to [scheduled-transitions:to-state]'
+message_transition_copy_latest_draft: 'Scheduled transition: reverted [scheduled-transitions:latest-state] revision #[scheduled-transitions:latest-revision-id] back to top'
+message_override: false

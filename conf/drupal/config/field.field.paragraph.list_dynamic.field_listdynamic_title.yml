@@ -1,0 +1,32 @@
+uuid: b6f01d87-12b7-45c0-9d1a-6e615fd6fa3b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_listdynamic_title
+    - paragraphs.paragraphs_type.list_dynamic
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.list_dynamic.field_listdynamic_title
+field_name: field_listdynamic_title
+entity_type: paragraph
+bundle: list_dynamic
+label: 'List title'
+description: 'The title of your list. If you have only one list, this title will not appear. If you have more than one list, it will appear as the subheader for your list on the page and as a clickable link in the table of contents section at the top of the page.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

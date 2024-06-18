@@ -1,0 +1,30 @@
+uuid: 1972bf5f-9a09-4d49-bc2c-832142d72c85
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_featured_content
+    - node.type.action
+    - node.type.stacked_layout
+    - paragraphs.paragraphs_type.action_set
+id: paragraph.action_set.field_featured_content
+field_name: field_featured_content
+entity_type: paragraph
+bundle: action_set
+label: Featured
+description: 'Select featured content.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      action: action
+      stacked_layout: stacked_layout
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: action
+field_type: entity_reference

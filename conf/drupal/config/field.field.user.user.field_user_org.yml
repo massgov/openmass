@@ -1,0 +1,29 @@
+uuid: d3c523f3-a8d3-4c4b-a38d-962d3bdab16b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_user_org
+    - taxonomy.vocabulary.user_organization
+  module:
+    - user
+id: user.user.field_user_org
+field_name: field_user_org
+entity_type: user
+bundle: user
+label: Organization
+description: 'Please select the agency or organization this user is connected to.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      user_organization: user_organization
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

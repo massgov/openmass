@@ -1,0 +1,28 @@
+uuid: 8becfbb3-6cf3-404f-ac71-5b207d0fdab1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_service_eligibility_info
+    - node.type.info_details
+    - node.type.service_page
+id: node.service_page.field_service_eligibility_info
+field_name: field_service_eligibility_info
+entity_type: node
+bundle: service_page
+label: 'Eligibility information'
+description: 'Optional: If there is eligibility information that applies to this service, you can add a link to a Service Details or Info Details page containing eligibility information here. You might need to create a <a href="/node/add/info_details" target="_blank">Information Details page</a> before referencing it.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: mass_select_filter
+  handler_settings:
+    target_bundles:
+      info_details: info_details
+    sort:
+      field: _none
+    auto_create: 0
+    auto_create_bundle: info_details
+field_type: entity_reference

@@ -1,0 +1,27 @@
+uuid: b081b0b5-e951-4596-b67d-8e23568eb813
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_alert_title_link
+field_name: field_alert_title_link
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: link
+      label: 'Link to an existing page on Mass.gov or to an external page'
+    -
+      value: nolink
+      label: 'Show the Alert title only, with no link'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

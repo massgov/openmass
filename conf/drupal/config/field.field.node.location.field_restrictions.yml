@@ -1,0 +1,29 @@
+uuid: 60a06c13-5376-403a-abda-7fdfb0b03bcd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_restrictions
+    - node.type.location
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: node.location.field_restrictions
+field_name: field_restrictions
+entity_type: node
+bundle: location
+label: Restrictions
+description: 'List any restrictions that apply to this location as a bulleted list. For example, no dogs, do not bring your own firewood, etc. You may also use subheadings if the list can be grouped.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

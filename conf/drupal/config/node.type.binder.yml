@@ -1,0 +1,38 @@
+uuid: 8129febd-29ad-4bec-ab20-f3529119ceb2
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  mass_content_api:
+    parents:
+      - field_binder_ref_organization
+    children:
+      - field_binder_pages>field_page_page
+      - field_binder_pages>field_page_group_page
+    linking_pages:
+      - referencing_services_more_about
+      - field_binder_pages>field_page_page
+      - field_contact
+      - field_binder_overview>field_section_heading_text_body
+  mass_admin_pages:
+    node_type_long_description: "<ul>\r\n<li>Long form reports</li>\r\n<li>Chapter books</li>\r\n<li>Collections of similarly-themed content</li>\r\n</ul>"
+    node_type_url: ''
+    node_type_category: service_suite
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_binder.svg
+  node_title_help_text:
+    title_help: ''
+name: Binder
+type: binder
+description: '<p>Ties related content together. Includes a table of contents and other navigational tools that encourage users to read content in an order you set. </p><p><a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/binders" target="_blank">Learn more about creating Binders.</a></p>'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

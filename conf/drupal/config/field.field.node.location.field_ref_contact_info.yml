@@ -1,0 +1,28 @@
+uuid: a53c6175-7698-4d8a-831a-2d9e19b47969
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ref_contact_info
+    - node.type.contact_information
+    - node.type.location
+id: node.location.field_ref_contact_info
+field_name: field_ref_contact_info
+entity_type: node
+bundle: location
+label: 'Additional Contacts'
+description: 'If there are other contacts that visitors to this location might need (for example, departments, separate features such as a museum or observatory, American Disabilities Act contacts, or offices at a courthouse), select them here. You might need to <a href="/node/add/contact_information" target="blank">create a Contact</a> before referencing it here.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

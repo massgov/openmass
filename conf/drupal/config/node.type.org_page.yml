@@ -1,0 +1,53 @@
+uuid: d057c539-afdf-40b1-a213-a223e967a73e
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  mass_content_api:
+    parents: null
+    children:
+      - field_organization_sections>field_section_long_form_content>field_org_ref_locations
+      - field_organization_sections>field_section_long_form_content>field_link_group_link
+      - field_organization_sections>field_section_long_form_content>field_read_more_page
+      - field_person_bio
+      - field_organization_sections>field_section_long_form_content>field_wwyltd_top_s_links
+      - field_organization_sections>field_section_long_form_content>field_featured_item_mosaic_items>field_featured_item_link
+      - 'field_organization_sections>field_section_long_form_content>field_org_our_orgs>*'
+      - field_organization_sections>field_section_long_form_content>field_featured_message_content
+    linking_pages:
+      - field_organization_sections>field_section_long_form_content>field_wwyltd_top_s_links
+      - field_organization_sections>field_section_long_form_content>field_org_featured_news_items
+      - field_organization_sections>field_section_long_form_content>field_org_ref_locations
+      - field_organization_sections>field_section_long_form_content>field_link_group_link
+      - field_organization_sections>field_section_long_form_content>field_featured_topics_topics
+      - field_organization_sections>field_section_long_form_content>field_featured_topics_topics>field_topic_content_cards>field_content_card_link_cards
+      - field_organization_sections>field_section_long_form_content>field_org_featured_news_items
+      - field_ref_contact_info
+      - field_ref_contact_info_1
+      - field_organization_sections>field_section_long_form_content>field_ref_orgs
+      - field_person_bio
+      - field_organization_sections>field_section_long_form_content>field_featured_item_mosaic_items>field_featured_item_link
+      - 'field_organization_sections>field_section_long_form_content>field_org_our_orgs>*'
+      - field_organization_sections>field_section_long_form_content>field_body
+  mass_admin_pages:
+    node_type_long_description: " <ul> \r\n<li>Organizations</li>\r\n<li>Elected officials</li>\r\n<li>Commissions</li>\r\n<li>Boards</li>\r\n</ul>"
+    node_type_url: ''
+    node_type_category: organization
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_organizational-landing.svg
+  node_title_help_text:
+    title_help: ''
+name: Organization
+type: org_page
+description: '<p>Connect readers with your agency’s Services, Locations, News, and Events.</p><p><a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/orgs-and-contact-info/organization-pages/general-org-page" target="_blank">Learn more about authoring Organization Pages.</a></p>'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

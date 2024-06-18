@@ -1,0 +1,32 @@
+uuid: 8e3402a8-c9b6-4a8d-8ab0-bd1ed46c73f0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_event_minutes_title
+    - paragraphs.paragraphs_type.event_minutes_section
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.event_minutes_section.field_event_minutes_title
+field_name: field_event_minutes_title
+entity_type: paragraph
+bundle: event_minutes_section
+label: 'Minutes section heading'
+description: "Add a heading for this section.  If you don't want a heading, you can leave this blank."
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

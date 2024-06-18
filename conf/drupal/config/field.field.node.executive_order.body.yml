@@ -1,0 +1,31 @@
+uuid: 3d410cbf-9bf9-4d31-b433-c27df2887399
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.executive_order
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: node.executive_order.body
+field_name: body
+entity_type: node
+bundle: executive_order
+label: Body
+description: 'The text of the executive order.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+field_type: text_with_summary

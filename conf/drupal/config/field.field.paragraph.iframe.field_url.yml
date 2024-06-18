@@ -1,0 +1,23 @@
+uuid: bcdcf17e-8c33-4538-9ef2-459e67a78d70
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_url
+    - paragraphs.paragraphs_type.iframe
+  module:
+    - link
+id: paragraph.iframe.field_url
+field_name: field_url
+entity_type: paragraph
+bundle: iframe
+label: URL
+description: 'Add source URL for iframe. URL must start with HTTPS. Please verify that the domain you want to use is on the list of <a href="https://www.mass.gov/allowed-domains">allowed domains</a>. If you want to request the ability to use another domain or if you want to get access to create iframe code in the massgov.github.io domain, please use our <a href="https://massgov.formstack.com/forms/iframe_request_form">iframe request form</a>.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 0
+  link_type: 16
+field_type: link

@@ -1,0 +1,29 @@
+uuid: 76c3c7c3-3a5b-4e31-ba1f-97b13ac0d221
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ref_contact_info_1
+    - node.type.contact_information
+    - node.type.org_page
+id: node.org_page.field_ref_contact_info_1
+field_name: field_ref_contact_info_1
+entity_type: node
+bundle: org_page
+label: 'Primary Contact Information'
+description: 'Select the primary Contact information for your organization, such as the main office or headquarters. You might need to <a href="/node/add/contact_information">create it</a> before referencing it here. <strong>Contact information will only appear on your Org page if you add a Contact and Logo section under the "Content" tab.</strong>'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

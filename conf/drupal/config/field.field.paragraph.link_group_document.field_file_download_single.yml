@@ -1,0 +1,29 @@
+uuid: ee736699-3c60-42ce-b09a-297fefe29acf
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_file_download_single
+    - media.type.document
+    - paragraphs.paragraphs_type.link_group_document
+id: paragraph.link_group_document.field_file_download_single
+field_name: field_file_download_single
+entity_type: paragraph
+bundle: link_group_document
+label: 'File Download'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: name
+      direction: ASC
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

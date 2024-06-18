@@ -1,0 +1,116 @@
+uuid: b807415d-8a9f-4a6b-a873-f483747fb096
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.campaign_landing
+  module:
+    - content_moderation
+id: campaign_landing_page
+label: 'Promotional page'
+type: content_moderation
+type_settings:
+  states:
+    draft:
+      label: Draft
+      weight: -4
+      published: false
+      default_revision: false
+    needs_review:
+      label: 'Needs Review'
+      weight: -3
+      published: false
+      default_revision: false
+    prepublished_draft:
+      label: 'Prepublished Draft'
+      weight: -2
+      published: false
+      default_revision: false
+    prepublished_needs_review:
+      label: 'Prepublished Needs Review'
+      weight: -1
+      published: false
+      default_revision: false
+    published:
+      label: Published
+      weight: 0
+      published: true
+      default_revision: true
+    trash:
+      label: Trash
+      weight: 1
+      published: false
+      default_revision: true
+    unpublished:
+      label: Unpublished
+      weight: 2
+      published: false
+      default_revision: true
+  transitions:
+    move_to_trash:
+      label: 'Move to Trash'
+      from:
+        - draft
+        - needs_review
+        - prepublished_draft
+        - prepublished_needs_review
+        - published
+        - unpublished
+      to: trash
+      weight: 1
+    needs_review:
+      label: 'Needs Review'
+      from:
+        - draft
+        - needs_review
+        - published
+        - unpublished
+      to: needs_review
+      weight: -3
+    prepublished_draft:
+      label: 'Prepublished Draft'
+      from:
+        - prepublished_draft
+        - prepublished_needs_review
+      to: prepublished_draft
+      weight: -2
+    prepublished_needs_review:
+      label: 'Prepublished Needs Review'
+      from:
+        - prepublished_draft
+        - prepublished_needs_review
+      to: prepublished_needs_review
+      weight: -1
+    publish:
+      label: Publish
+      from:
+        - draft
+        - needs_review
+        - prepublished_draft
+        - prepublished_needs_review
+        - published
+        - trash
+        - unpublished
+      to: published
+      weight: 0
+    to_draft:
+      label: 'To Draft'
+      from:
+        - draft
+        - needs_review
+        - published
+        - unpublished
+      to: draft
+      weight: -4
+    unpublish:
+      label: Unpublish
+      from:
+        - published
+        - trash
+        - unpublished
+      to: unpublished
+      weight: 2
+  entity_types:
+    node:
+      - campaign_landing
+  default_moderation_state: prepublished_draft

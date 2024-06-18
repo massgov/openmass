@@ -1,0 +1,29 @@
+uuid: f4e8957b-8fbb-44e8-8500-6a431cb11141
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.org_page
+    - node.type.stacked_layout
+id: node.stacked_layout.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: stacked_layout
+label: Organization(s)
+description: 'Please choose the organization most closely associated with this content. This is used only for the feedback form for this page and does not display on the page.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:untrashed_node_selection'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

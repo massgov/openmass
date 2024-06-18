@@ -1,0 +1,120 @@
+uuid: fca54b27-e0ff-4d99-9f3f-3b5bb21d769d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_action_header
+    - node.type.stacked_layout
+    - paragraphs.paragraphs_type.contact_group
+  module:
+    - entity_reference_revisions
+id: node.stacked_layout.field_action_header
+field_name: field_action_header
+entity_type: node
+bundle: stacked_layout
+label: 'Detailed Header Information'
+description: 'Use this area to add contact information, slideshows, and maps to the extended header.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      contact_group: contact_group
+    target_bundles_drag_drop:
+      action_address:
+        weight: 32
+        enabled: false
+      action_address_info:
+        weight: 33
+        enabled: false
+      action_area:
+        weight: 34
+        enabled: false
+      action_step:
+        weight: 35
+        enabled: false
+      action_step_numbered:
+        weight: 36
+        enabled: false
+      action_step_numbered_list:
+        weight: 37
+        enabled: false
+      activities:
+        weight: 38
+        enabled: false
+      activity:
+        weight: 39
+        enabled: false
+      callout_alert:
+        weight: 40
+        enabled: false
+      callout_button:
+        weight: 41
+        enabled: false
+      callout_link:
+        weight: 42
+        enabled: false
+      completion_time:
+        weight: 43
+        enabled: false
+      contact:
+        weight: 44
+        enabled: false
+      contact_group:
+        weight: 45
+        enabled: true
+      contact_info:
+        weight: 46
+        enabled: false
+      file_download:
+        weight: 47
+        enabled: false
+      full_bleed:
+        weight: 48
+        enabled: false
+      hours:
+        weight: 49
+        enabled: false
+      icon:
+        weight: 50
+        enabled: false
+      iframe:
+        weight: 51
+        enabled: false
+      location_information:
+        weight: 52
+        enabled: false
+      map:
+        weight: 53
+        enabled: false
+      pull_quote:
+        weight: 54
+        enabled: false
+      quick_action:
+        weight: 55
+        enabled: false
+      related_link:
+        weight: 56
+        enabled: false
+      rich_text:
+        weight: 57
+        enabled: false
+      slideshow:
+        weight: 58
+        enabled: false
+      stacked_band:
+        weight: 59
+        enabled: false
+      stat:
+        weight: 60
+        enabled: false
+      subhead:
+        weight: 61
+        enabled: false
+      video:
+        weight: 62
+        enabled: false
+field_type: entity_reference_revisions

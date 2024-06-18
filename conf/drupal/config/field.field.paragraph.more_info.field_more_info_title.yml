@@ -1,0 +1,32 @@
+uuid: 74d70bca-e606-4c81-a83a-54f31b21a36f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_more_info_title
+    - paragraphs.paragraphs_type.more_info
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    providers: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.more_info.field_more_info_title
+field_name: field_more_info_title
+entity_type: paragraph
+bundle: more_info
+label: 'More info title'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

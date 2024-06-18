@@ -1,0 +1,23 @@
+uuid: 17054d01-bdd8-4160-855d-f062c3f094e8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_section_style
+    - paragraphs.paragraphs_type.org_section_long_form
+  module:
+    - options
+id: paragraph.org_section_long_form.field_section_style
+field_name: field_section_style
+entity_type: paragraph
+bundle: org_section_long_form
+label: 'Section style'
+description: 'The "Simple" option uses a plain black header with content on a white background. If you really want to call attention to this section, you can use the "Enhanced" option which will use a blue header banner and gray shading for the section.'
+required: true
+translatable: true
+default_value:
+  -
+    value: simple
+default_value_callback: ''
+settings: {  }
+field_type: list_string
