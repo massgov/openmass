@@ -1,5 +1,14 @@
 
 
+## [0.401.0] - June 18, 2024
+
+### Changed
+  - DP-33580: updated page analytics link on welcome screen.
+  - DP-33634: Updated news listing pages to filter for English and non-translated content.
+  - DP-33639: Added billing code to billing taxonomy.
+  
+
+
 ## [0.400.0] - June 11, 2024
 
 ### Changed
