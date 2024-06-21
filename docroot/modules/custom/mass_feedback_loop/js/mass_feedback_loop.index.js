@@ -9,7 +9,6 @@
   Drupal.behaviors.massFeedbackLoop = {
     attach: function attach(context, settings) {
       var $filterByPage = $('#edit-filter-by-page', context);
-      var $filterByTag = $('#edit-filter-by-tag', context);
 
       // Updates 'tablesort' CSS classes based on current sorting values.
       $('th span[data-sort-by]', context).removeClass(function (index, className) {
@@ -43,44 +42,11 @@
         $(this).attr('href', url.search);
       });
 
-      // Triggers rebuild of feedback table via event on <select> element.
-      // Related AJAX events can be found in this module's main form:
-      // @see MassFeedbackLoopAuthorInterfaceForm
-      $filterByPage.on('change', function () {
-        if (!$(this).val()) {
-          $filterByTag.trigger('change');
-        }
-      });
-
       // Prevents form submission via 'Enter' key press.
       // Triggers rebuild of feedback table via event on <select> element.
       $filterByPage.on('keypress', function (e) {
         if (e.keyCode === 13) {
           e.preventDefault();
-          $filterByTag.trigger('change');
-        }
-      });
-
-      // Custom event reloads page to update results with URL query params.
-      // @see MassFeedbackLoopTagModalForm::submitModalFormAjax()
-      $(window).on('submitModalFormAjax.massFeedbackLoop', function () {
-        // Gets query params of active pager element.
-        var activePagerItemParams = new URLSearchParams(
-          $('nav.pager li.is-active a').attr('href')
-        );
-        // Gets query params of current page URL.
-        var locationParams = new URLSearchParams(this.location.search);
-        // Gets 'page' values from query params.
-        var activePagerItemPage = activePagerItemParams.get('page');
-        var locationPage = locationParams.get('page');
-        // Reloads page when 'page' query param matches active pager element,
-        // but is not first results page (?page=0), after filters are altered.
-        if (
-          locationPage
-          && parseInt(locationPage, 10) !== 0
-          && activePagerItemPage === locationPage
-        ) {
-          this.location.reload();
         }
       });
 
