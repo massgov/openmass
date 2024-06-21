@@ -15,18 +15,18 @@ describe("BStack demo test", () => {
   afterAll(async () => {
     await driver.quit();
   })
-
-    paths.forEach(async (path) => {
-        test(path.label + ' test', async () => {
-          await driver.get('https://stage.mass.gov' + path.url);
-          let options = {
-            fullPage: true,
-            ignore_region_selectors: [
-              'div.ma__banner-credit',
-            ]
-          }
-          await percy.screenshot(driver, path.label, options);
-        });
-    });
+  
+  paths.forEach(async (path) => {
+      test(path.label + ' test', async () => {
+        await driver.get('https://stage.mass.gov' + path.url);
+        let options = {
+          fullPage: true,
+          ignore_region_selectors: [
+            'div.ma__banner-credit',
+          ]
+        }
+        await percy.screenshot(driver, path.label, options);
+      });
+  });
 
 });
