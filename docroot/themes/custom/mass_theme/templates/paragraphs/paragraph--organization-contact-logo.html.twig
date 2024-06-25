@@ -96,8 +96,8 @@
   {% block moreLink %}
     {% include "@atoms/decorative-link.twig" with {
       "decorativeLink": {
-        "href": contactNode.field_contact_more_info_link.url,
-        "text": contactNode.field_contact_more_info_link.title,
+        "href": contactNode.field_contact_more_info_link[0].url,
+        "text": contactNode.field_contact_more_info_link[0].title,
         "info": ""
       }
     } %}
