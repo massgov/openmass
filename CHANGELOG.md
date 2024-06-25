@@ -1,5 +1,17 @@
 
 
+## [0.402.0] - June 25, 2024
+
+### Fixed
+  - DP-33606: Contact information page type (draft/trash state) still displays on info details.
+
+### Removed
+  - DP-32601: Removed Google sitemap ping command.
+  - DP-33637: Removed tagging from feedback manager.
+  - DP-33698: Remove key performance indicator fields from promo page.
+
+
+
 ## [0.401.1] - June 20, 2024
 
 ### Changed
