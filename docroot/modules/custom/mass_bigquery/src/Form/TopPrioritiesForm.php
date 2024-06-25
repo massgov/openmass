@@ -192,7 +192,7 @@ class TopPrioritiesForm extends FormBase {
     // Feed result data into rows and format results.
     foreach ($results as $result) {
       $url = $this->path->getUrlIfValid($result->alias);
-      $analytics_url = Url::fromUri('internal:/node/' . $result->nid . '/analytics-new');
+      $analytics_url = Url::fromUri('internal:/node/' . $result->nid . '/analytics');
       $feedback_url = Url::fromUri('internal:/node/' . $result->nid . '/feedback');
 
       $row = [];
