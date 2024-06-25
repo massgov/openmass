@@ -96,6 +96,15 @@ function _add_description_display_before(&$variables) {
   if (preg_match('/((node|media|term)\/\d+\/edit)|((node|media)\/add)|(taxonomy\/manage\/[0-9A-Za-z\-]+\/add)/', $result)) {
     $variables['description_display'] = 'before';
   }
+
+  if (isset($variables['type']) && $variables['type'] == 'checkbox') {
+    $parents = $variables['element']['#parents'] ?? [];
+    $last_parent = end($parents);
+    if ($last_parent == 'autolink') {
+      $variables['description_display'] = 'after';
+    }
+  }
+
 }
 
 /**

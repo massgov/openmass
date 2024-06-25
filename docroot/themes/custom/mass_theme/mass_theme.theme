@@ -3575,7 +3575,9 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $pageContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
 
     // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+    if ($pageContent['contactList']) {
+      $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+    }
     unset($sidebar['contactList']['compHeading']);
     $sidebar['contactList']['sidebarHeading']['title'] = t('Media Contact');
     $sidebar['contactList']['sidebarHeading']['titleContext'] = $titleContext;
