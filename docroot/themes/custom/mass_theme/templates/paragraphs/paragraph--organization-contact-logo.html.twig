@@ -94,7 +94,13 @@
     {{ contactNode.field_ref_fax_number|view|merge({'#level': level}) }}
   {% endblock %}
   {% block moreLink %}
-    {{ content.field_contact_more_info_link|view }}
+    {% include "@atoms/decorative-link.twig" with {
+      "decorativeLink": {
+        "href": contactNode.field_contact_more_info_link.url,
+        "text": contactNode.field_contact_more_info_link.title,
+        "info": ""
+      }
+    } %}
   {% endblock %}
   {% block contactImage %}
     {{ org_logo }}
