@@ -461,7 +461,13 @@ class MassContentCommands extends DrushCommands {
             $changedEntities++;
 
             if ($entityType == 'paragraph') {
-              $node = Helper::getParentNode($entity);
+              if ($node = Helper::getParentNode($entity)) {
+                $node->setNewRevision();
+                $node->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                $node->setRevisionCreationTime(\Drupal::time()
+                  ->getRequestTime());
+                $node->save();
+              }
               $this->output()
                 ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
                   '@type' => ucfirst($entityType),
@@ -535,7 +541,13 @@ class MassContentCommands extends DrushCommands {
                 $changed_revisions++;
 
                 if ($entityType == 'paragraph') {
-                  $node = Helper::getParentNode($entity);
+                  if ($node = Helper::getParentNode($entity)) {
+                    $node->setNewRevision();
+                    $node->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                    $node->setRevisionCreationTime(\Drupal::time()
+                      ->getRequestTime());
+                    $node->save();
+                  }
                   $this->output()
                     ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
                       '@type' => ucfirst($entityType),
