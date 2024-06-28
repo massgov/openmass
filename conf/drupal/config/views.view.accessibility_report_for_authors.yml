@@ -36,7 +36,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          label: 'Entity ID'
+          label: ID
           exclude: false
           alter:
             alter_text: false
@@ -158,7 +158,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: standard
-          label: 'Entity type'
+          label: 'Content type'
           exclude: false
           alter:
             alter_text: false
@@ -274,7 +274,7 @@ display:
           group_type: sum
           admin_label: ''
           plugin_id: editoria11y_issues_by_page_link
-          label: 'Result name count'
+          label: 'Issue count'
           exclude: false
           alter:
             alter_text: false
@@ -702,28 +702,52 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            page_title: page_title
-            page_result_count: page_result_count
-            page_path: page_path
-          default: page_result_count
+            entity_id: entity_id
+            title: title
+            entity_type: entity_type
+            status: status
+            result_name_count: result_name_count
+            pageviews: pageviews
+          default: pageviews
           info:
-            page_title:
+            entity_id:
               sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            page_result_count:
+            title:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            entity_type:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            status:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            result_name_count:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            pageviews:
               sortable: true
               default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            page_path:
-              sortable: false
-              default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
