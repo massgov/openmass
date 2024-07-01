@@ -77,7 +77,7 @@
 {% if node.field_ref_links is not empty or node.field_ref_fax_number is not empty or node.field_contact_more_info_link is not empty %}
   {% set secondaryItems = true %}
 {% endif %}
-{% embed "@molecules/contact-us.twig" with {
+{% embed "@organisms/contact/contact-us.twig" with {
   "contactUs": {
     "accordion": false,
     "isExpanded": false,
