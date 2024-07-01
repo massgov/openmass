@@ -23,10 +23,13 @@ class MassContentCommands extends DrushCommands {
 
   use AutowireTrait;
 
+  protected $externalDownloadMatch;
+
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerChannelFactoryInterface $loggerChannelFactory
   ) {
+    $this->externalDownloadMatch = '/(https:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)(\/download|\/|$)|files\/)/';
     parent::__construct();
   }
 
@@ -425,6 +428,27 @@ class MassContentCommands extends DrushCommands {
                 }
               }
             }
+            elseif ($fieldType === 'link') {
+              foreach ($field as $key => $item) {
+                if ($item->uri) {
+                  if (strpos($item->uri, 'internal:') === 0) {
+                    $url = substr($item->uri, strlen('internal:'));
+                    $processed = $urlReplacementService->processLink($url);
+                    if ($processed['changed']) {
+                      $item->value = 'internal:' . $processed['link'];
+                      $changed = TRUE;
+                    }
+                  }
+                  elseif (preg_match($this->externalDownloadMatch, $item->uri)) {
+                    $processed = $urlReplacementService->processLink($item->uri);
+                    if ($processed['changed']) {
+                      $item->value = 'internal:' . $processed['link'];
+                      $changed = TRUE;
+                    }
+                  }
+                }
+              }
+            }
           }
           if ($changed) {
             if (method_exists($entity, 'setRevisionLogMessage')) {
@@ -437,7 +461,13 @@ class MassContentCommands extends DrushCommands {
             $changedEntities++;
 
             if ($entityType == 'paragraph') {
-              $node = Helper::getParentNode($entity);
+              if ($node = Helper::getParentNode($entity)) {
+                $node->setNewRevision();
+                $node->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                $node->setRevisionCreationTime(\Drupal::time()
+                  ->getRequestTime());
+                $node->save();
+              }
               $this->output()
                 ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
                   '@type' => ucfirst($entityType),
@@ -478,6 +508,27 @@ class MassContentCommands extends DrushCommands {
                     }
                   }
                 }
+                elseif ($fieldType === 'link') {
+                  foreach ($field as $key => $item) {
+                    if ($item->uri) {
+                      if (strpos($item->uri, 'internal:') === 0) {
+                        $url = substr($item->uri, strlen('internal:'));
+                        $processed = $urlReplacementService->processLink($url);
+                        if ($processed['changed']) {
+                          $item->value = 'internal:' . $processed['link'];
+                          $changed = TRUE;
+                        }
+                      }
+                      elseif (preg_match($this->externalDownloadMatch, $item->uri)) {
+                        $processed = $urlReplacementService->processLink($item->uri);
+                        if ($processed['changed']) {
+                          $item->value = 'internal:' . $processed['link'];
+                          $changed = TRUE;
+                        }
+                      }
+                    }
+                  }
+                }
               }
               if ($changed) {
                 if (method_exists($entity, 'setRevisionLogMessage')) {
@@ -490,7 +541,13 @@ class MassContentCommands extends DrushCommands {
                 $changed_revisions++;
 
                 if ($entityType == 'paragraph') {
-                  $node = Helper::getParentNode($entity);
+                  if ($node = Helper::getParentNode($entity)) {
+                    $node->setNewRevision();
+                    $node->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                    $node->setRevisionCreationTime(\Drupal::time()
+                      ->getRequestTime());
+                    $node->save();
+                  }
                   $this->output()
                     ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
                       '@type' => ucfirst($entityType),

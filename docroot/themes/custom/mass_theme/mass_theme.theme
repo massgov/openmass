@@ -591,19 +591,20 @@ function mass_theme_preprocess_node_form_page(&$variables) {
         ],
       ];
 
-      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-      $sidebarContacts_options = [
-        'groups' => [
-          'accordion' => FALSE,
-          'isExpanded' => FALSE,
-        ],
-      ];
-      // Prepare the sidebarContact data object.
-      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-      unset($sideContent['contactList']['compHeading']);
-      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-      $sideContent['contactList']['viewSpecific'] = FALSE;
+      if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+        // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+        $sidebarContacts_options = [
+          'groups' => [
+            'accordion' => FALSE,
+            'isExpanded' => FALSE,
+          ],
+        ];
+        // Prepare the sidebarContact data object.
+        $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+        unset($sideContent['contactList']['compHeading']);
+        $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+        $sideContent['contactList']['viewSpecific'] = FALSE;
+      }
     }
 
     $variables['formRequirements'] = $formRequirements;
@@ -1558,20 +1559,23 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         ],
       ];
 
-      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-      $sidebarContacts_options = [
-        'groups' => [
-          'accordion' => FALSE,
-          'isExpanded' => FALSE,
-          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
-        ],
-      ];
-      // Prepare the sidebarContact data object.
-      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-      unset($sideContent['contactList']['compHeading']);
-      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-      $sideContent['contactList']['viewSpecific'] = TRUE;
+      if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+
+        // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+        $sidebarContacts_options = [
+          'groups' => [
+            'accordion' => FALSE,
+            'isExpanded' => FALSE,
+            'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+          ],
+        ];
+        // Prepare the sidebarContact data object.
+        $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+        unset($sideContent['contactList']['compHeading']);
+        $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+        $sideContent['contactList']['viewSpecific'] = TRUE;
+      }
+
       $variables['sideContent'] = $sideContent;
       $variables['mainContent'] = $mainContent;
     }
@@ -1726,22 +1730,23 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $titleContext = t(' for  @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $titleContext = t(' for  @title', ['@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   // Build related links section, if field is populated.
@@ -2000,23 +2005,23 @@ function mass_theme_preprocess_node_decision(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $titleContext = t(' for @docket @title', ['@docket' => $docket_number, '@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
-
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $titleContext = t(' for @docket @title', ['@docket' => $docket_number, '@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
     $sections[] = [
       'title' => $contactList_options['heading']['title'],
       'id' => $contactList_options['heading']['id'],
@@ -2250,23 +2255,23 @@ function mass_theme_preprocess_node_regulation(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
-
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
     $sections[] = [
       'title' => $contactList_options['heading']['title'],
       'id' => $contactList_options['heading']['id'],
@@ -2468,23 +2473,23 @@ function mass_theme_preprocess_node_advisory(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
-
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
     $sections[] = [
       'title' => $contactList_options['heading']['title'],
       'id' => $contactList_options['heading']['id'],
@@ -2780,20 +2785,21 @@ function mass_theme_preprocess_node_rules(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['viewSpecific'] = TRUE;
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   $mainContent['contents'] = $sections;
@@ -3095,20 +3101,21 @@ function mass_theme_preprocess_node_event(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-      ],
-    ];
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+        ],
+      ];
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   // Gather events associated with this node.
@@ -3572,14 +3579,16 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       ],
     ];
 
-    $pageContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
+    if ($pageContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
 
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
-    unset($sidebar['contactList']['compHeading']);
-    $sidebar['contactList']['sidebarHeading']['title'] = t('Media Contact');
-    $sidebar['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sidebar['contactList']['viewSpecific'] = TRUE;
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+
+      unset($sidebar['contactList']['compHeading']);
+      $sidebar['contactList']['sidebarHeading']['title'] = t('Media Contact');
+      $sidebar['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sidebar['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   // Build related links section, if field is populated.
