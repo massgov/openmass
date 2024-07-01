@@ -106,6 +106,12 @@ function mass_content_update_10002() {
  * Cleanup mass_superset and mass_tours modules configs.
  */
 function mass_content_update_10004() {
+  // Get a connection to the database.
+  // Drop the table mass_superset_data if it exists.
+  $connection = \Drupal::database();
+  if ($connection->schema()->tableExists('mass_superset_data')) {
+    $connection->schema()->dropTable('mass_superset_data');
+  }
   // Module jquery_ui_draggable has an entry in the
   // system.schema key/value storage, but is missing from your site.
   $modules_to_cleanup = ['jquery_ui_draggable', 'mass_superset', 'mass_tours'];
