@@ -3,11 +3,12 @@ index 2606e9a..00fea21 100644
 --- a/src/Dashboard.php
 +++ b/src/Dashboard.php
 @@ -53,7 +53,7 @@ public static function getResultNameOptions(): array {
- 
+
      $database = \Drupal::database();
- 
+
 -    $result_names = $database->select('editoria11y_dismissals', 't')
 +    $result_names = $database->select('editoria11y_results', 't')
        ->fields('t', ['result_name'])
        ->groupBy('result_name')
        ->orderBy('result_name')
+dd
