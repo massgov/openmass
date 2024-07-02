@@ -65,7 +65,7 @@
 {% endif %}
 <div id="top-alerts"></div>
 {% if header_version_mixed %}
-  <header class="ma__header__hamburger ma__header__mixed{{ header_class }}" id="header">
+  <header class="ma__header__hamburger ma__header__mixed{{ header_class }}" id="header" lang="en" dir="ltr" translate="no">
     <div class="menu-overlay"></div>
     <a class="ma__header__hamburger__skip-nav ma__visually-hidden focusable" href="#main-content">
       {{ 'Skip to main content'|t }}
@@ -89,7 +89,7 @@
     {{ page.header|without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
   </header>
 {% else %}
-  <header class="ma__header__hamburger{{ header_class }}" id="header">
+  <header class="ma__header__hamburger{{ header_class }}" id="header" lang="en" dir="ltr" translate="no">
     <div class="menu-overlay"></div>
     <a class="ma__header__hamburger__skip-nav" href="#main-content">
       {{ 'Skip to main content'|t }}
@@ -117,10 +117,10 @@
   {% endif %}
 {% endblock %}
 <main role="main" id="main-content" tabindex="-1"{% if main_class %} class="{{ main_class }}"{% endif %}>{# Keeping tabindex for accessibility purposes #}
-  <div id="content-alerts"></div>
+  <div id="content-alerts" lang="en" dir="ltr" translate="no"></div>
   {% block preContent %}
     {% if page.pre_content %}
-      <div class="pre-content">
+      <div class="pre-content" lang="en" dir="ltr" translate="no">
       {{ page.pre_content }}
       </div>
     {% endif %}
@@ -128,7 +128,7 @@
   {{ page.content }}
   {% block postContent %}
     {% if page.post_content %}
-      <div class="post-content">
+      <div class="post-content" lang="en" dir="ltr" translate="no">
       {{ page.post_content }}
       </div>
     {% endif %}

@@ -104,6 +104,17 @@ function mayflower_get_path() {
 }
 
 /**
+ * Set variables that should be applied to every theme preprocess function.
+ */
+function mayflower_preprocess(array &$variables) {
+  $variables['patternLanguage'] = [
+    'lang' => 'en',
+    'dir' => 'ltr',
+    'translate' => 'no',
+  ];
+}
+
+/**
  * Prepares variables for image template.
  *
  * Default template: atoms/09-media/image.twig.

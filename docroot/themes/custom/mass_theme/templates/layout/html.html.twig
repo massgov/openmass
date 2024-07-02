@@ -62,7 +62,7 @@
     {# Google Translate JS #}
     <script>
       function googleTranslateElementInit() {
-        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: '{{ languages }}', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+        new google.translate.TranslateElement({pageLanguage: '{{ html_attributes.lang }}', includedLanguages: '{{ languages }}', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
         document.querySelector('#google_translate_element') !== null ? document.querySelector('#google_translate_element').classList.add('has-rendered') : '';
       }
       (function() {
