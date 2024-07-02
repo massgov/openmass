@@ -1,4 +1,27 @@
 
+## [0.402.0] - July 2, 2024
+
+### Changed
+  - DP-28505: Replace the overflow horizontal scroll feature with native one.
+
+### Fixed
+  - DP-33344: Determine why /files/ URLs still exist in some rich text fields.
+  - DP-33606: Contact information page type (draft/trash state) still displays on info details.
+  - DP-33763: CSV table with link column defined is missing data.
+  - DP-33767: Media contacts missing on press releases.
+
+### Added
+  - DP-30082: Add missing Mayflower implementation for mobile table format.
+  - DP-32968: Search and replace /media and /files URLs with /doc URLs for entity reference/link fields.
+  - DP-33709: Added a view and changed two others to support reporting related to chargeback
+  - DP-33783: Add billing account to data layer.
+
+### Removed
+  - DP-32601: Removed Google sitemap ping command.
+  - DP-33637: Removed tagging from feedback manager.
+  - DP-33698: Remove key performance indicator fields from promo page.
+
+
 
 ## [0.401.1] - June 20, 2024
 
