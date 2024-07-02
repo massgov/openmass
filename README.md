@@ -34,10 +34,8 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 
 ###### Notes
 - The site is browseable at the URL reported by `ddev describe`. Thats usually https://mass.local
-- It takes a a minute for the `dbmass` container start up.
 - [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). create a `.ddev/config.local.yml` file and add whatever you need.
 - Similarly, rename [.ddev/.env.example](https://github.com/massgov/openmass/blob/develop/.ddev/.env.example) to `.env` in order to use ARM containers suitable for the Apple M1 Macs. This is also how you specify the less sanitized variant of our database.
-- Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
 - Use `ddev service enable backstop` to start the backstop image locally. Same for `selenium-chrome`.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
