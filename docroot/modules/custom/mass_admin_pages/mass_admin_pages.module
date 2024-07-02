@@ -248,3 +248,15 @@ function mass_admin_pages_form_node_service_page_edit_form_alter(&$form, &$form_
     }
   }
 }
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function mass_admin_pages_views_data_alter(array &$data) {
+  $data['editoria11y_results']['entity_id']['relationship'] = [
+    'base' => 'node_field_data',
+    'base field' => 'nid',
+    'id' => 'standard',
+    'label' => t('Entity ID'),
+  ];
+}
