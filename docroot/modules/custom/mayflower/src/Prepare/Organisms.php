@@ -6,8 +6,10 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 
 /**
  * Provides variable structure for mayflower organisms using prepare functions.
@@ -197,8 +199,19 @@ class Organisms {
     foreach ($ref_contacts as $contact) {
       // Get entity cache tags.
       $cache_tags = array_merge($cache_tags, $contact->getCacheTags());
+      if ($contact instanceof NodeInterface) {
+        if ($contact->moderation_state) {
+          if ($contact->moderation_state[0]) {
+            if ($contact->moderation_state[0]->value === MassModeration::PUBLISHED) {
+              $contacts[] = Molecules::prepareContactUs($contact, $options['groups']);
+            }
+          }
+        }
+      }
+      else {
+        $contacts[] = Molecules::prepareContactUs($contact, $options['groups']);
+      }
 
-      $contacts[] = Molecules::prepareContactUs($contact, $options['groups']);
     }
 
     $contactList = [];

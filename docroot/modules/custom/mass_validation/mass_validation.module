@@ -740,38 +740,6 @@ function mass_validation_form_node_campaign_landing_form_alter(&$form, FormState
  */
 function _mass_validation_form_node_campaign_landing_form_validate(array &$form, FormStateInterface $form_state) {
 
-  // Check the Key performance indicators (KPIs)
-  // have values if the box is checked.
-  // Map the KPI fields with the Key performance
-  // indicators options in the form.
-  $kpi_fields_mapping = [
-    'ctr_button_link' => 'field_kpi_ctr_button_links',
-    'ctr_button' => 'field_kpi_ctr_key_msg',
-    'num_pgviews' => 'field_kpi_pageviews',
-    'pct_vid_play' => 'field_kpi_pct_video_play',
-    'pct_vid_watch' => 'field_kpi_pct_video_50',
-  ];
-  // Finding the value for the Key performance indicators (KPIs)
-  $promotional_kpi_choice = $form_state->getValue('field_promotional_kpi_choice');
-  // Checking if the KPI are checked.
-  $selected_kpi = [];
-  if (isset($promotional_kpi_choice)) {
-    // Loop through the KPI to check for a value.
-    foreach ($promotional_kpi_choice as $choice) {
-      $field_name = $kpi_fields_mapping[$choice['value']];
-      $selected_kpi[] = $field_name;
-      $value = $form_state->getValue($field_name);
-      // If the KPI value is empty the error will be shown.
-      if (empty($value[0]['value'])) {
-        $form_state->setErrorByName($field_name, t('A value must be added to the this field.'));
-      }
-    }
-    // Take the unchecked checkboxes and reset the value to NULL.
-    $unchecked = array_diff($kpi_fields_mapping, $selected_kpi);
-    foreach ($unchecked as $unchecked_field_name) {
-      $form_state->setValue([$unchecked_field_name, 0, 'value'], NULL);
-    }
-  }
   if ($form_state->hasValue('field_sections')) {
     $sections = $form_state->getValue('field_sections');
     foreach ($sections as $section_key => $section) {

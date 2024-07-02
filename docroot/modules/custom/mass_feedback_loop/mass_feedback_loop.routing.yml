@@ -8,22 +8,6 @@ mass_feedback_loop.mass_feedback_loop_author_interface_form:
   options:
     _admin_route: TRUE
 
-mass_feedback_loop.open_modal_tag_form:
-  path: '/admin/ma-dash/feedback/tag/{action}/{comment_id}/{tag_id}/{tag_unique_id}'
-  defaults:
-    _title: 'Mass Feedback | Open "Add Tag" Modal Form'
-    _controller: '\Drupal\mass_feedback_loop\Controller\MassFeedbackLoopAuthorInterfaceController::openModalForm'
-    tag_id: ''
-    tag_unique_id: ''
-  requirements:
-    _permission: 'use mass dashboard'
-    action: '^(add|remove)$'
-    comment_id: '^\d*$'
-    tag_id: '^\d*$'
-    tag_unique_id: '^\d*$'
-  options:
-    _admin_route: TRUE
-
 mass_feedback_loop.mass_feedback_loop_config_form:
   path: '/admin/config/mass_feedback_loop/external-api'
   defaults:

@@ -32,7 +32,6 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
    */
   public function __construct(MassFeedbackLoopContentFetcher $content_fetcher) {
     $this->contentFetcher = $content_fetcher;
-    $this->request = $this->getRequest();
   }
 
   /**
@@ -134,7 +133,7 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
     // Fetches feedback.
     $response = $this->contentFetcher->fetchFeedback($feedback_api_params);
     // Builds table and pager.
-    $form['table_wrapper']['feedback_table'] = $this->contentFetcher->buildFeedbackTable($response['results'], [], $response['is_watching_content'], $fields);
+    $form['table_wrapper']['feedback_table'] = $this->contentFetcher->buildFeedbackTable($response['results'], $response['is_watching_content'], $fields);
     $form['table_wrapper']['pager'] = $this->contentFetcher->buildPager($response['total'], $response['per_page']);
 
     if (isset($response['total']) && is_numeric($response['total']) && $response['total'] > 0) {

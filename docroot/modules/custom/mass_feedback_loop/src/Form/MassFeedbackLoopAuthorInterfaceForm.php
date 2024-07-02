@@ -185,19 +185,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,
     ];
 
-    // Fetches tags.
-    $tags = $this->contentFetcher->fetchAllTags();
-    // Builds list of tags.
-    $tag_select_list = ['' => $this->t('- Select a tag -')] + $tags;
-    // Builds "Filter by tag" input.
-    $form['filter_by_tag'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Filter by feedback tag'),
-      '#options' => $tag_select_list,
-      // Updates form input with default value, if available.
-      '#default_value' => isset($feedback_api_params['tag_id']) ? $feedback_api_params['tag_id'] : NULL,
-    ];
-
     $searchHelpText = $this->t(
       'Enter a comma-separated list of words or phrases.'
     );
@@ -294,7 +281,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     // Fetches feedback.
     $response = $this->contentFetcher->fetchFeedback($feedback_api_params);
     // Builds table and pager.
-    $form['table_wrapper']['feedback_table'] = $this->contentFetcher->buildFeedbackTable($response['results'], $tags, $response['is_watching_content']);
+    $form['table_wrapper']['feedback_table'] = $this->contentFetcher->buildFeedbackTable($response['results'], $response['is_watching_content']);
     $form['table_wrapper']['pager'] = $this->contentFetcher->buildPager($response['total'], $response['per_page']);
 
     if (isset($response['total']) && is_numeric($response['total']) && $response['total'] > 0) {
@@ -314,27 +301,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     }
 
     return $form;
-  }
-
-  /**
-   * Helper function to build tag list.
-   *
-   * @param array $tags
-   *   Array of all existing tags in human-readable format, keyed by ID.
-   *
-   * @return array
-   *   Render array.
-   */
-  protected function buildSelectTagList(array $tags) {
-    // Builds list of tags.
-    $tag_select_list = ['' => $this->t('- Select a tag -')] + $tags;
-
-    // Returns render array for select list of tags.
-    return [
-      '#type' => 'select',
-      '#title' => $this->t('Filter by tag'),
-      '#options' => $tag_select_list,
-    ];
   }
 
   /**
@@ -383,11 +349,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       $filter_by_node_param = $form_state->getValue('filter_by_page');
       if (!empty($filter_by_node_param)) {
         $feedback_api_params['node_id'][0] = $filter_by_node_param;
-      }
-
-      $filter_by_tag_param = $form_state->getValue('filter_by_tag');
-      if (!empty($filter_by_tag_param)) {
-        $feedback_api_params['tag_id'] = $filter_by_tag_param;
       }
 
       $descending_flag_param = $form_state->getValue('sort_by');

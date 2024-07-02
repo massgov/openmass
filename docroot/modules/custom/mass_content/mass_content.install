@@ -95,7 +95,7 @@ function mass_content_update_10001() {
 /**
  * Reset state variables used by search and replace media URLs drush command.
  */
-function mass_content_update_10002() {
+function mass_content_update_10003() {
   $entityTypes = ['node', 'paragraph'];
   foreach ($entityTypes as $entityType) {
     \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
