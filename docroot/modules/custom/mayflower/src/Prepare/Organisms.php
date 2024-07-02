@@ -403,12 +403,12 @@ class Organisms {
    * @param array &$cache_tags
    *   The array of node cache tags.
    * @param string $langcode
-   *    The language code which will filter the nodes.
+   *   The language code which will filter the nodes.
    *
    * @return array
    *   Returns a structured array.
-   *@see @organisms/by-author/press-listing.twig
    *
+   * @see @organisms/by-author/press-listing.twig
    */
   public static function preparePressListing($entity, $field, array $options = [], array $secondaryEntities = [], array &$cache_tags = [], string $langcode = NULL) {
     $items = [];
