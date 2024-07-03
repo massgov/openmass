@@ -6,14 +6,13 @@ use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
-use Drupal\mass_entity_usage\Controller\LocalTaskUsageSubQueryController;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
 /**
  * Controller for our pages.
  */
-class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
+class MassLocalTaskUsageController extends ListUsageController {
 
   /**
    * Lists the usage of a given entity.
@@ -152,6 +151,34 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
    */
   public function getTitleLocalTask(RouteMatchInterface $route_match) {
     return $this->t('Pages linking here');
+  }
+
+  /**
+   * Checks access based on whether the user can view the current entity.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   A RouteMatch object.
+   *
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
+   */
+  public function checkAccessLocalTask(RouteMatchInterface $route_match) {
+    $entity = $this->getEntityFromRouteMatch($route_match);
+    return parent::checkAccess($entity->getEntityTypeId(), $entity->id());
+  }
+
+  /**
+   * Retrieves entity from route match.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   The entity object as determined from the passed-in route match.
+   */
+  protected function getEntityFromRouteMatch(RouteMatchInterface $route_match) {
+    $parameter_name = $route_match->getRouteObject()->getOption('_entity_usage_entity_type_id');
+    return $route_match->getParameter($parameter_name);
   }
 
 }
