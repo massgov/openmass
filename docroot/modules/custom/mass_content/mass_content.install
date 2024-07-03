@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Config\FileStorage;
+
 /**
  * Change field_section_long_form_heading char count to 255.
  */
@@ -69,5 +71,33 @@ function mass_content_update_9003() {
   else {
     // Term already exists, so we do not need to create it.
     return t('The term "@name" already exists in "@vocabulary" vocabulary.', ['@name' => $term_name, '@vocabulary' => $vocabulary]);
+  }
+}
+
+/**
+ * Imports "views.view.content_user_org" configuration from a custom directory.
+ */
+function mass_content_update_10001() {
+  // Define the custom directory path relative to the Drupal root.
+  $custom_directory = DRUPAL_ROOT . '/../conf/drupal/config';
+
+  // Create a new FileStorage object for the custom directory.
+  $storage = new FileStorage($custom_directory);
+
+  // Check if our configuration exists in the specified directory.
+  if ($storage->exists('views.view.content_user_org')) {
+    $config_data = $storage->read('views.view.content_user_org');
+    // Import the configuration.
+    \Drupal::configFactory()->getEditable('views.view.content_user_org')->setData($config_data)->save(TRUE);
+  }
+}
+
+/**
+ * Reset state variables used by search and replace media URLs drush command.
+ */
+function mass_content_update_10003() {
+  $entityTypes = ['node', 'paragraph'];
+  foreach ($entityTypes as $entityType) {
+    \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
   }
 }

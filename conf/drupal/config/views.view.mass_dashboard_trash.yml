@@ -117,16 +117,26 @@ display:
           batch: true
           batch_size: 10
           form_step: true
-          buttons: true
+          ajax_loader: false
+          buttons: false
           action_title: Action
           clear_on_exposed: true
           force_selection_info: false
           selected_actions:
-            2:
-              action_id: mass_content_moderation_restore_action
+            1:
+              action_id: 'flag_action:watch_content_flag'
               preconfiguration:
                 add_confirmation: false
-                label_override: 'Restore to unpublished state'
+            2:
+              action_id: 'flag_action:watch_content_unflag'
+              preconfiguration:
+                add_confirmation: false
+            12:
+              action_id: views_bulk_edit
+              preconfiguration:
+                add_confirmation: false
+                label_override: 'Edit content'
+                get_bundles_from_results: true
         title:
           id: title
           table: node_field_revision
@@ -1544,7 +1554,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
@@ -1564,7 +1573,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:

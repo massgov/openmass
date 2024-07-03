@@ -15,9 +15,15 @@ details {
   line-height: 1.3125rem;
   overflow: auto;
 }
+
 details .details-wrapper {
   padding: 0 0.75rem 1.5rem;
   overflow: auto;
+}
+
+html:has([data-fullscreen="fullscreenoverlay"]) details .details-wrapper,
+html:has([data-fullscreen="fullscreenoverlay"]) details {
+  overflow: initial !important;
 }
 
 .details-description {

@@ -1,26 +1,28 @@
 uuid: 985a9f66-0832-45e1-a606-da0b113b4876
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - linkit
 name: 'Campaign Landing Restricted'
 format: campaign_landing_restricted
 weight: 0
 filters:
-  filter_html:
-    id: filter_html
-    provider: filter
-    status: true
-    weight: -10
-    settings:
-      allowed_html: '<em> <strong> <ol start type class=""> <li> <ul class=" ma__horizontal-list"> <a href hreflang data-entity-type data-entity-uuid data-entity-substitution>'
-      filter_html_help: true
-      filter_html_nofollow: false
   filter_autop:
     id: filter_autop
     provider: filter
     status: true
     weight: 0
     settings: {  }
+  filter_html:
+    id: filter_html
+    provider: filter
+    status: true
+    weight: -10
+    settings:
+      allowed_html: '<br> <p> <ul class="ma__horizontal-list" type> <strong> <em> <ol type start> <li>'
+      filter_html_help: true
+      filter_html_nofollow: false
   filter_htmlcorrector:
     id: filter_htmlcorrector
     provider: filter

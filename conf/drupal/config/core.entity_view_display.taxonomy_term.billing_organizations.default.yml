@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.billing_organizations.field_billing_account_number
     - field.field.taxonomy_term.billing_organizations.field_billing_customer_code
     - field.field.taxonomy_term.billing_organizations.field_billing_customer_group
     - field.field.taxonomy_term.billing_organizations.field_billing_customer_name
@@ -20,6 +21,14 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 0
+    region: content
+  field_billing_account_number:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 5
     region: content
   field_billing_customer_code:
     type: string
