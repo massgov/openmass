@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Controller for our pages.
  */
-class MassLocalTaskUsageController extends ControllerBase {
+class UsageController extends ControllerBase {
 
   /**
    * Number of items per page to use when nothing was configured.
@@ -77,7 +77,7 @@ class MassLocalTaskUsageController extends ControllerBase {
   protected $pagerManager;
 
   /**
-   * ListUsageController constructor.
+   * LocalTaskUsageController constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
@@ -112,19 +112,6 @@ class MassLocalTaskUsageController extends ControllerBase {
     );
   }
 
-  /**
-   * Lists the usage of a given entity.
-   *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   A RouteMatch object.
-   *
-   * @return array
-   *   The page build to be rendered.
-   */
-  public function listUsageLocalTask(RouteMatchInterface $route_match) {
-    $entity = $this->getEntityFromRouteMatch($route_match);
-    return $this->listUsagePageSubQuery($entity->getEntityTypeId(), $entity->id());
-  }
 
   /**
    * {@inheritdoc}
@@ -242,27 +229,6 @@ class MassLocalTaskUsageController extends ControllerBase {
     }
 
     return $rows;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getTitleLocalTask(RouteMatchInterface $route_match) {
-    return $this->t('Pages linking here');
-  }
-
-  /**
-   * Checks access based on whether the user can view the current entity.
-   *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   A RouteMatch object.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   */
-  public function checkAccessLocalTask(RouteMatchInterface $route_match) {
-    $entity = $this->getEntityFromRouteMatch($route_match);
-    return $this->checkAccess($entity->getEntityTypeId(), $entity->id());
   }
 
   /**

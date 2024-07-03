@@ -67,7 +67,7 @@ class MassEntityUsage extends EntityUsage implements MassEntityUsageInterface {
     ]);
 
     // Set a range and restrict usage records to unique sources.
-    $items_per_page = $this->config->get('usage_controller_items_per_page') ?: \Drupal\mass_entity_usage\Controller\MassLocalTaskUsageController::ITEMS_PER_PAGE_DEFAULT;
+    $items_per_page = $this->config->get('usage_controller_items_per_page') ?: \Drupal\mass_entity_usage\Controller\LocalTaskUsageController::ITEMS_PER_PAGE_DEFAULT;
     $sub_query->range($offset, $items_per_page);
     $sub_query_results = $sub_query->execute()->fetchAllAssoc('type_id_key');
     $sub_query_keys = array_keys($sub_query_results);
@@ -116,26 +116,6 @@ class MassEntityUsage extends EntityUsage implements MassEntityUsageInterface {
     }
 
     return $references;
-  }
-
-  /**
-   * Check if a value is an integer, or an integer string.
-   *
-   * Core doesn't support big integers (bigint) for entity reference fields.
-   * Therefore we consider integers with more than 10 digits (big integer) to be
-   * strings.
-   * @todo: Fix bigint support once fixed in core. More info on #2680571 and
-   * #2989033.
-   *
-   * @param int|string $value
-   *   The value to check.
-   *
-   * @return bool
-   *   TRUE if the value is a numeric integer or a string containing an integer,
-   *   FALSE otherwise.
-   */
-  protected function isInt($value) {
-    return ((string) (int) $value === (string) $value) && strlen($value) < 11;
   }
 
 }
