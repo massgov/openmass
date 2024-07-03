@@ -9,8 +9,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\RevisionableInterface;
-use Drupal\Core\Language\LanguageInterface;
 use Drupal\mass_entity_usage\MassEntityUsageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Pager\PagerManagerInterface;
@@ -243,35 +241,6 @@ class ListUsageController extends ControllerBase {
   }
 
   /**
-   * Lists the usage of a given entity with sub queries.
-   *
-   * @param string $entity_type
-   *   The entity type.
-   * @param int $entity_id
-   *   The entity ID.
-   *
-   * @return array
-   *   The page build to be rendered.
-   *
-   * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
-   */
-  public function listUsagePageSubQuery($entity_type, $entity_id) {
-    $this->loadEntity($entity_type, $entity_id);
-    $total = $this->getSubQueryRowsCount();
-    if (!$total) {
-      return [
-        '#markup' => $this->t('There are no recorded usages for entity of type: @type with id: @id', ['@type' => $entity_type, '@id' => $entity_id]),
-      ];
-    }
-
-    $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
-    $page = $pager->getCurrentPage();
-    $page_rows = $this->getSubQueryRows($page, $this->itemsPerPage);
-
-    return $this->buildRows($page_rows);
-  }
-
-  /**
    * Retrieve total number of unique sources.
    *
    * @return int
@@ -310,67 +279,6 @@ class ListUsageController extends ControllerBase {
     if (!$this->entity) {
       $this->entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
     }
-  }
-
-  /**
-   * Prepare usage records.
-   *
-   * @param $usages
-   *   Usage records from the query.
-   *
-   * @return array
-   *   An indexed array of rows representing the records for a given page.
-   */
-  public function prepareRows($usages) {
-    $entity_types = $this->entityTypeManager->getDefinitions();
-    $languages = $this->languageManager()->getLanguages(LanguageInterface::STATE_ALL);
-    $rows = [];
-    foreach ($usages as $source_type => $ids) {
-      $type_storage = $this->entityTypeManager->getStorage($source_type);
-      foreach ($ids as $source_id => $records) {
-        // We will show a single row per source entity. If the target is not
-        // referenced on its default revision on the default language, we will
-        // just show indicate that in a specific column.
-        $source_entity = $type_storage->load($source_id);
-        if (!$source_entity) {
-          // If for some reason this record is broken, just skip it.
-          continue;
-        }
-        $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
-        if ($source_entity instanceof RevisionableInterface) {
-          $default_revision_id = $source_entity->getRevisionId();
-          $default_langcode = $source_entity->language()->getId();
-          $used_in_default = FALSE;
-          $default_key = 0;
-          foreach ($records as $key => $record) {
-            if ($record['source_vid'] == $default_revision_id && $record['source_langcode'] == $default_langcode) {
-              $default_key = $key;
-              $used_in_default = TRUE;
-              break;
-            }
-          }
-          $used_in_text = $used_in_default ? $this->t('Default') : $this->t('Translations or previous revisions');
-        }
-        $link = $this->getSourceEntityLink($source_entity);
-        // If the label is empty it means this usage shouldn't be shown
-        // on the UI, just skip this row.
-        if (empty($link)) {
-          continue;
-        }
-        $published = $this->getSourceEntityStatus($source_entity);
-        $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ? $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
-        $rows[] = [
-          $link,
-          $source_entity->bundle(),
-          $languages[$default_langcode]->getName(),
-          $field_label,
-          $published,
-          $used_in_text,
-        ];
-      }
-    }
-
-    return $rows;
   }
 
   /**
