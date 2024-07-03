@@ -6,7 +6,7 @@ use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
-use Drupal\entity_usage\Controller\LocalTaskUsageSubQueryController;
+use Drupal\mass_entity_usage\Controller\LocalTaskUsageSubQueryController;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 

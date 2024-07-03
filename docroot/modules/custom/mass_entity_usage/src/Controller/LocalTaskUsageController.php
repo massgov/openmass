@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage\Controller;
+namespace Drupal\mass_entity_usage\Controller;
 
 use Drupal\Core\Routing\RouteMatchInterface;
 

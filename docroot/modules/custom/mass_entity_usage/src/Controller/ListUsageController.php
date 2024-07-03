@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage\Controller;
+namespace Drupal\mass_entity_usage\Controller;
 
 use Drupal\block_content\BlockContentInterface;
 use Drupal\Core\Access\AccessResult;
@@ -11,7 +11,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Language\LanguageInterface;
-use Drupal\entity_usage\EntityUsageInterface;
+use Drupal\mass_entity_usage\MassEntityUsageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Pager\PagerManagerInterface;
 
@@ -35,7 +35,7 @@ class ListUsageController extends ControllerBase {
   /**
    * The EntityUsage service.
    *
-   * @var \Drupal\entity_usage\EntityUsageInterface
+   * @var \Drupal\mass_entity_usage\MassEntityUsageInterface
    */
   protected $entityUsage;
 
@@ -79,14 +79,14 @@ class ListUsageController extends ControllerBase {
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
-   * @param \Drupal\entity_usage\EntityUsageInterface $entity_usage
+   * @param \Drupal\mass_entity_usage\MassEntityUsageInterface $entity_usage
    *   The EntityUsage service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    * The config factory service.
    * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
    *   The pager manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, EntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory, PagerManagerInterface $pager_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, MassEntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory, PagerManagerInterface $pager_manager) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->entityUsage = $entity_usage;
@@ -102,7 +102,7 @@ class ListUsageController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager'),
-      $container->get('entity_usage.usage'),
+      $container->get('mass_entity_usage.usage'),
       $container->get('config.factory'),
       $container->get('pager.manager')
     );

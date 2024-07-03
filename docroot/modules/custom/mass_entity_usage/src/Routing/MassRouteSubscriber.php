@@ -47,7 +47,6 @@ class MassRouteSubscriber extends RouteSubscriber {
         ],
         [
           '_permission' => 'access entity usage statistics',
-          '_custom_access' => '\Drupal\mass_entity_usage\Controller\MassLocalTaskUsageController::checkAccessLocalTask',
         ],
         $options
       );
