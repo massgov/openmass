@@ -37,8 +37,6 @@ function mass_media_media_update(EntityInterface $entity) {
     return;
   }
 
-
-
   $target_new = $entity->getUploadFile()->target_id;
   $target_original = $entity->original->getUploadFile()->target_id;
   if (empty($target_original) || $target_original == $target_new) {
