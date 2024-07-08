@@ -1,4 +1,4 @@
-{% set heading = { } %}
+{% set heading = {} %}
 {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 0 %}
   {% set heading = {
     "title": (content.field_section_long_form_heading|field_value),
@@ -15,7 +15,7 @@
     "stackedRowSection": heading,
     "stackedRow": {
       "borderless": true,
-      "modifier" : "no-sidebar"
+      "modifier": "no-sidebar"
     },
     "externalSidebar": true
   } %}
@@ -62,7 +62,7 @@
             {% endblock %}
           {% endembed %}
         {% elseif org_component.group == 'contained' %}
-          {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent' : 'om__contained-component'} %}
+          {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}
             {% block rteElements %}
               {{ org_component.items|view }}
             {% endblock %}

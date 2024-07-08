@@ -134,11 +134,11 @@
 
 {% if node.field_publish_bio_page.value and not position_is_vacant %}
   {# Link the title to the person's bio page. #}
-  {% set generalTeaserTitle = generalTeaser.title|merge({ href: url }) %}
-  {% set generalTeaser = generalTeaser|merge({ title: generalTeaserTitle }) %}
+  {% set generalTeaserTitle = generalTeaser.title|merge({href: url}) %}
+  {% set generalTeaser = generalTeaser|merge({title: generalTeaserTitle}) %}
 
   {% set generalTeaserContents = generalTeaser.contents %}
-  {% set generalTeaser = generalTeaser|merge({ contents: generalTeaserContents }) %}
+  {% set generalTeaser = generalTeaser|merge({contents: generalTeaserContents}) %}
 {% endif %}
 
 {% embed "@molecules/general-teaser.twig" with {
@@ -166,4 +166,4 @@
 
 {% endembed %}
 
-{{ content | without('field_medium_image', 'person_is_featured', 'position_is_vacant') }}
+{{ content|without('field_medium_image', 'person_is_featured', 'position_is_vacant') }}

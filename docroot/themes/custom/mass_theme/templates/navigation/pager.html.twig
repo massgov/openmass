@@ -44,10 +44,10 @@
           {{ items.previous.text|default('‹ Previous'|t) }}
         </a>
       {% endif %}
-{#      #}{# Add an ellipsis if there are further previous pages. #}
-{#      {% if ellipses.previous %}#}
-{#        <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span>#}
-{#      {% endif %}#}
+{# #}{# Add an ellipsis if there are further previous pages. #}
+{# {% if ellipses.previous %} #}
+{# <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span> #}
+{# {% endif %} #}
       {# Now generate the actual pager piece. #}
       {% for key, item in items.pages %}
         {% if current == key %}
@@ -61,9 +61,9 @@
         </a>
       {% endfor %}
       {# Add an ellipsis if there are further next pages. #}
-{#      {% if ellipses.next %}#}
-{#        <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span>#}
-{#      {% endif %}#}
+{# {% if ellipses.next %} #}
+{# <span class="ma__pagination__spacer pager__item pager__item--ellipsis" role="presentation">&hellip;</span> #}
+{# {% endif %} #}
       {# Print next item if we are not on the last page. #}
       {% if items.next %}
        <a href="{{ items.next.href }}"

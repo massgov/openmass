@@ -591,19 +591,20 @@ function mass_theme_preprocess_node_form_page(&$variables) {
         ],
       ];
 
-      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-      $sidebarContacts_options = [
-        'groups' => [
-          'accordion' => FALSE,
-          'isExpanded' => FALSE,
-        ],
-      ];
-      // Prepare the sidebarContact data object.
-      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-      unset($sideContent['contactList']['compHeading']);
-      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-      $sideContent['contactList']['viewSpecific'] = FALSE;
+      if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+        // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+        $sidebarContacts_options = [
+          'groups' => [
+            'accordion' => FALSE,
+            'isExpanded' => FALSE,
+          ],
+        ];
+        // Prepare the sidebarContact data object.
+        $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+        unset($sideContent['contactList']['compHeading']);
+        $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+        $sideContent['contactList']['viewSpecific'] = FALSE;
+      }
     }
 
     $variables['formRequirements'] = $formRequirements;
@@ -1499,7 +1500,6 @@ function mass_theme_preprocess_node_info_details(&$variables) {
 
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
-    $variables['sectionCount'] = $node->field_info_details_sections->count();
 
     // Prepare field_banner_image, if it's populated.
     if (Helper::isFieldPopulated($node, 'field_banner_image')) {
@@ -1559,20 +1559,23 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         ],
       ];
 
-      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-      $sidebarContacts_options = [
-        'groups' => [
-          'accordion' => FALSE,
-          'isExpanded' => FALSE,
-          'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
-        ],
-      ];
-      // Prepare the sidebarContact data object.
-      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-      unset($sideContent['contactList']['compHeading']);
-      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-      $sideContent['contactList']['viewSpecific'] = TRUE;
+      if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+
+        // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+        $sidebarContacts_options = [
+          'groups' => [
+            'accordion' => FALSE,
+            'isExpanded' => FALSE,
+            'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
+          ],
+        ];
+        // Prepare the sidebarContact data object.
+        $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+        unset($sideContent['contactList']['compHeading']);
+        $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+        $sideContent['contactList']['viewSpecific'] = TRUE;
+      }
+
       $variables['sideContent'] = $sideContent;
       $variables['mainContent'] = $mainContent;
     }
@@ -1585,7 +1588,8 @@ function mass_theme_preprocess_node_info_details(&$variables) {
 
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
   // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-  (new CacheableMetadata())->addCacheTags($cache_tags)
+  CacheableMetadata::createFromRenderArray($variables)
+    ->addCacheTags($cache_tags)
     ->applyTo($variables);
 }
 
@@ -1726,22 +1730,23 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $titleContext = t(' for  @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $titleContext = t(' for  @title', ['@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   // Build related links section, if field is populated.
@@ -2000,23 +2005,23 @@ function mass_theme_preprocess_node_decision(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $titleContext = t(' for @docket @title', ['@docket' => $docket_number, '@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
-
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $titleContext = t(' for @docket @title', ['@docket' => $docket_number, '@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
     $sections[] = [
       'title' => $contactList_options['heading']['title'],
       'id' => $contactList_options['heading']['id'],
@@ -2250,23 +2255,23 @@ function mass_theme_preprocess_node_regulation(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
-
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
     $sections[] = [
       'title' => $contactList_options['heading']['title'],
       'id' => $contactList_options['heading']['id'],
@@ -2468,23 +2473,23 @@ function mass_theme_preprocess_node_advisory(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
-
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
     $sections[] = [
       'title' => $contactList_options['heading']['title'],
       'id' => $contactList_options['heading']['id'],
@@ -2780,20 +2785,21 @@ function mass_theme_preprocess_node_rules(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-        'onlyPhoneAndOnline' => TRUE,
-      ],
-    ];
-    // Prepare the sidebarContact data object.
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['viewSpecific'] = TRUE;
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+          'onlyPhoneAndOnline' => TRUE,
+        ],
+      ];
+      // Prepare the sidebarContact data object.
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   $mainContent['contents'] = $sections;
@@ -3095,20 +3101,21 @@ function mass_theme_preprocess_node_event(&$variables) {
       ],
     ];
 
-    $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebarContacts_options = [
-      'groups' => [
-        'accordion' => FALSE,
-        'isExpanded' => FALSE,
-      ],
-    ];
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-    unset($sideContent['contactList']['compHeading']);
-    $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sideContent['contactList']['viewSpecific'] = TRUE;
+    if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebarContacts_options = [
+        'groups' => [
+          'accordion' => FALSE,
+          'isExpanded' => FALSE,
+        ],
+      ];
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+      $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
+      unset($sideContent['contactList']['compHeading']);
+      $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+      $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sideContent['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   // Gather events associated with this node.
@@ -3572,14 +3579,16 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       ],
     ];
 
-    $pageContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
+    if ($pageContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
 
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
-    unset($sidebar['contactList']['compHeading']);
-    $sidebar['contactList']['sidebarHeading']['title'] = t('Media Contact');
-    $sidebar['contactList']['sidebarHeading']['titleContext'] = $titleContext;
-    $sidebar['contactList']['viewSpecific'] = TRUE;
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+
+      unset($sidebar['contactList']['compHeading']);
+      $sidebar['contactList']['sidebarHeading']['title'] = t('Media Contact');
+      $sidebar['contactList']['sidebarHeading']['titleContext'] = $titleContext;
+      $sidebar['contactList']['viewSpecific'] = TRUE;
+    }
   }
 
   // Build related links section, if field is populated.
@@ -3808,7 +3817,9 @@ function mass_theme_preprocess_block(&$variables) {
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
       // Add cache context for the current URL path.
       $cache_contexts = ['url.path'];
-      (new CacheableMetadata())->addCacheTags($cache_tags)->addCacheContexts($cache_contexts)
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
+        ->addCacheContexts($cache_contexts)
         ->applyTo($variables);
     }
     else {
@@ -3976,7 +3987,8 @@ function mass_theme_preprocess_node(&$variables) {
     $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    (new CacheableMetadata())->addCacheTags($cache_tags)
+    CacheableMetadata::createFromRenderArray($variables)
+      ->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
 
@@ -4530,7 +4542,8 @@ function mass_theme_preprocess_page(&$variables) {
       $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-      (new CacheableMetadata())->addCacheTags($cache_tags)
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
         ->applyTo($variables);
 
       // Add class for org-type to main wrapper.
@@ -5004,6 +5017,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
       'instagram',
       'medium',
       'youtube',
+      'vimeo',
     ];
 
     foreach ($variables['items'] as $index => &$item) {
@@ -5131,6 +5145,7 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
     $pressListing_options = [
       'numOfSecondaryItems' => $numItems,
       'displayImages' => Helper::fieldValue($paragraph, 'field_org_show_news_images'),
+      'level' => 3,
     ];
     $secondaryItems = $paragraph->recent_news->range(0, $numItems + 1)->referencedEntities();
     $press_listing = Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags);
@@ -5149,7 +5164,8 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
 
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-      (new CacheableMetadata())->addCacheTags($cache_tags)
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
         ->applyTo($variables);
     }
   }
@@ -5816,7 +5832,8 @@ function mass_theme_preprocess_paragraph__contact_group(&$variables) {
 function mass_theme_preprocess_paragraph__contact_info(&$variables) {
   $paragraph = $variables['paragraph'];
   // Ensure contact changes invalidate this render.
-  (new CacheableMetadata())->addCacheableDependency($paragraph)
+  CacheableMetadata::createFromRenderArray($variables)
+    ->addCacheableDependency($paragraph)
     ->applyTo($variables);
   $field_address = $paragraph->get('field_address');
 
@@ -6040,11 +6057,11 @@ function mass_theme_preprocess_views_view(&$variables) {
 
   // Add a class to the submit button.
   if (isset($variables['exposed']['actions']['submit'])) {
-    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button-submit';
+    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button-submit';
   }
   // Add a class to the reset button.
   if (isset($variables['exposed']['actions']['reset'])) {
-    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--quaternary ma__button-reset';
+    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--uppercase ma__button--quaternary ma__button-reset';
   }
 
   // Optionally, run node-type-specific preprocess functions, like
@@ -7259,7 +7276,8 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
 
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    (new CacheableMetadata())->addCacheTags($cache_tags)
+    CacheableMetadata::createFromRenderArray($variables)
+      ->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
 }

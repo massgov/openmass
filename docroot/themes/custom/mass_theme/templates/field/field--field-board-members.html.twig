@@ -41,5 +41,5 @@
 {% set level = elements['#level'] ? (elements['#level'] + 1) : 2 %}
 
 {% for item in items %}
-  {{ item.content|merge({'#level': level }) }}
+  {{ item.content|merge({'#level': level}) }}
 {% endfor %}

@@ -42,7 +42,7 @@
 
 {% set links_array = [] %}
 {% for item in items %}
-  {% set links_array = links_array|merge([{ "href": item.content['#url'], "text": item.content['#title'] }]) %}
+  {% set links_array = links_array|merge([{"href": item.content['#url'], "text": item.content['#title']}]) %}
 {% endfor %}
 
 {% if links_array|length > 0 %}
@@ -57,7 +57,7 @@
         "stacked": true,
         "links": links_array
       }
-    }%}
+    } %}
 
     {% if links_array|length > 3 %}
       <button type="button" class="ma__related-orgs-and-topics--toggle js-ma__related-orgs-and-topics--toggle">
@@ -66,8 +66,3 @@
     {% endif %}
   </div>
 {% endif %}
-
-
-
-
-
