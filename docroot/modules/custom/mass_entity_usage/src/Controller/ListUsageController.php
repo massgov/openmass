@@ -46,7 +46,7 @@ class ListUsageController extends ControllerBase {
   /**
    * The entity.
    *
-   * @var  \Drupal\Core\Entity\EntityInterface
+   * @var \Drupal\Core\Entity\EntityInterface
    */
   protected $entity;
 
