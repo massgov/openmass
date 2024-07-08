@@ -15,20 +15,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
   /**
-   * Get the number of pageviews for the specified node ids.
-   */
-  private function getPageviews($nids) {
-    /** @var \Drupal\Core\Database\Connection */
-    $database = \Drupal::service('database');
-    $query = $database->select('node_field_data', 'n');
-    $query->leftjoin('mass_superset_data', 'm', 'n.nid = m.nid');
-    $query->fields('n', ['nid']);
-    $query->fields('m', ['pageviews']);
-    $query->condition('n.nid', $nids, 'in');
-    return $query->execute()->fetchAllAssoc('nid');
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
@@ -148,7 +134,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     }
 
     if (!empty($ids)) {
-      $pageviews = $this->getPageviews($ids);
+      $pageviews = \Drupal::service('bigquery.storage')->getRecords($ids);
     }
 
     foreach ($children as $weight => $node) {
@@ -232,7 +218,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         '#attributes' => ['class' => ['child-id']],
       ];
 
-      $form['children'][$child]['pageviews']['#markup'] = \intval($pageviews[$child]->pageviews);
+      $form['children'][$child]['pageviews']['#markup'] = \intval($pageviews[$child]['totalPageViews']);
 
       $form['children'][$child]['parent'] = [
         '#type' => 'hidden',
