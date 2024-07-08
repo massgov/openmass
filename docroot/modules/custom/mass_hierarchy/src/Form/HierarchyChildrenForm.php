@@ -218,7 +218,9 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         '#attributes' => ['class' => ['child-id']],
       ];
 
-      $form['children'][$child]['pageviews']['#markup'] = \intval($pageviews[$child]['totalPageViews']);
+      if ($pageviews[$child]) {
+        $form['children'][$child]['pageviews']['#markup'] = \intval($pageviews[$child]['totalPageViews']);
+      }
 
       $form['children'][$child]['parent'] = [
         '#type' => 'hidden',
