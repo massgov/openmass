@@ -14,6 +14,18 @@ name: 'Full HTML'
 format: full_html
 weight: 1
 filters:
+  editor_file_reference:
+    id: editor_file_reference
+    provider: editor
+    status: true
+    weight: 11
+    settings: {  }
+  entity_embed:
+    id: entity_embed
+    provider: entity_embed
+    status: true
+    weight: 10
+    settings: {  }
   filter_align:
     id: filter_align
     provider: filter
@@ -26,30 +38,18 @@ filters:
     status: true
     weight: 9
     settings: {  }
-  filter_htmlcorrector:
-    id: filter_htmlcorrector
-    provider: filter
-    status: true
-    weight: 10
-    settings: {  }
-  editor_file_reference:
-    id: editor_file_reference
-    provider: editor
-    status: true
-    weight: 11
-    settings: {  }
   filter_html:
     id: filter_html
     provider: filter
     status: false
     weight: -10
     settings:
-      allowed_html: 'a href hreflang data-entity-type data-entity-uuid data-entity-substitution> <em> <strong> <cite> <blockquote cite> <code> <ol start type> <li> <dl> <dt> <dd> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <s> <sup> <sub> <ul type class="ma__checklist"> <img src alt data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <table> <caption> <tbody> <thead> <tfoot> <th> <td> <tr> <hr> <p> <h1> <pre>'
+      allowed_html: '<ul class="ma__checklist">'
       filter_html_help: true
       filter_html_nofollow: false
-  entity_embed:
-    id: entity_embed
-    provider: entity_embed
+  filter_htmlcorrector:
+    id: filter_htmlcorrector
+    provider: filter
     status: true
     weight: 10
     settings: {  }
@@ -69,6 +69,12 @@ filters:
     status: true
     weight: 0
     settings: {  }
+  filter_richtext_lang:
+    id: filter_richtext_lang
+    provider: mass_fields
+    status: true
+    weight: -50
+    settings: {  }
   linkit:
     id: linkit
     provider: linkit
@@ -76,9 +82,3 @@ filters:
     weight: -11
     settings:
       title: false
-  filter_richtext_lang:
-    id: filter_richtext_lang
-    provider: mass_fields
-    status: true
-    weight: -50
-    settings: {  }

@@ -13,7 +13,6 @@ dependencies:
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
-    - field.field.node.org_page.field_include_parent_org_search
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
@@ -24,6 +23,7 @@ dependencies:
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_organization_sections
+    - field.field.node.org_page.field_organization_type
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
@@ -210,16 +210,6 @@ content:
     third_party_settings: {  }
     weight: 14
     region: content
-  field_include_parent_org_search:
-    type: boolean
-    label: inline
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 140
-    region: content
   field_intended_audience:
     type: list_default
     label: above
@@ -298,6 +288,14 @@ content:
       link: ''
     third_party_settings: {  }
     weight: 50
+    region: content
+  field_organization_type:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 141
     region: content
   field_organizations:
     type: entity_reference_label

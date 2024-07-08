@@ -5,28 +5,21 @@ namespace Drupal\trashbin\Drush\Commands;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drush\Attributes as CLI;
+use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class TrashbinCommands extends DrushCommands {
 
-  const TRASHBIN_ONLY_TRASH = 'trashbin_only_trash';
+  use AutowireTrait;
 
+  const TRASHBIN_ONLY_TRASH = 'trashbin_only_trash';
   const TRASHBIN_PURGE = 'trashbin:purge';
 
   protected function __construct(
     private EntityTypeManagerInterface $etm,
     private TimeInterface $time) {
-  }
-
-  public static function create(ContainerInterface $container): self {
-    $commandHandler = new static(
-      $container->get('entity_type.manager'),
-      $container->get('datetime.time'),
-    );
-
-    return $commandHandler;
   }
 
   /**

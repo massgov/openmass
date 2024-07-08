@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.billing_organizations.field_billing_account_number
     - field.field.taxonomy_term.billing_organizations.field_billing_customer_code
     - field.field.taxonomy_term.billing_organizations.field_billing_customer_group
     - field.field.taxonomy_term.billing_organizations.field_billing_customer_name
@@ -12,9 +13,17 @@ targetEntityType: taxonomy_term
 bundle: billing_organizations
 mode: default
 content:
+  field_billing_account_number:
+    type: string_textfield
+    weight: 5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_billing_customer_code:
     type: string_textfield
-    weight: 3
+    weight: 4
     region: content
     settings:
       size: 60
@@ -22,7 +31,7 @@ content:
     third_party_settings: {  }
   field_billing_customer_group:
     type: string_textfield
-    weight: 2
+    weight: 3
     region: content
     settings:
       size: 60
@@ -53,7 +62,7 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 100
+    weight: 6
     region: content
     settings:
       display_label: true

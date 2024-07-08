@@ -1,30 +1,33 @@
-uuid: b94264e5-8855-4f9a-a167-4f734c81f249
+uuid: 2be7cc20-b4e2-4e74-a571-36997e4a1c0b
 langcode: en
 status: true
 dependencies:
   config:
     - filter.format.campaign_landing_restricted
   module:
-    - ckeditor
+    - ckeditor5
 format: campaign_landing_restricted
-editor: ckeditor
+editor: ckeditor5
 settings:
   toolbar:
-    rows:
-      -
-        -
-          name: Formatting
-          items:
-            - Bold
-            - Italic
-        -
-          name: Lists
-          items:
-            - BulletedList
-            - Styles
+    items:
+      - bold
+      - italic
+      - '|'
+      - bulletedList
+      - style
   plugins:
-    stylescombo:
-      styles: 'ul.ma__horizontal-list|Horizontal list'
+    ckeditor5_list:
+      properties:
+        reversed: false
+        startIndex: true
+        styles: true
+      multiBlock: true
+    ckeditor5_style:
+      styles:
+        -
+          label: 'Horizontal list'
+          element: '<ul class="ma__horizontal-list">'
 image_upload:
   status: false
   scheme: public

@@ -273,6 +273,8 @@ jobs:
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
+      # Lint Twig
+      - run: composer twigcs -- --no-interaction
 
   test:
     parameters:
@@ -285,6 +287,7 @@ jobs:
     executor:
       name: base
       instance: << parameters.instance >>
+    parallelism: 4
     steps:
       - attach_workspace: {at: /var/www}
       - *vendor_bin_add_path
@@ -321,7 +324,13 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+            - run:
+                # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
+                name: Run functional tests
+                command: |
+                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:

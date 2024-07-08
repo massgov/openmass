@@ -74,7 +74,7 @@
 {% set contents = [{
   "path": "@atoms/11-text/paragraph.twig",
   "data": {
-    "paragraph" : {
+    "paragraph": {
       "text": node.field_how_to_lede.value ?: ""
     }
   }
@@ -83,8 +83,8 @@
 {% set news_date = {
     "path": "@atoms/11-text/raw-html.twig",
     "data": {
-      "rawHtml" : {
-        "content" :  content.field_news_date|render
+      "rawHtml": {
+        "content": content.field_news_date|render
       }
     }
   }
@@ -107,17 +107,17 @@
   {% set contents = contents|merge([decorative_link]) %}
 {% endfor %}
 
-{% set eyebrow = content.field_news_type[0]['#markup'] != 'Blog Post' ? content.field_news_type[0]['#markup']  : '' %}
+{% set eyebrow = content.field_news_type[0]['#markup'] != 'Blog Post' ? content.field_news_type[0]['#markup'] : '' %}
 {% set headingLevel = 3 %}
 {% include "@molecules/general-teaser.twig" with {
-  "generalTeaser" : {
+  "generalTeaser": {
     "imageAfter": true,
     "image": {
       "src": content.field_news_image[0]['565w']['#markup'],
       "width": "400",
       "alt": node.field_news_image.alt ?: "",
     },
-    "title" : {
+    "title": {
       "href": url,
       "text": label,
       "info": "",
@@ -131,7 +131,7 @@
     "contents": [{
       "path": "@atoms/11-text/paragraph.twig",
       "data": {
-        "paragraph" : {
+        "paragraph": {
           "text": node.field_news_lede.value ?: ""
         }
       }

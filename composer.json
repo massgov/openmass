@@ -63,6 +63,18 @@
         {
             "type": "package",
             "package": {
+                "name": "davidjbradshaw/iframe-resizer",
+                "version": "v4.3.6",
+                "type": "drupal-library",
+                "dist": {
+                    "url": "https://github.com/davidjbradshaw/iframe-resizer/archive/refs/tags/v4.3.6.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
                 "name": "desandro/masonry",
                 "version": "4.1.1",
                 "type": "drupal-library",
@@ -158,6 +170,7 @@
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1",
         "d3/d3": "3.5.*",
+        "davidjbradshaw/iframe-resizer": "^4.3",
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
         "drupal/access_unpublished": "^1.4",
@@ -172,6 +185,8 @@
         "drupal/autologout": "^1",
         "drupal/better_exposed_filters": "^6.0.3",
         "drupal/cache_metrics": "^2",
+        "drupal/ckeditor5_fullscreen": "^1.0@beta",
+        "drupal/ckeditor5_paste_filter": "^1.0",
         "drupal/ckeditor_liststyle": "dev-1.x",
         "drupal/coffee": "^1",
         "drupal/color": "^1",
@@ -185,6 +200,7 @@
         "drupal/csv_field": "^1",
         "drupal/csv_serialization": "^2.0 || ^3.0",
         "drupal/datalayer": "^2",
+        "drupal/datatables_cdn": "^1.0",
         "drupal/devel": "^5",
         "drupal/devel_entity_updates": "^4.0",
         "drupal/diff": "^1.0",
@@ -192,8 +208,10 @@
         "drupal/dropzonejs": "^2",
         "drupal/dynamic_entity_reference": "^3.1",
         "drupal/editoria11y": "^2.1",
+        "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
         "drupal/entity_diff_ui": "dev-1.0.x",
+        "drupal/entity_embed": "^1.5",
         "drupal/entity_hierarchy": "3.3.2",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "^2.3",
@@ -206,14 +224,15 @@
         "drupal/file_browser": "^1",
         "drupal/flag": "^4.0",
         "drupal/focal_point": "dev-2.x",
-        "drupal/geocoder": "^4",
-        "drupal/geofield": "^1",
+        "drupal/geocoder": "^4.23",
+        "drupal/geofield": "^1.57",
         "drupal/gin": "^3",
         "drupal/gin_toolbar": "^1",
         "drupal/google_map_field": "^2",
-        "drupal/google_tag": "^2",
+        "drupal/google_tag": "^2.0",
         "drupal/http_response_headers": "^2",
         "drupal/hux": "^1.1",
+        "drupal/iframe_resizer": "^2.0",
         "drupal/imagick": "^1",
         "drupal/inline_entity_form": "^1",
         "drupal/jquery_ui_autocomplete": "^2.0",
@@ -245,7 +264,7 @@
         "drupal/r4032login": "^2.2",
         "drupal/rabbit_hole": "^1",
         "drupal/redirect": "^1",
-        "drupal/require_on_publish": "dev-1.x",
+        "drupal/require_on_publish": "^1.10",
         "drupal/reverse_proxy_header": "^1",
         "drupal/route_iframes": "^2.0",
         "drupal/scheduled_transitions": "^2",
@@ -276,7 +295,7 @@
         "drush/drush": "^12",
         "enyo/dropzone": "5.7.2",
         "furf/jquery-ui-touch-punch": "dev-master",
-        "geocoder-php/open-cage-provider": "^4.4",
+        "geocoder-php/open-cage-provider": "^4.6",
         "google/cloud-bigquery": "^1.25",
         "massgov/mayflower-artifacts": "dev-develop",
         "monolog/monolog": "^3",
@@ -297,7 +316,9 @@
         "imbo/behat-api-extension": "^2.0",
         "kint-php/kint": "^5",
         "phpspec/prophecy-phpunit": "^2",
-        "weitzman/drupal-test-traits": "^2",
+        "previousnext/phpunit-finder": "dev-main",
+        "vincentlanglet/twig-cs-fixer": "^2.5",
+        "weitzman/drupal-test-traits": "2.x-dev",
         "weitzman/logintrait": "^1"
     },
     "autoload-dev": {
@@ -306,7 +327,8 @@
         }
     },
     "scripts": {
-        "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom"
+        "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
+        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom"
     },
     "conflict": {
         "drupal/drupal": "*"
@@ -337,18 +359,33 @@
             }
         },
         "installer-paths": {
-            "docroot/core": ["type:drupal-core"],
-            "docroot/libraries/{$name}": ["type:drupal-library"],
-            "docroot/modules/contrib/{$name}": ["type:drupal-module"],
-            "docroot/profiles/contrib/{$name}": ["type:drupal-profile"],
-            "docroot/themes/contrib/{$name}": ["type:drupal-theme"],
-            "drush/contrib/{$name}": ["type:drupal-drush"]
+            "docroot/core": [
+                "type:drupal-core"
+            ],
+            "docroot/libraries/{$name}": [
+                "type:drupal-library"
+            ],
+            "docroot/modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "docroot/profiles/contrib/{$name}": [
+                "type:drupal-profile"
+            ],
+            "docroot/themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ],
+            "drush/contrib/{$name}": [
+                "type:drupal-drush"
+            ]
         },
         "patches": {
             "drupal/access_unpublished": {
                 "Invalid argument supplied for foreach AddHttpHeaders->onResponse (https://www.drupal.org/project/access_unpublished/issues/3215907)": "https://www.drupal.org/files/issues/2021-05-26/3215907-warning-invalid-argument.patch",
                 "Invalid argument supplied for foreach SettingsForm->prepareHeadersDisplay (https://www.drupal.org/project/access_unpublished/issues/3252499)": "https://www.drupal.org/files/issues/2021-12-03/3252499-warning-invalid-argument-2.patch",
                 "Hardcode preview links based on environment": "patches/access_unpublished/DP-25897_change_unpublish_preview_links_v2.patch"
+            },
+            "drupal/ckeditor5_fullscreen": {
+                "Fullscreen mode interferes with link button (https://www.drupal.org/files/issues/2024-05-30/3381084_fullscreen_mode_interferes_with_link_button.patch)": "https://www.drupal.org/files/issues/2024-05-30/3381084_fullscreen_mode_interferes_with_link_button_2.patch"
             },
             "drupal/core": {
                 "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577)": "https://www.drupal.org/files/issues/2022-07-12/2575577-38.patch",
@@ -357,18 +394,19 @@
                 "Notice: Undefined index: #type in drupal_process_states() (https://www.drupal.org/project/drupal/issues/2700667)": "https://www.drupal.org/files/issues/2019-12-05/2700667-89.patch",
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch",
                 "Batch is dependent on the order of query string parameters (https://www.drupal.org/project/drupal/issues/2879023)": "https://git.drupalcode.org/issue/drupal-2879023/-/commit/c68aa376a7fc262886cb56d9ac762e4b06e6b174.patch",
-                "3075454 - combine fields filter doesn't recognise taxonomy description field":  "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
+                "3075454 - combine fields filter doesn't recognise taxonomy description field": "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
                 "2993688 - Views relationships with multi-valued entity reference fields invalidate Distinct query option": "https://www.drupal.org/files/issues/2022-06-16/2993688-99.patch",
                 "2329253 - Allow the ChangedItem to skip updating when synchronizing (f.e. when migrating)": "https://www.drupal.org/files/issues/2022-12-07/2329253-97.patch",
                 "Avoid warnings when getting permissions for roles that do not have permissions and are not administrators": "patches/DP-23561-avoid-warnings-on-roles-without-permissions.patch",
-                "2845144 - User can't reference unpublished content even when they have access to it" : "https://www.drupal.org/files/issues/2022-06-17/2845144-67.patch",
-                "Ensure to have build info on View Page Controller before getting the view title" : "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch",
+                "2845144 - User can't reference unpublished content even when they have access to it": "https://www.drupal.org/files/issues/2024-01-09/2845144-84-11.x.patch",
+                "Ensure to have build info on View Page Controller before getting the view title": "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch",
                 "Bubbling of elements' max-age to the page's headers and the page cache (https://www.drupal.org/project/drupal/issues/2352009#comment-14724015)": "https://www.drupal.org/files/issues/2022-10-07/bubble.patch",
                 "Dynamically provide action plugins for every moderation state change (https://www.drupal.org/project/drupal/issues/2797583#comment-14699699)": "https://www.drupal.org/files/issues/2022-09-20/core-provide-moderation-states-as-actions-2797583-207.patch",
                 "PHP Deprecated: strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in docroot/core/lib/Drupal/Core/Mail/Plugin/Mail/PhpMail.php on line 112 (https://www.drupal.org/project/drupal/issues/3328187#comment-15138241)": "https://www.drupal.org/files/issues/2023-07-05/3372667-2_0.patch",
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch",
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
-                "Link error - the internal path component is invalid (https://www.drupal.org/project/drupal/issues/2943135)": "https://www.drupal.org/files/issues/2023-01-27/link_error_the_internal_path_component_is_invalid-2943135-041.patch"
+                "Use CKEditor 5's native <ol type> and <ul type> UX (https://www.drupal.org/project/drupal/issues/3274635)": "https://www.drupal.org/files/issues/2024-03-21/ckeditor5_custom_patch_file.patch",
+                "RouteProvider pretends no routes if database connection lost, poisoning cache downstream": "patches/routeprovider-logging-3402447-mr-7767.patch"
             },
             "drupal/flag": {
                 "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
@@ -379,9 +417,15 @@
             "drupal/diff": {
                 "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch"
             },
+            "drupal/dropzonejs": {
+                "Dropzone element overwrites potential metadata and libraries added by other modules (https://www.drupal.org/project/drupal/issues/3303028)": "https://www.drupal.org/files/issues/2023-01-18/dropzone_overwrites_metadata_and_libraries-3303028-2_with-3211288.patch"
+            },
+            "drupal/editoria11y": {
+                "Retrieve result name options using results instead of dismissals": "patches/editoria11y--result-name-options-results.patch"
+            },
             "drupal/entity_browser": {
                 "Fix duplicated image selection when click use selected button": "https://www.drupal.org/files/issues/prevent-duplication.patch",
-                "Fix PHP 8.2 deprecation issue with WidgetSelectorBase-class (https://www.drupal.org/project/entity_browser/issues/3350169)": "https://www.drupal.org/files/issues/2023-06-15/3350169-8_0.patch"
+                "Sorting not working in view with entity browser (https://www.drupal.org/project/entity_browser/issues/3216540)": "https://www.drupal.org/files/issues/2021-06-02/3216540-7_0.patch"
             },
             "drupal/entity_hierarchy": {
                 "Hidden Weight field causes extra space in the form": "patches/entity_hierarchy-weight-widget-space-3245879-2.patch",
@@ -393,8 +437,8 @@
             },
             "drupal/entity_usage": {
                 "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-25.patch",
-                "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
-                "2954973 - Track absolute URLs in link fields" : "patches/2954973-68.patch",
+                "Hides language column and shows bundle": "patches/entity-usage--hide-language--show-bundle.patch",
+                "2954973 - Track absolute URLs in link fields": "patches/2954973-68.patch",
                 "3098733 - Fatal error after saving the page not have a reuse entity (https://www.drupal.org/project/entity_usage/issues/3098733)": "https://www.drupal.org/files/issues/2021-09-03/3098733-fatal-error-13.patch"
             },
             "drupal/field_group": {
@@ -410,14 +454,20 @@
             "drupal/gin": {
                 "3281343 - Use Gin's edit form for Media Entries": "https://www.drupal.org/files/issues/2023-02-23/edit-form-media-3281343-9.patch"
             },
+            "drupal/iframe_resizer": {
+                "Missing license URL (https://www.drupal.org/project/iframe_resizer/issues/3385378)": "https://www.drupal.org/files/issues/2023-09-05/iframe_resizer-missing_license_url-3385378-3.patch"
+            },
             "drupal/inline_entity_form": {
                 "Add a setting to enable/disable inline editing of existing entities (https://www.drupal.org/project/inline_entity_form/issues/2913571#comment-12811088)": "https://www.drupal.org/files/issues/2018-10-11/ief_edit_existing_2913571_7.patch"
+            },
+            "drupal/paragraphs": {
+                "Nested paragraphs title gets cut off (https://www.drupal.org/project/paragraphs/issues/3246140)": "https://www.drupal.org/files/issues/2024-03-11/paragraphs-3246140-19-fix_paragraph_title_cutoff.patch"
             },
             "drupal/linkit": {
                 "Link shown after the autocomplete selection is the bare node/xxx link, not the alias (https://www.drupal.org/project/linkit/issues/2877535)": "https://www.drupal.org/files/issues/2023-10-05/linkit-2877535-64.patch"
             },
             "drupal/media_entity_download": {
-                "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2023-11-02/media_entity_download-ckeditor_plugin-2928318-30.patch",
+                "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2024-04-22/media_entity_download-ckeditor5_plugin-2928318-36.patch",
                 "3106062 - Track the usage of Media entity through media_entity_download route with entity_usage": "https://www.drupal.org/files/issues/2023-10-03/3106062-12.patch"
             },
             "drupal/pathologic": {
@@ -434,6 +484,12 @@
                 "Add an intermediate redirect (https://www.drupal.org/project/redirect/issues/3162696#comment-15085388)": "https://www.drupal.org/files/issues/2023-05-31/tmp.diff",
                 "Filter by redirect destination does not work with URL alias (https://www.drupal.org/project/redirect/issues/2981544) (See DP-31078 before replacing)": "https://www.drupal.org/files/issues/2023-09-21/redirect-filter-by-destination-alias-2981544-39.patch"
             },
+            "drupal/seven": {
+                "Add ckeditor5-stylesheets config (https://www.drupal.org/project/seven/issues/3267440)": "https://www.drupal.org/files/issues/2023-04-27/seven_add_ckeditor5-stylesheets-3267440-7.patch"
+            },
+            "drupal/csv_field": {
+                "Review accessiblility issue with CSV table feature - DP-32499": "patches/DP-32499_csv_field_a11y_fix.patch"
+            },
             "drupal/views_bulk_operations": {
                 "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch"
             },
@@ -444,7 +500,7 @@
                 "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2022-05-05/quick_node_clone-permissions_not_respected-2979426-34.patch"
             },
             "drupal/views_bulk_edit": {
-                "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2020-11-20/3024419-invalid-form-control-24.patch",
+                "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2024-01-10/views_bulk_edit-3024419-fix_required_fields-57.patch",
                 "Hide revision checkbox from the form": "patches/DP-25205_hide_revision_checkbox_from_views_bulk_edit_form.patch"
             }
         },

@@ -134,6 +134,8 @@ class MapLocationFetcher {
       // Get location information from location pages.
       // Populate the googleMap.markers and imagePromos data structures.
       $locations['googleMap']['markers'][$key]['infoWindow'] = $locations['imagePromos']['items'][$key]['infoWindow'];
+      // For LeafletMap infoWindow content, LL. 139-141 are not used.
+      // See L.1103 of modules/custom/mayflower/src/Prepare/Molecules.php.
       $locations['googleMap']['markers'][$key]['infoWindow']['name'] = Link::fromTextAndUrl($node->getTitle(), $node->toUrl())->toString();
       $locations['googleMap']['markers'][$key]['infoWindow']['plain_text_title'] = $node->getTitle();
       $locations['googleMap']['markers'][$key]['infoWindow']['description'] = $node->hasField('field_lede') ? $node->field_lede->value : NULL;

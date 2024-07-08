@@ -20,7 +20,7 @@
   {% set color = "ma__narrow-template--" ~ narrowTemplate.color %}
 {% endif %}
 
-<main id="main-content" class="ma__narrow-template {{side}} {{color}}" tabindex="-1">
+<main id="main-content" class="ma__narrow-template {{ side }} {{ color }}" tabindex="-1">
   <header class="ma__narrow-template__header">
     <div class="ma__site-logo">
       <a href="/" title="Mass.gov home page">
@@ -46,7 +46,7 @@
             }
           }
         %}
-        {% include "@organisms/by-template/transition-page.twig" with { 'transitionPage': transitionPage } %}
+        {% include "@organisms/by-template/transition-page.twig" with {'transitionPage': transitionPage} %}
         {{ attach_library('mass_theme/interstitial-page') }}
       {% endblock %}
     </div>
@@ -54,5 +54,3 @@
   {% block schemaContent %}
   {% endblock %}
 </main>
-
-

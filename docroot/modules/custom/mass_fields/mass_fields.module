@@ -883,6 +883,27 @@ function mass_fields_field_widget_single_element_entity_reference_paragraphs_for
 
 /**
  * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
+ *
+ * See https://massgov.atlassian.net/browse/DP-31886
+ *
+ * Approach comes from https://stackoverflow.com/a/66096376/265501https://stackoverflow.com/a/66096376/265501.
+ */
+function mass_fields_field_widget_single_element_image_image_form_alter(&$element, FormStateInterface $form_state, $context) {
+  if (in_array($element['#field_name'], ['field_featured_item_highlight', 'field_featured_item_image'])) {
+    $element['#process'][] = 'mass_fields_image_widget_alt_help_text_process';
+  }
+}
+
+function mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
+  if (isset($element['alt'])) {
+    $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
+    $element['alt']['#description'] = new \Drupal\Core\StringTranslation\TranslatableMarkup($text);
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
 function mass_fields_field_widget_single_element_paragraphs_form_alter(&$element, FormStateInterface $form_state, $context) {
   _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
@@ -896,7 +917,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
 
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_header' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_header' || $paragraph_entity_reference_field_name == 'field_info_details_header_media' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
@@ -916,6 +937,25 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
             ],
           ];
           $element['subform']['field_text_overlay_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
+          $element['subform']['field_use_half_image']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
+          $element['subform']['field_image']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'image'],
+            ],
             'visible' => [
               $selector => ['value' => 'image'],
             ],
@@ -1012,8 +1052,12 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
 
         case 'iframe':
           $dependee_field_name = 'field_iframe_height_config';
-          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
-
+          if ($paragraph_entity_reference_field_name == 'field_info_details_header_media') {
+            $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          }
+          else {
+            $selector = sprintf('input[name="%s[%d][subform][%s][%d][subform][%s]"]', $element['#field_parents'][0], $element['#field_parents'][1], $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          }
           // Dependent fields.
           $element['subform']['field_verify_iframe_100_confirm']['widget']['value']['#states'] = [
             'required' => [
@@ -1089,6 +1133,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
 function mass_fields_entity_presave(EntityInterface $entity) {
   if ($entity instanceof Node || $entity instanceof Paragraph) {
     // Get the URL replacement service.
+    /** @var  $urlReplacementService \Drupal\mass_fields\MassUrlReplacementService */
     $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
 
     foreach ($entity->getFields() as $field) {
@@ -1098,6 +1143,25 @@ function mass_fields_entity_presave(EntityInterface $entity) {
           $processed = $urlReplacementService->processText($item->value);
           if ($processed['changed']) {
             $item->value = $processed['text'];
+          }
+        }
+      }
+      elseif ($fieldType === 'link') {
+        foreach ($field as $item) {
+          if ($item->uri) {
+            if (strpos($item->uri, 'internal:') === 0) {
+              $url = substr($item->uri, strlen('internal:'));
+              $processed = $urlReplacementService->processLink($url);
+              if ($processed['changed']) {
+                $item->uri = 'internal:' . $processed['link'];
+              }
+            }
+            elseif (preg_match('/(https:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)(\/download|\/|$)|files\/)/', $item->uri)) {
+              $processed = $urlReplacementService->processLink($item->uri);
+              if ($processed['changed']) {
+                $item->uri = 'internal:' . $processed['link'];
+              }
+            }
           }
         }
       }

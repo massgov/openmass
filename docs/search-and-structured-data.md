@@ -169,7 +169,6 @@ Currently, the Google Custom Search Engine \(CSE\) powering search.mass.gov inde
 | Barnstable County Sheriff's Department | bsheriff.net | [www.bsheriff.net](http://www.bsheriff.net/) |
 | Berkshire County Sheriff's Department | bcsoma.org | [bcsoma.org](https://bcsoma.org/) |
 | Bershire Regional Planning Commission | berkshireplanning.org | [www.berkshireplanning.org](http://berkshireplanning.org/) |
-| Board and Commission Appointment by the Governor of Massachusetts \(_Boards and Commissions Office_\) | appointments.state.ma.us | [appointments.state.ma.us](https://appointments.state.ma.us/) |
 | Boston Region Metropolitan Planning Organization | ctps.org | [www.ctps.org](https://www.ctps.org/) |
 | Bristol County District Attorney | bristolda.com | [bristolda.com](http://bristolda.com/) |
 | Center for Health Information and Analysis | chiamass.gov | [www.chiamass.gov](http://www.chiamass.gov/) |
@@ -177,7 +176,6 @@ Currently, the Google Custom Search Engine \(CSE\) powering search.mass.gov inde
 | Committee for Public Counsel Services \(Public Defender Agency of Massachusetts\) | publiccounsel.net | [www.publiccounsel.net](https://www.publiccounsel.net/) |
 | Commonwealth Corporation | commcorp.org | [www.commcorp.org](http://commcorp.org/) |
 | Commonwealth of Massachusetts Supreme Judicial Court Mental Health Legal Advisors Committee | mhlac.org | [www.mhlac.org](http://mhlac.org/) |
-| CommonWiki | wiki.state.ma.us | [wiki.state.ma.us/confluence/display/data/](https://wiki.state.ma.us/confluence/display/data/) |
 | Community Economic Development Assistance Corporation | cedac.org | [www.cedac.org](https://cedac.org/) |
 | Dukes County | dukescounty.org | [www.dukescounty.org](http://www.dukescounty.org/Pages/index) |
 | Massachusetts Empowering Small Business | empoweringsmallbusiness.org | [www.empoweringsmallbusiness.org](https://www.empoweringsmallbusiness.org/) |
@@ -187,7 +185,6 @@ Currently, the Google Custom Search Engine \(CSE\) powering search.mass.gov inde
 | Hampshire County Sheriff's Department | hampshiresheriffs.com | [www.hampshiresheriffs.com](http://www.hampshiresheriffs.com/) |
 | Massachusetts Registry of Motor Vehicles | massrmv.com & secure.rmv.state.ma.us | [www.massrmv.com](http://www.massrmv.com/) & [secure.rmv.state.ma.us](https://secure.rmv.state.ma.us/) |
 | Mass.Gov | mass.gov | [www.mass.gov](https://www.mass.gov/) |
-| Mass.Gov Blog | blog.mass.gov | [blog.mass.gov](http://blog.mass.gov/) |
 | Massachusetts Board of Library Commissioners | mblc.state.ma.us | [mblc.state.ma.us](http://mblc.state.ma.us/) |
 | Massachusetts Cases | masscases.com | [masscases.com](http://masscases.com/) |
 | Massachusetts Compare Care | masscomparecare.gov | [www.masscomparecare.gov](https://www.masscomparecare.gov/) |
@@ -199,18 +196,18 @@ Currently, the Google Custom Search Engine \(CSE\) powering search.mass.gov inde
 | Massachusetts Environmental Public Health Tracking | matracking.ehs.state.ma.us | [matracking.ehs.state.ma.us](https://matracking.ehs.state.ma.us/) |
 | Massachusetts Gaming Commission | massgaming.com | [massgaming.com](https://massgaming.com/) |
 | Massachusetts Health Connector | mahealthconnector.org | [www.mahealthconnector.org](https://www.mahealthconnector.org/) |
-| Massachusetts Health Promotion Clearinghouse | massclearinghouse.ehs.state.ma.us | massclearinghouse.ehs.state.ma.us/ |
+| Massachusetts Health Promotion Clearinghouse | massclearinghouse.ehs.state.ma.us | [massclearinghouse.ehs.state.ma.us](massclearinghouse.ehs.state.ma.us) |
 | Massachusetts Housing Partnership | mhp.net | [www.mhp.net](https://www.mhp.net/) |
 | Massachusetts Legislature | malegislature.gov | [malegislature.gov](http://malegislature.gov/) |
 | Massachusetts National Guard | massnationalguard.org | [www.massnationalguard.org](https://www.massnationalguard.org/) |
 | Massachusetts School Building Authority | massschoolbuildings.org | [www.massschoolbuildings.org](http://www.massschoolbuildings.org/) |
 | Massachusetts Small Business Development Center Network | msbdc.org | [www.msbdc.org](https://www.msbdc.org/) |
 | Massachusetts State College Building Authority | mscba.org | [www.mscba.org](https://www.mscba.org/) |
-| Massachusetts State Lottery | masslottery.com | [www.masslottery.com](https://github.com/massgov/mayflower/tree/4edb7b87fc1e89ff83f22c9bb2a3c636ec76c94c/docs/guidelines/www.masslottery.com) |
+| Massachusetts State Lottery | masslottery.com | [www.masslottery.com](www.masslottery.com)| 
 | Massachusetts Technology Collaborative | masstech.org | [www.masstech.org](https://www.masslottery.com/) |
-| Massachusetts Vacation and Tourism | massvacation.com | [www.massvacation.com](https://www.massvacation.com/) |
+| Massachusetts Office of Travel and Tourism | visitma.com | [visitma.com](https://www.visitma.com/) |
 | Massachusetts Vehicle Check | mavehiclecheck.com | [www.mavehiclecheck.com](https://www.mavehiclecheck.com/) |
-| Massachusetts Water Resources Authority | mwra.state.ma.us | [www.mwra.state.ma.us](http://www.mwra.state.ma.us/) |
+| Massachusetts Water Resources Authority | mwra.com | [www.mwra.com](http://www.mwra.com/) |
 | MassDevelopment | massdevelopment.com | [www.massdevelopment.com](https://www.massdevelopment.com/) |
 | MassHousing | masshousing.com | [www.masshousing.com](https://www.masshousing.com/) |
 | Massport | massport.com | [www.massport.com](http://www.massport.com/) |
@@ -221,12 +218,11 @@ Currently, the Google Custom Search Engine \(CSE\) powering search.mass.gov inde
 | Montachusetts Regional Planning Commission | mrpc.org | [www.mrpc.org](https://www.mrpc.org/) |
 | Norfolk County Sheriff's Department | norfolksheriff.com | [www.norfolksheriff.com](https://www.norfolksheriff.com/) |
 | Northwestern District Attorney | northwesternda.org | [www.northwesternda.org](http://www.northwesternda.org/) |
-| Online mapping portal for the Executive Office of Energy an Environmental Affairs | mass-eoeea.maps.arcgis.com | [mass-eoeea.maps.arcgis.com](http://mass-eoeea.maps.arcgis.com) |
-| Pension Reserves Investment Management Board | mapension.com | [www.mapension.com](http://www.mapension.com/) |
+| Online mapping portal for the Executive Office of Energy an Environmental Affairs | mass-eoeea.maps.arcgis.com | [mass-eoeea.maps.arcgis.com](http://mass-eoeea.maps.arcgis.com) | Pension Reserves Investment Management Board | mapension.com | [www.mapension.com](http://www.mapension.com/) |
 | Plymouth County Sheriff's Department | pcsdma.org | [www.pcsdma.org](https://www.pcsdma.org/) |
 | Secretary of the Commonwealth of Massachusetts | sec.state.ma.us | [www.sec.state.ma.us](http://www.sec.state.ma.us/) |
 | Suffolk County District Attorney | suffolkdistrictattorney.com | [www.suffolkdistrictattorney.com](http://www.suffolkdistrictattorney.com/) |
-| Suffolk County Sheriff's Department | scsdma.org | [www.scsdma.org](https://github.com/massgov/mayflower/tree/4edb7b87fc1e89ff83f22c9bb2a3c636ec76c94c/docs/guidelines/www.scsdma.org) |
+| Suffolk County Sheriff's Department | scsdma.org | [www.scsdma.org](https://www.scsdma.org) |
 | University of Massachusetts | massachusetts.edu | [www.massachusetts.edu](http://www.massachusetts.edu/) |
 | Worcester County District Attorney | worcesterda.com | [worcesterda.com](http://worcesterda.com/) |
 | Worcester County Sheriff's Department | worcestercountysheriff.com | [worcestercountysheriff.com](https://worcestercountysheriff.com/) |
