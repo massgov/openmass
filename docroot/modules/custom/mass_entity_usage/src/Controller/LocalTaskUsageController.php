@@ -23,7 +23,6 @@ class LocalTaskUsageController extends UsageController {
     return $this->listUsagePageSubQuery($entity->getEntityTypeId(), $entity->id());
   }
 
-
   /**
    * {@inheritdoc}
    */

@@ -44,6 +44,8 @@ class UsageController extends ControllerBase {
   protected $entityUsage;
 
   /**
+   * The entity.
+   *
    * @var  \Drupal\Core\Entity\EntityInterface
    */
   protected $entity;
@@ -86,7 +88,7 @@ class UsageController extends ControllerBase {
    * @param \Drupal\mass_entity_usage\MassEntityUsageInterface $entity_usage
    *   The EntityUsage service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   * The config factory service.
+   *   The config factory service.
    * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
    *   The pager manager.
    */
@@ -111,7 +113,6 @@ class UsageController extends ControllerBase {
       $container->get('pager.manager')
     );
   }
-
 
   /**
    * {@inheritdoc}
