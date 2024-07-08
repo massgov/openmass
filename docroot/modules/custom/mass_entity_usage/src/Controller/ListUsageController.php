@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Controller for our pages.
  */
-class UsageController extends ControllerBase {
+class ListUsageController extends ControllerBase {
 
   /**
    * Number of items per page to use when nothing was configured.

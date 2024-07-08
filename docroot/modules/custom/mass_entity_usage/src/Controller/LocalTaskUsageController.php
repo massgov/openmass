@@ -7,7 +7,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Controller for our pages.
  */
-class LocalTaskUsageController extends UsageController {
+class LocalTaskUsageController extends ListUsageController {
 
   /**
    * Lists the usage of a given entity.
