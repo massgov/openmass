@@ -240,7 +240,7 @@ EOD;
                             ->createInstance('canonical')
                             ->getUrl($entity_new);
                           $element->setAttribute('data-entity-uuid', $entity_new->uuid());
-                          $element->setAttribute('href', $url->getGeneratedUrl() . $query . $anchor);
+                          $element->setAttribute('href', $url->toString() . $query . $anchor);
                           $changed = TRUE;
                         }
                       }

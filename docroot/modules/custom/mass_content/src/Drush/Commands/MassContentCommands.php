@@ -266,6 +266,7 @@ class MassContentCommands extends DrushCommands {
             case 'text_long':
               $query = $this->entityTypeManager->getStorage($entity_storage_name)->getQuery();
               $query->condition('type', $type);
+              $query->accessCheck(FALSE);
               // Add a condition to filter entities with a specific textarea field containing "node/nid".
               $query->condition("$field_name.value", 'node/', 'CONTAINS');
 
