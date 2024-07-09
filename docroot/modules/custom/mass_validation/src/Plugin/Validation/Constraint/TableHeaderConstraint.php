@@ -14,5 +14,5 @@ use Symfony\Component\Validator\Constraint;
  */
 class TableHeaderConstraint extends Constraint {
   public $message = 'Tables must have headers.';
-}
 
+}
