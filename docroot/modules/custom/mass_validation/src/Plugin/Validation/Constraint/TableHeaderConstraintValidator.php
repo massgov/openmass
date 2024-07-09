@@ -7,11 +7,12 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 class TableHeaderConstraintValidator extends ConstraintValidator {
+
   /**
    * {@inheritdoc}
    */
   public function validate($value, Constraint $constraint) {
-    if ($value !== null) {
+    if ($value !== NULL) {
       if ($text = $value->value) {
         $document = Html::load($text);
         $xpath = new \DOMXPath($document);
@@ -26,4 +27,5 @@ class TableHeaderConstraintValidator extends ConstraintValidator {
       }
     }
   }
+
 }
