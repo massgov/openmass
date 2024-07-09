@@ -13,28 +13,6 @@ class MassEntityUsage extends EntityUsage implements MassEntityUsageInterface {
   /**
    * {@inheritdoc}
    */
-  public function listUniqueSourcesCount(EntityInterface $target_entity) {
-    $target_id_column = $this->isInt($target_entity->id()) ? 'target_id' : 'target_id_string';
-    $query = $this->connection->select($this->tableName, 'p');
-    $query->fields('p', [
-      'source_id',
-      'source_type',
-    ]);
-    $query->addExpression("concat(source_type, '-', source_id)", 'type_id_key');
-    $query->condition($target_id_column, $target_entity->id());
-    $query->condition('target_type', $target_entity->getEntityTypeId());
-    $query->condition('count', 0, '>');
-    $query->orderBy('source_type');
-    $query->orderBy('source_id', 'DESC');
-    $query->distinct();
-
-    // Return the unique number of sources.
-    return (int) $query->countQuery()->execute()->fetchField();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function listSourcesPage(EntityInterface $target_entity, $offset, $nest_results = TRUE) {
     $target_id_column = $this->isInt($target_entity->id()) ? 'target_id' : 'target_id_string';
 
