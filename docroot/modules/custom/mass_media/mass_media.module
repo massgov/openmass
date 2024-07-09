@@ -29,6 +29,8 @@ use Drupal\media\MediaInterface;
  * @throws \Drupal\Core\Entity\EntityStorageException
  */
 function mass_media_media_update(EntityInterface $entity) {
+
+  // getUploadFile method and field_upload_file field are only available to documents.
   if (!($entity instanceof DocumentBundle)) {
     return;
   }
