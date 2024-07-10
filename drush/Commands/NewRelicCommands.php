@@ -21,7 +21,7 @@ final class NewRelicCommands extends DrushCommands {
   #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: '*')]
   public function name($result, CommandData $commandData) {
     if (!extension_loaded('newrelic')) {
-      $this->logger()->info('New Relic extension is not loaded.');
+      $this->logger()->debug('New Relic extension is not loaded.');
       return;
     }
     $annotationData = $commandData->annotationData();
