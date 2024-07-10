@@ -256,7 +256,7 @@ final class MassUtilityCommands extends DrushCommands {
       $batch_size = $limit;
     }
     while (!$finished) {
-      $query = $this->database
+      $query = $this->connection
         ->select('node_field_revision', 'r')
         ->fields('r', ['nid']);
       $query->join('node_field_data', 'n', 'n.nid = r.nid');
