@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "66f53a02e6aac85d48c1cbcbf04f38b9",
+    "content-hash": "025931a9c65fe98d73eaeb9ab7757ca3",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -4769,27 +4769,38 @@
         },
         {
             "name": "drupal/diff",
-            "version": "1.1.0",
+            "version": "1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/diff.git",
-                "reference": "8.x-1.1"
+                "reference": "8.x-1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/diff-8.x-1.1.zip",
-                "reference": "8.x-1.1",
-                "shasum": "b7558b0f431d5945289829946e0beba61bf7ae18"
+                "url": "https://ftp.drupal.org/files/projects/diff-8.x-1.7.zip",
+                "reference": "8.x-1.7",
+                "shasum": "d282bdf3350ac71f95b38576a9f397bdbab8d249"
             },
             "require": {
-                "drupal/core": "^9.3 || ^10",
-                "mkalkbrenner/php-htmldiff-advanced": "~0.0.8"
+                "drupal/core": "^10 || ^11",
+                "mkalkbrenner/php-htmldiff-advanced": "~0.0.8",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "jangregor/phpstan-prophecy": "dev-master",
+                "mglaman/phpstan-drupal": "^1.2.10",
+                "phpstan/extension-installer": "^1.2",
+                "phpstan/phpstan": "^1.11",
+                "phpstan/phpstan-deprecation-rules": "*",
+                "phpstan/phpstan-phpunit": "1.4.x-dev",
+                "phpstan/phpstan-strict-rules": "^1@stable",
+                "previousnext/coding-standard": "^1"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.1",
-                    "datestamp": "1665437355",
+                    "version": "8.x-1.7",
+                    "datestamp": "1718073570",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -4827,8 +4838,9 @@
                     "role": "Maintainer"
                 },
                 {
-                    "name": "Junyor",
-                    "homepage": "https://www.drupal.org/user/7006"
+                    "name": "Adam Bramley (acbramley)",
+                    "homepage": "https://www.drupal.org/u/acbramley",
+                    "role": "Maintainer"
                 },
                 {
                     "name": "lhangea",
@@ -4858,7 +4870,7 @@
             "description": "Compares two entity revisions",
             "homepage": "https://www.drupal.org/project/diff",
             "support": {
-                "source": "http://cgit.drupalcode.org/diff",
+                "source": "https://git.drupalcode.org/project/diff",
                 "issues": "https://www.drupal.org/project/issues/diff"
             }
         },
@@ -5154,26 +5166,29 @@
         },
         {
             "name": "drupal/editoria11y",
-            "version": "2.1.7",
+            "version": "2.1.18",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/editoria11y.git",
-                "reference": "2.1.7"
+                "reference": "2.1.18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/editoria11y-2.1.7.zip",
-                "reference": "2.1.7",
-                "shasum": "4efcf4a9cff26cbd64d9b69be384d9347499e1a5"
+                "url": "https://ftp.drupal.org/files/projects/editoria11y-2.1.18.zip",
+                "reference": "2.1.18",
+                "shasum": "ebdb25f92c2d77681661216ca3abebbc710b662a"
             },
             "require": {
-                "drupal/core": "^9 || ^10"
+                "drupal/core": "^9 || ^10 || ^11"
+            },
+            "conflict": {
+                "drupal/csp": "<1.24"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.1.7",
-                    "datestamp": "1703778081",
+                    "version": "2.1.18",
+                    "datestamp": "1716399461",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -5207,10 +5222,10 @@
                 }
             ],
             "description": "Editoria11y (\"editorial accessibility\") is a user-friendly accessibility checker.",
-            "homepage": "http://drupal.org/project/editoria11y",
+            "homepage": "https://drupal.org/project/editoria11y",
             "support": {
                 "source": "https://git.drupalcode.org/project/editoria11y",
-                "issues": "http://drupal.org/project/issues/editoria11y"
+                "issues": "https://drupal.org/project/issues/editoria11y"
             }
         },
         {
@@ -12615,12 +12630,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/massgov/mayflower-artifacts.git",
-                "reference": "1bc7f1d0f7136610a94fce176dd798aa7d90c680"
+                "reference": "c391ee9717d67cc68cce73150ac27a07e3e71310"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/1bc7f1d0f7136610a94fce176dd798aa7d90c680",
-                "reference": "1bc7f1d0f7136610a94fce176dd798aa7d90c680",
+                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/c391ee9717d67cc68cce73150ac27a07e3e71310",
+                "reference": "c391ee9717d67cc68cce73150ac27a07e3e71310",
                 "shasum": ""
             },
             "require": {
@@ -12642,7 +12657,7 @@
                 "issues": "https://github.com/massgov/mayflower-artifacts/issues",
                 "source": "https://github.com/massgov/mayflower-artifacts/tree/develop"
             },
-            "time": "2024-06-05T14:49:15+00:00"
+            "time": "2024-07-08T08:20:11+00:00"
         },
         {
             "name": "masterminds/html5",
