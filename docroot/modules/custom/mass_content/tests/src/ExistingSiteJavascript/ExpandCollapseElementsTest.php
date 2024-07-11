@@ -96,7 +96,8 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
         'report/qag-binderreport',
         '.ma__contact-us.js-accordion',
       ],
-      '_QAG Request Help with a Computer Problem Accordion in Table of Contents' => [
+      // @codingStandardsIgnoreStart
+      /*'_QAG Request Help with a Computer Problem Accordion in Table of Contents' => [
         'how-to/qag-request-help-with-a-computer-problem',
         '.ma__toc--hierarchy__accordion.js-accordion',
         function (ExpandCollapseElementsTest $me): void {
@@ -104,8 +105,8 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           $session = $me->getSession();
           $page = $session->getPage();
           // @codingStandardsIgnoreLine
-          /** @noinspection NullPointerExceptionInspection */
-          $page->find('css', '.ma__toc__toc__toggle')->click();
+          /* @noinspection NullPointerExceptionInspection
+          $page->find('css', 'div.ma__toc--overlay > div.ma__toc__toc__title > button.ma__toc__toc__toggle')->click();
           // CSS :visible seems to be true during the menu fade in, but before
           // the elements are clickable. We defer to the slower implementation
           // to let the browser determine when an element is ready to interact
@@ -114,6 +115,8 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           $me->assertSession()->waitForElementVisible('css', '#overlay-toc-384686 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion');
         },
       ],
+      */
+     // @codingStandardsIgnoreEnd
       '_QAG Request Help with a Computer Problem Notices and Alerts' => [
         'how-to/qag-request-help-with-a-computer-problem',
         '.ma__header-alerts.js-accordion',

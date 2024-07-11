@@ -4,12 +4,14 @@ namespace Drupal\mass_views\Plugin\Action;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -18,13 +20,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Allows to add Collections field value.
  *
  * @see https://www.drupal.org/docs/contributed-modules/views-bulk-operations-vbo/creating-a-new-action#s-2-action-class
- *
- * @Action(
- *   id = "mass_views_change_collections",
- *   label = @Translation("Add Collections"),
- *   type = "node"
- * )
  */
+#[Action(
+  id: "mass_views_change_collections",
+  label: new TranslatableMarkup('Add Collections'),
+  type: 'node'
+)]
 class ChangeCollections extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use StringTranslationTrait;

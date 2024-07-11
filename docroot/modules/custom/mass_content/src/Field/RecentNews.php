@@ -28,6 +28,7 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
     $query->condition('type', 'news');
     $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
     $query->condition('field_news_type', 'blog_post', '<>');
+    $query->condition('langcode', 'en');
     $query->condition('status', 1);
     $query->sort('field_date_published', 'DESC');
 
