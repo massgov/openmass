@@ -133,7 +133,7 @@ class BigqueryStorage implements BigqueryStorageInterface {
     foreach ($queryResults as $row) {
       $nos_per_1000 = $row['nosPerKUniquePageViews'];
       $pageviews = $row['totalPageViews'];
-      $total_no = $row['negativeSurveys'];
+      $total_no = $row['negativeSurveys'] ?? 0;
       $this->database->merge($this->table)
         ->key('nid', $row['nodeId'])
         ->fields([
