@@ -753,9 +753,7 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: browserstack-test
-          command: browserstack
+      - browserstack_test:
           filters:
             branches:
               <<: *branch_ignore
