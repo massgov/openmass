@@ -403,10 +403,10 @@ class Organisms {
    * @param array &$cache_tags
    *   The array of node cache tags.
    *
-   * @see @organisms/by-author/press-listing.twig
-   *
    * @return array
    *   Returns a structured array.
+   *
+   * @see @organisms/by-author/press-listing.twig
    */
   public static function preparePressListing($entity, $field, array $options = [], array $secondaryEntities = [], array &$cache_tags = []) {
     $items = [];
@@ -440,7 +440,6 @@ class Organisms {
           if (!empty($teaser_entity) && $teaser_entity->isPublished() === TRUE && $teaser_entity instanceof ContentEntityInterface) {
             // Get entity cache tags.
             $cache_tags = array_merge($cache_tags, $teaser_entity->getCacheTags());
-
             $items[] = Molecules::preparePressTeaser($teaser_entity, $options);
           }
         }
@@ -463,7 +462,7 @@ class Organisms {
     }
 
     if (!empty($secondaryEntities)) {
-      foreach ($secondaryEntities as $index => $secondary_entity) {
+      foreach ($secondaryEntities as $secondary_entity) {
         // Get entity cache tags.
         $cache_tags = array_merge($cache_tags, $secondary_entity->getCacheTags());
 
