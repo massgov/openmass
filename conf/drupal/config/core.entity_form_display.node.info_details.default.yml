@@ -39,10 +39,12 @@ dependencies:
     - conditional_fields
     - content_moderation
     - datetime
+    - entity_browser_entity_form
     - entity_hierarchy
     - entity_reference_tree
     - field_group
     - focal_point
+    - inline_entity_form
     - link
     - mass_validation
     - maxlength
@@ -195,15 +197,26 @@ content:
       label: 'Browse collections and topics'
     third_party_settings: {  }
   field_contact:
-    type: entity_reference_autocomplete
+    type: inline_entity_form_complex
     weight: 27
     region: content
     settings:
+      form_mode: default
+      override_labels: true
+      label_singular: Contact
+      label_plural: Contacts
+      allow_new: true
+      allow_existing: true
+      allow_edit: true
       match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
+      allow_duplicate: false
+      collapsible: false
+      collapsed: true
+      revision: true
+      removed_reference: keep
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: _none
   field_data_flag:
     type: options_buttons
     weight: 18
@@ -450,6 +463,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
