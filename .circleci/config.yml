@@ -463,6 +463,29 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
+  browserstack_test:
+    docker:
+      - image: cimg/php:8.2-node
+        environment:
+          BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
+          BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
+          BROWSERSTACK_LOCAL: false
+          BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
+    steps:
+      - attach_workspace: {at: /tmp}
+      - *vendor_bin_add_path
+      - *no_host_check
+      - *no_ssh_timeout
+      - run:
+          name: BrowserStack Automate
+          command: cd .circleci/browserstack && yarn install && npm run test
+          no_output_timeout: 300m
+      - store_test_results:
+          path: /tmp/results
+      - store_artifacts:
+          path: /tmp/results
+
+
   backstop_reference:
     parameters:
       target:
@@ -727,6 +750,12 @@ workflows:
           name: test-behat
           command: behat
           requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+      - test:
+          name: browserstack-test
+          command: browserstack
           filters:
             branches:
               <<: *branch_ignore
