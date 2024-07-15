@@ -754,6 +754,7 @@ workflows:
             branches:
               <<: *branch_ignore
       - browserstack_test:
+          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
