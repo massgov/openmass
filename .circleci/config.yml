@@ -464,6 +464,7 @@ jobs:
           path: /tmp/results
 
   browserstack_test:
+    working_directory: /tmp/code/.circle/browserstack
     docker:
       - image: cimg/php:8.2-node
         environment:
@@ -478,7 +479,7 @@ jobs:
       - *no_ssh_timeout
       - run:
           name: BrowserStack Automate
-          command: cd .circleci/browserstack && yarn install && npm run test
+          command: yarn install && npm run test
           no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
