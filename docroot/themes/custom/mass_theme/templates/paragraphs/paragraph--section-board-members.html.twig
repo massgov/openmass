@@ -39,8 +39,6 @@
  */
 #}
 
-{# Set top heading level for the component. #}
-{% set level = 3 %}
 {% if elements['#level'] is not empty %}
   {% set level = elements['#level'] %}
 {% endif %}
@@ -49,7 +47,6 @@
 {% if content.field_description is not empty %}
   {% set description = {
     text: content.field_description,
-    level: level,
   } %}
 {% endif %}
 
@@ -80,7 +77,7 @@
        {# Board members #}
       {% if content.field_board_members is not empty and teaserListing.expandable %}
         <ul class="ma__teaser-listing__items ma__teaser-listing__2-col-grid">
-          {{ content.field_board_members|merge({'#level': level}) }}
+          {{ content.field_board_members }}
         </ul>
       {% endif %}
     {% endblock %}
@@ -89,7 +86,7 @@
 {% else %}
   {% if content.field_board_members is not empty %}
     <ul class="ma__teaser-listing ma__teaser-listing__items ma__teaser-listing__2-col-grid">
-      {{ content.field_board_members|merge({'#level': level}) }}
+      {{ content.field_board_members }}
     </ul>
   {% endif %}
 {% endif %}

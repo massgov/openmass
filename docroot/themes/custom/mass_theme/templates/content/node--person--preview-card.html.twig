@@ -72,13 +72,6 @@
  */
 #}
 
-{# Set top heading level for the page. #}
-{% if elements['#level'] is not empty %}
-  {% set level = elements['#level'] + 1 %}
-{% else %}
-  {% set level = 3 %}
-{% endif %}
-
 {# Get the eyebrow value from the field on the referencing paragraph. #}
 {% set eyebrow = '' %}
 {% set parent_field = node._referringItem.parent %}
@@ -90,7 +83,7 @@
 {% set is_featured_board_member = node.person_is_featured.value %}
 
 {% set name = node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value %}
-{% set short_bio = node.field_short_bio.safe_value %}
+{% set short_bio = node.field_short_bio.value %}
 {% set role = node.field_person_role_title.value %}
 {% set show_image = true %}
 
@@ -108,11 +101,12 @@
   {% set layout = 'stacked' %}
 {% endif %}
 
+{# Set the heading level negative ("level": -1) to prevent rendering board member names with headings. https://github.com/massgov/mayflower/pull/1919 #}
 {% set generalTeaser = {
   "layout": layout,
   "eyebrow": eyebrow,
   "image": show_image,
-  "level": level,
+  "level": -1,
   "title": {
     "href": '',
     "text": name,

@@ -9,7 +9,6 @@
 
 {% set section_style_class = section_style == 'enhanced' ? 'org-section--enhanced' : 'org-section--simple' %}
 {% set hide_title_class = hide_heading ? 'org-section--hidden-title' : '' %}
-
 <section class="org-section {{ section_style_class }} {{ hide_title_class }}">
   {% embed "@organisms/by-author/stacked-row-section.twig" with {
     "stackedRowSection": heading,
@@ -68,23 +67,6 @@
             {% endblock %}
           {% endembed %}
         {% else %}
-
-          {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 1 %}
-
-             <p style="color: orange; font-weight: 800;">hide the heading </p>
-             {# <p style="color: purple; font-weight: 800;">value output: {{ org_component[0][0] }}</p> #}
-             {# <p style="color: purple; font-weight: 800;">{{ org_component[0]['#entityTypeId'].value }}</p> #}
-
-             {# {% set org_component[0]['#level'] = 1 %} #}
-             {# {% set org_component = org_component|merge([
-                  {'#level': 1,}
-              ]) %} #}
-
-          {% endif %}
-
-          {# {{ dump(org_component) }} #}
-
-
           {{ org_component[0]|view }}
         {% endif %}
       {% endfor %}

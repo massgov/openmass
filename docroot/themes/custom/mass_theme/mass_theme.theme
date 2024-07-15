@@ -7364,17 +7364,11 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     /** @var Drupal\paragraphs\Entity\Paragraph */
     $org_component_paragraph = &$org_component[0];
 
-    // If parent heading is hidden, addjust child's heading level.
-    // In the absense of parent heading, child heading takes over the parent's
-    // heading level.
-    // Child templates are set up to incease propagated heading level (#level or level) by 1 for their heading level.
-    // So, pass a value as 'current parent heading level - 1' (= 1)
-    // Need to add a new array item for 'heading_level' which originally does not exist.
-    if ($container->field_hide_heading->value == 1) {
-      // $org_component_paragraph['#values']['heading_level'] = 1;
-      print("<p>no heading</p>");
+    // Need to change child components' heading levels only when the section heading is hidden.
+    // paragraph--section-board-members.html.twig needs $container->field_hide_heading->value.
+    if ($variables['hide_heading'] == 0) {
+      $org_component['hideParentHeading'] = $container->field_hide_heading->value;
     }
-
 
 
     if (
