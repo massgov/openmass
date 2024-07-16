@@ -42,12 +42,12 @@ class MassRouteSubscriber extends RouteSubscriber {
       $route = new Route(
         $template . '/mass-usage',
         [
-          '_controller' => '\Drupal\mass_entity_usage\Controller\MassLocalTaskUsageController::listUsageLocalTask',
-          '_title_callback' => '\Drupal\mass_entity_usage\Controller\MassLocalTaskUsageController::getTitleLocalTask',
+          '_controller' => '\Drupal\mass_entity_usage\Controller\LocalTaskUsageController::listUsageLocalTask',
+          '_title_callback' => '\Drupal\mass_entity_usage\Controller\LocalTaskUsageController::getTitleLocalTask',
         ],
         [
           '_permission' => 'access entity usage statistics',
-          '_custom_access' => '\Drupal\mass_entity_usage\Controller\MassLocalTaskUsageController::checkAccessLocalTask',
+          '_custom_access' => '\Drupal\mass_entity_usage\Controller\LocalTaskUsageController::checkAccessLocalTask',
         ],
         $options
       );
