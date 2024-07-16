@@ -1,0 +1,29 @@
+uuid: 6c475aea-6c7e-44a5-9546-ac9d0551ab56
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_browser_entity_form
+name: contact_node
+label: 'Contact node'
+display: modal
+display_configuration:
+  width: '800'
+  height: '500'
+  link_text: 'Add new contact node'
+  auto_open: false
+selection_display: no_display
+selection_display_configuration: {  }
+widget_selector: single
+widget_selector_configuration: {  }
+widgets:
+  f544b482-0c2c-4def-b93a-d96136ad23e4:
+    id: entity_form
+    uuid: f544b482-0c2c-4def-b93a-d96136ad23e4
+    label: 'Add new'
+    weight: 1
+    settings:
+      submit_text: 'Save entity'
+      entity_type: node
+      bundle: contact_information
+      form_mode: default
