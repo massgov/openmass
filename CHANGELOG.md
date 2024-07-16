@@ -1,5 +1,22 @@
 
 
+## [0.403.0] - July 16, 2024
+
+### Changed
+  - DP-29889: Update entity_usage module and remove unneeded patches.
+  - DP-32555: Acquia Cloud tweaks
+  - DP-32600: Node queue revisions drush command fix
+  - DP-33908: A11y - Add styling to Foresee invite to increase line height.
+  
+### Fixed
+  - DP-32599: Fixed errors with BigQuery queue job.
+  - DP-33880: 500 Error when comparing revisions.
+  
+### Removed
+  - DP-33700: Remove unneeded modules.
+  
+
+
 ## [0.402.0] - July 9, 2024
 
 ### Changed
