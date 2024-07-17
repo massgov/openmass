@@ -1,37 +1,16 @@
 userName:
 accessKey:
 platforms:
-  - os: Windows
-    osVersion: latest
-    browserName: Chrome
+  - browserName: Chrome
+    os: Windows
+    osVersion: 11
     browserVersion: latest
-  - os: Windows
-    osVersion: latest
-    browserName: Edge
-    browserVersion: latest
-  - os: OS X
-    osVersion: latest
-    browserName: Chrome
-    browserVersion: latest
-  - os: OS X
-    osVersion: latest
-    browserName: Safari
-    browserVersion: latest
-  - os: android
-    osVersion: latest
-    browserName: Chrome
-    browserVersion: latest
-    device: Samsung Galaxy S24
-    real_mobile: true
-  - os: iOS
-    osVersion: latest
-    browserName: Safari
-    browserVersion: latest
-    device: iPhone 15
-    real_mobile: true
-parallelsPerPlatform: 1
-browserstackLocal: true
-buildName: openmass-build-1
+  - platformName: ios
+    deviceType: tablet
+  - platformName: android
+    deviceName: Samsung Galaxy S2.*
+parallelsPerPlatform: 3
+buildName: openmass
 projectName: openmass
 debug: false
 percy: true
