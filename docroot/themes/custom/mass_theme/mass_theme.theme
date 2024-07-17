@@ -5184,8 +5184,8 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
     $mappedLocations_options = [
       'locationDetailsLink' => [
         'display' => TRUE,
-        'nid' => $node->id(),
-        'path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
+        'nid' => $node ? $node->id() : '',
+        'path' => $node ? \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) : '',
       ],
     ];
 
