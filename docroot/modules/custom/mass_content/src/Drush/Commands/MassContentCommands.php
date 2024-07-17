@@ -287,7 +287,7 @@ class MassContentCommands extends DrushCommands {
                     $value = $item->getValue()['value'];
                     $dom = Html::load($value);
                     $xpath = new \DOMXPath($dom);
-                    foreach ($xpath->query("//a[starts-with(@href, '/node/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
+                    foreach ($xpath->query("//a[(starts-with(@href, 'node/') or starts-with(@href, '/node/')) and translate(substring-after(@href, 'node/'), '0123456789', '') = '']") as $element) {
                       $pattern = '/\d+/';
                       if (preg_match($pattern, $element->getAttribute('href'), $matches)) {
                         if ($nid = $matches[0]) {
@@ -295,14 +295,16 @@ class MassContentCommands extends DrushCommands {
                           if ($node) {
                             $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
                             if ($alias) {
-                              $changed = TRUE;
-                              $href_url = parse_url($element->getAttribute('href'));
-                              $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
-                              $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
-                              $element->setAttribute('data-entity-uuid', $node->uuid());
-                              $element->setAttribute('data-entity-substitution', 'canonical');
-                              $element->setAttribute('data-entity-type', 'node');
-                              $element->setAttribute('href', $alias . $query . $anchor);
+                              if (!preg_match('/node\/\d+/', $alias)) {
+                                $changed = TRUE;
+                                $href_url = parse_url($element->getAttribute('href'));
+                                $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                                $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                                $element->setAttribute('data-entity-uuid', $node->uuid());
+                                $element->setAttribute('data-entity-substitution', 'canonical');
+                                $element->setAttribute('data-entity-type', 'node');
+                                $element->setAttribute('href', $alias . $query . $anchor);
+                              }
                             }
                           }
                         }
