@@ -86,28 +86,29 @@ EOD;
           try {
 
             $usage = $this->entityTypeManager->getStorage($record->source_type)->load($record->source_id);
+            if ($usage) {
+              if ($record->source_type == 'paragraph') {
+                if (Helper::isParagraphOrphan($usage)) {
+                  continue;
+                }
+              }
 
-            if ($record->source_type == 'paragraph') {
-              if (Helper::isParagraphOrphan($usage)) {
+              if (in_array(EntityPublishedInterface::class, class_implements($usage)) && !$usage->isPublished()) {
+                // Usage is unpublished so don't bother fixing.
                 continue;
               }
-            }
+              if (str_starts_with($record->field_name, 'computed')) {
+                // We can't edit computed fields.
+                continue;
+              }
 
-            if (in_array(EntityPublishedInterface::class, class_implements($usage)) && !$usage->isPublished()) {
-              // Usage is unpublished so don't bother fixing.
-              continue;
-            }
-            if (str_starts_with($record->field_name, 'computed')) {
-              // We can't edit computed fields.
-              continue;
-            }
-
-            $parent = $usage;
-            // Climb up to find a non-paragraph parent.
-            while (method_exists($parent, 'getParentEntity')) {
-              $parent = $parent->getParentEntity();
-              if (!$parent->isPublished()) {
-                continue 2;
+              $parent = $usage;
+              // Climb up to find a non-paragraph parent.
+              while (method_exists($parent, 'getParentEntity')) {
+                $parent = $parent->getParentEntity();
+                if (!$parent->isPublished()) {
+                  continue 2;
+                }
               }
             }
           }
