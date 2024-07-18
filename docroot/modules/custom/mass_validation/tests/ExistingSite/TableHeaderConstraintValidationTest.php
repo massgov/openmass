@@ -56,7 +56,6 @@ class TableHeaderConstraintValidationTest extends MassExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-
     $this->createAndLoginUser('administrator');
     $this->visit($node->toUrl()->toString() . '/edit');
     $page = $this->getSession()->getPage();
