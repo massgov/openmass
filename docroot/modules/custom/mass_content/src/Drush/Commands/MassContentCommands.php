@@ -272,6 +272,7 @@ class MassContentCommands extends DrushCommands {
 
               // Execute the query and get a list of entity IDs.
               $entity_ids = $query->execute();
+
               if ($entity_ids) {
                 $entities = $this->entityTypeManager->getStorage($entity_storage_name)->loadMultiple($entity_ids);
                 foreach ($entities as $entity) {
@@ -287,13 +288,13 @@ class MassContentCommands extends DrushCommands {
                     $value = $item->getValue()['value'];
                     $dom = Html::load($value);
                     $xpath = new \DOMXPath($dom);
-                    foreach ($xpath->query("//a[(starts-with(@href, 'node/') or starts-with(@href, '/node/')) and translate(substring-after(@href, 'node/'), '0123456789', '') = '']") as $element) {
+                    foreach ($xpath->query("//a[(starts-with(@href, 'node/') or starts-with(@href, '/node/')) and translate(substring-before(substring-after(@href, 'node/'), '?#'), '0123456789', '') = '']") as $element) {
                       $pattern = '/\d+/';
                       if (preg_match($pattern, $element->getAttribute('href'), $matches)) {
                         if ($nid = $matches[0]) {
                           $node = $this->entityTypeManager->getStorage('node')->load($nid);
                           if ($node) {
-                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
+                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $matches[0]);
                             if ($alias) {
                               if (!preg_match('/node\/\d+/', $alias)) {
                                 $changed = TRUE;
