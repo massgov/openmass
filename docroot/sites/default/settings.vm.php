@@ -58,7 +58,7 @@ if (isset($GLOBALS['request']) && $GLOBALS['request']->headers->get(DebugCachabi
 }
 
 /**
- * Show all error messages with backtrace information, except during Behat runs.
+ * Show all error messages with backtrace information, except during Behat/Browserkit runs.
  * Those would fail dynamic page cache tests (at minimum).
  */
 if (getenv('HTTP_USER_AGENT') !== 'Symfony BrowserKit') {
