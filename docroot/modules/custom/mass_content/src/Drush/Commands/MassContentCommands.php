@@ -294,7 +294,7 @@ class MassContentCommands extends DrushCommands {
                         if ($nid = $matches[0]) {
                           $node = $this->entityTypeManager->getStorage('node')->load($nid);
                           if ($node) {
-                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $matches[0]);
+                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid);
                             if ($alias) {
                               if (!preg_match('/node\/\d+/', $alias)) {
                                 $changed = TRUE;
