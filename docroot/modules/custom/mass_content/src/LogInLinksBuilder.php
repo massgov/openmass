@@ -106,6 +106,7 @@ class LogInLinksBuilder {
                 ],
               ],
             ],
+            'class' => 'gtm-login-global',
             'links' => $links,
           ],
           '#cache' => [
