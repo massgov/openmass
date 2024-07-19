@@ -47,9 +47,7 @@ describe("massgov-screenshots", () => {
         await driver.get(base + page.url);
         let options = {
           fullPage: true,
-          ignore_region_selectors: [
-            'div.ma__banner-credit',
-          ]
+          ignore_region_selectors: []
         }
         await percy.screenshot(driver, page.label, options);
       });
