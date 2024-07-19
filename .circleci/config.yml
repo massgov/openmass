@@ -477,9 +477,10 @@ jobs:
       - *vendor_bin_add_path
       - *no_host_check
       - *no_ssh_timeout
+      - *yarn_install
       - run:
           name: BrowserStack Automate
-          command: yarn install && npm run snapshots-test
+          command: npm run snapshots-test
           no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
