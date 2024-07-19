@@ -463,7 +463,14 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
-  browserstack_test:
+  browserstack_percy_test:
+    parameters:
+      target:
+        type: string
+        default: test
+      file:
+        type: string
+        default: post-release
     working_directory: /tmp/code/browserstack
     docker:
       - image: cimg/php:8.2-node
@@ -472,6 +479,8 @@ jobs:
           BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
           BROWSERSTACK_LOCAL: false
           BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
+          PERCY_TARGET: << parameters.target >>
+          PERCY_FILE: << parameters.file >>
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -755,7 +764,7 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - browserstack_test:
+      - browserstack_percy_test:
           requires: [build]
           filters:
             branches:
@@ -823,6 +832,14 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-test-refresh-db]
+          target: test
+          file: post-release
+          filters:
+            branches:
+              only: /^release\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
           requires: [deploy-test-refresh-db]
@@ -886,6 +903,14 @@ workflows:
             requires: [deploy-test-no-refresh-db]
             target: test
             reference: prod
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
+      - browserstack_percy_test:
+            name: browserstack-percy-test
+            requires: [deploy-test-no-refresh-db]
+            target: test
+            file: all
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -963,6 +988,14 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-test-refresh-db]
+          target: test
+          file: all
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -1104,6 +1137,16 @@ workflows:
           list: post-release
           viewport: desktop
           reference: test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-tag-prod-acquia-maint]
+          target: prod
+          file: post-release
           filters:
             branches:
               ignore: /.*/
@@ -1275,6 +1318,11 @@ workflows:
           requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [ deploy-cd-refresh-db ]
+          target: cd
+          file: all
       - crawl:
           name: crawl-deploy-450
           requires: [ deploy-cd-refresh-db ]
