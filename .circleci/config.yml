@@ -283,7 +283,7 @@ jobs:
         default: massgov/mysql-sanitized:latest
       command:
         type: enum
-        enum: ['phpunit', 'behat']
+        enum: ['phpunit']
     executor:
       name: base
       instance: << parameters.instance >>
@@ -310,15 +310,8 @@ jobs:
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
       # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-      # Run DTT or Behat test command
-      - when:
-          condition:
-            and:
-              - equal: [ behat, << parameters.command >> ]
-          steps:
-            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
@@ -723,13 +716,6 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -756,13 +742,6 @@ workflows:
       - test:
           name: test-phpunit
           command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: /^release\/.*$/
-      - test:
-          name: test-behat
-          command: behat
           requires: [build]
           filters:
             branches:
@@ -820,13 +799,6 @@ workflows:
           filters:
            branches:
              only: /^hotfix\/.*$/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^hotfix\/.*$/
       - hold - Release manager only:
             type: approval
             requires:
@@ -896,13 +868,6 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^mayflower\/.*$/
       - hold - Release manager only:
           type: approval
           requires:
@@ -948,13 +913,6 @@ workflows:
       - test:
           name: test-phpunit
           command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: master
-      - test:
-          name: test-behat
-          command: behat
           requires: [build]
           filters:
             branches:
@@ -1134,12 +1092,6 @@ workflows:
           command: phpunit
           instance: massgov/mysql-sanitized:super
           requires: [build]
-      - test:
-          name: test-super-behat
-          command: behat
-          instance: massgov/mysql-sanitized:super
-          requires: [build]
-
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:

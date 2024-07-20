@@ -194,19 +194,6 @@ function mass_admin_theme_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
- * Implements hook_preprocess_HOOK().
- */
-function mass_admin_theme_preprocess_views_view_field(&$variables) {
-  if ($variables['field']->field_alias === 'mass_superset_data_score' &&
-    (float) $variables["row"]->mass_superset_data_score < 3.0) {
-
-    $output = ViewsRenderPipelineMarkup::create('<span class="red-link">'
-      . $variables['output'] . '</span>');
-    $variables['output'] = $output;
-  }
-}
-
-/**
  * Implements template_preprocess_views_view().
  *
  * Add an CSV export link to the footer of the redirect view.
