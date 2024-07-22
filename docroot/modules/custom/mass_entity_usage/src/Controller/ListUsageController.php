@@ -145,7 +145,8 @@ class ListUsageController extends ControllerBase {
     }
     $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
     $page = $pager->getCurrentPage();
-    $page_rows = $this->getPageRows($page, $this->itemsPerPage, $entity_type, $entity_id);
+    $offset = $page * $this->itemsPerPage;
+    $page_rows = array_slice($all_rows, $offset, $this->itemsPerPage);
 
     $build['results']['#prefix'] = $this->t($total . ' total records.');
     $build['results']['#rows'] = $page_rows;
@@ -156,26 +157,6 @@ class ListUsageController extends ControllerBase {
     ];
 
     return $build;
-  }
-
-  /**
-   * Get rows for a given page.
-   *
-   * @param int $page
-   *   The page number to retrieve.
-   * @param int $num_per_page
-   *   The number of rows we want to have on this page.
-   * @param string $entity_type
-   *   The type of the target entity.
-   * @param int|string $entity_id
-   *   The ID of the target entity.
-   *
-   * @return array
-   *   An indexed array of rows representing the records for a given page.
-   */
-  protected function getPageRows($page, $num_per_page, $entity_type, $entity_id) {
-    $offset = $page * $num_per_page;
-    return array_slice($this->getRows($entity_type, $entity_id), $offset, $num_per_page);
   }
 
   /**
