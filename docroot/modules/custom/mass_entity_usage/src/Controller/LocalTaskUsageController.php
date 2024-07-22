@@ -44,4 +44,18 @@ class LocalTaskUsageController extends ListUsageController {
     return $this->checkAccess($entity->getEntityTypeId(), $entity->id());
   }
 
+  /**
+   * Retrieves entity from route match.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   The route match.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   The entity object as determined from the passed-in route match.
+   */
+  protected function getEntityFromRouteMatch(RouteMatchInterface $route_match) {
+    $parameter_name = $route_match->getRouteObject()->getOption('_entity_usage_entity_type_id');
+    return $route_match->getParameter($parameter_name);
+  }
+
 }

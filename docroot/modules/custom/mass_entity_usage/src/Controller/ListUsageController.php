@@ -3,20 +3,18 @@
 namespace Drupal\mass_entity_usage\Controller;
 
 use Drupal\block_content\BlockContentInterface;
-use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Pager\PagerManagerInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\mass_entity_usage\MassEntityUsageInterface;
-use Drupal\mayflower\Helper;
-use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -125,10 +123,13 @@ class ListUsageController extends ControllerBase {
     // Table headers.
     $header = [
       $this->t('Entity'),
-      $this->t('Content Type'),
+      $this->t('Type'),
+      $this->t('Language'),
       $this->t('Field name'),
       $this->t('Status'),
+      $this->t('Used in'),
     ];
+
     // Result table.
     $build['results'] = [
       '#theme' => 'table',
@@ -137,16 +138,14 @@ class ListUsageController extends ControllerBase {
       '#empty' => $this->t('No pages link here.'),
     ];
 
-    $this->loadEntity($entity_type, $entity_id);
-
-    $total = count($this->prepareRows($this->entityUsage->listSources($this->entity)));
+    $all_rows = $this->getRows($entity_type, $entity_id);
+    $total = count($all_rows);
     if (!$total) {
       return $build;
     }
-
     $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
     $page = $pager->getCurrentPage();
-    $page_rows = $this->getSubQueryRows($page, $this->itemsPerPage);
+    $page_rows = $this->getPageRows($page, $this->itemsPerPage, $entity_type, $entity_id);
 
     $build['results']['#prefix'] = $this->t($total . ' total records.');
     $build['results']['#rows'] = $page_rows;
@@ -160,12 +159,52 @@ class ListUsageController extends ControllerBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Get rows for a given page.
+   *
+   * @param int $page
+   *   The page number to retrieve.
+   * @param int $num_per_page
+   *   The number of rows we want to have on this page.
+   * @param string $entity_type
+   *   The type of the target entity.
+   * @param int|string $entity_id
+   *   The ID of the target entity.
+   *
+   * @return array
+   *   An indexed array of rows representing the records for a given page.
    */
-  public function prepareRows($usages) {
+  protected function getPageRows($page, $num_per_page, $entity_type, $entity_id) {
+    $offset = $page * $num_per_page;
+    return array_slice($this->getRows($entity_type, $entity_id), $offset, $num_per_page);
+  }
 
+  /**
+   * Retrieve all usage rows for this target entity.
+   *
+   * @param string $entity_type
+   *   The type of the target entity.
+   * @param int|string $entity_id
+   *   The ID of the target entity.
+   *
+   * @return array
+   *   An indexed array of rows that should be displayed as sources for this
+   *   target entity.
+   */
+  protected function getRows($entity_type, $entity_id) {
+    if (!empty($this->allRows)) {
+      return $this->allRows;
+      // @todo Cache this based on the target entity, invalidating the cached
+      // results every time records are added/removed to the same target entity.
+    }
     $rows = [];
-    foreach ($usages as $source_type => $ids) {
+    $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
+    if (!$entity) {
+      return $rows;
+    }
+    $entity_types = $this->entityTypeManager->getDefinitions();
+    $languages = $this->languageManager()->getLanguages(LanguageInterface::STATE_ALL);
+    $all_usages = $this->entityUsage->listSources($entity);
+    foreach ($all_usages as $source_type => $ids) {
       $type_storage = $this->entityTypeManager->getStorage($source_type);
       foreach ($ids as $source_id => $records) {
         // We will show a single row per source entity. If the target is not
@@ -177,104 +216,42 @@ class ListUsageController extends ControllerBase {
           continue;
         }
         $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
-        $default_key = count($records) - 1;
-
+        if ($source_entity instanceof RevisionableInterface) {
+          $default_revision_id = $source_entity->getRevisionId();
+          $default_langcode = $source_entity->language()->getId();
+          $used_in_default = FALSE;
+          $default_key = 0;
+          foreach ($records as $key => $record) {
+            if ($record['source_vid'] == $default_revision_id && $record['source_langcode'] == $default_langcode) {
+              $default_key = $key;
+              $used_in_default = TRUE;
+              break;
+            }
+          }
+          $used_in_text = $used_in_default ? $this->t('Default revision') : $this->t('Translations or previous revisions');
+        }
         $link = $this->getSourceEntityLink($source_entity);
         // If the label is empty it means this usage shouldn't be shown
-        // on the UI, just skip this row. Also, only show Default sources.
+        // on the UI, just skip this row.
         if (empty($link)) {
           continue;
         }
 
-        // If the source is a paragraph, get the parent node.
-        if ($source_entity->getEntityTypeId() == 'paragraph') {
-          /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
-          $source_entity = Helper::getParentNode($source_entity);
-        }
-
-        if (!$source_entity) {
-          // If for some reason this record is broken, just skip it.
-          continue;
-        }
-
-        if (method_exists($link, 'getText')) {
-          $text = explode('>', $link->getText())[0];
-          $link->setText($text);
-        }
-
-        // Get the moderation state label of the parent node.
-        $state_label = '';
-        if ($source_entity instanceof Node) {
-          $content_moderation_state = ContentModerationState::loadFromModeratedEntity($source_entity);
-
-          if (!$content_moderation_state) {
-            continue;
-          }
-
-          $state_name = $content_moderation_state->get('moderation_state')->value;
-          $workflow = $content_moderation_state->get('workflow')->entity;
-          $state_label = $workflow->get('type_settings')['states'][$state_name]['label'];
-        }
-        // Get a field label.
-        $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ?
-          $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
-
-        // Set the row values.
+        $published = $this->getSourceEntityStatus($source_entity);
+        $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ? $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
         $rows[] = [
           $link,
-          $source_entity->type->entity->label(),
+          $entity_types[$source_type]->getLabel(),
+          $languages[$default_langcode]->getName(),
           $field_label,
-          $state_label,
+          $published,
+          $used_in_text,
         ];
       }
     }
 
-    return $rows;
-  }
-
-  /**
-   * Retrieves entity from route match.
-   *
-   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *   The route match.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface|null
-   *   The entity object as determined from the passed-in route match.
-   */
-  protected function getEntityFromRouteMatch(RouteMatchInterface $route_match) {
-    $parameter_name = $route_match->getRouteObject()->getOption('_entity_usage_entity_type_id');
-    return $route_match->getParameter($parameter_name);
-  }
-
-  /**
-   * Get all usage rows for a given page.
-   *
-   * @param int $page
-   *   The page number to retrieve.
-   * @param int $num_per_page
-   *   The number of rows we want to have on this page.
-   *
-   * @return array
-   *   An indexed array of rows representing the records for a given page.
-   */
-  protected function getSubQueryRows($page, $num_per_page) {
-    $offset = $page * $num_per_page;
-    $all_usages = $this->entityUsage->listSourcesPage($this->entity, $offset);
-    return $this->prepareRows($all_usages);
-  }
-
-  /**
-   * Set the current entity object.
-   *
-   * @param string $entity_type
-   *   The type of the target entity.
-   * @param int|string $entity_id
-   *   The ID of the target entity.
-   */
-  public function loadEntity($entity_type, $entity_id) {
-    if (!$this->entity) {
-      $this->entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
-    }
+    $this->allRows = $rows;
+    return $this->allRows;
   }
 
   /**
@@ -395,8 +372,8 @@ class ListUsageController extends ControllerBase {
    *   The access result.
    */
   public function checkAccess($entity_type, $entity_id) {
-    $this->loadEntity($entity_type, $entity_id);
-    if (!$this->entity || !$this->entity->access('view')) {
+    $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
+    if (!$entity || !$entity->access('view')) {
       return AccessResult::forbidden();
     }
     return AccessResult::allowed();
