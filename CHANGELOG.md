@@ -1,5 +1,12 @@
 
 
+## [0.403.1] - July 17, 2024
+
+### Fixed
+- DP-34046: Fixed 500 errors on document uploads.
+
+
+
 ## [0.403.0] - July 16, 2024
 
 ### Changed
@@ -7,14 +14,14 @@
   - DP-32555: Acquia Cloud tweaks
   - DP-32600: Node queue revisions drush command fix
   - DP-33908: A11y - Add styling to Foresee invite to increase line height.
-  
+
 ### Fixed
   - DP-32599: Fixed errors with BigQuery queue job.
   - DP-33880: 500 Error when comparing revisions.
-  
+
 ### Removed
   - DP-33700: Remove unneeded modules.
-  
+
 
 
 ## [0.402.0] - July 9, 2024
@@ -23,19 +30,19 @@
   - DP-28505: Replace the overflow horizontal scroll feature with native one.
   - DP-33337: Disable type selector for ordered and unordered lists.
   - DP-33824: Modify news listing to show only English news.
-  
+
 ### Added
   - DP-30082: Add missing Mayflower implementation for mobile table format.
   - DP-32968: Search and replace /media and /files URLs with /doc URLs for entity reference/link fields.
   - DP-33658: Added Editoria11y accessibility report for authors
   - DP-33709: Added a view and changed two others to support reporting related to chargeback
   - DP-33783: Add billing account to data layer.
-  
+
 ### Removed
   - DP-32601: Removed Google sitemap ping command.
   - DP-33637: Removed tagging from feedback manager.
   - DP-33698: Remove key performance indicator fields from promo page.
-  
+
 ### Fixed
   - DP-33344: Determine why /files/ URLs still exist in some rich text fields.
   - DP-33606: Contact information page type (draft/trash state) still displays on info details.
@@ -43,7 +50,7 @@
   - DP-33767: Media contacts missing on press releases.
   - DP-33784: A11y - Hover state text color contrast for editors.
   - DP-33874: Fix missing table caption on desktop introduced in DP-28505
-  
+
 
 
 ## [0.401.1] - June 20, 2024

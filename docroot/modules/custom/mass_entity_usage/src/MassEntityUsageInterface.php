@@ -88,4 +88,15 @@ interface MassEntityUsageInterface extends EntityUsageInterface {
    */
   public function prepareListSources($results, $nest_results);
 
+  /**
+   * Provide a count of unique referencing source entities for a target entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $target_entity
+   *   A target entity.
+   *
+   * @return int
+   *   The return value will be the total number of unique sources.
+   */
+  public function listUniqueSourcesCount(EntityInterface $target_entity);
+
 }
