@@ -16,17 +16,9 @@ The following tests are included in the CircleCI workflow automatically each tim
 
 To run these tests locally:
 
-- Run all [Behat](http://behat.org) tests: `ddev exec behat`
-
-  To run a single Behat test:
-
-  1. Add a tag a single behat feature file that you want to test. e.g. `@cool`
-  1. Run `docker-compose exec drupal vendor/bin/behat --tags=@cool`
-  1. Locally, debug files are saved to `/tmp` (they start with `behat*`). These same files are uploaded as Artifacts in CircleCI.
-
 - Run all [PHPUnit](https://phpunit.de/) tests: `ddev exec phpunit docroot/modules/custom`
 
-- Run all tests (Behat & PHPUnit): `ddev exec scripts/ma-test`
+- Run all tests (PHPUnit): `ddev exec scripts/ma-test`
 
 Pass the --help option to learn the arguments and options for each tool.
 
@@ -60,22 +52,14 @@ Good tests focus on high-value activities. We want to test that major functional
 
 ### Creating new tests
 
-- Behat test (Found in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory)
 - PHPUnit (Found in most of the custom modules under `/test/src/ExistingSites`)
 
 ### Updating tests
 
-- Behat test (Found in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory)
 - PHPUnit (Found in most of the custom modules under `/test/src/ExistingSites`)
 - Backstop (Change the page URLs if needed)
 
-**Please note that anything that is added or updated in the Behat tests or PHPUnit will be run in the CircleCI testing section**
-
 ## Test types
-
-### Behavioral (aka behat)
-
-We have [a large suite](https://github.com/massgov/openmass/tree/develop/features) of Behavioral tests. These tests are written in Gherkin. The Gherkin steps map to step definitions that we or others have written. Read our test suite to learn how to author these tests. These tests live in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory.
 
 ### Functional (aka PHPUnit+ExistingSiteTestCase)
 

@@ -30,7 +30,7 @@ Contributors should familiarize themselves with existing modules both custom and
 
 ## Testing
 - [Testing](testing.md)
-  - [Behat & PHPUnit](https://github.com/massgov/openmass/blob/develop/docs/testing.md#tests-run-on-every-pr)
+  - [PHPUnit](https://github.com/massgov/openmass/blob/develop/docs/testing.md#tests-run-on-every-pr)
   - [Backstop](https://github.com/massgov/openmass/blob/develop/backstop/README.md)
   - [Performance Optimization and Profiling (Blackfire.io)](performance.md)
   - [Nightcrawler](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md)

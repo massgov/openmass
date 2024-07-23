@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# This is a convenience script for linting files & running behat tests.
+# This is a convenience script for linting files & running tests.
 
 echo -e "\n"
 # cd into project root
@@ -27,6 +27,3 @@ yarn run eslint --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' '
 # phpunit
 echo -e "\n🔍  Running PHPUnit"
 composer unit
-
-echo -e "\n🔍  Running Behat tests 🐝  🐝  🐝"
-vendor/bin/behat --strict

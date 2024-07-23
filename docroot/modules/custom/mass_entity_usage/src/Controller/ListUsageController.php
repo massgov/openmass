@@ -139,7 +139,7 @@ class ListUsageController extends ControllerBase {
 
     $this->loadEntity($entity_type, $entity_id);
 
-    $total = count($this->prepareRows($this->entityUsage->listSources($this->entity)));
+    $total = $this->entityUsage->listUniqueSourcesCount($this->entity);
     if (!$total) {
       return $build;
     }

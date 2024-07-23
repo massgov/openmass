@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @QueueWorker(
  *   id = "mass_content_api_descendant_queue",
  *   title = @Translation("Descendant queue processing"),
- *   cron = {"time" = 120}
  * )
  */
 class DescendantQueueWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {

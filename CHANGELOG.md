@@ -1,5 +1,26 @@
 
 
+## [0.404.0] - July 23, 2024
+
+### Changed
+  - DP-28529: Change dropdown list of content types on my content view to match all content views.
+  - DP-31170: Change collections choice interface for authors on how-to page.
+  
+### Fixed
+  - DP-31924: Hamburger Menu Mobile Link Styles inconsistency.
+  - DP-32598: Fix heal references to trashed job.
+  - DP-33945: Out of memory error when looking at "pages linking here" for page with lots of links.
+  - DP-34028: Investigate and fix 500 errors.
+  
+### Removed
+  - DP-32567: Behat tests
+  - DP-33983: Remove code for unneeded modules.
+  
+### Added
+  - DP-33642: Require tables in rich text editor to have headers or block node save.
+  
+
+
 ## [0.403.1] - July 17, 2024
 
 ### Fixed
