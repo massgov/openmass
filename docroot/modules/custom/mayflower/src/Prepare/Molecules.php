@@ -299,6 +299,7 @@ class Molecules {
       'instagram',
       'medium',
       'youtube',
+      'vimeo',
     ];
 
     foreach ($links as $link) {
@@ -1929,8 +1930,7 @@ class Molecules {
         ],
       ];
     }
-
-    return [
+    $result = [
       'eyebrow' => $eyebrow,
       'title' => [
         'href' => !empty($options['url']) ? $options['url'] : $url,
@@ -1943,6 +1943,10 @@ class Molecules {
       'description' => $description,
       'image' => $image,
     ];
+    if (isset($options['level'])) {
+      $result['level'] = $options['level'];
+    }
+    return $result;
   }
 
   /**

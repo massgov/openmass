@@ -9,6 +9,7 @@ use Drupal\Core\Field\WidgetInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
+use Drupal\field\Entity\FieldConfig;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
@@ -67,12 +68,14 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
         'instagram.com',
         'linkedin.com',
         'youtube.com',
+        'vimeo.com',
         'medium.com',
         'blog.mass.gov',
         'www.mass.gov',
       ],
     ]);
   }
+
   if ($entity_type->id() === 'paragraph') {
     switch ($bundle) {
       case 'org_locations':
@@ -84,7 +87,16 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
         $url_field =& $fields['field_url'];
         $url_field->addConstraint('AllowedIframeUrl');
         break;
-
+      case 'key_message':
+      case 'key_message_section':
+        $field_image = &$fields['field_image'];
+        $field_image->addConstraint('BackgroundImageRequired');
+        break;
+    }
+  }
+  foreach ($fields as &$field) {
+    if ($field instanceof FieldConfig && in_array($field->getType(), ['text_long', 'text_with_summary', 'string_long'])) {
+      $field->addConstraint('TableHeaderConstraint');
     }
   }
 }
@@ -110,7 +122,8 @@ function _mass_validation_form_node_alert_form_validate(array &$form, FormStateI
   _mass_validation_mass_link_validate($form_state, 'field_alert_related_links_5');
 
   // Ensure link and content values match the selected link type.
-  // Get the field on the node and then load its emergency_alert paragraph fields below.
+  // Get the field on the node and then load its emergency_alert
+  // paragraph fields below.
   $field_name = 'field_alert';
   $alert = $form_state->getValue($field_name);
 
@@ -118,9 +131,6 @@ function _mass_validation_form_node_alert_form_validate(array &$form, FormStateI
     $alert_fields = $alert[0]['subform'];
     $link_type = $alert_fields['field_emergency_alert_link_type'][0]['value'];
     $link = $alert_fields['field_emergency_alert_link'][0]['uri'];
-    if (isset($alert_fields['field_emergency_alert_content'][0]) && isset($alert_fields['field_emergency_alert_content'][0]['subform'])) {
-      $link_content = $alert_fields['field_emergency_alert_content'][0]['subform']['field_body'][0]['value'];
-    }
 
     // Check each case.
     switch ($link_type) {
@@ -159,12 +169,13 @@ function mass_validation_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implements hook_form_FORM_ID_alter.
+ * Implements hook_form_FORM_ID_alter().
  */
 function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_validation_field_organizations_validate';
 
-  // For 5 content types, setup field synchronization from a source field to field_organizations.
+  // For 5 content types, setup field synchronization
+  // from a source field to field_organizations.
   $fields = [
     'node_binder_form' => 'field_binder_ref_organization',
     'node_binder_edit_form' => 'field_binder_ref_organization',
@@ -207,17 +218,24 @@ function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_s
 function _mass_validation_field_organizations_validate(array &$form, FormStateInterface $form_state) {
   if ($form_state->hasValue('field_organizations')) {
     if (isset($form['field_organizations']['widget'][0]['target_id']) && $form['field_organizations']['widget'][0]['target_id']['#required'] == TRUE) {
-      // field_organizations is a multi value field, on which we get a false error if one or more
-      // values are present, but the first value is missing. If such a false error is present then
-      // we remove that error, but we keep other genuine errors connected to the form submission.
-      // The way we do this is inspired by code in the conditional_fields module.
+      // field_organizations is a multi value field,
+      // on which we get a false error if one or more
+      // values are present, but the first value is missing.
+      // If such a false error is present then
+      // we remove that error, but we keep other genuine errors
+      // connected to the form submission.
+      // The way we do this is inspired by code in
+      // the conditional_fields module.
       // SEE: https://git.drupalcode.org/project/conditional_fields/blob/b855e9dd79fd362d5861fd31f1179dc1885fb6b2/conditional_fields.api.inc#L491-516
       $errors = $form_state->getErrors();
       $error_key = 'field_organizations][0][target_id';
       if (isset($errors[$error_key])) {
-        // Since Drupal provides no clean way to selectively remove error messages,
-        // we have to store all current form errors and error messages, clear them,
-        // filter out from our stored values the errors originating from field_organizations
+        // Since Drupal provides no clean way
+        // to selectively remove error messages,
+        // we have to store all current form errors
+        // and error messages, clear them,
+        // filter out from our stored values the
+        // errors originating from field_organizations
         // and then reinstate remaining errors and messages.
         unset($errors[$error_key]);
         $form_state->clearErrors();
@@ -227,7 +245,8 @@ function _mass_validation_field_organizations_validate(array &$form, FormStateIn
         }
       }
 
-      // Make sure at least one of the organizations if filled in by looping through multiple values of that field.
+      // Make sure at least one of the organizations
+      // if filled in by looping through multiple values of that field.
       $multiple_ogranizations = $form_state->getValue('field_organizations');
       $org_count = count($multiple_ogranizations) - 1;
 
@@ -237,9 +256,12 @@ function _mass_validation_field_organizations_validate(array &$form, FormStateIn
           array_splice($multiple_ogranizations, 0, 1);
         }
       }
-      // For true error condition, confirm that either there are no more ORG fields present (because they were all null
-      // and got unset), or that the top ORG field now left (indexed 0) does not have any target id.
-      // If such true error condition is met then set the error on field_organizations.
+      // For true error condition, confirm that either there
+      // are no more ORG fields present (because they were all null
+      // and got unset), or that the top ORG field now
+      // left (indexed 0) does not have any target id.
+      // If such true error condition is met then set
+      // the error on field_organizations.
       if ((count($multiple_ogranizations) == 1 && isset($multiple_ogranizations['add_more'])) || $multiple_ogranizations[0]['target_id'] == NULL) {
         $form_state->setErrorByName($error_key, t('At least one organization value must be filled out.'));
       }
@@ -275,7 +297,8 @@ function mass_validation_entity_presave(EntityInterface $entity) {
           array_push($values, $reference->target_id);
         }
       }
-      // Ignore any values set to field_organization and use the source field instead.
+      // Ignore any values set to field_organization
+      // and use the source field instead.
       $entity->field_organizations = [];
       foreach ($values as $value) {
         $entity->field_organizations[] = ['target_id' => $value];
@@ -396,6 +419,7 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_mosaic_items($form_state, $paragraph);
       _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
+      _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
     }
   }
 }
@@ -654,7 +678,7 @@ function _mass_validation_form_node_executive_order_form_validate(array &$form, 
             // If the field has a uri but no title, get one if possible.
             if (!empty($field['uri']) && empty($field['title'])) {
               $uri = $field['uri'];
-              $title = t('');
+              $title = '';
               // If a link is to a node, get the node title.
               if (stripos($uri, 'entity:node') === 0) {
                 // Get the node from the uri.
@@ -664,7 +688,7 @@ function _mass_validation_form_node_executive_order_form_validate(array &$form, 
                   $node = Node::load($nid);
                   if (!is_null($node)) {
                     if ($node->field_executive_order_number->value) {
-                      $title = t('Executive Order No. ') . $node->field_executive_order_number->value;
+                      $title = t('Executive Order No. @number', ['@number' => $node->field_executive_order_number->value]);
                     }
                     else {
                       $title = $node->getTitle();
@@ -722,36 +746,6 @@ function mass_validation_form_node_campaign_landing_form_alter(&$form, FormState
  */
 function _mass_validation_form_node_campaign_landing_form_validate(array &$form, FormStateInterface $form_state) {
 
-  // Check the Key performance indicators (KPIs) have values if the box is checked.
-  // Map the KPI fields with the Key performance indicators options in the form.
-  $kpi_fields_mapping = [
-    'ctr_button_link' => 'field_kpi_ctr_button_links',
-    'ctr_button' => 'field_kpi_ctr_key_msg',
-    'num_pgviews' => 'field_kpi_pageviews',
-    'pct_vid_play' => 'field_kpi_pct_video_play',
-    'pct_vid_watch' => 'field_kpi_pct_video_50',
-  ];
-  // Finding the value for the Key performance indicators (KPIs)
-  $promotional_kpi_choice = $form_state->getValue('field_promotional_kpi_choice');
-  // Checking if the KPI are checked.
-  $selected_kpi = [];
-  if (isset($promotional_kpi_choice)) {
-    // Loop through the KPI to check for a value.
-    foreach ($promotional_kpi_choice as $choice) {
-      $field_name = $kpi_fields_mapping[$choice['value']];
-      $selected_kpi[] = $field_name;
-      $value = $form_state->getValue($field_name);
-      // If the KPI value is empty the error will be shown.
-      if (empty($value[0]['value'])) {
-        $form_state->setErrorByName($field_name, t('A value must be added to the this field.'));
-      }
-    }
-    // Take the unchecked checkboxes and reset the value to NULL.
-    $unchecked = array_diff($kpi_fields_mapping, $selected_kpi);
-    foreach ($unchecked as $unchecked_field_name) {
-      $form_state->setValue([$unchecked_field_name, 0, 'value'], NULL);
-    }
-  }
   if ($form_state->hasValue('field_sections')) {
     $sections = $form_state->getValue('field_sections');
     foreach ($sections as $section_key => $section) {
@@ -1090,7 +1084,7 @@ function _mass_validation_form_node_event_form_validate(array &$form, FormStateI
 
       // Validate each paragraph.
       $set_error = FALSE;
-      foreach ($unique_address as $key => $paragraph) {
+      foreach ($unique_address as $paragraph) {
         // Verify this is a paragraph with fields.
         if (array_key_exists('subform', $paragraph)) {
           if (!array_key_exists('field_address_address', $paragraph['subform'])) {
@@ -1249,7 +1243,7 @@ function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, 
     $form_state->setErrorByName('mosaic_items_add_more', t('You must provide 5 featured items.'));
   }
   // Find the item with the lowest weight.
-  foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
+  foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_array) {
     if (!isset($mosaic_array['_weight'])) {
       continue;
     }
@@ -1294,7 +1288,6 @@ function _mass_validation_validate_custom_flexible_links(FormStateInterface $for
   $subtype = $paragraph['subform']['field_display_type'][0]['value'];
   if ($subtype == 'links') {
     if (empty($paragraph['subform']['field_flexible_link_group_title'][0]['value'])) {
-      dump($paragraph_error_string);
       $form_state->setErrorByName(
         $paragraph_error_string . '[field_flexible_link_group_title][0][value',
         t('Link group title" field is required.')
@@ -1412,6 +1405,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
           $paragraph_error_string = 'field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform]';
           _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
           _mass_validation_validate_mosaic_items($form_state, $paragraph);
+          _mass_validation_validate_custom_iframe($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
         }
@@ -1605,12 +1599,17 @@ function mass_validation_field_widget_link_default_form_alter(&$element, FormSta
  * Implements hook_preprocess_input().
  */
 function mass_validation_preprocess_input(&$variables) {
-  // 1. We proceed with changing render attributes within $variable only if we are on a node/edit page.
+  // 1. We proceed with changing render attributes
+  // within $variable only if we are on a node/edit page.
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
-    // On every node/edit authors must enter one or more organizations, which is an unlimited `entity_reference` field.
-    // Because it is a requried field class RenderElement adds a `required` HTML5 attribute to that field, causing
-    // broswers to complain even if of say 4 organizations the author only deletes the first one (since all separate
-    // input fields have a `required` HTML5 attribute added to them.
+    // On every node/edit authors must enter one or more organizations,
+    // which is an unlimited `entity_reference` field.
+    // Because it is a requried field class RenderElement adds
+    // a `required` HTML5 attribute to that field, causing
+    // browsers to complain even if of say
+    // 4 organizations the author only deletes the
+    // first one (since all separate
+    // input fields have a `required` HTML attribute added to them.
     // See: https://jira.mass.gov/browse/DP-13971.
     $field = $variables['element'];
     if ($field['#type'] == 'entity_autocomplete' && strpos($field['#id'], 'field-organizations') !== FALSE) {
@@ -1630,7 +1629,7 @@ function mass_validation_form_alter(&$form, FormStateInterface $form_state, $for
   if ($form_state->getFormObject() instanceof EntityForm) {
     if ($entity = $form_state->getFormObject()->getEntity()) {
       if ($entity instanceof Media || $entity instanceof Node) {
-        if (!$entity->isNew() && $entity->get('moderation_state')->getString() != MassModeration::PUBLISHED) {
+        if (!$entity->isNew() && $entity->get('moderation_state')->getString() == MassModeration::DRAFT) {
           $entity_label = $entity->getEntityTypeId();
           $route_name = "entity." . $entity_label . ".version_history";
           $url = Url::fromRoute($route_name, [$entity_label => $entity->id()]);

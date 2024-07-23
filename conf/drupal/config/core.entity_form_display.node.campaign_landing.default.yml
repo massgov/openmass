@@ -7,22 +7,15 @@ dependencies:
     - field.field.node.campaign_landing.field_collections
     - field.field.node.campaign_landing.field_english_version
     - field.field.node.campaign_landing.field_header
-    - field.field.node.campaign_landing.field_kpi_ctr_button_links
-    - field.field.node.campaign_landing.field_kpi_ctr_key_msg
-    - field.field.node.campaign_landing.field_kpi_pageviews
-    - field.field.node.campaign_landing.field_kpi_pct_video_50
-    - field.field.node.campaign_landing.field_kpi_pct_video_play
     - field.field.node.campaign_landing.field_meta_description
     - field.field.node.campaign_landing.field_organizations
     - field.field.node.campaign_landing.field_primary_parent
-    - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
     - field.field.node.campaign_landing.field_short_title
     - node.type.campaign_landing
     - workflows.workflow.campaign_landing_page
   module:
-    - conditional_fields
     - content_moderation
     - entity_hierarchy
     - entity_reference_tree
@@ -59,7 +52,6 @@ third_party_settings:
       children:
         - group_overview
         - group_content
-        - group_kpis
       label: 'Campaign Landing Edit Form'
       region: content
       parent_name: ''
@@ -84,25 +76,6 @@ third_party_settings:
         formatter: closed
         description: "Choose the Header that you want to appear at the top of your page and add up to 9 sections. The Header consists of a title and text that is either over an image or solid color (Key message), or a video.<br><br>\r\nWe recommend you keep the page as short and simple as possible with a single call to action. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page/content-tab\" target=\"_blank\">Learn about adding content to Promotional pages.</a>"
         required_fields: true
-    group_kpis:
-      children:
-        - field_promotional_kpi_choice
-        - field_kpi_ctr_key_msg
-        - field_kpi_ctr_button_links
-        - field_kpi_pageviews
-        - field_kpi_pct_video_play
-        - field_kpi_pct_video_50
-      label: 'Key Performance Indicators'
-      region: content
-      parent_name: group_campaign_landing_edit_form
-      weight: 9
-      format_type: tab
-      format_settings:
-        classes: ''
-        id: ''
-        formatter: closed
-        description: 'KPIs allow you to define what counts as success for this page. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page/key-performance-indicators" target="_blank">Learn about choosing Key Performance Indicators.</a>'
-        required_fields: true
 id: node.campaign_landing.default
 targetEntityType: node
 bundle: campaign_landing
@@ -114,6 +87,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_collections:
     type: entity_reference_tree
@@ -180,131 +154,6 @@ content:
         collapse_edit_all: collapse_edit_all
         duplicate: duplicate
     third_party_settings: {  }
-  field_kpi_ctr_button_links:
-    type: number
-    weight: 29
-    region: content
-    settings:
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        33b09f9f-0ea5-403b-b819-10e637c3a16e:
-          entity_type: node
-          bundle: campaign_landing
-          dependee: field_promotional_kpi_choice
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: ctr_button_link
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_kpi_ctr_key_msg:
-    type: number
-    weight: 28
-    region: content
-    settings:
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        f784c9de-6ac6-4d92-af0e-e14f6c78986a:
-          entity_type: node
-          bundle: campaign_landing
-          dependee: field_promotional_kpi_choice
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: ctr_button
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_kpi_pageviews:
-    type: number
-    weight: 30
-    region: content
-    settings:
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        27c43845-d9fd-4370-98f5-4cc41118c53e:
-          entity_type: node
-          bundle: campaign_landing
-          dependee: field_promotional_kpi_choice
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: num_pgviews
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_kpi_pct_video_50:
-    type: number
-    weight: 32
-    region: content
-    settings:
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        4ff2bca4-2dff-4e88-8765-dd7f54b5f3e8:
-          entity_type: node
-          bundle: campaign_landing
-          dependee: field_promotional_kpi_choice
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: pct_vid_watch
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_kpi_pct_video_play:
-    type: number
-    weight: 31
-    region: content
-    settings:
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        72e93d38-c523-427d-955f-0432adf852de:
-          entity_type: node
-          bundle: campaign_landing
-          dependee: field_promotional_kpi_choice
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: pct_vid_play
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_meta_description:
     type: string_textfield
     weight: 58
@@ -337,12 +186,6 @@ content:
       size: 60
       placeholder: ''
       hide_weight: true
-    third_party_settings: {  }
-  field_promotional_kpi_choice:
-    type: options_buttons
-    weight: 26
-    region: content
-    settings: {  }
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete

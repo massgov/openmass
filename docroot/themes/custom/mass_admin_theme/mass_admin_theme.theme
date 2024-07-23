@@ -96,6 +96,15 @@ function _add_description_display_before(&$variables) {
   if (preg_match('/((node|media|term)\/\d+\/edit)|((node|media)\/add)|(taxonomy\/manage\/[0-9A-Za-z\-]+\/add)/', $result)) {
     $variables['description_display'] = 'before';
   }
+
+  if (isset($variables['type']) && $variables['type'] == 'checkbox') {
+    $parents = $variables['element']['#parents'] ?? [];
+    $last_parent = end($parents);
+    if ($last_parent == 'autolink') {
+      $variables['description_display'] = 'after';
+    }
+  }
+
 }
 
 /**
@@ -182,19 +191,6 @@ function mass_admin_theme_form_alter(&$form, &$form_state, $form_id) {
     $form_state->setUserInput($input);
   }
 
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function mass_admin_theme_preprocess_views_view_field(&$variables) {
-  if ($variables['field']->field_alias === 'mass_superset_data_score' &&
-    (float) $variables["row"]->mass_superset_data_score < 3.0) {
-
-    $output = ViewsRenderPipelineMarkup::create('<span class="red-link">'
-      . $variables['output'] . '</span>');
-    $variables['output'] = $output;
-  }
 }
 
 /**

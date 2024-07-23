@@ -3,16 +3,11 @@ services:
     class: Drupal\mass_utility\Logger\DockerStreamHandler
     # Send errors to stderr on the main process.
     arguments: ['php://stderr']
-  monolog.handler.behat:
-    class: Monolog\Handler\StreamHandler
-    arguments: ['%monolog.behat.file%', '%monolog.behat.level.notice%']
 parameters:
   monolog.channel_handlers:
     # Log to stderr.
     default: ['stderr']
     # Log php channel to web server's error log.
-    php: ['error_log', 'behat', 'stderr']
+    php: ['error_log', 'stderr']
     # Silence purge warnings.
     # purge: ['null']
-  monolog.behat.file: 'temporary://monolog.handler.behat.log'
-  monolog.behat.level.notice: 250
