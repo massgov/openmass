@@ -1762,6 +1762,8 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
     if (isset($section['subform']['field_section_long_form_content'])) {
       $paragraphs = $section['subform']['field_section_long_form_content'];
       foreach ($paragraphs as $paragraph_key => $paragraph) {
+        $paragraph_error_string = 'field_info_details_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform]';
+        _mass_validation_validate_custom_iframe($form_state, $paragraph, $paragraph_error_string);
         if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
           foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
             if (!empty($caspioId)) {
