@@ -9,6 +9,19 @@ describe("massgov-screenshots", () => {
   const auth = getAuth();
   const file = process.env.PERCY_FILE;
   const target = process.env.PERCY_TARGET;
+  const cookies = [
+    {
+      "expirationDate": 1798790400,
+      "path": "/",
+      "name": "im-bypass",
+      "value": "true",
+      "hostOnly": false,
+      "httpOnly": false,
+      "secure": false,
+      "session": false,
+      "sameSite": "Lax"
+    }
+  ];
 
   switch (file) {
     case 'all':
@@ -43,6 +56,9 @@ describe("massgov-screenshots", () => {
     driver = new Builder()
       .withCapabilities(capabilties)
       .build();
+    Object.keys(cookies).forEach((name, label) => {
+      driver.manage().addCookie(name, label);
+    });
   });
 
   afterAll(async () => {
