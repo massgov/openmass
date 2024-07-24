@@ -5,6 +5,7 @@ describe("massgov-screenshots", () => {
   let base;
   let driver;
   let pages;
+  let capabilties;
   const auth = getAuth();
   const file = process.env.PERCY_FILE;
   const target = process.env.PERCY_TARGET;
@@ -32,9 +33,14 @@ describe("massgov-screenshots", () => {
   }
 
   beforeAll(() => {
+    capabilties = {
+      'bstack:options': {
+        "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
+      }
+    }
     driver = new Builder()
-      .usingServer(`http://localhost:4444/wd/hub`)
-      .withCapabilities(Capabilities.chrome())
+      .forBrowser(driver.getBrowserName())
+      .withCapabilities(capabilties)
       .build();
   });
 
