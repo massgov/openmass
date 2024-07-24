@@ -39,7 +39,6 @@ describe("massgov-screenshots", () => {
       }
     }
     driver = new Builder()
-      .forBrowser(driver.getBrowserName())
       .withCapabilities(capabilties)
       .build();
   });
