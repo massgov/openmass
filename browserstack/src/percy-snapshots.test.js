@@ -33,11 +33,13 @@ describe("massgov-screenshots", () => {
   }
 
   beforeAll(() => {
-    capabilties = {
-      'bstack:options': {
-        "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
-      }
-    }
+    // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
+    // capabilties = {
+    //   'bstack:options': {
+    //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
+    //   }
+    // }
+    capabilties = {};
     driver = new Builder()
       .withCapabilities(capabilties)
       .build();
