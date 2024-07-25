@@ -273,6 +273,8 @@ jobs:
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
+      # Lint Twig
+      - run: composer twigcs -- --no-interaction
 
   test:
     parameters:
@@ -281,10 +283,11 @@ jobs:
         default: massgov/mysql-sanitized:latest
       command:
         type: enum
-        enum: ['phpunit', 'behat']
+        enum: ['phpunit']
     executor:
       name: base
       instance: << parameters.instance >>
+    parallelism: 4
     steps:
       - attach_workspace: {at: /var/www}
       - *vendor_bin_add_path
@@ -307,21 +310,20 @@ jobs:
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
       # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-      # Run DTT or Behat test command
-      - when:
-          condition:
-            and:
-              - equal: [ behat, << parameters.command >> ]
-          steps:
-            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+            - run:
+                # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
+                name: Run functional tests
+                command: |
+                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -474,8 +476,7 @@ jobs:
     resource_class: xlarge
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
-      # Don't upgrade until https://github.com/garris/BackstopJS/issues/1468
-      - image: backstopjs/backstopjs:6.1.4
+      - image: backstopjs/backstopjs:6.3.3
     steps:
       - checkout
       - run:
@@ -501,8 +502,8 @@ jobs:
       - run:
           name: Archive Reference Screenshots
           command: |
-            sudo apt-get update
-            sudo apt-get install zip -y
+            apt-get update
+            apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
@@ -580,6 +581,7 @@ jobs:
             - run:
                 name: Verify Artifacts
                 command: |
+                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
@@ -714,13 +716,6 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -747,13 +742,6 @@ workflows:
       - test:
           name: test-phpunit
           command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: /^release\/.*$/
-      - test:
-          name: test-behat
-          command: behat
           requires: [build]
           filters:
             branches:
@@ -811,13 +799,6 @@ workflows:
           filters:
            branches:
              only: /^hotfix\/.*$/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^hotfix\/.*$/
       - hold - Release manager only:
             type: approval
             requires:
@@ -887,13 +868,6 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^mayflower\/.*$/
       - hold - Release manager only:
           type: approval
           requires:
@@ -939,13 +913,6 @@ workflows:
       - test:
           name: test-phpunit
           command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: master
-      - test:
-          name: test-behat
-          command: behat
           requires: [build]
           filters:
             branches:
@@ -1125,12 +1092,6 @@ workflows:
           command: phpunit
           instance: massgov/mysql-sanitized:super
           requires: [build]
-      - test:
-          name: test-super-behat
-          command: behat
-          instance: massgov/mysql-sanitized:super
-          requires: [build]
-
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
@@ -1192,9 +1153,6 @@ workflows:
     jobs:
       - backstop_reference:
           target: prod
-          filters:
-            branches:
-              only: develop
 
   # See https://support.circleci.com/hc/en-us/articles/12419710425499-How-to-Manually-Trigger-a-Scheduled-Pipeline
   backstop_snapshot:

@@ -14,15 +14,18 @@ name: 'Basic HTML'
 format: basic_html
 weight: 0
 filters:
-  filter_html:
-    id: filter_html
-    provider: filter
+  editor_file_reference:
+    id: editor_file_reference
+    provider: editor
     status: true
-    weight: 0
-    settings:
-      allowed_html: '<a href hreflang data-entity-type data-entity-uuid data-entity-substitution> <sup> <sub> <em> <strong> <cite> <blockquote cite> <code> <ul start type class> <ol start type> <li> <dl> <dt> <dd> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <p> <br> <span> <img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <table> <caption> <tbody> <thead> <tfoot> <th> <td> <tr> <drupal-entity data-entity-type data-entity-uuid data-entity-substitution data-entity-embed-display data-entity-embed-display-settings data-align data-caption data-embed-button title alt>'
-      filter_html_help: false
-      filter_html_nofollow: false
+    weight: 50
+    settings: {  }
+  entity_embed:
+    id: entity_embed
+    provider: entity_embed
+    status: true
+    weight: 50
+    settings: {  }
   filter_align:
     id: filter_align
     provider: filter
@@ -35,17 +38,32 @@ filters:
     status: true
     weight: 11
     settings: {  }
-  editor_file_reference:
-    id: editor_file_reference
-    provider: editor
+  filter_html:
+    id: filter_html
+    provider: filter
     status: true
-    weight: 50
+    weight: 0
+    settings:
+      allowed_html: '<br> <p> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <ul class="ma__checklist" start> <cite> <dl> <dt> <dd> <span> <img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <a hreflang href data-entity-type data-entity-uuid data-entity-substitution> <blockquote cite> <drupal-entity data-entity-type data-entity-substitution data-embed-button alt title data-align data-caption data-entity-embed-display data-entity-embed-display-settings data-view-mode data-entity-uuid data-langcode> <strong> <em> <sub> <sup> <ol start> <li> <table> <tr> <td rowspan colspan> <th rowspan colspan> <thead> <tbody> <tfoot> <caption>'
+      filter_html_help: false
+      filter_html_nofollow: false
+  filter_html_escape:
+    id: filter_html_escape
+    provider: filter
+    status: false
+    weight: 0
     settings: {  }
-  entity_embed:
-    id: entity_embed
-    provider: entity_embed
+  filter_html_image_secure:
+    id: filter_html_image_secure
+    provider: filter
+    status: false
+    weight: -50
+    settings: {  }
+  filter_htmlcorrector:
+    id: filter_htmlcorrector
+    provider: filter
     status: true
-    weight: 50
+    weight: 10
     settings: {  }
   filter_pathologic:
     id: filter_pathologic
@@ -63,25 +81,6 @@ filters:
     status: true
     weight: 7
     settings: {  }
-  linkit:
-    id: linkit
-    provider: linkit
-    status: true
-    weight: -10
-    settings:
-      title: false
-  filter_html_escape:
-    id: filter_html_escape
-    provider: filter
-    status: false
-    weight: 0
-    settings: {  }
-  filter_html_image_secure:
-    id: filter_html_image_secure
-    provider: filter
-    status: false
-    weight: -50
-    settings: {  }
   filter_richtext_indent:
     id: filter_richtext_indent
     provider: mass_fields
@@ -94,3 +93,10 @@ filters:
     status: true
     weight: -50
     settings: {  }
+  linkit:
+    id: linkit
+    provider: linkit
+    status: true
+    weight: -10
+    settings:
+      title: false

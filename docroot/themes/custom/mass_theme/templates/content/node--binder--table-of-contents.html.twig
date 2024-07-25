@@ -5,7 +5,7 @@
  */
  #}
 {% embed "@organisms/by-template/table-of-contents-overlay.twig" with {
-  "tableOfContentsOverlay" : {
+  "tableOfContentsOverlay": {
     "id": "overlay-toc-" ~ node.id,
     "typeContext": node.field_binder_binder_type ? node.field_binder_binder_type.entity.name.value|lower,
     "title": {
@@ -14,7 +14,7 @@
       "info": ""
     }
   }
-}%}
+} %}
   {% block tableOfContentsOverlaySections %}
     {{ content }}
   {% endblock %}

@@ -3,12 +3,20 @@
 namespace Drupal\mass_content\Entity\Bundle\media;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\file\Entity\File;
 
 /**
  * A bundle class for media entities.
  */
 class DocumentBundle extends MediaBundle {
+
+  /**
+   * Get uploaded file.
+   */
+  public function getUploadFile(): FieldItemListInterface {
+    return $this->get('field_upload_file');
+  }
 
   /**
    * Get the changed time for the first referenced file.

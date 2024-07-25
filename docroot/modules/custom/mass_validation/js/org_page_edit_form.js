@@ -67,20 +67,12 @@
 
       // Allow a simple array of machine field names to be used to calculate the selector
       // for conditionally required fields.
-      var generalRequiredFields = [
-        'field_bg_wide'
-      ].map(function (field) {
-        return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
-      }).join(', ');
-
       var electedRequiredFields = [
-        'field_banner_image',
         'field_person_bio'
       ].map(function (field) {
         return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
       }).join(', ');
 
-      this.$generalRequired = $(generalRequiredFields, context);
       this.$electedRequired = $(electedRequiredFields, context);
       this.$generalRequiredTabs = $tabs.find('a[href$="edit-group-actions"]').find('strong');
     },
@@ -88,11 +80,15 @@
     updateElements: function (context) {
       var subtype = $('#edit-field-subtype option:selected', context).val();
 
-      this.$conditionallyRequiredFields.addClass('form-required');
+      if (typeof this.$conditionallyRequiredFields.addClass === 'function') {
+        this.$conditionallyRequiredFields.addClass('form-required');
+      }
 
       if (subtype === 'General Organization') {
         this.$conditionalTabs.addClass('js-hide');
-        this.$generalRequired.addClass('form-required');
+        if (typeof this.$generalRequired.addClass === 'function') {
+          this.$generalRequired.addClass('form-required');
+        }
         this.$electedRequired.removeClass('form-required');
         this.$generalRequiredTabs.addClass('form-required');
         $(".field--name-field-organization-sections details.section-content .field--name-field-section-long-form-content input[id*='-subform-field-section-long-form-content-add-more-add-more-button-list-board-members']").addClass('js-hide');

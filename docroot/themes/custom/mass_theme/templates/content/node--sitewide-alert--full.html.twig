@@ -79,8 +79,8 @@
         "title": node.label,
       }
   %}
-  {% include "@organisms/by-template/page-header.twig" %}
-  {% include "@organisms/by-template/page-header-addons.twig" %}
+  {% include "@organisms/page-header/page-header.twig" %}
+  {% include "@organisms/page-header/page-header-addons.twig" %}
 {% endblock %}
 
 {% block main %}
@@ -103,7 +103,7 @@
                     'level': level,
                     'title': linkList.compHeading.title,
                   }) %}
-                  {% set linkList = linkList|merge({'sidebarHeading': linkList.compHeading }) %}
+                  {% set linkList = linkList|merge({'sidebarHeading': linkList.compHeading}) %}
                   {% include "@organisms/by-author/link-list.twig" %}
                 {% endif %}
             {% endblock %}

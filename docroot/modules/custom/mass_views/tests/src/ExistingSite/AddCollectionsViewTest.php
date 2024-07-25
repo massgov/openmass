@@ -8,14 +8,14 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests add media to collections bulk.
  */
-class AddCollectionsViewTest extends ExistingSiteBase {
+class AddCollectionsViewTest extends MassExistingSiteBase {
 
   use LoginTrait;
   use MediaCreationTrait;
@@ -76,18 +76,18 @@ class AddCollectionsViewTest extends ExistingSiteBase {
     $this->drupalGet('admin/ma-dash/reports/add-collections-documents');
 
     // Trigger search to get some results.
-    $this->submitForm(['field_title_value' => 'docsmediabulkllamatest'], $this->t('Search'), 'views-exposed-form-add-collections-documents-media-page-list');
+    $this->submitForm(['field_title_value' => 'docsmediabulkllamatest'], (string) $this->t('Search'), 'views-exposed-form-add-collections-documents-media-page-list');
     // Trigger the action.
-    $this->submitForm($checked, $this->t('Add documents to a collection'), 'views-form-add-collections-documents-media-page-list');
+    $this->submitForm($checked, (string) $this->t('Add documents to a collection'), 'views-form-add-collections-documents-media-page-list');
 
     // Check if the "New Collection" element exists.
     $this->assertSession()->pageTextContains('New Collection');
     $this->assertSession()->elementExists('css', '.field--widget-term-reference-tree');
 
     // Use "Test 2 (87956)" collection and trigger the batch.
-    $this->submitForm(['new_collection[0][87861][87861-children][87956][87956]' => TRUE], $this->t('Add collections'), 'views-bulk-operations-configure-action');
+    $this->submitForm(['new_collection[0][87861][87861-children][87956][87956]' => TRUE], (string) $this->t('Add collections'), 'views-bulk-operations-configure-action');
     // Trigger the batch process.
-    $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
+    $this->submitForm([], (string) $this->t('Execute action'), 'views-bulk-operations-confirm-action');
     $page = $this->getSession()->getPage();
 
     // Wait for the batch to finish processing.
@@ -127,18 +127,18 @@ class AddCollectionsViewTest extends ExistingSiteBase {
     $this->drupalGet('admin/ma-dash/reports/change-collections');
 
     // Trigger search to get some results.
-    $this->submitForm(['title' => 'bulktestcollections'], $this->t('Apply'), 'views-exposed-form-change-collections-page-1');
+    $this->submitForm(['title' => 'bulktestcollections'], (string) $this->t('Apply'), 'views-exposed-form-change-collections-page-1');
     // Trigger the action.
-    $this->submitForm($checked, $this->t('Add Collections'), 'views-form-change-collections-page-1');
+    $this->submitForm($checked, (string) $this->t('Add Collections'), 'views-form-change-collections-page-1');
 
     // Check if the "New Collection" element exists.
     $this->assertSession()->pageTextContains('New Collection');
     $this->assertSession()->elementExists('css', '.field--widget-term-reference-tree');
 
     // Use "Test 2 (87956)" collection and trigger the batch.
-    $this->submitForm(['new_collection[0][87861][87861-children][87956][87956]' => TRUE], $this->t('Add collections'), 'views-bulk-operations-configure-action');
+    $this->submitForm(['new_collection[0][87861][87861-children][87956][87956]' => TRUE], (string) $this->t('Add collections'), 'views-bulk-operations-configure-action');
     // Trigger the batch process.
-    $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
+    $this->submitForm([], (string) $this->t('Execute action'), 'views-bulk-operations-confirm-action');
     $page = $this->getSession()->getPage();
 
     // Wait for the batch to finish processing.

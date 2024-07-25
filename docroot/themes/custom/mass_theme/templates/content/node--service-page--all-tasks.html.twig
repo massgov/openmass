@@ -7,14 +7,14 @@
 {% extends '@templates/two-column.twig' %}
 
 {% block preContent %}
-  {% include "@organisms/by-template/page-header.twig" with {
+  {% include "@organisms/page-header/page-header.twig" with {
     "pageHeader": {
       "category": "",
       "divider": false,
       "prefix": "",
       "title": "What would you like to do?",
       "subTitle": {
-        "#type" : 'inline_template',
+        "#type": 'inline_template',
         "#template": 'For <a href="{{ url }}">{{ title }}</a>',
         "#context": {
           'url': url,

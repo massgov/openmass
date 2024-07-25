@@ -3,17 +3,18 @@
 namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures editor can save the nodes.
  */
-class ContentEditingTest extends ExistingSiteBase {
+class ContentEditingTest extends MassExistingSiteBase {
 
   use LoginTrait;
 
   const QAG_PATHS = [
+    "/forms/qag-form-with-file-uploads",
     "/audit/qag-binderaudit",
     "/report/qag-binderreport",
     "/qagcampaign-landing-with-solid-color-key-message-header",
@@ -23,7 +24,6 @@ class ContentEditingTest extends ExistingSiteBase {
     // @todo Giving a 404 on edit page
     // "/event/qag-event-general-past-2018-07-24t124500-0400-2018-07-24t134500-0400",
     "/executive-orders/no-1-qag-executiveorder",
-    "/forms/qag-formwithfileuploads",
     "/guides/qag-guide",
     "/how-to/qag-request-help-with-a-computer-problem",
     "/info-details/qag-info-detail-with-landing-page-features",

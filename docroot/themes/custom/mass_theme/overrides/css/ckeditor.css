@@ -1,79 +1,239 @@
 /* ckeditor edit window format */
 /* format editing content in ckeditor to match rendered page format (= theming) */
 
-ul,
-ol {
-  margin-top: 0;
+.ck-content ul,
+.ck-content ol {
+  margin-top: 0.5em;
 }
 
-p {
+.ck-content p {
   margin-top: 0;
   margin-bottom: 1rem;
 }
 
-ul ul,
-ol ul {
+.ck-content ul ul,
+.ck-content ol ul {
   list-style-type: circle;
   padding-left: 30px;
   margin-bottom: 1em;
 }
 
-ul ul ul {
+.ck-content ul ul ul {
   list-style-type: square;
 }
 
 /* Custom ol list style types out to 9 levels */
 /* All decimals after that */
 
-ol,
-ol ol ol ol,
-ol ol ol ol ol ol ol,
-ol ol ol ol ol ol ol ol ol ol {
+.ck-content ol,
+.ck-content ol ol ol ol,
+.ck-content ol ol ol ol ol ol ol,
+.ck-content ol ol ol ol ol ol ol ol ol ol {
   list-style-type: decimal;
 }
 
-ol ol,
-ol ol ol ol ol,
-ol ol ol ol ol ol ol ol {
+.ck-content ol ol,
+.ck-content ol ol ol ol ol,
+.ck-content ol ol ol ol ol ol ol ol {
   list-style-type: lower-alpha;
 }
 
-ol ol ol,
-ol ol ol ol ol ol,
-ol ol ol ol ol ol ol ol ol {
+.ck-content ol ol ol,
+.ck-content ol ol ol ol ol ol,
+.ck-content ol ol ol ol ol ol ol ol ol {
   list-style-type: lower-roman;
 }
 
 /* Rich text specific list styles */
 
-ul {
+.ck-content ul {
   margin-bottom: 1em;
   padding-left: 20px;
 }
 
-ul:last-child {
+.ck-content ul:last-child {
   margin-bottom: 0;
 }
 
-ul ul {
+.ck-content ul ul {
   margin-top: 0.5em;
   margin-bottom: 0;
 }
 
-ol {
+.ck-content ol {
   margin-bottom: 1em;
   padding-left: 30px;
 }
 
-ol:last-child {
+.ck-content ol:last-child {
   margin-bottom: 0;
 }
 
-li {
+.ck-content li {
   margin-bottom: .5em;
   padding-left: 10px;
 }
 
-li:last-child {
+.ck-content li:last-child {
   margin-bottom: 0;
+}
+
+/* Solid circle (default) */
+.ck-content ul[type="disc"] { list-style-type: disc; }
+
+/* Hollow circle */
+.ck-content ul[type="circle"] { list-style-type: circle; }
+
+/* Solid square */
+.ck-content ul[type="square"] { list-style-type: square; }
+
+/* No bullets - Though 'type' attribute does not support 'none', shown for consistency */
+.ck-content ul[type="none"] { list-style-type: none; }
+
+/* Arabic numerals (default) */
+.ck-content ol[type="1"] { list-style-type: decimal; }
+
+/* Lowercase letters */
+.ck-content ol[type="a"] { list-style-type: lower-alpha; }
+
+/* Uppercase letters */
+.ck-content ol[type="A"] { list-style-type: upper-alpha; }
+
+/* Lowercase Roman numerals */
+.ck-content ol[type="i"] { list-style-type: lower-roman; }
+
+/* Uppercase Roman numerals */
+.ck-content ol[type="I"] { list-style-type: upper-roman; }
+
+.ck-content table, .ck-content figure.table {
+  width: 100%;
+}
+
+.ck-content a,
+.ck-content .link {
+  color: #14558f;
+  font-weight: bold;
+  text-decoration: none;
+}
+.ck-content a:hover,
+.ck-content .link:hover,
+.ck-content a:focus,
+.ck-content .link:focus {
+  text-decoration: underline;
+  outline: 0;
+}
+
+.ck-content p {
+  font-size: inherit;
+  line-height: inherit;
+  margin-top: 0;
+  margin-bottom: 1.75rem;
+}
+
+.field--widget-text-textarea .js-text-format-wrapper .js-form-type-textarea {
+  margin: 0;
+}
+
+.ck-editor .ck.ck-toolbar.ck-toolbar_grouping > .ck-toolbar__items {
+  flex-wrap: wrap;
+}
+
+.ck-content h2,
+.ck-content h3,
+.ck-content h4 {
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.ck-content h2:after,
+.ck-content h3:after,
+.ck-content h4:after {
+  content: "";
+  height: 3px;
+  position: absolute;
+  bottom: 0;
+  left: 0.075em;
+  transform: skew(-30deg);
+  width: 1.85em;
+  background-color: rgba(56, 133, 87, .5);
+}
+
+.ck-content h2 a,
+.ck-content h3 a,
+.ck-content h4 a {
+  border: none;
+  color: #141414;
+}
+
+.ck-content h5 {
+  text-transform: unset;
+}
+
+.ck-content h2,
+.ck-content h3,
+.ck-content h4,
+.ck-content h5,
+.ck-content h6 {
+  font-weight: 600;
+}
+
+.ck-content h6 {
+  font-size: 1.075em;
+}
+
+.ck-content blockquote {
+  border-left: none !important;
+  font-style: inherit !important;
+  margin: 1em !important;
+}
+
+.ck-content .table>figcaption {
+    background-color: inherit !important;
+    font-size: inherit !important;
+ }
+
+.ck-content table thead {
+    background-color: #f2f2f2;
+    border-collapse: collapse;
+    border-spacing: 0;
+    text-align: left;
+    -webkit-box-shadow: 0 0 0 2px #dcdcdc;
+    box-shadow: 0 0 0 2px #dcdcdc;
+}
+
+.ck-content table thead th {
+    color: #141414;
+    border: none !important;
+    line-height: 1.3;
+}
+
+.ck-content .table>figcaption {
+    background-color: inherit !important;
+    font-size: inherit !important;
+ }
+
+div.ck.ck-editor__main table th,
+div.ck.ck-editor__main table td {
+    vertical-align: top;
+ }
+
+div.ck.ck-editor__main table th, div.ck.ck-editor__main table td {
+    padding: 0.6em !important;
+}
+
+
+div.ck.ck-editor__main table tr {
+    border-top: 1px solid #dcdcdc;
+}
+
+div.ck.ck-editor__main table td, div.ck.ck-editor__main table th {
+    border: none;
+}
+
+div.ck.ck-editor__main table tbody tr th {
+    background: none;
+}
+
+div.ck.ck-editor__main table {
+    border: none;
 }

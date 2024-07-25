@@ -141,10 +141,51 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+
+  // DP-24989: alter the view to custom sort autocomplete results by bundle.
+  if ($view->id() == "link_field_autocomplete" && $view->getDisplay()->display['id'] == 'entity_reference') {
+    // Add a case statement to the sort criteria.
+    $order_case = "CASE
+                    WHEN node_field_data.type = 'org_page' THEN 1
+                    WHEN node_field_data.type = 'topic_page' THEN 2
+                    WHEN node_field_data.type = 'service_page' THEN 3
+                    WHEN node_field_data.type = 'how_to_page' THEN 4
+                    WHEN node_field_data.type = 'decision_tree' THEN 5
+                    WHEN node_field_data.type = 'info_details' THEN 6
+                    WHEN node_field_data.type = 'curated_list' THEN 7
+                    WHEN node_field_data.type = 'binder' THEN 8
+                    WHEN node_field_data.type = 'location_details' THEN 9
+                    WHEN node_field_data.type = 'location' THEN 10
+                    WHEN node_field_data.type = 'form_page' THEN 11
+                    WHEN node_field_data.type = 'guide_page' THEN 12
+                    WHEN node_field_data.type = 'campaign_landing' THEN 13
+                    WHEN node_field_data.type = 'regulation' THEN 14
+                    WHEN node_field_data.type = 'advisory' THEN 15
+                    WHEN node_field_data.type = 'decision' THEN 16
+                    WHEN node_field_data.type = 'executive_order' THEN 17
+                    WHEN node_field_data.type = 'news' THEN 18
+                    WHEN node_field_data.type = 'event' THEN 19
+                    WHEN node_field_data.type = 'rules' THEN 20
+                    WHEN node_field_data.type = 'contact_information' THEN 21
+                    WHEN node_field_data.type = 'person' THEN 22
+                    ELSE 23
+                   END";
+
+    $query->addOrderBy(NULL, $order_case, 'ASC', 'custom_sort');
+  }
+
   if ($view->id() == "report_d2d_redirects" && $view->getDisplay()->display['id'] == 'page_1') {
-    foreach ($query->where as $key_group_conditions => &$condition_group) {
-      // Call helper function to recursively alter conditions.
-      _redirect_recursively_alter_query_conditions($condition_group['conditions'], $query, $key_group_conditions);
+    // See DP-23382 for more info.
+    // The functions used below help to filter the view with the url alias
+    // instead of id.
+    // Note: THe functions are coming from the patch here
+    // https://www.drupal.org/project/redirect/issues/2981544
+    if (function_exists('redirect_is_query_alter_required_and_trim_source_path') && function_exists('redirect_add_left_join_to_path_alias_table') && function_exists('redirect_alter_where_clause')) {
+      if (redirect_is_query_alter_required_and_trim_source_path($query)) {
+        // Call helper function to recursively alter conditions.
+        redirect_add_left_join_to_path_alias_table($query);
+        redirect_alter_where_clause($query);
+      }
     }
   }
 
@@ -219,5 +260,34 @@ function mass_views_do_invalidate($entity): void {
       }
     }
     Cache::invalidateTags($tags);
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ *
+ * Unset the collections_all view field rendering if we are dealing with media entity.
+ */
+function mass_views_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'collection_all') {
+    foreach ($view->result as $row) {
+      // Check if the row entity is a media entity
+      if ($row->_entity == NULL && $row->entity_type == 'media') {
+        // If the $row is of type media we should unset the fields below, since the
+        // views system will try load the entity and access the fields that media entity
+        // doesn't have. This is a unique/complex view that is rendering 2 entities node/media
+        // (initially overridden here docroot/modules/custom/mass_content/mass_content.module:924)
+        foreach ($view->field as $field_id => $field) {
+          switch ($field_id) {
+            case 'title':
+            case 'field_news_lede':
+            case 'field_short_desc':
+            case 'field_how_to_lede':
+              unset($view->field[$field_id]);
+              break;
+          }
+        }
+      }
+    }
   }
 }

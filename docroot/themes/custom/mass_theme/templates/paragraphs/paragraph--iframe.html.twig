@@ -36,18 +36,21 @@
  * @ingroup themeable
  */
 #}
-{% set caption = {
-  '#type':   'processed_text',
-  '#text':    paragraph.field_iframe_caption.value ?: '',
-  '#format':  paragraph.field_iframe_caption.format ?: 'basic_html',
-} %}
-
+{% set caption = null %}
+{% if paragraph.field_iframe_caption.value is not empty %}
+  {% set caption = {
+    '#type': 'processed_text',
+    '#text': paragraph.field_iframe_caption.value ?: '',
+    '#format': paragraph.field_iframe_caption.format ?: 'basic_html',
+  } %}
+{% endif %}
 {% include "@atoms/09-media/figure--iframe.twig" with {
   "figure": {
     "align": paragraph.field_iframe_alignment.value,
     "wrap": paragraph.field_iframe_wrapping.value ? TRUE : FALSE,
     "size": paragraph.field_iframe_display_size.value,
     "iframe": {
+      "customClass": paragraph.field_iframe_height_config.value is same as('iframe resizer') ? 'js-iframe-resizer' : '',
       "src": paragraph.field_url.uri,
       "title": paragraph.field_iframe_accessibility_title.value,
       "height": paragraph.field_iframe_height_config.value is same as('ratio') ? null : iframe_height,
@@ -57,4 +60,3 @@
     }
   }
 } %}
-

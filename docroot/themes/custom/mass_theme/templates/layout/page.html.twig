@@ -67,7 +67,7 @@
 {% if header_version_mixed %}
   <header class="ma__header__hamburger ma__header__mixed{{ header_class }}" id="header">
     <div class="menu-overlay"></div>
-    <a class="ma__header__hamburger__skip-nav visually-hidden focusable" href="#main-content">
+    <a class="ma__header__hamburger__skip-nav ma__visually-hidden focusable" href="#main-content">
       {{ 'Skip to main content'|t }}
     </a>
 
@@ -79,14 +79,14 @@
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
-          {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
+          {% include "@molecules/header-search.twig" %}
         </div>
       {% endif %}
     </div>
 
     {{ page.header.mainnavigation }}
 
-    {{ page.header | without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
+    {{ page.header|without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
   </header>
 {% else %}
   <header class="ma__header__hamburger{{ header_class }}" id="header">
@@ -103,12 +103,12 @@
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
-          {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
+          {% include "@molecules/header-search.twig" %}
         </div>
       {% endif %}
     </div>
 
-    {{ page.header | without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
+    {{ page.header|without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
   </header>
 {% endif %}
 {% block breadcrumb %}
@@ -137,4 +137,3 @@
 {% if page.footer or page.footer_navigation %}
   {% include directory ~ "/templates/includes/organisms-footer.html.twig" %}
 {% endif %}
-

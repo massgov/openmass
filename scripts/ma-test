@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
 
-# This is a convenience script for linting files & running behat tests.
+# This is a convenience script for linting files & running tests.
 
 echo -e "\n"
 # cd into project root
 echo -e "ℹ️  Changing directory to '/var/www/mass.local'  🚀  🚀  🚀"
-cd /var/www/mass.local
+cd /var/www/html
 
 # check drupal coding standards with php code sniffer
 echo -e "\n🔍  Validate .json and check if it is in sync with the .lock file"
 composer validate
 
+# check Twig coding standards
+echo -e "\n🔍  Validate Twig coding standards"
+composer twigcs
+
 # check drupal coding standards with php code sniffer
 echo -e "\n🔍  Running PHP Code Sniffer"
-phpcs -n
+vendor/bin/phpcs -n
 
 # lint javascript
 echo -e "\n🔍  Running ESLint"
 # use --debug for verbose output
-yarn run eslint --ignore-path 'docroot/.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js'
+yarn run eslint --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js'
 
 # phpunit
 echo -e "\n🔍  Running PHPUnit"
-phpunit docroot/modules/custom
-
-echo -e "\n🔍  Running Behat tests 🐝  🐝  🐝"
-behat --strict
+composer unit

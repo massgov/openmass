@@ -13,9 +13,9 @@
  */
 #}
 {% block preContent %}
-  {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
-  {% include "@organisms/by-template/page-header.twig" %}
-  {% include "@organisms/by-template/page-header-addons.twig" %}
+  {# {% include "@organisms/by-template/breadcrumbs.twig" %} #}
+  {% include "@organisms/page-header/page-header.twig" %}
+  {% include "@organisms/page-header/page-header-addons.twig" %}
 {% endblock %}
 {% block main %}
   <div class="main-content main-content--two">
@@ -25,6 +25,7 @@
         {% if backButton %}
           {% include "@molecules/back-button.twig" %}
         {% endif %}
+        {% set video = video|merge({"headingLevel": "2"}) %}
         {% include "@atoms/09-media/video.twig" %}
         {% if backButton %}
           {% include "@molecules/back-button.twig" %}

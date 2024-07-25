@@ -19,7 +19,7 @@
   {% set color = "ma__narrow-template--" ~ narrowTemplate.color %}
 {% endif %}
 
-<main id="main-content" class="ma__narrow-template {{side}} {{color}}" tabindex="-1">
+<main id="main-content" class="ma__narrow-template {{ side }} {{ color }}" tabindex="-1">
   <header class="ma__narrow-template__header">
     {% include "@atoms/09-media/site-logo.twig" %}
   </header>
@@ -35,9 +35,9 @@
             'message': content.field_error_message|field_value,
           }
         %}
-        {% include "@organisms/by-template/error-page.twig" with { 'errorPage': errorPage } %}
+        {% include "@organisms/by-template/error-page.twig" with {'errorPage': errorPage} %}
         {% if content.field_include_search|render|striptags|trim == 'True' %}
-          {% include "@custom_includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
+          {% include "@molecules/header-search.twig" %}
         {% endif %}
         {% if content.field_helpful_links is not empty %}
           {{ content.field_helpful_links }}
@@ -48,5 +48,3 @@
   {% block schemaContent %}
   {% endblock %}
 </main>
-
-

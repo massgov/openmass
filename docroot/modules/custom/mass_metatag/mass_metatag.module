@@ -251,9 +251,11 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
               // the name value.
               if (!empty($handler_settings['target_bundles']['external_organization'])) {
                 foreach ($data['node']->get($field_name) as $item) {
-                  if ($item->entity->hasField('field_external_org_name')) {
-                    $values[] = $item->entity->field_external_org_name->value;
-                    $replacements[$original] = json_encode($values);
+                  if ($item->entity) {
+                    if ($item->entity->hasField('field_external_org_name')) {
+                      $values[] = $item->entity->field_external_org_name->value;
+                      $replacements[$original] = json_encode($values);
+                    }
                   }
                 }
               }
@@ -555,14 +557,15 @@ function mass_metatag_datalayer_meta() {
 }
 
 /**
- * Implements hook_datalayer_meta_alter().
- *
- * Change the output of entityField_organizations to include title.
+ * Implements hook_datalayer_alter().
  */
 function mass_metatag_datalayer_alter(&$data_layer) {
-  if (isset($data_layer['entityIdentifier'])) {
+  if (isset($data_layer['entityIdentifier']) && isset($data_layer['entityType']) && $data_layer['entityType'] === 'node') {
     $node = Node::load($data_layer['entityIdentifier']);
     if ($node) {
+      if (isset($node->field_parent) && $orgParentNodeId = $node->field_parent->target_id) {
+        $data_layer['org_parent_node_id'] = intval($orgParentNodeId);
+      }
       $metatag_utils = \Drupal::service('mass_metatag.utilities');
       $parent_orgs = $metatag_utils->getAllOrgsFromNode($node, TRUE, TRUE);
       if ($parent_orgs) {
@@ -572,13 +575,26 @@ function mass_metatag_datalayer_alter(&$data_layer) {
   }
 
   if (isset($data_layer['entityField_organizations'])) {
+    $utilities = \Drupal::service('mass_metatag.utilities');
     $ids = explode(', ', $data_layer['entityField_organizations']);
+    $first_org = $ids[0];
+    if ($node = Node::load($first_org)) {
+      if ($node->hasField('field_billing_organization') && !$node->get('field_billing_organization')->isEmpty()) {
+        $bill_org_term = $node->get('field_billing_organization')->entity;
+        if ($bill_org_term instanceof Term) {
+          if ($bill_org_term->hasField('field_billing_account_number') && !$bill_org_term->get('field_billing_account_number')->isEmpty()) {
+            $data_layer['bill'] = $bill_org_term->field_billing_account_number->value;
+          }
+        }
+      }
+    }
     $organizations = [];
     foreach ($ids as $id) {
       if ($node = Node::load($id)) {
         $organizations[$id] = [
           'title' => $node->getTitle(),
           'uuid' => $node->uuid(),
+          'slug' => str_replace("-", "", $utilities->slugify(trim($node->label()))),
         ];
       }
     }

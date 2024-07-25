@@ -13,12 +13,6 @@
   {# Check if primary indicator content exists. #}
   {% set primaryIndicators = null %}
   {% set primaryRelationshipContent = null %}
-  {#
-  {% if content.computed_related_to[0] %}
-    {% set primaryIndicators = { "label": "part of" } %}
-    {% set primaryRelationshipContent = content.computed_related_to %}
-  {% endif %}
-  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty and not is_blog_post %}
     {% set secondaryIndicators = {
@@ -54,7 +48,7 @@
     } %}
   {% endif %}
 
-  {% include "@organisms/by-template/page-header.twig" %}
+  {% include "@organisms/page-header/page-header.twig" %}
 {% endblock %}
 
 {% block main %}
@@ -62,7 +56,7 @@
   {% set level = level + 1 %}
   <div class="main-content main-content--two">
 
-    {% set type_class = "ma__announcement__page-content--" ~ (node.field_news_type.value is not iterable ? node.field_news_type.value : '')  %}
+    {% set type_class = "ma__announcement__page-content--" ~ (node.field_news_type.value is not iterable ? node.field_news_type.value : '') %}
     <div class="page-content ma__announcement__page-content {{ type_class }}">
       {% if pageContent.pressStatus %}
         {% set pressStatus = pageContent.pressStatus %}
@@ -78,6 +72,7 @@
         {% endif %}
         {% if pageContent.video %}
           {% set video = pageContent.video %}
+          {% set video = video|merge({"headingLevel": level}) %}
           {% include "@atoms/09-media/video.twig" %}
         {% endif %}
         {% if pageContent.richText %}
@@ -114,13 +109,13 @@
               'title': contactList.compHeading.title,
               'titleContext': contactList.compHeading.titleContext,
               'level': level,
-              'id': contactList.compHeading.id }}) %}
+              'id': contactList.compHeading.id}}) %}
           {% include "@organisms/by-author/contact-list.twig" %}
         {% endif %}
       {% endif %}
       {% if pageContent.personalMessage %}
         {% set personalMessage = pageContent.personalMessage %}
-        {% set imagePromos = personalMessage.imagePromos|merge({'level': level }) %}
+        {% set imagePromos = personalMessage.imagePromos|merge({'level': level}) %}
         {% include "@organisms/by-author/personal-message.twig" %}
       {% endif %}
     </div>
@@ -165,20 +160,20 @@
 
         {% if not is_blog_post and sidebar.contactList %}
           {% set contactList = sidebar.contactList %}
-          {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
-          {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+          {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
+          {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
           {% include "@organisms/by-author/contact-list.twig" %}
         {% endif %}
         {% if sidebar.pressListing %}
           {% set pressListing = sidebar.pressListing %}
-          {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level }) %}
-          {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading }) %}
+          {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level}) %}
+          {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading}) %}
           {% include "@organisms/by-author/press-listing.twig" %}
         {% endif %}
         {% if sidebar.eventListing %}
           {% set eventListing = sidebar.eventListing %}
-          {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level }) %}
-          {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading }) %}
+          {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level}) %}
+          {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading}) %}
           {% include "@organisms/by-author/event-listing.twig" %}
         {% endif %}
       </aside>

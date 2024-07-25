@@ -43,7 +43,7 @@ class LogInLinksBuilder {
         return $list;
       }
     }
-    $refs = $entity->field_primary_parent->referencedEntities();
+    $refs = $entity->getPrimaryParent()->referencedEntities();
     $parent_entity = $refs[0] ?? FALSE;
     $entities_hierarchy[] = $entity;
     return $parent_entity ? $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level) : [];
@@ -106,6 +106,7 @@ class LogInLinksBuilder {
                 ],
               ],
             ],
+            'class' => 'gtm-login-contextual',
             'links' => $links,
           ],
           '#cache' => [

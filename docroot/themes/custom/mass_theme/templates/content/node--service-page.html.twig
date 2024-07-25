@@ -68,7 +68,8 @@
           "size": "small",
           "usage": "primary",
           "theme": "c-white",
-          "icon": "login"
+          "icon": "login",
+          "uppercaseOverride": true
         }
       %}
       {% set logInButtons = logInButtons|merge([button]) %}
@@ -81,26 +82,25 @@
   {% endif %}
   {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
-      "layout": bannerImageWide ? "overlay" : "",
-      "color": "blue",
-      "title": node.label,
-      "titleSubText": content.field_title_sub_text,
-      "description": content.field_service_lede,
-      "bgWide": bannerImageWide,
-      "bgNarrow": '',
-      "buttonsLabel": "LOG IN:",
-      "buttons": logInButtons
+      "image": bannerImageWide,
+      "theme": "c-primary",
+      "pageHeader": {
+        "title": node.label,
+        "titleSubText": content.field_title_sub_text,
+        "description": content.field_service_lede,
+        "buttonsLabel": "LOG IN:",
+        "buttons": logInButtons
+      }
     }
   } %}
 {% endblock %}
-
 
 {# Increase heading number from the parent heading. #}
 {% set level = level + 1 %}
 
 {% block pageContentIntro %}
   {% if content.field_service_body|render is not empty %}
-    {# NOTE: teaser-text conditionally also includes "@atoms/decorative-link.twig" but Service Page teaser-text does  #}
+    {# NOTE: teaser-text conditionally also includes "@atoms/decorative-link.twig" but Service Page teaser-text does #}
     {# not use a "learn more / read more" sort of link, so we don't pass any "decorativeLink" values to the template. #}
     {% include "@organisms/by-author/teaser-text.twig" with {
       "teaserText": {
@@ -109,7 +109,7 @@
           "rteElements": [{
             "path": "@atoms/11-text/paragraph.twig",
             "data": {
-              "paragraph" : {
+              "paragraph": {
                 "text": content.field_service_body
               }
             }
@@ -121,6 +121,7 @@
 
   {% if introPageContent.video %}
     {% set video = introPageContent.video %}
+    {% set video = video|merge({"headingLevel": level}) %}
     {% include "@atoms/09-media/video.twig" %}
   {% endif %}
 {% endblock %}

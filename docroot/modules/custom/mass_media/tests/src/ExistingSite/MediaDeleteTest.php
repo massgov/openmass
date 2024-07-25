@@ -3,17 +3,36 @@
 namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
+use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
+use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Verify media functionality.
  *
  * @group mass_media
  */
-class MediaDeleteTest extends ExistingSiteBase {
+class MediaDeleteTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
+  use LoginTrait;
+
+  private UserInterface $admin;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+    // An admin is needed.
+    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin->addRole('administrator');
+    $admin->activate();
+    $admin->save();
+    $this->admin = $admin;
+  }
 
   /**
    * Ensure that a document is no longer available after it is replaced.
@@ -64,9 +83,15 @@ class MediaDeleteTest extends ExistingSiteBase {
     // Update the "Llama" media item.
     $media->field_upload_file->target_id = $file2->id();
     $media->save();
-    // The original file is now unavailable.
+    // The original file is now unavailable to anon.
     $this->visit($file->createFileUrl());
     $this->assertEquals($this->getSession()->getStatusCode(), 404);
+
+    // Make sure original file was moved to private filesystem
+    $file = File::load($file->id());
+    $this->drupalLogin($this->admin);
+    $this->visit($file->createFileUrl());
+    $this->assertEquals($this->getSession()->getStatusCode(), 200);
   }
 
 }

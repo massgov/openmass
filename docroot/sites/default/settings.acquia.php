@@ -5,6 +5,8 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 $is_prod = isset($_ENV['AH_PRODUCTION']) && $_ENV['AH_PRODUCTION'];
 $cli = php_sapi_name() == 'cli';
 $is_mass_gov = preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
+// Copied from https://github.com/acquia/memcache-settings/blob/4db80cd9bbf673d61e4ab572dbca4df333d665b3/memcache.settings.php#L26
+$is_acquia_cloud_next = (getenv("HOME") == "/home/clouduser");
 
 /**
  * Loads environment-specific secrets, if available.
@@ -49,9 +51,9 @@ if (!$cli && ($is_prod || $is_mass_gov)) {
 
 /**
  * Set the HTTP header name which stores real client IP. Harmless if not provided.
- * We use https://www.drupal.org/project/reverse_proxy_header because of https://www.drupal.org/project/drupal/issues/3223280
+ * See https://www.drupal.org/project/reverse_proxy_header
  */
-$settings['reverse_proxy_header'] = 'HTTP_TRUE_CLIENT_IP';
+$settings['reverse_proxy_header'] = 'True-Client-IP';
 
 /**
  * Load Acquia-specific services.
@@ -70,6 +72,8 @@ $config['system.file']['path']['temporary'] = "/mnt/gfs/{$_ENV['AH_SITE_GROUP']}
  * Use memcache.
  *
  * Comment out this line to disable memcache.
+ *
+ * Acquia docs on memcache: https://docs.acquia.com/acquia-cloud/performance/memcached/
  */
 $settings = $configureMemcache($settings);
 
@@ -81,7 +85,7 @@ $settings = $configureMemcache($settings);
  *
  * @see https://docs.acquia.com/articles/password-protect-your-non-production-environments-acquia-hosting#phpfpm
  */
-if (!$cli && !$is_prod && !in_array($_SERVER['SERVER_NAME'], ['wwwcf.digital.mass.gov', 'editcf.digital.mass.gov', 'stage.mass.gov', 'edit.stage.mass.gov'])) {
+if (!$cli && !$is_prod && !in_array($_SERVER['SERVER_NAME'], ['stage.mass.gov', 'edit.stage.mass.gov'])) {
   $username = getenv('LOWER_ENVIR_AUTH_USER');
   $password = getenv('LOWER_ENVIR_AUTH_PASS');
   $is_testing_page = strpos($_SERVER['REQUEST_URI'], '/topics/hunting-fishing') !== FALSE;
@@ -121,21 +125,13 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
       $config['akamai.settings']['disabled'] = FALSE;
       break;
     case 'dev':
-      $settings['mass_caching.hosts'] = [
-        'wwwcf.digital.mass.gov',
-        'editcf.digital.mass.gov',
-      ];
       break;
   }
 }
 
 /**
- * Improve traceability of New Relic transactions by adding URL and
- * unique request ID. Request ID also shows up in all of Acquia's logs.
+ * Improve traceability of New Relic transactions by adding URL.
  */
 if(function_exists('newrelic_add_custom_parameter') && !$cli) {
   newrelic_add_custom_parameter('backend_url', $_SERVER['REQUEST_URI']);
-  newrelic_add_custom_parameter('request_id', $_SERVER['HTTP_X_REQUEST_ID']);
 }
-
-
