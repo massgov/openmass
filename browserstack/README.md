@@ -1,6 +1,11 @@
 # BrowserStack Visual Regression Testing
 
-Visual regression tests are run with a suite of tools offered and supported by BrowserStack. In CircleCI, automation runs `npm run snapshots-test`, which runs a single JestJS test through the `browserstack-node-sdk` command. The JestJS test that is run initiates a build in Browser Automate, which instructs BrowserStack to take visual regression snapshots in Percy. Once the Browser Automate build is complete, visual regression snapshots are sent to Percy. Build success is reported in CircleCI and a link to Percy visual regression test results can be viewed under the checks on a given pull request in GitHub. If the test results in false positives, they can be reviewed and approved in Percy, which will mark the Percy check in GitHub as a success.
+Visual regression tests are run with a suite of tools offered and supported by BrowserStack. The workflow is:
+
+1. A CircleCI job runs `npm run snapshots-test`. This command runs a single JestJS test through `browserstack-node-sdk`, which initiates a build in Browser Automate and instructs BrowserStack to take visual regression snapshots in Percy.
+2. Once the Browser Automate build is complete, visual regression snapshots are sent to Percy.
+3. Build success or failure for BrowserStack Automate is reported in CircleCI.
+4. Percy success or failure is reported in a Percy GitHub pull request check. False positives result in a failed check, but can be reviewed and approved in Percy, marking the check as a success.
 
 Below is a description of each of the components used in openmass's visual regression testing.
 
