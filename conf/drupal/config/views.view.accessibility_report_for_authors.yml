@@ -387,13 +387,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        view_node:
-          id: view_node
-          table: node
-          field: view_node
-          relationship: entity_id
-          entity_type: node
-          plugin_id: entity_link
       pager:
         type: mini
         options:
@@ -429,7 +422,7 @@ display:
         options:
           perm: 'use mass dashboard'
       cache:
-        type: tag
+        type: none
         options: {  }
       empty:
         title:
@@ -857,7 +850,7 @@ display:
           plugin_id: standard
           required: true
       use_ajax: false
-      group_by: false
+      group_by: true
       show_admin_links: false
       use_more: false
       use_more_always: true
