@@ -3899,6 +3899,7 @@ function mass_theme_preprocess_menu(&$variables) {
               ],
             ];
           }
+          $panel['class'] = 'gtm-login-global';
           $panels[] = $panel;
 
           $items[] = [
@@ -4996,11 +4997,14 @@ function mass_theme_preprocess_field(&$variables, $hook) {
   // The first element of the featured items mosaic needs a slightly different template.
   if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
     // First image with an image style.
-    $highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight;
-    $style = ImageStyle::load('featured_item_highlight');
-    $new_image = $style->buildUrl($highlight->entity->getFileUri());
-    $highlight->entity->setFileUri($new_image);
-    $variables['items'][0]['content']['#view_mode'] = 'tall';
+    if ($highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight) {
+      $style = ImageStyle::load('featured_item_highlight');
+      if ($highlight->entity) {
+        $new_image = $style->buildUrl($highlight->entity->getFileUri());
+        $highlight->entity->setFileUri($new_image);
+        $variables['items'][0]['content']['#view_mode'] = 'tall';
+      }
+    }
   }
 
   // Setup social link icons.
@@ -5184,8 +5188,8 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
     $mappedLocations_options = [
       'locationDetailsLink' => [
         'display' => TRUE,
-        'nid' => $node->id(),
-        'path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
+        'nid' => $node ? $node->id() : '',
+        'path' => $node ? \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) : '',
       ],
     ];
 

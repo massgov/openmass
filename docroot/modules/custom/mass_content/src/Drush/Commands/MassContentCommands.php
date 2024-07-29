@@ -266,11 +266,13 @@ class MassContentCommands extends DrushCommands {
             case 'text_long':
               $query = $this->entityTypeManager->getStorage($entity_storage_name)->getQuery();
               $query->condition('type', $type);
+              $query->accessCheck(FALSE);
               // Add a condition to filter entities with a specific textarea field containing "node/nid".
               $query->condition("$field_name.value", 'node/', 'CONTAINS');
 
               // Execute the query and get a list of entity IDs.
               $entity_ids = $query->execute();
+
               if ($entity_ids) {
                 $entities = $this->entityTypeManager->getStorage($entity_storage_name)->loadMultiple($entity_ids);
                 foreach ($entities as $entity) {
@@ -286,22 +288,24 @@ class MassContentCommands extends DrushCommands {
                     $value = $item->getValue()['value'];
                     $dom = Html::load($value);
                     $xpath = new \DOMXPath($dom);
-                    foreach ($xpath->query("//a[starts-with(@href, '/node/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
+                    foreach ($xpath->query("//a[(starts-with(@href, 'node/') or starts-with(@href, '/node/')) and translate(substring-before(substring-after(@href, 'node/'), '?#'), '0123456789', '') = '']") as $element) {
                       $pattern = '/\d+/';
                       if (preg_match($pattern, $element->getAttribute('href'), $matches)) {
                         if ($nid = $matches[0]) {
                           $node = $this->entityTypeManager->getStorage('node')->load($nid);
                           if ($node) {
-                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
+                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid);
                             if ($alias) {
-                              $changed = TRUE;
-                              $href_url = parse_url($element->getAttribute('href'));
-                              $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
-                              $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
-                              $element->setAttribute('data-entity-uuid', $node->uuid());
-                              $element->setAttribute('data-entity-substitution', 'canonical');
-                              $element->setAttribute('data-entity-type', 'node');
-                              $element->setAttribute('href', $alias . $query . $anchor);
+                              if (!preg_match('/node\/\d+/', $alias)) {
+                                $changed = TRUE;
+                                $href_url = parse_url($element->getAttribute('href'));
+                                $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                                $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                                $element->setAttribute('data-entity-uuid', $node->uuid());
+                                $element->setAttribute('data-entity-substitution', 'canonical');
+                                $element->setAttribute('data-entity-type', 'node');
+                                $element->setAttribute('href', $alias . $query . $anchor);
+                              }
                             }
                           }
                         }
