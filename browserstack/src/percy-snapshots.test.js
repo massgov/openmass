@@ -44,24 +44,18 @@ describe("massgov-screenshots", () => {
       .withCapabilities(capabilties)
       .build();
 
+    // Inject JavaScript to modify request headers
     await driver.executeScript(`
-      (function(XHR) {
-        "use strict";
-        var open = XHR.prototype.open;
-        var setRequestHeader = XHR.prototype.setRequestHeader;
-
-        XHR.prototype.open = function(method, url, async, user, pass) {
-          this._url = url;
+      (function(open) {
+        XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
+          this.addEventListener('readystatechange', function() {
+            if (this.readyState === 1) {
+              this.setRequestHeader('mass-bypass-rate-limit', '${process.env.MASS_BYPASS_RATE_LIMIT}');
+            }
+          }, false);
           open.call(this, method, url, async, user, pass);
         };
-
-        XHR.prototype.setRequestHeader = function(header, value) {
-          if (header === 'mass-bypass-rate-limit') {
-            value = '${process.env.MASS_BYPASS_RATE_LIMIT}';
-          }
-          setRequestHeader.call(this, header, value);
-        };
-      })(XMLHttpRequest);
+      })(XMLHttpRequest.prototype.open);
     `);
   });
 
