@@ -44,7 +44,7 @@ class EntityUsageTest extends MassExistingSiteBase {
     \Drupal::service('database')->truncate('entity_usage')->execute();
 
     $this->emptyEntityUsageQueues();
-    $user = User::create(['name' => $this->randomMachineName()]);
+    $user = $this->createUser();
     $user->addRole('administrator');
     $user->activate();
     $user->save();

@@ -22,7 +22,7 @@ class PublishChildWithUnpublishedParentConstraintTest extends MassExistingSiteBa
    */
   protected function setUp(): void {
     parent::setUp();
-    $user = User::create(['name' => $this->randomMachineName()]);
+    $user = $this->createUser();
     $user->addRole('editor');
     $user->activate();
     $user->save();
