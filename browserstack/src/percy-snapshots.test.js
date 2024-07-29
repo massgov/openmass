@@ -5,7 +5,7 @@ describe("massgov-screenshots", () => {
   let base;
   let driver;
   let pages;
-  let capabilties;
+  let capabilities;
   const auth = getAuth();
   const file = process.env.PERCY_FILE;
   const target = process.env.PERCY_TARGET;
@@ -18,7 +18,7 @@ describe("massgov-screenshots", () => {
       pages = require('../post-release');
       break;
     default:
-      throw new Error('has occurred with' + file + '.');
+      throw new Error('Error occurred with ' + file + '.');
   }
 
   switch (target) {
@@ -34,26 +34,27 @@ describe("massgov-screenshots", () => {
 
   beforeAll(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
-    // capabilties = {
+    // capabilities = {
     //   'bstack:options': {
     //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
     //   }
     // }
-    capabilties = {};
-    driver = new Builder()
-      .withCapabilities(capabilties)
+    capabilities = {};
+    driver = await new Builder()
+      .withCapabilities(capabilities)
       .build();
-
   });
 
   afterAll(async () => {
     await driver.quit();
-  })
+  });
 
-  pages.forEach(async (page) => {
-      test(page.label + ' test', async () => {
-        // Inject JavaScript to set custom headers
-        await driver.executeScript(`
+  pages.forEach((page) => {
+    test(page.label + ' test', async () => {
+      await driver.get(base + page.url);
+
+      // Inject JavaScript to set custom headers
+      await driver.executeScript(`
         (function() {
           function interceptFetch() {
             const originalFetch = window.fetch;
@@ -81,15 +82,13 @@ describe("massgov-screenshots", () => {
         })();
       `);
 
-        await driver.get(base + page.url);
-        let options = {
-          fullPage: true,
-          ignore_region_selectors: []
-        }
-        await percy.screenshot(driver, page.label, options);
-      });
+      let options = {
+        fullPage: true,
+        ignore_region_selectors: []
+      };
+      await percy.screenshot(driver, page.label, options);
+    });
   });
-
 });
 
 function getAuth() {
@@ -99,5 +98,5 @@ function getAuth() {
   return {
     username: process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
     password: process.env.LOWER_ENVIR_AUTH_PASS.replace(/(^["']|["']$)/g, '')
-  }
+  };
 }
