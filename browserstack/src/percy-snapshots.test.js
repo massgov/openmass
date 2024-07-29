@@ -1,6 +1,5 @@
 const { Builder, By, Key, until, Capabilities } = require("selenium-webdriver");
 const { percy } = require('browserstack-node-sdk');
-const axios = require('axios');
 
 describe("massgov-screenshots", () => {
   let base;
@@ -53,18 +52,40 @@ describe("massgov-screenshots", () => {
 
   pages.forEach(async (page) => {
       test(page.label + ' test', async () => {
+        // Inject JavaScript to set custom headers
+        await driver.executeScript(`
+        (function() {
+          function interceptFetch() {
+            const originalFetch = window.fetch;
+            window.fetch = function(url, options = {}) {
+              options.headers = options.headers || {};
+              options.headers['mass-bypass-rate-limit'] = '${process.env.MASS_BYPASS_RATE_LIMIT}';
+              return originalFetch(url, options);
+            };
+          }
+
+          function interceptXHR() {
+            const originalOpen = XMLHttpRequest.prototype.open;
+            XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
+              this.addEventListener('readystatechange', function() {
+                if (this.readyState === 1) {
+                  this.setRequestHeader('mass-bypass-rate-limit', '${process.env.MASS_BYPASS_RATE_LIMIT}');
+                }
+              }, false);
+              originalOpen.call(this, method, url, async, user, pass);
+            };
+          }
+
+          interceptFetch();
+          interceptXHR();
+        })();
+      `);
+
         await driver.get(base + page.url);
         let options = {
           fullPage: true,
           ignore_region_selectors: []
         }
-        // Make a request with axios to ensure custom headers are set
-        await axios.get(base + page.url, {
-          headers: {
-            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT
-          }
-        });
-        console.log(process.env.MASS_BYPASS_RATE_LIMIT);
         await percy.screenshot(driver, page.label, options);
       });
   });
