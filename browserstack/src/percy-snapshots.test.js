@@ -87,6 +87,7 @@ describe("massgov-screenshots", () => {
           ignore_region_selectors: []
         }
         await percy.screenshot(driver, page.label, options);
+        await driver.quit();
       });
   });
 
