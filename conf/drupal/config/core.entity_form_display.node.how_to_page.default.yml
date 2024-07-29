@@ -39,6 +39,7 @@ dependencies:
     - content_moderation
     - entity_browser_entity_form
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - inline_entity_form
     - link
@@ -46,7 +47,6 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -166,7 +166,7 @@ bundle: how_to_page
 mode: default
 content:
   field_collections:
-    type: term_reference_tree
+    type: entity_reference_tree
     weight: 9
     region: content
     settings:
@@ -177,11 +177,11 @@ content:
       match_operator: CONTAINS
       match_limit: 10
       dialog_title: 'Browse collections and topics'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
       label: 'Browse collections and topics'
-      auto_check_ancestors: '1'
-      auto_uncheck_descendants: '1'
-      auto_uncheck_ancestors: 0
-      auto_check_descendants: 0
     third_party_settings: {  }
   field_customize_header_text:
     type: boolean_checkbox
@@ -303,6 +303,7 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -344,6 +345,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_how_to_methods_5:
     type: entity_reference_paragraphs
@@ -394,6 +396,7 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: _none
