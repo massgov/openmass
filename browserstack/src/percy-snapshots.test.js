@@ -32,7 +32,7 @@ describe("massgov-screenshots", () => {
       base = `https://${auth.username}:${auth.password}@${target}.edit.mass.gov`;
   }
 
-  beforeAll(() => {
+  beforeAll(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
     // capabilties = {
     //   'bstack:options': {
@@ -43,6 +43,26 @@ describe("massgov-screenshots", () => {
     driver = new Builder()
       .withCapabilities(capabilties)
       .build();
+
+    await driver.executeScript(`
+      (function(XHR) {
+        "use strict";
+        var open = XHR.prototype.open;
+        var setRequestHeader = XHR.prototype.setRequestHeader;
+
+        XHR.prototype.open = function(method, url, async, user, pass) {
+          this._url = url;
+          open.call(this, method, url, async, user, pass);
+        };
+
+        XHR.prototype.setRequestHeader = function(header, value) {
+          if (header === 'mass-bypass-rate-limit') {
+            value = '${process.env.MASS_BYPASS_RATE_LIMIT}';
+          }
+          setRequestHeader.call(this, header, value);
+        };
+      })(XMLHttpRequest);
+    `);
   });
 
   afterAll(async () => {
