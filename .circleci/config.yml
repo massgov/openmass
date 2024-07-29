@@ -484,6 +484,7 @@ jobs:
           name: Capture Percy Snapshots
           command: npm run percy-snapshots-test
           no_output_timeout: 300m
+      - run: mkdir -p /tmp/results/junit
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
