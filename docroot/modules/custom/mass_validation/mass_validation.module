@@ -9,6 +9,7 @@ use Drupal\Core\Field\WidgetInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
+use Drupal\field\Entity\FieldConfig;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
@@ -91,6 +92,11 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
         $field_image = &$fields['field_image'];
         $field_image->addConstraint('BackgroundImageRequired');
         break;
+    }
+  }
+  foreach ($fields as &$field) {
+    if ($field instanceof FieldConfig && in_array($field->getType(), ['text_long', 'text_with_summary', 'string_long'])) {
+      $field->addConstraint('TableHeaderConstraint');
     }
   }
 }
@@ -411,7 +417,7 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       }
       $paragraph_error_string = 'field_service_sections][' . $section_key . '][subform][field_service_section_content][' . $key . '][subform]';
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
-      _mass_validation_validate_mosaic_items($form_state, $paragraph);
+      _mass_validation_validate_mosaic_items($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
       _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
     }
@@ -1229,7 +1235,7 @@ function mass_validation_org_page_alter_helper(array &$form) {
 /**
  * Validates mosaic items to be 5 and Hightlight image for the first item.
  */
-function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, &$paragraph) {
+function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, &$paragraph, $section_key, $paragraph_key, $field_wrapper, $field) {
   if (!isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
     return;
   }
@@ -1237,7 +1243,7 @@ function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, 
     $form_state->setErrorByName('mosaic_items_add_more', t('You must provide 5 featured items.'));
   }
   // Find the item with the lowest weight.
-  foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_array) {
+  foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
     if (!isset($mosaic_array['_weight'])) {
       continue;
     }
@@ -1245,6 +1251,11 @@ function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, 
     if (!isset($lowest) || $weight < $lowest) {
       $lowest = $weight;
       $first = $mosaic_array;
+    }
+
+    if (str_starts_with($mosaic_array['subform']['field_featured_item_link'][0]['uri'], 'internal:')) {
+      $form_state->setErrorByName($field_wrapper . '][' . $section_key . '][subform][' . $field . '][' . $paragraph_key . '][subform][field_featured_item_mosaic_items][' . $mosaic_key . '][subform][field_featured_item_link][0][uri',
+        t('The entered value must be either a selected existing page or a complete URL.'));
     }
   }
   if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
@@ -1398,7 +1409,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
         foreach ($paragraphs as $paragraph_key => $paragraph) {
           $paragraph_error_string = 'field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform]';
           _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
-          _mass_validation_validate_mosaic_items($form_state, $paragraph);
+          _mass_validation_validate_mosaic_items($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
           _mass_validation_validate_custom_iframe($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);

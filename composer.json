@@ -135,21 +135,6 @@
         {
             "type": "package",
             "package": {
-                "name": "ckeditor/liststyle",
-                "version": "4.11.1",
-                "type": "drupal-library",
-                "extra": {
-                    "installer-name": "ckeditor/plugins/liststyle"
-                },
-                "dist": {
-                    "url": "https://download.ckeditor.com/liststyle/releases/liststyle_4.11.1.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        {
-            "type": "package",
-            "package": {
                 "name": "drupal/entity_usage_queue_tracking",
                 "type": "drupal-module",
                 "version": "9.1.x-dev",
@@ -165,7 +150,6 @@
         "ext-json": "*",
         "andileco/eval-math": "^3.0",
         "christian-riesen/base32": "^1.3.1",
-        "ckeditor/liststyle": "4.11.1",
         "components/highlightjs": "9.7.*",
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1",
@@ -187,7 +171,6 @@
         "drupal/cache_metrics": "^2",
         "drupal/ckeditor5_fullscreen": "^1.0@beta",
         "drupal/ckeditor5_paste_filter": "^1.0",
-        "drupal/ckeditor_liststyle": "dev-1.x",
         "drupal/coffee": "^1",
         "drupal/color": "^1",
         "drupal/components": "^3",
@@ -200,7 +183,6 @@
         "drupal/csv_field": "^1",
         "drupal/csv_serialization": "^2.0 || ^3.0",
         "drupal/datalayer": "^2",
-        "drupal/datatables_cdn": "^1.0",
         "drupal/devel": "^5",
         "drupal/devel_entity_updates": "^4.0",
         "drupal/diff": "^1.7",
@@ -267,7 +249,6 @@
         "drupal/redirect": "^1",
         "drupal/require_on_publish": "^1.10",
         "drupal/reverse_proxy_header": "^1",
-        "drupal/route_iframes": "^2.0",
         "drupal/scheduled_transitions": "^2",
         "drupal/schema_metatag": "^2.0",
         "drupal/seckit": "^2",
@@ -410,11 +391,11 @@
                 "RouteProvider pretends no routes if database connection lost, poisoning cache downstream": "patches/routeprovider-logging-3402447-mr-7767.patch",
                 "Diffs with different line endings leads to Invalid $mode 3 specified (https://www.drupal.org/project/drupal/issues/3389715)": "https://www.drupal.org/files/issues/2024-01-09/Diffs-with-different-line-endings-leads-to-Invalid-mode-3-specified.patch"
             },
+            "drupal/entity_embed": {
+                "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "https://git.drupalcode.org/project/entity_embed/-/merge_requests/39.diff"
+            },
             "drupal/flag": {
                 "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
-            },
-            "ckeditor/liststyle": {
-                "Change code from styles to type": "https://www.drupal.org/files/issues/2019-01-02/ckeditor_liststyle-styles-to-type-2874952-4-do-not-test.patch"
             },
             "drupal/diff": {
                 "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch"

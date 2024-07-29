@@ -239,9 +239,11 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
               // the name value.
               if (!empty($handler_settings['target_bundles']['external_organization'])) {
                 foreach ($data['node']->get($field_name) as $item) {
-                  if ($item->entity->hasField('field_external_org_name')) {
-                    $values[] = $item->entity->field_external_org_name->value;
-                    $replacements[$original] = json_encode($values);
+                  if ($item->entity) {
+                    if ($item->entity->hasField('field_external_org_name')) {
+                      $values[] = $item->entity->field_external_org_name->value;
+                      $replacements[$original] = json_encode($values);
+                    }
                   }
                 }
               }
