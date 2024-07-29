@@ -68,11 +68,7 @@ describe("massgov-screenshots", () => {
           function interceptXHR() {
             const originalOpen = XMLHttpRequest.prototype.open;
             XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
-              this.addEventListener('readystatechange', function() {
-                if (this.readyState === 1) {
-                  this.setRequestHeader('mass-bypass-rate-limit', '${process.env.MASS_BYPASS_RATE_LIMIT}');
-                }
-              }, false);
+              this.setRequestHeader('mass-bypass-rate-limit', '${process.env.MASS_BYPASS_RATE_LIMIT}');
               originalOpen.call(this, method, url, async, user, pass);
             };
           }
