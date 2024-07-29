@@ -486,10 +486,9 @@ jobs:
           no_output_timeout: 300m
       - run: mkdir -p /tmp/results/junit
       - store_test_results:
-          path: /tmp/results
+          path: ./browserstack-artifacts/
       - store_artifacts:
-          path: /tmp/results
-
+          path: ./browserstack-artifacts/
 
   backstop_reference:
     parameters:
