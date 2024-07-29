@@ -1,5 +1,6 @@
 const { Builder, By, Key, until, Capabilities } = require("selenium-webdriver");
 const { percy } = require('browserstack-node-sdk');
+const axios = require('axios');
 
 describe("massgov-screenshots", () => {
   let base;
@@ -44,19 +45,6 @@ describe("massgov-screenshots", () => {
       .withCapabilities(capabilties)
       .build();
 
-    // Inject JavaScript to modify request headers
-    await driver.executeScript(`
-      (function(open) {
-        XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
-          this.addEventListener('readystatechange', function() {
-            if (this.readyState === 1) {
-              this.setRequestHeader('mass-bypass-rate-limit', '${process.env.MASS_BYPASS_RATE_LIMIT}');
-            }
-          }, false);
-          open.call(this, method, url, async, user, pass);
-        };
-      })(XMLHttpRequest.prototype.open);
-    `);
   });
 
   afterAll(async () => {
@@ -70,6 +58,13 @@ describe("massgov-screenshots", () => {
           fullPage: true,
           ignore_region_selectors: []
         }
+        // Make a request with axios to ensure custom headers are set
+        await axios.get(base + page.url, {
+          headers: {
+            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT
+          }
+        });
+        console.log(process.env.MASS_BYPASS_RATE_LIMIT);
         await percy.screenshot(driver, page.label, options);
       });
   });
