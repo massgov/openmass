@@ -1,5 +1,24 @@
 
 
+## [0.405.0] - July 30, 2024
+
+### Changed
+  - DP-24497: Updated help text for service page re app log-in links.
+  - DP-32381: Change event URLs in Drupal and fix Backstop Ref
+  - DP-32500: Updated help text on org page template in the overview tab.
+  - DP-33174: $this->createUser() in Tests
+  - DP-34059: Allow documents in draft state to transition directly to trash state.
+  
+### Fixed
+  - DP-24742: Feedback button disappears after main nav opens and closes.
+  - DP-34151: Fixed validation for featured mosaic items.
+  
+### Added
+  - DP-34033: Add an analytics class to support analytics on global vs contextual login clicks.
+  - DP-34084: Added label filter and csv export to accessibility report.
+  
+
+
 ## [0.404.0] - July 23, 2024
 
 ### Changed
