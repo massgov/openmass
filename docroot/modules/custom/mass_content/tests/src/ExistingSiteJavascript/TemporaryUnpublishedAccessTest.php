@@ -68,7 +68,7 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
    */
   private function createAdmin() {
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin = $this->createUser();
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();
