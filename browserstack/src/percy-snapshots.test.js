@@ -78,6 +78,69 @@ describe("massgov-screenshots", () => {
         })();
       `);
 
+      // Inject styles and handle dynamic content
+      // await driver.executeScript(`
+      //   // Add custom styles
+      //   const style = document.createElement('style');
+      //   style.textContent = \`
+      //     *, *::before, *::after {
+      //       animation-duration: 0s !important;
+      //       transition-duration: 0s !important;
+      //     }
+      //     body.is-front .ma__search-banner {
+      //       background: none !important;
+      //     }
+      //     .ma__header__hamburger__menu-button {
+      //       outline: none !important;
+      //     }
+      //     #sticky-toc {
+      //       display: none !important;
+      //     }
+      //     .ma__sticky-nav {
+      //       top: auto !important;
+      //       bottom: -15px !important;
+      //       position: absolute !important;
+      //       z-index: 80;
+      //     }
+      //     .ma__organization-navigation.stuck {
+      //       position: static !important;
+      //       top: auto !important;
+      //       left: auto !important;
+      //       width: auto !important;
+      //       margin-top: -20px !important;
+      //       z-index: auto !important;
+      //     }
+      //     .ma__org-page .pre-content {
+      //       padding-top: 0 !important;
+      //     }
+      //   \`;
+      //   document.head.append(style);
+      //
+      //   // Handle frequently changing content
+      //   document.querySelectorAll('.ma__search-banner__image-name').forEach(e => e.innerText = 'Good Picture');
+      //   document.querySelectorAll('.ma__search-banner__image-author').forEach(e => e.innerText = 'John Smith');
+      //   document.querySelectorAll('.ma__search-banner__links .ma__link-list__item a').forEach(e => e.innerText = 'Popular search query');
+      //   document.querySelectorAll('.ma__stacked-row__section .ma__key-actions .ma__callout-link .ma__callout-link__container .ma__callout-link__text').forEach(e => e.innerText = 'Featured service link text');
+      //   document.querySelectorAll('.ma__split-columns__column > .ma__rich-text').forEach(e => e.innerHTML = '<article style="background-color: #888;"><span style="display: block; width: 100%; max-width: 100%; height: auto;">&nbsp;</span></article><h5>News title</h5>Teaser text');
+      //   document.querySelectorAll('.ma__featured-item__title-container .ma__featured-item__title span').forEach(e => e.innerText = 'Featured item title');
+      //   document.querySelectorAll('.ma__press-listing__secondary-item .ma__press-teaser__details').forEach(e => e.innerText = 'Press teaser details');
+      //
+      //   // Wait for necessary elements
+      //   return new Promise((resolve) => {
+      //     setTimeout(resolve, 2000);
+      //   });
+      // `);
+
+      // Scenario-specific actions
+      switch (page.label) {
+        case 'ExpansionOfAccordions1':
+          await driver.executeScript(() => {
+            document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom');
+          });
+          await driver.wait(until.elementLocated(By.css('.ma__sticky-nav')));
+          break;
+      }
+
       let options = {
         fullPage: true,
         ignore_region_selectors: []
