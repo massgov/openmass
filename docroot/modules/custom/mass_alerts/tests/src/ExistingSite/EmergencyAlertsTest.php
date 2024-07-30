@@ -29,13 +29,13 @@ class EmergencyAlertsTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $user1 = User::create(['name' => $this->randomMachineName()]);
+    $user1 = $this->createUser();
     $user1->addRole('editor');
     $user1->activate();
     $user1->save();
     $this->editor = $user1;
 
-    $user2 = User::create(['name' => $this->randomMachineName()]);
+    $user2 = $this->createUser();
     $user2->addRole('emergency_alert_publisher');
     $user2->activate();
     $user2->save();
