@@ -52,7 +52,7 @@ class ContentEditingTest extends MassExistingSiteBase {
    * Creates an editor, saves it and returns it.
    */
   private function createEditor() {
-    $editor = User::create(['name' => $this->randomMachineName()]);
+    $editor = $this->createUser();
     $editor->addRole('editor');
     $editor->activate();
     $editor->save();

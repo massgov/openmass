@@ -41,7 +41,7 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
     $this->page = $this->getSession()->getPage();
 
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin = $this->createUser();
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();
