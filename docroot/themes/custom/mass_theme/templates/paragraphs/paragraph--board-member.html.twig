@@ -37,13 +37,6 @@
  *
  * @ingroup themeable
  */
-#}
-
-{# Set top heading level for the component. #}
-{% set level = 2 %}
-{% if elements['#level'] is not empty %}
-  {% set level = elements['#level'] %}
-{% endif %}
 
 {# Set the display if the position is vacant. #}
 {% if paragraph.field_position_is_vacant.value %}
@@ -59,7 +52,6 @@
     "layout": layout,
     "eyebrow": eyebrow,
     "image": show_image,
-    "level": level,
     "title": {
       "href": '',
       "text": name,
@@ -82,10 +74,10 @@
 
 {% elseif content.field_person is not empty %}
   {% if is_featured_board_member %}
-    {{ content.field_person|merge({'#level': level}) }}
+    {{ content.field_person }}
   {% else %}
     <li class="ma__teaser-listing__item">
-      {{ content.field_person|merge({'#level': level}) }}
+      {{ content.field_person }}
     </li>
   {% endif %}
 {% endif %}
