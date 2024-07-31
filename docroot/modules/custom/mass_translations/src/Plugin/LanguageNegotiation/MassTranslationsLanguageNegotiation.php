@@ -29,12 +29,15 @@ class MassTranslationsLanguageNegotiation extends LanguageNegotiationMethodBase 
    */
   public function getLangcode(Request $request = NULL) {
     $langcode = NULL;
+    $url = Url::fromUserInput($request->getPathInfo());
 
-    $params = Url::fromUserInput($request->getPathInfo())->getRouteParameters();
-    if (isset($params['node'])) {
-      if ($node = Node::load($params['node'])) {
-        $langcode = $node->language()->getId();
-      };
+    if ($url->isRouted()) {
+      $params = $url->getRouteParameters();
+      if (isset($params['node'])) {
+        if ($node = Node::load($params['node'])) {
+          $langcode = $node->language()->getId();
+        };
+      }
     }
 
     return $langcode;
