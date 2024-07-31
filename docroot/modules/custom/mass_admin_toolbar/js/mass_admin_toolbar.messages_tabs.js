@@ -10,13 +10,13 @@
 
   Drupal.behaviors.massDashboardTabs = {
     attach: function (context) {
-      var $wrapper = $('.mass-dashboard-tabs', context);
 
-      $wrapper.each(function () {
-        var $messages = $('.mass-dashboard-tabs__messages', this);
-        var $tabs = $('.mass-dashboard-tabs__tabs', this);
+      var $messages = $('.mass-dashboard-tabs__messages');
+      var $tabs = $('.mass-dashboard-tabs__tabs');
 
+      if ($messages.length) {
         var messageBottom = $messages.offset().top;
+
         var messagesOpen = true;
 
         var $toggle = $('<a href="#" class="mass-dashboard-tabs__trigger">Hide Messages</a>');
@@ -26,14 +26,14 @@
 
         $toggle.click(function (e) {
           e.preventDefault();
-          $wrapper.trigger('mass_dashboard.toggle');
+          $(document).trigger('mass_dashboard.toggle');
         }).mouseout(function () {
           // Lose focus on the trigger when the mouse leaves. Using .blur() in the
           // click handler breaks menus for users who are tabbing through.
           $(this).blur();
         });
 
-        $wrapper.on('mass_dashboard.toggle', function () {
+        $(document).on('mass_dashboard.toggle', function () {
           if (messagesOpen) {
             close();
           }
@@ -69,7 +69,7 @@
           }
         };
         $(window).on('scroll.mass_dashboard_tabs', handleScroll);
-      });
+      }
     }
   };
 
