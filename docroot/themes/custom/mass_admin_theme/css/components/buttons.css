@@ -162,3 +162,39 @@ input[value="Remove"]:focus {
   border: none;
   text-decoration: underline;
 }
+
+/* Style buttons related to the reference edit link feature */
+.button.reference-edit-link {
+    border: none;
+    background-color: transparent;
+    font-weight: 400;
+    text-decoration: underline;
+    text-transform: none;
+    font-size: 0.9rem;
+    &:before{
+        content: "Open\00a0\26\00a0";
+      }
+    &:after{
+        content: " (new tab)"
+    }
+
+}
+
+.button.reference-edit-link:hover,
+.button.reference-edit-link:active,
+.button.reference-edit-link:focus {
+    border: none;
+    color: #14558f;
+    background-color: transparent;
+    font-weight: 600;
+    text-decoration: underline;
+    text-transform: none;
+    font-size: 0.9rem;
+    &:before{
+        content: "Open\00a0\26\00a0";
+      }
+    &:after{
+        content: " (new tab)"
+    }
+
+}
