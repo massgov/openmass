@@ -37,7 +37,7 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     $this->random = $this->randomString();
 
     // Create a user with editor role.
-    $user = User::create(['name' => $this->randomMachineName()]);
+    $user = $this->createUser();
     $user->addRole('editor');
     $user->activate();
     $user->save();

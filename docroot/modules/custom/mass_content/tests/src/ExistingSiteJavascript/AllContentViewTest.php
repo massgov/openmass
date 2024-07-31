@@ -295,7 +295,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     parent::setUp();
 
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin = $this->createUser();
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();
