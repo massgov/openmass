@@ -167,7 +167,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   public function testTopicPageEditForm($data) {
 
     // Create user.
-    $user = User::create(['name' => $this->randomMachineName()]);
+    $user = $this->createUser();
     $user->addRole($data['role']);
     // Content administrators also require permissions from the editor role.
     if ($data['role'] == 'content_team') {

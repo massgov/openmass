@@ -18,7 +18,7 @@ class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
    * Creates a random user with a specified role.
    */
   private function createRandomUser($role) {
-    $user = User::create(['name' => $this->randomMachineName(20)]);
+    $user = $this->createUser();
     $user->addRole($role);
     // Also add editor role for testing Content Administrator permissions.
     if ($role == 'content_team') {
