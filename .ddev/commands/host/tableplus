@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Support for mass.gov TablePlus, https://tableplus.com/
+# This command is available on macOS only.
+## Description: Run TablePlus with mass.gov database.
+## Usage: tableplus
+## Example: "ddev tableplus"
+## OSTypes: darwin
+## HostBinaryExists: /Applications/TablePlus.app,/Applications/Setapp/TablePlus.app
+
+
+query="mysql://circle:circle@mass.local:3206/circle?Enviroment=local&Name=ddev-${DDEV_SITENAME}"
+set -eu -o pipefail
+
+if [ -d "/Applications/Setapp/TablePlus.app" ]; then
+    open "$query" -a "/Applications/Setapp/TablePlus.app/Contents/MacOS/TablePlus"
+else
+    open "$query" -a "/Applications/TablePlus.app/Contents/MacOS/TablePlus"
+fi
