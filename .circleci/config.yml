@@ -488,7 +488,7 @@ jobs:
           steps:
             - run:
                 name: Percy on BrowserStack Automate test (Tugboat target)
-                command: PERCY_TARGET=tugboat PERCY_TUGBOT=<< parameters.tugboat >> npm run percy-snapshots-test
+                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test
       - unless:
           condition: << parameters.tugboat >>
           steps:
