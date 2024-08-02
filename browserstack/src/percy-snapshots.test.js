@@ -7,10 +7,10 @@ describe("massgov-screenshots", () => {
   let pages;
   let capabilities;
   const auth = getAuth();
-  const file = process.env.PERCY_FILE;
+  const list = process.env.PERCY_LIST;
   const target = process.env.PERCY_TARGET;
 
-  switch (file) {
+  switch (list) {
     case 'all':
       pages = require('../all');
       break;
@@ -18,7 +18,7 @@ describe("massgov-screenshots", () => {
       pages = require('../post-release');
       break;
     default:
-      throw new Error('Error occurred with ' + file + '.');
+      throw new Error('Error occurred with ' + list + '.');
   }
 
   switch (target) {
@@ -77,7 +77,7 @@ describe("massgov-screenshots", () => {
           interceptXHR();
         })();
       `);
-      
+
       let options = {
         fullPage: true,
         ignore_region_selectors: []

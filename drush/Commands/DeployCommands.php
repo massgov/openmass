@@ -59,6 +59,7 @@ class DeployCommands extends DrushCommands {
   const VALIDATE_CIRCLECI_TOKEN = 'validate-circleci-token';
   const CI_BACKSTOP_SNAPSHOT = 'ma:ci:backstop-snapshot';
   const CI_BACKSTOP_COMPARE = 'ma:ci:backstop-compare';
+  const CI_PERCY = 'ma:ci:percy';
   const MA_BACKUP = 'ma:backup';
   const LATEST_BACKUP_URL = 'ma:latest-backup-url';
   const MA_RELEASE = 'ma:release';
@@ -149,6 +150,47 @@ class DeployCommands extends DrushCommands {
           'tugboat' => !empty($tugboat_url) ? $tugboat_url : '',
           'cachebuster' => $options['cachebuster'],
           'force-reference' => $options['force-reference'],
+        ],
+      ],
+    ];
+    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string) $response->getBody(), TRUE);
+    $this->logger()->success($this->getSuccessMessage($body));
+  }
+
+  /**
+   * Run Percy on BrowserStack Automate at CircleCI.
+   */
+  #[CLI\Command(name: self::CI_PERCY, aliases: ['ma-ci-percy'])]
+  #[CLI\Option(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
+  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: all, post-release. See backstop/backstop.js')]
+  #[CLI\Option(name: 'tugboat', description: 'A Tugboat URL which should be used as target. You must also pass \'tugboat\' as target. When omitted, the most recent Preview for the current branch is assumed.')]
+  #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start, default value is "develop"')]
+  #[CLI\Usage(name: 'drush ma:ci:percy --reference=prod --target=test', description: 'Run backstop in the test environment against the latest production screenshots')]
+  #[ValidateCircleciToken]
+  public function ciBrowserStackCompare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false, 'tugboat' => self::OPT, 'force-reference' => false]): void {
+    // If --tugboat is specified without a specific URL, or --tugboat is
+    // omitted, automatically determine the preview for the branch.
+    if ($options['target'] === 'tugboat') {
+      $tugboat_url = $this->getTugboatUrl($options['tugboat'], $options['ci-branch']);
+    }
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle(), ''],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'webhook' => FALSE,
+          'trigger_workflow' => 'browserstack_percy_compare',
+          'target' => $options['target'],
+          'list' => $options['list'],
+          'tugboat' => !empty($tugboat_url) ? $tugboat_url : '',
         ],
       ],
     ];
