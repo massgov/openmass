@@ -25,7 +25,7 @@ class CollectionSearchValidationTest extends MassExistingSiteBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $user = User::create(['name' => $this->randomMachineName()]);
+    $user = $this->createUser();
     // Content Administrators also have the Editor role.
     $user->addRole('content_team');
     $user->addRole('editor');

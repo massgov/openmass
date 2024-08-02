@@ -1076,13 +1076,13 @@ class Helper {
    * @param array &$cache_tags
    *   The array of node cache tags.
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
    *   [ [
-   *       'path' => '@molecules/contact-us.twig',
+   *       'path' => '@organisms/contact/contact-us.twig',
    *       'data' => [
    *         'contactUs' => [ contact us data structure ]
    *       ],
@@ -1102,7 +1102,7 @@ class Helper {
       }
 
       $optionalContentsContactUs[] = [
-        'path' => '@molecules/contact-us.twig',
+        'path' => '@organisms/contact/contact-us.twig',
         'data' => ['contactUs' => $contactUs],
       ];
     }
@@ -1120,13 +1120,13 @@ class Helper {
    * @param array $options
    *   An array of options for header contact.
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
    *   [ [
-   *       'path' => '@molecules/contact-us.twig',
+   *       'path' => '@organisms/contact/contact-us.twig',
    *       'data' => [
    *         'contactUs' => [ contact us data structure ]
    *       ],
@@ -1142,7 +1142,7 @@ class Helper {
       }
 
       $optionalContentsContactUs[] = [
-        'path' => '@molecules/contact-us.twig',
+        'path' => '@organisms/contact/contact-us.twig',
         'data' => ['contactUs' => $contactUs],
       ];
     }

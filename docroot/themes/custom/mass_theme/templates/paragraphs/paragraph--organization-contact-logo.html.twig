@@ -3,7 +3,7 @@
  * @file
  * Default theme implementation to display a paragraph.
  *
- * If we are using the default paragraph, we only want it to print the content.
+ * If we are using the default paragraph, we only want it to print the contactNode.
  *
  * Available variables:
  * - paragraph: Full paragraph entity.
@@ -16,7 +16,7 @@
  *   See Drupal\paragraphs\Entity\Paragraph for a full list of public properties
  *   and methods for the paragraph object.
  * - content: All paragraph items. Use {{ content }} to print them all,
- *   or print a subset such as {{ content.field_example }}. Use
+ *   or print a subset such as {{ contactNode.field_example }}. Use
  *   {{ content|without('field_example') }} to temporarily suppress the printing
  *   of a given child element.
  * - attributes: HTML attributes for the containing element.
@@ -40,20 +40,69 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-template/org-contact.twig" %}
+{% set level = 3 %}
+{% if elements['#level'] is not empty %}
+  {% set level = elements['#level'] %}
+{% endif %}
 
-  {% block contact_first %}
-    {{ org_contact }}
+{% set addressContactGroup = false %}
+{% set phoneContactGroup = false %}
+{% set onlineContactGroup = false %}
+{% set faxContactGroup = false %}
+{% set moreLink = false %}
+{% set image = false %}
+
+{% if contactNode.field_ref_address is not empty %}
+  {% set addressContactGroup = true %}
+{% endif %}
+{% if contactNode.field_ref_phone_number is not empty %}
+  {% set phoneContactGroup = true %}
+{% endif %}
+{% if contactNode.field_ref_links is not empty %}
+  {% set onlineContactGroup = true %}
+{% endif %}
+{% if contactNode.field_ref_fax_number is not empty %}
+  {% set faxContactGroup = true %}
+{% endif %}
+{% if contactNode.field_contact_more_info_link is not empty %}
+  {% set moreLink = true %}
+{% endif %}
+{% if org_logo is not empty %}
+  {% set image = true %}
+{% endif %}
+
+{% embed "@organisms/contact/contact-row.twig" with {
+  "contactRow": {
+    "addressContactGroup": addressContactGroup,
+    "phoneContactGroup": phoneContactGroup,
+    "onlineContactGroup": onlineContactGroup,
+    "faxContactGroup": faxContactGroup,
+    "moreLink": moreLink,
+    "image": image
+  }
+} %}
+  {% block addressContactGroup %}
+    {{ contactNode.field_ref_address|view|merge({'#level': level}) }}
   {% endblock %}
-
-  {% block contact_last %}
+  {% block phoneContactGroup %}
+    {{ contactNode.field_ref_phone_number|view|merge({'#level': level}) }}
+  {% endblock %}
+  {% block onlineContactGroup %}
+    {{ contactNode.field_ref_links|view|merge({'#level': level}) }}
+  {% endblock %}
+  {% block faxContactGroup %}
+    {{ contactNode.field_ref_fax_number|view|merge({'#level': level}) }}
+  {% endblock %}
+  {% block moreLink %}
+    {% include "@atoms/decorative-link.twig" with {
+      "decorativeLink": {
+        "href": contactNode.field_contact_more_info_link[0].url,
+        "text": contactNode.field_contact_more_info_link[0].title,
+        "info": ""
+      }
+    } %}
+  {% endblock %}
+  {% block contactImage %}
     {{ org_logo }}
   {% endblock %}
 {% endembed %}
-{% if content.field_component_add_separator|field_value|render == "True" %}
-  {% include "@atoms/divider.twig" with {
-    "divider": {
-      "thin": true
-    }
-  } %}
-{% endif %}

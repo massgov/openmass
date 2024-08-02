@@ -489,7 +489,7 @@ class Molecules {
    * @param array &$contactInfo
    *   An array that containing the current schema contact info.
    *
-   * @see @molecules/contact-group.twig
+   * @see @molecules/contact/contact-group.twig
    *
    * @return array
    *   Returns an array of items that contains:
@@ -668,7 +668,7 @@ class Molecules {
    *     type: string ('phone' || 'online' || 'email' || 'address' || 'fax')
    *   )
    *
-   * @see @molecules/contact-group.twig
+   * @see @molecules/contact/contact-group.twig
    *
    * @return array
    *   Returns an array of items that contains:
@@ -728,7 +728,7 @@ class Molecules {
    *     display_title: Boolean / require.
    *   )
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    *
    * @return array
    *   Returns an array of items that contains:
