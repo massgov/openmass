@@ -1256,6 +1256,7 @@ workflows:
         - equal: [ api, << pipeline.trigger_source >> ]
         - equal: [ browserstack_percy_compare, << pipeline.parameters.trigger_workflow >> ]
     jobs:
+      - build
       - browserstack_percy_test:
           requires: [ build ]
           target: << pipeline.parameters.target >>
