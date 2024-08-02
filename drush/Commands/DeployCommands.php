@@ -171,7 +171,7 @@ class DeployCommands extends DrushCommands {
   #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: all, post-release. See backstop/backstop.js')]
   #[CLI\Option(name: 'tugboat', description: 'A Tugboat URL which should be used as target. You must also pass \'tugboat\' as target. When omitted, the most recent Preview for the current branch is assumed.')]
   #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start, default value is "develop"')]
-  #[CLI\Usage(name: 'drush ma:ci:percy --reference=prod --target=test', description: 'Run backstop in the test environment against the latest production screenshots')]
+  #[CLI\Usage(name: 'drush ma:ci:percy --target=test', description: 'Run backstop in the test environment against the latest production screenshots')]
   #[ValidateCircleciToken]
   public function ciBrowserStackCompare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false, 'tugboat' => self::OPT, 'force-reference' => false]): void {
     // If --tugboat is specified without a specific URL, or --tugboat is

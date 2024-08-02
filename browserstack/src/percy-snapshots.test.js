@@ -11,6 +11,8 @@ describe("massgov-screenshots", () => {
   const target = process.env.PERCY_TARGET;
   const tugboat = process.env.PERCY_TUGBOAT;
 
+  console.log('the tugboat url is: ' + tugboat);
+
   switch (list) {
     case 'all':
       pages = require('../all');
