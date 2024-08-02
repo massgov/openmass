@@ -483,6 +483,19 @@ jobs:
       - *no_host_check
       - *no_ssh_timeout
       - *yarn_install
+      - when:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Percy on BrowserStack Automate test (Tugboat target)
+                command: PERCY_TARGET=tugboat PERCY_TUGBOT=<< parameters.tugboat >> npm run percy-snapshots-test
+      - unless:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Percy on BrowserStack Automate test (non Tugboat target)
+                command: npm run percy-snapshots-test
+                no_output_timeout: 300m
       - run:
           name: Capture Percy Snapshots
           command: npm run percy-snapshots-test

@@ -9,6 +9,7 @@ describe("massgov-screenshots", () => {
   const auth = getAuth();
   const list = process.env.PERCY_LIST;
   const target = process.env.PERCY_TARGET;
+  const tugboat = process.env.PERCY_TUGBOAT;
 
   switch (list) {
     case 'all':
@@ -27,6 +28,9 @@ describe("massgov-screenshots", () => {
       break;
     case 'test':
       base = `https://stage.mass.gov`;
+      break;
+    case 'tugboat':
+      base = tugboat;
       break;
     default:
       base = `https://${auth.username}:${auth.password}@${target}.edit.mass.gov`;
