@@ -1,0 +1,16 @@
+diff --git a/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php b/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php
+index fd23923..2d35ff2 100644
+--- a/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php
++++ b/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php
+@@ -152,9 +152,9 @@ class ImageFieldFormatter extends FileFieldFormatter {
+       '#type' => 'textfield',
+       '#title' => $this->t('Alternate text'),
+       '#default_value' => $alt,
+-      '#description' => $this->t('This text will be used by screen readers, search engines, or when the image cannot be loaded.'),
++      '#description' => $this->t('Alternative Text is read by screen readers and should be a concise description of the image’s purpose. If the image is purely decorative, leave this field blank.'),
+       '#parents' => ['attributes', 'alt'],
+-      '#required' => TRUE,
++      '#required' => FALSE,
+       '#required_error' => $this->t('Alternative text is required.<br />(Only in rare cases should this be left empty. To create empty alternative text, enter <code>""</code> — two double quotes without any content).'),
+       '#maxlength' => 512,
+     ];
