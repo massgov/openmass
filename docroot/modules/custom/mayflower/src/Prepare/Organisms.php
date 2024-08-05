@@ -150,7 +150,7 @@ class Organisms {
    * @param array &$cache_tags
    *   The array of node cache tags.
    *
-   * @see @organisms/by-author/contact-list.twig
+   * @see @organisms/contact/contact-list.twig
    *
    * @return array
    *   Returns an array of items.

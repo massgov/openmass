@@ -54,12 +54,12 @@
       {% block pageContent %}
         {% if sideContent.contactList %}
           {% set contactList = sideContent.contactList|merge({'compHeading': sideContent.contactList.sidebarHeading, 'sidebarHeading': null}) %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
 
         {% if sideContent.mediaContact %}
           {% set contactList = sideContent.mediaContact|merge({'compHeading': sideContent.mediaContact.sidebarHeading, 'sidebarHeading': null}) %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
 
         {% if mainContent.pageOverview %}
@@ -136,7 +136,7 @@
             'titleContext': contactList.compHeading.titleContext,
             'level': level
           }}) %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
 
         {% if mainContent.mediaContact %}
@@ -146,7 +146,7 @@
             'titleContext': contactList.compHeading.titleContext,
             'level': level
           }}) %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
 
         {% if mainContent.linkList %}
@@ -170,7 +170,7 @@
           {% set contactList = sideContent.contactList %}
         {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
         {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
-          {% include "@organisms/by-author/contact-list.twig" %}
+          {% include "@organisms/contact/contact-list.twig" %}
         {% endif %}
         {% if sideContent.mediaContact %}
           {% set contactList = sideContent.mediaContact %}
