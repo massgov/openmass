@@ -53,6 +53,13 @@ use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_content_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  $form['#validate'][] = 'mass_content_node_form_validate';
+}
+
+/**
  * Validation for the node form.
  *
  * Ensures that the title is changed after being cloned.
