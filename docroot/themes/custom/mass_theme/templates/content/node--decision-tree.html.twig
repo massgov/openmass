@@ -88,75 +88,73 @@
   </script>
 
   <script id="branch-content" type="text/x-handlebars-template">
-    {% verbatim %}
-      <div class="page-content ma__decision-tree-node ma__decision-tree-node--question">
-        <h2 class="ma__colored-heading ma__colored-heading--blue">
-          {{#if step.editLink }}<a href="{{step.editLink}}" class="edit-link">[edit]</a>{{/if}}
-          Question
-        </h2>
-        <h3 class="ma__decision-tree__qa" id="question">{{step.text}}</h3>
-        {{#if step.details}}
-        <p>{{{step.details}}}</p>
-        {{/if}}
+  {% verbatim %}
+    <div class="page-content ma__decision-tree-node ma__decision-tree-node--question">
+      <h2 class="ma__colored-heading ma__colored-heading--blue">
+        {{#if step.editLink }}<a href="{{step.editLink}}" class="edit-link">[edit]</a>{{/if}}
+        Question
+      </h2>
+      <h3 class="ma__decision-tree__qa" id="question">{{step.text}}</h3>
+      {{#if step.details}}
+      <p>{{{step.details}}}</p>
+      {{/if}}
 
-        {{#if step.moreInfo}}
-        <section class="ma__action-step js-accordion ma__action-step--accordion question-more-info">
-          <button class="ma__action-step__header js-accordion-link" aria-label="Expand {{step.moreInfo.title}}">
-            <h2 class="ma__action-step__title">{{step.moreInfo.title}}</h2>
-          </button>
-          <div class="ma__action-step__content js-accordion-content">
-            <section class="ma__rich-text js-ma-rich-text">
-              <p>{{{step.moreInfo.details}}}</p>
-            </section>
-          </div>
-        </section>
-        {{/if}}
-
-        {{#if step.responses}}
-        <div class="ma__decision-tree-node__responses">
-          {{#each step.responses}}
-            <button type="button" class="ma__button ma__button--uppercase ma__button--minor" aria-label="{{text}}" data-response="{{id}}" aria-describedby="question">{{text}}</button>
-          {{/each}}
-        </div>
-        {{/if}}
-        {{/unless}}
-        {{#if step.disclaimer}}
-        <p class="disclaimer"><em>{{step.disclaimer}}</em></p>
-        {{/if}}
-        <div class="back">
-          <a href="#">
-            <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35">
-             <path d="M17.5,35C7.8,35,0,27.2,0,17.5C0,7.8,7.8,0,17.5,0C27.2,0,35,7.8,35,17.5C35,27.2,27.2,35,17.5,35zM11,17l8,8l3,-2.9l-5.1,-5.1l5.1,-5.1l-3,-2.9l-8,8z" />
-            </svg>
-            Go Back
-          </a>
-        </div>
-        <div class="restart">
-          <a href="#">Start Over</a>
-        </div>
-        {{/unless}}
-      </div>
-      <aside class="sidebar">
-        <div class="ma__decision-tree-responses">
-          <h2 class="ma__colored-heading ">Your Responses</h2>
-          <section class="ma__link-list">
-            <div class="ma__link-list__container">
-              <ul class="ma__link-list__items ">
-                {{#each responses}}
-                <li class="ma__link-list__item">
-                  <span class="ma__input-checkbox">
-                    <input type="checkbox" value="checkbox" id="checkbox-test" checked disabled>
-                    <label for="checkbox-test"><span>{{explainer}}</span></label>
-                  </span>
-                </li>
-                {{/each}}
-              <ul>
-            </div>
+      {{#if step.moreInfo}}
+      <section class="ma__action-step js-accordion ma__action-step--accordion question-more-info">
+        <button class="ma__action-step__header js-accordion-link" aria-label="Expand {{step.moreInfo.title}}">
+          <h2 class="ma__action-step__title">{{step.moreInfo.title}}</h2>
+        </button>
+        <div class="ma__action-step__content js-accordion-content">
+          <section class="ma__rich-text js-ma-rich-text">
+            <p>{{{step.moreInfo.details}}}</p>
           </section>
         </div>
-      </aside>
-    {% endverbatim %}
-  </script>
+      </section>
+      {{/if}}
+
+      {{#if step.responses}}
+      <div class="ma__decision-tree-node__responses">
+        {{#each step.responses}}
+          <button type="button" class="ma__button ma__button--uppercase ma__button--minor" aria-label="{{text}}" data-response="{{id}}" aria-describedby="question">{{text}}</button>
+        {{/each}}
+      </div>
+      {{/if}}
+      {{#if step.disclaimer}}
+      <p class="disclaimer"><em>{{step.disclaimer}}</em></p>
+      {{/if}}
+      <div class="back">
+        <a href="#">
+          <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35">
+           <path d="M17.5,35C7.8,35,0,27.2,0,17.5C0,7.8,7.8,0,17.5,0C27.2,0,35,7.8,35,17.5C35,27.2,27.2,35,17.5,35zM11,17l8,8l3,-2.9l-5.1,-5.1l5.1,-5.1l-3,-2.9l-8,8z" />
+          </svg>
+          Go Back
+        </a>
+      </div>
+      <div class="restart">
+        <a href="#">Start Over</a>
+      </div>
+    </div>
+    <aside class="sidebar">
+      <div class="ma__decision-tree-responses">
+        <h2 class="ma__colored-heading ">Your Responses</h2>
+        <section class="ma__link-list">
+          <div class="ma__link-list__container">
+            <ul class="ma__link-list__items ">
+              {{#each responses}}
+              <li class="ma__link-list__item">
+                <span class="ma__input-checkbox">
+                  <input type="checkbox" value="checkbox" id="checkbox-test" checked disabled>
+                  <label for="checkbox-test"><span>{{explainer}}</span></label>
+                </span>
+              </li>
+              {{/each}}
+            <ul>
+          </div>
+        </section>
+      </div>
+    </aside>
+  {% endverbatim %}
+</script>
 
   <script id="conclusion-content" type="text/x-handlebars-template">
     {% verbatim %}
