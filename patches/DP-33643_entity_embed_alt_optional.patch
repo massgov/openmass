@@ -1,8 +1,25 @@
 diff --git a/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php b/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php
-index fd23923..2d35ff2 100644
+index fd23923..fc3cd53 100644
 --- a/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php
 +++ b/src/Plugin/entity_embed/EntityEmbedDisplay/ImageFieldFormatter.php
-@@ -152,9 +152,9 @@ class ImageFieldFormatter extends FileFieldFormatter {
+@@ -135,26 +135,15 @@ class ImageFieldFormatter extends FileFieldFormatter {
+     // consistent UX across various forms.
+     // @see Drupal\editor\Form\EditorImageDialog::buildForm()
+     $alt = $this->getAttributeValue('alt', '');
+-    if ($alt === '') {
+-      // Do not change empty alt text to two double quotes if the previously
+-      // used Entity Embed Display plugin was not 'image:image'. That means that
+-      // some other plugin was used so if this image formatter is selected at a
+-      // later stage, then this should be treated as a new edit. We show two
+-      // double quotes in place of empty alt text only if that was filled
+-      // intentionally by the user.
+-      if (!empty($entity_element) && $entity_element['data-entity-embed-display'] == 'image:image') {
+-        $alt = MediaImageDecorator::EMPTY_STRING;
+-      }
+-    }
+ 
+     // Add support for editing the alternate and title text attributes.
+     $form['alt'] = [
        '#type' => 'textfield',
        '#title' => $this->t('Alternate text'),
        '#default_value' => $alt,
@@ -14,3 +31,19 @@ index fd23923..2d35ff2 100644
        '#required_error' => $this->t('Alternative text is required.<br />(Only in rare cases should this be left empty. To create empty alternative text, enter <code>""</code> — two double quotes without any content).'),
        '#maxlength' => 512,
      ];
+@@ -170,15 +159,4 @@ class ImageFieldFormatter extends FileFieldFormatter {
+     return $form;
+   }
+ 
+-  /**
+-   * {@inheritdoc}
+-   */
+-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+-    // When the alt attribute is set to two double quotes, transform it to the
+-    // empty string: two double quotes signify "empty alt attribute". See above.
+-    if (trim($form_state->getValue(['attributes', 'alt'])) === MediaImageDecorator::EMPTY_STRING) {
+-      $form_state->setValue(['attributes', 'alt'], '');
+-    }
+-  }
+-
+ }
