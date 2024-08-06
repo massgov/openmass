@@ -558,28 +558,6 @@ class DeployCommands extends DrushCommands {
   }
 
   /**
-   * Return the Drush logger, and fail if it does not exist.
-   *
-   * The parent logger() method is typehinted to optionally return a
-   * DrushLoggerManager. That means that every call to logger() should check
-   * against NULL before calling methods. Rather than rewrite all of our typical
-   * Drush code that in practice should only fail if things are Horribly Broken,
-   * this method implements a stricter typehint and throws a useful exception if
-   * a logger is not set.
-   *
-   * @throws \RuntimeException
-   *   Thrown when a Drush logger is not set.
-   */
-  public function logger(): DrushLoggerManager {
-    $logger = parent::logger();
-    if (!$logger) {
-      throw new \RuntimeException('No Drush logger is available, but one should always be present.');
-    }
-
-    return $logger;
-  }
-
-  /**
    * Fetch the tugboat URL based on --target and --ci-branch.
    *
    * @param mixed $tugboat_url_option
