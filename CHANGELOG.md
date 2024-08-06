@@ -1,5 +1,23 @@
 
 
+## [0.406.0] - August 6, 2024
+
+### Changed
+  - DP-24673: Refactor mass_utility_form_node_form_alter.
+  - DP-26650: Consolidated OrgContact into ContactRow. Remove folding logic, and reorder contact items.
+  
+### Removed
+  - DP-26654: Remove descendant manager from Drupal.
+  
+### Fixed
+  - DP-28287: Resolve mapping-related JS errors and warnings.
+  
+### Added
+  - DP-34221: DDEV: Add support scripts for Mac OS Sequel Ace and TablePlus database clients
+to work with mass.gov custom database container.
+  
+
+
 ## [0.405.0] - July 30, 2024
 
 ### Changed
