@@ -570,7 +570,7 @@ class DeployCommands extends DrushCommands {
    * @throws \RuntimeException
    *   Thrown when a Drush logger is not set.
    */
-  protected function logger(): DrushLoggerManager {
+  public function logger(): DrushLoggerManager {
     $logger = parent::logger();
     if (!$logger) {
       throw new \RuntimeException('No Drush logger is available, but one should always be present.');
