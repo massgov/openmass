@@ -13,20 +13,15 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
-use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
-use Drush\Commands\core\SiteCommands;
-use Drush\Commands\core\SshCommands;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
-use Drush\Log\DrushLoggerManager;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use MassGov\Drush\Attributes\OptionsetDeploy;
 use MassGov\Drush\Attributes\ValidateCircleciToken;
-use Symfony\Component\Filesystem\Path;
 
 #[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
 class DeployCommands extends DrushCommands {
