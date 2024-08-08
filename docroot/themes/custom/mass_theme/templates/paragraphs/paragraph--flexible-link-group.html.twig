@@ -14,13 +14,8 @@
         }
       :
         {
-          "path": "@atoms/decorative-link.twig",
-          "data": {
-            "decorativeLink": {
-              "text": link.text,
-              "href": link.href
-            }
-          }
+          "text": link.text,
+          "href": link.href
         }
       %}
 
@@ -34,7 +29,16 @@
             "headingLevel": 3
           },
           "expanded": flexible_link.expanded,
-          "includes": links
+          "includes": [{
+            "path": "@organisms/by-author/link-list.twig",
+            "data": {
+              "linkList" : {
+                "stacked": true,
+                "hideBullets": false,
+                "links": links
+              }
+            }
+          }]
         }
     %}
 
