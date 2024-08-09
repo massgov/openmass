@@ -10,12 +10,11 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
 use Drush\Attributes as CLI;
-use Drush\Drupal\Commands\sql\SanitizeCommands;
+use Drush\Commands\sql\sanitize\SanitizeCommands;
 use MassGov\Sanitation\ContentModerationSanitizer;
 use MassGov\Sanitation\MediaSanitizer;
 use MassGov\Sanitation\SqlEntitySanitizer;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Extra sanitization commands for drush sql:sanitize.
