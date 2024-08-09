@@ -4,12 +4,24 @@ status: true
 dependencies:
   module:
     - mass_admin_pages
+    - mass_content_api
     - menu_ui
     - node_title_help_text
 third_party_settings:
   menu_ui:
     available_menus: {  }
     parent: ''
+  mass_content_api:
+    parents:
+      - field_binder_ref_organization
+    children:
+      - field_binder_pages>field_page_page
+      - field_binder_pages>field_page_group_page
+    linking_pages:
+      - referencing_services_more_about
+      - field_binder_pages>field_page_page
+      - field_contact
+      - field_binder_overview>field_section_heading_text_body
   mass_admin_pages:
     node_type_long_description: "<ul>\r\n<li>Long form reports</li>\r\n<li>Chapter books</li>\r\n<li>Collections of similarly-themed content</li>\r\n</ul>"
     node_type_url: ''

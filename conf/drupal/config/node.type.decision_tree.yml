@@ -4,12 +4,21 @@ status: true
 dependencies:
   module:
     - mass_admin_pages
+    - mass_content_api
     - menu_ui
     - node_title_help_text
 third_party_settings:
   menu_ui:
     available_menus: {  }
     parent: ''
+  mass_content_api:
+    parents: null
+    children:
+      - field_start_button>field_start_button_branch
+    linking_pages:
+      - field_service_ref_services_6
+      - 'field_start_button>*'
+      - field_description
   mass_admin_pages:
     node_type_long_description: ''
     node_type_url: ''

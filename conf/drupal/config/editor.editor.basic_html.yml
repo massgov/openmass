@@ -29,9 +29,11 @@ settings:
       - heading
       - style
       - '|'
-      - Fullscreen
+      - findAndReplace
       - specialCharacters
       - removeFormat
+      - showBlocks
+      - Fullscreen
       - sourceEditing
   plugins:
     ckeditor5_heading:
@@ -120,6 +122,73 @@ settings:
           weight: 3
           search: '<a name="OLE_LINK[^"]*">(.*?)<\/a>'
           replace: $1
+    ckeditor5_plugin_pack_text_transformation__text_transformation:
+      enabled: false
+      extra_transformations: ''
+      extra_regex_transformations: {  }
+      groups:
+        typography:
+          transformations:
+            ellipsis:
+              enabled: 1
+            enDash:
+              enabled: 1
+            emDash:
+              enabled: 1
+          enabled: 1
+        quotes:
+          transformations:
+            quotesPrimary:
+              enabled: 1
+            quotesSecondary:
+              enabled: 1
+          enabled: 1
+        symbols:
+          transformations:
+            trademark:
+              enabled: 1
+            registeredTrademark:
+              enabled: 1
+            copyright:
+              enabled: 1
+          enabled: 1
+        mathematical:
+          transformations:
+            oneHalf:
+              enabled: 1
+            oneThird:
+              enabled: 1
+            twoThirds:
+              enabled: 1
+            oneFourth:
+              enabled: 1
+            threeQuarters:
+              enabled: 1
+            lessThanOrEqual:
+              enabled: 1
+            greaterThanOrEqual:
+              enabled: 1
+            notEqual:
+              enabled: 1
+            arrowLeft:
+              enabled: 1
+            arrowRight:
+              enabled: 1
+          enabled: 1
+        misc:
+          transformations:
+            quotesPrimaryEnGb:
+              enabled: 0
+            quotesSecondaryEnGb:
+              enabled: 0
+            quotesPrimaryPl:
+              enabled: 0
+            quotesSecondaryPl:
+              enabled: 0
+          enabled: 0
+    ckeditor5_plugin_pack_word_count__word_count:
+      word_count_enabled: false
+      word_count_mode: words_chars
     ckeditor5_sourceEditing:
       allowed_tags:
         - '<cite>'

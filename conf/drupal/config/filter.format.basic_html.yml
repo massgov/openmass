@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   module:
+    - ckeditor5_premium_features
     - editor
     - entity_embed
     - linkit
@@ -14,6 +15,12 @@ name: 'Basic HTML'
 format: basic_html
 weight: 0
 filters:
+  ckeditor5_premium_features_collaboration_filter:
+    id: ckeditor5_premium_features_collaboration_filter
+    provider: ckeditor5_premium_features
+    status: true
+    weight: -100
+    settings: {  }
   editor_file_reference:
     id: editor_file_reference
     provider: editor

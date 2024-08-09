@@ -4,12 +4,26 @@ status: true
 dependencies:
   module:
     - mass_admin_pages
+    - mass_content_api
     - menu_ui
     - node_title_help_text
 third_party_settings:
   menu_ui:
     available_menus: {  }
     parent: ''
+  mass_content_api:
+    parents:
+      - field_news_signees>field_state_org_ref_org
+    children: null
+    linking_pages:
+      - field_news_links
+      - 'field_news_media_contac>*'
+      - 'field_news_sections>*'
+      - 'field_news_signees>*'
+      - 'field_news_video>*'
+      - field_news_body
+      - field_news_signees>field_external_org_description
+      - field_news_sections>field_section_body
   mass_admin_pages:
     node_type_long_description: "<ul>\r\n<li>Speeches</li>\r\n<li>News (articles)</li>\r\n<li>Press Releases</li>\r\n<li>Press Statements</li>\r\n<li>Blog Posts</li>\r\n<li>Guest Posts</li>\r\n</ul>"
     node_type_url: ''

@@ -5,7 +5,32 @@ dependencies:
   config:
     - field.storage.node.field_organization_sections
     - node.type.org_page
+    - paragraphs.paragraphs_type.about
+    - paragraphs.paragraphs_type.callout_link
+    - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.collection_search
+    - paragraphs.paragraphs_type.featured_item_mosaic
+    - paragraphs.paragraphs_type.featured_message
+    - paragraphs.paragraphs_type.featured_topics
+    - paragraphs.paragraphs_type.flexible_link_group
+    - paragraphs.paragraphs_type.iframe
+    - paragraphs.paragraphs_type.image
+    - paragraphs.paragraphs_type.info_details_card_group
+    - paragraphs.paragraphs_type.list_board_members
+    - paragraphs.paragraphs_type.org_events
+    - paragraphs.paragraphs_type.org_locations
+    - paragraphs.paragraphs_type.org_news
+    - paragraphs.paragraphs_type.org_related_orgs
     - paragraphs.paragraphs_type.org_section_long_form
+    - paragraphs.paragraphs_type.organization_contact_logo
+    - paragraphs.paragraphs_type.organization_grid
+    - paragraphs.paragraphs_type.pull_quote
+    - paragraphs.paragraphs_type.service_rich_text
+    - paragraphs.paragraphs_type.social_media
+    - paragraphs.paragraphs_type.stat
+    - paragraphs.paragraphs_type.tableau_embed
+    - paragraphs.paragraphs_type.video
+    - paragraphs.paragraphs_type.video_with_header
   module:
     - entity_reference_revisions
 id: node.org_page.field_organization_sections
@@ -22,7 +47,32 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
+      about: about
+      callout_link: callout_link
+      caspio_embed: caspio_embed
+      featured_item_mosaic: featured_item_mosaic
+      featured_message: featured_message
+      collection_search: collection_search
+      iframe: iframe
+      image: image
+      info_details_card_group: info_details_card_group
+      featured_topics: featured_topics
+      list_board_members: list_board_members
+      flexible_link_group: flexible_link_group
+      organization_grid: organization_grid
       org_section_long_form: org_section_long_form
+      pull_quote: pull_quote
+      stat: stat
+      organization_contact_logo: organization_contact_logo
+      org_events: org_events
+      tableau_embed: tableau_embed
+      org_locations: org_locations
+      video: video
+      org_news: org_news
+      video_with_header: video_with_header
+      org_related_orgs: org_related_orgs
+      service_rich_text: service_rich_text
+      social_media: social_media
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -39,7 +89,7 @@ settings:
         enabled: false
       about:
         weight: 119
-        enabled: false
+        enabled: true
       action_address:
         weight: 120
         enabled: false
@@ -79,6 +129,9 @@ settings:
       advisory_section:
         weight: 132
         enabled: false
+      alert:
+        weight: 151
+        enabled: false
       board_member:
         weight: 133
         enabled: false
@@ -90,7 +143,7 @@ settings:
         enabled: false
       callout_link:
         weight: 136
-        enabled: false
+        enabled: true
       campaign_features:
         weight: 137
         enabled: false
@@ -99,7 +152,10 @@ settings:
         enabled: false
       caspio_embed:
         weight: 139
-        enabled: false
+        enabled: true
+      collection_search:
+        weight: 159
+        enabled: true
       completion_time:
         weight: 140
         enabled: false
@@ -112,8 +168,14 @@ settings:
       contact_info:
         weight: 143
         enabled: false
+      contact_placeholder:
+        weight: 164
+        enabled: false
       content_card_group:
         weight: 144
+        enabled: false
+      csv_table:
+        weight: 166
         enabled: false
       custom_html:
         weight: 145
@@ -150,16 +212,22 @@ settings:
         enabled: false
       featured_item_mosaic:
         weight: 156
-        enabled: false
+        enabled: true
       featured_message:
         weight: 157
-        enabled: false
+        enabled: true
+      featured_topics:
+        weight: 180
+        enabled: true
       file_download:
         weight: 158
         enabled: false
       file_download_single:
         weight: 159
         enabled: false
+      flexible_link_group:
+        weight: 183
+        enabled: true
       footnotes:
         weight: 160
         enabled: false
@@ -189,16 +257,16 @@ settings:
         enabled: false
       iframe:
         weight: 169
-        enabled: false
+        enabled: true
       image:
         weight: 170
-        enabled: false
+        enabled: true
       image_credit:
         weight: 171
         enabled: false
       info_details_card_group:
         weight: 172
-        enabled: false
+        enabled: true
       issuer:
         weight: 173
         enabled: false
@@ -208,8 +276,8 @@ settings:
       key_message_section:
         weight: 175
         enabled: false
-      link_group:
-        weight: 178
+      link_group_accordion:
+        weight: 202
         enabled: false
       link_group_document:
         weight: 179
@@ -225,7 +293,7 @@ settings:
         enabled: false
       list_board_members:
         weight: 181
-        enabled: false
+        enabled: true
       list_dynamic:
         weight: 182
         enabled: false
@@ -277,12 +345,27 @@ settings:
       online_email:
         weight: 198
         enabled: false
+      org_events:
+        weight: 225
+        enabled: true
+      org_locations:
+        weight: 226
+        enabled: true
+      org_news:
+        weight: 227
+        enabled: true
+      org_related_orgs:
+        weight: 228
+        enabled: true
       org_section_long_form:
         weight: 200
         enabled: true
+      organization_contact_logo:
+        weight: 223
+        enabled: true
       organization_grid:
         weight: 199
-        enabled: false
+        enabled: true
       page:
         weight: 200
         enabled: false
@@ -294,7 +377,7 @@ settings:
         enabled: false
       pull_quote:
         weight: 203
-        enabled: false
+        enabled: true
       quick_action:
         weight: 204
         enabled: false
@@ -340,9 +423,21 @@ settings:
       section_with_heading:
         weight: 218
         enabled: false
+      service_rich_text:
+        weight: 249
+        enabled: true
+      service_section:
+        weight: 250
+        enabled: false
+      sitewide_alert_message:
+        weight: 251
+        enabled: false
       slideshow:
         weight: 219
         enabled: false
+      social_media:
+        weight: 253
+        enabled: true
       stacked_band:
         weight: 220
         enabled: false
@@ -351,7 +446,7 @@ settings:
         enabled: false
       stat:
         weight: 222
-        enabled: false
+        enabled: true
       state_organization:
         weight: 223
         enabled: false
@@ -360,14 +455,20 @@ settings:
         enabled: false
       tableau_embed:
         weight: 225
+        enabled: true
+      time_callout:
+        weight: 260
         enabled: false
       video:
         weight: 226
-        enabled: false
+        enabled: true
       video_with_header:
         weight: 227
-        enabled: false
+        enabled: true
       video_with_section:
         weight: 228
+        enabled: false
+      what_would_you_like_to_do:
+        weight: 264
         enabled: false
 field_type: entity_reference_revisions
