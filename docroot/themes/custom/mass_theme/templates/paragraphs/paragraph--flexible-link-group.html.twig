@@ -28,23 +28,22 @@
 
     {% set item = {
         "collapsibleHeader": {
-            "title": flexible_link.title,
-            "description": flexible_link.description,
-            "headingLevel": 3
-          },
-          "expanded": flexible_link.expanded,
-          "includes": [{
-            "path": "@organisms/by-author/link-list.twig",
-            "data": {
-              "linkList" : {
-                "stacked": true,
-                "hideBullets": false,
-                "links": links
-              }
-            }
-          }]
-        }
-    %}
+           "title": flexible_link.title,
+           "description": flexible_link.description,
+           "headingLevel": 3
+         },
+         "expanded": flexible_link.expanded,
+         "includes": [{
+           "path": "@organisms/by-author/link-list.twig",
+           "data": {
+             "linkList" : {
+               "stacked": true,
+               "hideBullets": false,
+               "links": links
+             }
+           }
+         }]
+    } %}
 
     {% set items = items|merge([item]) %}
   {% endfor %}
