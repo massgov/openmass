@@ -13,20 +13,15 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
-use Consolidation\SiteProcess\Util\Shell;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
-use Drush\Commands\core\SiteCommands;
-use Drush\Commands\core\SshCommands;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
-use Drush\Log\DrushLoggerManager;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
 use GuzzleHttp\Middleware;
 use MassGov\Drush\Attributes\OptionsetDeploy;
 use MassGov\Drush\Attributes\ValidateCircleciToken;
-use Symfony\Component\Filesystem\Path;
 
 #[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
 class DeployCommands extends DrushCommands {
@@ -555,28 +550,6 @@ class DeployCommands extends DrushCommands {
       /** @noinspection PhpParamsInspection */
       $this->waitForTaskToComplete(basename($modifyResponse->links->notification->href));
     }
-  }
-
-  /**
-   * Return the Drush logger, and fail if it does not exist.
-   *
-   * The parent logger() method is typehinted to optionally return a
-   * DrushLoggerManager. That means that every call to logger() should check
-   * against NULL before calling methods. Rather than rewrite all of our typical
-   * Drush code that in practice should only fail if things are Horribly Broken,
-   * this method implements a stricter typehint and throws a useful exception if
-   * a logger is not set.
-   *
-   * @throws \RuntimeException
-   *   Thrown when a Drush logger is not set.
-   */
-  protected function logger(): DrushLoggerManager {
-    $logger = parent::logger();
-    if (!$logger) {
-      throw new \RuntimeException('No Drush logger is available, but one should always be present.');
-    }
-
-    return $logger;
   }
 
   /**
