@@ -5,12 +5,16 @@
     {% for link in flexible_link.links %}
       {% set content = link.download_link ?
         {
-          "path": "@atoms/11-text/raw-html.twig",
-          "data": {
-            "rawHtml": {
-              "content": link.download_link
-            }
-          }
+          "iconSize": "",
+          "icon": link.download_link.extra_file_icon['#markup'],
+          "decorativeLink": {
+            "text": link.download_link.file_title,
+            "href": url('media_entity_download.download', {'media': link.download_link.mid}),
+            "info": ""
+          },
+          "size": link.download_link.calculated_file_size,
+          "format": link.download_link.extra_file_extension,
+          "inlineLinks": link.download_link.translationLinks
         }
       :
         {
