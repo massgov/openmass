@@ -15,6 +15,7 @@ use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
@@ -890,14 +891,31 @@ function mass_fields_field_widget_single_element_entity_reference_paragraphs_for
  */
 function mass_fields_field_widget_single_element_image_image_form_alter(&$element, FormStateInterface $form_state, $context) {
   if (in_array($element['#field_name'], ['field_featured_item_highlight', 'field_featured_item_image'])) {
-    $element['#process'][] = 'mass_fields_image_widget_alt_help_text_process';
+    $element['#process'][] = '_mass_fields_image_widget_alt_help_text_process';
+  }
+  elseif (in_array($element['#field_name'], ['field_event_image', 'field_event_logo'])) {
+    $element['#process'][] = '_mass_fields_event_image_widget_alt_help_text_process';
   }
 }
 
-function mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
+/**
+ * Helper function to change alt text.
+ */
+function _mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
   if (isset($element['alt'])) {
     $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
-    $element['alt']['#description'] = new \Drupal\Core\StringTranslation\TranslatableMarkup($text);
+    $element['alt']['#description'] = new TranslatableMarkup($text);
+  }
+  return $element;
+}
+
+/**
+ * Helper function to change alt text.
+ */
+function _mass_fields_event_image_widget_alt_help_text_process($element, &$form_state, $form) {
+  if (isset($element['alt'])) {
+    $text = 'Enter a short description of the image to be used by screen readers ONLY if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank.';
+    $element['alt']['#description'] = new TranslatableMarkup($text);
   }
   return $element;
 }
