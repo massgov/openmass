@@ -24,6 +24,7 @@ use Drupal\Core\Url;
 use Drupal\editor\Entity\Editor;
 use Drupal\file\Entity\File;
 use Drupal\link\LinkItemInterface;
+use Drupal\mass_utility\EntityAlter\ImageStyle;
 use Drupal\node\Entity\Node;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
@@ -1377,7 +1378,8 @@ function mass_utility_query_linkit_entity_autocomplete_alter(AlterableInterface 
 /**
  * Implements hook_views_data_alter().
  *
- * Add a relationship between the node_field_data and node_field_revision tables.
+ * Add a relationship between the node_field_data and node_field_revision
+ * tables.
  *
  * As it stands, by default there's no way to get comprehensive infromation
  * about a node's most recent revision when using node_field_data as the base
@@ -1456,4 +1458,13 @@ function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_i
  */
 function mass_utility_ckeditor_css_alter(array &$css, Editor $editor) {
   $css[] = \Drupal::service('extension.list.module')->getPath('mass_utility') . '/css/ckeditor.css';
+}
+
+/**
+ * Implements hook__entity_type_build().
+ */
+function mass_utility_entity_type_build(&$entity_types) {
+  if (isset($entity_types['image_style'])) {
+    $entity_types['image_style']->setClass(ImageStyle::class);
+  }
 }
