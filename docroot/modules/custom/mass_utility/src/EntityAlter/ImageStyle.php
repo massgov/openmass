@@ -57,9 +57,14 @@ class ImageStyle extends ImageStyleOriginal {
       return parent::buildUri($uri);
     }
 
+    // Do nothing of file does not exist.
+    $path = \Drupal::service('file_system')->realpath($uri);
+    if (!file_exists($path)) {
+      return parent::buildUri($uri);
+    }
+
     // Check if the GIF is animated.
     // If it is not animated a GIF - do nothing, default behaviour.
-    $path = \Drupal::service('file_system')->realpath($uri);
     if (!$this->isAnimatedGif($path)) {
       return parent::buildUri($uri);
     }
