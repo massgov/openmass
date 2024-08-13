@@ -59,35 +59,16 @@ describe("massgov-screenshots", () => {
     test(page.label + ' test', async () => {
       await driver.get(base + page.url);
 
-      // Inject JavaScript to set custom headers
-      await driver.executeScript(`
-        (function() {
-          function interceptFetch() {
-            const originalFetch = window.fetch;
-            window.fetch = function(url, options = {}) {
-              options.headers = options.headers || {};
-              options.headers['mass-bypass-rate-limit'] = '${process.env.MASS_BYPASS_RATE_LIMIT}';
-              return originalFetch(url, options);
-            };
-          }
-
-          function interceptXHR() {
-            const originalOpen = XMLHttpRequest.prototype.open;
-            XMLHttpRequest.prototype.open = function(method, url, async, user, pass) {
-              this.setRequestHeader('mass-bypass-rate-limit', '${process.env.MASS_BYPASS_RATE_LIMIT}');
-              originalOpen.call(this, method, url, async, user, pass);
-            };
-          }
-
-          interceptFetch();
-          interceptXHR();
-        })();
-      `);
-
       let options = {
         fullPage: true,
-        ignore_region_selectors: []
+        ignore_region_selectors: [],
+        discovery: {
+          requestHeaders: {
+            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT
+          }
+        }
       };
+      console.log(process.env.MASS_BYPASS_RATE_LIMIT);
       await percy.screenshot(driver, page.label, options);
     });
   });
