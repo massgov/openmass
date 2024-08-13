@@ -62,7 +62,7 @@ describe("massgov-screenshots", () => {
         ignore_region_selectors: [],
         discovery: {
           requestHeaders: {
-            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT
+            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
           }
         }
       };
