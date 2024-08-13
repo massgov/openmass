@@ -62,14 +62,16 @@ executors:
           MYSQL_PASSWORD: circle
           MYSQL_DATABASE: circle
           MYSQL_HOST: 127.0.0.1
+          # Specify the local creds for the benefit of pull:db.
+          ACLI_DB_USER: circle
+          ACLI_DB_PASSWORD: circle
+          ACLI_DB_NAME: circle
+          ACLI_DB_HOST: 127.0.0.1
           MEMCACHED_HOST: 127.0.0.1
           DTT_BASE_URL: http://mass.local
           DTT_API_URL: http://mass.local:9222
           BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-      - image: << parameters.instance >>
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_API_KEY
+      - image: cimg/mysql:5.7
         environment:
           MYSQL_USER: circle
           MYSQL_PASSWORD: circle
@@ -298,8 +300,16 @@ jobs:
       - run:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Import DB from Acquia
+      - run: curl -OL https://github.com/acquia/cli/releases/latest/download/acli.phar && mv acli.phar acli && chmod +x acli
+      - run: ./acli -n auth:login --key="${AC_API2_KEY}" --secret="${AC_API2_SECRET}"
+      - run:
+          command: ./acli pull:db massgov.test --no-interaction -vvv
+          no_output_timeout: 60m
       # Run drush updatedb and cim.
       - run: drush deploy
+      # Clear out email addresses and misc.
+      - run: drush sql:sanitize -y
       # Get an overview
       - run: drush status
       - run: cat /proc/cpuinfo
