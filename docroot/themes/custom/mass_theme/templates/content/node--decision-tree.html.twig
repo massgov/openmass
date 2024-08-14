@@ -94,11 +94,6 @@
           {{#if step.editLink }}<a href="{{step.editLink}}" class="edit-link">[edit]</a>{{/if}}
           Question
         </h2>
-        {{#if step.orphan}}
-        <p class="ma__decision-tree-node--orphan">
-          This step is currently not reachable from the beginning of the decision tree. Navigation is unavailable until this is added to the tree.
-        </p>
-        {{/if}}
         <h3 class="ma__decision-tree__qa" id="question">{{step.text}}</h3>
         {{#if step.details}}
         <p>{{{step.details}}}</p>
@@ -117,7 +112,6 @@
         </section>
         {{/if}}
 
-        {{#unless step.orphan}}
         {{#if step.responses}}
         <div class="ma__decision-tree-node__responses">
           {{#each step.responses}}
@@ -125,11 +119,9 @@
           {{/each}}
         </div>
         {{/if}}
-        {{/unless}}
         {{#if step.disclaimer}}
         <p class="disclaimer"><em>{{step.disclaimer}}</em></p>
         {{/if}}
-        {{#unless step.orphan}}
         <div class="back">
           <a href="#">
             <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35">
@@ -141,7 +133,6 @@
         <div class="restart">
           <a href="#">Start Over</a>
         </div>
-        {{/unless}}
       </div>
       <aside class="sidebar">
         <div class="ma__decision-tree-responses">
@@ -172,11 +163,6 @@
           {{#if step.editLink }}<a href="{{step.editLink}}" class="edit-link">[edit]</a>{{/if}}
           Answer
         </h2>
-        {{#if step.orphan}}
-        <p class="ma__decision-tree-node--orphan">
-          This step is currently not reachable from the beginning of the decision tree. Navigation is unavailable until this is added to the tree.
-        </p>
-        {{/if}}
         <h3 class="ma__decision-tree__qa">{{step.text}}</h3>
         {{#if step.details}}
         <p>{{{step.details}}}</p>
@@ -204,7 +190,6 @@
         </div>
         {{/if}}
 
-        {{#unless step.orphan}}
         <div class="back">
           <a href="#">
             <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" width="35px" height="35px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35;" xml:space="preserve">
@@ -216,7 +201,6 @@
         <div class="restart">
           <a href="#">Start Over</a>
         </div>
-        {{/unless}}
       </div>
       <aside class="sidebar">
         <div class="ma__decision-tree-responses">
