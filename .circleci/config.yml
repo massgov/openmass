@@ -477,6 +477,8 @@ jobs:
           BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
           PERCY_TARGET: << parameters.target >>
           PERCY_LIST: << parameters.list >>
+          LOG_LEVEL: "debug"
+          PERCY_DEBUG: "*"
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
