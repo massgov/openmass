@@ -62,7 +62,7 @@ class TableHeaderConstraintValidationTest extends MassExistingSiteBase {
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
 
-    $validation_text = 'Tables must have headers.';
+    $validation_text = 'Tables must include a header row. See our Knowledge Base article on header rows.';
     $this->assertStringContainsString($validation_text, $page_contents, 'Validation message not found.');
 
   }
