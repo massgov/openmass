@@ -30,8 +30,8 @@ class TableHeaderConstraintValidator extends ConstraintValidator {
 
     if ($tablesWithoutHeaders->length > 0) {
       $this->context->addViolation($constraint->message, [
-        '%title' => 'Knowledge Base article on header rows',
-        '%url' => '/kb/documents-images-media--tables--headers-and-captions-key-tools-for-clarity-and-accessibility',
+        ':title' => 'Knowledge Base article on header rows',
+        ':url' => '/kb/tableheaders',
       ]);
     }
   }

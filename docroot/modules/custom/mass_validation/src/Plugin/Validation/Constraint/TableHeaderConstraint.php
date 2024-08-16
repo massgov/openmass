@@ -13,6 +13,6 @@ use Symfony\Component\Validator\Constraint;
  * )
  */
 class TableHeaderConstraint extends Constraint {
-  public $message = 'Tables must include a header row. See our <a target="_blank" href="%link">%title</a>.';
+  public $message = 'Tables must include a header row. See our <a target="_blank" href=":url">:title</a>.';
 
 }
