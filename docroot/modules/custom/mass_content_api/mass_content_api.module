@@ -147,31 +147,3 @@ function mass_content_api_form_node_type_form_alter(&$form, FormStateInterface $
     ],
   ];
 }
-
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function mass_content_api_form_node_form_alter(&$form, FormStateInterface $form_state) {
-  $form['#validate'][] = 'mass_content_api_node_form_validate';
-}
-
-/**
- * Validation for the node form.
- *
- * Ensures that the title is changed after being cloned.
- */
-function mass_content_api_node_form_validate($form, FormStateInterface &$form_state) {
-
-  $title = $form_state->getValue('title');
-  if (isset($title[0]['value'])) {
-    $looking_for = 'Clone of ';
-    $chunk = substr($title[0]['value'], 0, strlen($looking_for));
-    if (strcasecmp($looking_for, $chunk) == 0) {
-      $form_state->setErrorByName('title', t("Please change the title to something different from the cloned page and remove 'Clone of ' from the beginning of it."));
-      return;
-    }
-    else {
-      return;
-    }
-  }
-}

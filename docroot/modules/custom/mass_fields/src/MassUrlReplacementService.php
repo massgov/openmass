@@ -42,7 +42,7 @@ class MassUrlReplacementService {
 
     // Selects all <a> elements with 'href' attribute
     // containing 'media/' or 'sites/default/files/documents/'
-    $xpathQuery = "//a[contains(@href, 'media/') or contains(@href, 'sites/default/files/documents/') or contains(@href, 'files/documents/') or (contains(@href, 'files/') and not(contains(@href, 'files/documents/')))]";
+    $xpathQuery = "//a[contains(@href, 'files/') or contains(@href, 'media/') or contains(@href, 'sites/default/files/documents/') or contains(@href, 'files/documents/')]";
     $anchors = $xpath->query($xpathQuery);
 
     $changed = FALSE;
@@ -92,6 +92,25 @@ class MassUrlReplacementService {
             $anchor->setAttribute('href', $mediaUrl);
             $changed = TRUE;
           }
+          else {
+            // We cover the case when the file was used in revisions.
+            $mediaQuery = \Drupal::entityQuery('media')
+              ->condition('field_upload_file', $file->id())
+              ->accessCheck(FALSE)
+              ->allRevisions();
+            $result = $mediaQuery->execute();
+            if ($result) {
+              $mediaId = reset($result);
+              $mediaEntity = $this->entityTypeManager->getStorage('media')->load($mediaId);
+              if ($mediaEntity) {
+                // Replace the href with a media URL.
+                // Note: We always want to concat download string to the URL.
+                $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
+                $anchor->setAttribute('href', $mediaUrl);
+                $changed = TRUE;
+              }
+            }
+          }
         }
       }
       elseif (preg_match('/files\/documents\/(.+)/', $href, $matches)) {
@@ -111,6 +130,25 @@ class MassUrlReplacementService {
             $anchor->setAttribute('href', $mediaUrl);
             $changed = TRUE;
           }
+          else {
+            // We cover the case when the file was used in revisions.
+            $mediaQuery = \Drupal::entityQuery('media')
+              ->condition('field_upload_file', $file->id())
+              ->accessCheck(FALSE)
+              ->allRevisions();
+            $result = $mediaQuery->execute();
+            if ($result) {
+              $mediaId = reset($result);
+              $mediaEntity = $this->entityTypeManager->getStorage('media')->load($mediaId);
+              if ($mediaEntity) {
+                // Replace the href with a media URL.
+                // Note: We always want to concat download string to the URL.
+                $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
+                $anchor->setAttribute('href', $mediaUrl);
+                $changed = TRUE;
+              }
+            }
+          }
         }
       }
       // Logic for 'files/[dynamic path]' excluding 'files/documents/'
@@ -118,7 +156,6 @@ class MassUrlReplacementService {
         $filePath = urldecode('public://' . $matches[1]);
         $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $filePath]);
         $file = reset($files);
-
         if ($file) {
           // Check if there's a media entity referencing this file
           $media = $this->entityTypeManager->getStorage('media')->loadByProperties(['field_upload_file' => $file->id()]);
@@ -130,6 +167,25 @@ class MassUrlReplacementService {
             $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
             $anchor->setAttribute('href', $mediaUrl);
             $changed = TRUE;
+          }
+          else {
+            // We cover the case when the file was used in revisions.
+            $mediaQuery = \Drupal::entityQuery('media')
+              ->condition('field_upload_file', $file->id())
+              ->accessCheck(FALSE)
+              ->allRevisions();
+            $result = $mediaQuery->execute();
+            if ($result) {
+              $mediaId = reset($result);
+              $mediaEntity = $this->entityTypeManager->getStorage('media')->load($mediaId);
+              if ($mediaEntity) {
+                // Replace the href with a media URL.
+                // Note: We always want to concat download string to the URL.
+                $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
+                $anchor->setAttribute('href', $mediaUrl);
+                $changed = TRUE;
+              }
+            }
           }
         }
       }
@@ -231,6 +287,25 @@ class MassUrlReplacementService {
           $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
           $link = $mediaUrl;
           $changed = TRUE;
+        }
+        else {
+          // We cover the case when the file was used in revisions.
+          $mediaQuery = \Drupal::entityQuery('media')
+            ->condition('field_upload_file', $file->id())
+            ->accessCheck(FALSE)
+            ->allRevisions();
+          $result = $mediaQuery->execute();
+          if ($result) {
+            $mediaId = reset($result);
+            $mediaEntity = $this->entityTypeManager->getStorage('media')->load($mediaId);
+            if ($mediaEntity) {
+              // Replace the href with a media URL.
+              // Note: We always want to concat download string to the URL.
+              $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
+              $link = $mediaUrl;
+              $changed = TRUE;
+            }
+          }
         }
       }
     }

@@ -7273,9 +7273,18 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
         'isExpanded' => FALSE,
       ],
     ];
+
     // Prepare the contactList data object.
     $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
-
+    if ($paragraph->parent_field_name->value == 'field_service_section_content' && $paragraph->parent_type->value == 'paragraph') {
+      if ($paragraph->parent_id->value) {
+        if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
+          if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
+            $variables['contactList']['level'] = 3;
+          }
+        }
+      }
+    }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
     CacheableMetadata::createFromRenderArray($variables)
