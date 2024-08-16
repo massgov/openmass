@@ -95,8 +95,12 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
     }
   }
   foreach ($fields as &$field) {
-    if ($field instanceof FieldConfig && in_array($field->getType(), ['text_long', 'text_with_summary', 'string_long'])) {
-      $field->addConstraint('TableHeaderConstraint');
+    if ($field instanceof FieldConfig && in_array($field->getType(), [
+        'text_long',
+        'text_with_summary',
+        'string_long'
+      ])) {
+      $field->addPropertyConstraints('value', ['TableHeaderConstraint' => []]);
     }
   }
 }

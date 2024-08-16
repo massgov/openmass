@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * Create redirects for external resources.
+ */
+function mass_validation_update_10001() {
+  // Load the necessary services
+  /** @var \Drupal\redirect\RedirectRepository $redirect_repository */
+  $redirect_repository = \Drupal::service('redirect.repository');
+  /** @var \Drupal\path_alias\AliasManagerInterface $path_alias_manager */
+  $path_alias_manager = \Drupal::service('path_alias.manager');
+
+  // Set up an array for your redirects
+  $redirects = [
+    '/kb/documents-images-media--tables--headers-and-captions-key-tools-for-clarity-and-accessibility' => 'https://massgovdigital.gitbook.io/knowledge-base/documents-images-media/tables#headers-and-captions-key-tools-for-clarity-and-accessibility',
+  ];
+
+  $redirect_service = \Drupal::entityTypeManager()->getStorage('redirect');
+  // Process each redirect
+  foreach ($redirects as $source => $destination) {
+    $source_path = $path_alias_manager->getPathByAlias($source);
+
+    // Check if a redirect already exists.
+    if ($redirect_repository->findMatchingRedirect($source)) {
+      \Drupal::messenger()->addWarning(t('The redirect from @source to @destination already exists.', ['@source' => $source, '@destination' => $destination]));
+      continue;
+    }
+
+    // Create the redirect.
+    $redirect = $redirect_service->create([
+      'redirect_source' => [
+        'path' => trim($source_path, '/')
+      ],
+      'redirect_redirect' => ['uri' => $destination],
+      'status_code' => 301,
+    ]);
+    $redirect->save();
+
+  }
+}
