@@ -46,7 +46,6 @@ third_party_settings:
       weight: 9
       format_type: fieldset
       format_settings:
-        label: 'Phone / Online Link / Email / Fax'
         classes: ''
         id: ''
         description: ''
@@ -75,7 +74,6 @@ third_party_settings:
       weight: 0
       format_type: fieldset
       format_settings:
-        label: 'Contact titles'
         classes: ''
         id: tab-contact-titles
         description: 'The Display Title is the information that will appear on a page. The Admin Title provides a way to distinguish between 2 Contacts that use the same Display Title. The Admin Title is for internal use only and will never be displayed to the public. For example, the Governor’s Office might use the same Display title (“Governor’s Office”) for two offices - Boston and Springfield. The Admin Title can be different for each office.'
@@ -107,9 +105,10 @@ third_party_settings:
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: open
-        description: ''
+        description: '<p>Contact information entered here may be used on multiple pages. The "Pages linking here" tab will show where it is used.</p>'
         required_fields: true
 id: node.contact_information.default
 targetEntityType: node
