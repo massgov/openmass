@@ -93,16 +93,6 @@ function mass_content_update_10001() {
 }
 
 /**
- * Reset state variables used by search and replace media URLs drush command.
- */
-function mass_content_update_10003() {
-  $entityTypes = ['node', 'paragraph'];
-  foreach ($entityTypes as $entityType) {
-    \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
-  }
-}
-
-/**
  * Cleanup mass_superset and mass_tours modules configs.
  */
 function mass_content_update_10004() {
@@ -117,5 +107,15 @@ function mass_content_update_10004() {
   $modules_to_cleanup = ['jquery_ui_draggable', 'mass_superset', 'mass_tours'];
   foreach ($modules_to_cleanup as $module_name) {
     \Drupal::keyValue("system.schema")->delete($module_name);
+  }
+}
+
+/**
+ * Reset state variables used by search and replace media URLs drush command.
+ */
+function mass_content_update_10005() {
+  $entityTypes = ['node', 'paragraph'];
+  foreach ($entityTypes as $entityType) {
+    \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
   }
 }
