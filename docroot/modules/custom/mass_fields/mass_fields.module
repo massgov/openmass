@@ -18,6 +18,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Url;
+use Drupal\mass_fields\Plugin\Field\FieldWidget\EntityReferenceEditLinkAutocompleteWidget;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 
@@ -1185,4 +1186,67 @@ function mass_fields_entity_presave(EntityInterface $entity) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function mass_fields_field_widget_info_alter(array &$info) {
+  $info['entity_reference_autocomplete']['class'] = EntityReferenceEditLinkAutocompleteWidget::class;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_fields_preprocess_field_multiple_value_form(&$variables) {
+  if (!isset($variables['element'][0]['_link'])) {
+    return;
+  }
+
+  // Adds link column to the table header.
+  $variables['table']['#header'][] = t('Edit Entity', [], ['context' => 'Link']);
+  $element = $variables['element'];
+  // Copied some part of the code from the another hook just to add the correct
+  // values to the render array.
+  /* @see \template_preprocess_field_multiple_value_form() */
+  foreach (Element::children($element) as $key) {
+    if ($key === 'add_more') {
+      $variables['button'] = &$element[$key];
+    }
+    else {
+      $items[] = &$element[$key];
+    }
+  }
+
+  foreach ($items as $item) {
+    $order_class = $element['#field_name'] . '-delta-order';
+    $item['_weight']['#attributes']['class'] = [$order_class];
+    // Remove weight and link form elements from item render array,
+    // so they can be rendered in a separate table column.
+    $delta_element = $item['_weight'];
+    $link_element = $item['_link'] ?? NULL;
+    unset($item['_weight']);
+    unset($item['_link']);
+
+    // Render actions in a separate column.
+    $actions = [];
+    if (isset($item['_actions'])) {
+      $actions = $item['_actions'];
+      unset($item['_actions']);
+    }
+
+    $cells = [
+      ['data' => '', 'class' => ['field-multiple-drag']],
+      ['data' => $item],
+      ['data' => $actions],
+      ['data' => $delta_element, 'class' => ['delta-order']],
+      // Adds link element to the render array.
+      ['data' => $link_element, 'class' => ['reference-link']],
+    ];
+    $rows[] = [
+      'data' => $cells,
+      'class' => ['draggable'],
+    ];
+  }
+  $variables['table']['#rows'] = $rows;
 }
