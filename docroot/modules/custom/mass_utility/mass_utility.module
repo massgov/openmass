@@ -418,9 +418,32 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
+ * Hides the format section under the widget.
+ */
+function _mass_utility_text_format_guidelines_help($form_element, FormStateInterface $form_state) {
+  if (isset($form_element['format'])) {
+    $form_element['format']['format']['#access'] = FALSE;
+    $form_element['format']['help']['#access'] = FALSE;
+    $form_element['format']['guidelines']['#access'] = FALSE;
+    unset($form_element['format']['#theme_wrappers']);
+  }
+  return $form_element;
+}
+
+/**
  * Implements hook_field_widget_form_alter().
  */
 function mass_utility_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
+
+  // If the user doesn't have administrator or content_team roles
+  // the format section of the widget will be hidden.
+  if (isset($element['#type']) && $element['#type'] === 'text_format') {
+    $current_user = \Drupal::currentUser();
+    if (!$current_user->hasRole('administrator') && !$current_user->hasRole('content_team')) {
+      $element['#after_build'][] = '_mass_utility_text_format_guidelines_help';
+    }
+  }
+
   // Hide the map name field on the address google map field.
   $field_definition = $context['items']->getFieldDefinition();
   $type = $field_definition->getType();
