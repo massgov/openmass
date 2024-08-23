@@ -7273,9 +7273,18 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
         'isExpanded' => FALSE,
       ],
     ];
+
     // Prepare the contactList data object.
     $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
-
+    if ($paragraph->parent_field_name->value == 'field_service_section_content' && $paragraph->parent_type->value == 'paragraph') {
+      if ($paragraph->parent_id->value) {
+        if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
+          if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
+            $variables['contactList']['level'] = 3;
+          }
+        }
+      }
+    }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
     CacheableMetadata::createFromRenderArray($variables)
@@ -7497,11 +7506,11 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
             break;
           }
           /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
-          $file = $item->entity->field_file_download_single[0]->entity;
-          if ($file) {
+          $media = $item->entity->field_file_download_single[0]->entity;
+          if ($media) {
 
             if ($variables['display_type'] == "buttons") {
-              $original_file = $file->field_upload_file->entity;
+              $original_file = $media->field_upload_file->entity;
               $links[$index]['file_size'] = strtoupper(format_size($original_file->getSize()));
               $file_info = new \SplFileInfo($original_file->getFilename());
               $file_extension = strtoupper($file_info->getExtension());
@@ -7512,22 +7521,64 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
               $links[$index]['file_icon'] = $file_icon;
               $links[$index]['downloadable_file'] = TRUE;
               $links[$index]['file_extension'] = $file_extension;
-              if (!$file->field_title->isEmpty()) {
-                $links[$index]['file_title'] = $file->field_title->value;
+              if (!$media->field_title->isEmpty()) {
+                $links[$index]['file_title'] = $media->field_title->value;
               }
               else {
-                $links[$index]['file_title'] = $file->label();
+                $links[$index]['file_title'] = $media->label();
               }
-              $links[$index]['mid'] = $file->id();
+              $links[$index]['mid'] = $media->id();
 
             }
             else {
-              $view_builder = Drupal::entityTypeManager()
-                ->getViewBuilder($file->getEntityType()->id());
-              $links[$index]['download_link'] = $view_builder->view($file, 'media_download_link');
+              // Check if the media entity has the 'field_upload_file' field and it's not empty.
+              if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
+                $file_media = $media->get('field_upload_file')->entity;
+
+                if ($file_media) {
+                  // Initialize the render array.
+                  $render_array = [];
+
+                  // Manually add calculated file size.
+                  $file_size = strtoupper(format_size($file_media->getSize()));
+                  $render_array['calculated_file_size'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_size,
+                  ];
+
+                  // Manually add extra file extension and icon.
+                  $file_info = new \SplFileInfo($file_media->getFilename());
+                  $file_extension = strtoupper($file_info->getExtension());
+                  $file_icon = 'doc-' . strtolower($file_extension);
+
+                  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                    $file_icon = 'doc-generic';
+                  }
+
+                  $render_array['extra_file_extension'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_extension,
+                  ];
+
+                  $render_array['extra_file_icon'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_icon,
+                  ];
+                  if (!$media->field_title->isEmpty()) {
+                    $render_array['file_title'] = $media->field_title->value;
+                  }
+                  else {
+                    $render_array['file_title'] = $media->label();
+                  }
+                  $render_array['mid'] = $media->id();
+                  $render_array['media'] = $media;
+                  _mass_translations_media_helper($render_array);
+                  $links[$index]['download_link'] = $render_array;
+                }
+              }
             }
-            $links[$index]['href'] = $file->toURL()->setAbsolute()->toString();
-            $links[$index]['text'] = $file->label();
+            $links[$index]['href'] = $media->toURL()->setAbsolute()->toString();
+            $links[$index]['text'] = $media->label();
           }
           break;
       }
