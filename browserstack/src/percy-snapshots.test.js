@@ -60,10 +60,8 @@ describe("massgov-screenshots", () => {
       let options = {
         fullPage: true,
         ignore_region_selectors: [],
-        discovery: {
-          requestHeaders: {
-            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
-          }
+        requestHeaders: {
+          'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
         }
       };
       console.log(process.env.MASS_BYPASS_RATE_LIMIT);
