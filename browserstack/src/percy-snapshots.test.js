@@ -1,5 +1,6 @@
 const { Builder, By, Key, until, Capabilities } = require("selenium-webdriver");
 const { percy } = require('browserstack-node-sdk');
+const { postSnapshot } = '@percy/sdk-utils'
 
 describe("massgov-screenshots", () => {
   let base;
@@ -59,10 +60,7 @@ describe("massgov-screenshots", () => {
 
       let options = {
         fullPage: true,
-        ignore_region_selectors: [],
-        requestHeaders: {
-          'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
-        }
+        ignore_region_selectors: []
       };
       console.log(process.env.MASS_BYPASS_RATE_LIMIT);
       await percy.screenshot(driver, page.label, options);
