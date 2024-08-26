@@ -98,7 +98,7 @@ class MassUrlReplacementService {
           }
           else {
             // We cover the case when the file was used in revisions.
-            $mediaQuery = \Drupal::entityQuery('media')
+            $mediaQuery = $this->entityTypeManager->getStorage('media')->getQuery()
               ->condition('field_upload_file', $file->id())
               ->accessCheck(FALSE)
               ->allRevisions();
@@ -142,7 +142,8 @@ class MassUrlReplacementService {
           }
           else {
             // We cover the case when the file was used in revisions.
-            $mediaQuery = \Drupal::entityQuery('media')
+
+            $mediaQuery = $this->entityTypeManager->getStorage('media')->getQuery()
               ->condition('field_upload_file', $file->id())
               ->accessCheck(FALSE)
               ->allRevisions();
@@ -186,7 +187,7 @@ class MassUrlReplacementService {
           }
           else {
             // We cover the case when the file was used in revisions.
-            $mediaQuery = \Drupal::entityQuery('media')
+            $mediaQuery = $this->entityTypeManager->getStorage('media')->getQuery()
               ->condition('field_upload_file', $file->id())
               ->accessCheck(FALSE)
               ->allRevisions();
@@ -297,7 +298,7 @@ class MassUrlReplacementService {
         }
         else {
           // We cover the case when the file was used in revisions.
-          $mediaQuery = \Drupal::entityQuery('media')
+          $mediaQuery = $this->entityTypeManager->getStorage('media')->getQuery()
             ->condition('field_upload_file', $file->id())
             ->accessCheck(FALSE)
             ->allRevisions();
@@ -342,7 +343,7 @@ class MassUrlReplacementService {
         }
         else {
           // We cover the case when the file was used in revisions.
-          $mediaQuery = \Drupal::entityQuery('media')
+          $mediaQuery = $this->entityTypeManager->getStorage('media')->getQuery()
             ->condition('field_upload_file', $file->id())
             ->accessCheck(FALSE)
             ->allRevisions();
