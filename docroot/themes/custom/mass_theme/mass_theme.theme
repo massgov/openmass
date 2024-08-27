@@ -1952,7 +1952,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
   // Set static pageHeader properties to pass to prepare function.
   $pageHeader_options = [
     'category' => $category,
-    'optionalContents' => $optionalContents,
+    'optionalContents' => $optionalContents ?? [],
   ];
 
   // Make pageBanner data object available in twig template.
@@ -2194,7 +2194,7 @@ function mass_theme_preprocess_node_regulation(&$variables) {
   // Set static pageHeader properties to pass to prepare function.
   $pageHeader_options = [
     'category' => $category,
-    'optionalContents' => $optionalContents,
+    'optionalContents' => $optionalContents ?? [],
   ];
 
   if (!empty($fields['publish_state']) && Helper::isFieldPopulated($node, $fields['publish_state'])) {
@@ -2412,7 +2412,7 @@ function mass_theme_preprocess_node_advisory(&$variables) {
   // Set static pageHeader properties to pass to prepare function.
   $pageHeader_options = [
     'category' => $category,
-    'optionalContents' => $optionalContents,
+    'optionalContents' => $optionalContents ?? [],
   ];
 
   if (!empty($fields['publish_state']) && Helper::isFieldPopulated($node, $fields['publish_state'])) {
