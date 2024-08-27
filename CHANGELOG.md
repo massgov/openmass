@@ -1,5 +1,23 @@
 
 
+## [0.407.0] - August 20, 2024
+
+### Added
+  - DP-29801: Add link to edit contact node when it is in an entity reference field in Drupal.
+  
+### Fixed
+  - DP-32036: Link list in accordion style and markup fix.
+  - DP-34205: Fixed heal drush commands.
+  - DP-34266: Incorrect heading level for contact on service page.
+  - DP-34332: Bug - fix path to download media in orphaned media view.
+  - DP-34473: Backstop URLs for events fixed, adjustment to document URL in post release backstop
+  
+### Changed
+  - DP-34297: remove DDEV startup warnings
+  - DP-34460: HTML tables header validation message improved.
+  
+
+
 ## [0.406.0] - August 13, 2024
 
 ### Changed

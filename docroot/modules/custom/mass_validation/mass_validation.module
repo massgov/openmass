@@ -14,6 +14,7 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Implements hook_help().
@@ -95,8 +96,15 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
     }
   }
   foreach ($fields as &$field) {
-    if ($field instanceof FieldConfig && in_array($field->getType(), ['text_long', 'text_with_summary', 'string_long'])) {
-      $field->addConstraint('TableHeaderConstraint');
+    $table_header_constraint_field_types = [
+      'text_long',
+      'text_with_summary',
+      'string_long',
+    ];
+
+    if ($field instanceof FieldConfig && in_array($field->getType(), $table_header_constraint_field_types)) {
+      $field->addPropertyConstraints('value', ['TableHeaderConstraint' => []]);
+
     }
   }
 }
@@ -1346,21 +1354,32 @@ function _mass_validation_validate_custom_search(FormStateInterface $form_state,
   }
 }
 
-function _mass_validation_validate_custom_iframe(FormStateInterface $form_state, $paragraph, $paragraph_error_string) {
-  if (!isset($paragraph['subform']['field_iframe_height_config'])) {
+/**
+ * Validates the custom iframe paragraph configuration helper.
+ *
+ * @param FormStateInterface $form_state
+ *   The form state.
+ * @param array $paragraph_values
+ *   Form state values for paragraph entity.
+ * @param string $paragraph_error_string
+ *   The error string.
+ */
+function _mass_validation_validate_custom_iframe(FormStateInterface $form_state, array $paragraph_values, string $paragraph_error_string): void {
+  if (!isset($paragraph_values['subform']['field_iframe_height_config'])) {
     return;
   }
 
-  $subtype = $paragraph['subform']['field_iframe_height_config'][0]['value'];
+  $subtype = $paragraph_values['subform']['field_iframe_height_config'][0]['value'];
   switch ($subtype) {
     case '100':
       $report = FALSE;
-      if (empty($paragraph['subform']['field_verify_iframe_100_confirm'])) {
+      if (empty($paragraph_values['subform']['field_verify_iframe_100_confirm'])) {
         $report = TRUE;
       }
-      elseif ($paragraph['subform']['field_verify_iframe_100_confirm']['value'] != 1) {
+      elseif ($paragraph_values['subform']['field_verify_iframe_100_confirm']['value'] != 1) {
         $report = TRUE;
       }
+
       if ($report) {
         $form_state->setErrorByName(
           $paragraph_error_string . '[field_verify_iframe_100_confirm][value',
@@ -1370,21 +1389,23 @@ function _mass_validation_validate_custom_iframe(FormStateInterface $form_state,
       break;
     case 'fixed':
       $report = FALSE;
-      if (empty($paragraph['subform']['field_height'])) {
+      if (empty($paragraph_values['subform']['field_height'])) {
         $report = TRUE;
       }
-      elseif (empty($paragraph['subform']['field_height'][0]['value'])) {
+      elseif (empty($paragraph_values['subform']['field_height'][0]['value'])) {
         $report = TRUE;
       }
+
       if ($report) {
         $form_state->setErrorByName(
           $paragraph_error_string . '[field_height][0][value',
           t('The "Set Fixed Height" field is required.')
         );
       }
+
       break;
     case 'ratio':
-      if (empty($paragraph['subform']['field_aspect_ratio'])) {
+      if (empty($paragraph_values['subform']['field_aspect_ratio'])) {
         $form_state->setErrorByName(
           $paragraph_error_string . '[field_aspect_ratio',
           t('The "Set Aspect Ratio" field is required.')
@@ -1755,6 +1776,8 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
     if (isset($section['subform']['field_section_long_form_content'])) {
       $paragraphs = $section['subform']['field_section_long_form_content'];
       foreach ($paragraphs as $paragraph_key => $paragraph) {
+        $paragraph_error_string = 'field_info_details_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform]';
+        _mass_validation_validate_custom_iframe($form_state, $paragraph, $paragraph_error_string);
         if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
           foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
             if (!empty($caspioId)) {
