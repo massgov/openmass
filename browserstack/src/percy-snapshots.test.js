@@ -10,6 +10,7 @@ describe("massgov-screenshots", () => {
   const list = process.env.PERCY_LIST;
   const target = process.env.PERCY_TARGET;
   const tugboat = process.env.PERCY_TUGBOAT;
+  const queryParam = process.env.MASS_QUERY_BYPASS_PARAM
 
   switch (list) {
     case 'all':
@@ -55,7 +56,7 @@ describe("massgov-screenshots", () => {
 
   pages.forEach((page) => {
     test(page.label + ' test', async () => {
-      await driver.get(base + page.url);
+      await driver.get(base + page.url + '?mass-qag-bypass=' + queryParam);
 
       let options = {
         fullPage: true,
