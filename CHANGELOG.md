@@ -1,5 +1,24 @@
 
 
+## [0.408.0] - August 27, 2024
+
+### Added
+  - DP-22509: Reimplement Allow authors to choose the type of ordered list style they need for a list.
+  - DP-34663: Made Default views display visible; Made SQL query related to view display visible.
+  
+### Fixed
+  - DP-27414: Redirect loops.
+  - DP-34115: Bug - adding iframe using aspect ratio for sizing still requires fixed height value.
+  - DP-34517: Raw files URLs in content and link fields.
+  - DP-34583: A11y issue with contact info on location page.
+  - DP-34663: Error on /admin/structure/views/settings when saving views configuration.
+  
+### Changed
+  - DP-34115: External links replaced with internal in embed iframe paragraph.
+  - DP-34425: Changed the validation error message for the feedback component, updated help text on feedback component for contact pages.
+  
+
+
 ## [0.407.0] - August 20, 2024
 
 ### Added
