@@ -497,7 +497,7 @@ jobs:
           steps:
             - run:
                 name: Percy on BrowserStack Automate test (non Tugboat target)
-                command: export PERCY_TOKEN=auto_84d7b797daaf4f7cc9b629058d273574ef46d057be4bb995c47808cb99a5d670 && npm run percy-snapshots-test
+                command: npm run percy-snapshots-test
                 no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
