@@ -1,0 +1,20 @@
+uuid: 467d7a1b-d32e-417f-b855-eec1314ed899
+langcode: en
+status: true
+dependencies:
+  module:
+    - key_auth
+    - mass_content_api
+    - serialization
+    - user
+id: content_metadata_resource
+plugin_id: content_metadata_resource
+granularity: resource
+configuration:
+  methods:
+    - GET
+  formats:
+    - json
+  authentication:
+    - key_auth
+    - cookie
