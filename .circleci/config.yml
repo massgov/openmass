@@ -480,6 +480,7 @@ jobs:
           PERCY_TARGET: << parameters.target >>
           PERCY_LIST: << parameters.list >>
           PERCY_DO_NOT_CAPTURE_RESPONSIVE_ASSETS: true
+          PERCY_CLIENT_ERROR_LOGS: false
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
