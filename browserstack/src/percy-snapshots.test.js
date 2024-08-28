@@ -10,7 +10,6 @@ describe("massgov-screenshots", () => {
   const list = process.env.PERCY_LIST;
   const target = process.env.PERCY_TARGET;
   const tugboat = process.env.PERCY_TUGBOAT;
-  const queryParam = process.env.MASS_QUERY_BYPASS_PARAM
 
   switch (list) {
     case 'all':
@@ -56,11 +55,16 @@ describe("massgov-screenshots", () => {
 
   pages.forEach((page) => {
     test(page.label + ' test', async () => {
-      await driver.get(base + page.url + '?mass-qag-bypass=' + queryParam);
+      await driver.get(base + page.url);
 
       let options = {
         fullPage: true,
-        ignore_region_selectors: []
+        ignore_region_selectors: [],
+        discovery: {
+          requestHeaders: {
+            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
+          }
+        }
       };
       await percy.screenshot(driver, page.label, options);
     });
