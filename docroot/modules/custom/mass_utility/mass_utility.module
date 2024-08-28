@@ -79,9 +79,51 @@ function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_sta
 }
 
 /**
+ * Recurse through the provided form and hide any text_format elements.
+ *
+ * @param array $form
+ *   The form in which to iterate to hide the text_format elements.
+ */
+function _mass_utility_hide_text_format_elements(array &$form) {
+  foreach (Element::children($form) as $key) {
+    if (!isset($form[$key]['#type']) || $form[$key]['#type'] == 'container') {
+      _mass_utility_hide_text_format_elements($form[$key]);
+    }
+    elseif ($form[$key]['#type'] == 'text_format') {
+      $form[$key]['#after_build'][] = '_mass_utility_hide_text_format_element';
+    }
+  }
+}
+
+/**
+ * Hide a given text_format element.
+ *
+ * @param array $element
+ *   The element to hide.
+ *
+ * @return array
+ *   The hidden element.
+ */
+function _mass_utility_hide_text_format_element(array $element) {
+  if (!empty($element['format'])) {
+    $element['format']['#attributes']['class'][] = 'hidden';
+  }
+  return $element;
+}
+
+
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Hide text_format form the form.
+  $current_user = \Drupal::currentUser();
+  if (!$current_user->hasRole('administrator') && !$current_user->hasRole('content_team')) {
+    _mass_utility_hide_text_format_elements($form);
+  }
+
   /** @var \Drupal\node\NodeForm $node_form */
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
@@ -418,31 +460,9 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
- * Hides the format section under the widget.
- */
-function _mass_utility_text_format_guidelines_help($form_element, FormStateInterface $form_state) {
-  if (isset($form_element['format'])) {
-    $form_element['format']['format']['#access'] = FALSE;
-    $form_element['format']['help']['#access'] = FALSE;
-    $form_element['format']['guidelines']['#access'] = FALSE;
-    unset($form_element['format']['#theme_wrappers']);
-  }
-  return $form_element;
-}
-
-/**
  * Implements hook_field_widget_form_alter().
  */
 function mass_utility_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
-
-  // If the user doesn't have administrator or content_team roles
-  // the format section of the widget will be hidden.
-  if (isset($element['#type']) && $element['#type'] === 'text_format') {
-    $current_user = \Drupal::currentUser();
-    if (!$current_user->hasRole('administrator') && !$current_user->hasRole('content_team')) {
-      $element['#after_build'][] = '_mass_utility_text_format_guidelines_help';
-    }
-  }
 
   // Hide the map name field on the address google map field.
   $field_definition = $context['items']->getFieldDefinition();
