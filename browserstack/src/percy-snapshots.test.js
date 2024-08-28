@@ -1,5 +1,5 @@
 const { Builder, By, Key, until, Capabilities } = require("selenium-webdriver");
-const { percy } = require('browserstack-node-sdk');
+const { percyScreenshot } = require('@percy/selenium-webdriver');
 
 describe("massgov-screenshots", () => {
   let base;
@@ -64,7 +64,7 @@ describe("massgov-screenshots", () => {
           'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
         }
       };
-      await percy.screenshot(driver, page.label, options);
+      await percyScreenshot(driver, page.label, options);
     });
   });
 });

@@ -2,6 +2,8 @@
   "name": "massgov-browserstack",
   "license": "GPL-2.0-only",
   "dependencies": {
+    "@percy/cli": "^1.29.2",
+    "@percy/selenium-webdriver": "2.0.1",
     "@types/jest": "^29.5.12",
     "browserstack-node-sdk": "^1.34.4",
     "dotenv": "^16.4.5",
@@ -9,7 +11,7 @@
     "selenium-webdriver": "^4.22.0"
   },
   "scripts": {
-    "percy-snapshots-test": "browserstack-node-sdk jest src/percy-snapshots.test.js",
+    "percy-snapshots-test": "percy exec -- browserstack-node-sdk jest src/percy-snapshots.test.js",
     "postinstall": "npm update browserstack-node-sdk"
   }
 }
