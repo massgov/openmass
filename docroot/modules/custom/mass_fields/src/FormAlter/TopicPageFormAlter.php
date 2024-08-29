@@ -45,13 +45,21 @@ class TopicPageFormAlter implements ContainerInjectionInterface {
    *   The current state of the form.
    */
   public function topicFieldsControlAccess(array &$form, FormStateInterface $form_state): void {
-    if (!isset($form['field_hide_feedback_component'])) {
-      return;
+    $fields_to_restrict_access_if_no_create_topic_page_perm = [
+      'field_restrict_orgs_field',
+      'field_hide_feedback_component',
+    ];
+
+    foreach ($fields_to_restrict_access_if_no_create_topic_page_perm as $field) {
+      if (!isset($form[$field])) {
+        continue;
+      }
+
+      $can_manage_topics = $this->currentUser->hasPermission('create topic_page content');
+
+      $form[$field]['#access'] = $can_manage_topics;
     }
 
-    $can_manage_topics = $this->currentUser->hasPermission('create topic_page content');
-
-    $form['field_hide_feedback_component']['#access'] = $can_manage_topics;
   }
 
 }
