@@ -165,7 +165,7 @@ class Molecules {
         if ($entity->{$fields['image']}->alt) {
           $alt = $entity->{$fields['image']}->alt;
         }
-        else {
+        elseif (isset($options['alt'])) {
           $alt = $options['alt'];
         }
 
@@ -299,6 +299,7 @@ class Molecules {
       'instagram',
       'medium',
       'youtube',
+      'vimeo',
     ];
 
     foreach ($links as $link) {
@@ -488,7 +489,7 @@ class Molecules {
    * @param array &$contactInfo
    *   An array that containing the current schema contact info.
    *
-   * @see @molecules/contact-group.twig
+   * @see @molecules/contact/contact-group.twig
    *
    * @return array
    *   Returns an array of items that contains:
@@ -667,7 +668,7 @@ class Molecules {
    *     type: string ('phone' || 'online' || 'email' || 'address' || 'fax')
    *   )
    *
-   * @see @molecules/contact-group.twig
+   * @see @molecules/contact/contact-group.twig
    *
    * @return array
    *   Returns an array of items that contains:
@@ -727,7 +728,7 @@ class Molecules {
    *     display_title: Boolean / require.
    *   )
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    *
    * @return array
    *   Returns an array of items that contains:
@@ -1089,6 +1090,12 @@ class Molecules {
         if (isset($locations[$entity->id()])) {
           $location = $locations[$entity->id()];
           $location_link = Link::fromTextAndUrl($location->label(), $location->toUrl());
+
+          $location_url = Helper::getEntityUrl($location)['href'];
+          // Use a decorative link to match Mayflower
+          $location_decorative_link = '<span class="ma__decorative-link"><a href="'
+                      . $location_url . '">' . $location_link->getText() .
+                      ' <svg aria-hidden="true" id="SvgjsSvg1000" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="16" height="18" viewBox="0 0 16 18"><defs id="SvgjsDefs1001"></defs><path id="SvgjsPath1007" d="M983.721 1887.28L983.721 1887.28L986.423 1890L986.423 1890L986.423 1890L983.721 1892.72L983.721 1892.72L978.318 1898.17L975.617 1895.45L979.115 1891.92L971.443 1891.92L971.443 1888.0700000000002L979.103 1888.0700000000002L975.617 1884.5500000000002L978.318 1881.8300000000002Z " transform="matrix(1,0,0,1,-971,-1881)"></path></svg></a></span>';
         }
 
         if (!$address = Helper::formatAddress($addressEntity->field_address_address)) {
@@ -1102,7 +1109,7 @@ class Molecules {
           ],
           'infoWindow' => [
             // If Contacts are mapped to Locations, provide link to Location.
-            'name' => $location_link ? $location_link->toString() : Helper::fieldValue($addressEntity, 'field_label'),
+            'name' => $location_link ? $location_decorative_link : Helper::fieldValue($addressEntity, 'field_label'),
             'phone' => $phone_number,
             'fax' => $fax_number,
             'email' => $link,
@@ -1444,6 +1451,18 @@ class Molecules {
       $file = $entity->field_upload_file->entity;
       if ($file instanceof File) {
         $itsAFile = TRUE;
+        if ($entity->isDefaultRevision()) {
+          // Create media entity download link rather than linking directly to file.
+          $href = Url::fromRoute(
+            'media_entity_download.download',
+            [
+              'media' => $entity->id(),
+            ]
+          );
+        }
+        else {
+          $href = $file->createFileUrl();
+        }
       }
     }
 
@@ -1456,19 +1475,6 @@ class Molecules {
       $title = !empty($entity->field_title->value) ? $entity->field_title->value : $file->getFilename();
       $file_info = new \SplFileInfo($file->getFilename());
       $file_extension = $file_info->getExtension();
-      // Create media entity download link rather than linking directly to file.
-      $mid = $entity->mid->getValue();
-      if ($mid !== NULL) {
-        $media_id = $mid[0]['value'];
-      }
-      if (isset($media_id)) {
-        $href = Url::fromRoute(
-          'media_entity_download.download',
-          [
-            'media' => $media_id,
-          ]
-        );
-      }
       switch (strtolower($file_extension)) {
         case 'pdf':
         case 'docx':
@@ -1924,8 +1930,7 @@ class Molecules {
         ],
       ];
     }
-
-    return [
+    $result = [
       'eyebrow' => $eyebrow,
       'title' => [
         'href' => !empty($options['url']) ? $options['url'] : $url,
@@ -1938,6 +1943,10 @@ class Molecules {
       'description' => $description,
       'image' => $image,
     ];
+    if (isset($options['level'])) {
+      $result['level'] = $options['level'];
+    }
+    return $result;
   }
 
   /**

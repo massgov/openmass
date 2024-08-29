@@ -91,3 +91,45 @@ function mass_content_update_10001() {
     \Drupal::configFactory()->getEditable('views.view.content_user_org')->setData($config_data)->save(TRUE);
   }
 }
+
+/**
+ * Reset state variables used by search and replace media URLs drush command.
+ */
+function _mass_content_reset_state_vars_media_search_replace() {
+  $entityTypes = ['node', 'paragraph'];
+  foreach ($entityTypes as $entityType) {
+    \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", 0);
+  }
+}
+
+/**
+ * Reset state variables used by search and replace media URLs drush command.
+ */
+function mass_content_update_10003() {
+  _mass_content_reset_state_vars_media_search_replace();
+}
+
+/**
+ * Cleanup mass_superset and mass_tours modules configs.
+ */
+function mass_content_update_10004() {
+  // Get a connection to the database.
+  // Drop the table mass_superset_data if it exists.
+  $connection = \Drupal::database();
+  if ($connection->schema()->tableExists('mass_superset_data')) {
+    $connection->schema()->dropTable('mass_superset_data');
+  }
+  // Module jquery_ui_draggable has an entry in the
+  // system.schema key/value storage, but is missing from your site.
+  $modules_to_cleanup = ['jquery_ui_draggable', 'mass_superset', 'mass_tours'];
+  foreach ($modules_to_cleanup as $module_name) {
+    \Drupal::keyValue("system.schema")->delete($module_name);
+  }
+}
+
+/**
+ * Reset state variables used by search and replace media URLs drush command.
+ */
+function mass_content_update_10005() {
+  _mass_content_reset_state_vars_media_search_replace();
+}

@@ -27,7 +27,6 @@ abstract class MetadataTestCase extends MassExistingSiteBase {
    */
   public function testHasExpectedMetadata() {
     $entity = $this->getContent();
-    $this->indexNode($entity);
     $this->drupalGet($entity->toUrl());
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
     $page = $this->getSession()->getPage();
@@ -57,18 +56,6 @@ abstract class MetadataTestCase extends MassExistingSiteBase {
   }
 
   /**
-   * Run any indexing functions required on the node before using it .
-   *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-   *   The entity.
-   */
-  protected function indexNode(ContentEntityInterface $entity) {
-    /** @var \Drupal\mass_content_api\DescendantManagerInterface $dm */
-    $dm = \Drupal::service('descendant_manager');
-    $dm->index($entity);
-  }
-
-  /**
    * Return the meta tags this entity is expected to have.
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
@@ -85,7 +72,7 @@ abstract class MetadataTestCase extends MassExistingSiteBase {
       'og:site_name' => 'Mass.gov',
       'og:url' => $entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
       'og:type' => 'website',
-      'twitter:card' => 'summary',
+      'twitter:card' => 'summary_large_image',
       'twitter:site' => '@massgov',
       'twitter:site:id' => '16264003',
       'twitter:title' => $entity->label(),

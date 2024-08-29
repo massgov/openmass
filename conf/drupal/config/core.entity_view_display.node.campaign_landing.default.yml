@@ -7,15 +7,9 @@ dependencies:
     - field.field.node.campaign_landing.field_collections
     - field.field.node.campaign_landing.field_english_version
     - field.field.node.campaign_landing.field_header
-    - field.field.node.campaign_landing.field_kpi_ctr_button_links
-    - field.field.node.campaign_landing.field_kpi_ctr_key_msg
-    - field.field.node.campaign_landing.field_kpi_pageviews
-    - field.field.node.campaign_landing.field_kpi_pct_video_50
-    - field.field.node.campaign_landing.field_kpi_pct_video_play
     - field.field.node.campaign_landing.field_meta_description
     - field.field.node.campaign_landing.field_organizations
     - field.field.node.campaign_landing.field_primary_parent
-    - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
     - field.field.node.campaign_landing.field_short_title
@@ -23,7 +17,6 @@ dependencies:
   module:
     - entity_reference_revisions
     - metatag
-    - options
     - user
 id: node.campaign_landing.default
 targetEntityType: node
@@ -72,59 +65,6 @@ content:
     third_party_settings: {  }
     weight: 2
     region: content
-  field_kpi_ctr_button_links:
-    type: number_decimal
-    label: above
-    settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
-    third_party_settings: {  }
-    weight: 8
-    region: content
-  field_kpi_ctr_key_msg:
-    type: number_decimal
-    label: above
-    settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
-    third_party_settings: {  }
-    weight: 7
-    region: content
-  field_kpi_pageviews:
-    type: number_integer
-    label: above
-    settings:
-      thousand_separator: ''
-      prefix_suffix: true
-    third_party_settings: {  }
-    weight: 6
-    region: content
-  field_kpi_pct_video_50:
-    type: number_decimal
-    label: above
-    settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
-    third_party_settings: {  }
-    weight: 10
-    region: content
-  field_kpi_pct_video_play:
-    type: number_decimal
-    label: above
-    settings:
-      thousand_separator: ''
-      decimal_separator: .
-      scale: 2
-      prefix_suffix: true
-    third_party_settings: {  }
-    weight: 9
-    region: content
   field_meta_description:
     type: string
     label: above
@@ -140,13 +80,6 @@ content:
       link: true
     third_party_settings: {  }
     weight: 4
-    region: content
-  field_promotional_kpi_choice:
-    type: list_default
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    weight: 11
     region: content
   field_sections:
     type: entity_reference_revisions_entity_view

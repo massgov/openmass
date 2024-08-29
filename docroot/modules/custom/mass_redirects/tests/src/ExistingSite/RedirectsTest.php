@@ -23,12 +23,19 @@ class RedirectsTest extends MassExistingSiteBase {
   private $sourcePaths;
 
   /**
+   * Un-cacheable dynamic page patterns.
+   */
+  protected static array $uncacheableDynamicPagePatterns = [
+    'orgs/*',
+  ];
+
+  /**
    * Create an editor and a node with url redirects.
    */
   protected function setUp(): void {
     parent::setUp();
 
-    $user1 = User::create(['name' => $this->randomMachineName()]);
+    $user1 = $this->createUser();
     $user1->addRole('editor');
     $user1->activate();
     $user1->save();

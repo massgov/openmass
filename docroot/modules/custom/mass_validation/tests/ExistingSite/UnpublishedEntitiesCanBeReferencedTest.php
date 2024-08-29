@@ -26,7 +26,7 @@ class UnpublishedEntitiesCanBeReferencedTest extends MassExistingSiteBase {
    */
   protected function setUp(): void {
     parent::setUp();
-    $user = User::create(['name' => $this->randomMachineName()]);
+    $user = $this->createUser();
     $user->activate();
     $user->save();
     $this->user = $user;

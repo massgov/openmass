@@ -829,11 +829,13 @@ class Helper {
    *   Which generates the heading before a section.
    * @param string $titleContext
    *   Add supplemental information to the heading.
+   * @param int $level
+   *   Heading level optional value.
    *
    * @return array
    *   Return structured array.
    */
-  public static function buildHours($hours, $title, $titleContext = NULL) {
+  public static function buildHours($hours, $title, $titleContext = NULL, $level = 5) {
     $rteElements = [];
 
     // Hours section.
@@ -858,9 +860,9 @@ class Helper {
 
       if (!empty($field['label']) && Helper::isFieldPopulated($entity, $field['label'])) {
         $rteElements[] = [
-          'path' => '@atoms/04-headings/heading-5.twig',
+          'path' => '@atoms/04-headings/heading-' . $level . '.twig',
           'data' => [
-            'heading5' => [
+            'heading' . $level => [
               'text' => Helper::fieldValue($entity, $field['label']),
             ],
           ],
@@ -900,6 +902,7 @@ class Helper {
           'property' => '',
           'rteElements' => $rteElements,
         ],
+        'headerIndent' => $level < 5 ? 'rich-text-override' : '',
       ],
     ];
   }
@@ -1076,13 +1079,13 @@ class Helper {
    * @param array &$cache_tags
    *   The array of node cache tags.
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
    *   [ [
-   *       'path' => '@molecules/contact-us.twig',
+   *       'path' => '@organisms/contact/contact-us.twig',
    *       'data' => [
    *         'contactUs' => [ contact us data structure ]
    *       ],
@@ -1102,7 +1105,7 @@ class Helper {
       }
 
       $optionalContentsContactUs[] = [
-        'path' => '@molecules/contact-us.twig',
+        'path' => '@organisms/contact/contact-us.twig',
         'data' => ['contactUs' => $contactUs],
       ];
     }
@@ -1120,13 +1123,13 @@ class Helper {
    * @param array $options
    *   An array of options for header contact.
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
    *   [ [
-   *       'path' => '@molecules/contact-us.twig',
+   *       'path' => '@organisms/contact/contact-us.twig',
    *       'data' => [
    *         'contactUs' => [ contact us data structure ]
    *       ],
@@ -1142,7 +1145,7 @@ class Helper {
       }
 
       $optionalContentsContactUs[] = [
-        'path' => '@molecules/contact-us.twig',
+        'path' => '@organisms/contact/contact-us.twig',
         'data' => ['contactUs' => $contactUs],
       ];
     }

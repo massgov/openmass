@@ -14,6 +14,7 @@ use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
+use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
 use Drupal\media\MediaInterface;
 
@@ -28,16 +29,45 @@ use Drupal\media\MediaInterface;
  * @throws \Drupal\Core\Entity\EntityStorageException
  */
 function mass_media_media_update(EntityInterface $entity) {
-  if ($entity->field_upload_file != NULL) {
-    $target_new = $entity->field_upload_file->target_id;
-    $target_original = $entity->original->field_upload_file->target_id;
-    if ($target_original && $target_original !== $target_new) {
-      if ($file = File::load($target_original)) {
-        $file->delete();
-        Drupal::logger('content')->info('File entity @num was replaced and then deleted. Was @url', ['@num' => $file->id(), '@url' => $file->createFileUrl()]);
-      }
-    }
+
+  // getUploadFile method and field_upload_file field are only available to documents.
+  if (!($entity instanceof DocumentBundle)) {
+    return;
   }
+
+  if ($entity->getUploadFile()->isEmpty()) {
+    return;
+  }
+
+  $target_new = $entity->getUploadFile()->target_id;
+  $target_original = $entity->original->getUploadFile()->target_id;
+  if (empty($target_original) || $target_original == $target_new) {
+    return;
+  }
+
+  $file = File::load($target_original);
+  if (empty($file)) {
+    return;
+  }
+
+  $file_uri = $file->getFileUri();
+  /** @var \Drupal\Core\File\FileSystem $file_system */
+  $file_system = \Drupal::service('file_system');
+  $file_scheme = StreamWrapperManager::getScheme($file_uri);
+  if ($file_scheme == 'private') {
+    return;
+  }
+
+  $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
+  $file_destination = 'private://' . $file_uri_target;
+  $dirname = $file_system->dirname($file_destination);
+  if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+    throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
+  }
+  if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
+    throw new \RuntimeException("Unable to move file to '$file_destination'");
+  }
+  Drupal::logger('content')->info('File entity @num was moved to private. Was @url', ['@num' => $file->id(), '@url' => $file->createFileUrl()]);
 }
 
 /**
@@ -188,7 +218,7 @@ function mass_media_media_presave(MediaInterface $entity) {
 
       // Check if the usage of the document is 0.
       // If not process further to track the media.
-      $total = Drupal::service('entity_usage.usage')->listUniqueSourcesCount($entity);
+      $total = Drupal::service('mass_entity_usage.usage')->listUniqueSourcesCount($entity);
       if (!$total) {
         foreach ($labels as $label) {
           // Check if there are paragraphs with the same labels.
@@ -217,7 +247,7 @@ function mass_media_media_presave(MediaInterface $entity) {
 
     // Loads file.
     /** @var \Drupal\file\Entity\File $file */
-    $file = File::load($entity->field_upload_file->target_id);
+    $file = File::load($entity->getUploadFile()->target_id);
     if ($file) {
       $file_uri = $file->getFileUri();
       /** @var \Drupal\Core\File\FileSystem $file_system */
