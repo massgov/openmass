@@ -53,15 +53,22 @@ class TopicPageFormAlter implements ContainerInjectionInterface {
       'field_hide_feedback_component',
     ];
 
+    $can_create_topics = $this->currentUser->hasPermission('create topic_page content');
+    // Hide the listed fields for not admins.
     foreach ($fields_to_restrict_access_if_no_create_topic_page_perm as $field) {
       if (!isset($form[$field])) {
         continue;
       }
 
-      $can_manage_topics = $this->currentUser->hasPermission('create topic_page content');
-
-      $form[$field]['#access'] = $can_manage_topics;
+      $form[$field]['#access'] = $can_create_topics;
     }
+
+    if (!isset($form['field_organizations'])) {
+      return;
+    }
+
+    // Show the field_organizations for not admins, but keep it disabled.
+    $form['field_organizations']['#disabled'] = !$can_create_topics;
 
   }
 
