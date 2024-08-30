@@ -103,8 +103,8 @@
   {# TOPIC PAGES show organizations and related topics at the bottom of page content as a bulleted list. #}
   {# Other content types show organizations as wrapped links at the top in the page header region. #}
   {# See: https://jira.mass.gov/browse/DP-13009 #}
-  {% set set_related_tipics_is_visible = node.field_organizations.isEmpty != true or node.field_topic_ref_related_topics.isEmpty != true %}
-  {% if set_related_tipics_is_visible %}
+  {% set related_tipics_are_visible = node.field_organizations.isEmpty != true or node.field_topic_ref_related_topics.isEmpty != true %}
+  {% if related_tipics_are_visible %}
     <section class="ma__related-orgs-and-topics">
       {% include "@atoms/04-headings/comp-heading.twig" with {
         "compHeading": {
