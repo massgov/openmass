@@ -425,13 +425,11 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
   $field_definition = $context['items']->getFieldDefinition();
   $type = $field_definition->getType();
   $field_name = $field_definition->getName();
-
   if ($type == 'google_map_field') {
     if ($field_name == 'field_lat_long') {
       $element['name']['#type'] = 'hidden';
     }
   }
-  // TODO: Refactor code, split to classes, user ClassResolver to call the code.
   elseif ($type == 'link') {
     // Change description of internal+external widgets.
     // This is needed because supportsExternalLinks() and supportsInternalLinks() are protected.
@@ -461,13 +459,11 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         unset($element['uri']['#field_prefix']);
       }
     }
-
     // Overrides description of link module for social media-related link fields.
     $social_link_fields = [
       'field_services_social_links',
       'field_social_links',
     ];
-
     if (in_array($field_name, $social_link_fields)) {
       $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, X (formerly Twitter), Threads, Instagram, LinkedIn, Vimeo or Medium.',
         [
@@ -488,13 +484,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
           unset($element['uri']['#description']['#items'][1]);
         }
       }
-
-      $paragraphs_fields_holds_urls_to_modify_description = [
-        'field_info_details_sections',
-        'field_iframe'
-      ];
-
-      if (isset($context['form']['#parents'][0]) && in_array($context['form']['#parents'][0], $paragraphs_fields_holds_urls_to_modify_description,)) {
+      if (isset($context['form']['#parents'][0]) && $context['form']['#parents'][0] == 'field_iframe') {
         $element['uri']['#description']['#items'][1] = t('This must be an external URL such as %url.',
           [
             '%url' => 'https://example.com',
