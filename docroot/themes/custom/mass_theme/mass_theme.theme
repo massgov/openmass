@@ -827,7 +827,7 @@ function mass_theme_preprocess_node_location(&$variables) {
         $contact_entity = $contact[0];
         // Don't know why this map isn't working.
         // $contact_fields = Helper::getMappedFields($contact_entity, $contact_map)
-        $hours_content[] = Helper::buildHours($contact_entity->field_ref_hours, 'Hours', $titleContext);
+        $hours_content[] = Helper::buildHours($contact_entity->field_ref_hours, 'Hours', $titleContext, 4);
       }
 
       $richTextElements = [

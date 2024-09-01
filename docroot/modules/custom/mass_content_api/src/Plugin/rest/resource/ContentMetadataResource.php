@@ -4,7 +4,6 @@ namespace Drupal\mass_content_api\Plugin\rest\resource;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\path_alias\AliasManagerInterface;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
@@ -25,13 +24,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
  * )
  */
 class ContentMetadataResource extends ResourceBase implements ContainerFactoryPluginInterface {
-
-  /**
-   * Drupal\mass_content_api\DescendantManager definition.
-   *
-   * @var \Drupal\mass_content_api\DescendantManagerInterface
-   */
-  protected $descendantManager;
 
   /**
    * Drupal\Core\Entity\EntityTypeManager definition.
@@ -57,9 +49,8 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, DescendantManagerInterface $descendant_manager, EntityTypeManagerInterface $entity_type_manager, RequestStack $request_stack, AliasManagerInterface $alias_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, EntityTypeManagerInterface $entity_type_manager, RequestStack $request_stack, AliasManagerInterface $alias_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
-    $this->descendantManager = $descendant_manager;
     $this->entityTypeManager = $entity_type_manager;
     $this->requestStack = $request_stack;
     $this->aliasManager = $alias_manager;
@@ -75,7 +66,6 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       $plugin_definition,
       $container->getParameter('serializer.formats'),
       $container->get('logger.factory')->get('rest'),
-      $container->get('descendant_manager'),
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
       $container->get('path_alias.manager')
@@ -96,7 +86,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
 
     // Transforms a Node item into a simple object,
     // containing an ID attribute, and parent IDs array.
-    $extract_meta_from_nodes = function ($item, $flag_show_flat, $traversal_depth) {
+    $extract_meta_from_nodes = function ($item) {
       // References to various 'parent reference fields'.
       $get_target_id = function ($r) {
         return $r['target_id'];
@@ -170,7 +160,6 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       $mod_state = $item->moderation_state->getValue();
       $path = $this->aliasManager->getAliasByPath('/node/' . $item->nid->value);
       $res = [
-        'descendants' => [],
         'id' => $item->nid->value,
         'node_path' => $path,
         'uuid' => $item->uuid->value,
@@ -196,13 +185,6 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
         'kpis' => $kpis,
       ];
 
-      if ($flag_show_flat) {
-        $res['descendants'] = $this->descendantManager->getChildrenFlat($item->nid->value, $traversal_depth);
-      }
-      else {
-        $res['descendants'] = $this->descendantManager->getChildrenTree($item->nid->value, $traversal_depth);
-      }
-
       return $res;
     };
 
@@ -210,35 +192,18 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
     $query_params = $this->requestStack->getCurrentRequest()->query->all();
     $offset_num = 0;
     $record_limit = 1000;
-    $descendant_format = TRUE;
-    $traversal_depth = $this->descendantManager::MAX_DEPTH;
-    if (isset($query_params['depth']) && (int) $query_params['depth'] < $traversal_depth && (int) $query_params['depth'] > 0) {
-      $traversal_depth = (int) $query_params['depth'];
-    }
-    // This function is invoked by the rest API endpoint `api/v1/content-metadata` where we prefer to
-    // show descendants as a flat list (not a nested tree) because external systems that consume
-    // the API output expect a flat tree. So we initialize $show_flat flag to TRUE and set it to false
-    // only if an explicit parameter `?flat=0` is passed to the API endpoint.
-    // NOTE: On the descendant test UI page `/admin/config/content/descendants` by default we show a tree, and a
-    // flat list can be see by passing in a url parameter `?flat=1`.
-    $show_flat = TRUE;
+    // This function is invoked by the rest API endpoint `api/v1/content-metadata`.
     if (isset($query_params['offset'])) {
       $offset_num = (int) $query_params['offset'];
     }
     if (isset($query_params['limit'])) {
       $record_limit = min($record_limit, (int) $query_params['limit']);
     }
-    if (isset($query_params['descendant_format'])) {
-      $descendant_format = ($query_params['descendant_format'] != MASS_CONTENT_API_DEPTH);
-    }
     if (isset($query_params['content_types'])) {
       $content_types = explode(',', $query_params['content_types']);
     }
     if (isset($query_params['published'])) {
       $published = 1;
-    }
-    if (isset($query_params['flat']) && $query_params['flat'] == 'no') {
-      $show_flat = FALSE;
     }
 
     $node_storage = $this->entityTypeManager->getStorage('node');
@@ -257,7 +222,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
     $results = [];
 
     foreach ($nodes as $n) {
-      $results[] = $extract_meta_from_nodes($n, $show_flat, $traversal_depth);
+      $results[] = $extract_meta_from_nodes($n);
     }
 
     $output = [

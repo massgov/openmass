@@ -1,21 +1,45 @@
+## [0.408.1] - August 29, 2024
+
+### Fixed:
+  - DP-34755: HOTFIX PHP error on some node edit forms.
+
+
+
+## [0.408.0] - August 27, 2024
+
+### Added
+  - DP-22509: Reimplement Allow authors to choose the type of ordered list style they need for a list.
+  - DP-34663: Made Default views display visible; Made SQL query related to view display visible.
+
+### Fixed
+  - DP-27414: Redirect loops.
+  - DP-34115: Bug - adding iframe using aspect ratio for sizing still requires fixed height value.
+  - DP-34517: Raw files URLs in content and link fields.
+  - DP-34583: A11y issue with contact info on location page.
+  - DP-34663: Error on /admin/structure/views/settings when saving views configuration.
+
+### Changed
+  - DP-34115: External links replaced with internal in embed iframe paragraph.
+  - DP-34425: Changed the validation error message for the feedback component, updated help text on feedback component for contact pages.
+
 
 
 ## [0.407.0] - August 20, 2024
 
 ### Added
   - DP-29801: Add link to edit contact node when it is in an entity reference field in Drupal.
-  
+
 ### Fixed
   - DP-32036: Link list in accordion style and markup fix.
   - DP-34205: Fixed heal drush commands.
   - DP-34266: Incorrect heading level for contact on service page.
   - DP-34332: Bug - fix path to download media in orphaned media view.
   - DP-34473: Backstop URLs for events fixed, adjustment to document URL in post release backstop
-  
+
 ### Changed
   - DP-34297: remove DDEV startup warnings
   - DP-34460: HTML tables header validation message improved.
-  
+
 
 
 ## [0.406.0] - August 13, 2024
@@ -25,19 +49,19 @@
   - DP-26650: Consolidated OrgContact into ContactRow. Remove folding logic, and reorder contact items.
   - DP-33643: Configure images in Drupal to allow decorative images.
   - DP-34186: Update our contrib projects for Drupal 11 compatibility (Akamai, cache metrics, Drush)
-  
+
 ### Removed
   - DP-26654: Remove descendant manager from Drupal.
-  
+
 ### Fixed
   - DP-28287: Resolve mapping-related JS errors and warnings.
   - DP-34237: Fix /files URL cleaning.
   - DP-34349: Decision tree js errors in template.
-  
+
 ### Added
   - DP-34221: DDEV: Add support scripts for Mac OS Sequel Ace and TablePlus database clients
 to work with mass.gov custom database container.
-  
+
 
 
 ## [0.405.0] - July 30, 2024
@@ -48,15 +72,15 @@ to work with mass.gov custom database container.
   - DP-32500: Updated help text on org page template in the overview tab.
   - DP-33174: $this->createUser() in Tests
   - DP-34059: Allow documents in draft state to transition directly to trash state.
-  
+
 ### Fixed
   - DP-24742: Feedback button disappears after main nav opens and closes.
   - DP-34151: Fixed validation for featured mosaic items.
-  
+
 ### Added
   - DP-34033: Add an analytics class to support analytics on global vs contextual login clicks.
   - DP-34084: Added label filter and csv export to accessibility report.
-  
+
 
 
 ## [0.404.0] - July 23, 2024
@@ -64,20 +88,20 @@ to work with mass.gov custom database container.
 ### Changed
   - DP-28529: Change dropdown list of content types on my content view to match all content views.
   - DP-31170: Change collections choice interface for authors on how-to page.
-  
+
 ### Fixed
   - DP-31924: Hamburger Menu Mobile Link Styles inconsistency.
   - DP-32598: Fix heal references to trashed job.
   - DP-33945: Out of memory error when looking at "pages linking here" for page with lots of links.
   - DP-34028: Investigate and fix 500 errors.
-  
+
 ### Removed
   - DP-32567: Behat tests
   - DP-33983: Remove code for unneeded modules.
-  
+
 ### Added
   - DP-33642: Require tables in rich text editor to have headers or block node save.
-  
+
 
 
 ## [0.403.1] - July 17, 2024
