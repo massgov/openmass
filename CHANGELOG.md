@@ -1,3 +1,14 @@
+
+
+## [0.409.0] - September 3, 2024
+
+### Fixed
+  - DP-34561: Fix download links in bulleted list. Adjust collapsible content spacing on mobile.
+  - DP-34687: Orphan page report now available again.
+  
+### Removed
+  - DP-34585: Removed descendant manager code from mass_content_api and re-enabled.
+  
 ## [0.408.1] - August 29, 2024
 
 ### Fixed:
