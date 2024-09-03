@@ -875,7 +875,7 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
  */
 function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInterface $form_state) {
   _mass_fields_form_node_topic_page_edit_restrict_fields($form, $form_state);
-  \Drupal::classResolver(TopicPageFormAlter::class)->topicFieldsControlAccess($form);
+  \Drupal::classResolver(TopicPageFormAlter::class)->topicFieldsControlAccess($form, $form_state);
 }
 
 /**

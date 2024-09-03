@@ -3,7 +3,10 @@
 namespace Drupal\mass_fields\FormAlter;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Entity\ContentEntityFormInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -47,10 +50,10 @@ class TopicPageFormAlter implements ContainerInjectionInterface {
    * @param array $form
    *   The form array being built.
    */
-  public function topicFieldsControlAccess(array &$form): void {
+  public function topicFieldsControlAccess(array &$form, FormStateInterface $form_state): void {
     $can_create_topics = $this->currentUser->hasPermission('create topic_page content');
     $this->adminFieldsAccess($form, $can_create_topics);
-    $this->organizationsFieldAccess($form, $can_create_topics);
+    $this->organizationsFieldAccess($form, $can_create_topics, $form_state);
   }
 
   /**
@@ -87,15 +90,45 @@ class TopicPageFormAlter implements ContainerInjectionInterface {
    * @param array $form
    *   The form array being built.
    * @param bool $can_create_topics
-   *   A boolean indicating if the user has 'create topic_page content' permissions.
+   *   A boolean indicating if the user has 'create topic_page content'
+   *   permissions.
    */
-  private function organizationsFieldAccess(array &$form, bool $can_create_topics): void {
-    $can_create_topics = $this->currentUser->hasPermission('create topic_page content');
+  private function organizationsFieldAccess(array &$form, bool $can_create_topics, FormStateInterface $form_state): void {
     if (!isset($form['field_organizations'])) {
       return;
     }
 
-    $form['field_organizations']['#disabled'] = !$can_create_topics;
+    $form_object = $form_state->getFormObject();
+    if (!$form_object instanceof ContentEntityFormInterface) {
+      return;
+    }
+
+    $node = $form_object->getEntity();
+    if (!$node instanceof NodeInterface) {
+      return;
+    }
+
+    if (!$node->hasField('field_restrict_orgs_field')) {
+      return;
+    }
+
+    // This logic should not be executed if a user has access to edit the Topic
+    // Page.
+    if ($can_create_topics) {
+      return;
+    }
+
+    // Do nothing, field value not defined, default behaviour.
+    // Field_restrict_orgs_field possible values:
+    // - "1", access to field_organizations restricted.
+    // - "0" access to field_organizations unrestricted.
+    // - null, not defined, access to field_organizations unrestricted.
+    if (is_null($node->get('field_restrict_orgs_field')->value)) {
+      return;
+    }
+
+    $orgs_field_is_access_restricted_by_admin = (bool) $node->get('field_restrict_orgs_field')->value;
+    $form['field_organizations']['#disabled'] = $orgs_field_is_access_restricted_by_admin;
   }
 
 }
