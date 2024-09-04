@@ -92,7 +92,7 @@ class Helper {
    * @param int|string|null $delta
    *   (Optional) the delta of the image field to display, defaults to 0.
    *
-   * @return \Drupal\Core\GeneratedUrl|string The URL to the styled image, or to the original image if the style
+   * @return \Drupal\Core\GeneratedUrl|string
    *   The URL to the styled image, or to the original image if the style
    *   does not exist.
    */
