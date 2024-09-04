@@ -129,6 +129,15 @@ class TopicPageFormAlter implements ContainerInjectionInterface {
 
     $orgs_field_is_access_restricted_by_admin = (bool) $node->get('field_restrict_orgs_field')->value;
     $form['field_organizations']['#disabled'] = $orgs_field_is_access_restricted_by_admin;
+
+    if ($orgs_field_is_access_restricted_by_admin) {
+      // Remove validations created by conditional_fields when we don't need it.
+      $index = array_search('conditional_fields_form_after_build', $form["#after_build"]);
+      if (is_int($index)) {
+        unset($form['#after_build'][$index]);
+      }
+    }
+
   }
 
 }
