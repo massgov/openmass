@@ -10,6 +10,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -121,6 +122,12 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   $current_user = \Drupal::currentUser();
   if (!$current_user->hasRole('administrator') && !$current_user->hasRole('content_team')) {
     _mass_utility_hide_text_format_elements($form);
+    // Initialize CacheableMetadata.
+    $cache_metadata = new CacheableMetadata();
+    // Add cache context for roles.
+    $cache_metadata->addCacheContexts(['user.roles']);
+    // Attach cache metadata to the form.
+    $cache_metadata->applyTo($form);
   }
 
   /** @var \Drupal\node\NodeForm $node_form */
