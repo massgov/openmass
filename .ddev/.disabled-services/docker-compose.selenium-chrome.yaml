@@ -1,7 +1,9 @@
----
-# Selenium Chrome configuration for DDEV-Local.
-
-version: '3.6'
+#ddev-generated
+# Remove the line above if you don't want this file to be overwritten when you run
+# ddev get ddev/ddev-selenium-standalone-chrome
+#
+# This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
+#
 services:
   selenium-chrome:
     image: seleniarm/standalone-chromium:4.1.4-20220429
@@ -14,27 +16,19 @@ services:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
       - HTTPS_EXPOSE=7900:7900
       - HTTP_EXPOSE=7910:7900
+      - VNC_NO_PASSWORD=1
     external_links:
       - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
-      #ports:
-      # VNC access for a traditional VNC client like macOS "Screen Sharing".
-      # - "5900:5900"
+    # To enable VNC access for traditional VNC clients like macOS "Screen Sharing",
+    # uncomment the following two lines.
+    #ports:
+    #  - "5900:5900"
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
     volumes:
-      - ".:/mnt/ddev_config:ro"
-      - ddev-global-cache:/mnt/ddev-global-cache
-    shm_size: 2gb
+      - ".:/mnt/ddev_config"
 
   web:
     links:
       - selenium-chrome
-    environment:
-      - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
-      # Note: Do not modify the base URL value.
-      - BROWSERTEST_OUTPUT_BASE_URL=${DDEV_PRIMARY_URL}
-      # Use disable-dev-shm-usage instead of setting shm_usage
-      # https://developers.google.com/web/tools/puppeteer/troubleshooting#tips
-      # The format of chromeOptions is defined at https://chromedriver.chromium.org/capabilities
-      - 'DTT_MINK_DRIVER_ARGS=["chrome", {"chromeOptions": {"args": ["disable-dev-shm-usage"]}}, "http://selenium-chrome:4444"]'

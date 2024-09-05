@@ -6,6 +6,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
@@ -147,7 +148,7 @@ EOD;
             'to_id' => $parameters['node'],
             'to_type' => 'node',
           ];
-          if (!Drush::simulate()) {
+          if (!Drush::simulate() && isset($usage)) {
             // Re-point this usage.
             if ($this->heal($usage, $result)) {
               $result['success'] = 'Yes';
