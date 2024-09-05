@@ -603,8 +603,9 @@ class Organisms {
         $cache_tags = array_merge($cache_tags, $ref_entity->getCacheTags());
         // Determines which field names to use from the map.
         $field = Helper::getMappedFields($ref_entity, $ref_map);
+
         $pages[] = [
-          'image' => Helper::getFieldImageUrl($ref_entity, isset($options['style']) ? $options['style'] : '', $field['image']),
+          'image' => Helper::getFieldImageUrl($ref_entity, $options['style'] ?? '', $field['image'] ?? NULL),
           'altTag' => $ref_entity->alt,
           'link' => [
             'type' => UrlHelper::isExternal($ref_entity->toURL()
