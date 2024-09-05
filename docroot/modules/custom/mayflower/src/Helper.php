@@ -6,6 +6,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\GeneratedUrl;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\crop\Entity\Crop;
@@ -82,21 +83,32 @@ class Helper {
   /**
    * Provide the URL of an image.
    *
-   * @param object $entity
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The node with the field on it.
-   * @param string $style_name
+   * @param string|null $style_name
    *   (Optional) The name of an image style.
-   * @param string $field
-   *   The name of an the image field.
-   * @param int $delta
+   * @param string|null $field
+   *   The name of the image field.
+   * @param int|string|null $delta
    *   (Optional) the delta of the image field to display, defaults to 0.
    *
-   * @return string
+   * @return \Drupal\Core\GeneratedUrl|string
    *   The URL to the styled image, or to the original image if the style
    *   does not exist.
    */
-  public static function getFieldImageUrl($entity, $style_name = NULL, $field = NULL, $delta = 0) {
+  public static function getFieldImageUrl(ContentEntityInterface $entity, ?string $style_name = NULL, ?string $field = NULL, int|string|null $delta = 0): GeneratedUrl|string {
     $url = '';
+
+    if (!$entity->hasField($field)) {
+      \Drupal::logger('mayflower')
+        ->error('Field not found in method: @method, style name: @style_name, field @field', [
+          '@method' => __METHOD__,
+          '@style_name' => $style_name,
+          '@field' => $field,
+        ]
+      );
+      return $url;
+    }
 
     $fields = $entity->get($field);
 
@@ -147,6 +159,7 @@ class Helper {
         $url = $image->createFileUrl();
       }
     }
+
     return $url;
   }
 
