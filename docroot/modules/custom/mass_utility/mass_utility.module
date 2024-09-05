@@ -469,7 +469,6 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
  * Implements hook_field_widget_form_alter().
  */
 function mass_utility_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
-
   // Hide the map name field on the address google map field.
   $field_definition = $context['items']->getFieldDefinition();
   $type = $field_definition->getType();
