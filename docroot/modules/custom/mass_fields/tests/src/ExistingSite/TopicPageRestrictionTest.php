@@ -162,6 +162,45 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   }
 
   /**
+   * Creates a Topic Page with with admin controlled organization field.
+   */
+  private function createTopicPageWhereOrganizationAccessControledByField(bool $access_to_orgs_restricted_for_non_content_admin) {
+    // Test a new Topic page can be saved.
+    $newOrgNode = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+    ]);
+
+    $image = File::create([
+      'uri' => 'public://test.jpg',
+    ]);
+
+    $this->markEntityForCleanup($image);
+
+    $data = [
+      'type' => 'topic_page',
+      'title' => $this->randomMachineName(),
+      'field_restrict_orgs_field' => $access_to_orgs_restricted_for_non_content_admin,
+      'field_topic_lede' => $this->randomString(20),
+      'field_topic_content_cards' => [
+        Paragraph::create([
+          'type' => 'content_card_group',
+          'field_content_card_link_cards' => [
+            'uri' => 'http://test.card',
+            'title' => 'Test Card',
+          ],
+        ]),
+      ],
+      'status' => 1,
+      'moderation_state' => 'published',
+    ];
+
+    $topic_page = $this->createNode($data);
+    $topic_page->save();
+    return $topic_page;
+  }
+
+  /**
    * Checks topic page edit form locked and unlocked fields.
    */
   public function checkTopicPageEditForm($locked, $unlocked) {
@@ -273,9 +312,54 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   }
 
   /**
-   * Provides data to test with testTopicPageOrganizationFieldControlsVisibility.
+   * Provides data to test with
+   * testTopicPageOrganizationFieldAccess.
    */
-  public function nonAdminRoles() {
+  public function testTopicPageOrganizationFieldAccessNonAdminRoles(): array {
+    return [
+      [['role' => 'editor']],
+      [['role' => 'author']],
+    ];
+  }
+
+  /**
+   * Tests access to organizations field on a topic page edit form.
+   *
+   * @dataProvider testTopicPageOrganizationFieldAccessNonAdminRoles
+   */
+  public function testTopicPageOrganizationFieldAccess(array $role_data) {
+    // Create user.
+    $user = $this->createUser();
+    $role = $role_data['role'];
+
+    $user->addRole($role);
+
+    $user->activate();
+    $user->save();
+    $this->user = $user;
+
+    $this->drupalLogin($this->user);
+
+    // Assert organizations field is disabled by admins.
+    $topic_page = $this->createTopicPageWhereOrganizationAccessControledByField(TRUE);
+    $this->drupalGet($topic_page->toUrl('edit-form')->toString());
+    $page = $this->getCurrentPage();
+    $element = $page->find('css', '#edit-field-organizations-0-target-id');
+    $this->assertTrue($element->hasAttribute('disabled'), "Organizations field must be disabled for $role if \"field_restrict_orgs_field\" is selected.");
+
+    // Assert admins allow organizations field.
+    $topic_page = $this->createTopicPageWhereOrganizationAccessControledByField(FALSE);
+    $this->drupalGet($topic_page->toUrl('edit-form')->toString());
+    $page = $this->getCurrentPage();
+    $element = $page->find('css', '#edit-field-organizations-0-target-id');
+    $this->assertFalse($element->hasAttribute('disabled'), "Organizations field must be visible for $role if \"field_restrict_orgs_field\" is not selected.");
+  }
+
+  /**
+   * Provides data to test with
+   * testTopicPageOrganizationFieldControlsVisibility.
+   */
+  public function testTopicPageOrganizationFieldControlsVisibilityAdminRoles(): array {
     return [
       [['role' => 'editor', 'assert' => 'assertFalse']],
       [['role' => 'author', 'assert' => 'assertFalse']],
@@ -286,9 +370,9 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   /**
    * Tests access to organizations field on topic page edit form.
    *
-   * @dataProvider nonAdminRoles
+   * @dataProvider testTopicPageOrganizationFieldControlsVisibilityAdminRoles
    */
-  public function testTopicPageOrganizationFieldControlsVisibility($role_data) {
+  public function testTopicPageOrganizationFieldControlsVisibility(array $role_data) {
     // Create user.
     $role = $role_data['role'];
     $user = $this->createUser();
