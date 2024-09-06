@@ -127,6 +127,12 @@ class TopicPageFormAlter implements ContainerInjectionInterface {
       return;
     }
 
+    // Do nothing if links management restricted globally for that Topic Page.
+    $link_management_restricted = $node->field_restrict_link_management->value ?? FALSE;
+    if ($link_management_restricted) {
+      return;
+    }
+
     $orgs_field_is_access_restricted_by_admin = (bool) $node->get('field_restrict_orgs_field')->value;
     $form['field_organizations']['#disabled'] = $orgs_field_is_access_restricted_by_admin;
 
