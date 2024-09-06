@@ -276,7 +276,11 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    * Provides data to test with testTopicPageOrganizationFieldControlsVisibility.
    */
   public function nonAdminRoles() {
-    return [['editor'], ['author']];
+    return [
+      [['role' => 'editor', 'assert' => 'assertFalse']],
+      [['role' => 'author', 'assert' => 'assertFalse']],
+      [['role' => 'content_team', 'assert' => 'assertTrue']],
+    ];
   }
 
   /**
@@ -284,8 +288,9 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    *
    * @dataProvider nonAdminRoles
    */
-  public function testTopicPageOrganizationFieldControlsVisibility(string $role) {
+  public function testTopicPageOrganizationFieldControlsVisibility($role_data) {
     // Create user.
+    $role = $role_data['role'];
     $user = $this->createUser();
     $user->addRole($role);
     $user->activate();
@@ -300,7 +305,8 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
     // Assert field visibility.
     $field_names = ['Disable organization(s) field and make it optional', 'Hide sitewide feedback component'];
     foreach ($field_names as $field_name) {
-      $this->assertFalse($page->hasField($field_name), "\"$field_name\" field should not be visible for "  . $role);
+      $condition = $role_data['assert'] == 'assertTrue' ? '' : 'not';
+      $this->{$role_data['assert']}($page->hasField($field_name), "\"$field_name\" field should $condition be visible for " . $role);
     }
   }
 
