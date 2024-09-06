@@ -182,6 +182,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
       'title' => $this->randomMachineName(),
       'field_restrict_orgs_field' => $access_to_orgs_restricted_for_non_content_admin,
       'field_topic_lede' => $this->randomString(20),
+      'field_organizations' => $newOrgNode->id(),
       'field_topic_content_cards' => [
         Paragraph::create([
           'type' => 'content_card_group',
@@ -317,7 +318,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    * Provides data to test with
    * testTopicPageOrganizationFieldAccess.
    */
-  public function testTopicPageOrganizationFieldAccessNonAdminRoles(): array {
+  public function topicPageOrganizationFieldAccessNonAdminRoles(): array {
     return [
       [['role' => 'editor']],
       [['role' => 'author']],
@@ -327,7 +328,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   /**
    * Tests access to organizations field on a topic page edit form.
    *
-   * @dataProvider testTopicPageOrganizationFieldAccessNonAdminRoles
+   * @dataProvider topicPageOrganizationFieldAccessNonAdminRoles
    */
   public function testTopicPageOrganizationFieldAccess(array $role_data) {
     // Create user.
@@ -348,6 +349,10 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
     $page = $this->getCurrentPage();
     $element = $page->find('css', '#edit-field-organizations-0-target-id');
     $this->assertTrue($element->hasAttribute('disabled'), "Organizations field must be disabled for $role if \"field_restrict_orgs_field\" is selected.");
+    // Check the page can be saved.
+    $page->findButton('Save')->click();
+    $this->htmlOutput();
+    $this->assertSession()->pageTextContains('Topic Page ' . $topic_page->label() . ' has been updated.');
 
     // Assert admins allow organizations field.
     $topic_page = $this->createTopicPageWhereOrganizationAccessControledByField(FALSE);
@@ -355,6 +360,10 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
     $page = $this->getCurrentPage();
     $element = $page->find('css', '#edit-field-organizations-0-target-id');
     $this->assertFalse($element->hasAttribute('disabled'), "Organizations field must be visible for $role if \"field_restrict_orgs_field\" is not selected.");
+    // Check the page can be saved.
+    $page->findButton('Save')->click();
+    $this->htmlOutput();
+    $this->assertSession()->pageTextContains('Topic Page ' . $topic_page->label() . ' has been updated.');
   }
 
   /**
@@ -363,7 +372,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    * Provides data to test with
    * testTopicPageOrganizationFieldControlsVisibility.
    */
-  public function testTopicPageOrganizationFieldControlsVisibilityAdminRoles(): array {
+  public function topicPageOrganizationFieldControlsVisibilityAdminRoles(): array {
     return [
       [['role' => 'editor', 'assert' => 'assertFalse']],
       [['role' => 'author', 'assert' => 'assertFalse']],
@@ -374,7 +383,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   /**
    * Tests access to organizations field on topic page edit form.
    *
-   * @dataProvider testTopicPageOrganizationFieldControlsVisibilityAdminRoles
+   * @dataProvider topicPageOrganizationFieldControlsVisibilityAdminRoles
    */
   public function testTopicPageOrganizationFieldControlsVisibility(array $role_data) {
     // Create user.
@@ -395,7 +404,12 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
     foreach ($field_names as $field_name) {
       $condition = $role_data['assert'] == 'assertTrue' ? '' : 'not';
       $this->{$role_data['assert']}($page->hasField($field_name), "\"$field_name\" field should $condition be visible for " . $role);
+
     }
+    // Check the page can be saved.
+    $page->findButton('Save')->click();
+    $this->htmlOutput();
+    $this->assertSession()->pageTextContains('Topic Page ' . $topic_page->label() . ' has been updated.');
   }
 
 }
