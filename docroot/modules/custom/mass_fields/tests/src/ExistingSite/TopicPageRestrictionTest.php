@@ -272,4 +272,36 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
     $this->assertTrue($this->getCurrentPage()->hasContent('Help Us Improve Mass.gov'), 'The feedback form is hidden, while it must be visible.');
   }
 
+  /**
+   * Provides data to test with testTopicPageOrganizationFieldControlsVisibility.
+   */
+  public function nonAdminRoles() {
+    return [['editor'], ['author']];
+  }
+
+  /**
+   * Tests access to organizations field on topic page edit form.
+   *
+   * @dataProvider nonAdminRoles
+   */
+  public function testTopicPageOrganizationFieldControlsVisibility(string $role) {
+    // Create user.
+    $user = $this->createUser();
+    $user->addRole($role);
+    $user->activate();
+    $user->save();
+    $this->user = $user;
+
+    $this->drupalLogin($this->user);
+
+    $topic_page = $this->createTopicPage(FALSE);
+    $this->drupalGet($topic_page->toUrl('edit-form')->toString());
+    $page = $this->getCurrentPage();
+    // Assert field visibility.
+    $field_names = ['Disable organization(s) field and make it optional', 'Hide sitewide feedback component'];
+    foreach ($field_names as $field_name) {
+      $this->assertFalse($page->hasField($field_name), "\"$field_name\" field should not be visible for "  . $role);
+    }
+  }
+
 }
