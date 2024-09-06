@@ -312,6 +312,8 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   }
 
   /**
+   * Data provider.
+   *
    * Provides data to test with
    * testTopicPageOrganizationFieldAccess.
    */
@@ -356,6 +358,8 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   }
 
   /**
+   * Data provider.
+   *
    * Provides data to test with
    * testTopicPageOrganizationFieldControlsVisibility.
    */
