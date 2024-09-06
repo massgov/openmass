@@ -73,13 +73,13 @@ class TopicPageAdminFieldsTest extends ExistingSiteSelenium2DriverTestBase {
     // Ensure we have a parent page.
     $page = $this->getCurrentPage();
     $orgs_control_field = $page->findField('Disable organization(s) field and make it optional');
-    $orgs_control_field->check();;
+    $orgs_control_field->check();
     // Wait to make sure states are completed.
     sleep(1);
     $element = $page->find('css', '#edit-field-organizations-0-target-id');
     $this->assertTrue($element->hasAttribute('disabled'), "Organizations field must be disabled.");
 
-    $orgs_control_field->uncheck();;
+    $orgs_control_field->uncheck();
     // Wait to make sure states are completed.
     sleep(1);
     $element = $page->find('css', '#edit-field-organizations-0-target-id');
