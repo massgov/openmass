@@ -30,6 +30,13 @@ class PublishChildWithUnpublishedParentConstraintTest extends MassExistingSiteBa
   }
 
   /**
+   * Un-cacheable dynamic page patterns.
+   */
+  protected static array $uncacheableDynamicPagePatterns = [
+    'orgs/*',
+  ];
+
+  /**
    * Assert that the constraint works properly.
    */
   public function testNodeCannotBePublishedIfItsParentIsNotPublished() {
