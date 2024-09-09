@@ -1,0 +1,23 @@
+uuid: b16930c3-628d-4d4c-8367-1bfe5bd606f7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_restrict_orgs_field
+    - node.type.topic_page
+id: node.topic_page.field_restrict_orgs_field
+field_name: field_restrict_orgs_field
+entity_type: node
+bundle: topic_page
+label: 'Disable organization(s) field and make it optional'
+description: 'Check this box to make the organization(s) field optional and to disable it from editing (remove any organizations before checking this field). This is useful for topic pages that are very general and not reasonably tied to specific organizations. (This flag is only seen by content administrators)'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean
