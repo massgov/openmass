@@ -18,6 +18,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Url;
+use Drupal\mass_fields\FormAlter\TopicPageFormAlter;
 use Drupal\mass_fields\Plugin\Field\FieldWidget\EntityReferenceEditLinkAutocompleteWidget;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -874,6 +875,7 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
  */
 function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInterface $form_state) {
   _mass_fields_form_node_topic_page_edit_restrict_fields($form, $form_state);
+  \Drupal::classResolver(TopicPageFormAlter::class)->topicFieldsControlAccess($form, $form_state);
 }
 
 /**
