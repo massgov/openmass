@@ -10,6 +10,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -80,9 +81,55 @@ function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_sta
 }
 
 /**
+ * Recurse through the provided form and hide any text_format elements.
+ *
+ * @param array $form
+ *   The form in which to iterate to hide the text_format elements.
+ */
+function _mass_utility_hide_text_format_elements(array &$form) {
+  foreach (Element::children($form) as $key) {
+    if (!isset($form[$key]['#type']) || $form[$key]['#type'] == 'container') {
+      _mass_utility_hide_text_format_elements($form[$key]);
+    }
+    elseif ($form[$key]['#type'] == 'text_format') {
+      $form[$key]['#after_build'][] = '_mass_utility_hide_text_format_element';
+    }
+  }
+}
+
+/**
+ * Hide a given text_format element.
+ *
+ * @param array $element
+ *   The element to hide.
+ *
+ * @return array
+ *   The hidden element.
+ */
+function _mass_utility_hide_text_format_element(array $element) {
+  if (!empty($element['format'])) {
+    $element['format']['#attributes']['class'][] = 'hidden';
+  }
+  return $element;
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Hide text_format form the form.
+  $current_user = \Drupal::currentUser();
+  if (!$current_user->hasRole('administrator') && !$current_user->hasRole('content_team')) {
+    _mass_utility_hide_text_format_elements($form);
+    // Initialize CacheableMetadata.
+    $cache_metadata = new CacheableMetadata();
+    // Add cache context for roles.
+    $cache_metadata->addCacheContexts(['user.roles']);
+    // Attach cache metadata to the form.
+    $cache_metadata->applyTo($form);
+  }
+
   /** @var \Drupal\node\NodeForm $node_form */
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
