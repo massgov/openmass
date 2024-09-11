@@ -64,10 +64,7 @@ describe("massgov-screenshots", () => {
           'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
         }
       };
-      // Add unique information to the screenshot name
-      const browserName = process.env.browserName || 'default-browser';
-      const osVersion = process.env.osVersion || 'default-os';
-      await percyScreenshot(driver, `${page.label} - ${browserName} ${osVersion}`, options);
+      await percyScreenshot(driver, page.label, options);
     });
   });
 });
