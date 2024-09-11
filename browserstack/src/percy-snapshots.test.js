@@ -65,8 +65,8 @@ describe("massgov-screenshots", () => {
         }
       };
       // Add unique information to the screenshot name
-      const browserName = process.env.BROWSER_NAME || 'default-browser';
-      const osVersion = process.env.OS_VERSION || 'default-os';
+      const browserName = process.env.browserName || 'default-browser';
+      const osVersion = process.env.osVersion || 'default-os';
       await percyScreenshot(driver, `${page.label} - ${browserName} ${osVersion}`, options);
     });
   });
