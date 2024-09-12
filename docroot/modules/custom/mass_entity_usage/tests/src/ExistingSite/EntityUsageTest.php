@@ -363,7 +363,7 @@ class EntityUsageTest extends MassExistingSiteBase {
     // Verify the usage tab contents.
     $page = $this->getSession()->getPage()->getContent();
     $this->assertStringContainsString('Test Curated List', $page, 'Test Curated List not found on usage page.');
-    $table_caption = '<caption>The list below shows pages that include a link to this page in structured and rich text fields. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here">Learn how to use Linking Pages.</a></caption>';
+    $table_caption = '<caption>The list below shows pages that include a link to this page in structured and rich text fields. <a href="https://www.mass.gov/kb/pages-linking-here">Learn how to use Linking Pages.</a></caption>';
     $this->assertStringContainsString($table_caption, $page, 'Table caption not found on usage page.');
     $table_headers = '<thead>
       <tr>
