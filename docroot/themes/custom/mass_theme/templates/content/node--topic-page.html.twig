@@ -69,11 +69,22 @@
       {% endblock %}
     {% endembed %}
   {% endif %}
+  {# Build the pageHeader variable dynamically #}
+  {% set pageHeader = {
+    "title": node.label,
+    "underline": "TRUE",
+  } %}
+
+  {# Check if 'field_display_short_description' is checked #}
+  {% if node.field_display_short_description.value == '1' %}
+    {% set pageHeader = pageHeader|merge({
+      "description": node.field_topic_lede.value
+    }) %}
+  {% endif %}
+
+  {# Include the 'page-header' template with the dynamic 'pageHeader' #}
   {% include "@organisms/page-header/page-header.twig" with {
-    "pageHeader": {
-      "title": node.label,
-      "underline": "TRUE",
-    }
+    "pageHeader": pageHeader
   } %}
 {% endblock %}
 
