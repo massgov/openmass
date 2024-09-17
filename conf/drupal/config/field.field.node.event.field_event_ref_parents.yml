@@ -20,7 +20,7 @@ field_name: field_event_ref_parents
 entity_type: node
 bundle: event
 label: 'Associated pages'
-description: "When you add an associated page, a link to this Event will be added to the associated pages you select. You may select any published Organization, Service, News, Location, Advisory, Decision, Executive Order, Regulation or Rules of Court page.<br><br>\r\n<strong>NOTE</strong>: For Service and Organization page types, you MUST have an event row within a section of the page for the events to appear.  Verify that the event row exists under the “Content” tab, and if it doesn’t, add one to a section."
+description: "When you add an associated page, a link to this Event will be added to the associated pages you select. You may select any published Advisory, Binder, Decision, Executive Order, Location, News, Organization, Regulation, Rules of Court, or Service page.<br><br>\r\n<strong>NOTE</strong>: For Service and Organization page types, you MUST have an event row within a section of the page for the events to appear.  Verify that the event row exists under the “Content” tab, and if it doesn’t, add one to a section."
 required: true
 translatable: false
 default_value: {  }
@@ -41,6 +41,7 @@ settings:
       service_page: service_page
     sort:
       field: _none
+      direction: ASC
     auto_create: false
     auto_create_bundle: org_page
 field_type: entity_reference
