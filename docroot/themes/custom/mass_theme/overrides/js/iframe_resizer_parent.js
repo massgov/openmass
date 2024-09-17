@@ -33,6 +33,7 @@ SOFTWARE.
 // event.origin - the URL from which the message came
 // event.source - a reference to the 'window' object that sent the message
 function gotResizeMessage(event) {
+  console.log(event);
   'use strict';
   var matches = document.querySelectorAll('.js-ma-responsive-iframe iframe'); // iterate through all iFrames on page
   var i = 0;

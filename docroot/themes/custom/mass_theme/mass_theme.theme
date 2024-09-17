@@ -611,27 +611,38 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $variables['mainContent'] = $mainContent;
     $variables['sideContent'] = $sideContent;
 
-    if (!empty($node->field_form_embed->value)) {
-      try {
-        $crawler = new Crawler($node->field_form_embed->value);
-        $script_url = $crawler->filterXPath('//script[@src]')->attr('src');
-        $noscript_url = $crawler->filterXPath('//noscript/a[@href]')->attr('href');
-        $validate_script_url = parse_url($script_url, PHP_URL_HOST);
-        $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
 
-        if (str_ends_with($validate_script_url, "formstack.com")) {
-          $variables['form_url'] = Url::fromUri($script_url);
-        }
-        if (str_ends_with($validate_noscript_url, "formstack.com")) {
-          $variables['form_url_noscript'] = $noscript_url;
+    if (!$node->get('field_form_platform')->isEmpty()) {
+      $variables['formPlatform'] = $node->field_form_platform->value;
+      if ($node->field_form_platform->value == 'formstack') {
+        if (!empty($node->field_form_embed->value)) {
+          try {
+            $crawler = new Crawler($node->field_form_embed->value);
+            $script_url = $crawler->filterXPath('//script[@src]')->attr('src');
+            $noscript_url = $crawler->filterXPath('//noscript/a[@href]')
+              ->attr('href');
+            $validate_script_url = parse_url($script_url, PHP_URL_HOST);
+            $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
+
+            if (str_ends_with($validate_script_url, "formstack.com")) {
+              $variables['form_url'] = Url::fromUri($script_url);
+            }
+            if (str_ends_with($validate_noscript_url, "formstack.com")) {
+              $variables['form_url_noscript'] = $noscript_url;
+            }
+          } catch (\Exception $e) {
+            \Drupal::logger('mass_fields')
+              ->warning('Parsing of formstack URL failed: %message', [
+                '%message' => $e->getMessage(),
+              ]);
+          }
         }
       }
-      catch (\Exception $e) {
-        \Drupal::logger('mass_fields')->warning('Parsing of formstack URL failed: %message', [
-          '%message' => $e->getMessage(),
-        ]);
+      elseif ($node->field_form_platform->value == 'gravity_forms') {
+        $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       }
     }
+
 
     if (!empty($cache_tags)) {
       // Merge arrays of existing and new cache tags and removes duplicates.

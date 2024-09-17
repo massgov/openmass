@@ -22,6 +22,7 @@ dependencies:
     - node.type.form_page
     - workflows.workflow.editorial
   module:
+    - conditional_fields
     - content_moderation
     - entity_hierarchy
     - entity_reference_tree
@@ -132,7 +133,44 @@ content:
     weight: 15
     region: content
     settings: {  }
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        7f133b58-2762-4fab-aea2-7cf02fc8ef77:
+          entity_type: node
+          bundle: form_page
+          dependee: field_form_platform
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: formstack
+            effect: show
+            effect_options: {  }
+            selector: ''
+        8703e2e2-aceb-432c-b7a5-2a39e92ce045:
+          entity_type: node
+          bundle: form_page
+          dependee: field_form_platform
+          settings:
+            state: required
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: formstack
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_form_lede:
     type: string_textfield
     weight: 9
@@ -172,7 +210,44 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        45983f26-adea-428d-86e9-e9edbcaf562a:
+          entity_type: node
+          bundle: form_page
+          dependee: field_form_platform
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: gravity_forms
+            effect: show
+            effect_options: {  }
+            selector: ''
+        db5a152d-4798-4b27-82b9-aaa01ec0def3:
+          entity_type: node
+          bundle: form_page
+          dependee: field_form_platform
+          settings:
+            state: required
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: gravity_forms
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_form_you_will:
     type: text_textarea
     weight: 11

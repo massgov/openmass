@@ -257,3 +257,76 @@ function mass_content_deploy_card_label_migration(&$sandbox) {
     return t('Card paragraph link field label into the Card header text field migration has been completed.');
   }
 }
+
+/**
+ * Deploy hook to update field_form_platform to 'Formstack' for all form_page content type nodes.
+ */
+function mass_content_deploy_form_platform_update(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+  $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
+  $query->condition('type', 'form_page');
+
+  // Initialize sandbox if this is the first run.
+  if (empty($sandbox)) {
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count_query = clone $query;
+    $sandbox['max'] = $count_query->count()->execute();
+  }
+
+  // Set batch size to avoid memory exhaustion.
+  $batch_size = 50;
+
+  // Fetch node IDs in batches.
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  // Load the nodes from the fetched node IDs.
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+  $nodes = $node_storage->loadMultiple($nids);
+
+  // Temporarily disable entity hierarchy writes to avoid issues during batch processing.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  foreach ($nodes as $node) {
+    // Update the sandbox current nid.
+    $sandbox['current'] = $node->id();
+    try {
+      // Check if the field exists and is not already set to 'formstack'.
+      if ($node->hasField('field_form_platform')) {
+        // Set the field value to 'formstack'.
+        $node->set('field_form_platform', 'formstack');
+        // Save the node.
+        $node->save();
+      }
+    }
+    catch (\Exception $e) {
+      // Catch any exception and continue processing.
+      \Drupal::logger('mass_validation')->error('Failed to update node @nid: @message', [
+        '@nid' => $node->id(),
+        '@message' => $e->getMessage(),
+      ]);
+      // Re-enable entity hierarchy writes in case of an error.
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    }
+
+    // Track progress.
+    $sandbox['progress']++;
+  }
+
+  // Log progress for each batch.
+  \Drupal::logger('mass_validation')->notice('Processed @progress out of @max nodes.', [
+    '@progress' => $sandbox['progress'],
+    '@max' => $sandbox['max'],
+  ]);
+
+  // Update finished state.
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    // Re-enable entity hierarchy writes after all nodes are processed.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('All form_page nodes have been updated with the "Formstack" value in field_form_platform.');
+  }
+}
