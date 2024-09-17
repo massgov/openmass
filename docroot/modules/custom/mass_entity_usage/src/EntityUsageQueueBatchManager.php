@@ -147,6 +147,9 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
 
     // First pass, populate the sandbox.
     if (empty($context['sandbox']['total'])) {
+      // Log the start of the batch for this entity type.
+      \Drupal::logger('entity_usage.batch')->info('Starting batch process for entity type: @entity_type.', ['@entity_type' => $entity_type_id]);
+
       // Delete current usage statistics for these entities.
       \Drupal::service('entity_usage.usage')
         ->bulkDeleteSources($entity_type_id);
@@ -158,6 +161,13 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
         ->count()
         ->execute();
       $context['sandbox']['current_item'] = 0;
+
+      // Log the total number of entities found.
+      \Drupal::logger('entity_usage.batch')->info('Total entities to process for @entity_type: @total', [
+        '@entity_type' => $entity_type_id,
+        '@total' => $context['sandbox']['total'],
+      ]);
+
       $context['finished'] = 0;
     }
 
@@ -182,9 +192,21 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
           $context['sandbox']['current_item'] = $entity_id;
           $context['sandbox']['progress']++;
         }
+
+        // Log progress after every 100 entities processed.
+        if ($context['sandbox']['progress'] % 100 === 0) {
+          \Drupal::logger('entity_usage.batch')->info('Processed @progress of @total entities for @entity_type', [
+            '@progress' => $context['sandbox']['progress'],
+            '@total' => $context['sandbox']['total'],
+            '@entity_type' => $entity_type_id,
+          ]);
+        }
       }
       catch (\Exception $e) {
-        watchdog_exception('entity_usage.batch', $e);
+        \Drupal::logger('entity_usage.batch')->error('Exception while processing @entity_type: @message', [
+          '@entity_type' => $entity_type_id,
+          '@message' => $e->getMessage(),
+        ]);
       }
 
       $context['results'][] = $entity_type_id;
@@ -195,6 +217,8 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
     }
     else {
       $context['finished'] = 1;
+      // Log the successful completion of the entity type.
+      \Drupal::logger('entity_usage.batch')->info('Completed batch process for entity type: @entity_type.', ['@entity_type' => $entity_type_id]);
     }
 
     $context['message'] = t('Populating entity usage queue for entity type @entity_type: @current of @total', [
@@ -220,20 +244,23 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
       \Drupal::messenger()->addStatus(t('Created queue items to regenerate entity usage statistics for entity types: @types.', [
         '@types' => implode(", ", $types),
       ]));
-      \Drupal::messenger()->addStatus(t('Important! Statistics will not be accurate until all queue items have been processed. Use "drush queue:list" to check the current number of unprocessed items in the queue "entity_usage_regenerate_queue".'));
+      \Drupal::logger('entity_usage.batch')->info('Batch completed successfully for entity types: @types.', [
+        '@types' => implode(", ", $types),
+      ]);
     }
     else {
-      // An error occurred.
       // $operations contains the operations that remained unprocessed.
       $error_operation = reset($operations);
       \Drupal::messenger()->addMessage(
-        t('An error occurred while processing @operation with arguments : @args',
-          [
-            '@operation' => $error_operation[0],
-            '@args' => print_r($error_operation[0], TRUE),
-          ]
-        )
+        t('An error occurred while processing @operation with arguments : @args', [
+          '@operation' => $error_operation[0],
+          '@args' => print_r($error_operation[0], TRUE),
+        ])
       );
+      \Drupal::logger('entity_usage.batch')->error('Batch failed during operation: @operation with arguments: @args', [
+        '@operation' => $error_operation[0],
+        '@args' => print_r($error_operation[0], TRUE),
+      ]);
     }
   }
 

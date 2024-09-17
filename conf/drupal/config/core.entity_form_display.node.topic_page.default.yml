@@ -5,11 +5,13 @@ dependencies:
   config:
     - field.field.node.topic_page.field_collections
     - field.field.node.topic_page.field_display_short_description
+    - field.field.node.topic_page.field_hide_feedback_component
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
     - field.field.node.topic_page.field_restrict_link_management
+    - field.field.node.topic_page.field_restrict_orgs_field
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_topic_content_cards
@@ -49,6 +51,8 @@ third_party_settings:
         - field_topic_lede
         - field_display_short_description
         - field_restrict_link_management
+        - field_hide_feedback_component
+        - field_restrict_orgs_field
         - field_primary_parent
         - field_organizations
         - field_intended_audience
@@ -101,7 +105,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 70
+    weight: 67
     region: content
     settings:
       theme: default
@@ -124,36 +128,75 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  field_hide_feedback_component:
+    type: boolean_checkbox
+    weight: 61
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 65
     region: content
     settings:
-      start_minimized: true
-      leaves_only: false
-      select_parents: true
-      cascading_selection: 0
-      max_depth: 0
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 64
+    weight: 65
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 63
+    weight: 64
     region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        daa1c849-2aef-49ac-8f75-51e60524916c:
+          entity_type: node
+          bundle: topic_page
+          dependee: field_restrict_orgs_field
+          settings:
+            state: '!required'
+            reset: false
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+        33bd9296-3758-4802-9a05-da20dd42a6ef:
+          entity_type: node
+          bundle: topic_page
+          dependee: field_restrict_orgs_field
+          settings:
+            state: disabled
+            reset: false
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 62
+    weight: 63
     region: content
     settings:
       match_operator: CONTAINS
@@ -169,9 +212,16 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  field_restrict_orgs_field:
+    type: boolean_checkbox
+    weight: 62
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 65
+    weight: 66
     region: content
     settings:
       match_operator: CONTAINS
@@ -214,6 +264,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_topic_ref_related_topics:
     type: entity_reference_autocomplete
@@ -308,7 +359,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_image_credit: true
   langcode: true
   path: true
   promote: true

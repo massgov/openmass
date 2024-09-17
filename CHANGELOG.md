@@ -1,3 +1,36 @@
+
+
+## [0.410.0] - September 10, 2024
+
+### Added
+  - DP-34207: Added posibility to skip GIF image derivative generation if image is animated gif
+  - DP-34675: Add Urdu language
+  - DP-34727: Flag to Show/Hide Feedback form on Topic Page, for users with 'create topic_page content' permission.
+  - DP-34727: Flag to make optional organization field on Topic Page edit form, for users with 'create topic_page content' permission.
+  
+### Fixed
+  - DP-34424: Fixed the issue with styles in rich text related to images.
+  - DP-34678: Empty table being added to rules of court pages with no dates.
+  - DP-34797: 500 Error on https://edit.mass.gov/guides/massachusetts-energy-rebates-incentives
+  
+### Security
+  - DP-34468: Resolve dependabot issues.
+  
+### Changed
+  - DP-34515: Email validation in the feedback component.
+  - DP-34568: Don't show authors and editors the text format options.
+  
+
+
+## [0.409.0] - September 3, 2024
+
+### Fixed
+  - DP-34561: Fix download links in bulleted list. Adjust collapsible content spacing on mobile.
+  - DP-34687: Orphan page report now available again.
+  
+### Removed
+  - DP-34585: Removed descendant manager code from mass_content_api and re-enabled.
+  
 ## [0.408.1] - August 29, 2024
 
 ### Fixed:
