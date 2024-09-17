@@ -611,7 +611,6 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $variables['mainContent'] = $mainContent;
     $variables['sideContent'] = $sideContent;
 
-
     if (!$node->get('field_form_platform')->isEmpty()) {
       $variables['formPlatform'] = $node->field_form_platform->value;
       if ($node->field_form_platform->value == 'formstack') {
@@ -630,7 +629,8 @@ function mass_theme_preprocess_node_form_page(&$variables) {
             if (str_ends_with($validate_noscript_url, "formstack.com")) {
               $variables['form_url_noscript'] = $noscript_url;
             }
-          } catch (\Exception $e) {
+          }
+          catch (\Exception $e) {
             \Drupal::logger('mass_fields')
               ->warning('Parsing of formstack URL failed: %message', [
                 '%message' => $e->getMessage(),
@@ -642,7 +642,6 @@ function mass_theme_preprocess_node_form_page(&$variables) {
         $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       }
     }
-
 
     if (!empty($cache_tags)) {
       // Merge arrays of existing and new cache tags and removes duplicates.
@@ -2725,7 +2724,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
 
   if (!empty($fields['subheading']) && Helper::isFieldPopulated($node, $fields['subheading'])) {
     $subCategory = [
-      'title' => Helper::fieldFullView($node, $fields['subheading'])
+      'title' => Helper::fieldFullView($node, $fields['subheading']),
     ];
   }
 
