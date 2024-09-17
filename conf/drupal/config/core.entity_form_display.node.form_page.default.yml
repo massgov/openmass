@@ -8,7 +8,9 @@ dependencies:
     - field.field.node.form_page.field_form_embed
     - field.field.node.form_page.field_form_lede
     - field.field.node.form_page.field_form_listing_desc
+    - field.field.node.form_page.field_form_platform
     - field.field.node.form_page.field_form_ref_contacts_3
+    - field.field.node.form_page.field_form_url
     - field.field.node.form_page.field_form_you_will
     - field.field.node.form_page.field_hide_feedback_component
     - field.field.node.form_page.field_intended_audience
@@ -24,6 +26,7 @@ dependencies:
     - entity_hierarchy
     - entity_reference_tree
     - field_group
+    - link
     - mass_fields
     - maxlength
     - metatag
@@ -36,7 +39,7 @@ third_party_settings:
       label: 'Form page edit form'
       region: content
       parent_name: ''
-      weight: 0
+      weight: 1
       format_type: tabs
       format_settings:
         classes: ''
@@ -50,6 +53,8 @@ third_party_settings:
         - field_form_listing_desc
         - field_form_you_will
         - field_form_ref_contacts_3
+        - field_form_platform
+        - field_form_url
         - field_form_embed
         - field_hide_feedback_component
         - field_primary_parent
@@ -78,7 +83,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 21
+    weight: 23
     region: content
     settings:
       theme: default
@@ -96,7 +101,7 @@ content:
     third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 19
+    weight: 21
     region: content
     settings:
       match_operator: CONTAINS
@@ -124,7 +129,7 @@ content:
             selector: ''
   field_form_embed:
     type: form_embed
-    weight: 13
+    weight: 15
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -144,6 +149,12 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_form_platform:
+    type: options_select
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_form_ref_contacts_3:
     type: entity_reference_autocomplete
     weight: 12
@@ -153,6 +164,14 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_form_url:
+    type: link_default
+    weight: 14
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
     third_party_settings: {  }
   field_form_you_will:
     type: text_textarea
@@ -164,20 +183,20 @@ content:
     third_party_settings: {  }
   field_hide_feedback_component:
     type: boolean_checkbox
-    weight: 14
+    weight: 16
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 17
+    weight: 19
     region: content
     settings: {  }
     third_party_settings: {  }
   field_metatags:
     type: metatag_firehose
-    weight: 8
+    weight: 2
     region: content
     settings:
       sidebar: true
@@ -185,7 +204,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 16
+    weight: 18
     region: content
     settings:
       match_operator: CONTAINS
@@ -195,7 +214,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 15
+    weight: 17
     region: content
     settings:
       match_operator: CONTAINS
@@ -206,7 +225,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 20
+    weight: 22
     region: content
     settings:
       match_operator: CONTAINS
@@ -224,14 +243,14 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 18
+    weight: 20
     region: content
     settings:
       include_locked: false
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -254,20 +273,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -306,7 +325,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
