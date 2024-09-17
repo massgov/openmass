@@ -7,6 +7,7 @@ use AcquiaCloudApi\Connector\Connector;
 use AcquiaCloudApi\Endpoints\Code;
 use AcquiaCloudApi\Endpoints\DatabaseBackups;
 use AcquiaCloudApi\Endpoints\Databases;
+use AcquiaCloudApi\Endpoints\Domains;
 use AcquiaCloudApi\Endpoints\Environments;
 use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
@@ -256,10 +257,11 @@ class DeployCommands extends DrushCommands {
   #[CLI\Argument(name: 'target', description: self::TARGET_DESC)]
   #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
   #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start.')]
+  #[CLI\Option(name: 'varnish', description: 'Full purge of Varnish cache.')]
   #[CLI\Usage(name: 'drush ma:release test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[ValidateCircleciToken]
   #[OptionsetDeploy]
-  public function release($target, $git_ref, array $options = ['ci-branch' => self::REQ]) {
+  public function release($target, $git_ref, array $options = ['ci-branch' => self::REQ, 'varnish' => FALSE]): void {
     // For production deployments, prompt the user if they are sure. If they say no, exit.
     if ($target === 'prod') {
       $this->confirmProd();
@@ -275,6 +277,7 @@ class DeployCommands extends DrushCommands {
         'parameters' => [
           'webhook' => FALSE,
           'ma-release' => TRUE,
+          'varnish' => $options['varnish'],
           'target' => $target,
           'git-ref' => $git_ref,
           'skip-maint' => $options['skip-maint'] ? '--skip-maint' : '',
@@ -301,9 +304,10 @@ class DeployCommands extends DrushCommands {
   #[CLI\Command(name: self::MA_DEPLOY, aliases: ['ma-deploy'])]
   #[CLI\Argument(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
   #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
+  #[CLI\Option(name: 'varnish', description: 'Full purge of Varnish cache.')]
   #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[OptionsetDeploy]
-  public function deploy(string $target, string $git_ref, array $options = []) {
+  public function deploy(string $target, string $git_ref, array $options = ['varnish' => FALSE]): void {
 
     // For production deployments, prompt user. If they say no, exit.
     $is_prod = ($target === 'prod');
@@ -357,8 +361,14 @@ class DeployCommands extends DrushCommands {
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
 
-    $this->purgeSelective($targetRecord);
-    $this->logger()->success("Selective Purge enqueued at $target.");
+    if ($options['varnish']) {
+      $this->purgeVarnishFully($targetRecord);
+      $this->logger()->success('Varnish fully purged.');
+    }
+    else {
+      $this->purgeSelective($targetRecord);
+      $this->logger()->success("Selective Purge enqueued at $target.");
+    }
 
     // Perform a final cache rebuild just in case. Root cause is unknown.
     // @todo Explore removing this in future.
@@ -624,6 +634,21 @@ class DeployCommands extends DrushCommands {
     }
 
     return $tugboat_url_option;
+  }
+
+  protected function purgeVarnishFully(SiteAlias $targetRecord): void {
+    $hosts = [];
+    $cloudapi = $this->getClient();
+    $domains = new Domains($cloudapi);
+    $all = $domains->getAll($targetRecord->get('uuid'));
+    foreach ($all as $domain) {
+      $this->logger()->notice('domain ' . print_r($domain, TRUE));
+      $hosts[] = $domain->hostname;
+    }
+    $response = $domains->purge($targetRecord->get('uuid'), $hosts);
+    if ($response->message !== 'Creating the backup.') {
+      throw new \Exception('Failed to purge Varnish via the Acquia Cloud API.');
+    }
   }
 
 }
