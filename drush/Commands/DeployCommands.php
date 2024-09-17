@@ -277,7 +277,7 @@ class DeployCommands extends DrushCommands {
         'parameters' => [
           'webhook' => FALSE,
           'ma-release' => TRUE,
-          'varnish' => $options['varnish'],
+          'varnish' => $options['varnish'] ? '--varnish' : '',
           'target' => $target,
           'git-ref' => $git_ref,
           'skip-maint' => $options['skip-maint'] ? '--skip-maint' : '',
