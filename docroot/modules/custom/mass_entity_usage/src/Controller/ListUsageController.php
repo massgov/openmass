@@ -120,7 +120,7 @@ class ListUsageController extends ControllerBase {
   public function listUsagePageSubQuery($entity_type, $entity_id) {
     $build = [];
     // Link needed for the caption.
-    $help_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here');
+    $help_url = Url::fromUri('https://www.mass.gov/kb/pages-linking-here');
     $help_text = Link::fromTextAndUrl('Learn how to use Linking Pages.', $help_url)->toString();
     // Table headers.
     $header = [
