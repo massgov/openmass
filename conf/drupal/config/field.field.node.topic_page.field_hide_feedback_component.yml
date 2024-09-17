@@ -1,0 +1,23 @@
+uuid: f3f76c80-a34c-47c2-ab72-a25f45d64501
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_hide_feedback_component
+    - node.type.topic_page
+id: node.topic_page.field_hide_feedback_component
+field_name: field_hide_feedback_component
+entity_type: node
+bundle: topic_page
+label: 'Hide sitewide feedback component'
+description: 'If this topic page is very general and broad, feedback will not be helpful and the component should be hidden. Only the content administrators can modify this settings. <b>NOTE: if organization(s) is not selected - the feedback form is always hidden.</b>'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

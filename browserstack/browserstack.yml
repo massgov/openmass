@@ -1,0 +1,21 @@
+userName:
+accessKey:
+platforms:
+  - browserName: Chrome
+    os: Windows
+    osVersion: 11
+    browserVersion: 117.0
+  - browserName: safari
+    osVersion: 17
+    deviceName: iPad Air 6
+  - browserName: chrome
+    osVersion: 13.0
+    deviceName: Samsung Galaxy S23 Ultra
+parallelsPerPlatform: 3
+buildName: ${CIRCLE_BRANCH}
+projectName: openmass
+buildIdentifier: "${CIRCLE_BUILD_NUM}-${DATE_TIME}"
+debug: false
+percy: false
+percyCaptureMode: manual
+browserstackLocal: false

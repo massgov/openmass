@@ -141,7 +141,7 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
           else {
             $moderation_state_msg = "The latest revision has not changed moderation state.";
           }
-          $params['message'] = t("Hello,\n\nUser @author_username added a new revision of the @node_type '@node_title' at @node_edit_time. You can email @author_username at @author_email.@moderation_state_changelog@author_message\n\nTo see content changes (if any) made in this revision, go to:\n\n:diff_url\n\nFor more information about the watch feature, visit https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/navigating-the-cms/watching-and-unwatching-content. \n\nTo unwatch this or other content, visit:\n\n:watched_content",
+          $params['message'] = t("Hello,\n\nUser @author_username added a new revision of the @node_type '@node_title' at @node_edit_time. You can email @author_username at @author_email.@moderation_state_changelog@author_message\n\nTo see content changes (if any) made in this revision, go to:\n\n:diff_url\n\nFor more information about the watch feature, visit https://www.mass.gov/kb/watch-content. \n\nTo unwatch this or other content, visit:\n\n:watched_content",
             [
               '@current_username' => \Drupal::currentUser()->getDisplayName(),
               '@author_username' => $author_username,
