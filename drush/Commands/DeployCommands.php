@@ -652,6 +652,7 @@ class DeployCommands extends DrushCommands {
     $cloudapi = $this->getClient();
     $domains = new Domains($cloudapi);
     $response = $domains->purge($targetRecord->get('uuid'), $hosts);
+    $this->logger()->notice(print_r($response, TRUE));
     if ($response->message !== 'Creating the backup.') {
       throw new \Exception('Failed to fully purge Varnish via the Acquia Cloud API.');
     }
