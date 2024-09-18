@@ -357,8 +357,6 @@ class DeployCommands extends DrushCommands {
     /** @noinspection PhpParamsInspection */
     $this->waitForTaskToComplete(basename($href), 15);
 
-    $this->purgeVarnishFully($targetRecord);
-
     // Run deploy steps.
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
