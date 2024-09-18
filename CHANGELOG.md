@@ -1,5 +1,26 @@
 
 
+## [0.411.0] - September 17, 2024
+
+### Changed
+  - DP-30412: Bulk update of help text and minor changes.
+  - DP-34911: Updated GitBook references to d2d redirects for an easier transition to the SharePoint knowledge base.
+  
+### Added
+  - DP-33490: Added Percy configurations for visual regression testing.
+  - DP-34621: Added logging to entity_usage queue generation and processing.
+  - DP-34716: Get newrelic browser working on other environments.
+  - DP-35008: Added intended audience to dataLayer.
+  
+### Fixed
+  - DP-34850: Some test are missing by phpunit-finder because of incorrect test file location..
+  - DP-34424,DP-34976: Rollback heading clear floats and fix the comp heading styles in floats
+  
+### Security
+  - DP-34962: Update security kit module.
+  
+
+
 ## [0.410.0] - September 10, 2024
 
 ### Added
