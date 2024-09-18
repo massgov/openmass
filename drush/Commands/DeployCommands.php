@@ -292,7 +292,7 @@ class DeployCommands extends DrushCommands {
     }
 
     $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
+    $this->logger()->success($this->getSuccessMessage($body));
   }
 
   /**
@@ -652,8 +652,7 @@ class DeployCommands extends DrushCommands {
     $cloudapi = $this->getClient();
     $domains = new Domains($cloudapi);
     $response = $domains->purge($targetRecord->get('uuid'), $hosts);
-    $this->logger()->notice(print_r($response, TRUE));
-    if ($response->message !== 'Creating the backup.') {
+    if ($response->message !== 'Caches are being cleared.') {
       throw new \Exception('Failed to fully purge Varnish via the Acquia Cloud API.');
     }
     $this->logger()->success('Varnish fully purged.');
