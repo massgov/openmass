@@ -118,16 +118,19 @@ function mass_feedback_form_node_view(array &$build, EntityInterface $entity, En
         return;
       }
     }
-    $entityTypeManager = \Drupal::entityTypeManager();
-    $viewBuilder = $entityTypeManager->getViewBuilder('node');
+
+    //TODO: document the logins, over with tests.
+    $entity_type_manager = \Drupal::entityTypeManager();
+    $view_builder = $entity_type_manager->getViewBuilder('node');
     if ($entity->bundle() === 'org_page') {
-      $item = $viewBuilder->view($entity, 'feedback');
+      $item = $view_builder->view($entity, 'feedback');
     }
     else {
       if ($entity->field_organizations->count() > 0 && !empty($entity->field_organizations[0]->entity)) {
-        $item = $viewBuilder->view($entity->field_organizations[0]->entity, 'feedback');
+        $item = $view_builder->view($entity->field_organizations[0]->entity, 'feedback');
       }
     }
+
     $item['#field_name'] = 'extra_org_feedback_form';
     $build['extra_org_feedback_form'][] = $item;
   }
