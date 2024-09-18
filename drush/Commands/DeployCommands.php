@@ -357,6 +357,8 @@ class DeployCommands extends DrushCommands {
     /** @noinspection PhpParamsInspection */
     $this->waitForTaskToComplete(basename($href), 15);
 
+    $this->purgeVarnishFully($targetRecord);
+
     // Run deploy steps.
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
@@ -572,7 +574,7 @@ class DeployCommands extends DrushCommands {
    * Return success message about how to view a Pipeline at CircleCI.
    */
   private function getSuccessMessage(array $body): string {
-    return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
+    return 'Pipeline is viewable at https://app.circleci.com/pipelines/github/massgov/openmass/' . $body['number'];
   }
 
   /**
