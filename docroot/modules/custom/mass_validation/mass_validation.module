@@ -892,7 +892,6 @@ function mass_validation_form_node_regulation_form_alter(&$form, FormStateInterf
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_regulation_form_validate(array &$form, FormStateInterface $form_state) {
-  $reg_status = $form_state->getValue('field_regulation_ref_state_tax')[0]['target_id'];
   $official_version = $form_state->getValue('field_regluation_official_ver');
 
   // Link fields.
@@ -912,15 +911,18 @@ function _mass_validation_form_node_regulation_form_validate(array &$form, FormS
 
   // If Regulation Status is "Future Effective Date" run normal and require url
   // field.
-  if (isset($regulation_type_term_ids[$reg_status])) {
-    // Clear all errors to remove required error and add back all other errors.
-    $errors = $form_state->getErrors();
-    // Missing bracket typo is correct.
-    $conditional_field = 'field_regluation_official_ver][0][uri';
-    $form_state->clearErrors();
-    foreach ($errors as $element => $error) {
-      if ($element != $conditional_field) {
-        $form_state->setErrorByName($element, $error);
+  if (isset($form_state->getValue('field_regulation_ref_state_tax')[0])) {
+    $reg_status = $form_state->getValue('field_regulation_ref_state_tax')[0]['target_id'];
+    if (isset($regulation_type_term_ids[$reg_status])) {
+      // Clear all errors to remove required error and add back all other errors.
+      $errors = $form_state->getErrors();
+      // Missing bracket typo is correct.
+      $conditional_field = 'field_regluation_official_ver][0][uri';
+      $form_state->clearErrors();
+      foreach ($errors as $element => $error) {
+        if ($element != $conditional_field) {
+          $form_state->setErrorByName($element, $error);
+        }
       }
     }
   }
@@ -1772,6 +1774,25 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
     if ($section_key != 'add_more') {
       // If at least 1 section is populated, validation passed.
       $section_populated = isset($section['subform']);
+    }
+    // External links should have a title.
+    if (isset($section['subform']['field_section_long_form_addition'])) {
+      $paragraphs = $section['subform']['field_section_long_form_addition'];
+      foreach ($paragraphs as $paragraph_key => $paragraph) {
+        if (!empty($paragraph['subform']['field_links_downloads_link'])) {
+          foreach ($paragraph['subform']['field_links_downloads_link'] as $field_key => $field) {
+            if (is_array($field)) {
+              // If the link has no title and is external throw an error.
+              if (!empty($field['uri']) && empty($field['title'])) {
+                $title = mass_validation_get_title_from_uri($field['uri']);
+                if (!$title) {
+                  $form_state->setErrorByName('field_info_details_sections][' . $section_key . '][subform][field_section_long_form_addition][' . $paragraph_key . '][subform][field_links_downloads_link][' . $field_key, t('External links require a title.'));
+                }
+              }
+            }
+          }
+        }
+      }
     }
     if (isset($section['subform']['field_section_long_form_content'])) {
       $paragraphs = $section['subform']['field_section_long_form_content'];

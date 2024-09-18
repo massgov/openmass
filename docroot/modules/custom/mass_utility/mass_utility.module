@@ -150,7 +150,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     unset($options['-1']);
     $form['access_unpublished_settings']['duration']['#options'] = $options;
 
-    $temporary_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/temporary-unpublished-access');
+    $temporary_url = Url::fromUri('https://www.mass.gov/kb/share-content');
     $form['access_unpublished_settings']['description'] = [
       '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url)->toString(),
       '#weight' => -30,
@@ -173,7 +173,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
 
   // Add help text link for Scheduling options.
   if (isset($form['publish_on']['widget'][0]['value']['#description'])) {
-    $schedule_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/schedule-publishing-and-unpublishing');
+    $schedule_url = Url::fromUri('https://www.mass.gov/kb/schedule-content');
     $form['publish_on']['widget'][0]['value']['#description'] = new FormattableMarkup('Enter a date. The time part is optional. The default time is 09:00:00. Leave the date blank for no scheduled publishing.' . ' @schedule', [
       '@schedule' => Link::fromTextAndUrl('Learn how to schedule your content for publishing or unpublishing.', $schedule_url)->toString(),
     ]);
@@ -741,20 +741,22 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
 function mass_utility_entity_embed_context_alter(array &$context, EntityInterface $entity) {
   if ($entity instanceof File) {
 
-    if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
-      if (isset($context['class'])) {
-        $context['class'] .= " half-width";
+    if (!empty($context['data-entity-embed-display-settings']['image_style'])) {
+      if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
+        if (isset($context['class'])) {
+          $context['class'] .= " half-width";
+        }
+        else {
+          $context['class'] = "half-width";
+        }
       }
-      else {
-        $context['class'] = "half-width";
-      }
-    }
-    elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
-      if (isset($context['class'])) {
-        $context['class'] .= " full-width";
-      }
-      else {
-        $context['class'] = "full-width";
+      elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
+        if (isset($context['class'])) {
+          $context['class'] .= " full-width";
+        }
+        else {
+          $context['class'] = "full-width";
+        }
       }
     }
   }
