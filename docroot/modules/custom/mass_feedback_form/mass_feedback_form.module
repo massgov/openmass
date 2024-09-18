@@ -111,10 +111,10 @@ function mass_feedback_form_entity_extra_field_info() {
 /**
  * Implements hook_ENTITY_TYPE_view().
  */
-function mass_feedback_form_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+function mass_feedback_form_node_view(array &$build, EntityInterface $node, EntityViewDisplayInterface $display, $view_mode) {
   if ($display->getComponent('extra_org_feedback_form')) {
-    if ($entity->hasField('field_hide_feedback_component')) {
-      if ($entity->field_hide_feedback_component->value == 1) {
+    if ($node->hasField('field_hide_feedback_component')) {
+      if ($node->field_hide_feedback_component->value == 1) {
         return;
       }
     }
@@ -122,16 +122,17 @@ function mass_feedback_form_node_view(array &$build, EntityInterface $entity, En
     //TODO: document the logins, over with tests.
     $entity_type_manager = \Drupal::entityTypeManager();
     $view_builder = $entity_type_manager->getViewBuilder('node');
-    if ($entity->bundle() === 'org_page') {
-      $item = $view_builder->view($entity, 'feedback');
+    $org_node_view_feedback = [];
+    if ($node->bundle() === 'org_page') {
+      $org_node_view_feedback = $view_builder->view($node, 'feedback');
     }
     else {
-      if ($entity->field_organizations->count() > 0 && !empty($entity->field_organizations[0]->entity)) {
-        $item = $view_builder->view($entity->field_organizations[0]->entity, 'feedback');
+      if ($node->field_organizations->count() > 0 && !empty($node->field_organizations[0]->entity)) {
+        $org_node_view_feedback = $view_builder->view($node->field_organizations[0]->entity, 'feedback');
       }
     }
 
-    $item['#field_name'] = 'extra_org_feedback_form';
-    $build['extra_org_feedback_form'][] = $item;
+    $org_node_view_feedback['#field_name'] = 'extra_org_feedback_form';
+    $build['extra_org_feedback_form'][] = $org_node_view_feedback;
   }
 }
