@@ -33,6 +33,9 @@ function mass_feedback_form_help($route_name, RouteMatchInterface $route_match) 
  */
 function mass_feedback_form_theme() {
   return [
+    'mass_feedback_form_without_organization' => [
+      'render element' => NULL,
+    ],
     'mass_feedback_form' => [
       'variables' => ['node_id' => NULL],
     ],
@@ -119,12 +122,17 @@ function mass_feedback_form_node_view(array &$build, EntityInterface $node, Enti
       }
     }
 
-    //TODO: document the logins, over with tests.
+    //TODO: document the logic, cover with tests.
     $entity_type_manager = \Drupal::entityTypeManager();
     $view_builder = $entity_type_manager->getViewBuilder('node');
     $org_node_view_feedback = [];
     if ($node->bundle() === 'org_page') {
       $org_node_view_feedback = $view_builder->view($node, 'feedback');
+    }
+    elseif ($node->bundle() === 'topic_page' && $node->get('field_organizations')->isEmpty()) {
+      $org_node_view_feedback = [
+        '#theme' => 'mass_feedback_form_without_organization',
+      ];
     }
     else {
       if ($node->field_organizations->count() > 0 && !empty($node->field_organizations[0]->entity)) {
