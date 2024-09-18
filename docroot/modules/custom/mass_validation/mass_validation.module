@@ -892,7 +892,6 @@ function mass_validation_form_node_regulation_form_alter(&$form, FormStateInterf
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_regulation_form_validate(array &$form, FormStateInterface $form_state) {
-  $reg_status = $form_state->getValue('field_regulation_ref_state_tax')[0]['target_id'];
   $official_version = $form_state->getValue('field_regluation_official_ver');
 
   // Link fields.
@@ -912,15 +911,18 @@ function _mass_validation_form_node_regulation_form_validate(array &$form, FormS
 
   // If Regulation Status is "Future Effective Date" run normal and require url
   // field.
-  if (isset($regulation_type_term_ids[$reg_status])) {
-    // Clear all errors to remove required error and add back all other errors.
-    $errors = $form_state->getErrors();
-    // Missing bracket typo is correct.
-    $conditional_field = 'field_regluation_official_ver][0][uri';
-    $form_state->clearErrors();
-    foreach ($errors as $element => $error) {
-      if ($element != $conditional_field) {
-        $form_state->setErrorByName($element, $error);
+  if (isset($form_state->getValue('field_regulation_ref_state_tax')[0])) {
+    $reg_status = $form_state->getValue('field_regulation_ref_state_tax')[0]['target_id'];
+    if (isset($regulation_type_term_ids[$reg_status])) {
+      // Clear all errors to remove required error and add back all other errors.
+      $errors = $form_state->getErrors();
+      // Missing bracket typo is correct.
+      $conditional_field = 'field_regluation_official_ver][0][uri';
+      $form_state->clearErrors();
+      foreach ($errors as $element => $error) {
+        if ($element != $conditional_field) {
+          $form_state->setErrorByName($element, $error);
+        }
       }
     }
   }
