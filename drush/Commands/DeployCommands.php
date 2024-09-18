@@ -363,11 +363,9 @@ class DeployCommands extends DrushCommands {
 
     if ($options['varnish']) {
       $this->purgeVarnishFully($targetRecord);
-      $this->logger()->success('Varnish fully purged.');
     }
     else {
-      $this->purgeSelective($targetRecord);
-      $this->logger()->success("Selective Purge enqueued at $target.");
+      $this->purgeVarnishSelectively($targetRecord);
     }
 
     // Perform a final cache rebuild just in case. Root cause is unknown.
@@ -388,10 +386,13 @@ class DeployCommands extends DrushCommands {
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
 
-    // Process purge queue.
-    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
-    $process->mustRun();
-    $this->logger()->success("Purge queue worker complete at $target.");
+
+    if (!$options['varnish']) {
+      // Process purge queue.
+      $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
+      $process->mustRun();
+      $this->logger()->success("Purge queue worker complete at $target.");
+    }
   }
 
   /**
@@ -480,7 +481,7 @@ class DeployCommands extends DrushCommands {
     return $return ?: NULL;
   }
 
-  public function purgeSelective(SiteAlias|bool $targetRecord) {
+  public function purgeVarnishSelectively(SiteAlias|bool $targetRecord) {
     // Enqueue purging of QAG pages.
     $sql = "SELECT nid FROM node_field_data WHERE title LIKE '%_QAG%'";
     $process = Drush::drush($targetRecord, 'sql:query', [$sql], ['verbose' => TRUE]);
@@ -500,6 +501,7 @@ class DeployCommands extends DrushCommands {
       $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
       $process->mustRun();
     }
+    $this->logger()->success("Selective Purge enqueued at $target.");
   }
 
   /**
@@ -638,17 +640,20 @@ class DeployCommands extends DrushCommands {
 
   protected function purgeVarnishFully(SiteAlias $targetRecord): void {
     $hosts = [];
+    $hosts[] = parse_url($targetRecord->get('uri'), PHP_URL_HOST);
+    if ($targetRecord->get('name') === 'prod') {
+      $hosts[] = 'www.mass.gov';
+    }
+    elseif ($targetRecord->get('name') === 'test') {
+      $hosts[] = 'stage.mass.gov';
+    }
     $cloudapi = $this->getClient();
     $domains = new Domains($cloudapi);
-    $all = $domains->getAll($targetRecord->get('uuid'));
-    foreach ($all as $domain) {
-      $this->logger()->notice('domain ' . print_r($domain, TRUE));
-      $hosts[] = $domain->hostname;
-    }
     $response = $domains->purge($targetRecord->get('uuid'), $hosts);
     if ($response->message !== 'Creating the backup.') {
-      throw new \Exception('Failed to purge Varnish via the Acquia Cloud API.');
+      throw new \Exception('Failed to fully purge Varnish via the Acquia Cloud API.');
     }
+    $this->logger()->success('Varnish fully purged.');
   }
 
 }
