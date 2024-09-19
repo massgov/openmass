@@ -391,7 +391,7 @@ class DeployCommands extends DrushCommands {
       // Process purge queue.
       $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
       $process->mustRun();
-      $this->logger()->success("Purge queue worker complete at $target.");
+      $this->logger()->success('Purge queue worker complete at ' . $targetRecord->name());
     }
   }
 
@@ -481,7 +481,7 @@ class DeployCommands extends DrushCommands {
     return $return ?: NULL;
   }
 
-  public function purgeVarnishSelectively(SiteAlias|bool $targetRecord) {
+  public function purgeVarnishSelectively(SiteAlias $targetRecord) {
     // Enqueue purging of QAG pages.
     $sql = "SELECT nid FROM node_field_data WHERE title LIKE '%_QAG%'";
     $process = Drush::drush($targetRecord, 'sql:query', [$sql], ['verbose' => TRUE]);
@@ -501,7 +501,7 @@ class DeployCommands extends DrushCommands {
       $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
       $process->mustRun();
     }
-    $this->logger()->success("Selective Purge enqueued at $target.");
+    $this->logger()->success("Selective Purge enqueued at " . $targetRecord->name());
   }
 
   /**
@@ -641,10 +641,10 @@ class DeployCommands extends DrushCommands {
   protected function purgeVarnishFully(SiteAlias $targetRecord): void {
     $hosts = [];
     $hosts[] = parse_url($targetRecord->get('uri'), PHP_URL_HOST);
-    if ($targetRecord->get('name') === 'prod') {
+    if ($targetRecord->name() === 'prod') {
       $hosts[] = 'www.mass.gov';
     }
-    elseif ($targetRecord->get('name') === 'test') {
+    elseif ($targetRecord->name() === 'test') {
       $hosts[] = 'stage.mass.gov';
     }
     $cloudapi = $this->getClient();
