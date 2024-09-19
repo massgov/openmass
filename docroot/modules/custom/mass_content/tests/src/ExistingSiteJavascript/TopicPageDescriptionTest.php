@@ -10,8 +10,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 class TopicPageDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
 
   /**
-   * Test that short description is rendered when the checkbox is
-   * checked and not rendered when unchecked on the same node.
+   * Test that short description rendering.
    */
   public function testShortDescriptionVisibility() {
     // Create a node with the checkbox checked.
@@ -31,8 +30,10 @@ class TopicPageDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     $node->set('field_display_short_description', FALSE);
     $node->save();
 
-    // Visit the node page again and check if the short description is NOT rendered.
+    // Visit the node page again and check
+    // if the short description is NOT rendered.
     $this->drupalGet($node->toUrl()->toString());
     $this->assertSession()->elementNotExists('css', '.pre-content .ma__page-header__content .ma__page-header__description');
   }
+
 }
