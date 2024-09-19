@@ -195,6 +195,8 @@ function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_s
     'node_person_edit_form' => 'field_person_ref_org',
   ];
   if (in_array($form_id, array_keys($fields))) {
+    // Empty value so that validation passes. The value gets set in mass_validation_entity_presave().
+    $form['field_organizations']['widget'][0] = [];
     $form['#attached']['library'][] = 'mass_validation/synced_fields';
     $form['#attached']['drupalSettings']['massValidation']['sourceField'] = $fields[$form_id];
     if ($form_id === 'node_executive_order_edit_form') {
@@ -307,10 +309,7 @@ function mass_validation_entity_presave(EntityInterface $entity) {
       }
       // Ignore any values set to field_organization
       // and use the source field instead.
-      $entity->field_organizations = [];
-      foreach ($values as $value) {
-        $entity->field_organizations[] = ['target_id' => $value];
-      }
+      $entity->field_organizations->setValue($values);
     }
 
     if ($type === 'fee') {
@@ -892,7 +891,6 @@ function mass_validation_form_node_regulation_form_alter(&$form, FormStateInterf
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_regulation_form_validate(array &$form, FormStateInterface $form_state) {
-  $reg_status = $form_state->getValue('field_regulation_ref_state_tax')[0]['target_id'];
   $official_version = $form_state->getValue('field_regluation_official_ver');
 
   // Link fields.
@@ -912,15 +910,18 @@ function _mass_validation_form_node_regulation_form_validate(array &$form, FormS
 
   // If Regulation Status is "Future Effective Date" run normal and require url
   // field.
-  if (isset($regulation_type_term_ids[$reg_status])) {
-    // Clear all errors to remove required error and add back all other errors.
-    $errors = $form_state->getErrors();
-    // Missing bracket typo is correct.
-    $conditional_field = 'field_regluation_official_ver][0][uri';
-    $form_state->clearErrors();
-    foreach ($errors as $element => $error) {
-      if ($element != $conditional_field) {
-        $form_state->setErrorByName($element, $error);
+  if (isset($form_state->getValue('field_regulation_ref_state_tax')[0])) {
+    $reg_status = $form_state->getValue('field_regulation_ref_state_tax')[0]['target_id'];
+    if (isset($regulation_type_term_ids[$reg_status])) {
+      // Clear all errors to remove required error and add back all other errors.
+      $errors = $form_state->getErrors();
+      // Missing bracket typo is correct.
+      $conditional_field = 'field_regluation_official_ver][0][uri';
+      $form_state->clearErrors();
+      foreach ($errors as $element => $error) {
+        if ($element != $conditional_field) {
+          $form_state->setErrorByName($element, $error);
+        }
       }
     }
   }

@@ -90,7 +90,7 @@ class MassUrlReplacementService {
             // Replace the href with a media URL.
             // Note: We always want to concat download string to the URL.
             $mediaUrl = $mediaEntity->toUrl()->toString() . '/download';
-            if ($url['query']) {
+            if (isset($url['query'])) {
               $mediaUrl .= '?' . $url['query'];
             }
             $anchor->setAttribute('href', $mediaUrl);
