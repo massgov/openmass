@@ -195,6 +195,8 @@ function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_s
     'node_person_edit_form' => 'field_person_ref_org',
   ];
   if (in_array($form_id, array_keys($fields))) {
+    // Empty value so that validation passes. The value gets set in mass_validation_entity_presave().
+    $form['field_organizations']['widget'][0] = [];
     $form['#attached']['library'][] = 'mass_validation/synced_fields';
     $form['#attached']['drupalSettings']['massValidation']['sourceField'] = $fields[$form_id];
     if ($form_id === 'node_executive_order_edit_form') {
@@ -307,10 +309,7 @@ function mass_validation_entity_presave(EntityInterface $entity) {
       }
       // Ignore any values set to field_organization
       // and use the source field instead.
-      $entity->field_organizations = [];
-      foreach ($values as $value) {
-        $entity->field_organizations[] = ['target_id' => $value];
-      }
+      $entity->field_organizations->setValue($values);
     }
 
     if ($type === 'fee') {
