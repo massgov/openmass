@@ -28,7 +28,8 @@ class GuideSuggestedPagesVisibilityTest extends ExistingSiteSelenium2DriverTestB
       'moderation_state' => 'published',
     ]);
 
-    // Visit the guide page and verify that the suggested pages block is not rendered.
+    // Visit the guide page and verify that
+    // the suggested pages block is not rendered.
     $this->drupalGet($node->toUrl()->toString());
     $this->assertSession()->elementNotExists('css', '.post-content .ma__suggested-pages');
 
@@ -36,14 +37,17 @@ class GuideSuggestedPagesVisibilityTest extends ExistingSiteSelenium2DriverTestB
     $node->set('field_guide_page_related_guides', [$related]);
     $node->save();
 
-    // Visit the guide page again and verify that the suggested pages block is now rendered.
+    // Visit the guide page again and verify that
+    // the suggested pages block is now rendered.
     $this->drupalGet($node->toUrl()->toString());
     $this->assertSession()->elementExists('css', '.post-content .ma__suggested-pages');
 
-    // Unpublish the related guide and verify that the suggested pages block is not rendered.
+    // Unpublish the related guide and verify that
+    // the suggested pages block is not rendered.
     $related->setUnpublished()->set('moderation_state', 'unpublished')->save();
 
     $this->drupalGet($node->toUrl()->toString());
     $this->assertSession()->elementNotExists('css', '.post-content .ma__suggested-pages');
   }
+
 }
