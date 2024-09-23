@@ -1,0 +1,145 @@
+{% set reportMessage = false %}
+{% set showHelp = false %}
+{% set showHelp = false %}
+{% set warnmsg = false %}
+{% set helpText = "The feedback will only be used for improving the website." %}
+
+{% set hiddenElements = [
+  {
+    "id": "field47056299",
+    "name": "field47056299",
+    "value": url('<current>'),
+    "class": "fsField"
+  },
+  {
+    "id": "field58154059",
+    "name": "field58154059",
+    "value": "entityIdentifier",
+    "class": "fsField data-layer-substitute"
+  },
+  {
+    "id": "field57432673",
+    "name": "field57432673",
+    "value": "entityIdentifier",
+    "class": "fsField data-layer-substitute"
+  },
+  {
+    "id": "field68798989",
+    "name": "field68798989",
+    "value": "",
+    "class": "fsField unique-id-substitute"
+  },
+  {
+    "id": "field97986104",
+    "name": "field97986104",
+    "value": "9999",
+    "class": "fsField"
+  },
+  {
+    "id": "form2521317",
+    "name": "form",
+    "value": "2521317"
+  },
+  {
+    "id": "viewkeyvx39GBYJhi",
+    "name": "viewkey",
+    "value": "vx39GBYJhi"
+  },
+  {
+    "id": "hidden_fields2521317",
+    "name": "hidden_fields",
+    "value": ""
+  },
+  {
+    "id": "submit2521317",
+    "name": "_submit",
+    "value": "1"
+  },
+  {
+    "id": "style_version2521317",
+    "name": "style_version",
+    "value": "3"
+  },
+  {
+    "id": "viewparam",
+    "name": "viewparam",
+    "value": "524744"
+  }
+] %}
+
+{{ attach_library('mass_feedback_form/feedback-form-behaviors') }}
+
+{% include "@organisms/feedback/mass-feedback.twig" with {
+
+  "formAction": 'https://www.formstack.com/forms/index.php',
+  "formId": "2521317",
+  "heading": "Help Us Improve Mass.gov",
+  "title": {
+    "value": "Did you find what you were looking for on this webpage?",
+    "required": true
+  },
+  "inputGroup": {
+    "type": "radio",
+    "required": true,
+    "inline": true,
+    "items": [
+      {
+        "name": "field47054416",
+        "value": "Yes",
+        "label": "Yes",
+        "id": "field47054416_1",
+        "checked": false,
+      },
+      {
+        "name": "field47054416",
+        "id": "field47054416_2",
+        "value": "No",
+        "label": "No",
+        "checked": false,
+      }
+    ],
+  },
+  "queryAffirmative": {
+    "value": "If you have any suggestions for the website, please let us know.",
+    "required": false
+  },
+  "affirmativeTextarea": {
+    "required": false,
+    "maxlength": 500,
+    "id": "field52940022",
+    "name": "field52940022",
+    "describedBy": "helptext-feedback-no-response",
+    "errorIds": "affirmative-textarea-error-alert"
+  },
+  "queryNegative": {
+    "value": "How can we improve the page?",
+    "required": true
+  },
+  "negativeTextarea": {
+    "required": true,
+    "maxlength": 500,
+    "id": "field47054414",
+    "name": "field47054414",
+    "errorMsg": "Please let us know how we can improve this page.",
+    "describedBy": "helptext-feedback-no-response",
+    "errorIds": "negative-textarea-error-alert"
+  },
+  "helpTip": {
+    "textBefore": "Please do not include personal or contact information.",
+    "textTrigger": "You will not get a response",
+    "helpText": helpText,
+    "id": "helptext-feedback-no-response",
+    "expanded": false,
+    "isDescription": true
+  },
+  "warnMsg": warnmsg,
+  "alertMsg": "Please remove any contact information or personal data from your feedback. <strong>You will NOT get a response</strong>.",
+  "alert": reportMessage,
+  "hiddenElements": hiddenElements,
+  "showWarnMsg": showHelp,
+  "submitted": false,
+  "success": {
+    "before": "Thank you for your website feedback! We will use this information to improve this page.",
+    "after": "If you would like to continue helping us improve Mass.gov, <a href=\"https://www.mass.gov/user-panel?utm_source=survey\">join our user panel<\/a> to test new features for the site."
+  }
+} %}
