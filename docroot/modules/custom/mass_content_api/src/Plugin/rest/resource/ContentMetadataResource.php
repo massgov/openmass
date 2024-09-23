@@ -178,7 +178,6 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
           'uuid' => $node_owner->uuid->value,
           'name' => $node_owner->name->value,
           'organization' => $organization,
-          'is_intern' => $node_owner->field_user_intern->value == 1,
           'roles' => $roles,
         ],
         'labels' => $labels,
