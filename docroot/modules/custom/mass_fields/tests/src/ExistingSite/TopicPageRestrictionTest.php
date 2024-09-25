@@ -124,7 +124,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   /**
    * Creates a Topic Page with and without a feedback form component.
    */
-  private function createTopicPageShowHideFeedbackForm(bool $feedback_form_hidden) {
+  private function createTopicPageShowHideFeedbackForm(bool $feedback_form_hidden, bool $no_organization = FALSE) {
     // Test a new Topic page can be saved.
     $newOrgNode = $this->createNode([
       'type' => 'org_page',
@@ -141,7 +141,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
       'type' => 'topic_page',
       'title' => $this->randomMachineName(),
       'field_hide_feedback_component' => $feedback_form_hidden,
-      'field_organizations' => $newOrgNode->id(),
+      'field_organizations' => $no_organization ? NULL : $newOrgNode->id(),
       'field_topic_lede' => $this->randomString(20),
       'field_topic_content_cards' => [
         Paragraph::create([
@@ -283,7 +283,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   }
 
   /**
-   * Tests organization feedback form show/hide functionality.
+   * Tests an organization feedback form show/hide functionality.
    */
   public function testTopicPageShowHideFeedbackForm() {
 
@@ -301,13 +301,26 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
     $this->user = $user;
     $this->drupalLogin($this->user);
 
-    // Create topic page without a feedback form.
+    // Create a Topic Page without a feedback form.
     $topic_page = $this->createTopicPageShowHideFeedbackForm(TRUE);
+    $this->drupalLogout();
     $this->drupalGet($topic_page->toUrl()->toString());
     $this->assertFalse($this->getCurrentPage()->hasContent('Help Us Improve Mass.gov'), 'The feedback form is visible, while it must be hidden.');
 
-    // Create topic page with a feedback form.
+    // Create a Topic Page with a feedback form.
+    $this->drupalLogin($this->user);
     $topic_page = $this->createTopicPageShowHideFeedbackForm(FALSE);
+    $this->drupalLogout();
+    $this->drupalGet($topic_page->toUrl()->toString());
+    $this->assertTrue($this->getCurrentPage()->hasContent('Help Us Improve Mass.gov'), 'The feedback form is hidden, while it must be visible.');
+
+    // Create a Topic Page with a feedback form, but without organization,
+    // a feedback component should be still visible.
+    $this->drupalLogin($this->user);
+    $topic_page = $this->createTopicPageShowHideFeedbackForm(FALSE, TRUE);
+    $this->drupalGet($topic_page->toUrl('edit-form')->toString());
+    $this->htmlOutput();
+    $this->drupalLogout();
     $this->drupalGet($topic_page->toUrl()->toString());
     $this->assertTrue($this->getCurrentPage()->hasContent('Help Us Improve Mass.gov'), 'The feedback form is hidden, while it must be visible.');
   }
