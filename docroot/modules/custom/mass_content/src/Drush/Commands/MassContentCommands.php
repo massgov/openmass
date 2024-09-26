@@ -581,4 +581,50 @@ class MassContentCommands extends DrushCommands {
     }
   }
 
+  /**
+   * Processes 'service-details/[something]' links in all entities.
+   *
+   * Use --simulate to get a report, and skip healing.
+   *
+   * @command mass-content:process-service-details
+   *
+   * @aliases mpsd
+   */
+  public function processServiceDetails() {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    $entityTypes = ['node', 'paragraph'];
+    $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
+    foreach ($entityTypes as $entityType) {
+      $lastProcessedId = \Drupal::state()->get("mass_content.service_details.last_processed_id.{$entityType}", 0);
+      $idFieldName = $entityType === 'node' ? 'nid' : 'id';
+      $storage = $this->entityTypeManager->getStorage($entityType);
+      $ids = $storage->getQuery()
+        ->condition($idFieldName, $lastProcessedId, '>')
+        ->sort($idFieldName)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $changedEntities = 0;
+      foreach ($ids as $id) {
+        $entity = $storage->load($id);
+        if ($entity) {
+          $changed = $urlReplacementService->processServiceDetailsLink($entity);
+          if ($changed) {
+            if (method_exists($entity, 'setRevisionLogMessage')) {
+              $entity->setNewRevision();
+              $entity->setRevisionLogMessage('Revision created to update service-details links.');
+              $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+            }
+            $entity->save();
+            $changedEntities++;
+          }
+        }
+        \Drupal::state()->set("mass_content.service_details.last_processed_id.{$entityType}", $id);
+      }
+
+      $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
+    }
+  }
+
 }
