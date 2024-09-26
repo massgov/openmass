@@ -1,15 +1,8 @@
-{% if node.field_urgent_warning is empty or node.field_urgent_warning.value == 0 %}
-  {% set reportMessage = false %}
-{% else %}
-  {% set reportMessage = {
-    "text": "Need to report abuse or request urgent assistance? ",
-    "link": {
-      "text": "Use these contacts instead",
-      "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
-      "info": ""
-    }
-  } %}
-{% endif %}
+{% set reportMessage = false %}
+{% set showHelp = false %}
+{% set showHelp = false %}
+{% set warnmsg = false %}
+{% set helpText = "The feedback will only be used for improving the website." %}
 
 {% set hiddenElements = [
   {
@@ -73,28 +66,6 @@
     "value": "524744"
   }
 ] %}
-
-{% if node.field_org_always_show_help_page is empty or node.field_org_always_show_help_page.value == 0 %}
-  {% set showHelp = false %}
-{% else %}
-  {% set showHelp = true %}
-{% endif %}
-
-{% set current_url = url('<current>')|render|render %}
-{% set field_feedback_com_link = node.field_feedback_com_link.get(0).getUrl().toString() %}
-
-{% if "/topics/" in current_url %}
-  {% set showHelp = false %}
-  {% set warnmsg = false %}
-   {% set helpText = "The feedback will only be used for improving the website." %}
-{% elseif field_feedback_com_link in current_url %}
-  {% set showHelp = true %}
-  {% set warnmsg = "Use the information on this page to #{node.field_feedback_com_link.title}." %}
-  {% set helpText = "The feedback will only be used for improving the website." %}
-{% else %}
-  {% set warnmsg = "If you need assistance, please <a href='#{node.field_feedback_com_link.get(0).getUrl().toString()}'>#{node.field_feedback_com_link.title}</a>." %}
-  {% set helpText = "The feedback will only be used for improving the website. If you need assistance, please <a href='#{node.field_feedback_com_link.get(0).getUrl().toString()}'>#{node.field_feedback_com_link.title}</a>. <span class='ma__visually-hidden'>Please limit your input to 500 characters. </span>" %}
-{% endif %}
 
 {{ attach_library('mass_feedback_form/feedback-form-behaviors') }}
 
