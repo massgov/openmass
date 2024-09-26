@@ -563,6 +563,9 @@ function mass_metatag_datalayer_alter(&$data_layer) {
   if (isset($data_layer['entityIdentifier']) && isset($data_layer['entityType']) && $data_layer['entityType'] === 'node') {
     $node = Node::load($data_layer['entityIdentifier']);
     if ($node) {
+      if (isset($node->field_intended_audience)) {
+        $data_layer['intended_audience'] = $node->field_intended_audience->value;
+      }
       if (isset($node->field_parent) && $orgParentNodeId = $node->field_parent->target_id) {
         $data_layer['org_parent_node_id'] = intval($orgParentNodeId);
       }

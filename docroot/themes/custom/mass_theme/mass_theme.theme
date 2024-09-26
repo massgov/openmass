@@ -1860,12 +1860,14 @@ function mass_theme_preprocess_node_decision(&$variables) {
     $listingTable['rows'][] = Helper::rowListingTable($node, ['sources' => $fields['sources']], ['label' => t('Referenced Sources')]);
   }
 
-  $optionalContents[] = [
-    'path' => '@molecules/listing-table.twig',
-    'data' => [
-      'listingTable' => $listingTable,
-    ],
-  ];
+  if ($listingTable) {
+    $optionalContents[] = [
+      'path' => '@molecules/listing-table.twig',
+      'data' => [
+        'listingTable' => $listingTable,
+      ],
+    ];
+  }
 
   if (Helper::isFieldPopulated($node, 'field_decision_participants')) {
     $rows = [];
@@ -1950,7 +1952,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
   // Set static pageHeader properties to pass to prepare function.
   $pageHeader_options = [
     'category' => $category,
-    'optionalContents' => $optionalContents,
+    'optionalContents' => $optionalContents ?? [],
   ];
 
   // Make pageBanner data object available in twig template.
@@ -2165,12 +2167,14 @@ function mass_theme_preprocess_node_regulation(&$variables) {
     $listingTable['rows'][] = Helper::rowListingTable($node, ['sources' => $fields['official']], $official_options);
   }
 
-  $optionalContents[] = [
-    'path' => '@molecules/listing-table.twig',
-    'data' => [
-      'listingTable' => $listingTable,
-    ],
-  ];
+  if ($listingTable) {
+    $optionalContents[] = [
+      'path' => '@molecules/listing-table.twig',
+      'data' => [
+        'listingTable' => $listingTable,
+      ],
+    ];
+  }
 
   if (!empty($fields['overview']) && Helper::isFieldPopulated($node, $fields['overview'])) {
     $headerRichText = [
@@ -2190,7 +2194,7 @@ function mass_theme_preprocess_node_regulation(&$variables) {
   // Set static pageHeader properties to pass to prepare function.
   $pageHeader_options = [
     'category' => $category,
-    'optionalContents' => $optionalContents,
+    'optionalContents' => $optionalContents ?? [],
   ];
 
   if (!empty($fields['publish_state']) && Helper::isFieldPopulated($node, $fields['publish_state'])) {
@@ -2377,12 +2381,14 @@ function mass_theme_preprocess_node_advisory(&$variables) {
     $listingTable['rows'][] = Helper::rowListingTable($node, ['sources' => $fields['sources']], ['label' => t('Referenced Sources')]);
   }
 
-  $optionalContents[] = [
-    'path' => '@molecules/listing-table.twig',
-    'data' => [
-      'listingTable' => $listingTable,
-    ],
-  ];
+  if ($listingTable) {
+    $optionalContents[] = [
+      'path' => '@molecules/listing-table.twig',
+      'data' => [
+        'listingTable' => $listingTable,
+      ],
+    ];
+  }
 
   if (!empty($fields['overview']) && Helper::isFieldPopulated($node, $fields['overview'])) {
     $headerRichText = [
@@ -2406,7 +2412,7 @@ function mass_theme_preprocess_node_advisory(&$variables) {
   // Set static pageHeader properties to pass to prepare function.
   $pageHeader_options = [
     'category' => $category,
-    'optionalContents' => $optionalContents,
+    'optionalContents' => $optionalContents ?? [],
   ];
 
   if (!empty($fields['publish_state']) && Helper::isFieldPopulated($node, $fields['publish_state'])) {
@@ -2682,12 +2688,14 @@ function mass_theme_preprocess_node_rules(&$variables) {
     $mainContent['updates']['rows'][] = $updateRow;
   }
 
-  $optionalContents[] = [
-    'path' => '@molecules/listing-table.twig',
-    'data' => [
-      'listingTable' => $listingTable,
-    ],
-  ];
+  if ($listingTable) {
+    $optionalContents[] = [
+      'path' => '@molecules/listing-table.twig',
+      'data' => [
+        'listingTable' => $listingTable,
+      ],
+    ];
+  }
 
   if (!empty($fields['overview']) && Helper::isFieldPopulated($node, $fields['overview'])) {
     $headerRichText = [
@@ -2718,7 +2726,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
   $pageHeader_options = [
     'category' => $category,
     'subCategory' => $subCategory,
-    'optionalContents' => $optionalContents,
+    'optionalContents' => $optionalContents ?? [],
   ];
 
   if (Helper::isFieldPopulated($node, $fields['publish_state'])) {

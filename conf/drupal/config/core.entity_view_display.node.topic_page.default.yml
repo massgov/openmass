@@ -5,11 +5,13 @@ dependencies:
   config:
     - field.field.node.topic_page.field_collections
     - field.field.node.topic_page.field_display_short_description
+    - field.field.node.topic_page.field_hide_feedback_component
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
     - field.field.node.topic_page.field_restrict_link_management
+    - field.field.node.topic_page.field_restrict_orgs_field
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_topic_content_cards
@@ -45,6 +47,16 @@ content:
     third_party_settings: {  }
     weight: 17
     region: content
+  field_hide_feedback_component:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 15
+    region: content
   field_image_credit:
     type: string
     label: above
@@ -67,6 +79,16 @@ content:
       link: true
     third_party_settings: {  }
     weight: 14
+    region: content
+  field_restrict_orgs_field:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 18
     region: content
   field_topic_content_cards:
     type: entity_reference_revisions_entity_view
