@@ -371,4 +371,93 @@ class MassUrlReplacementService {
     ];
   }
 
+  /**
+   * Processes 'service-details/[something]' links in both text and link fields within an entity.
+   *
+   * This method scans through all fields of a given entity, identifying text fields and link fields
+   * that may contain 'service-details/[something]' URLs. It then replaces these URLs with the appropriate
+   * 'info-details/[something]' URLs, based on the redirect information. If any changes are made, the
+   * entity is marked as changed.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity being processed.
+   *
+   * @return bool
+   *   TRUE if the entity was changed, FALSE otherwise.
+   */
+  public function processServiceDetailsLink($entity): bool {
+    $changed = FALSE;
+
+    // Process text fields.
+    foreach ($entity->getFields() as $field) {
+      $fieldType = $field->getFieldDefinition()->getType();
+      if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
+        foreach ($field as $item) {
+          $processed = $this->replaceServiceDetailsLinks($item->value);
+          if ($processed['changed']) {
+            $item->value = $processed['text'];
+            $changed = TRUE;
+          }
+        }
+      }
+      // Process link fields.
+      elseif ($fieldType === 'link') {
+        foreach ($field as  $item) {
+          if ($item->uri && strpos($item->uri, 'internal:/service-details/') === 0) {
+            $url = substr($item->uri, strlen('internal:/'));
+            $processed = $this->replaceServiceDetailsLinks($url);
+            if ($processed['changed']) {
+              $item->uri = 'internal:/' . $processed['text'];
+              $changed = TRUE;
+            }
+          }
+        }
+      }
+    }
+
+    return $changed;
+  }
+
+  /**
+   * Replaces 'service-details/[something]' URLs with 'info-details/[something]' in a given text.
+   *
+   * This helper method scans the provided text for any 'service-details/[something]' URLs. If such a URL
+   * is found, it checks if a redirect exists for this URL that points to an 'info-details/[something]' URL.
+   * If a matching redirect is found, the URL in the text is replaced, and the redirect is optionally deleted.
+   *
+   * @param string $text
+   *   The text containing potential 'service-details/[something]' URLs.
+   *
+   * @return array
+   *   An associative array containing:
+   *   - 'changed' (bool): TRUE if any URLs were replaced, FALSE otherwise.
+   *   - 'text' (string): The processed text with updated URLs.
+   */
+  private function replaceServiceDetailsLinks($text) {
+    $changed = FALSE;
+
+    // Match all 'service-details/[something]' patterns.
+    if (preg_match_all('/service-details\/([a-zA-Z0-9-]+)/', $text, $matches)) {
+      foreach ($matches[1] as $match) {
+        // Load the redirect entity.
+        $redirects = $this->entityTypeManager->getStorage('redirect')->loadByProperties(['redirect_source__path' => 'service-details/' . $match]);
+        if ($redirect = reset($redirects)) {
+          $target = $redirect->getRedirectUrl()->toString();
+          if (strpos($target, '/info-details/') !== FALSE) {
+            // Extract the path starting from '/info-details/'.
+            $infoDetailsPath = parse_url($target, PHP_URL_PATH);
+
+            // Replace the link in the text.
+            $text = str_replace('service-details/' . $match, ltrim($infoDetailsPath, '/'), $text);
+            $changed = TRUE;
+            // Optionally delete the redirect.
+            // $redirect->delete();
+          }
+        }
+      }
+    }
+
+    return ['changed' => $changed, 'text' => $text];
+  }
+
 }
