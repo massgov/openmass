@@ -1,0 +1,31 @@
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+# Also see https://mglaman.dev/blog/my-dependabot-configuration-drupal-and-other-php-projects
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "composer"
+    open-pull-requests-limit: 3
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "drupal/core*"
+        update-types: ["version-update:semver-major"]
+    groups:
+      drupal-core:
+        patterns:
+          - "drupal/core"
+          - "drupal/core-composer-scaffold"
+          - "drupal/core-recommended"
+          - "drupal/core-dev"
+      gin:
+        patterns:
+          - "drupal/gin"
+          - "drupal/gin_login"
+          - "drupal/gin_toolbar"

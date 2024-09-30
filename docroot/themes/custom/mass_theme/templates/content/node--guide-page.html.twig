@@ -80,7 +80,7 @@
     {% if content.field_image_credit is not empty %}
         {{ content.field_image_credit }}
     {% endif %}
-    {% if node.field_guide_page_related_guides.value %}
+    {% if suggestedPages %}
         {% include "@organisms/by-author/suggested-pages.twig" %}
     {% endif %}
     {{ content.extra_org_feedback_form }}
