@@ -587,16 +587,28 @@ class MassContentCommands extends DrushCommands {
    * Use --simulate to get a report, and skip healing.
    *
    * @command mass-content:process-service-details
-   *
+   * @field-labels
+   *   success: Success
+   *   entity_type: Entity Type
+   *   entity_id: Entity ID
+   *   processed_links: Processed Links
+   * @default-fields success,entity_type,entity_id,processed_links
    * @aliases mpsd
+   * @option simulate If set, no changes will be saved.
    */
-  public function processServiceDetails() {
+  public function processServiceDetails($options = ['simulate' => FALSE, 'format' => 'table']) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
+    $rows = [];
     $entityTypes = ['node', 'paragraph'];
     $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
+
     foreach ($entityTypes as $entityType) {
-      $lastProcessedId = \Drupal::state()->get("mass_content.service_details.last_processed_id.{$entityType}", 0);
+      $lastProcessedId = 0;
+      if (!$options['simulate']) {
+        $lastProcessedId = \Drupal::state()
+          ->get("mass_content.service_details.last_processed_id.{$entityType}", 0);
+      }
       $idFieldName = $entityType === 'node' ? 'nid' : 'id';
       $storage = $this->entityTypeManager->getStorage($entityType);
       $ids = $storage->getQuery()
@@ -605,26 +617,67 @@ class MassContentCommands extends DrushCommands {
         ->accessCheck(FALSE)
         ->execute();
 
+      $totalEntities = count($ids);
+      $this->output()->writeln(t('Processing @count @type entities...', ['@count' => $totalEntities, '@type' => $entityType]));
+
       $changedEntities = 0;
+
       foreach ($ids as $id) {
+
         $entity = $storage->load($id);
         if ($entity) {
           $changed = $urlReplacementService->processServiceDetailsLink($entity);
+
+          // Only output rows where changes will happen.
           if ($changed) {
-            if (method_exists($entity, 'setRevisionLogMessage')) {
-              $entity->setNewRevision();
-              $entity->setRevisionLogMessage('Revision created to update service-details links.');
-              $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+            $row = [
+              'success' => 'No',
+              'entity_type' => $entityType,
+              'entity_id' => $entity->id(),
+              'processed_links' => $changed,
+            ];
+
+            $this->output()->writeln(t('Entity ID @id of @type has @changes changes.', [
+              '@id' => $entity->id(),
+              '@type' => $entityType,
+              '@changes' => $changed,
+            ]));
+
+            if (!$options['simulate']) {
+              if (method_exists($entity, 'setRevisionLogMessage')) {
+                $entity->setNewRevision();
+                $entity->setRevisionLogMessage('Revision created to update service-details links.');
+                $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+              }
+              $entity->save();
+              $row['success'] = 'Yes';
+              $changedEntities++;
+            } else {
+              $this->output()->writeln(t('Simulating: Entity @id changes not saved.', ['@id' => $entity->id()]));
             }
-            $entity->save();
-            $changedEntities++;
+
+            $rows[] = $row;
+          }
+
+          if (!$options['simulate']) {
+            // Update the last processed ID after each entity.
+            \Drupal::state()
+              ->set("mass_content.service_details.last_processed_id.{$entityType}", $id);
           }
         }
-        \Drupal::state()->set("mass_content.service_details.last_processed_id.{$entityType}", $id);
       }
 
-      $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
+      $this->output()->writeln(t('Processed @count @type entities with changes.', ['@count' => $changedEntities, '@type' => $entityType]));
     }
+
+    if ($changedEntities > 0) {
+      $this->output()->writeln(t('Finished processing all entities with changes. Exporting results...'));
+    } else {
+      $this->output()->writeln(t('No changes were detected during processing.'));
+    }
+
+    // Only return rows where changes happened.
+    return new RowsOfFields($rows);
   }
 
 }
