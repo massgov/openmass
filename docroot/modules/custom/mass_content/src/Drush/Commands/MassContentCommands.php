@@ -6,10 +6,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\mass_fields\MassUrlReplacementService;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
@@ -485,7 +483,7 @@ class MassContentCommands extends DrushCommands {
                 ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
                   '@type' => ucfirst($entityType),
                   '@bundle' => $entity->bundle(),
-                  '@id' => $entity->id()
+                  '@id' => $entity->id(),
                 ]));
             }
           }
@@ -565,7 +563,7 @@ class MassContentCommands extends DrushCommands {
                     ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
                       '@type' => ucfirst($entityType),
                       '@bundle' => $entity->bundle(),
-                      '@id' => $entity->id()
+                      '@id' => $entity->id(),
                     ]));
                 }
               }
@@ -652,7 +650,8 @@ class MassContentCommands extends DrushCommands {
               $entity->save();
               $row['success'] = 'Yes';
               $changedEntities++;
-            } else {
+            }
+            else {
               $this->output()->writeln(t('Simulating: Entity @id changes not saved.', ['@id' => $entity->id()]));
             }
 
@@ -672,7 +671,8 @@ class MassContentCommands extends DrushCommands {
 
     if ($changedEntities > 0) {
       $this->output()->writeln(t('Finished processing all entities with changes. Exporting results...'));
-    } else {
+    }
+    else {
       $this->output()->writeln(t('No changes were detected during processing.'));
     }
 
