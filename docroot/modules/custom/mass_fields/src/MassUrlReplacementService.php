@@ -142,7 +142,6 @@ class MassUrlReplacementService {
           }
           else {
             // We cover the case when the file was used in revisions.
-
             $mediaQuery = $this->entityTypeManager->getStorage('media')->getQuery()
               ->condition('field_upload_file', $file->id())
               ->accessCheck(FALSE)
@@ -402,7 +401,7 @@ class MassUrlReplacementService {
       }
       // Process link fields.
       elseif ($fieldType === 'link') {
-        foreach ($field as  $item) {
+        foreach ($field as $item) {
           if ($item->uri && strpos($item->uri, 'internal:/service-details/') === 0) {
             $url = substr($item->uri, strlen('internal:/'));
             $processed = $this->replaceServiceDetailsLinks($url);
