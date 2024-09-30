@@ -829,7 +829,7 @@ workflows:
           name: browserstack-percy-test
           requires: [deploy-test-refresh-db]
           target: test
-          list: post-release
+          list: all
           filters:
             branches:
               only: /^release\/.*$/
@@ -1122,7 +1122,7 @@ workflows:
           name: browserstack-percy-test
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
-          list: post-release
+          list: all
           filters:
             branches:
               ignore: /.*/
