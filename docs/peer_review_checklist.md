@@ -67,6 +67,6 @@ All openmass feature development PRs that require Mayflower changes must pass al
 - [ ] All circleCI tests are green on the Openmass branch
 
 ## JavaScript/CSS update
-- [] If JavaScript/CSS were modified - does version of the library definition incremented?
+- [] If JavaScript/CSS were modified - was the version of the library definition incremented?
 
 Because we are no longer compiling Mayflower changelogs for each Openmass release, we expect you to follow the branch naming conventions, include the ticket number in the branch names so they appear in JIRA. Please also link to the corresponding Mayflower PR in the Openmass PR description. Doing so will help others review the PRs together and find the related PRs quickly in case where a hotfix is needed.
