@@ -5,12 +5,15 @@
   <script>
     {# We need way for the content to be loaded #}
     {# because we insert alert based on specific regions #}
+    if (typeof drupalLike === 'undefined') {
+      var drupalLike = {behaviors: {massAlertBlocks: {}}};
+    }
     {% if wait %}
-      document.addEventListener('DOMContentLoaded', function () {
-        drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
-      });
+    document.addEventListener('DOMContentLoaded', function () {
+      drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
+    });
     {% else %}
-        drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
+    drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
     {% endif %}
   </script>
 {% endif %}
