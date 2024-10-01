@@ -325,26 +325,9 @@ function mass_translations_module_implements_alter(&$implementations, $hook) {
  * Implements hook_locale_translation_projects_alter().
  */
 function mass_translations_locale_translation_projects_alter(&$projects) {
-  $allowed_projects = [
-    'mass_alerts',
-    'mass_content',
-    'mass_feedback_form',
-    'mass_fields',
-    'mass_hierarchy',
-    'mass_map',
-    'mass_theme',
-    'mayflower',
-  ];
-
   foreach ($projects as $project_name => $project) {
-    unset($projects[$project_name]);
-  }
-
-  foreach ($allowed_projects as $allowed_project) {
-    $projects[$allowed_project] = [
-      'info' => [
-        'interface translation project' => $allowed_project,
-      ],
-    ];
+    if (!isset($file->info['interface translation project'])) {
+      unset($projects[$project_name]);
+    }
   }
 }
