@@ -158,8 +158,8 @@ var jQueryLike = function (elemOrSelector, context) {
               if ($('.ma__illustrated-header').length) {
                 $this.insertAfter('.ma__illustrated-header');
               }
-              else if ($('.ma__details__sticky-nav').length) {
-                $this.insertAfter('.ma__details__sticky-nav');
+              else if ($('.ma__org-page .ma__details__sticky-nav').length) {
+                $this.insertAfter('.ma__org-page .ma__details__sticky-nav');
               }
               else if ($('.ma__page-banner').length) {
                 $this.insertAfter('.ma__page-banner');
