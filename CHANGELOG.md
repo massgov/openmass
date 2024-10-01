@@ -1,5 +1,17 @@
 
 
+## [0.413.0] - October 1, 2024
+
+### Changed
+  - DP-28816: UX improvements to the simplified org nav. Style improvement to sticky nav.
+  - DP-35078: Start versioning Mayflower Artifacts library definition to make sure cache can be invalidated correctly.
+  - DP-35159: Changed CircleCI Percy jobs to only run against the "all" list of screenshots.
+  
+### Added
+  - DP-34662: Configure Dependabot for composer updates
+  
+
+
 ## [0.412.0] - September 24, 2024
 
 ### Fixed
