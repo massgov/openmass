@@ -6,6 +6,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mass_content\Entity\Bundle\node\LocationBundle;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
@@ -119,10 +120,21 @@ class Organisms {
       ],
     ];
 
+    // In case this is a location bundle we include Primary contact as well.
+    if ($entity instanceof LocationBundle ) {
+      $map['contact_info'] = ['field_ref_contact_info_1'];
+    }
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
 
     $ref_items = Helper::getReferencedEntitiesFromField($entity, $fields['items']);
+
+    // In case this is a location bundle we include Primary contact as well.
+    if ($fields['contact_info']) {
+      if ($ref_primary_contact_info = Helper::getReferencedEntitiesFromField($entity, $fields['contact_info'])) {
+        $ref_items = array_merge($ref_primary_contact_info, $ref_items);
+      }
+    }
 
     foreach ($ref_items as $item) {
       // Get entity cache tags.
