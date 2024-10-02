@@ -121,7 +121,7 @@ class Organisms {
     ];
 
     // In case this is a location bundle we include Primary contact as well.
-    if ($entity instanceof LocationBundle ) {
+    if ($entity instanceof LocationBundle) {
       $map['contact_info'] = ['field_ref_contact_info_1'];
     }
     // Determines which field names to use from the map.
