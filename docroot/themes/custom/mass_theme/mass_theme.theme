@@ -638,7 +638,7 @@ function mass_theme_preprocess_node_form_page(&$variables) {
           }
         }
       }
-      elseif ($node->field_form_platform->value == 'gravity_forms') {
+      elseif ($node->getPlatform() == 'gravity_forms') {
         $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       }
     }

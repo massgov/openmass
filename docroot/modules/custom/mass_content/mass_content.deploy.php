@@ -308,8 +308,7 @@ function mass_content_deploy_form_platform_update(&$sandbox) {
         '@nid' => $node->id(),
         '@message' => $e->getMessage(),
       ]);
-      // Re-enable entity hierarchy writes in case of an error.
-      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+      // Log the error but do not re-enable writes here, continue processing.
     }
 
     // Track progress.
