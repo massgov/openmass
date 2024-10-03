@@ -10,6 +10,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -80,9 +81,55 @@ function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_sta
 }
 
 /**
+ * Recurse through the provided form and hide any text_format elements.
+ *
+ * @param array $form
+ *   The form in which to iterate to hide the text_format elements.
+ */
+function _mass_utility_hide_text_format_elements(array &$form) {
+  foreach (Element::children($form) as $key) {
+    if (!isset($form[$key]['#type']) || $form[$key]['#type'] == 'container') {
+      _mass_utility_hide_text_format_elements($form[$key]);
+    }
+    elseif ($form[$key]['#type'] == 'text_format') {
+      $form[$key]['#after_build'][] = '_mass_utility_hide_text_format_element';
+    }
+  }
+}
+
+/**
+ * Hide a given text_format element.
+ *
+ * @param array $element
+ *   The element to hide.
+ *
+ * @return array
+ *   The hidden element.
+ */
+function _mass_utility_hide_text_format_element(array $element) {
+  if (!empty($element['format'])) {
+    $element['format']['#attributes']['class'][] = 'hidden';
+  }
+  return $element;
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Hide text_format form the form.
+  $current_user = \Drupal::currentUser();
+  if (!$current_user->hasRole('administrator') && !$current_user->hasRole('content_team')) {
+    _mass_utility_hide_text_format_elements($form);
+    // Initialize CacheableMetadata.
+    $cache_metadata = new CacheableMetadata();
+    // Add cache context for roles.
+    $cache_metadata->addCacheContexts(['user.roles']);
+    // Attach cache metadata to the form.
+    $cache_metadata->applyTo($form);
+  }
+
   /** @var \Drupal\node\NodeForm $node_form */
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
@@ -103,7 +150,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     unset($options['-1']);
     $form['access_unpublished_settings']['duration']['#options'] = $options;
 
-    $temporary_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/temporary-unpublished-access');
+    $temporary_url = Url::fromUri('https://www.mass.gov/kb/share-content');
     $form['access_unpublished_settings']['description'] = [
       '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url)->toString(),
       '#weight' => -30,
@@ -126,7 +173,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
 
   // Add help text link for Scheduling options.
   if (isset($form['publish_on']['widget'][0]['value']['#description'])) {
-    $schedule_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/schedule-publishing-and-unpublishing');
+    $schedule_url = Url::fromUri('https://www.mass.gov/kb/schedule-content');
     $form['publish_on']['widget'][0]['value']['#description'] = new FormattableMarkup('Enter a date. The time part is optional. The default time is 09:00:00. Leave the date blank for no scheduled publishing.' . ' @schedule', [
       '@schedule' => Link::fromTextAndUrl('Learn how to schedule your content for publishing or unpublishing.', $schedule_url)->toString(),
     ]);
@@ -694,20 +741,22 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
 function mass_utility_entity_embed_context_alter(array &$context, EntityInterface $entity) {
   if ($entity instanceof File) {
 
-    if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
-      if (isset($context['class'])) {
-        $context['class'] .= " half-width";
+    if (!empty($context['data-entity-embed-display-settings']['image_style'])) {
+      if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
+        if (isset($context['class'])) {
+          $context['class'] .= " half-width";
+        }
+        else {
+          $context['class'] = "half-width";
+        }
       }
-      else {
-        $context['class'] = "half-width";
-      }
-    }
-    elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
-      if (isset($context['class'])) {
-        $context['class'] .= " full-width";
-      }
-      else {
-        $context['class'] = "full-width";
+      elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
+        if (isset($context['class'])) {
+          $context['class'] .= " full-width";
+        }
+        else {
+          $context['class'] = "full-width";
+        }
       }
     }
   }

@@ -104,10 +104,6 @@ parameters:
     type: boolean
     default: true
 
-  # These params for currently used in drush ma:cf-deploy
-  ma-cf-deploy:
-    type: boolean
-    default: false
   # These params for currently used in drush ma:backstop. target is declared later.
   reference:
     type: string
@@ -141,7 +137,10 @@ parameters:
   skip-maint:
     type: string
     default: ""
-  # target also used by ma-cf-deploy, ma-backstop
+  varnish:
+    type: string
+    default: ""
+  # target used by ma-backstop
   target:
     type: string
     default: ""
@@ -413,6 +412,10 @@ jobs:
         type: enum
         enum: ["", "--refresh-db"]
         default: ""
+      varnish:
+        type: enum
+        enum: [ "", "--varnish" ]
+        default: ""
     working_directory: /tmp/code
     docker:
       - image: cimg/php:8.2-node
@@ -423,7 +426,7 @@ jobs:
       - *vendor_bin_add_path
       - fetch_drush_aliases
       - run:
-          command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
+          command: "drush ma:deploy -v -y << parameters.varnish >> << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
       - jira/notify:
           environment: << parameters.target >>
@@ -451,6 +454,55 @@ jobs:
           name: Nightcrawler
           command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=<< parameters.target >> --samples=<< parameters.samples >>
           no_output_timeout: 300m
+      - store_test_results:
+          path: /tmp/results
+      - store_artifacts:
+          path: /tmp/results
+
+  browserstack_percy_test:
+    parameters:
+      target:
+        type: string
+        default: test
+      list:
+        type: string
+        default: post-release
+      tugboat:
+        type: string
+        default: ""
+    working_directory: /tmp/code/browserstack
+    docker:
+      - image: cimg/php:8.2-node
+        environment:
+          BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
+          BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
+          BROWSERSTACK_LOCAL: false
+          BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
+          MASS_BYPASS_RATE_LIMIT: $MASS_BYPASS_RATE_LIMIT
+          PERCY_TOKEN: $PERCY_TOKEN
+          PERCY_TARGET: << parameters.target >>
+          PERCY_LIST: << parameters.list >>
+          PERCY_DO_NOT_CAPTURE_RESPONSIVE_ASSETS: true
+          PERCY_CLIENT_ERROR_LOGS: false
+    steps:
+      - attach_workspace: {at: /tmp}
+      - *vendor_bin_add_path
+      - *no_host_check
+      - *no_ssh_timeout
+      - *yarn_install
+      - when:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Percy on BrowserStack Automate test (Tugboat target)
+                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test
+      - unless:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Percy on BrowserStack Automate test (non Tugboat target)
+                command: npm run percy-snapshots-test
+                no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
@@ -718,7 +770,7 @@ workflows:
               <<: *branch_ignore
 
   # This is to automate the creation of the release branch.
-  # The cron time needs to be updated every Fall/Spring for daylight saving time.
+  # The trigger time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
     when:
       and:
@@ -753,6 +805,7 @@ workflows:
             - push_acquia
           target: test
           refresh-db: "--refresh-db"
+          varnish: "--varnish"
           filters:
             branches:
               only: /^release\/.*$/
@@ -769,6 +822,14 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-test-refresh-db]
+          target: test
+          list: all
           filters:
             branches:
               only: /^release\/.*$/
@@ -831,6 +892,14 @@ workflows:
             filters:
               branches:
                 only: /^hotfix\/.*$/
+      - browserstack_percy_test:
+            name: browserstack-percy-test
+            requires: [deploy-test-no-refresh-db]
+            target: test
+            list: all
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
           requires: [push_acquia]
@@ -882,6 +951,7 @@ workflows:
             - hold - Release manager only
           target: test
           refresh-db: "--refresh-db"
+          varnish: "--varnish"
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -898,6 +968,14 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-test-refresh-db]
+          target: test
+          list: all
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -972,6 +1050,7 @@ workflows:
             - tagging_acquia
             - hold_for_stage Release manager only
           gitRef: tags/$CIRCLE_TAG
+          varnish: "--varnish"
           target: test
           filters:
             branches:
@@ -996,6 +1075,7 @@ workflows:
             - hold_for_prod_maint Release manager only
           target: prod
           gitRef: tags/$CIRCLE_TAG
+          varnish: "--varnish"
           filters:
             branches:
               ignore: /.*/
@@ -1020,6 +1100,7 @@ workflows:
           target: prod
           gitRef: tags/$CIRCLE_TAG
           skip-maint: --skip-maint
+          varnish: "--varnish"
           filters:
             branches:
               ignore: /.*/
@@ -1032,6 +1113,16 @@ workflows:
           list: post-release
           viewport: desktop
           reference: test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-tag-prod-acquia-maint]
+          target: prod
+          list: all
           filters:
             branches:
               ignore: /.*/
@@ -1134,6 +1225,7 @@ workflows:
           gitRef: << pipeline.parameters.git-ref >>
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
+          varnish: << pipeline.parameters.varnish >>
 
   # Nightly On Demand Prod DB Backup
   nightly_prod_db_backup:
@@ -1180,6 +1272,19 @@ workflows:
           tugboat: << pipeline.parameters.tugboat >>
           cachebuster: << pipeline.parameters.cachebuster >>
 
+  browserstack_percy_compare:
+    when:
+      and:
+        - equal: [ api, << pipeline.trigger_source >> ]
+        - equal: [ browserstack_percy_compare, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - build
+      - browserstack_percy_test:
+          requires: [ build ]
+          target: << pipeline.parameters.target >>
+          list: << pipeline.parameters.list >>
+          tugboat: << pipeline.parameters.tugboat >>
+
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
@@ -1193,10 +1298,16 @@ workflows:
           requires: [ build ]
           target: cd
           refresh-db: "--refresh-db"
+          varnish: "--varnish"
       - backstop_test:
           requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [ deploy-cd-refresh-db ]
+          target: cd
+          list: all
       - crawl:
           name: crawl-deploy-450
           requires: [ deploy-cd-refresh-db ]
