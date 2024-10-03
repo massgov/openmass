@@ -39,6 +39,7 @@ function mass_views_views_data() {
       'id' => 'cl_manual_lists_downloads',
     ],
   ];
+
   return $data;
 }
 
@@ -48,6 +49,45 @@ function mass_views_views_data() {
  * Adds a better content bundle filter.
  */
 function mass_views_views_data_alter(array &$data) {
+
+  // Describes relationships between files and comments.
+  $data['file_usage']['file_to_paragraph'] = [
+    'title' => t('Paragraph'),
+    'help' => t('A Paragraph that is associated with this file, usually because this file is in a field on the Paragraph.'),
+    // Only provide this field/relationship/etc.,
+    // when the 'file_managed' base table is present.
+    'skip base' => ['node_field_data', 'node_field_revision', 'users_field_data', 'comment_field_data', 'taxonomy_term_field_data'],
+    'real field' => 'id',
+    'relationship' => [
+      'id' => 'standard',
+      'join_id' => 'casted_int_field_join',
+      'cast' => 'left',
+      'title' => t('Paragraph'),
+      'label' => t('Paragraph'),
+      'base' => 'paragraphs_item_field_data',
+      'base field' => 'id',
+      'relationship field' => 'id',
+      'extra' => [['table' => 'file_usage', 'field' => 'type', 'operator' => '=', 'value' => 'paragraph']],
+    ],
+  ];
+
+  $data['file_usage']['paragraph_to_file'] = [
+    'title' => t('File'),
+    'help' => t('A file that is associated with this paragraph, usually because it is in a field on the paragraph.'),
+    // Only provide this field/relationship/etc.,
+    // when the 'comment' base table is present.
+    'skip base' => ['file_managed', 'node_field_data', 'node_field_revision', 'users_field_data', 'taxonomy_term_field_data'],
+    'real field' => 'fid',
+    'relationship' => [
+      'id' => 'standard',
+      'title' => t('File'),
+      'label' => t('File'),
+      'base' => 'file_managed',
+      'base field' => 'fid',
+      'relationship field' => 'fid',
+    ],
+  ];
+
   // Adds a better content type filter.
   $data['node_field_data']['node_user_permitted_type_filter'] = [
     'title' => t('Mass.gov user permitted content type filter'),
@@ -292,5 +332,6 @@ function mass_views_field_views_data_alter(array &$data, FieldStorageConfigInter
       ],
     ];
   }
+
   return $data;
 }
