@@ -15,4 +15,5 @@ class FormPageBundle extends NodeBundle {
   public function getPlatform(): FieldItemListInterface {
     return $this->get('field_form_platform');
   }
+
 }
