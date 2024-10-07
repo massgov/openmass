@@ -419,6 +419,7 @@ class MassUrlReplacementService {
 
   /**
    * Replaces 'service-details/[something]' URLs with 'info-details/[something]' in a given text or link.
+   *
    * Adds necessary anchor attributes when processing text fields.
    *
    * @param string $text
