@@ -5,6 +5,7 @@
  * Contains mayflower.module.
  */
 
+use Composer\InstalledVersions as ComposerInstalledVersions;
 use Drupal\block\Entity\Block;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\mayflower\Prepare\Molecules;
@@ -43,10 +44,12 @@ function mayflower_theme() {
  * Add the mayflower/global library from the artifacts installation.
  */
 function mayflower_library_info_build() {
+  $mf_installed_reference = ComposerInstalledVersions::getReference('massgov/mayflower-artifacts');
+  $mf_installed_version = ComposerInstalledVersions::getVersion('massgov/mayflower-artifacts');
   $artifacts = mayflower_get_path();
   $libraries = [];
   $libraries['global'] = [
-    'version' => '1.0.0',
+    'version' => $mf_installed_version . '-' . $mf_installed_reference,
     'js' => [
       "/$artifacts/assets/js/vendor-generated.js" => [
         'minified' => TRUE,

@@ -56,13 +56,17 @@
 - [ ] Is the logic in the right place?
 - [ ] If the code implements functional behavior that should occur regardless of the theming, it should be in a module. (We have not been good about this).
 - [ ] If it is purely presentational, can the logic be in the template? (unless it is Mass.gov specific logic and a Mayflower template).
+- [ ] If Drupal core was updated, do all changes from the scaffold files apply to our version-controlled files as well? (e.g. .htaccess, settings.php, services.yml, development.services.yml, etc.)
 
 ## Mayflower Integration
 All openmass feature development PRs that require Mayflower changes must pass all these checks before **squashing and merging** into develop:
 - [ ] Both the Mayflower and Openmass PRs reviewed and approved
 - [ ] **Squash and merge** the corresponding Mayflower PR into develop
-- [ ] After the Mayflower develop circleCI tasks are done, in the Openmass branch, resolve merge conflicts with the develop branch and run `composer require massgov/mayflower-artifacts:dev-develop`. 
+- [ ] After the Mayflower develop CircleCI tasks are done, in the Openmass branch, resolve merge conflicts with the develop branch and run `composer require massgov/mayflower-artifacts:dev-develop`.
 - [ ] Commit and push up the composer.lock changes. (mayflower-artifacts should be pointing to the latest `dev-develop` version)
 - [ ] All circleCI tests are green on the Openmass branch
+
+## JavaScript/CSS update
+- [] If JavaScript/CSS were modified - was the version of the library definition incremented?
 
 Because we are no longer compiling Mayflower changelogs for each Openmass release, we expect you to follow the branch naming conventions, include the ticket number in the branch names so they appear in JIRA. Please also link to the corresponding Mayflower PR in the Openmass PR description. Doing so will help others review the PRs together and find the related PRs quickly in case where a hotfix is needed.
