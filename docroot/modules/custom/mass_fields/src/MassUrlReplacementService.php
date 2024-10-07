@@ -392,7 +392,7 @@ class MassUrlReplacementService {
       $fieldType = $field->getFieldDefinition()->getType();
       if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
         foreach ($field as $item) {
-          $processed = $this->replaceServiceDetailsLinks($item->value);
+          $processed = $this->replaceServiceDetailsLinks($item->value, TRUE);
           if ($processed['changed']) {
             $item->value = $processed['text'];
             $changed = TRUE;
@@ -418,39 +418,88 @@ class MassUrlReplacementService {
   }
 
   /**
-   * Replaces 'service-details/[something]' URLs with 'info-details/[something]' in a given text.
-   *
-   * This helper method scans the provided text for any 'service-details/[something]' URLs. If such a URL
-   * is found, it checks if a redirect exists for this URL that points to an 'info-details/[something]' URL.
-   * If a matching redirect is found, the URL in the text is replaced, and the redirect is optionally deleted.
+   * Replaces 'service-details/[something]' URLs with 'info-details/[something]' in a given text or link.
+   * Adds necessary anchor attributes when processing text fields.
    *
    * @param string $text
    *   The text containing potential 'service-details/[something]' URLs.
+   * @param bool $isTextField
+   *   Whether the text is from a text field (TRUE) or a link field (FALSE).
    *
    * @return array
    *   An associative array containing:
    *   - 'changed' (bool): TRUE if any URLs were replaced, FALSE otherwise.
-   *   - 'text' (string): The processed text with updated URLs.
+   *   - 'text' (string): The processed text or link with updated URLs.
    */
-  private function replaceServiceDetailsLinks($text) {
+  private function replaceServiceDetailsLinks($text, $isTextField = FALSE): array {
     $changed = FALSE;
 
-    // Match all 'service-details/[something]' patterns.
-    if (preg_match_all('/service-details\/([a-zA-Z0-9-]+)/', $text, $matches)) {
-      foreach ($matches[1] as $match) {
-        // Load the redirect entity.
-        $redirects = $this->entityTypeManager->getStorage('redirect')->loadByProperties(['redirect_source__path' => 'service-details/' . $match]);
-        if ($redirect = reset($redirects)) {
-          $target = $redirect->getRedirectUrl()->toString();
-          if (strpos($target, '/info-details/') !== FALSE) {
-            // Extract the path starting from '/info-details/'.
-            $infoDetailsPath = parse_url($target, PHP_URL_PATH);
+    // Only process text fields if $isTextField is TRUE
+    if ($isTextField) {
+      // Parse the text using DOM
+      $dom = Html::load($text);
+      $xpath = new \DOMXPath($dom);
 
-            // Replace the link in the text.
-            $text = str_replace('service-details/' . $match, ltrim($infoDetailsPath, '/'), $text);
-            $changed = TRUE;
-            // Optionally delete the redirect.
-            // $redirect->delete();
+      // Find all anchor tags that start with 'service-details' or 'node' href
+      foreach ($xpath->query("//a[starts-with(@href, 'service-details/') or starts-with(@href, '/service-details/')]") as $element) {
+        // Extract the href attribute
+        $href = $element->getAttribute('href');
+
+        // Extract the node ID or path fragment from the href
+        if (preg_match('/service-details\/([a-zA-Z0-9-]+)/', $href, $matches)) {
+          $serviceDetailFragment = $matches[1];
+
+          // Load the redirect entity and resolve to the new URL
+          $redirects = $this->entityTypeManager->getStorage('redirect')->loadByProperties(['redirect_source__path' => 'service-details/' . $serviceDetailFragment]);
+          if ($redirect = reset($redirects)) {
+            $target = $redirect->getRedirectUrl()->toString();
+            if (strpos($target, '/info-details/') !== FALSE) {
+              // Extract the alias from the target URL
+              $alias = parse_url($target, PHP_URL_PATH);
+              // Convert the alias to the internal path (e.g., from '/info-details/...' to '/node/{nid}').
+              $internal_path = \Drupal::service('path_alias.manager')->getPathByAlias($alias);
+
+              if (preg_match('/^\/node\/(\d+)$/', $internal_path, $nid_matches)) {
+                $nid = $nid_matches[1];
+                if ($node = $this->entityTypeManager->getStorage('node')->load($nid)) {
+                  // Set data-entity attributes on the <a> tag
+                  $element->setAttribute('data-entity-uuid', $node->uuid());
+                  $element->setAttribute('data-entity-substitution', 'canonical');
+                  $element->setAttribute('data-entity-type', 'node');
+
+                  // Update the href with the new alias
+                  $href_url = parse_url($href);
+                  $anchor = empty($href_url['fragment']) ? '' : '#' . $href_url['fragment'];
+                  $query = empty($href_url['query']) ? '' : '?' . $href_url['query'];
+                  $element->setAttribute('href', $alias . $query . $anchor);
+
+                  // Mark as changed
+                  $changed = TRUE;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      // Serialize the DOM back to HTML
+      $text = Html::serialize($dom);
+    }
+    else {
+      // Process link fields as URLs, no need to handle <a> tags here.
+      if (preg_match_all('/service-details\/([a-zA-Z0-9-]+)/', $text, $matches)) {
+        foreach ($matches[1] as $match) {
+          // Load the redirect entity.
+          $redirects = $this->entityTypeManager->getStorage('redirect')->loadByProperties(['redirect_source__path' => 'service-details/' . $match]);
+          if ($redirect = reset($redirects)) {
+            $target = $redirect->getRedirectUrl()->toString();
+            if (strpos($target, '/info-details/') !== FALSE) {
+              // Extract the path starting from '/info-details/'.
+              $infoDetailsPath = parse_url($target, PHP_URL_PATH);
+              // Replace the URL in the link field
+              $text = str_replace('service-details/' . $match, ltrim($infoDetailsPath, '/'), $text);
+              $changed = TRUE;
+            }
           }
         }
       }
