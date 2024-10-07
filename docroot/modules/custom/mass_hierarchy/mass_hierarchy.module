@@ -16,6 +16,7 @@ use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
 use Drupal\mass_hierarchy\MassHierarchyBatch;
 use Drupal\mass_hierarchy\MassHierarchyRouteMatch;
 use Drupal\node\Entity\Node;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionCompletedTrait;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -100,27 +101,17 @@ function mass_hierarchy_entity_type_build(array &$entity_types) {
 }
 
 /**
- * Implements hook_views_pre_view().
+ * Implements hook_views_query_alter().
  */
-function mass_hierarchy_views_pre_view($view) {
+function mass_hierarchy_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   /** @var \Drupal\views\Entity\View $view */
-  if ($view->id() != 'change_parents') {
-    return;
+  if ($view->id() == 'change_parents') {
+    if (!\Drupal::currentUser()->hasPermission('mass_hierarchy - change topic page parent')) {
+      // Add the condition to exclude nodes of type 'topic_page'.
+      $query->addWhere(0, "node_field_data.type", 'topic_page', '!=');
+    }
   }
 
-  $filters = $view->display_handler->getOption('filters');
-
-  if (!isset($filters['type_1'])) {
-    return;
-  }
-
-  if (!\Drupal::currentUser()->hasPermission('mass_hierarchy - change topic page parent')) {
-    return;
-  }
-
-  // Include topic pages on the view by unsetting a filter that removes them.
-  unset($filters['type_1']);
-  $view->display_handler->overrideOption('filters', $filters);
 }
 
 /**
