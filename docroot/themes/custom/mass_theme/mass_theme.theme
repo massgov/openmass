@@ -612,21 +612,23 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $variables['sideContent'] = $sideContent;
 
     if (!$node->getPlatform()->isEmpty()) {
-      $variables['formPlatform'] = $node->field_form_platform->value;
-      if ($node->field_form_platform->value == 'formstack') {
-        if (!empty($node->field_form_embed->value)) {
+      $variables['formPlatform'] = $node->getPlatform()->getString();
+
+      // Check if the platform is FormStack.
+      if ($node->isFormStack()) {
+        if ($node->hasFormEmbed()) {
           try {
-            $crawler = new Crawler($node->field_form_embed->value);
+            $crawler = new Crawler($node->getFormEmbed());
             $script_url = $crawler->filterXPath('//script[@src]')->attr('src');
-            $noscript_url = $crawler->filterXPath('//noscript/a[@href]')
-              ->attr('href');
+            $noscript_url = $crawler->filterXPath('//noscript/a[@href]')->attr('href');
+
             $validate_script_url = parse_url($script_url, PHP_URL_HOST);
             $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
 
-            if (str_ends_with($validate_script_url, "formstack.com")) {
+            if (str_ends_with($validate_script_url, 'formstack.com')) {
               $variables['form_url'] = Url::fromUri($script_url);
             }
-            if (str_ends_with($validate_noscript_url, "formstack.com")) {
+            if (str_ends_with($validate_noscript_url, 'formstack.com')) {
               $variables['form_url_noscript'] = $noscript_url;
             }
           }
@@ -638,7 +640,9 @@ function mass_theme_preprocess_node_form_page(&$variables) {
           }
         }
       }
-      elseif ($node->getPlatform()->getString() == 'gravity_forms') {
+
+      // Check if the platform is Gravity Forms.
+      elseif ($node->isGravityForms()) {
         $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       }
     }
