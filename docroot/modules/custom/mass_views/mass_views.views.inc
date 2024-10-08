@@ -5,12 +5,24 @@
  * Mass Dashboard views hooks.
  */
 
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\field\FieldStorageConfigInterface;
 
 /**
  * Implements hook_views_data().
  */
 function mass_views_views_data() {
+
+  $data['node']['source_id_target_count'] = [
+    'title' => t('Target Count for Source ID'),
+    'help' => t('Displays the number of target IDs associated with the source ID in entity_usage table.'),
+    'field' => [
+      'id' => 'source_id_target_count',
+      'click sortable' => TRUE,
+      'help' => t('Displays the number of target IDs associated with the source ID in entity_usage table.'),
+    ],
+  ];
+
   $data['views']['cl_automatic_lists'] = [
     'title' => t('Automatic lists (Curated list)'),
     'help' => t('Number of Automatic lists in the Curated list'),
