@@ -33,7 +33,7 @@ module.exports = async (page, scenario, viewport) => {
         z-index: 80;
       }
 
-      .ma__organization-navigation.stuck {
+      .ma__details__sticky-nav.stuck {
         position: static !important;
         top: auto !important;
         left: auto !important;
@@ -126,7 +126,7 @@ module.exports = async (page, scenario, viewport) => {
       await page.waitForSelector('.ma__sticky-nav');
       break;
     case 'OrgElectedOfficial':
-      await page.waitForSelector('.ma__organization-navigation');
+      await page.waitForSelector('.ma__details__sticky-nav');
       break;
     case 'ServiceDetails':
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
