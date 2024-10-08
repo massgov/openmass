@@ -69,7 +69,7 @@
         {% set formRequirements = formRequirements|merge({'level': level}) %}
         {% include "@organisms/by-author/form-requirements.twig" %}
       {% endif %}
-      {% if node.getPlatform().getString() ==  constant('Drupal\\mass_content\\Entity\\Bundle\\node\\FormPageBundle::PLATFORM_FORMSTACK') %}
+      {% if node.getPlatform().getString() == constant('Drupal\\mass_content\\Entity\\Bundle\\node\\FormPageBundle::PLATFORM_FORMSTACK') %}
         <div aria-live="polite" aria-relevant="all" class="form_embed feedback">
           <script type="text/javascript" src="{{ form_url }}"></script>
           <noscript><a href="{{ form_url_noscript }}" title="{{ node.title.value }}">Online Form - {{ node.title.value }}</a></noscript>
