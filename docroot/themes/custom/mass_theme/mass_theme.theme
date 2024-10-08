@@ -612,8 +612,6 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $variables['sideContent'] = $sideContent;
 
     if (!$node->getPlatform()->isEmpty()) {
-      $variables['formPlatform'] = $node->getPlatform()->getString();
-
       // Check if the platform is FormStack.
       if ($node->isFormStack()) {
         if ($node->hasFormEmbed()) {

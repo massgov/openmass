@@ -50,7 +50,7 @@ class FormPageBundle extends NodeBundle {
    */
   public function getFormEmbed(): ?string {
     $embed_field = $this->get('field_form_embed');
-    return !empty($embed_field->getString()) ? $embed_field->getString() : null;
+    return !empty($embed_field->getString()) ? $embed_field->getString() : NULL;
   }
 
   /**

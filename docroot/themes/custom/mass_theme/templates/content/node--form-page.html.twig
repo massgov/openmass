@@ -69,7 +69,7 @@
         {% set formRequirements = formRequirements|merge({'level': level}) %}
         {% include "@organisms/by-author/form-requirements.twig" %}
       {% endif %}
-      {% if formPlatform == 'formstack' %}
+      {% if node.getPlatform().getString() == 'formstack' %}
         <div aria-live="polite" aria-relevant="all" class="form_embed feedback">
           <script type="text/javascript" src="{{ form_url }}"></script>
           <noscript><a href="{{ form_url_noscript }}" title="{{ node.title.value }}">Online Form - {{ node.title.value }}</a></noscript>
@@ -85,7 +85,7 @@
             });
           })();
         </script>
-      {% elseif formPlatform == 'gravity_forms' %}
+      {% elseif node.getPlatform().getString() == 'gravity_forms' %}
         {% include "@atoms/09-media/iframe.twig" with {
           "iframe": {
             "customClass": 'js-iframe-resizer',
