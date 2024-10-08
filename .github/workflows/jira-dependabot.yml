@@ -12,6 +12,7 @@ jobs:
       - name: Fetch Jira CLI
         # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#homebrew-note
         run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           brew tap ankitpokhrel/jira-cli && \
           brew install jira-cli
 
