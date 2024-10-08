@@ -36,7 +36,7 @@ class DeployCommands extends DrushCommands {
   }
 
   // Set the PHP version to use when deploying to Acquia environments.
-  public const PHP_VERSION = '8.2';
+  public const PHP_VERSION = '8.3';
 
   const TARGET_DESC = 'Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod';
 
