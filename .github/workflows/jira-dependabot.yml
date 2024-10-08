@@ -11,8 +11,6 @@ jobs:
   create-jira-ticket:
     if: contains(github.event.pull_request.labels.*.name, 'Dependencies')
     runs-on: ubuntu-latest
-    outputs:
-      url: ${{ steps.create-jira-issue.outputs }}
     steps:
       - id: fetch-jira-cli
         # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#homebrew-note
@@ -27,9 +25,10 @@ jobs:
       - id: create-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}"
+          $content = `jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}"`
+          echo outputContent=$content >> $env:GITHUB_OUTPUT
       - id: transition-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          ID=$(basename ${{ steps.create-jira-issue.outputs.url }}) && \
+          ID=$(basename ${{ steps.create-jira-issue.outputs.outputContent }}) && \
           jira issue move $ID "Slated"
