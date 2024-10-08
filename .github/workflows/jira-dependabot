@@ -1,0 +1,24 @@
+name: Jira Dependabot
+
+on:
+  pull_request:
+    types: [opened, reopened, closed]
+    branches:
+      - develop
+
+jobs:
+  create-jira-ticket:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Jira CLI
+        run: |
+          curl -L https://github.com/ankitpokhrel/jira-cli/releases/download/v1.5.2/jira_1.5.2_linux_arm64.tar.gz > jira.tar.gz && \
+             tar -zxf jira.tar.gz -C /usr/local/bin/ && rm -f jira.tar.gz && mv /usr/local/bin/jira_1.5.2_linux_arm64/bin/jira /usr/local/bin/jira && rm -rf /usr/local/bin/jira_1.5.2_linux_arm64
+      - name: Configure Jira CLI
+        run: |
+          jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server ${{ secrets.JIRA_BASE_URL }} --login ${{ secrets.JIRA_USER }}
+      - name: Create Jira issue
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR to update the dependencies ${{ github.event.pull_request.html_url }}"
