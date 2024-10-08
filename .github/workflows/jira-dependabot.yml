@@ -23,6 +23,8 @@ jobs:
 #             chmod +x /usr/local/bin/jira && \
 #             rm -rf /usr/local/bin/jira_1.5.2_linux_arm64
       - name: Configure Jira CLI
+        env:
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
