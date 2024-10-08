@@ -614,20 +614,24 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     if (!$node->getPlatform()->isEmpty()) {
       // Check if the platform is FormStack.
       if ($node->isFormStack()) {
-        if ($node->hasFormEmbed()) {
+        if (!$node->getFormEmbed()->isEmpty()) {
           try {
-            $crawler = new Crawler($node->getFormEmbed());
-            $script_url = $crawler->filterXPath('//script[@src]')->attr('src');
-            $noscript_url = $crawler->filterXPath('//noscript/a[@href]')->attr('href');
+            if ($form_embed = $node->getFormEmbed()->getString()) {
+              $crawler = new Crawler($form_embed);
+              $script_url = $crawler->filterXPath('//script[@src]')
+                ->attr('src');
+              $noscript_url = $crawler->filterXPath('//noscript/a[@href]')
+                ->attr('href');
 
-            $validate_script_url = parse_url($script_url, PHP_URL_HOST);
-            $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
+              $validate_script_url = parse_url($script_url, PHP_URL_HOST);
+              $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
 
-            if (str_ends_with($validate_script_url, 'formstack.com')) {
-              $variables['form_url'] = Url::fromUri($script_url);
-            }
-            if (str_ends_with($validate_noscript_url, 'formstack.com')) {
-              $variables['form_url_noscript'] = $noscript_url;
+              if (str_ends_with($validate_script_url, 'formstack.com')) {
+                $variables['form_url'] = Url::fromUri($script_url);
+              }
+              if (str_ends_with($validate_noscript_url, 'formstack.com')) {
+                $variables['form_url_noscript'] = $noscript_url;
+              }
             }
           }
           catch (\Exception $e) {

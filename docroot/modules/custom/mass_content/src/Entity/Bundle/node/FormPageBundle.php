@@ -45,22 +45,11 @@ class FormPageBundle extends NodeBundle {
   /**
    * Get form embed field.
    *
-   * @return string|null
-   *   The value of the form embed field, or NULL if it's empty.
+   * @return \Drupal\Core\Field\FieldItemListInterface|null
+   *   The form embed field, or NULL if it's not set.
    */
-  public function getFormEmbed(): ?string {
-    $embed_field = $this->get('field_form_embed');
-    return !empty($embed_field->getString()) ? $embed_field->getString() : NULL;
-  }
-
-  /**
-   * Check if form embed field is set and not empty.
-   *
-   * @return bool
-   *   TRUE if form embed field has a value, FALSE otherwise.
-   */
-  public function hasFormEmbed(): bool {
-    return !empty($this->getFormEmbed());
+  public function getFormEmbed(): ?FieldItemListInterface {
+    return $this->get('field_form_embed');
   }
 
 }
