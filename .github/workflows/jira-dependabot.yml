@@ -4,33 +4,32 @@ on:
   pull_request:
     types: [opened, labeled]
 
+env:
+  JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+
 jobs:
   create-jira-ticket:
     if: contains(github.event.pull_request.labels.*.name, 'Dependencies')
     runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.create-jira-issue.outputs }}
     steps:
-      - name: Fetch Jira CLI
+      - id: fetch-jira-cli
         # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#homebrew-note
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           brew tap ankitpokhrel/jira-cli && \
           brew install jira-cli
-
-#          curl -L https://github.com/ankitpokhrel/jira-cli/releases/download/v1.5.2/jira_1.5.2_linux_arm64.tar.gz > jira.tar.gz && \
-#             tar -zxf jira.tar.gz -C /usr/local/bin/ && \
-#             rm -f jira.tar.gz && \
-#             mv /usr/local/bin/jira_1.5.2_linux_arm64/bin/jira /usr/local/bin/jira && \
-#             chmod +x /usr/local/bin/jira && \
-#             rm -rf /usr/local/bin/jira_1.5.2_linux_arm64
-      - name: Configure Jira CLI
-        env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - id: configure-jira-cli
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
-      - name: Create Jira issue
-        env:
-          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+      - id: create-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR to update the dependencies ${{ github.event.pull_request.html_url }}"
+          jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}"
+      - id: transition-jira-issue
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+          ID=$(basename ${{ steps.create-jira-issue.outputs.url }}) && \
+          jira issue move $ID "Slated"
