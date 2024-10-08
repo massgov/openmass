@@ -12,7 +12,6 @@ jobs:
       - name: Fetch Jira CLI
         # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#homebrew-note
         run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           brew tap ankitpokhrel/jira-cli && \
           brew install jira-cli
 
@@ -24,9 +23,11 @@ jobs:
 #             rm -rf /usr/local/bin/jira_1.5.2_linux_arm64
       - name: Configure Jira CLI
         run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
       - name: Create Jira issue
         env:
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
         run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR to update the dependencies ${{ github.event.pull_request.html_url }}"
