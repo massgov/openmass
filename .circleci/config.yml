@@ -53,7 +53,7 @@ executors:
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     docker:
-      - image: massgov/drupal-container:1.1.0-ci
+      - image: massgov/drupal-container:1.2.0-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -155,7 +155,7 @@ jobs:
   build:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - checkout
       - *restore_composer_cache
@@ -170,7 +170,7 @@ jobs:
 #  build_with_latest_mayflower:
 #    working_directory: ~/project/code
 #    docker:
-#      - image: cimg/php:8.2-node
+#      - image: cimg/php:8.3-node
 #    steps:
 #      - checkout
 #      - *restore_composer_cache
@@ -188,7 +188,7 @@ jobs:
   push_acquia:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - *no_host_check
       - *no_ssh_timeout
@@ -210,7 +210,7 @@ jobs:
   danger:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - run:
@@ -221,7 +221,7 @@ jobs:
   tagging_github:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -232,7 +232,7 @@ jobs:
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - *no_host_check
       - checkout
@@ -245,7 +245,7 @@ jobs:
   acquia_db_backup:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: { at: /tmp }
       - fetch_drush_aliases
@@ -256,7 +256,7 @@ jobs:
   validate:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -339,7 +339,7 @@ jobs:
   cut_release_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -355,7 +355,7 @@ jobs:
   mayflower_develop_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -370,7 +370,7 @@ jobs:
   # Log a new release in New Relic
   new_relic_change_tracking:
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     parameters:
       version:
         type: string
@@ -386,7 +386,7 @@ jobs:
   master_to_develop:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: { at: /tmp }
       - *vendor_bin_add_path
@@ -418,7 +418,7 @@ jobs:
         default: ""
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -442,7 +442,7 @@ jobs:
         type: string
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -472,7 +472,7 @@ jobs:
         default: ""
     working_directory: /tmp/code/browserstack
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
         environment:
           BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
           BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
@@ -726,7 +726,7 @@ jobs:
   pending_security:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - run: "composer audit --no-interaction --no-dev"
@@ -829,7 +829,7 @@ workflows:
           name: browserstack-percy-test
           requires: [deploy-test-refresh-db]
           target: test
-          list: post-release
+          list: all
           filters:
             branches:
               only: /^release\/.*$/
@@ -1122,7 +1122,7 @@ workflows:
           name: browserstack-percy-test
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
-          list: post-release
+          list: all
           filters:
             branches:
               ignore: /.*/
