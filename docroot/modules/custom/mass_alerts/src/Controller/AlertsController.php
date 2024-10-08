@@ -10,6 +10,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Render\Renderer;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -19,6 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
  * Defines a route controller for entity query.
  */
 class AlertsController extends ControllerBase implements ContainerInjectionInterface {
+
+  use StringTranslationTrait;
 
   const DURATION_PAGE = 900;
   const DURATION_SITE = 60;
@@ -178,9 +181,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       'headerAlerts' => [],
       'headerTitle' => [
         'icon' => 'warning',
-        'text' => 'Notices & Alerts',
-        'hideText' => 'Hide',
-        'showText' => 'Expand',
+        'text' => $this->t('Notices & Alerts'),
+        'hideText' => $this->t('Hide'),
+        'showText' => $this->t('Expand'),
       ],
     ];
 
