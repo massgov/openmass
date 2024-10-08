@@ -2,12 +2,11 @@ name: Jira Dependabot
 
 on:
   pull_request:
-    types: [opened, reopened, closed]
-    branches:
-      - develop
+    types: [opened, labeled]
 
 jobs:
   create-jira-ticket:
+    if: contains(github.event.pull_request.labels.*.name, 'Dependencies')
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Jira CLI
