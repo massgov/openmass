@@ -25,10 +25,10 @@ jobs:
       - id: create-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          $content = `jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}"`
-          echo outputContent=$content >> $env:GITHUB_OUTPUT
+          $URL = `jira issue create -tBug -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}"` && \
+          echo outputContent=$URL >> $env:GITHUB_OUTPUT
       - id: transition-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          ID=$(basename ${{ steps.create-jira-issue.outputs.outputContent }}) && \
+          $ID = $(basename ${{ steps.create-jira-issue.outputs.outputContent }}) && \
           jira issue move $ID "Slated"
