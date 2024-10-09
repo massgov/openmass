@@ -45,7 +45,7 @@ jobs:
           } >> $GITHUB_STEP_SUMMARY
       - id: create-push-changelog-file
         run: |
-          ID="${{ steps.create-jira-issue.outputs.id }}" && \
+          ID=${{ steps.create-jira-issue.outputs.id }} && \
           printf "Changed:\n  - description: $PR_TITLE\n    issue: $ID\n" > changelogs/$ID.yml && \
           git config --global user.email "jira-dependabot@mass.gov" && \
           git config --global user.name "Jira Dependabot Workflow" && \
@@ -54,5 +54,5 @@ jobs:
           git push
       - id: create-pr-comment
         run: |
-          ID="${{ steps.create-jira-issue.outputs.id }}" && \
-          gh pr comment --edit-last ${{ github.event.pull_request.number }} --body "Jira issue created: https://massgov.atlassian.net/browse/$ID"
+          ID=${{ steps.create-jira-issue.outputs.id }} && \
+          gh pr comment --edit-last ${{ github.event.pull_request.number }} --body "Jira issue auto-created: https://massgov.atlassian.net/browse/$ID"
