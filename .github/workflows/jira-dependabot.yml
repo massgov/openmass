@@ -6,7 +6,8 @@ on:
 
 env:
   JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN
+  PR_TITLE: ${{ github.event.pull_request.title }}
 
 jobs:
   create-jira-ticket:
@@ -30,7 +31,7 @@ jobs:
       - id: create-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          CONFIRM_TEXT=$(jira issue create --no-input -tTask -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
+          CONFIRM_TEXT=$(jira issue create --no-input -tTask -s"$PR_TITLE" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
           jira issue move $ID "Slated"
@@ -50,7 +51,7 @@ jobs:
       - id: create-push-changelog-file
         run: |
           ID="${{ steps.create-jira-issue.outputs.id }}" && \
-          printf "Changed:\n  - description: ${{ github.event.pull_request.title }}\n    issue: $ID\n" > changelogs/$ID.yml && \
+          printf "Changed:\n  - description: $PR_TITLE\n    issue: $ID\n" > changelogs/$ID.yml && \
           git config --global user.email "jira-dependabot@mass.gov" && \
           git config --global user.name "Jira Dependabot Workflow" && \
           git add changelogs/$ID.yml && \
@@ -59,4 +60,4 @@ jobs:
       - id: create-pr-comment
         run: |
           ID="${{ steps.create-jira-issue.outputs.id }}" && \
-          gh pr comment ${{ github.event.pull_request.number }} --body "Jira issue created: https://massgov.atlassian.net/browse/$ID"
+          gh pr comment --edit-last ${{ github.event.pull_request.number }} --body "Jira issue created: https://massgov.atlassian.net/browse/$ID"
