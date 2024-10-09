@@ -25,9 +25,7 @@ jobs:
           brew tap ankitpokhrel/jira-cli && \
           brew install jira-cli
       - id: configure-jira-cli
-        run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
+        run: jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
       - id: create-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
@@ -37,7 +35,6 @@ jobs:
           jira issue move $ID "Slated"
 
           {
-            "confirm_text=$CONFIRM_TEXT"
             "id=$ID"
           } >> $GITHUB_OUTPUT
 
@@ -45,7 +42,6 @@ jobs:
             echo "### Workflow variables"
             echo "| Variable   | Value       |"
             echo "| ---------- | ----------- |"
-            echo "| CONFIRM_TEXT  | $CONFIRM_TEXT  |"
             echo "| ID  | $ID  |"
           } >> $GITHUB_STEP_SUMMARY
       - id: create-push-changelog-file
