@@ -1,5 +1,27 @@
 
 
+## [0.413.0] - October 8, 2024
+
+### Changed
+  - DP-28816: UX improvements to the simplified org nav. Style improvement to sticky nav.
+  - DP-34469: Upgrade entity reference hierarchy to latest stable production version .
+  - DP-34679: Bump to PHP 8.3
+  - DP-35078: Start versioning Mayflower Artifacts library definition to make sure cache can be invalidated correctly.
+  - DP-35125: Configure image paragraph in Drupal to allow decorative images.
+  - DP-35159: Changed CircleCI Percy jobs to only run against the "all" list of screenshots.
+  
+### Added
+  - DP-34662: Configure Dependabot for composer updates
+  
+### Fixed
+  - DP-34715: Fix JS error related to Drupallike not defined.
+  - DP-35232: Fixed alerts positioning on org pages.
+  
+### Security
+  - DP-35261: Security updates to OpenMass.
+  
+
+
 ## [0.412.0] - September 24, 2024
 
 ### Fixed
