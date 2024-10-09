@@ -33,16 +33,12 @@ jobs:
           CONFIRM_TEXT=$(jira issue create --no-input -tTask -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
-          jira issue move $ID "Slated" && \
-          printf "Changed:\n  - description: ${{ github.event.pull_request.title }}\n    issue: $ID\n" > changelogs/$ID.yml && \
-          git config --global user.email "jira-dependabot@mass.gov" && \
-          git config --global user.name "Jira Dependabot Workflow" && \
-          git add changelogs/$ID.yml && \
-          git commit -m "Add changelog" changelogs/$ID.yml && \
-          git push && \
-          gh pr comment ${{ github.event.pull_request.number }} --body "Jira issue created: https://massgov.atlassian.net/browse/$ID"
+          jira issue move $ID "Slated"
 
-
+          {
+            "confirm_text=$CONFIRM_TEXT"
+            "id=$ID"
+          } >> $GITHUB_OUTPUT
 
           {
             echo "### Workflow variables"
@@ -51,3 +47,16 @@ jobs:
             echo "| CONFIRM_TEXT  | $CONFIRM_TEXT  |"
             echo "| ID  | $ID  |"
           } >> $GITHUB_STEP_SUMMARY
+      - id: create-push-changelog-file
+        run: |
+          ID="${{ steps.create-jira-issue.outputs.id }}" && \
+          printf "Changed:\n  - description: ${{ github.event.pull_request.title }}\n    issue: $ID\n" > changelogs/$ID.yml && \
+          git config --global user.email "jira-dependabot@mass.gov" && \
+          git config --global user.name "Jira Dependabot Workflow" && \
+          git add changelogs/$ID.yml && \
+          git commit -m "Add changelog" changelogs/$ID.yml && \
+          git push
+      - id: create-pr-comment
+        run: |
+          ID="${{ steps.create-jira-issue.outputs.id }}" && \
+          gh pr comment ${{ github.event.pull_request.number }} --body "Jira issue created: https://massgov.atlassian.net/browse/$ID"
