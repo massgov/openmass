@@ -34,7 +34,7 @@ jobs:
           CONFIRM_TEXT=$(jira issue create --no-input -tTask -s"$PR_TITLE" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
-          jira issue move $ID "Slated"
+          jira issue move $ID "Slated" && \
           echo id=$ID >> $env:GITHUB_OUTPUT
 
           {
