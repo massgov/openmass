@@ -35,16 +35,13 @@ jobs:
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
           jira issue move $ID "Slated"
-
-          {
-            "id=$ID"
-          } >> $GITHUB_OUTPUT
+          echo id=$ID >> $env:GITHUB_OUTPUT
 
           {
             echo "### Workflow variables"
             echo "| Variable   | Value       |"
             echo "| ---------- | ----------- |"
-            echo "| ID  | $ID  |"
+            echo "| id  | $ID  |"
           } >> $GITHUB_STEP_SUMMARY
       - id: create-push-changelog-file
         run: |
