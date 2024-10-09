@@ -49,11 +49,6 @@ const CHANGELOG_SCHEMA = {
 // A list of all the changelog files that were touched during this change.
 const changelogs = danger.git.fileMatch('changelogs/*.yml', '!**/template.yml');
 
-// Check for a specific label "Awaiting Mayflower" can't merge until removed from the PR.
-if (github.pr_labels = "Dependencies") {
-  exit(EXIT_SUCCESS);
-}
-
 // Fail if no changelog was created.
 if(!changelogs || !changelogs.created) {
   fail("Add a changelog YAML file to this PR");
@@ -79,3 +74,6 @@ else {
 // if (github.pr_labels = "Config Backport") {
 //   warn("This PR needs to be merged before the next release.");
 // }
+
+
+
