@@ -699,7 +699,7 @@ jobs:
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     machine:
-      image: ubuntu-2004:202101-01
+      image: default
     steps:
       - attach_workspace: {at: /home/circleci}
       - fetch_drush_aliases:
