@@ -34,9 +34,9 @@ jobs:
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
           jira issue move $ID "Slated" && \
-          ls && \
-          pwd && \
           echo "I am $ID" > changelogs/$ID.yml && \
+          git config --global user.email "bot@mass.gov" && \
+          git config --global user.name "Jira Dependabot Workflow" && \
           git add changelogs/$ID.yml && \
           git commit -m "Add changelog" changelogs/$ID.yml && \
           git push
