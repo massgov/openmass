@@ -13,6 +13,9 @@ jobs:
     if: contains(github.event.pull_request.labels.*.name, 'Dependencies')
     runs-on: ubuntu-latest
     steps:
+      # https://github.com/actions/checkout/issues/363
+      - id: git-config
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       # This, and later step come from https://github.com/orgs/community/discussions/24945#discussioncomment-3245946
       - name: Checkout PR
         env:
