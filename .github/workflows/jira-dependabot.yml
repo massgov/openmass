@@ -6,6 +6,7 @@ on:
 
 env:
   JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   create-jira-ticket:
@@ -25,10 +26,11 @@ jobs:
       - id: create-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          CONFIRM_TEXT=$(/home/linuxbrew/.linuxbrew/bin/brew shellenv && jira issue --no-input create -tTask -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
+          CONFIRM_TEXT=$(/home/linuxbrew/.linuxbrew/bin/brew shellenv && jira issue create --no-input -tTask -s"${{ github.event.pull_request.title }}" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
           jira issue move $ID "Slated"
+
 
           {
             echo "### Workflow variables"
