@@ -21,7 +21,7 @@ jobs:
           brew install jira-cli
       - id: configure-jira-cli
         run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+#          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
       - id: create-jira-issue
         run: |
@@ -30,7 +30,12 @@ jobs:
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
           jira issue move $ID "Slated" && \
-          echo "I am $ID" > changelogs/$ID.yml
+          ls && \
+          pwd && \
+          echo "I am $ID" > changelogs/$ID.yml && \
+          git add changelogs/$ID.yml && \
+          git commit -m "Add changelog" changelogs/$ID.yml && \
+          git push
 
 
 
