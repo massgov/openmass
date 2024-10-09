@@ -21,7 +21,7 @@ jobs:
           brew install jira-cli
       - id: configure-jira-cli
         run: |
-#          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
           jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
       - id: create-jira-issue
         run: |
