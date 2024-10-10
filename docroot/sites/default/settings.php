@@ -176,6 +176,14 @@ $config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] =
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 
+// Override rtl languages to use ltr.
+$config['language.entity.ar']['direction'] = 'ltr';
+$config['language.entity.fa']['direction'] = 'ltr';
+$config['language.entity.he']['direction'] = 'ltr';
+$config['language.entity.prs']['direction'] = 'ltr';
+$config['language.entity.pst']['direction'] = 'ltr';
+$config['language.entity.sw']['direction'] = 'ltr';
+
 $databases['default']['default']['init_commands'] = [
   'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
 ];
