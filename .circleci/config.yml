@@ -720,7 +720,7 @@ jobs:
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
+      - run: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
       - run: docker push << parameters.instance >>
 
   pending_security:
