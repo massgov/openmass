@@ -1,0 +1,58 @@
+name: Jira Dependabot
+
+on:
+  pull_request:
+    types: [opened, labeled]
+
+env:
+  JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_TITLE: ${{ github.event.pull_request.title }}
+
+jobs:
+  create-jira-ticket:
+    if: contains(github.event.pull_request.labels.*.name, 'Dependencies')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
+      - id: fetch-jira-cli
+        # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#homebrew-note
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+          brew tap ankitpokhrel/jira-cli && \
+          brew install jira-cli
+      - id: configure-jira-cli
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+          jira init --installation cloud --project DP --board "Mass.gov feature/SSR" --server "https://massgov.atlassian.net" --login "moshe.weitzman@mass.gov"
+      - id: create-jira-issue
+        run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
+          CONFIRM_TEXT=$(jira issue create --no-input -tTask -s"$PR_TITLE" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -DP-30545 -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
+          # https://stackoverflow.com/a/19482947/265501
+          ID=${CONFIRM_TEXT##*/} && \
+          jira issue move $ID "Slated" && \
+          echo "id=$ID" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Workflow variables"
+            echo "| Variable   | Value       |"
+            echo "| ---------- | ----------- |"
+            echo "| id  | $ID  |"
+          } >> $GITHUB_STEP_SUMMARY
+      - id: create-push-changelog-file
+        run: |
+          ID=${{ steps.create-jira-issue.outputs.id }} && \
+          printf "Changed:\n  - description: $PR_TITLE\n    issue: $ID\n" > changelogs/$ID.yml && \
+          git config --global user.email "jira-dependabot@mass.gov" && \
+          git config --global user.name "Jira Dependabot Workflow" && \
+          git add changelogs/$ID.yml && \
+          git commit -m "Add changelog" changelogs/$ID.yml && \
+          git push
+      - id: create-pr-comment
+        run: |
+          ID=${{ steps.create-jira-issue.outputs.id }} && \
+          gh pr comment --edit-last ${{ github.event.pull_request.number }} --body "Jira issue auto-created: https://massgov.atlassian.net/browse/$ID"
