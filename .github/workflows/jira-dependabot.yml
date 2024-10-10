@@ -31,7 +31,7 @@ jobs:
       - id: create-jira-issue
         run: |
           eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)" && \
-          CONFIRM_TEXT=$(jira issue create --no-input -tTask -s"$PR_TITLE" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
+          CONFIRM_TEXT=$(jira issue create --no-input -tTask -s"$PR_TITLE" -yNormal -lDependabot -lb-plat-massgov -Cp-massgov -DP-30545 -b"Dependabot has opened a PR to update dependencies. Review and merge the PR ${{ github.event.pull_request.html_url }}") && \
           # https://stackoverflow.com/a/19482947/265501
           ID=${CONFIRM_TEXT##*/} && \
           jira issue move $ID "Slated" && \
