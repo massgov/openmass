@@ -44,9 +44,11 @@ describe("massgov-screenshots", () => {
     //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
     //   }
     // }
+    const chromeOptions = new chrome.Options();
     driver = await new Builder()
       .forBrowser('chrome')
       .setChromeOptions(new chrome.Options())
+      .setCapability('add_experimental_option', )
       .build();
 
     await driver.sendDevToolsCommand('Network.enable', {});
@@ -58,7 +60,7 @@ describe("massgov-screenshots", () => {
     await driver.sendDevToolsCommand('Network.setUserAgentOverride', {
       userAgent: 'massGovPercy'
     });
-    await driver.sendDevToolsCommand('Network.setBlockedUrls', {
+    await driver.sendDevToolsCommand('Network.setBlockedURLs', {
       urls: [
         'www.googletagmanager.com',
         'script.crazyegg.com',
