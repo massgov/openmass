@@ -128,7 +128,7 @@ class Organisms {
     $fields = Helper::getMappedFields($entity, $map);
 
     $ref_items = Helper::getReferencedEntitiesFromField($entity, $fields['items']);
-    
+
     // Include Primary contact if this is a location bundle.
     if (!empty($fields['contact_info'])) {
       $ref_primary_contact_info = Helper::getReferencedEntitiesFromField($entity, $fields['contact_info']);
