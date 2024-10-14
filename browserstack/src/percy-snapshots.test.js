@@ -44,7 +44,6 @@ describe("massgov-screenshots", () => {
     //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
     //   }
     // }
-    const chromeOptions = new chrome.Options();
     driver = await new Builder()
       .forBrowser('chrome')
       .setChromeOptions(new chrome.Options().androidChrome())
