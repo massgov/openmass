@@ -326,7 +326,7 @@ function mass_translations_module_implements_alter(&$implementations, $hook) {
  */
 function mass_translations_locale_translation_projects_alter(&$projects) {
   foreach ($projects as $project_name => $project) {
-    if (!isset($file->info['interface translation project'])) {
+    if (!isset($project['info']['interface translation project'])) {
       unset($projects[$project_name]);
     }
   }
