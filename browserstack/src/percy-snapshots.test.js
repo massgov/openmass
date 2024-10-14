@@ -50,7 +50,6 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options().androidChrome())
       .build();
 
-    await driver.sendDevToolsCommand('Network.enable', {});
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
         "mass-bypass-rate-limit": "${process.env.MASS_BYPASS_RATE_LIMIT}"
