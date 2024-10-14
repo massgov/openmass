@@ -86,14 +86,23 @@ describe("massgov-screenshots", () => {
 
       switch (pageScreen) {
         case 'mobile':
-
+          await driver.sendDevToolsCommand('Browser.setWindowBounds', {
+            windowId: 'normal',
+            bounds: {width: 320},
+          });
           driver.manage().window().setSize(320, 900);
           break;
         case 'tablet':
-          driver.manage().window().setSize(1024, 900);
+          await driver.sendDevToolsCommand('Browser.setWindowBounds', {
+            windowId: 'normal',
+            bounds: {width: 1024},
+          });
           break;
         case 'desktop':
-          driver.manage().window().setSize(1920, 900);
+          await driver.sendDevToolsCommand('Browser.setWindowBounds', {
+            windowId: 'normal',
+            bounds: {width: 1920},
+          });
       }
 
       test(page.label + ' test', async () => {
