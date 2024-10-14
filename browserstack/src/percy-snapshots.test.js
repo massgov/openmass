@@ -85,7 +85,6 @@ describe("massgov-screenshots", () => {
 
       let options = {
         fullPage: true,
-        widths: [320, 1024, 1920],
         ignore_region_selectors: [],
         requestHeaders: {
           'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),

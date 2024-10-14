@@ -2,10 +2,28 @@ userName:
 accessKey:
 platforms:
   - browserName: Chrome
+    os: OS X
+    osVersion: Sequoia
+    browserVersion: 129
+    chromeOptions:
+      args:
+        - --window-size=320, 900
+      enableNetwork: true
+  - browserName: Chrome
     os: Windows
     osVersion: 11
     browserVersion: 129
     chromeOptions:
+      args:
+        - --window-size=1024, 900
+      enableNetwork: true
+  - browserName: Chrome
+    os: Windows
+    osVersion: 10
+    browserVersion: 129
+    chromeOptions:
+      args:
+        - --window-size=1920, 900
       enableNetwork: true
 parallelsPerPlatform: 3
 buildName: ${CIRCLE_BRANCH}
