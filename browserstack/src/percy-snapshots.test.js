@@ -47,8 +47,7 @@ describe("massgov-screenshots", () => {
     const chromeOptions = new chrome.Options();
     driver = await new Builder()
       .forBrowser('chrome')
-      .setChromeOptions(new chrome.Options())
-      .setCapability('add_experimental_option', )
+      .setChromeOptions(new chrome.Options().androidChrome())
       .build();
 
     await driver.sendDevToolsCommand('Network.enable', {});
@@ -58,7 +57,7 @@ describe("massgov-screenshots", () => {
       }
     });
     await driver.sendDevToolsCommand('Network.setUserAgentOverride', {
-      userAgent: 'massGovPercy'
+      userAgent: 'massgov-percy'
     });
     await driver.sendDevToolsCommand('Network.setBlockedURLs', {
       urls: [
