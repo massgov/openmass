@@ -49,10 +49,6 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options())
       .build();
 
-    const userAgent = driver.executeScript('console.log(window.navigator.userAgent)');
-
-    console.log(userAgent);
-
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
         "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT
@@ -84,17 +80,34 @@ describe("massgov-screenshots", () => {
   });
 
   pages.forEach((page) => {
-    test(page.label + ' test', async () => {
-      await driver.get(base + page.url);
+    let pageScreens = page.screens ?? ['desktop'];
 
-      let options = {
-        fullPage: true,
-        ignore_region_selectors: [],
-        requestHeaders: {
-          'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
-        }
-      };
-      await percyScreenshot(driver, page.label, options);
+    pageScreens.forEach((pageScreen) => {
+
+      switch (pageScreen) {
+        case 'mobile':
+
+          driver.manage().window().setSize(320, 900);
+          break;
+        case 'tablet':
+          driver.manage().window().setSize(1024, 900);
+          break;
+        case 'desktop':
+          driver.manage().window().setSize(1920, 900);
+      }
+
+      test(page.label + ' test', async () => {
+        await driver.get(base + page.url);
+
+        let options = {
+          fullPage: true,
+          ignore_region_selectors: [],
+          requestHeaders: {
+            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
+          }
+        };
+        await percyScreenshot(driver, page.label, options);
+      });
     });
   });
 });
