@@ -49,7 +49,7 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options())
       .build();
 
-    console.log("the platform is " + driver.getPlatform());
+    console.log("the platform is " + driver.capabilities.getPlatform());
 
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
