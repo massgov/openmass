@@ -1,7 +1,6 @@
 const { Builder, By, Key, until, Capabilities } = require("selenium-webdriver");
 const chrome = require('selenium-webdriver/chrome');
 const { percyScreenshot } = require('@percy/selenium-webdriver');
-const getos = require('getos');
 
 describe("massgov-screenshots", () => {
   let base;
@@ -50,13 +49,9 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options())
       .build();
 
-    os = getos((e,os) => {
-      if(e) return console.log(e)
-      console.log("Your OS is:" + JSON.stringify(os))
-      return os;
-    });
+    const userAgent = driver.executeScript('console.log(window.navigator.userAgent)');
 
-    console.log('This is is the OS: ' + JSON.stringify(os));
+    console.log(userAgent);
 
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
