@@ -106,7 +106,7 @@ describe("massgov-screenshots", () => {
             'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
           }
         };
-        await percyScreenshot(driver, page.label, options);
+        await percyScreenshot(driver, page.label + ' ' + pageScreen, options);
       });
     });
   });
