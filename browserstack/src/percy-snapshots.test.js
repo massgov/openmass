@@ -1,4 +1,5 @@
 const { Builder, By, Key, until, Capabilities } = require("selenium-webdriver");
+const chrome = require('selenium-webdriver/chrome');
 const { percyScreenshot } = require('@percy/selenium-webdriver');
 
 describe("massgov-screenshots", () => {
@@ -43,10 +44,9 @@ describe("massgov-screenshots", () => {
     //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
     //   }
     // }
-    const Options = driver.getChromeOptions();
     driver = await new Builder()
       .forBrowser(Browser.CHROME)
-      .setChromeOptions(Options)
+      .setChromeOptions(new chrome.Options())
       .build();
 
     await driver.sendDevToolsCommand('Network.enable', {});
