@@ -49,6 +49,8 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options())
       .build();
 
+    await driver.manage().window().setSize(1024, 900);
+
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
         "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT
