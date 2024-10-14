@@ -46,12 +46,11 @@ describe("massgov-screenshots", () => {
     // }
     driver = await new Builder()
       .forBrowser('chrome')
-      .setChromeOptions(new chrome.Options())
       .build();
 
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
-        "mass-bypass-rate-limit": "${process.env.MASS_BYPASS_RATE_LIMIT}"
+        "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT
       }
     });
     await driver.sendDevToolsCommand('Network.setUserAgentOverride', {
