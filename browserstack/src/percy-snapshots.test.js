@@ -79,10 +79,10 @@ describe("massgov-screenshots", () => {
     await driver.quit();
   });
 
-  pages.forEach((page) => {
+  pages.forEach(async (page) => {
     let pageScreens = page.screens ?? ['desktop'];
 
-    pageScreens.forEach((pageScreen) => {
+    pageScreens.forEach(async (pageScreen) => {
 
       switch (pageScreen) {
         case 'mobile':
