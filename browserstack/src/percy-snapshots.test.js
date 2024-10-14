@@ -44,6 +44,9 @@ describe("massgov-screenshots", () => {
     //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
     //   }
     // }
+
+    console.log('This is the remote URL: ' + process.env.SELENIUM_REMOTE_URL);
+
     driver = await new Builder()
       .forBrowser('chrome')
       .setChromeOptions(new chrome.Options().androidChrome())
