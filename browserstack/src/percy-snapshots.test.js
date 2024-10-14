@@ -82,43 +82,17 @@ describe("massgov-screenshots", () => {
   });
 
   pages.forEach(async (page) => {
-    let pageScreens = page.screens ?? ['desktop'];
+    test(page.label + ' test', async () => {
+      await driver.get(base + page.url);
 
-    pageScreens.forEach(async (pageScreen) => {
-
-      switch (pageScreen) {
-        case 'mobile':
-          await driver.sendDevToolsCommand('Browser.setWindowBounds', {
-            windowId: 'normal',
-            bounds: {width: 320},
-          });
-          driver.manage().window().setSize(320, 900);
-          break;
-        case 'tablet':
-          await driver.sendDevToolsCommand('Browser.setWindowBounds', {
-            windowId: 'normal',
-            bounds: {width: 1024},
-          });
-          break;
-        case 'desktop':
-          await driver.sendDevToolsCommand('Browser.setWindowBounds', {
-            windowId: 'normal',
-            bounds: {width: 1920},
-          });
-      }
-
-      test(page.label + ' test', async () => {
-        await driver.get(base + page.url);
-
-        let options = {
-          fullPage: true,
-          ignore_region_selectors: [],
-          requestHeaders: {
-            'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
-          }
-        };
-        await percyScreenshot(driver, page.label + ' ' + pageScreen, options);
-      });
+      let options = {
+        fullPage: true,
+        ignore_region_selectors: [],
+        requestHeaders: {
+          'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
+        }
+      };
+      await percyScreenshot(driver, page.label, options);
     });
   });
 });
