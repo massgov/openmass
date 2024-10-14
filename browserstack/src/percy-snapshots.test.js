@@ -45,7 +45,7 @@ describe("massgov-screenshots", () => {
     //   }
     // }
     driver = await new Builder()
-      .forBrowser(Browser.CHROME)
+      .forBrowser('chrome')
       .setChromeOptions(new chrome.Options())
       .build();
 
