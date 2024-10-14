@@ -46,7 +46,10 @@ describe("massgov-screenshots", () => {
     // }
     driver = await new Builder()
       .forBrowser('chrome')
+      .setChromeOptions(new chrome.Options())
       .build();
+
+    console.log("the platform is " + driver.getPlatform());
 
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
