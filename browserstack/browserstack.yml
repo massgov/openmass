@@ -5,15 +5,18 @@ platforms:
     os: Windows
     osVersion: 11
     browserVersion: latest
-    enableNetwork: true
+    chromeOptions:
+      enableNetwork: true
   - browserName: chromium
     osVersion: 17
     deviceName: iPad Air 6
-    enableNetwork: true
+    chromeOptions:
+      enableNetwork: true
   - browserName: chrome
     osVersion: 14.0
     deviceName: Google Pixel 9
-    enableNetwork: true
+    chromeOptions:
+      enableNetwork: true
 parallelsPerPlatform: 3
 buildName: ${CIRCLE_BRANCH}
 projectName: openmass
