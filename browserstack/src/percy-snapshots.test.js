@@ -1,6 +1,7 @@
 const { Builder, By, Key, until, Capabilities } = require("selenium-webdriver");
 const chrome = require('selenium-webdriver/chrome');
 const { percyScreenshot } = require('@percy/selenium-webdriver');
+const os = require('os');
 
 describe("massgov-screenshots", () => {
   let base;
@@ -49,7 +50,7 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options())
       .build();
 
-    console.log(JSON.stringify(driver.capabilities));
+    console.log('This is is the OS: ' + JSON.stringify(os));
 
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
