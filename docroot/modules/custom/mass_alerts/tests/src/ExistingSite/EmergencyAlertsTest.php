@@ -82,20 +82,17 @@ class EmergencyAlertsTest extends MassExistingSiteBase {
       ],
     ]);
 
-    $session = $this->getSession();
-    $session->visit('/alerts/sitewide');
-    $page = $session->getPage();
-    $this->assertStringContainsString($alert_message_text, $page->getText());
+    $this->drupalGet('/alerts/sitewide');
+    $this->assertSession()->pageTextContains($alert_message_text);
 
-    $headers = $session->getResponseHeaders();
-    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
+    $this->assertSession()->responseHeaderContains('Cache-Control', 'max-age=60');
     $duration = StaleResponseSubscriber::DURATION;
-    $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
-    $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
-    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
+    $this->assertSession()->responseHeaderContains('Cache-Control', "stale-if-error=$duration");
+    $this->assertSession()->responseHeaderContains('Cache-Control', "stale-while-revalidate=$duration");
+    $this->assertSession()->responseHeaderContains('Cache-Control', 'max-age=60');
 
-    $this->assertStringContainsString(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
-    $this->assertStringContainsString('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertSession()->responseHeaderContains('X-Drupal-Cache-Tags', MASS_ALERTS_TAG_SITEWIDE . ':list');
+    $this->assertSession()->responseHeaderContains('X-Drupal-Cache-Tags', 'node:' . $node->id());
   }
 
   /**

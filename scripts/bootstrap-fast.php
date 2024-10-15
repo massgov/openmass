@@ -21,12 +21,6 @@ use weitzman\DrupalTestTraits\AddPsr4;
 list($finder, $class_loader) = AddPsr4::add();
 $root = $finder->getDrupalRoot();
 
-// So that test cases may be simultaneously compatible with multiple major versions of PHPUnit.
-$class_loader->addPsr4('Drupal\TestTools\\', "$root/core/tests");
-if (class_exists('Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter')) {
-    ClassWriter::mutateTestBase($class_loader);
-}
-
 // Register more namespaces, as needed.
 $class_loader->addPsr4('Drupal\Tests\mass_metatag\\', "$root/modules/custom/mass_metatag/tests/src");
 $class_loader->addPsr4('Drupal\Tests\paragraphs\\', "$root/modules/contrib/paragraphs/tests/src");
