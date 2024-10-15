@@ -104,6 +104,7 @@ describe("massgov-screenshots", () => {
           await driver.manage().window().setSize({width: 1920, height: 900});
           break;
       }
+
       await driver.get(base + screenshot.pageUrl);
 
       let options = {
