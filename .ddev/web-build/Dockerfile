@@ -9,10 +9,10 @@ RUN curl -L https://dashboard.tugboatqa.com/cli/linux/tugboat.tar.gz > tugboat.t
 RUN curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
 
 # Install GitHub CLI.
-RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg && \
-  echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
-  sudo apt update && \
-  sudo apt install gh
+#RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg && \
+ # echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null && \
+  # sudo apt update && \
+ # sudo apt install gh
 
 # Install New Relic CLI per https://github.com/newrelic/newrelic-cli#example-usage
 RUN curl -L https://download.newrelic.com/install/newrelic-cli/scripts/install.sh | bash
