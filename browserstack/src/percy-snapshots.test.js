@@ -38,6 +38,17 @@ describe("massgov-screenshots", () => {
       base = `https://${auth.username}:${auth.password}@${target}.edit.mass.gov`;
   }
 
+  pages.forEach((page) => {
+    let pageScreens = page.screens ?? ['desktop'];
+    pageScreens.forEach((pageScreen) => {
+      screenshots.push({
+        testName: page.label + ' test ' + pageScreen,
+        screenWidth: pageScreen,
+        pageUrl: page.url
+      });
+    });
+  });
+
   beforeEach(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
     // capabilities = {
@@ -49,28 +60,6 @@ describe("massgov-screenshots", () => {
       .forBrowser('chrome')
       .setChromeOptions(new chrome.Options())
       .build();
-
-    pages.forEach(async (page) => {
-      let pageScreens = page.screens ?? ['desktop'];
-      pageScreens.forEach(async (pageScreen) => {
-        switch (pageScreen) {
-          case 'mobile':
-            await driver.manage().window().setSize({width: 320, height: 900});
-            break;
-          case 'tablet':
-            await driver.manage().window().setSize({width: 1024, height: 900});
-            break;
-          case 'desktop':
-            await driver.manage().window().setSize({width: 1920, height: 900});
-            break;
-        }
-        screenshots.push({
-          testName: page.label + ' test ' + pageScreen,
-          screenWidth: pageScreen,
-          pageUrl: page.url
-        });
-      });
-    });
 
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
@@ -102,8 +91,19 @@ describe("massgov-screenshots", () => {
     await driver.quit();
   });
 
-  screenshots.forEach(async (screenshot) => {
+  screenshots.forEach((screenshot) => {
     test(screenshot.testName, async () => {
+      switch (screenshot.screenWidth) {
+        case 'mobile':
+          await driver.manage().window().setSize({width: 320, height: 900});
+          break;
+        case 'tablet':
+          await driver.manage().window().setSize({width: 1024, height: 900});
+          break;
+        case 'desktop':
+          await driver.manage().window().setSize({width: 1920, height: 900});
+          break;
+      }
       await driver.get(base + screenshot.pageUrl);
 
       let options = {
