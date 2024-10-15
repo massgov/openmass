@@ -150,7 +150,7 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
 
   // Build the query to extract media IDs from the redirect_redirect__uri column.
   $query = $database->select('redirect', 'r')
-    ->distinct();  // Ensure distinct media IDs.
+    ->distinct();
 
   // Add the expression to extract media IDs.
   $query->addExpression(
