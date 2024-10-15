@@ -7,6 +7,7 @@ describe("massgov-screenshots", () => {
   let driver;
   let pages;
   let capabilities;
+  let screenshots = [];
   const auth = getAuth();
   const list = process.env.PERCY_LIST;
   const target = process.env.PERCY_TARGET;
@@ -37,7 +38,7 @@ describe("massgov-screenshots", () => {
       base = `https://${auth.username}:${auth.password}@${target}.edit.mass.gov`;
   }
 
-  beforeAll(async () => {
+  beforeEach(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
     // capabilities = {
     //   'bstack:options': {
@@ -49,7 +50,27 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options())
       .build();
 
-    await driver.manage().window().setSize({width: 1024});
+    pages.forEach((page) => {
+      let pageScreens = page.screens ?? ['desktop'];
+      pageScreens.forEach((pageScreen) => {
+        switch (pageScreen) {
+          case 'mobile':
+            await driver.manage().window().setSize({width: 320, height: 900});
+            break;
+          case 'tablet':
+            await driver.manage().window().setSize({width: 1024, height: 900});
+            break;
+          case 'desktop':
+            await driver.manage().window().setSize({width: 1920, height: 900});
+            break;
+        }
+        screenshots.push({
+          testName: page.label + ' test ' + pageScreen,
+          screenWidth: pageScreen,
+          pageUrl: page.url
+        });
+      });
+    });
 
     await driver.sendDevToolsCommand('Network.setExtraHTTPHeaders', {
       headers: {
@@ -77,13 +98,13 @@ describe("massgov-screenshots", () => {
     });
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await driver.quit();
   });
 
-  pages.forEach(async (page) => {
-    test(page.label + ' test', async () => {
-      await driver.get(base + page.url);
+  screenshots.forEach(async (screenshot) => {
+    test(screenshot.testName, async () => {
+      await driver.get(base + screenshot.pageUrl);
 
       let options = {
         fullPage: true,
@@ -92,7 +113,7 @@ describe("massgov-screenshots", () => {
           'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
         }
       };
-      await percyScreenshot(driver, page.label, options);
+      await percyScreenshot(driver, screenshot.testName, options);
     });
   });
 });
