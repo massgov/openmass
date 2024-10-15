@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_views\Plugin\views\field;
 
+use Drupal\Core\Database\Connection;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Database\Connection;
 
 /**
  * Custom view field to show media redirect source.
