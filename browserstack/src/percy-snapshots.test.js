@@ -50,9 +50,9 @@ describe("massgov-screenshots", () => {
       .setChromeOptions(new chrome.Options())
       .build();
 
-    pages.forEach((page) => {
+    pages.forEach(async (page) => {
       let pageScreens = page.screens ?? ['desktop'];
-      pageScreens.forEach((pageScreen) => {
+      pageScreens.forEach(async (pageScreen) => {
         switch (pageScreen) {
           case 'mobile':
             await driver.manage().window().setSize({width: 320, height: 900});
