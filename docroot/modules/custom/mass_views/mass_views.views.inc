@@ -217,6 +217,15 @@ function mass_views_views_data_alter(array &$data) {
       'id' => 'org_grid_count',
     ],
   ];
+
+  // Add a custom field for displaying the redirect from the redirect table.
+  $data['media_field_data']['redirect'] = [
+    'title' => t('Redirect Source'),
+    'help' => t('Displays the redirect Source that is pointing to this media item.'),
+    'field' => [
+      'id' => 'media_redirect_field',
+    ],
+  ];
 }
 
 /**

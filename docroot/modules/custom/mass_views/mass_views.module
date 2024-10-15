@@ -139,9 +139,69 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
 }
 
 /**
+ * Fetches all numeric media IDs from the redirect table.
+ *
+ * @return array
+ *   An array of distinct numeric media IDs.
+ */
+function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
+  // Get the database connection.
+  $database = \Drupal::database();
+
+  // Build the query to extract media IDs from the redirect_redirect__uri column.
+  $query = $database->select('redirect', 'r')
+    ->distinct();  // Ensure distinct media IDs.
+
+  // Add the expression to extract media IDs.
+  $query->addExpression(
+    "REPLACE(REPLACE(SUBSTRING_INDEX(r.redirect_redirect__uri, '/', -1), '/download', ''), 'internal:/media/', '')",
+    'media_id'
+  );
+
+  // Only process URIs that start with 'internal:/media/'.
+  $query->condition('redirect_redirect__uri', 'internal:/media/%', 'LIKE');
+
+  // Execute the query and fetch the results.
+  $media_ids = $query->execute()->fetchCol();
+
+  // Filter the result using PHP to only include numeric values.
+  $numeric_media_ids = array_filter($media_ids, 'is_numeric');
+
+  // Return the filtered array of numeric media IDs.
+  return $numeric_media_ids;
+}
+
+/**
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+
+  if ($view->id() == 'report_orphaned_documents') {
+
+    // Get the numeric media IDs that need to be excluded.
+    $media_ids = _mass_views_helper_get_numeric_media_ids_from_redirect_table();
+
+    if (!empty($media_ids)) {
+      // Exclude media items that match any of the media IDs in the extracted list.
+      $media_ids_list = implode(',', $media_ids);
+
+      // Add a where expression to exclude media items that have a matching redirect.
+      $query->addWhereExpression(0, "media_field_data.mid NOT IN ($media_ids_list)");
+    }
+  }
+
+  if ($view->id() == 'report_orphaned_documents_redirects') {
+    // Get the numeric media IDs that need to be excluded.
+    $media_ids = _mass_views_helper_get_numeric_media_ids_from_redirect_table();
+
+    if (!empty($media_ids)) {
+      // Exclude media items that match any of the media IDs in the extracted list.
+      $media_ids_list = implode(',', $media_ids);
+
+      // Add a where expression to include ONLY media items that have a matching redirect.
+      $query->addWhereExpression(0, "media_field_data.mid IN ($media_ids_list)");
+    }
+  }
 
   // DP-24989: alter the view to custom sort autocomplete results by bundle.
   if ($view->id() == "link_field_autocomplete" && $view->getDisplay()->display['id'] == 'entity_reference') {
