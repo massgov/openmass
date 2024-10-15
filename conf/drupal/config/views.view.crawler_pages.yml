@@ -42,7 +42,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Crawler Links - Content'
+      title: 'Build crawler URL for pages'
       fields:
         title:
           id: title
@@ -750,7 +750,20 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: '<p>Search for the pages you want the crawler to include. Then copy the URL and replace this portion of the URL "edit.mass.gov/admin/crawler/pages" with "www.mass.gov/crawler-links/pages". Add this new URL to your crawler and have it go only one level deep.</p>'
+            format: basic_html
+          tokenize: false
       footer: {  }
       display_extenders:
         metatag_display_extender:
