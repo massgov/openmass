@@ -18,6 +18,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Url;
+use Drupal\mass_fields\FormAlter\TopicPageFormAlter;
 use Drupal\mass_fields\Plugin\Field\FieldWidget\EntityReferenceEditLinkAutocompleteWidget;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -874,6 +875,7 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
  */
 function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInterface $form_state) {
   _mass_fields_form_node_topic_page_edit_restrict_fields($form, $form_state);
+  \Drupal::classResolver(TopicPageFormAlter::class)->topicFieldsControlAccess($form, $form_state);
 }
 
 /**
@@ -891,11 +893,23 @@ function mass_fields_field_widget_single_element_entity_reference_paragraphs_for
  * Approach comes from https://stackoverflow.com/a/66096376/265501https://stackoverflow.com/a/66096376/265501.
  */
 function mass_fields_field_widget_single_element_image_image_form_alter(&$element, FormStateInterface $form_state, $context) {
-  if (in_array($element['#field_name'], ['field_featured_item_highlight', 'field_featured_item_image'])) {
-    $element['#process'][] = '_mass_fields_image_widget_alt_help_text_process';
+  $field_process_map = [
+    'field_featured_item_highlight' => '_mass_fields_image_widget_alt_help_text_process',
+    'field_featured_item_image' => '_mass_fields_image_widget_alt_help_text_process',
+    'field_event_image' => '_mass_fields_event_image_widget_alt_help_text_process',
+    'field_event_logo' => '_mass_fields_event_image_widget_alt_help_text_process',
+  ];
+
+  // Handle fields that have a direct mapping
+  if (isset($field_process_map[$element['#field_name']])) {
+    $element['#process'][] = $field_process_map[$element['#field_name']];
   }
-  elseif (in_array($element['#field_name'], ['field_event_image', 'field_event_logo'])) {
-    $element['#process'][] = '_mass_fields_event_image_widget_alt_help_text_process';
+
+  // Handle special cases with additional conditions
+  if ($element['#field_name'] === 'field_image' && isset($element['#field_parents'])) {
+    if (in_array('field_info_details_sections', $element['#field_parents']) || in_array('field_organization_sections', $element['#field_parents'])) {
+      $element['#process'][] = '_mass_fields_image_paragraph_widget_alt_help_text_process';
+    }
   }
 }
 
@@ -905,6 +919,17 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
 function _mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
   if (isset($element['alt'])) {
     $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
+    $element['alt']['#description'] = new TranslatableMarkup($text);
+  }
+  return $element;
+}
+
+/**
+ * Helper function to change alt text.
+ */
+function _mass_fields_image_paragraph_widget_alt_help_text_process($element, &$form_state, $form) {
+  if (isset($element['alt'])) {
+    $text = 'Alternative Text is read by screen readers and should be a concise description of the image’s purpose. If the image is purely decorative, leave this field blank.';
     $element['alt']['#description'] = new TranslatableMarkup($text);
   }
   return $element;

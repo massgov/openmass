@@ -1,5 +1,89 @@
 
 
+## [0.413.0] - October 8, 2024
+
+### Changed
+  - DP-28816: UX improvements to the simplified org nav. Style improvement to sticky nav.
+  - DP-34469: Upgrade entity reference hierarchy to latest stable production version .
+  - DP-34679: Bump to PHP 8.3
+  - DP-35078: Start versioning Mayflower Artifacts library definition to make sure cache can be invalidated correctly.
+  - DP-35125: Configure image paragraph in Drupal to allow decorative images.
+  - DP-35159: Changed CircleCI Percy jobs to only run against the "all" list of screenshots.
+  
+### Added
+  - DP-34662: Configure Dependabot for composer updates
+  
+### Fixed
+  - DP-34715: Fix JS error related to Drupallike not defined.
+  - DP-35232: Fixed alerts positioning on org pages.
+  
+### Security
+  - DP-35261: Security updates to OpenMass.
+  
+
+
+## [0.412.0] - September 24, 2024
+
+### Fixed
+  - DP-34671: Don't render heading when no published content in section.
+  - DP-34965: Short description not displaying for topic pages when display is enabled.
+  - DP-35035: Resolve watchdog errors.
+  - DP-35042: Unpublishing doesn't change alias for non-English title page.
+  
+### Changed
+  - DP-34680: Users unable to edit old Executive Orders on Mass.gov
+  - DP-34940: Full Varnish clear at end of deploys
+  - DP-34966: Modify feedback component to display even if a Topic Page has no organization.
+  
+### Added
+  - DP-34731: Update to Drush 13.1 for bulk entity unpublish.
+  - DP-35068: Add Romanian language to Drupal site.
+  
+
+
+## [0.411.0] - September 17, 2024
+
+### Changed
+  - DP-30412: Bulk update of help text and minor changes.
+  - DP-34911: Updated GitBook references to d2d redirects for an easier transition to the SharePoint knowledge base.
+  
+### Added
+  - DP-33490: Added Percy configurations for visual regression testing.
+  - DP-34621: Added logging to entity_usage queue generation and processing.
+  - DP-34716: Get newrelic browser working on other environments.
+  - DP-35008: Added intended audience to dataLayer.
+  
+### Fixed
+  - DP-34850: Some test are missing by phpunit-finder because of incorrect test file location..
+  - DP-34424,DP-34976: Rollback heading clear floats and fix the comp heading styles in floats
+  
+### Security
+  - DP-34962: Update security kit module.
+  
+
+
+## [0.410.0] - September 10, 2024
+
+### Added
+  - DP-34207: Added posibility to skip GIF image derivative generation if image is animated gif
+  - DP-34675: Add Urdu language
+  - DP-34727: Flag to Show/Hide Feedback form on Topic Page, for users with 'create topic_page content' permission.
+  - DP-34727: Flag to make optional organization field on Topic Page edit form, for users with 'create topic_page content' permission.
+  
+### Fixed
+  - DP-34424: Fixed the issue with styles in rich text related to images.
+  - DP-34678: Empty table being added to rules of court pages with no dates.
+  - DP-34797: 500 Error on https://edit.mass.gov/guides/massachusetts-energy-rebates-incentives
+  
+### Security
+  - DP-34468: Resolve dependabot issues.
+  
+### Changed
+  - DP-34515: Email validation in the feedback component.
+  - DP-34568: Don't show authors and editors the text format options.
+  
+
+
 ## [0.409.0] - September 3, 2024
 
 ### Fixed

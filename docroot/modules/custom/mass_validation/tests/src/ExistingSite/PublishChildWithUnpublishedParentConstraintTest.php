@@ -51,7 +51,6 @@ class PublishChildWithUnpublishedParentConstraintTest extends MassExistingSiteBa
 
     // Edit the child node, select the moderation state to published.
     $this->drupalLogin($this->user);
-    $this->drupalGet('node/' . $childNode->id());
     $this->visit($childNode->toUrl()->toString() . '/edit');
     $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::PUBLISHED);
 

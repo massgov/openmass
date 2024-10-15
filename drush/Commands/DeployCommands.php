@@ -7,6 +7,7 @@ use AcquiaCloudApi\Connector\Connector;
 use AcquiaCloudApi\Endpoints\Code;
 use AcquiaCloudApi\Endpoints\DatabaseBackups;
 use AcquiaCloudApi\Endpoints\Databases;
+use AcquiaCloudApi\Endpoints\Domains;
 use AcquiaCloudApi\Endpoints\Environments;
 use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
@@ -35,7 +36,7 @@ class DeployCommands extends DrushCommands {
   }
 
   // Set the PHP version to use when deploying to Acquia environments.
-  public const PHP_VERSION = '8.2';
+  public const PHP_VERSION = '8.3';
 
   const TARGET_DESC = 'Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod';
 
@@ -54,6 +55,7 @@ class DeployCommands extends DrushCommands {
   const VALIDATE_CIRCLECI_TOKEN = 'validate-circleci-token';
   const CI_BACKSTOP_SNAPSHOT = 'ma:ci:backstop-snapshot';
   const CI_BACKSTOP_COMPARE = 'ma:ci:backstop-compare';
+  const CI_PERCY = 'ma:ci:percy';
   const MA_BACKUP = 'ma:backup';
   const LATEST_BACKUP_URL = 'ma:latest-backup-url';
   const MA_RELEASE = 'ma:release';
@@ -158,6 +160,47 @@ class DeployCommands extends DrushCommands {
   }
 
   /**
+   * Run Percy on BrowserStack Automate at CircleCI.
+   */
+  #[CLI\Command(name: self::CI_PERCY, aliases: ['ma-ci-percy'])]
+  #[CLI\Option(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
+  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: all, post-release. See backstop/backstop.js')]
+  #[CLI\Option(name: 'tugboat', description: 'A Tugboat URL which should be used as target. You must also pass \'tugboat\' as target. When omitted, the most recent Preview for the current branch is assumed.')]
+  #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start, default value is "develop"')]
+  #[CLI\Usage(name: 'drush ma:ci:percy --target=test', description: 'Run backstop in the test environment against the latest production screenshots')]
+  #[ValidateCircleciToken]
+  public function ciBrowserStackCompare(array $options = ['reference' => 'prod', 'target' => 'test', 'ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'cachebuster' => false, 'tugboat' => self::OPT, 'force-reference' => false]): void {
+    // If --tugboat is specified without a specific URL, or --tugboat is
+    // omitted, automatically determine the preview for the branch.
+    if ($options['target'] === 'tugboat') {
+      $tugboat_url = $this->getTugboatUrl($options['tugboat'], $options['ci-branch']);
+    }
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle(), ''],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'webhook' => FALSE,
+          'trigger_workflow' => 'browserstack_percy_compare',
+          'target' => $options['target'],
+          'list' => $options['list'],
+          'tugboat' => !empty($tugboat_url) ? $tugboat_url : '',
+        ],
+      ],
+    ];
+    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string) $response->getBody(), TRUE);
+    $this->logger()->success($this->getSuccessMessage($body));
+  }
+
+  /**
    * Initiate an on-demand database backup via the Acquia API.
    */
   #[CLI\Command(name: self::MA_BACKUP, aliases: [])]
@@ -214,10 +257,11 @@ class DeployCommands extends DrushCommands {
   #[CLI\Argument(name: 'target', description: self::TARGET_DESC)]
   #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
   #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start.')]
+  #[CLI\Option(name: 'varnish', description: 'Full purge of Varnish cache.')]
   #[CLI\Usage(name: 'drush ma:release test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[ValidateCircleciToken]
   #[OptionsetDeploy]
-  public function release($target, $git_ref, array $options = ['ci-branch' => self::REQ]) {
+  public function release($target, $git_ref, array $options = ['ci-branch' => self::REQ, 'varnish' => FALSE]): void {
     // For production deployments, prompt the user if they are sure. If they say no, exit.
     if ($target === 'prod') {
       $this->confirmProd();
@@ -233,6 +277,7 @@ class DeployCommands extends DrushCommands {
         'parameters' => [
           'webhook' => FALSE,
           'ma-release' => TRUE,
+          'varnish' => $options['varnish'] ? '--varnish' : '',
           'target' => $target,
           'git-ref' => $git_ref,
           'skip-maint' => $options['skip-maint'] ? '--skip-maint' : '',
@@ -247,7 +292,7 @@ class DeployCommands extends DrushCommands {
     }
 
     $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
+    $this->logger()->success($this->getSuccessMessage($body));
   }
 
   /**
@@ -259,9 +304,10 @@ class DeployCommands extends DrushCommands {
   #[CLI\Command(name: self::MA_DEPLOY, aliases: ['ma-deploy'])]
   #[CLI\Argument(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
   #[CLI\Argument(name: 'git_ref', description: 'Tag or branch to deploy. Must be pushed to Acquia.')]
+  #[CLI\Option(name: 'varnish', description: 'Full purge of Varnish cache.')]
   #[CLI\Usage(name: 'drush ma-deploy test tags/build-0.6.1', description: 'Deploy build-0.6.1 tag to the staging environment.')]
   #[OptionsetDeploy]
-  public function deploy(string $target, string $git_ref, array $options = []) {
+  public function deploy(string $target, string $git_ref, array $options = ['varnish' => FALSE]): void {
 
     // For production deployments, prompt user. If they say no, exit.
     $is_prod = ($target === 'prod');
@@ -315,8 +361,12 @@ class DeployCommands extends DrushCommands {
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
 
-    $this->purgeSelective($targetRecord);
-    $this->logger()->success("Selective Purge enqueued at $target.");
+    if ($options['varnish']) {
+      $this->purgeVarnishFully($targetRecord);
+    }
+    else {
+      $this->purgeVarnishSelectively($targetRecord);
+    }
 
     // Perform a final cache rebuild just in case. Root cause is unknown.
     // @todo Explore removing this in future.
@@ -336,10 +386,13 @@ class DeployCommands extends DrushCommands {
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
 
-    // Process purge queue.
-    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
-    $process->mustRun();
-    $this->logger()->success("Purge queue worker complete at $target.");
+
+    if (!$options['varnish']) {
+      // Process purge queue.
+      $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
+      $process->mustRun();
+      $this->logger()->success('Purge queue worker complete at ' . $targetRecord->name());
+    }
   }
 
   /**
@@ -428,7 +481,7 @@ class DeployCommands extends DrushCommands {
     return $return ?: NULL;
   }
 
-  public function purgeSelective(SiteAlias|bool $targetRecord) {
+  public function purgeVarnishSelectively(SiteAlias $targetRecord) {
     // Enqueue purging of QAG pages.
     $sql = "SELECT nid FROM node_field_data WHERE title LIKE '%_QAG%'";
     $process = Drush::drush($targetRecord, 'sql:query', [$sql], ['verbose' => TRUE]);
@@ -448,6 +501,7 @@ class DeployCommands extends DrushCommands {
       $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
       $process->mustRun();
     }
+    $this->logger()->success("Selective Purge enqueued at " . $targetRecord->name());
   }
 
   /**
@@ -518,7 +572,7 @@ class DeployCommands extends DrushCommands {
    * Return success message about how to view a Pipeline at CircleCI.
    */
   private function getSuccessMessage(array $body): string {
-    return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
+    return 'Pipeline is viewable at https://app.circleci.com/pipelines/github/massgov/openmass/' . $body['number'];
   }
 
   /**
@@ -582,6 +636,24 @@ class DeployCommands extends DrushCommands {
     }
 
     return $tugboat_url_option;
+  }
+
+  protected function purgeVarnishFully(SiteAlias $targetRecord): void {
+    $hosts = [];
+    $hosts[] = parse_url($targetRecord->get('uri'), PHP_URL_HOST);
+    if ($targetRecord->name() === 'prod') {
+      $hosts[] = 'www.mass.gov';
+    }
+    elseif ($targetRecord->name() === 'test') {
+      $hosts[] = 'stage.mass.gov';
+    }
+    $cloudapi = $this->getClient();
+    $domains = new Domains($cloudapi);
+    $response = $domains->purge($targetRecord->get('uuid'), $hosts);
+    if ($response->message !== 'Caches are being cleared.') {
+      throw new \Exception('Failed to fully purge Varnish via the Acquia Cloud API.');
+    }
+    $this->logger()->success('Varnish fully purged.');
   }
 
 }
