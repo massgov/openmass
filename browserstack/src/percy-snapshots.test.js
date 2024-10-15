@@ -49,7 +49,7 @@ describe("massgov-screenshots", () => {
     });
   });
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
     // capabilities = {
     //   'bstack:options': {
@@ -87,7 +87,7 @@ describe("massgov-screenshots", () => {
     });
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await driver.quit();
   });
 
