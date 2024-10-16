@@ -118,7 +118,7 @@ module.exports = async (page, scenario, viewport) => {
     await page.evaluate(() => { for (link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
     await page.waitForSelector('.ma__sticky-nav');
   }
-  
+
   switch (scenario.label) {
     case 'InfoDetails1':
     case 'InfoDetailsImageWrapLeft':
