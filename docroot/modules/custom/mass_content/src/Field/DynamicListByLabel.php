@@ -20,6 +20,10 @@ class DynamicListByLabel extends QueryGeneratedDynamicEntityReferenceList {
       $term_ids[] = $term->id();
     }
 
+    if (empty($term_ids)) {
+      return [];
+    }
+
     $types = [
       'advisory',
       'binder',

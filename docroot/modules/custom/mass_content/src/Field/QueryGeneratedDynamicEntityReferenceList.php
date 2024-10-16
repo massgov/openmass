@@ -33,14 +33,17 @@ abstract class QueryGeneratedDynamicEntityReferenceList extends DynamicEntityRef
       $queries = $this->queries();
       $i = 0;
       foreach ($queries as $type => $query) {
-        foreach ($query->accessCheck(FALSE)->execute() as $id) {
-          $this->list[$i] = $this->createItem($i, ['target_id' => $id, 'target_type' => $type]);
-          $i++;
+        $result = $query->accessCheck(FALSE)->execute();
+        // Check if the query result is not empty before processing it.
+        if (!empty($result)) {
+          foreach ($result as $id) {
+            $this->list[$i] = $this->createItem($i, ['target_id' => $id, 'target_type' => $type]);
+            $i++;
+          }
         }
       }
     }
   }
-
   /**
    * Build the query that will be run.
    *
