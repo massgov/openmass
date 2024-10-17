@@ -12,6 +12,13 @@ use Drupal\file\Entity\File;
 class DocumentBundle extends MediaBundle {
 
   /**
+   * Get title.
+   */
+  public function getTitle(): FieldItemListInterface {
+    return $this->get('field_title');
+  }
+
+  /**
    * Get uploaded file.
    */
   public function getUploadFile(): FieldItemListInterface {
