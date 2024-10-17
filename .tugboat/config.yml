@@ -1,8 +1,8 @@
 services:
   # What to call the service hosting the site.
   php:
-    # Use PHP 8.x with Apache; this syntax pulls in the latest version of PHP 8
-    image: tugboatqa/php:8.2-apache
+    # Use PHP 8.x with Apache;
+    image: tugboatqa/php:8.3-apache
 
     # Set this as the default service. This does a few things
     #   1. Clones the git repository into the service container
@@ -129,4 +129,3 @@ services:
         - mysql -h localhost -e "SET GLOBAL max_allowed_packet=536870912;"
         # Ensure this packet size persists even if MySQL restarts.
         - echo "max_allowed_packet=536870912" >> /etc/mysql/conf.d/tugboat.cnf
-

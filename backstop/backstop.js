@@ -77,7 +77,7 @@ const scenarios = pages.map(function(page) {
           case "mobile":
             viewport = {
               "label": "phone",
-              "width": 320,
+              "width": 360,
               "height": 480
             };
             break;
@@ -122,7 +122,7 @@ if (viewportArg !== 'desktop') {
   viewports.push(
     {
       "label": "phone",
-      "width": 320,
+      "width": 360,
       "height": 480
     },
     {
