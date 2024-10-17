@@ -14,10 +14,8 @@ use Drupal\Core\Pager\PagerManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Url;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Service class for interacting with external Mass.gov API.
@@ -123,7 +121,7 @@ class MassFeedbackLoopContentFetcher {
     ClientFactory $http_client_factory,
     LoggerInterface $logger,
     EntityTypeManagerInterface $entity_type_manager,
-    PagerManagerInterface $pager_manager
+    PagerManagerInterface $pager_manager,
   ) {
     $this->currentUser = $current_user;
     $this->database = $database;
@@ -155,7 +153,7 @@ class MassFeedbackLoopContentFetcher {
    * @return array
    *   Array of NIDs for content flagged by user.
    */
-  public function fetchFlaggedContent($flag_id = 'watch_content', AccountProxy $account = NULL, $title_order = 'ASC') {
+  public function fetchFlaggedContent($flag_id = 'watch_content', ?AccountProxy $account = NULL, $title_order = 'ASC') {
     // Uses current user's account if none is provided.
     if (empty($account)) {
       $account = $this->currentUser;

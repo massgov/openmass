@@ -5,8 +5,8 @@ namespace Drupal\mass_utility\Logger;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\SyslogHandler;
-use Monolog\Logger;
 use Monolog\LogRecord;
+use Monolog\Logger;
 
 /**
  * Syslog handler for mass.gov.

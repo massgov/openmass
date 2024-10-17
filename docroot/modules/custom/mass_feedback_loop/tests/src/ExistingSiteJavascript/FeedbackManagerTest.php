@@ -3,7 +3,6 @@
 namespace Drupal\Tests\mass_feedback_loop\ExistingSiteJavascript;
 
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 

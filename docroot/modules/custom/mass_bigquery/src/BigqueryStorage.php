@@ -10,7 +10,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\Site\Settings;
-use Google\Cloud\BigQuery\QueryResults;
 
 /**
  * Storage class for Bigquery data.

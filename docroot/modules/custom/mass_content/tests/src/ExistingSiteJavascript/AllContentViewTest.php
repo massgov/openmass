@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
-use Drupal\user\Entity\User;
 use Exception;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
