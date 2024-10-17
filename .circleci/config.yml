@@ -699,7 +699,7 @@ jobs:
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     machine:
-      image: ubuntu-2004:202101-01
+      image: default
     steps:
       - attach_workspace: {at: /home/circleci}
       - fetch_drush_aliases:
@@ -720,7 +720,7 @@ jobs:
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
+      - run: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
       - run: docker push << parameters.instance >>
 
   pending_security:
