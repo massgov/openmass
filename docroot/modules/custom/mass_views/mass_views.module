@@ -11,6 +11,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -289,5 +290,29 @@ function mass_views_views_pre_render(ViewExecutable $view) {
         }
       }
     }
+  }
+}
+
+/**
+ * Implements hook_views_post_execute().
+ *
+ * This function checks if the 'locations' view has no results on the front-end.
+ * If no results are found, it triggers a 404 "Page not found" error
+ * by throwing a NotFoundHttpException.
+ *
+ * @param \Drupal\views\ViewExecutable $view
+ *   The view executable object.
+ *
+ * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
+ *   Throws an exception to trigger a 404 response.
+ */
+function mass_views_views_post_execute(ViewExecutable $view) {
+  if ($view->id() == 'locations' && empty($view->result)) {
+    // Check if the current page is an admin page.
+    if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+      // If we are on an admin page, do not trigger a 404.
+      return;
+    }
+    throw new NotFoundHttpException();
   }
 }
