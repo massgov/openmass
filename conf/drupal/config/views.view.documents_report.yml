@@ -6,8 +6,12 @@ dependencies:
     - field.storage.media.field_organizations
     - media.type.document
   module:
+    - csv_serialization
     - media
+    - rest
+    - serialization
     - user
+    - views_data_export
 id: documents_report
 label: 'Documents report'
 module: views
@@ -454,7 +458,7 @@ display:
         options:
           perm: 'use content reports'
       cache:
-        type: tag
+        type: none
         options: {  }
       empty: {  }
       sorts:
@@ -630,6 +634,56 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
+        - user.permissions
+      tags:
+        - 'config:field.storage.media.field_organizations'
+  data_export_1:
+    id: data_export_1
+    display_title: 'Data export'
+    display_plugin: data_export
+    position: 2
+    display_options:
+      pager:
+        type: some
+        options:
+          offset: 0
+          items_per_page: 0
+      style:
+        type: data_export
+        options:
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+            use_serializer_encode_only: false
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
+      path: admin/ma-dash/reports/documents-report/export
+      displays:
+        page_docs: page_docs
+        default: '0'
+      filename: 'massgov-documents-report-[date:html_datetime].csv'
+      automatic_download: false
+      export_method: batch
+      export_batch_size: 100
+      store_in_public_file_directory: false
+      custom_redirect_path: false
+      redirect_to_display: page_docs
+      include_query_params: true
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - request_format
         - user.permissions
       tags:
         - 'config:field.storage.media.field_organizations'
