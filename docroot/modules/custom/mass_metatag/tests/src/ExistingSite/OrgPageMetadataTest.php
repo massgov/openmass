@@ -3,11 +3,11 @@
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 
 /**
  * Org Page metadata tests.

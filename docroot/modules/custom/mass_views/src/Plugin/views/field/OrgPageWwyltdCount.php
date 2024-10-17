@@ -17,7 +17,7 @@ class OrgPageWwyltdCount extends OrgPageCountBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     $this->pseudoTableAlias = 'pifd_wwyltd_count';
     $this->pseudoFieldName = 'org_wwyltd_count';
     $this->paragraphBundle = 'what_would_you_like_to_do';

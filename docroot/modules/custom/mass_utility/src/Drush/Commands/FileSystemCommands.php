@@ -3,7 +3,6 @@
 namespace Drupal\mass_utility\Drush\Commands;
 
 use Drupal\Core\Database\Connection;
-use Drupal\Core\File\FileSystem;
 use Drupal\Core\File\FileSystemInterface;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;

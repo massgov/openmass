@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\mass_content\ExistingSite;
 
-use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 

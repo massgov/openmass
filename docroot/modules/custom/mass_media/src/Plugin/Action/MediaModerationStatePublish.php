@@ -26,7 +26,7 @@ class MediaModerationStatePublish extends ViewsBulkOperationsActionBase {
   /**
    * {@inheritdoc}
    */
-  public function execute(MediaInterface $entity = NULL) {
+  public function execute(?MediaInterface $entity = NULL) {
     if ($entity) {
       $this->createRevision($entity, 'published');
     }
@@ -35,7 +35,7 @@ class MediaModerationStatePublish extends ViewsBulkOperationsActionBase {
   /**
    * {@inheritdoc}
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var \Drupal\mass_content\Entity\Bundle\media\MediaBundle $object */
     // Get current moderation state.
     $state = $object->getModerationState()->getString();

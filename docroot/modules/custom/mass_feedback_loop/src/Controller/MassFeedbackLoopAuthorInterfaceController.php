@@ -2,8 +2,6 @@
 
 namespace Drupal\mass_feedback_loop\Controller;
 
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\OpenModalDialogCommand;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Symfony\Component\DependencyInjection\ContainerInterface;

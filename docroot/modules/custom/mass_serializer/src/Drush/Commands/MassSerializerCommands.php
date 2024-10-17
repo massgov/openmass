@@ -2,15 +2,11 @@
 
 namespace Drupal\mass_serializer\Drush\Commands;
 
-use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteAlias\SiteAliasManagerInterface;
 use Drupal\mass_serializer\CacheEndpoint;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
-use Drush\Runtime\DependencyInjection;
-use Drush\SiteAlias\SiteAliasManagerAwareInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Class MassSerializerCommands.
@@ -23,7 +19,7 @@ class MassSerializerCommands extends DrushCommands {
 
   public function __construct(
     protected CacheEndpoint $cacheEndpoint,
-    private SiteAliasManagerInterface $siteAliasManager
+    private SiteAliasManagerInterface $siteAliasManager,
   ) {
     parent::__construct();
   }

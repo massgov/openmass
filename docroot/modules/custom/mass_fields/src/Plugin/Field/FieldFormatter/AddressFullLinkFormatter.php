@@ -5,9 +5,9 @@ namespace Drupal\mass_fields\Plugin\Field\FieldFormatter;
 use CommerceGuys\Addressing\AddressFormat\AddressField;
 use CommerceGuys\Addressing\AddressFormat\AddressFormat;
 use CommerceGuys\Addressing\Locale;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\address\AddressInterface;
 use Drupal\address\Plugin\Field\FieldFormatter\AddressPlainFormatter;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Plugin implementation of the 'address_plain' formatter.

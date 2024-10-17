@@ -5,7 +5,6 @@ namespace Drupal\mass_content\ExistingSite;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\taxonomy\Entity\Vocabulary;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Tests External Organization on Colection Term pages.

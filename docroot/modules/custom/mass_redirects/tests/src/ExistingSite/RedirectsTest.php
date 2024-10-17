@@ -6,7 +6,6 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
 use Drupal\node\Entity\Node;
 use Drupal\redirect\Entity\Redirect;
-use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 

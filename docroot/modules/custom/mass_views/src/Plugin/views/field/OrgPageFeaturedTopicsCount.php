@@ -17,7 +17,7 @@ class OrgPageFeaturedTopicsCount extends OrgPageCountBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     $this->pseudoTableAlias = 'pifd_ft_count';
     $this->pseudoFieldName = 'org_featured_topics_count';
     $this->paragraphBundle = 'featured_topics';
