@@ -3,13 +3,12 @@
 namespace Drupal\mass_views\Plugin\views\field;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\path_alias\AliasManagerInterface;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
 use Drupal\views\ResultRow;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-
 
 /**
  * Custom view field to show media redirect source, including following multiple redirects.
@@ -113,10 +112,12 @@ class MediaRedirectField extends FieldPluginBase {
           $usage_count = $this->getEntityUsageCount($media_id);
           if ($usage_count > 0) {
             $output .= '<br><strong>Usage count:</strong> ' . $usage_count;
-          } else {
+          }
+          else {
             $output .= '<br><strong>Usage:</strong> Not used';
           }
-        } else {
+        }
+        else {
           $output .= '<br>No entity found for this redirect.';
         }
 
@@ -155,7 +156,7 @@ class MediaRedirectField extends FieldPluginBase {
     }
 
     // If no further redirects are found, return null.
-    return null;
+    return NULL;
   }
 
   /**
@@ -184,7 +185,7 @@ class MediaRedirectField extends FieldPluginBase {
     }
 
     // No media entity was found or the path did not resolve to a media entity.
-    return null;
+    return NULL;
   }
 
   /**
