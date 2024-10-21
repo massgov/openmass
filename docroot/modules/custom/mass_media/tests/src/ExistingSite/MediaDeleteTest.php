@@ -6,7 +6,6 @@ use Drupal\file\Entity\File;
 use Drupal\user\UserInterface;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Verify media functionality.
@@ -16,7 +15,6 @@ use weitzman\LoginTrait\LoginTrait;
 class MediaDeleteTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
-  use LoginTrait;
 
   private UserInterface $admin;
 

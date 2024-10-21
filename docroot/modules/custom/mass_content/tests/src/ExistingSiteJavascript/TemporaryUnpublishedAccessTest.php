@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures access links for unpublished content are generated properly.
@@ -13,9 +12,7 @@ use weitzman\LoginTrait\LoginTrait;
  * `$form_state->getValue('field_primary_parent')` returns a non-empty
  * array even if it doesn't have a value.
  */
-class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
+class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
 
   /**
    * To generate a unpublished access link.

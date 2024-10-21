@@ -7,14 +7,11 @@ use Drupal\mass_entity_usage\UsageTrackingBlocker;
 use Drupal\paragraphs\Entity\Paragraph;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests to ensure block tracking for entity usage works as expected.
  */
 class UsageTrackingBlockerTest extends MassExistingSiteBase {
-
-  use LoginTrait;
   use MediaCreationTrait;
 
   /**

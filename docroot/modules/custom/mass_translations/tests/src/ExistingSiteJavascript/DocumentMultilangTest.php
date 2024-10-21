@@ -5,7 +5,6 @@ namespace Drupal\Tests\mass_translations\ExistingSiteJavascript;
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Multilanguage documents tests.
@@ -13,7 +12,6 @@ use weitzman\LoginTrait\LoginTrait;
 class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
 
   use MediaCreationTrait;
-  use LoginTrait;
 
   const LANGCODE = 'es';
   private $editor;
