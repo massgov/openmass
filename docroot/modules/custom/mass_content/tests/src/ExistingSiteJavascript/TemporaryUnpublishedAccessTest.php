@@ -2,9 +2,7 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 

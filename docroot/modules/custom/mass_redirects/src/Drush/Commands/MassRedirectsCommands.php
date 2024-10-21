@@ -6,7 +6,6 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;
@@ -31,7 +30,7 @@ class MassRedirectsCommands extends DrushCommands {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected Connection $connection,
     #[Autowire(service: 'redirect.repository')]
-    protected RedirectRepository $redirectRepository
+    protected RedirectRepository $redirectRepository,
   ) {
     parent::__construct();
   }

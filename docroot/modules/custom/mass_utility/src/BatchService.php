@@ -2,8 +2,6 @@
 
 namespace Drupal\mass_utility;
 
-use DrushBatchContext;
-
 /**
  * Class BatchService.
  *
