@@ -12,7 +12,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  * `$form_state->getValue('field_primary_parent')` returns a non-empty
  * array even if it doesn't have a value.
  */
-class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
+class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase {
 
   /**
    * To generate a unpublished access link.
