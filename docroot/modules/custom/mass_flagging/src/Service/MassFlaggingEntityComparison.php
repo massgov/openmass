@@ -17,7 +17,7 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
   /**
    * {@inheritdoc}
    */
-  public function getRevisionDescription(ContentEntityInterface $revision, ContentEntityInterface $previous_revision = NULL) {
+  public function getRevisionDescription(ContentEntityInterface $revision, ?ContentEntityInterface $previous_revision = NULL) {
     // Code is adapted from Diff module prior to patch introduced in this issue:
     // https://www.drupal.org/project/diff/issues/2880936
     $summary_elements = [];
@@ -75,7 +75,7 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
   /**
    * {@inheritdoc}
    */
-  public function checkRevisionforImageSectionChanges(ContentEntityInterface $revision, ContentEntityInterface $previous_revision = NULL) {
+  public function checkRevisionforImageSectionChanges(ContentEntityInterface $revision, ?ContentEntityInterface $previous_revision = NULL) {
     $elements = [];
 
     $mapping = [
