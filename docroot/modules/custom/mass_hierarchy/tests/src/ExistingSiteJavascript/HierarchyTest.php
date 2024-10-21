@@ -97,7 +97,7 @@ class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
    */
   public function testCronErasesOtherRevisions() {
     $this->drupalLogin($this->createRandomUser('content_team'));
-    [$parent1Node, $child1Node,] = $this->createParentAndChildren();
+    [$parent1Node, $child1Node] = $this->createParentAndChildren();
 
     // Save child node.
     $child1Node->moderation_state = MassModeration::DRAFT;
