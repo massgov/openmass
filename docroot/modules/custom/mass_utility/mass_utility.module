@@ -1392,7 +1392,7 @@ function mass_utility_clean_file_managed() {
  * @param \Drupal\Core\Database\Connection $connection
  *   Optional database connection.
  */
-function mass_utility_delete_fids(array $bad_fids, Connection $connection = NULL) {
+function mass_utility_delete_fids(array $bad_fids, ?Connection $connection = NULL) {
   if (!$connection) {
     $connection = \Drupal::database();
   }

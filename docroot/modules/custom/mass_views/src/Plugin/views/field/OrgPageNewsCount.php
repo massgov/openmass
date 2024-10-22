@@ -17,7 +17,7 @@ class OrgPageNewsCount extends OrgPageCountBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     $this->pseudoTableAlias = 'pifd_news_count';
     $this->pseudoFieldName = 'org_news_count';
     $this->paragraphBundle = 'org_news';
