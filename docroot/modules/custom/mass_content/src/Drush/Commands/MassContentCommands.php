@@ -6,10 +6,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\mass_fields\MassUrlReplacementService;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
@@ -27,7 +25,7 @@ class MassContentCommands extends DrushCommands {
 
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
-    protected LoggerChannelFactoryInterface $loggerChannelFactory
+    protected LoggerChannelFactoryInterface $loggerChannelFactory,
   ) {
     $this->externalDownloadMatch = '/(https:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)(\/download|\/|$)|files\/)/';
     parent::__construct();
@@ -485,7 +483,7 @@ class MassContentCommands extends DrushCommands {
                 ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
                   '@type' => ucfirst($entityType),
                   '@bundle' => $entity->bundle(),
-                  '@id' => $entity->id()
+                  '@id' => $entity->id(),
                 ]));
             }
           }
@@ -565,7 +563,7 @@ class MassContentCommands extends DrushCommands {
                     ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
                       '@type' => ucfirst($entityType),
                       '@bundle' => $entity->bundle(),
-                      '@id' => $entity->id()
+                      '@id' => $entity->id(),
                     ]));
                 }
               }
@@ -579,6 +577,107 @@ class MassContentCommands extends DrushCommands {
       $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
       $this->output()->writeln(t('Processed @count @type entity revisions.', ['@count' => $changed_revisions, '@type' => $entityType]));
     }
+  }
+
+  /**
+   * Processes 'service-details/[something]' links in all entities.
+   *
+   * Use --simulate to get a report, and skip healing.
+   *
+   * @command mass-content:process-service-details
+   * @field-labels
+   *   success: Success
+   *   entity_type: Entity Type
+   *   entity_id: Entity ID
+   *   processed_links: Processed Links
+   * @default-fields success,entity_type,entity_id,processed_links
+   * @aliases mpsd
+   * @option simulate If set, no changes will be saved.
+   */
+  public function processServiceDetails($options = ['simulate' => FALSE, 'format' => 'table']) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    $rows = [];
+    $entityTypes = ['node', 'paragraph'];
+    $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
+
+    foreach ($entityTypes as $entityType) {
+      $lastProcessedId = 0;
+      if (!$options['simulate']) {
+        $lastProcessedId = \Drupal::state()
+          ->get("mass_content.service_details.last_processed_id.{$entityType}", 0);
+      }
+      $idFieldName = $entityType === 'node' ? 'nid' : 'id';
+      $storage = $this->entityTypeManager->getStorage($entityType);
+      $ids = $storage->getQuery()
+        ->condition($idFieldName, $lastProcessedId, '>')
+        ->sort($idFieldName)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $totalEntities = count($ids);
+      $this->output()->writeln(t('Processing @count @type entities...', ['@count' => $totalEntities, '@type' => $entityType]));
+
+      $changedEntities = 0;
+
+      foreach ($ids as $id) {
+
+        $entity = $storage->load($id);
+        if ($entity) {
+          $changed = $urlReplacementService->processServiceDetailsLink($entity);
+
+          // Only output rows where changes will happen.
+          if ($changed) {
+            $row = [
+              'success' => 'No',
+              'entity_type' => $entityType,
+              'entity_id' => $entity->id(),
+              'processed_links' => $changed,
+            ];
+
+            $this->output()->writeln(t('Entity ID @id of @type has @changes changes.', [
+              '@id' => $entity->id(),
+              '@type' => $entityType,
+              '@changes' => $changed,
+            ]));
+
+            if (!$options['simulate']) {
+              if (method_exists($entity, 'setRevisionLogMessage')) {
+                $entity->setNewRevision();
+                $entity->setRevisionLogMessage('Revision created to update service-details links.');
+                $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+              }
+              $entity->save();
+              $row['success'] = 'Yes';
+              $changedEntities++;
+            }
+            else {
+              $this->output()->writeln(t('Simulating: Entity @id changes not saved.', ['@id' => $entity->id()]));
+            }
+
+            $rows[] = $row;
+          }
+
+          if (!$options['simulate']) {
+            // Update the last processed ID after each entity.
+            \Drupal::state()
+              ->set("mass_content.service_details.last_processed_id.{$entityType}", $id);
+          }
+        }
+      }
+
+      $this->output()->writeln(t('Processed @count @type entities with changes.', ['@count' => $changedEntities, '@type' => $entityType]));
+    }
+
+    if ($changedEntities > 0) {
+      $this->output()->writeln(t('Finished processing all entities with changes. Exporting results...'));
+    }
+    else {
+      $this->output()->writeln(t('No changes were detected during processing.'));
+    }
+
+    // Only return rows where changes happened.
+    return new RowsOfFields($rows);
   }
 
 }

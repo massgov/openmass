@@ -1818,7 +1818,7 @@ class Helper {
     // Make sure the file exists before trying to fetch it and parse it as an
     // XML document.
     if (!file_exists($path)) {
-      trigger_error(sprintf('Not a valid file: "%s"', $path), E_USER_DEPRECATED);
+      @trigger_error(sprintf('Not a valid file: "%s"', $path), E_USER_DEPRECATED);
       return;
     }
     // For security reasons, we don't want to allow anything but an .svg file

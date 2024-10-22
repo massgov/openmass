@@ -17,7 +17,7 @@ class OrgPageSocialMediaCount extends OrgPageCountBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     $this->pseudoTableAlias = 'pifd_sm_count';
     $this->pseudoFieldName = 'org_social_media_count';
     $this->paragraphBundle = 'social_media';
