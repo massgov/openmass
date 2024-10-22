@@ -4,8 +4,8 @@ namespace Drupal\mass_entityaccess_userreference\Plugin\views\filter;
 
 use Drupal\Core\Database\Query\Condition;
 use Drupal\Core\Session\AccountProxyInterface;
-use Drupal\views\Plugin\views\filter\FilterPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
+use Drupal\views\Plugin\views\filter\FilterPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**

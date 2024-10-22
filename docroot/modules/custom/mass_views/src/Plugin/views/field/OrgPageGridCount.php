@@ -17,7 +17,7 @@ class OrgPageGridCount extends OrgPageCountBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     $this->pseudoTableAlias = 'pifd_grid_count';
     $this->pseudoFieldName = 'org_grid_count';
     $this->paragraphBundle = 'organization_grid';

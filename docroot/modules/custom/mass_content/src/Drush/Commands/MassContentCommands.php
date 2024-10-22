@@ -25,7 +25,7 @@ class MassContentCommands extends DrushCommands {
 
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
-    protected LoggerChannelFactoryInterface $loggerChannelFactory
+    protected LoggerChannelFactoryInterface $loggerChannelFactory,
   ) {
     $this->externalDownloadMatch = '/(https:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)(\/download|\/|$)|files\/)/';
     parent::__construct();

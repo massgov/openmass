@@ -1,0 +1,14 @@
+mass_views.page:
+  path: '/crawler-links/pages'
+  defaults:
+    _controller: 'Drupal\mass_views\Controller\MassViewsController::pageLinks'
+    _title: 'Crawler Links Pages'
+  requirements:
+    _permission: 'access content'
+mass_views.documents:
+  path: '/crawler-links/documents'
+  defaults:
+    _controller: '\Drupal\mass_views\Controller\MassViewsController::documentLinks'
+    _title: 'Crawler Links Documents'
+  requirements:
+    _permission: 'access content'

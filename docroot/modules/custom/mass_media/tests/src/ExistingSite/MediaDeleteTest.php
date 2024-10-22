@@ -3,7 +3,6 @@
 namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
-use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;

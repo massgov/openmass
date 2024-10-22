@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_views\Plugin\views\relationship;
 
-use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Plugin\ViewsHandlerManager;
+use Drupal\views\Plugin\views\relationship\RelationshipPluginBase;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

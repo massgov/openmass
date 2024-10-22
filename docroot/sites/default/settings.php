@@ -105,6 +105,8 @@ $configureMemcache = function($settings) use ($app_root, $site_path, $class_load
 
 $settings['config_sync_directory'] = '../conf/drupal/config';
 
+$settings['state_cache'] = TRUE;
+
 /**
  * Page caching:
  *

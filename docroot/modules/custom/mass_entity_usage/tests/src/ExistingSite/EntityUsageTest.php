@@ -6,7 +6,6 @@ use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\user\Entity\User;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;

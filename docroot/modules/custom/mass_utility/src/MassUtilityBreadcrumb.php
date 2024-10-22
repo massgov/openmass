@@ -28,7 +28,7 @@ class MassUtilityBreadcrumb extends HierarchyBasedBreadcrumbBuilder {
     NestedSetNodeKeyFactory $node_key_factory,
     EntityTreeNodeMapperInterface $mapper,
     EntityFieldManagerInterface $entity_field_manager,
-    AdminContext $admin_context
+    AdminContext $admin_context,
   ) {
     parent::__construct($storage_factory, $node_key_factory, $mapper, $entity_field_manager, $admin_context);
   }

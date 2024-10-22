@@ -520,7 +520,7 @@ class Organisms {
    * @return array
    *   Returns structured array.
    */
-  public static function prepareSectionThreeUp($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
+  public static function prepareSectionThreeUp($entities, array $options = [], ?array $field_map = NULL, array &$cache_tags = []) {
     $sections = [];
     $fields = [];
 
@@ -1704,7 +1704,7 @@ class Organisms {
    * @return array
    *   Returns structured array.
    */
-  public static function prepareExpandableContent($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
+  public static function prepareExpandableContent($entities, array $options = [], ?array $field_map = NULL, array &$cache_tags = []) {
     $sections = [];
     $fields = [];
 

@@ -8,7 +8,6 @@ use Drush\Attributes as CLI;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class TrashbinCommands extends DrushCommands {
 
@@ -19,7 +18,8 @@ final class TrashbinCommands extends DrushCommands {
 
   protected function __construct(
     private EntityTypeManagerInterface $etm,
-    private TimeInterface $time) {
+    private TimeInterface $time,
+  ) {
   }
 
   /**
