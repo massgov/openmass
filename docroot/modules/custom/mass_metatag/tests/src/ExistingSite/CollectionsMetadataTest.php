@@ -3,8 +3,8 @@
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
+use Drupal\taxonomy\Entity\Vocabulary;
 
 /**
  * Collections metadata tests.

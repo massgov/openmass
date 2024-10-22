@@ -3,7 +3,6 @@
 namespace Drupal\Tests\mass_hierarchy\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 

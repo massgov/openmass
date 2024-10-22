@@ -3,7 +3,6 @@
 namespace Drupal\Tests\mass_translations\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;

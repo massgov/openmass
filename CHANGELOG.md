@@ -1,5 +1,15 @@
 
 
+## [0.414.0] - October 15, 2024
+
+### Changed
+  - DP-35080: Usability improvements to rich text tables related to horizontal scrolling.
+  
+### Fixed
+  - DP-35223: Unable to Embed YouTube Video.
+  
+
+
 ## [0.413.0] - October 8, 2024
 
 ### Changed

@@ -2,7 +2,6 @@
 
 namespace Drupal\mass_formatters\Plugin\Field\FieldFormatter;
 
-use Drupal\breakpoint\BreakpointManagerInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -10,6 +9,7 @@ use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\breakpoint\BreakpointManagerInterface;
 use Drupal\image\Plugin\Field\FieldFormatter\ImageFormatterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

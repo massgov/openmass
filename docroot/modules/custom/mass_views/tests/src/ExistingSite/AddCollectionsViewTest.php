@@ -7,7 +7,6 @@ namespace Drupal\Tests\mass_views\ExistingSite;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\LoginTrait\LoginTrait;

@@ -23,7 +23,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
    *
    * @dataProvider accordionDataProvider
    */
-  public function testAccordion(string $path, string $css_selector, \Closure $before_function = NULL): void {
+  public function testAccordion(string $path, string $css_selector, ?\Closure $before_function = NULL): void {
     $session = $this->getSession();
     $this->drupalGet($path);
     if ($before_function) {
