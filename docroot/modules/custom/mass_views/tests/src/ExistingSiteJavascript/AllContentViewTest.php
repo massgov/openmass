@@ -3,7 +3,6 @@
 namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.

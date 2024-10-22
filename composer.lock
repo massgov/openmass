@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1ba43f60a7252f29698ca0b0c07d303b",
+    "content-hash": "2bca8b49cf3eb454180df694e041a0a3",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -24195,16 +24195,16 @@
         },
         {
             "name": "weitzman/drupal-test-traits",
-            "version": "2.4.2",
+            "version": "dev-addLoginTrait",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/dtt.git",
-                "reference": "4705ec0a8414189aa28373bc672189dce93077be"
+                "reference": "b109447a7e663b05cec42fa7d202a5ee5cfa801c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://git.drupalcode.org/api/v4/projects/project%2Fdtt/repository/archive.zip?sha=4705ec0a8414189aa28373bc672189dce93077be",
-                "reference": "4705ec0a8414189aa28373bc672189dce93077be",
+                "url": "https://git.drupalcode.org/api/v4/projects/project%2Fdtt/repository/archive.zip?sha=b109447a7e663b05cec42fa7d202a5ee5cfa801c",
+                "reference": "b109447a7e663b05cec42fa7d202a5ee5cfa801c",
                 "shasum": ""
             },
             "require": {
@@ -24254,54 +24254,9 @@
             ],
             "description": "Traits for testing Drupal sites that have user content (versus unpopulated sites).",
             "support": {
-                "source": "https://git.drupalcode.org/project/dtt/-/tree/2.4.2"
+                "source": "https://git.drupalcode.org/project/dtt/-/tree/addLoginTrait"
             },
-            "time": "2024-10-22T11:02:37+00:00"
-        },
-        {
-            "name": "weitzman/logintrait",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://gitlab.com/weitzman/logintrait.git",
-                "reference": "cb6da1e216596d647f6f927a2d39fd54bec26c1d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/weitzman%2Flogintrait/repository/archive.zip?sha=cb6da1e216596d647f6f927a2d39fd54bec26c1d",
-                "reference": "cb6da1e216596d647f6f927a2d39fd54bec26c1d",
-                "shasum": ""
-            },
-            "conflict": {
-                "drupal/core": "<10.3"
-            },
-            "require-dev": {
-                "jakub-onderka/php-parallel-lint": "^1.0",
-                "squizlabs/php_codesniffer": "^3.2"
-            },
-            "default-branch": true,
-            "type": "drupal-dtt",
-            "autoload": {
-                "psr-4": {
-                    "weitzman\\LoginTrait\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Moshe Weitzman",
-                    "email": "weitzman@tejasa.com"
-                }
-            ],
-            "description": "Provides login/logout via user reset URL instead of forms.",
-            "support": {
-                "issues": "https://gitlab.com/weitzman/logintrait/-/issues",
-                "source": "https://gitlab.com/weitzman/logintrait/-/tree/master"
-            },
-            "time": "2024-09-25T08:36:09+00:00"
+            "time": "2024-10-22T10:09:35+00:00"
         }
     ],
     "aliases": [
@@ -24310,6 +24265,12 @@
             "version": "dev-3.x",
             "alias": "2.0",
             "alias_normalized": "2.0.0.0"
+        },
+        {
+            "package": "weitzman/drupal-test-traits",
+            "version": "dev-addLoginTrait",
+            "alias": "2.x-dev",
+            "alias_normalized": "2.9999999.9999999.9999999-dev"
         }
     ],
     "minimum-stability": "dev",
@@ -24326,7 +24287,7 @@
         "massgov/mayflower-artifacts": 20,
         "drupaltest/queue-runner-trait": 20,
         "previousnext/phpunit-finder": 20,
-        "weitzman/logintrait": 20
+        "weitzman/drupal-test-traits": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
