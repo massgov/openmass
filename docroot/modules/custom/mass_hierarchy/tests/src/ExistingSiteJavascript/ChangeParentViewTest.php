@@ -4,11 +4,14 @@ namespace Drupal\Tests\mass_hierarchy\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests move children action in the change_parents views.
  */
 class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
+
+  use LoginTrait;
 
   /**
    * Loads the admin and logs in.

@@ -10,6 +10,7 @@ use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\ConfigTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
+use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Class EntityUsageTest.
@@ -17,6 +18,7 @@ use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 class EntityUsageTest extends MassExistingSiteBase {
 
   use ConfigTrait;
+  use LoginTrait;
   use MediaCreationTrait;
   use QueueRunnerTrait;
 
