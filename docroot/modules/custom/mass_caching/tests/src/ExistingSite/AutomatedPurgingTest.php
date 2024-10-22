@@ -6,7 +6,6 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\StreamWrapper\PrivateStream;
 use Drupal\file\Entity\File;
-use Drupal\mass_caching\ManualPurger;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**

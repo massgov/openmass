@@ -28,7 +28,7 @@ class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
   /**
    * {@inheritdoc}
    */
-  public function execute(MediaInterface $entity = NULL) {
+  public function execute(?MediaInterface $entity = NULL) {
     if ($entity) {
       $this->createRevision($entity, 'restricted');
 
@@ -44,7 +44,7 @@ class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
   /**
    * {@inheritdoc}
    */
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var \Drupal\media\MediaInterface $object */
     $access = $object->access('update', $account, TRUE)
       ->andIf($object->status->access('update', $account, TRUE));

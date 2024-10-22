@@ -5,7 +5,6 @@
  * Functions to support theming in the mass.gov theme.
  */
 
-use Drupal\block\Entity\Block;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
@@ -16,6 +15,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
+use Drupal\block\Entity\Block;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mass_content\EventsRendererOrgPages;
@@ -2714,7 +2714,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
 
   if (!empty($fields['subheading']) && Helper::isFieldPopulated($node, $fields['subheading'])) {
     $subCategory = [
-      'title' => Helper::fieldFullView($node, $fields['subheading'])
+      'title' => Helper::fieldFullView($node, $fields['subheading']),
     ];
   }
 

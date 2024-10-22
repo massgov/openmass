@@ -70,7 +70,7 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, NodeInterface $node = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?NodeInterface $node = NULL) {
     $params = $this->getRequest()->query->all();
     $feedback_api_params = $this->contentFetcher->formatQueryParams($params);
     $feedback_api_params['node_id'] = [];
