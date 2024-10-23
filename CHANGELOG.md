@@ -1,5 +1,23 @@
 
 
+## [0.415.0] - October 22, 2024
+
+### Changed
+  - DP-34193: Upgrade to Drupal core 10.3
+  - DP-35150: Empty Location Page Appearing in Search.
+  - DP-35215: Increase backstop screenshots mobile size
+  - DP-35381: CircleCI image for Mysql rebuild jobs
+  
+### Added
+  - DP-35074: Replace service details links on site with info details links.
+  - DP-35142: Add new URL list views for LLM crawlers to use for pages and documents.
+  - DP-35245: Create Jira issue on Dependabot PR
+  
+### Removed
+  - DP-35403: Removed Percy job from post-release workflow.
+  
+
+
 ## [0.414.0] - October 15, 2024
 
 ### Changed
