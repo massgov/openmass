@@ -4,18 +4,38 @@ status: true
 dependencies:
   config:
     - node.type.action
+    - node.type.advisory
     - node.type.alert
+    - node.type.binder
+    - node.type.campaign_landing
     - node.type.contact_information
+    - node.type.curated_list
+    - node.type.decision
+    - node.type.decision_tree
     - node.type.decision_tree_branch
     - node.type.decision_tree_conclusion
     - node.type.error_page
+    - node.type.event
+    - node.type.executive_order
     - node.type.external_data_resource
     - node.type.fee
+    - node.type.form_page
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.info_details
     - node.type.interstitial
+    - node.type.location
+    - node.type.location_details
+    - node.type.news
+    - node.type.org_page
     - node.type.page
     - node.type.person
+    - node.type.regulation
+    - node.type.rules
+    - node.type.service_page
     - node.type.sitewide_alert
     - node.type.stacked_layout
+    - node.type.topic_page
     - node.type.utility_drawer
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
@@ -591,7 +611,7 @@ display:
           id: type
           table: node_field_data
           field: type
-          relationship: nid
+          relationship: vid
           group_type: group
           admin_label: ''
           entity_type: node
@@ -642,10 +662,288 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        type_1:
+          id: type_1
+          table: node_field_data
+          field: type
+          relationship: vid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: in
+          value:
+            advisory: advisory
+            binder: binder
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            event: event
+            executive_order: executive_order
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            location: location
+            location_details: location_details
+            news: news
+            org_page: org_page
+            campaign_landing: campaign_landing
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+            topic_page: topic_page
+          group: 1
+          exposed: true
+          expose:
+            operator_id: type_1_op
+            label: 'Content type'
+            description: ''
+            use_operator: true
+            operator: type_1_op
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
+            identifier: type_1
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: true
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        nid:
+          id: nid
+          table: node_field_data
+          field: nid
+          relationship: node__field_primary_parent
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: numeric
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 2
+          exposed: true
+          expose:
+            operator_id: nid_op
+            label: "Parent Node ID (other filters don't apply to child pages)"
+            description: 'Enter a node ID if you want to show the children of that node. Repeat this value in the grandparent filter if desired.'
+            use_operator: false
+            operator: nid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: nid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        nid_1:
+          id: nid_1
+          table: node_field_data
+          field: nid
+          relationship: node__field_primary_parent_1
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: numeric
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 2
+          exposed: true
+          expose:
+            operator_id: nid_1_op
+            label: "Grandparent node ID (other filters don't apply to grandchild pages)"
+            description: 'Enter a node ID if you want to show grandchildren of that page.'
+            use_operator: false
+            operator: nid_1_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: nid_1
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        status_2:
+          id: status_2
+          table: node_field_data
+          field: status
+          relationship: node__field_primary_parent
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          operator: '!='
+          value: '0'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        status_3:
+          id: status_3
+          table: node_field_data
+          field: status
+          relationship: node__field_primary_parent_1
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
+          operator: '!='
+          value: '0'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
           1: AND
+          2: OR
       style:
         type: table
         options:
@@ -751,6 +1049,24 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        node__field_primary_parent:
+          id: node__field_primary_parent
+          table: node_revision__field_primary_parent
+          field: node__field_primary_parent
+          relationship: none
+          group_type: group
+          admin_label: Parent
+          plugin_id: standard
+          required: false
+        node__field_primary_parent_1:
+          id: node__field_primary_parent_1
+          table: node__field_primary_parent
+          field: node__field_primary_parent
+          relationship: node__field_primary_parent
+          group_type: group
+          admin_label: Grandparent
+          plugin_id: standard
+          required: false
       header:
         area:
           id: area
@@ -762,7 +1078,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<p>Search for the pages you want the crawler to include. Then copy the URL and replace this portion of the URL "edit.mass.gov/admin/crawler/pages" with "www.mass.gov/crawler-links/pages". Add this new URL to your crawler and have it go only one level deep.</p><p>This page will show a limit of 500 pages. If you think you might need to include more than 500 pages, you will need to scroll to the bottom of the link page on the www.mass.gov domain to get the link to the "next" page and include that URL in your crawl as well. You will need to crawl one URL for each batch of 500 links - each will have a different "page"= value in the query string. </p>'
+            value: "<p>Search for the pages you want the crawler to include. Then copy the URL and replace this portion of the URL \"edit.mass.gov/admin/crawler/pages\" with \"www.mass.gov/crawler-links/pages\". Add this new URL to your crawler and have it go only one level deep.</p><p>This page will show a limit of 500 pages. If you think you might need to include more than 500 pages, you will need to scroll to the bottom of the link page on the www.mass.gov domain to get the link to the \"next\" page and include that URL in your crawl as well. You will need to crawl one URL for each batch of 500 links - each will have a different \"page\"= value in the query string. </p>\r\n<p>Filters use \"AND\" logic, and only results matching all filters will be shown. One exception is the Parent and Grandparent filters, where the results for EITHER will be shown. When using a Parent or Grandparent filter, the other filters on this page only apply to the parent or grandparent listed. For example, if you limit the content type to \"Service\" pages, it will require any Parent or Grandparent to be a service page, but it will not require the children or grandchildren to be service pages. To have the URL list include all child and grandchild pages of a starting page, you need to enter the starting page node ID in BOTH the parent and grandparent filters.</p>"
             format: basic_html
           tokenize: false
       footer: {  }
