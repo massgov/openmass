@@ -9,14 +9,12 @@ use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests add media to collections bulk.
  */
 class AddCollectionsViewTest extends MassExistingSiteBase {
 
-  use LoginTrait;
   use MediaCreationTrait;
   use StringTranslationTrait;
 

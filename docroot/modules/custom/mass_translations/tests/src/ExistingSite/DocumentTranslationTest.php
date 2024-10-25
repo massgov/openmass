@@ -7,12 +7,10 @@ use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 class DocumentTranslationTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
-  use LoginTrait;
 
   private $editor;
   private $file;

@@ -8,7 +8,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.
@@ -19,7 +18,6 @@ class MediaBulkActionTest extends MassExistingSiteBase {
   const TRASH_ACTION = '5';
   const UNPUBLISH_ACTION = '6';
 
-  use LoginTrait;
   use MediaCreationTrait;
   use StringTranslationTrait;
 
