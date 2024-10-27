@@ -65,10 +65,6 @@ ddev updatedb
 
 To access MailHog using the browser, use the URL shown in `ddev describe`.
 
-### Portainer
-
-To access Portainer using the browser, use the URL shown in `ddev describe`.
-
 ### Memcache
 
 Our site uses Memcache for some of the cache buckets. Memcache runs as a separate server in Docker (called `memcached`). See `settings.vm.php` and `settings.acquia.php` for which buckets are being sent to Memcache.
