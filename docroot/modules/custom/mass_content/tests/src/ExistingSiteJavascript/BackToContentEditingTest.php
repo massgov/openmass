@@ -6,14 +6,11 @@ use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
 use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures access links for unpublished content are generated properly.
  */
 class BackToContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
   use ParagraphsTestBaseTrait;
 
   /**

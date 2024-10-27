@@ -7,14 +7,11 @@ use Drupal\mass_redirects\Form\MoveRedirectsForm;
 use Drupal\node\Entity\Node;
 use Drupal\redirect\Entity\Redirect;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Test Redirects.
  */
 class RedirectsTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   private $editor;
   private $orgNode;
