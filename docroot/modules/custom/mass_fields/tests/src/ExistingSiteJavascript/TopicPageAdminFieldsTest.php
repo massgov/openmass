@@ -6,7 +6,6 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Test the behavior field on Topic Page.
@@ -15,8 +14,6 @@ use weitzman\LoginTrait\LoginTrait;
  * "Disable organization(s) field and make it optional" is selected.
  */
 class TopicPageAdminFieldsTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * Creates and returns a topic page node.
