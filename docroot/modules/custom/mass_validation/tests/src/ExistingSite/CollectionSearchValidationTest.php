@@ -4,13 +4,11 @@ namespace Drupal\Tests\mass_validation\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Class UnpublishParentConstraintTest.
  */
 class CollectionSearchValidationTest extends MassExistingSiteBase {
-  use LoginTrait;
 
   /**
    * The user to log in and test the functionality.

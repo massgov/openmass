@@ -6,14 +6,11 @@ use Behat\Mink\Exception\ExpectationException;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Test Alerts Placement.
  */
 class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * Unpublishes any alerts.

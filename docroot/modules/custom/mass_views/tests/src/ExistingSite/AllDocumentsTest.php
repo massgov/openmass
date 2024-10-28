@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Drupal\Tests\mass_views\ExistingSite;
 
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 class AllDocumentsTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   protected function setUp(): void {
     parent::setUp();
