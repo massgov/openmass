@@ -1,5 +1,18 @@
 
 
+## [0.416.0] - October 29, 2024
+
+### Changed
+  - DP-35216: Upgrade Drupal Test traits to 2.4
+  
+### Added
+  - DP-35475: Reports to evaluate effect of hidden headings.
+  
+### Removed
+  - DP-35680: Remove Portainer from ddev dependencies.
+  
+
+
 ## [0.415.0] - October 22, 2024
 
 ### Changed
