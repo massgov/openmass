@@ -255,7 +255,6 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
   // Only send notifications after an alert has been published.
   if ($node->bundle() === "sitewide_alert") {
     // Only send notifications if the alert is site-wide.
-
     // Get the current moderation state.
     $current_state = $node->moderation_state->value;
 
