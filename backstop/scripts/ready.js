@@ -129,6 +129,7 @@ module.exports = async (page, scenario, viewport) => {
     case 'InfoDetailsImageRightAlign':
       await page.waitForSelector('.ma__fixed-feedback-button');
       break;
+    case 'OrgElectedOfficial':
     case 'ExpansionOfAccordions1':
       await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
       await page.waitForSelector('.ma__sticky-nav');
