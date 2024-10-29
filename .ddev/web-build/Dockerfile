@@ -5,6 +5,10 @@ FROM $BASE_IMAGE
 RUN curl -L https://dashboard.tugboatqa.com/cli/linux/tugboat.tar.gz > tugboat.tar.gz && \
   tar -zxf tugboat.tar.gz -C /usr/local/bin/ && rm -f tugboat.tar.gz
 
+# Install Jira CLI.
+RUN curl -L https://github.com/ankitpokhrel/jira-cli/releases/download/v1.5.2/jira_1.5.2_linux_arm64.tar.gz > jira.tar.gz && \
+  tar -zxf jira.tar.gz -C /usr/local/bin/ && rm -f jira.tar.gz && mv /usr/local/bin/jira_1.5.2_linux_arm64/bin/jira /usr/local/bin/jira && rm -rf /usr/local/bin/jira_1.5.2_linux_arm64
+
 # Install CircleCI CLI.
 RUN curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
 

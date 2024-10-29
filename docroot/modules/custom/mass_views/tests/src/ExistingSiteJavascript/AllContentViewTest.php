@@ -2,16 +2,12 @@
 
 namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.
  */
 class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   private \Behat\Mink\Element\NodeElement $view;
   private \Behat\Mink\Element\DocumentElement $page;

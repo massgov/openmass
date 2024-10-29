@@ -4,17 +4,13 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
-use Drupal\user\Entity\User;
 use Exception;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view at admin/content.
  */
 class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * The All Content view.

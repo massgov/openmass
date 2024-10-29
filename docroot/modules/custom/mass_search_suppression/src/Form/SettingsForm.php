@@ -30,7 +30,7 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?Request $request = NULL) {
     $config = $this->config('mass_search_suppression.settings');
     $form['suppression_urls'] = [
       '#type' => 'textarea',

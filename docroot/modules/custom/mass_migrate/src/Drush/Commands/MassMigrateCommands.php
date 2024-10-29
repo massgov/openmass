@@ -6,7 +6,6 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Drupal\mass_migrate\MassMigrateBatchManager;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Mass Migrate drush commands.

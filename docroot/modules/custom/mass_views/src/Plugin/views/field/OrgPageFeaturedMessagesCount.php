@@ -17,7 +17,7 @@ class OrgPageFeaturedMessagesCount extends OrgPageCountBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     $this->pseudoTableAlias = 'pifd_fm_count';
     $this->pseudoFieldName = 'org_featured_messages_count';
     $this->paragraphBundle = 'featured_message';

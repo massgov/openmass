@@ -6,18 +6,17 @@ use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\user\Entity\User;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use MassGov\Dtt\MassExistingSiteBase;
+use weitzman\DrupalTestTraits\ConfigTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Class EntityUsageTest.
  */
 class EntityUsageTest extends MassExistingSiteBase {
 
-  use LoginTrait;
+  use ConfigTrait;
   use MediaCreationTrait;
   use QueueRunnerTrait;
 
@@ -33,8 +32,11 @@ class EntityUsageTest extends MassExistingSiteBase {
    */
   protected function setUp(): void {
     parent::setUp();
-
-    $GLOBALS['config']['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
+    $this->setConfigValues([
+      'entity_usage_queue_tracking.settings' => [
+        'queue_tracking' => TRUE,
+      ],
+    ]);
     $this->container->get('config.factory')->clearStaticCache();
 
     // Remove everything from the entity_usage table
@@ -50,6 +52,12 @@ class EntityUsageTest extends MassExistingSiteBase {
     $user->save();
     $this->user = $user;
     $this->drupalLogin($user);
+  }
+
+  protected function tearDown(): void {
+    // Restore original configurations.
+    $this->restoreConfigValues();
+    parent::tearDown();
   }
 
   /**
