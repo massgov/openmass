@@ -6,13 +6,11 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Utils\StringUtils;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Client\ClientInterface;
 
 final class MassUtilityCommands extends DrushCommands {
@@ -23,7 +21,7 @@ final class MassUtilityCommands extends DrushCommands {
     protected Connection $connection,
     protected MessengerInterface $messenger,
     protected EntityTypeManagerInterface $entityTypeManager,
-    protected ClientInterface $httpClient
+    protected ClientInterface $httpClient,
   ) {
     parent::__construct();
   }
@@ -230,14 +228,16 @@ final class MassUtilityCommands extends DrushCommands {
    *
    * @command ma:queue-revision-cleanup
    */
-  public function queueRevisionsCleanup(array $options = [
-    'batch' => 50,
-    'bundle' => NULL,
-    'idlist' => NULL,
-    'limit' => 200,
-    'offset' => 0,
-    'timestamp' => NULL,
-  ]) {
+  public function queueRevisionsCleanup(
+    array $options = [
+      'batch' => 50,
+      'bundle' => NULL,
+      'idlist' => NULL,
+      'limit' => 200,
+      'offset' => 0,
+      'timestamp' => NULL,
+    ],
+  ) {
     extract($options);
     $bundle = !empty($options['bundle']) ? explode(',', $options['bundle']) : [];
     $idlist = !empty($options['idlist']) ? explode(',', $options['idlist']) : [];

@@ -19,11 +19,12 @@
         "allow-plugins": {
             "composer/installers": true,
             "cweagans/composer-patches": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
             "php-http/discovery": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "tbachert/spi": true
         }
     },
     "repositories": [
@@ -154,7 +155,6 @@
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
         "drupal/access_unpublished": "^1.4",
-        "drupal/acquia_connector": "^4",
         "drupal/acquia_purge": "^1",
         "drupal/address": "^1.9",
         "drupal/admin_toolbar": "^3.0",
@@ -162,15 +162,12 @@
         "drupal/allowed_formats": "^2",
         "drupal/asset_cache_bust": "^1.0",
         "drupal/auto_entitylabel": "^3",
-        "drupal/autologout": "^1",
         "drupal/better_exposed_filters": "^6.0.3",
         "drupal/cache_metrics": "^2",
         "drupal/ckeditor5_fullscreen": "^1.0@beta",
         "drupal/ckeditor5_paste_filter": "^1.0",
-        "drupal/coffee": "^1",
         "drupal/color": "^1",
         "drupal/components": "^3",
-        "drupal/composer_deploy": "^1.4",
         "drupal/conditional_fields": "4.0.0-alpha5",
         "drupal/config_ignore": "3.x-dev",
         "drupal/core-composer-scaffold": "^10",
@@ -243,14 +240,13 @@
         "drupal/rabbit_hole": "^1",
         "drupal/redirect": "^1",
         "drupal/require_on_publish": "^1.10",
-        "drupal/reverse_proxy_header": "^1",
         "drupal/scheduled_transitions": "^2",
         "drupal/schema_metatag": "^2.0",
         "drupal/seckit": "^2.0",
         "drupal/security_review": "^2",
         "drupal/seven": "^1",
         "drupal/simple_sitemap": "^4.1",
-        "drupal/stage_file_proxy": "^2",
+        "drupal/stage_file_proxy": "^3",
         "drupal/subpathauto": "^1",
         "drupal/term_reference_tree": "^2",
         "drupal/twig_field_value": "^2",
@@ -269,7 +265,7 @@
         "drupal/views_porter_stemmer": "^1.0",
         "drupal/views_simple_math_field": "^3.0",
         "drupal/views_taxonomy_term_name_into_id": "^1.0@alpha",
-        "drush/drush": "^13.3.0-rc1",
+        "drush/drush": "^13",
         "enyo/dropzone": "5.7.2",
         "furf/jquery-ui-touch-punch": "dev-master",
         "geocoder-php/open-cage-provider": "^4.6",
@@ -295,8 +291,7 @@
         "phpspec/prophecy-phpunit": "^2",
         "previousnext/phpunit-finder": "dev-main",
         "vincentlanglet/twig-cs-fixer": "^2.5",
-        "weitzman/drupal-test-traits": "2.x-dev",
-        "weitzman/logintrait": "^1"
+        "weitzman/drupal-test-traits": "dev-addLoginTrait as 2.x-dev"
     },
     "autoload-dev": {
         "psr-4": {
@@ -308,7 +303,7 @@
         "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom"
     },
     "conflict": {
-        "drupal/drupal": "*"
+        "drupal/core": "<=10.2"
     },
     "extra": {
         "drupal-scaffold": {
@@ -373,7 +368,7 @@
                 "Batch is dependent on the order of query string parameters (https://www.drupal.org/project/drupal/issues/2879023)": "https://git.drupalcode.org/issue/drupal-2879023/-/commit/c68aa376a7fc262886cb56d9ac762e4b06e6b174.patch",
                 "3075454 - combine fields filter doesn't recognise taxonomy description field": "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
                 "2993688 - Views relationships with multi-valued entity reference fields invalidate Distinct query option": "https://www.drupal.org/files/issues/2022-06-16/2993688-99.patch",
-                "2329253 - Allow the ChangedItem to skip updating when synchronizing (f.e. when migrating)": "https://www.drupal.org/files/issues/2022-12-07/2329253-97.patch",
+                "2329253 - Allow the ChangedItem to skip updating when synchronizing (f.e. when migrating)": "https://www.drupal.org/files/issues/2024-07-30/2329253-10.x.patch",
                 "Avoid warnings when getting permissions for roles that do not have permissions and are not administrators": "patches/DP-23561-avoid-warnings-on-roles-without-permissions.patch",
                 "2845144 - User can't reference unpublished content even when they have access to it": "https://www.drupal.org/files/issues/2024-01-09/2845144-84-11.x.patch",
                 "Ensure to have build info on View Page Controller before getting the view title": "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch",
@@ -382,8 +377,7 @@
                 "PHP Deprecated: strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in docroot/core/lib/Drupal/Core/Mail/Plugin/Mail/PhpMail.php on line 112 (https://www.drupal.org/project/drupal/issues/3328187#comment-15138241)": "https://www.drupal.org/files/issues/2023-07-05/3372667-2_0.patch",
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch",
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
-                "Use CKEditor 5's native <ol type> and <ul type> UX (https://www.drupal.org/project/drupal/issues/3274635)": "https://www.drupal.org/files/issues/2024-03-21/ckeditor5_custom_patch_file.patch",
-                "RouteProvider pretends no routes if database connection lost, poisoning cache downstream": "patches/routeprovider-logging-3402447-mr-7767.patch",
+                "Use CKEditor 5's native <ol type> and <ul type> UX (https://www.drupal.org/project/drupal/issues/3274635)": "https://www.drupal.org/files/issues/2024-08-11/3274635--ckeditor_list_styles-10.3.2--108.patch",
                 "Diffs with different line endings leads to Invalid $mode 3 specified (https://www.drupal.org/project/drupal/issues/3389715)": "https://www.drupal.org/files/issues/2024-01-09/Diffs-with-different-line-endings-leads-to-Invalid-mode-3-specified.patch"
             },
             "drupal/entity_embed": {

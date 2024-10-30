@@ -3,17 +3,14 @@
 namespace Drupal\Tests\mass_validation\ExistingSite;
 
 use Drupal\Core\Render\Markup;
-use Drupal\mass_content_moderation\MassModeration;
 use Drupal\Tests\user\Traits\UserCreationTrait;
+use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Class TableHeaderConstraintValidationTest.
  */
 class TableHeaderConstraintValidationTest extends MassExistingSiteBase {
-
-  use LoginTrait;
   use UserCreationTrait;
 
   /**

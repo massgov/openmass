@@ -1242,7 +1242,7 @@ class Molecules {
    *
    * @see @molecules/header-search.twig
    */
-  public static function prepareHeaderSearch(object $entity = NULL, array &$cache_tags = []) {
+  public static function prepareHeaderSearch(?object $entity = NULL, array &$cache_tags = []) {
     $has_suggestions = FALSE;
     $suggested_scopes = [];
     $orgs = [];
