@@ -5,14 +5,11 @@ namespace Drupal\Tests\mass_caching\ExistingSite;
 use Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber;
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests the stale caching functionality.
  */
 class StaleCachingTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   /**
    * {@inheritdoc}

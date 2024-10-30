@@ -3,14 +3,11 @@
 namespace Drupal\Tests\mass_content\ExistingSite;
 
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures editor can save the nodes.
  */
 class ContentEditingTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   const QAG_PATHS = [
     "/forms/qag-form-with-file-uploads",
