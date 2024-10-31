@@ -1541,6 +1541,8 @@ function mass_validation_get_title_from_uri($uri) {
       }
     }
   }
+  // Add condition to the helper function to try finding the titles
+  // from other uri schemas as well even if it is a redirected one.
   elseif (stripos($uri, 'internal:/') === 0) {
     // Extract the path from the internal URI.
     $internal_path = str_replace('internal:/', '', $uri);
@@ -1558,7 +1560,7 @@ function mass_validation_get_title_from_uri($uri) {
       }
     }
     else {
-      $redirects = Drupal::entityTypeManager()->getStorage('redirect')->loadByProperties(['redirect_source__path' =>  $internal_path]);
+      $redirects = Drupal::entityTypeManager()->getStorage('redirect')->loadByProperties(['redirect_source__path' => $internal_path]);
       if ($redirect = reset($redirects)) {
         if ($target = $redirect->getRedirectUrl()->toString()) {
           $system_path = $path_alias_manager->getPathByAlias($target);
