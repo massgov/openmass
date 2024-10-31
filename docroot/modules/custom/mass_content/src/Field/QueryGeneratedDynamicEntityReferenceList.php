@@ -44,6 +44,7 @@ abstract class QueryGeneratedDynamicEntityReferenceList extends DynamicEntityRef
       }
     }
   }
+
   /**
    * Build the query that will be run.
    *
