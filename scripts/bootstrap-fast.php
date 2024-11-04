@@ -18,10 +18,11 @@
 use Drupal\TestTools\PhpUnitCompatibility\PhpUnit8\ClassWriter;
 use weitzman\DrupalTestTraits\AddPsr4;
 
-list($finder, $class_loader) = AddPsr4::add();
+[$finder, $class_loader] = AddPsr4::add();
 $root = $finder->getDrupalRoot();
 
 // Register more namespaces, as needed.
 $class_loader->addPsr4('Drupal\Tests\mass_metatag\\', "$root/modules/custom/mass_metatag/tests/src");
 $class_loader->addPsr4('Drupal\Tests\paragraphs\\', "$root/modules/contrib/paragraphs/tests/src");
+$class_loader->addPsr4('Drupal\Tests\system\Functional\Cache\\', "$root/core/modules/system/tests/src/Functional/Cache");
 $class_loader->addPsr4('Drupal\mass_schema_web_page\\', "$root/modules/custom/mass_schema_metatag/mass_schema_web_page/src");
