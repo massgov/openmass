@@ -2,10 +2,10 @@
 
 namespace Drupal\Tests\mass_scheduled_transitions\ExistingSite;
 
-use Drupal\user\Entity\User;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
+use Drupal\user\Entity\User;
 use Drupal\workflows\Entity\Workflow;
 use MassGov\Dtt\MassExistingSiteBase;
 

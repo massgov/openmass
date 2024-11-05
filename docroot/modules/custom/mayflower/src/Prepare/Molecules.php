@@ -3,11 +3,11 @@
 namespace Drupal\mayflower\Prepare;
 
 use Drupal\Component\Utility\DeprecationHelper;
-use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Link;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;

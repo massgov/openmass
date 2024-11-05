@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
-use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Element\DocumentElement;
+use Behat\Mink\Element\NodeElement;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**

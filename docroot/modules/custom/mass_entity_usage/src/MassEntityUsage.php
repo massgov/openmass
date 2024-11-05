@@ -2,9 +2,9 @@
 
 namespace Drupal\mass_entity_usage;
 
-use Drupal\mass_entity_usage\Controller\LocalTaskUsageController;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\entity_usage\EntityUsage;
+use Drupal\mass_entity_usage\Controller\LocalTaskUsageController;
 
 /**
  * Extends the entity usage base class.
