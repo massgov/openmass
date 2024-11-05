@@ -5,10 +5,9 @@
  * Utility methods and helpers.
  */
 
+use Drupal\block\Entity\Block;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityStorageException;
-use Drupal\Core\File\FileSystemInterface;
-use Drupal\block\Entity\Block;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\media\Entity\Media;
@@ -626,15 +625,7 @@ function mass_utility_update_8024() {
  * Add custom icon for file browser entity embed button.
  */
 function mass_utility_update_8025() {
-  // Add an icon for File Browser.
-  $data = file_get_contents(\Drupal::service('extension.list.theme')->getPath('mass_admin_theme') . '/icons/embed_image.png');
-  $file = \Drupal::service('file.repository')->writeData($data, 'public://file_browser_icon.png', FileSystemInterface::EXISTS_REPLACE);
-  $configuration = \Drupal::configFactory()->get('embed.button.file_browser');
-  $uuid = $configuration->get('icon_uuid');
-
-  // Set file uuid same as default config.
-  $file->set('uuid', $uuid);
-  $file->save();
+  // Removed.
 }
 
 /**

@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_migrate\Plugin\migrate\source;
 
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\migrate\MigrateSkipRowException;
 use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Row;
@@ -107,7 +108,7 @@ class ServiceDetails extends SqlBase {
     return parent::prepareRow($row);
   }
 
-  private function prepareRowSections(Row $row, \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node) {
+  private function prepareRowSections(Row $row, NodeBundle $node) {
     /** @var Paragraph[] $paragraphs */
     $paragraphs = $node->get('field_service_detail_sections')->referencedEntities();
     if (empty($paragraphs)) {

@@ -17,7 +17,7 @@ class UsageTrackingBlockerTest extends MassExistingSiteBase {
   /**
    * Provides content type data for testNodes().
    */
-  public function contentTypes() {
+  public static function contentTypes() {
     return [
       ['binder'],
       ['curated_list'],

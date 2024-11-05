@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_scheduled_transitions\ExistingSite;
 
+use Drupal\user\Entity\User;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
@@ -15,7 +16,7 @@ class ScheduledTransitionsTest extends MassExistingSiteBase {
 
   const FORMAT = 'Y-m-d';
 
-  private \Drupal\user\Entity\User|false $author;
+  private User|false $author;
 
   /**
    * Create the user.

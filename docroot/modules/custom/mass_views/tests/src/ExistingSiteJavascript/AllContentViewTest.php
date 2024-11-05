@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Element\DocumentElement;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
@@ -9,8 +11,8 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  */
 class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
-  private \Behat\Mink\Element\NodeElement $view;
-  private \Behat\Mink\Element\DocumentElement $page;
+  private NodeElement $view;
+  private DocumentElement $page;
 
   /**
    * {@inheritdoc}
