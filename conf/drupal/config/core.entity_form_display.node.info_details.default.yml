@@ -433,16 +433,24 @@ content:
           - contact_information
           - fee
   field_info_details_sections:
-    type: entity_reference_paragraphs
+    type: paragraphs
     weight: 9
     region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
-      edit_mode: open
+      edit_mode: closed
+      closed_mode: summary
+      autocollapse: all
+      closed_mode_threshold: 0
       add_mode: button
       form_display_mode: default
       default_paragraph_type: _none
+      features:
+        add_above: '0'
+        collapse_edit_all: collapse_edit_all
+        convert: '0'
+        duplicate: '0'
     third_party_settings: {  }
   field_infodetails_metatags:
     type: metatag_firehose
@@ -450,6 +458,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
