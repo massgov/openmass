@@ -86,7 +86,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
    *     - An optional function to call before running the test case, accepting
    *       a reference to the test object.
    */
-  public function accordionDataProvider(): array {
+  public static function accordionDataProvider(): array {
     return [
       '_QAG Binder_Report Table of Contents' => [
         'report/qag-binderreport',
