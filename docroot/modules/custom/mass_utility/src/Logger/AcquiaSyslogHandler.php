@@ -5,8 +5,8 @@ namespace Drupal\mass_utility\Logger;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\SyslogHandler;
+use Monolog\Level;
 use Monolog\LogRecord;
-use Monolog\Logger;
 
 /**
  * Syslog handler for mass.gov.
@@ -23,7 +23,7 @@ class AcquiaSyslogHandler extends SyslogHandler {
   /**
    * Constructor.
    */
-  public function __construct($facility = LOG_LOCAL0, $level = Logger::DEBUG, $bubble = TRUE, $logopts = LOG_PID) {
+  public function __construct($facility = LOG_LOCAL0, $level = Level::Debug, $bubble = TRUE, $logopts = LOG_PID) {
     $ident = getenv('AH_SITE_NAME') ?: 'drupal';
     parent::__construct($ident, $facility, $level, $bubble, $logopts);
   }

@@ -19,7 +19,7 @@ class ErrorPageCachingSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       // Run before the DynamicPageCacheSubscriber (100)
       // so our manipulations get saved in the page cache.

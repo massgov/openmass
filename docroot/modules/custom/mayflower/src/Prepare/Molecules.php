@@ -2,10 +2,12 @@
 
 namespace Drupal\mayflower\Prepare;
 
+use Drupal\Component\Utility\DeprecationHelper;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Link;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\link\Plugin\Field\FieldType\LinkItem;
@@ -1471,7 +1473,7 @@ class Molecules {
     if ($itsAFile) {
       // Get file info.
       $bytes = $file->getSize();
-      $readable_size = format_size($bytes);
+      $readable_size = DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.2.0', fn() => ByteSizeMarkup::create($bytes), fn() => format_size($bytes));
       $title = !empty($entity->field_title->value) ? $entity->field_title->value : $file->getFilename();
       $file_info = new \SplFileInfo($file->getFilename());
       $file_extension = $file_info->getExtension();

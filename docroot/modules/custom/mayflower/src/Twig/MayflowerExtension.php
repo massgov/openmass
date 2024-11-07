@@ -36,7 +36,7 @@ class MayflowerExtension extends AbstractExtension {
   public function getFunctions() {
     return [
       new TwigFunction('icon',
-        [$this, 'displayIcon'],
+        $this->displayIcon(...),
         ['is_safe' => ['html']]
       ),
     ];
