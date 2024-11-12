@@ -1,5 +1,28 @@
 
 
+## [0.416.0] - November 12, 2024
+
+### Fixed
+  - DP-34420: Fix error items in entity usage queue.
+  - DP-35462: Fix backstop config for org pages related to org nav bar.
+  - DP-35737: Media usage tracking for redirected URLs.
+  
+### Changed
+  - DP-34964: Updates to purge modules and DTT, Drush
+  - DP-35160: Review and update .htaccess to make sure it reflects the latest changes in the Drupal core 10.3.x
+  - DP-35216: Upgrade Drupal Test traits to 2.4
+  - DP-35298: Internal label report updated to allow search for labels based on partial text match.
+  - DP-35404: D11 - Update most depecations in custom code
+  - DP-35553: Change Contact header in right column from H1 to H2 on info detail.
+  
+### Added
+  - DP-35475: Reports to evaluate effect of hidden headings.
+  
+### Removed
+  - DP-35680: Remove Portainer from ddev dependencies.
+  
+
+
 ## [0.415.0] - October 22, 2024
 
 ### Changed
