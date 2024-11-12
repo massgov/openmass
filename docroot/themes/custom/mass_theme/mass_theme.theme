@@ -1509,13 +1509,12 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     }
 
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $entity) {
-        if ($entity->bundle() == 'tableau_embed') {
-          $variables['tableauEmbeded'] = TRUE;
-        }
-        if ($entity->bundle() == 'info_details_card_group') {
-          $variables['cardGroup'] = TRUE;
-        }
-
+      if ($entity->bundle() == 'tableau_embed') {
+        $variables['tableauEmbeded'] = TRUE;
+      }
+      if ($entity->bundle() == 'info_details_card_group') {
+        $variables['cardGroup'] = TRUE;
+      }
     }
 
     // Get the page title for title context.
