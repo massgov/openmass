@@ -1508,16 +1508,14 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       $variables['bgPosition'] = Helper::getFieldImageFocalPoint($node, 'field_banner_image');
     }
 
-    foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
-      $ref_entities = $section->get('field_section_long_form_content')->referencedEntities();
-      foreach ($ref_entities as $index => $entity) {
+    foreach ($node->get('field_info_details_sections')->referencedEntities() as $entity) {
         if ($entity->bundle() == 'tableau_embed') {
           $variables['tableauEmbeded'] = TRUE;
         }
         if ($entity->bundle() == 'info_details_card_group') {
           $variables['cardGroup'] = TRUE;
         }
-      }
+
     }
 
     // Get the page title for title context.

@@ -7,7 +7,67 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\mayflower\Helper;
+use Drupal\mayflower\Prepare\Molecules;
+use Drupal\node\NodeInterface;
 use Drupal\views\Views;
+use Drupal\Component\Utility\UrlHelper;
+
+function mass_admin_theme_preprocess_layout_paragraphs_builder(array &$variables) {
+  $css = load_css_with_dependencies('mass_theme', 'global-styling');
+  $css2 = load_css_with_dependencies('mayflower', 'global');
+  $css_files = array_merge($css, $css2);
+
+  $css_content = '';
+  foreach ($css_files as $css_file) {
+    // Resolve the relative path to an absolute path.
+    $absolute_path = DRUPAL_ROOT . '/' . $css_file['data'];
+
+    // Check if the file exists at this path.
+    if (file_exists($absolute_path)) {
+      $css_content .= file_get_contents($absolute_path);
+    }
+  }
+
+  $variables['css_content'] = $css_content;
+  $variables['#attached']['library'][] = 'mass_theme/global-styling';
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Break out url pieces for callout link paragraphs.
+ */
+function mass_admin_theme_preprocess_paragraph__callout_link(&$variables) {
+  $paragraph = $variables['elements']['#paragraph'];
+  $variables['calloutLinks'] = Molecules::prepareCalloutLinks($paragraph);
+}
+
+/**
+ * Function to load only CSS files from a library, along with dependent libraries.
+ */
+function load_css_with_dependencies($module, $library_name) {
+  // Get the library discovery service.
+  $library_discovery = \Drupal::service('library.discovery');
+
+  // Retrieve metadata for the library.
+  $library = $library_discovery->getLibraryByName($module, $library_name);
+
+  if ($library) {
+    $css_files = [];
+
+    // Collect CSS files from the main library.
+    if (isset($library['css'])) {
+      foreach ($library['css'] as $css_file => $attributes) {
+        $css_files[$css_file] = $attributes;
+      }
+    }
+
+    return $css_files;
+  }
+
+  return [];
+}
 
 /**
  * Implements hook_form_FORM_ID_alter().
