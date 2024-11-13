@@ -258,13 +258,14 @@ function mass_content_deploy_card_label_migration(&$sandbox) {
   }
 }
 
-use Drupal\Core\Logger\RfcLogLevel;
-
 /**
  * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
  */
 function mass_content_deploy_info_details_migration(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  // Disable entity hierarchy writes for better performance during processing.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
   // Query all nodes of type 'info_details'.
   $query = \Drupal::entityQuery('node')
@@ -276,7 +277,7 @@ function mass_content_deploy_info_details_migration(&$sandbox) {
     $sandbox['current'] = 0;
     $count = clone $query;
     $sandbox['max'] = $count->count()->execute();
-    \Drupal::logger('mass_content_deploy')->notice('Starting migration of info_details nodes. Total nodes to process: @max', ['@max' => $sandbox['max']]);
+    \Drupal::logger('mass_content_deploy')->notice('Starting to process info_details nodes. Total nodes to process: @max', ['@max' => $sandbox['max']]);
   }
 
   $batch_size = 50;
@@ -348,6 +349,8 @@ function mass_content_deploy_info_details_migration(&$sandbox) {
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
+    // Re-enable entity hierarchy writes after processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     \Drupal::logger('mass_content_deploy')->notice('Processing info_details nodes completed. Processed @max nodes.', ['@max' => $sandbox['max']]);
     return t('Migration of info_details nodes to the new layout structure has been completed.');
   }
