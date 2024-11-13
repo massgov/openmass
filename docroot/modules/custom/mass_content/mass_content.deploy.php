@@ -280,7 +280,7 @@ function mass_content_deploy_info_details_migration(&$sandbox) {
     \Drupal::logger('mass_content_deploy')->notice('Starting to process info_details nodes. Total nodes to process: @max', ['@max' => $sandbox['max']]);
   }
 
-  $batch_size = 50;
+  $batch_size = 150;
   $nids = $query->condition('nid', $sandbox['current'], '>')
     ->sort('nid')
     ->range(0, $batch_size)
