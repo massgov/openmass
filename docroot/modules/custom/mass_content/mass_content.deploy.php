@@ -258,100 +258,100 @@ function mass_content_deploy_card_label_migration(&$sandbox) {
   }
 }
 
-/**
- * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
- */
-function mass_content_deploy_info_details_migration(&$sandbox) {
-  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-
-  // Disable entity hierarchy writes for better performance during processing.
-  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
-
-  // Query all nodes of type 'info_details'.
-  $query = \Drupal::entityQuery('node')
-    ->condition('type', 'info_details')
-    ->accessCheck(FALSE);
-
-  if (empty($sandbox)) {
-    $sandbox['progress'] = 0;
-    $sandbox['current'] = 0;
-    $count = clone $query;
-    $sandbox['max'] = $count->count()->execute();
-    \Drupal::logger('mass_content_deploy')->notice('Starting to process info_details nodes. Total nodes to process: @max', ['@max' => $sandbox['max']]);
-  }
-
-  $batch_size = 150;
-  $nids = $query->condition('nid', $sandbox['current'], '>')
-    ->sort('nid')
-    ->range(0, $batch_size)
-    ->execute();
-
-  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-  $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
-
-  // Load nodes in batches.
-  $nodes = $node_storage->loadMultiple($nids);
-
-  foreach ($nodes as $node) {
-    $sandbox['current'] = $node->id();
-
-    \Drupal::logger('mass_content_deploy')->info('Processing node @nid (@progress / @max)', [
-      '@nid' => $node->id(),
-      '@progress' => $sandbox['progress'] + 1,
-      '@max' => $sandbox['max'],
-    ]);
-
-    if ($node->hasField('field_info_details_sections')) {
-      $sections = $node->get('field_info_details_sections')->referencedEntities();
-      $new_sections = [];
-
-      foreach ($sections as $section) {
-        if ($section->bundle() === 'section_long_form') {
-          // Check if heading is not hidden.
-          if (!$section->get('field_hide_heading')->value) {
-            // Create a new 'section_header' paragraph for the heading.
-            $section_header_paragraph = $paragraph_storage->create([
-              'type' => 'section_header',
-              'field_section_long_form_heading' => $section->get('field_section_long_form_heading')->value,
-            ]);
-            $section_header_paragraph->save();
-            $new_sections[] = [
-              'target_id' => $section_header_paragraph->id(),
-              'target_revision_id' => $section_header_paragraph->getRevisionId(),
-            ];
-          }
-
-          // Migrate each content paragraph in field_section_long_form_content.
-          $content_paragraphs = $section->get('field_section_long_form_content')->referencedEntities();
-          foreach ($content_paragraphs as $content_paragraph) {
-            $new_sections[] = [
-              'target_id' => $content_paragraph->id(),
-              'target_revision_id' => $content_paragraph->getRevisionId(),
-            ];
-          }
-        }
-      }
-
-      // Update the node with the newly structured paragraphs.
-      $node->set('field_info_details_sections', $new_sections);
-      if (method_exists($node, 'setRevisionLogMessage')) {
-        $node->setNewRevision();
-        $node->setRevisionLogMessage('Revision created for layout paragraphs.');
-        $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-      }
-      $node->save();
-
-      \Drupal::logger('mass_content_deploy')->info('Node @nid processed successfully.', ['@nid' => $node->id()]);
-    }
-
-    $sandbox['progress']++;
-  }
-
-  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
-  if ($sandbox['#finished'] >= 1) {
-    // Re-enable entity hierarchy writes after processing.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-    \Drupal::logger('mass_content_deploy')->notice('Processing info_details nodes completed. Processed @max nodes.', ['@max' => $sandbox['max']]);
-    return t('Migration of info_details nodes to the new layout structure has been completed.');
-  }
-}
+///**
+// * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
+// */
+//function mass_content_deploy_info_details_migration(&$sandbox) {
+//  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+//
+//  // Disable entity hierarchy writes for better performance during processing.
+//  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+//
+//  // Query all nodes of type 'info_details'.
+//  $query = \Drupal::entityQuery('node')
+//    ->condition('type', 'info_details')
+//    ->accessCheck(FALSE);
+//
+//  if (empty($sandbox)) {
+//    $sandbox['progress'] = 0;
+//    $sandbox['current'] = 0;
+//    $count = clone $query;
+//    $sandbox['max'] = $count->count()->execute();
+//    \Drupal::logger('mass_content_deploy')->notice('Starting to process info_details nodes. Total nodes to process: @max', ['@max' => $sandbox['max']]);
+//  }
+//
+//  $batch_size = 150;
+//  $nids = $query->condition('nid', $sandbox['current'], '>')
+//    ->sort('nid')
+//    ->range(0, $batch_size)
+//    ->execute();
+//
+//  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+//  $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+//
+//  // Load nodes in batches.
+//  $nodes = $node_storage->loadMultiple($nids);
+//
+//  foreach ($nodes as $node) {
+//    $sandbox['current'] = $node->id();
+//
+//    \Drupal::logger('mass_content_deploy')->info('Processing node @nid (@progress / @max)', [
+//      '@nid' => $node->id(),
+//      '@progress' => $sandbox['progress'] + 1,
+//      '@max' => $sandbox['max'],
+//    ]);
+//
+//    if ($node->hasField('field_info_details_sections')) {
+//      $sections = $node->get('field_info_details_sections')->referencedEntities();
+//      $new_sections = [];
+//
+//      foreach ($sections as $section) {
+//        if ($section->bundle() === 'section_long_form') {
+//          // Check if heading is not hidden.
+//          if (!$section->get('field_hide_heading')->value) {
+//            // Create a new 'section_header' paragraph for the heading.
+//            $section_header_paragraph = $paragraph_storage->create([
+//              'type' => 'section_header',
+//              'field_section_long_form_heading' => $section->get('field_section_long_form_heading')->value,
+//            ]);
+//            $section_header_paragraph->save();
+//            $new_sections[] = [
+//              'target_id' => $section_header_paragraph->id(),
+//              'target_revision_id' => $section_header_paragraph->getRevisionId(),
+//            ];
+//          }
+//
+//          // Migrate each content paragraph in field_section_long_form_content.
+//          $content_paragraphs = $section->get('field_section_long_form_content')->referencedEntities();
+//          foreach ($content_paragraphs as $content_paragraph) {
+//            $new_sections[] = [
+//              'target_id' => $content_paragraph->id(),
+//              'target_revision_id' => $content_paragraph->getRevisionId(),
+//            ];
+//          }
+//        }
+//      }
+//
+//      // Update the node with the newly structured paragraphs.
+//      $node->set('field_info_details_sections', $new_sections);
+//      if (method_exists($node, 'setRevisionLogMessage')) {
+//        $node->setNewRevision();
+//        $node->setRevisionLogMessage('Revision created for layout paragraphs.');
+//        $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+//      }
+//      $node->save();
+//
+//      \Drupal::logger('mass_content_deploy')->info('Node @nid processed successfully.', ['@nid' => $node->id()]);
+//    }
+//
+//    $sandbox['progress']++;
+//  }
+//
+//  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+//  if ($sandbox['#finished'] >= 1) {
+//    // Re-enable entity hierarchy writes after processing.
+//    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+//    \Drupal::logger('mass_content_deploy')->notice('Processing info_details nodes completed. Processed @max nodes.', ['@max' => $sandbox['max']]);
+//    return t('Migration of info_details nodes to the new layout structure has been completed.');
+//  }
+//}
