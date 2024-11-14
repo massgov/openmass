@@ -38,12 +38,14 @@ describe("massgov-screenshots", () => {
 
   beforeAll(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
-    // capabilities = {
-    //   'bstack:options': {
-    //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
-    //   }
-    // }
-    capabilities = {};
+    const massBypassRateLimit = process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, '');
+    const capabilities = {
+      'bstack:options': {
+        headerParams: JSON.stringify({
+          'mass-bypass-rate-limit': massBypassRateLimit
+        })
+      }
+    };
     driver = await new Builder()
       .withCapabilities(capabilities)
       .build();
@@ -53,9 +55,21 @@ describe("massgov-screenshots", () => {
     await driver.quit();
   });
 
+  // Function to inject CSS to hide the survey popup
+  async function hideSurveyPopup(driver) {
+    await driver.executeScript(`
+      var style = document.createElement('style');
+      style.type = 'text/css';
+      style.innerHTML = '.__fsr { display: none !important; }';
+      document.head.appendChild(style);
+    `);
+  }
+
   pages.forEach((page) => {
     test(page.label + ' test', async () => {
       await driver.get(base + page.url);
+      // Hide the popup before taking the screenshot
+      await hideSurveyPopup(driver);
 
       let options = {
         fullPage: true,
