@@ -680,4 +680,93 @@ class MassContentCommands extends DrushCommands {
     return new RowsOfFields($rows);
   }
 
+  /**
+   * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
+   *
+   * @command mass-content:migrate-layout-paragraphs
+   * @option batch-size The number of nodes to process per batch.
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=150
+   * @aliases mclp
+   */
+  public function migrateLayoutParagraphs($options = ['batch-size' => 150]) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Disable entity hierarchy writes for better performance during processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    $batch_size = (int) $options['batch-size'];
+
+    // Query all nodes of type 'info_details'.
+    $query = $this->entityTypeManager->getStorage('node')->getQuery()
+      ->condition('type', 'info_details')
+      ->accessCheck(FALSE)
+      ->sort('nid')
+      ->range(0, $batch_size);
+
+    $nids = $query->execute();
+    $node_storage = $this->entityTypeManager->getStorage('node');
+    $paragraph_storage = $this->entityTypeManager->getStorage('paragraph');
+
+    $total_nodes = count($nids);
+    $this->loggerChannelFactory->get('mass_content_deploy')->notice('Starting to process @total nodes of type info_details.', ['@total' => $total_nodes]);
+
+    foreach ($nids as $nid) {
+      $node = $node_storage->load($nid);
+      if (!$node) {
+        continue;
+      }
+
+      $this->loggerChannelFactory->get('mass_content_deploy')->info('Processing node @nid', ['@nid' => $nid]);
+
+      if ($node->hasField('field_info_details_sections')) {
+        $sections = $node->get('field_info_details_sections')->referencedEntities();
+        $new_sections = [];
+
+        foreach ($sections as $section) {
+          if ($section->bundle() === 'section_long_form') {
+            // Check if heading is not hidden.
+            if (!$section->get('field_hide_heading')->value) {
+              // Create a new 'section_header' paragraph for the heading.
+              $section_header_paragraph = $paragraph_storage->create([
+                'type' => 'section_header',
+                'field_section_long_form_heading' => $section->get('field_section_long_form_heading')->value,
+              ]);
+              $section_header_paragraph->save();
+              $new_sections[] = [
+                'target_id' => $section_header_paragraph->id(),
+                'target_revision_id' => $section_header_paragraph->getRevisionId(),
+              ];
+            }
+
+            // Migrate each content paragraph in field_section_long_form_content.
+            $content_paragraphs = $section->get('field_section_long_form_content')->referencedEntities();
+            foreach ($content_paragraphs as $content_paragraph) {
+              $new_sections[] = [
+                'target_id' => $content_paragraph->id(),
+                'target_revision_id' => $content_paragraph->getRevisionId(),
+              ];
+            }
+          }
+        }
+
+        // Update the node with the newly structured paragraphs.
+        $node->set('field_info_details_sections', $new_sections);
+        if (method_exists($node, 'setRevisionLogMessage')) {
+          $node->setNewRevision();
+          $node->setRevisionLogMessage('Revision created for layout paragraphs.');
+          $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+        }
+        $node->save();
+
+        $this->loggerChannelFactory->get('mass_content_deploy')->info('Node @nid processed successfully.', ['@nid' => $nid]);
+      }
+    }
+
+    // Re-enable entity hierarchy writes after processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
+    $this->loggerChannelFactory->get('mass_content_deploy')->notice('Processing of info_details nodes completed. Total nodes processed: @total', ['@total' => $total_nodes]);
+    $this->output()->writeln('Migration of info_details nodes to the new layout structure has been completed.');
+  }
+
 }
