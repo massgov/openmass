@@ -696,9 +696,13 @@ class MassContentCommands extends DrushCommands {
 
     $batch_size = (int) $options['batch-size'];
 
-    // Query all nodes of type 'info_details'.
+    // Get the last processed nid from state.
+    $last_processed_nid = \Drupal::state()->get('mass_content_deploy.info_details_migration_last_processed_nid', 0);
+
+    // Query all nodes of type 'info_details' starting from the last processed nid.
     $query = $this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', 'info_details')
+      ->condition('nid', $last_processed_nid, '>')
       ->accessCheck(FALSE)
       ->sort('nid')
       ->range(0, $batch_size);
@@ -758,6 +762,9 @@ class MassContentCommands extends DrushCommands {
         }
         $node->save();
 
+        // Update the last processed nid in the state to allow resuming from this point if needed.
+        \Drupal::state()->set('mass_content_deploy.info_details_migration_last_processed_nid', $nid);
+
         $this->loggerChannelFactory->get('mass_content_deploy')->info('Node @nid processed successfully.', ['@nid' => $nid]);
       }
     }
@@ -765,8 +772,14 @@ class MassContentCommands extends DrushCommands {
     // Re-enable entity hierarchy writes after processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
 
-    $this->loggerChannelFactory->get('mass_content_deploy')->notice('Processing of info_details nodes completed. Total nodes processed: @total', ['@total' => $total_nodes]);
-    $this->output()->writeln('Migration of info_details nodes to the new layout structure has been completed.');
+    $this->loggerChannelFactory->get('mass_content_deploy')
+      ->notice('Processing of info_details nodes completed. Total nodes processed: @total', ['@total' => $total_nodes]);
+    $this->output()
+      ->writeln('Migration of info_details nodes to the new layout structure has been completed.');
+
+    // Reset the last processed nid in state after completion.
+    \Drupal::state()
+      ->delete('mass_content_deploy.info_details_migration_last_processed_nid');
   }
 
 }
