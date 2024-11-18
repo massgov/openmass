@@ -328,7 +328,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    * Provides data to test with
    * testTopicPageOrganizationFieldAccess.
    */
-  public function topicPageOrganizationFieldAccessNonAdminRoles(): array {
+  public static function topicPageOrganizationFieldAccessNonAdminRoles(): array {
     return [
       [['role' => 'editor']],
       [['role' => 'author']],
@@ -382,7 +382,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    * Provides data to test with
    * testTopicPageOrganizationFieldControlsVisibility.
    */
-  public function topicPageOrganizationFieldControlsVisibilityAdminRoles(): array {
+  public static function topicPageOrganizationFieldControlsVisibilityAdminRoles(): array {
     return [
       [['role' => 'editor', 'assert' => 'assertFalse']],
       [['role' => 'author', 'assert' => 'assertFalse']],

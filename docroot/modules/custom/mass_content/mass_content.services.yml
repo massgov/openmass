@@ -13,4 +13,4 @@ services:
     weight: 200
   mass_content.image_style_warmer:
     class: Drupal\mass_content\ImageStylesWarmer
-    arguments: ['@entity_type.manager', '@image.factory','@entity_type.manager']
+    arguments: ['@entity_type.manager', '@image.factory','@entity_type.manager', '@file.validator']
