@@ -39,13 +39,14 @@ describe("massgov-screenshots", () => {
   beforeAll(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
     const massBypassRateLimit = process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, '');
-    const capabilities = {
-      'bstack:options': {
-        headerParams: JSON.stringify({
-          'mass-bypass-rate-limit': massBypassRateLimit
-        })
-      }
-    };
+    // const capabilities = {
+    //   'bstack:options': {
+    //     headerParams: JSON.stringify({
+    //       'mass-bypass-rate-limit': massBypassRateLimit
+    //     })
+    //   }
+    // };
+    const capabilities = {};
     driver = await new Builder()
       .withCapabilities(capabilities)
       .build();
