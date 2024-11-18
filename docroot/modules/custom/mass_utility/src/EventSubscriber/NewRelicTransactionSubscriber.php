@@ -25,7 +25,7 @@ class NewRelicTransactionSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       KernelEvents::REQUEST => [
         // Run after authentication (300), but before everything else.
@@ -60,7 +60,7 @@ class NewRelicTransactionSubscriber implements EventSubscriberInterface {
    */
   public function onRequest(KernelEvent $event) {
     // Do nothing on subrequests.
-    if ($event->getRequestType() !== HttpKernelInterface::MASTER_REQUEST) {
+    if ($event->getRequestType() !== HttpKernelInterface::MAIN_REQUEST) {
       return;
     }
     $request = $event->getRequest();
