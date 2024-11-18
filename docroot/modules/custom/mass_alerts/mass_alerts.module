@@ -259,7 +259,10 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
     $current_state = $node->getModerationState()->getString();
 
     // Check if this is an update (node->original exists) to get the previous state.
-    $previous_state = $node->original->getModerationState()->getString() ?? NULL;
+    $previous_state = NULL;
+    if (!empty($node->original)) {
+      $previous_state = $node->original->getModerationState()->getString();
+    }
 
     if ($current_state == MassModeration::PUBLISHED || $previous_state == MassModeration::PUBLISHED) {
       $langcode = $node->language()->getId();
