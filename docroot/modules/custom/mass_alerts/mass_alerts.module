@@ -256,10 +256,10 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
   if ($node->bundle() === "sitewide_alert") {
     // Only send notifications if the alert is site-wide.
     // Get the current moderation state.
-    $current_state = $node->moderation_state->value;
+    $current_state = $node->getModerationState()->getString();
 
     // Check if this is an update (node->original exists) to get the previous state.
-    $previous_state = $node->original->moderation_state->value ?? NULL;
+    $previous_state = $node->original->getModerationState()->getString() ?? NULL;
 
     if ($current_state == MassModeration::PUBLISHED || $previous_state == MassModeration::PUBLISHED) {
       $langcode = $node->language()->getId();
