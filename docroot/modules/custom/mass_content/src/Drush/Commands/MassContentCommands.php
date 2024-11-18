@@ -679,15 +679,7 @@ class MassContentCommands extends DrushCommands {
     // Only return rows where changes happened.
     return new RowsOfFields($rows);
   }
-
-  /**
-   * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
-   *
-   * @command mass-content:migrate-layout-paragraphs
-   * @option batch-size The number of nodes to process per batch.
-   * @usage mass-content:migrate-layout-paragraphs --batch-size=150
-   * @aliases mclp
-   */
+  
   /**
    * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
    *
