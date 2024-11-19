@@ -1541,6 +1541,42 @@ function mass_validation_get_title_from_uri($uri) {
       }
     }
   }
+  // Add condition to the helper function to try finding the titles
+  // from other uri schemas as well even if it is a redirected one.
+  elseif (stripos($uri, 'internal:/') === 0) {
+    // Extract the path from the internal URI.
+    $internal_path = str_replace('internal:/', '', $uri);
+
+    // Convert the internal path to its system path.
+    $path_alias_manager = \Drupal::service('path_alias.manager');
+    $system_path = $path_alias_manager->getPathByAlias('/' . $internal_path);
+
+    // Check if the path corresponds to a node.
+    if (preg_match('/node\/(\d+)/', $system_path, $matches)) {
+      $nid = $matches[1];
+      $node = Node::load($nid);
+      if ($node) {
+        return $node->getTitle();
+      }
+    }
+    else {
+      $redirects = Drupal::entityTypeManager()->getStorage('redirect')->loadByProperties(['redirect_source__path' => $internal_path]);
+      if ($redirect = reset($redirects)) {
+        if ($target = $redirect->getRedirectUrl()->toString()) {
+          $system_path = $path_alias_manager->getPathByAlias($target);
+          // Check if the path corresponds to a node.
+          if (preg_match('/node\/(\d+)/', $system_path, $matches)) {
+            $nid = $matches[1];
+            $node = Node::load($nid);
+            if ($node) {
+              return $node->getTitle();
+            }
+          }
+        }
+      }
+    }
+  }
+
   return NULL;
 }
 

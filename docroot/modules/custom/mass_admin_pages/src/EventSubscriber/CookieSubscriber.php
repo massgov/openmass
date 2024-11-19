@@ -48,7 +48,7 @@ class CookieSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     // Act after the finish ResponseSubscriber.
     $events[KernelEvents::RESPONSE][] = ['onKernelResponse'];
     return $events;

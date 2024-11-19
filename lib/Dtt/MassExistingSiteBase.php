@@ -25,4 +25,12 @@ class MassExistingSiteBase extends ExistingSiteBase {
     $this->detectUncacheableResponse($path, $options);
     return $response;
   }
+
+  protected function setUp(): void {
+    parent::setUp();
+    // Cause tests to fail if an error is sent to Drupal logs.
+    $this->failOnLoggedErrors();
+  }
+
+
 }

@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures access links for unpublished content are generated properly.
@@ -14,8 +13,6 @@ use weitzman\LoginTrait\LoginTrait;
  * array even if it doesn't have a value.
  */
 class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * To generate a unpublished access link.

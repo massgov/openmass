@@ -7,6 +7,7 @@ namespace Drupal\mass_content;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Image\ImageFactory;
 use Drupal\file\FileInterface;
+use Drupal\file\Validation\FileValidator;
 
 /**
  * Defines an images styles warmer.
@@ -35,6 +36,11 @@ class ImageStylesWarmer {
   protected $imageStyles;
 
   /**
+   * @var \Drupal\file\Validation\FileValidator
+   */
+  private FileValidator $fileValidator;
+
+  /**
    * Constructs a ImageStylesWarmer object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $file_storage
@@ -47,10 +53,11 @@ class ImageStylesWarmer {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(EntityTypeManagerInterface $file_storage, ImageFactory $image_factory, EntityTypeManagerInterface $image_style_storage) {
+  public function __construct(EntityTypeManagerInterface $file_storage, ImageFactory $image_factory, EntityTypeManagerInterface $image_style_storage, FileValidator $fileValidator) {
     $this->file = $file_storage->getStorage('file');
     $this->image = $image_factory;
     $this->imageStyles = $image_style_storage->getStorage('image_style');
+    $this->fileValidator = $fileValidator;
   }
 
   /**
@@ -92,7 +99,7 @@ class ImageStylesWarmer {
     if ($file->isPermanent()) {
       $image = $this->image->get($file->getFileUri());
       $extensions = implode(' ', $image->getToolkit()->getSupportedExtensions());
-      if ($image->isValid() && empty(file_validate_extensions($file, $extensions))) {
+      if ($image->isValid() && empty($this->fileValidator->validate($file, ['FileExtension' => ['extensions' => $extensions]]))) {
         return TRUE;
       }
     }
