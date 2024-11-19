@@ -32,6 +32,36 @@ function mass_admin_theme_preprocess_paragraph__video(&$variables) {
 
 /**
  * Implements hook_preprocess_paragraph().
+ *
+ * Process info_details card group/
+ */
+function mass_admin_theme_preprocess_paragraph__info_details_card_group(&$variables) {
+  $entity = $variables['paragraph'];
+
+  if (!$entity->field_card->isEmpty()) {
+    $entities = $entity->get('field_card')->referencedEntities();
+    foreach ($entities as $index => $p) {
+      $numOfSections = ++$index;
+      $variables['numOfSections'] = $numOfSections;
+      $link = Helper::separatedLinks($p, 'field_card_link');
+      $sectionLinks[] = [
+        'title' => [
+          'href' => $link[0]['href'] ?? '',
+          'text' => $p->get('field_card_header')->value,
+        ],
+        'level' => 3,
+        'type' => '',
+        'description' => Helper::fieldFullView($p, 'field_content'),
+        'links' => '',
+      ];
+      $sections = ['sections' => $sectionLinks];
+    }
+    $variables['sectionContent'][$numOfSections]['sectionThreeUp'] = $sections;
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
  */
 function mass_admin_theme_preprocess_paragraph__iframe(&$variables) {
   if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
