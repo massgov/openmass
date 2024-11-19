@@ -44,6 +44,13 @@
   not paragraph.isPublished() ? 'paragraph--unpublished'
 ]
 %}
+<style>
+  .js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--right) .lpb-controls,
+  .js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--left) + .js-lpb-component.paragraph--type--rich-text .lpb-controls {
+    right: 0;
+    left: initial;
+  }
+</style>
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
