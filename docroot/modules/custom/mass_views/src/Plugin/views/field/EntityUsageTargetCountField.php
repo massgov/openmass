@@ -13,7 +13,6 @@ use Drupal\views\ResultRow;
  */
 class EntityUsageTargetCountField extends FieldPluginBase {
 
-
   /**
    * {@inheritdoc}
    */
