@@ -44,73 +44,10 @@
   not paragraph.isPublished() ? 'paragraph--unpublished'
 ]
 %}
-<style>
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) {
-    float: right;
-    position: relative;
-    z-index: 9;
-  }
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)) {
-    float: left;
-    position: relative;
-    z-index: 9;
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--large:not(.ma__figure-iframe)),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--large:not(.ma__figure-iframe)),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) .ma__figure--large:not(.ma__figure-iframe),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) .ma__figure--large:not(.ma__figure-iframe),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--x-large:not(.ma__figure-iframe)),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--x-large:not(.ma__figure-iframe)),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) .ma__figure--x-large:not(.ma__figure-iframe),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) .ma__figure--x-large:not(.ma__figure-iframe)
-  {
-    float: none;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--medium:not(.ma__figure-iframe)),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--medium:not(.ma__figure-iframe)) {
-    max-width: calc(50% - 20px);
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small:not(.ma__figure-iframe)),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small:not(.ma__figure-iframe)) {
-    max-width: calc(33.3% - 20px);
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--x-small:not(.ma__figure-iframe)),
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--x-small:not(.ma__figure-iframe)) {
-    max-width: calc(25% - 20px);
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)) .lpb-controls,
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) .lpb-controls {
-    top: 20px;
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)) .ma__figure-image,
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) .ma__figure-image {
-    max-width: 100%;
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)) + .js-lpb-component.paragraph--type--rich-text .ma__rich-text,
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) + .js-lpb-component.paragraph--type--rich-text .ma__rich-text {
-    display: inline;
-    position: relative;
-    z-index: 0;
-  }
-
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)) .lpb-controls,
-  .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)) + .js-lpb-component.paragraph--type--rich-text .lpb-controls {
-    right: 0;
-    left: initial;
-  }
-</style>
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
+      {{ attach_library('mass_admin_theme/layout_paragraphs') }}
       {% include "@atoms/09-media/figure--image.twig" with {
         "figure": {
           "image": {
