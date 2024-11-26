@@ -1,5 +1,19 @@
 
 
+## [0.417.0] - November 26, 2024
+
+### Added
+  - DP-34459: Added reporting views for internal use - trival content and org feedback settings.
+  
+### Changed
+  - DP-35406: Bump Prod No Redirect and Asset Cache Bust modules to D11 compat.
+  - DP-35513: Hide survey popup in Percy.io base screenshots.
+  
+### Security
+  - DP-35999: Drupal core update.
+  
+
+
 ## [0.416.0] - November 19, 2024
 
 ### Fixed
