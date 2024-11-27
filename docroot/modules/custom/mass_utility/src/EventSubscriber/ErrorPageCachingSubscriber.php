@@ -2,8 +2,8 @@
 
 namespace Drupal\mass_utility\EventSubscriber;
 
-use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Cache\CacheableResponseInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -19,7 +19,7 @@ class ErrorPageCachingSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       // Run before the DynamicPageCacheSubscriber (100)
       // so our manipulations get saved in the page cache.

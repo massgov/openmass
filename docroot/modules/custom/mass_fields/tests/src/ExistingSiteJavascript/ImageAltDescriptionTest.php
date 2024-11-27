@@ -6,7 +6,6 @@ use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests image alt text descriptions across multiple content types and fields.
@@ -38,8 +37,6 @@ use weitzman\LoginTrait\LoginTrait;
  *      is not loaded. This is important for accessibility."
  */
 class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * Creates an admin, saves it, and returns it.

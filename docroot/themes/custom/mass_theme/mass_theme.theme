@@ -15,6 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
@@ -6034,7 +6035,7 @@ function mass_theme_preprocess_file_link(&$variables) {
 
   // Get the human readable file size.
   $bytes = $file->getSize();
-  $readable_size = format_size($bytes);
+  $readable_size = ByteSizeMarkup::create($bytes)->render();
   $variables['download']['size'] = $readable_size;
 
   // Use the description as the link text if available,
@@ -7535,7 +7536,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
 
             if ($variables['display_type'] == "buttons") {
               $original_file = $media->field_upload_file->entity;
-              $links[$index]['file_size'] = strtoupper(format_size($original_file->getSize()));
+              $links[$index]['file_size'] = strtoupper(ByteSizeMarkup::create($original_file->getSize())->render());
               $file_info = new \SplFileInfo($original_file->getFilename());
               $file_extension = strtoupper($file_info->getExtension());
               $file_icon = 'doc-' . strtolower($file_extension);
@@ -7564,7 +7565,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
                   $render_array = [];
 
                   // Manually add calculated file size.
-                  $file_size = strtoupper(format_size($file_media->getSize()));
+                  $file_size = strtoupper(ByteSizeMarkup::create($file_media->getSize())->render());
                   $render_array['calculated_file_size'] = [
                     '#type' => 'markup',
                     '#markup' => $file_size,

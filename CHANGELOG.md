@@ -1,5 +1,96 @@
 
 
+## [0.417.0] - November 26, 2024
+
+### Added
+  - DP-34459: Added reporting views for internal use - trival content and org feedback settings.
+  
+### Changed
+  - DP-35406: Bump Prod No Redirect and Asset Cache Bust modules to D11 compat.
+  - DP-35513: Hide survey popup in Percy.io base screenshots.
+  
+### Security
+  - DP-35999: Drupal core update.
+  
+
+
+## [0.416.0] - November 19, 2024
+
+### Fixed
+  - DP-34420: Fix error items in entity usage queue.
+  - DP-35402: Orphan document report includes documents linked by redirects.
+  - DP-35462: Fix backstop config for org pages related to org nav bar.
+  - DP-35727: Fix overlapping elements in ckeditor fullscreen mode.
+  - DP-35737: Media usage tracking for redirected URLs.
+  
+### Changed
+  - DP-34964: Updates to purge modules and DTT, Drush
+  - DP-35160: Review and update .htaccess to make sure it reflects the latest changes in the Drupal core 10.3.x
+  - DP-35216: Upgrade Drupal Test traits to 2.4
+  - DP-35298: Internal label report updated to allow search for labels based on partial text match.
+  - DP-35404: D11 - Update most depecations in custom code
+  - DP-35553: Change Contact header in right column from H1 to H2 on info detail.
+  - DP-35609: Change sitewide alert notifications to only send emails when an alert is published or transitioned out of published state.
+  - DP-35809: Altered BigQuery module to query against changed name.
+  
+### Added
+  - DP-35475: Reports to evaluate effect of hidden headings.
+  
+### Removed
+  - DP-35680: Remove Portainer from ddev dependencies.
+  
+
+
+## [0.415.0] - October 22, 2024
+
+### Changed
+  - DP-34193: Upgrade to Drupal core 10.3
+  - DP-35150: Empty Location Page Appearing in Search.
+  - DP-35215: Increase backstop screenshots mobile size
+  - DP-35381: CircleCI image for Mysql rebuild jobs
+  
+### Added
+  - DP-35074: Replace service details links on site with info details links.
+  - DP-35142: Add new URL list views for LLM crawlers to use for pages and documents.
+  - DP-35245: Create Jira issue on Dependabot PR
+  
+### Removed
+  - DP-35403: Removed Percy job from post-release workflow.
+  
+
+
+## [0.414.0] - October 15, 2024
+
+### Changed
+  - DP-35080: Usability improvements to rich text tables related to horizontal scrolling.
+  
+### Fixed
+  - DP-35223: Unable to Embed YouTube Video.
+  
+
+
+## [0.413.0] - October 8, 2024
+
+### Changed
+  - DP-28816: UX improvements to the simplified org nav. Style improvement to sticky nav.
+  - DP-34469: Upgrade entity reference hierarchy to latest stable production version .
+  - DP-34679: Bump to PHP 8.3
+  - DP-35078: Start versioning Mayflower Artifacts library definition to make sure cache can be invalidated correctly.
+  - DP-35125: Configure image paragraph in Drupal to allow decorative images.
+  - DP-35159: Changed CircleCI Percy jobs to only run against the "all" list of screenshots.
+  
+### Added
+  - DP-34662: Configure Dependabot for composer updates
+  
+### Fixed
+  - DP-34715: Fix JS error related to Drupallike not defined.
+  - DP-35232: Fixed alerts positioning on org pages.
+  
+### Security
+  - DP-35261: Security updates to OpenMass.
+  
+
+
 ## [0.412.0] - September 24, 2024
 
 ### Fixed

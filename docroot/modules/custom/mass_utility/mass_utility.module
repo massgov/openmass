@@ -21,6 +21,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\editor\Entity\Editor;
 use Drupal\file\Entity\File;
@@ -1173,7 +1174,7 @@ function mass_utility_mail_alter(&$message) {
       $view_builder = \Drupal::entityTypeManager()
         ->getViewBuilder($contact_message->getEntityTypeId());
       $build = $view_builder->view($contact_message, 'mail');
-      $message['body'][] = \Drupal::service('renderer')->renderPlain($build);
+      $message['body'][] = \Drupal::service('renderer')->renderInIsolation($build);
   }
 }
 
@@ -1238,7 +1239,7 @@ function mass_utility_media_view(array &$build, EntityInterface $entity, EntityV
     $file = $entity->field_upload_file->entity;
 
     if ($file && $display->getComponent('calculated_file_size')) {
-      $file_size = strtoupper(format_size($file->getSize()));
+      $file_size = strtoupper(ByteSizeMarkup::create($file->getSize()));
 
       $build['calculated_file_size'] = [
         '#type' => 'markup',
@@ -1395,7 +1396,7 @@ function mass_utility_clean_file_managed() {
  * @param \Drupal\Core\Database\Connection $connection
  *   Optional database connection.
  */
-function mass_utility_delete_fids(array $bad_fids, Connection $connection = NULL) {
+function mass_utility_delete_fids(array $bad_fids, ?Connection $connection = NULL) {
   if (!$connection) {
     $connection = \Drupal::database();
   }

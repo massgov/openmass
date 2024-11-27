@@ -22,7 +22,7 @@ class RenderedEntityMixed extends RenderedEntity {
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
     $entity = $storage->load($values->nid);
 
-    $entity = $this->getEntityTranslation($entity, $values);
+    $entity = $this->getEntityTranslationByRelationship($entity, $values);
     $build = [];
     if (!isset($entity)) {
       return $build;
