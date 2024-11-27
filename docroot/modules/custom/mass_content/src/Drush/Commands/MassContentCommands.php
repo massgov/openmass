@@ -755,6 +755,17 @@ class MassContentCommands extends DrushCommands {
                   'target_revision_id' => $content_paragraph->getRevisionId(),
                 ];
               }
+              $additional_resources = $section->get('field_section_long_form_addition')->referencedEntities();
+              if (!empty($additional_resources)) {
+                foreach ($additional_resources as $additional_resource) {
+                  if (!$additional_resource->get('field_links_downloads_down')->isEmpty() || !$additional_resource->get('field_links_downloads_link')->isEmpty()) {
+                    $new_sections[] = [
+                      'target_id' => $additional_resource->id(),
+                      'target_revision_id' => $additional_resource->getRevisionId(),
+                    ];
+                  }
+                }
+              }
             }
           }
 
