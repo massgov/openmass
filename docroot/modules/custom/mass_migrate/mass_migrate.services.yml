@@ -1,9 +1,0 @@
-services:
-  migration_subscriber:
-    class: Drupal\mass_migrate\EventSubscriber\MassMigrateMigrationSubscriber
-    tags:
-      - { name: 'event_subscriber' }
-  mass_migrate.batch_manager:
-    class: Drupal\mass_migrate\MassMigrateBatchManager
-    arguments: [ '@entity_type.manager' ]
-
