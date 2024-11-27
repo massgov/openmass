@@ -1,4 +1,5 @@
 <?php
+
 namespace Drupal\mass_translations\Controller;
 
 use Drupal\Core\Access\AccessResult;
