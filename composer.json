@@ -120,18 +120,6 @@
         {
             "type": "package",
             "package": {
-                "name": "furf/jquery-ui-touch-punch",
-                "version": "dev-master",
-                "type": "drupal-library",
-                "dist": {
-                    "url": "https://github.com/furf/jquery-ui-touch-punch/archive/refs/heads/master.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        {
-            "type": "package",
-            "package": {
                 "name": "drupal/entity_usage_queue_tracking",
                 "type": "drupal-module",
                 "version": "9.1.x-dev",
@@ -267,7 +255,6 @@
         "drupal/views_taxonomy_term_name_into_id": "^1.0@alpha",
         "drush/drush": "^13",
         "enyo/dropzone": "5.7.2",
-        "furf/jquery-ui-touch-punch": "dev-master",
         "geocoder-php/open-cage-provider": "^4.6",
         "google/cloud-bigquery": "^1.25",
         "massgov/mayflower-artifacts": "dev-develop",
@@ -288,10 +275,11 @@
         "friends-of-behat/mink-debug-extension": "^2",
         "imbo/behat-api-extension": "^2.0",
         "kint-php/kint": "^5",
+        "palantirnet/drupal-rector": "^0.20.3",
         "phpspec/prophecy-phpunit": "^2",
         "previousnext/phpunit-finder": "dev-main",
         "vincentlanglet/twig-cs-fixer": "^2.5",
-        "weitzman/drupal-test-traits": "dev-addLoginTrait as 2.x-dev"
+        "weitzman/drupal-test-traits": "^2"
     },
     "autoload-dev": {
         "psr-4": {
@@ -363,7 +351,6 @@
                 "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577)": "https://www.drupal.org/files/issues/2022-07-12/2575577-38.patch",
                 "Remove final from a class in order to inherit from it": "patches/DP-11721-jsonapi-serializer.patch",
                 "Remove type hint which allows usage in combination with workbench_moderation": "patches/jsonapi-2.3.0-no-type-hint.patch",
-                "Notice: Undefined index: #type in drupal_process_states() (https://www.drupal.org/project/drupal/issues/2700667)": "https://www.drupal.org/files/issues/2019-12-05/2700667-89.patch",
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch",
                 "Batch is dependent on the order of query string parameters (https://www.drupal.org/project/drupal/issues/2879023)": "https://git.drupalcode.org/issue/drupal-2879023/-/commit/c68aa376a7fc262886cb56d9ac762e4b06e6b174.patch",
                 "3075454 - combine fields filter doesn't recognise taxonomy description field": "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
@@ -383,6 +370,9 @@
             "drupal/entity_embed": {
                 "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "https://git.drupalcode.org/project/entity_embed/-/merge_requests/39.diff",
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch"
+            },
+            "drupal/entity_usage": {
+                "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "https://git.drupalcode.org/project/entity_usage/-/merge_requests/55.diff"
             },
             "drupal/flag": {
                 "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
@@ -434,17 +424,13 @@
             },
             "drupal/media_entity_download": {
                 "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2024-04-22/media_entity_download-ckeditor5_plugin-2928318-36.patch",
-                "3106062 - Track the usage of Media entity through media_entity_download route with entity_usage": "https://www.drupal.org/files/issues/2023-10-03/3106062-12.patch"
+                "Track the usage of Media entity through media_entity_download route with entity_usage (https://www.drupal.org/project/media_entity_download/issues/3106062)": "https://www.drupal.org/files/issues/2024-11-06/3106062-15.patch"
             },
             "drupal/pathologic": {
                 "Dynamic routes like image styles break under pathologic (https://www.drupal.org/project/pathologic/issues/2718473)": "https://www.drupal.org/files/issues/2020-01-29/2718473-dynamic-image-style-lookup-20.patch"
             },
             "drupal/password_policy": {
                 "Can't edit user profile because password policy validates even when password unchanged": "https://www.drupal.org/files/issues/2020-03-19/password_policy-empty-password-skip-validation-2971079-37.patch"
-            },
-            "drupal/purge": {
-                "Add alter hooks for plugin definitions - purger, queue, queuer (https://www.drupal.org/project/purge/issues/2757155#comment-14335663)": "https://www.drupal.org/files/issues/2021-12-10/alters.diff",
-                "Undefined array key in Drupal\\purge\\Plugin\\Purge\\Queue\\QueueService->commitAdding() (https://www.drupal.org/project/purge/issues/3343141#comment-14965816)": "https://www.drupal.org/files/issues/2023-03-14/purge-fix-undefined-key-for-invalidation-buffer-3343141-4.patch"
             },
             "drupal/redirect": {
                 "Add an intermediate redirect (https://www.drupal.org/project/redirect/issues/3162696#comment-15085388)": "https://www.drupal.org/files/issues/2023-05-31/tmp.diff",

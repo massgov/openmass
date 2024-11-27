@@ -27,7 +27,7 @@ class StaleResponseSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     // Act after the FinishResponseSubscriber.
     $events[KernelEvents::RESPONSE][] = ['onKernelResponse', -18];
     return $events;

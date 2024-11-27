@@ -19,7 +19,7 @@ class MassMigrateMigrationSubscriber implements EventSubscriberInterface {
    *
    * @inheritdoc
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events[MigrateEvents::POST_ROW_SAVE][] = ['onMigratePostRowSave'];
     return $events;
   }

@@ -127,7 +127,7 @@ class BigqueryStorage implements BigqueryStorageInterface {
     $time = \Drupal::time()->getRequestTime();
     // Fetch data from Bigquery.
     $query =
-        'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_testing.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
+      'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_prod.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
     $queryResults = $this->bigqueryClient->runQuery($query);
     foreach ($queryResults as $row) {
       $nos_per_1000 = $row['nosPerKUniquePageViews'];
@@ -164,10 +164,9 @@ class BigqueryStorage implements BigqueryStorageInterface {
     }
     // Delete any previously existing records for these IDs.
     $this->database->delete($this->table)->condition('nid', $ids, 'IN')->execute();
-    $time = \Drupal::time()->getRequestTime();
     // Fetch data from Bigquery.
     $query =
-      'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_testing.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
+      'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_prod.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
     $queryResults = $this->bigqueryClient->runQuery($query);
     $result = [];
     foreach ($queryResults as $row) {

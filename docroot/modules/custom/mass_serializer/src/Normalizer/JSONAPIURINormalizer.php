@@ -20,7 +20,7 @@ class JSONAPIURINormalizer extends NormalizerBase {
   /**
    * {@inheritdoc}
    */
-  public function normalize($object, $format = NULL, array $context = []): float|\Drupal\Core\GeneratedUrl|int|\ArrayObject|bool|array|string|null {
+  public function normalize($object, $format = NULL, array $context = []): array|bool|string|int|float|null|\ArrayObject {
     $url = Url::fromUri($object->getValue());
     return $url->toString();
   }
