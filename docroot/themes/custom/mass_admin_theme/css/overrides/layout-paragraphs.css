@@ -59,6 +59,45 @@ input[type="radio"]{
   max-width: calc(50% - 20px);
 }
 
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--left.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text,
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--right.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--right.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text {
+  overflow: auto;
+  padding-left: 21px;
+  padding-right: 21px;
+}
+
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-controls,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-controls,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--left.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-controls,
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-controls,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--right.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-controls,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--right.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-controls {
+  top: 40px;
+}
+
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:first-child,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:first-child,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--left.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:first-child,
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:first-child,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--right.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:first-child,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--right.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:first-child {
+  top: 0;
+}
+
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:last-child,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:last-child,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--left.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:last-child,
+.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:last-child,
+.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--right.ma__figure-iframe):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:last-child,
+.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--right.ma__dataviz):has(.ma__figure--medium) + .js-lpb-component.paragraph--type--rich-text .lpb-btn--add:last-child {
+  bottom: 0;
+}
+
+
 /* Small figure adjustments */
 .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small),
 .js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small),
@@ -69,6 +108,16 @@ input[type="radio"]{
   max-width: calc(33.3% - 20px);
 }
 
+/*.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--left.ma__dataviz):has(.ma__figure--small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--right.ma__figure-iframe):not(:has(.ma__figure--no-wrap)):has(.ma__figure--small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--right.ma__dataviz):has(.ma__figure--small) + .js-lpb-component.paragraph--type--rich-text {*/
+/*  overflow: auto;*/
+/*  max-width: calc(66.6% - 20px);*/
+/*}*/
+
 /* X-Small figure adjustments */
 .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):has(.ma__figure--x-small),
 .js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):has(.ma__figure--x-small),
@@ -78,6 +127,16 @@ input[type="radio"]{
 .js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--right.ma__dataviz):has(.ma__figure--x-small) {
   max-width: calc(25% - 20px);
 }
+
+/*.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):has(.ma__figure--x-small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--left.ma__figure-iframe):has(.ma__figure--x-small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--left.ma__dataviz):has(.ma__figure--x-small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--right.ma__figure-image):has(.ma__figure--x-small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--iframe:has(.ma__figure.ma__figure--right.ma__figure-iframe):has(.ma__figure--x-small) + .js-lpb-component.paragraph--type--rich-text,*/
+/*.js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--right.ma__dataviz):has(.ma__figure--x-small) + .js-lpb-component.paragraph--type--rich-text {*/
+/*  overflow: auto;*/
+/*  max-width: calc(75% - 20px);*/
+/*}*/
 
 /* Controls alignment */
 .js-lpb-component.paragraph--type--image:has(.ma__figure.ma__figure--left.ma__figure-image):not(:has(.ma__figure--no-wrap)) .lpb-controls,
@@ -118,4 +177,10 @@ input[type="radio"]{
 .js-lpb-component.paragraph--type--tableau-embed:has(.ma__figure.ma__figure--left.ma__dataviz):not(:has(.ma__figure--no-wrap)) + .js-lpb-component.paragraph--type--rich-text .lpb-controls {
   right: 0;
   left: initial;
+}
+
+.js-lpb-component-list::after {
+  content: "";
+  display: table;
+  clear: both;
 }
