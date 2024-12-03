@@ -1,5 +1,12 @@
 
 
+## [0.418.0] - December 3, 2024
+
+### Changed
+  - DP-35408: Upgrade admin theme to Drupal 11
+  
+
+
 ## [0.417.0] - November 26, 2024
 
 ### Added
