@@ -246,6 +246,10 @@ function mass_admin_theme_form_media_form_alter(&$form, FormStateInterface $form
  */
 function mass_admin_theme_form_alter(&$form, &$form_state, $form_id) {
 
+  if ($form_id == 'node_info_details_form' || $form_id == 'node_info_details_edit_form') {
+    $form['#attached']['library'][] = 'mass_theme/global-styling-lp';
+  }
+
   if (!empty($form['last_updated'])) {
     $form['last_updated']['#options']['All'] = t('All');
     $form['last_updated']['#validated'] = TRUE;
