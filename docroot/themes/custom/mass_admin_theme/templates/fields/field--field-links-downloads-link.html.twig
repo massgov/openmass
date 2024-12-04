@@ -1,0 +1,11 @@
+{% for item in items %}
+  {% include "@molecules/download-link.twig" with {
+    "downloadLink": {
+      "decorativeLink": {
+        "text": item.content['#title'],
+        "href": item.content['#url_title'],
+        "info": ""
+      }
+    }
+  } %}
+{% endfor %}
