@@ -6,10 +6,8 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\mass_fields\MassUrlReplacementService;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
@@ -23,10 +21,13 @@ class MassContentCommands extends DrushCommands {
 
   use AutowireTrait;
 
+  protected $externalDownloadMatch;
+
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
-    protected LoggerChannelFactoryInterface $loggerChannelFactory
+    protected LoggerChannelFactoryInterface $loggerChannelFactory,
   ) {
+    $this->externalDownloadMatch = '/(https:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)(\/download|\/|$)|files\/)/';
     parent::__construct();
   }
 
@@ -263,11 +264,13 @@ class MassContentCommands extends DrushCommands {
             case 'text_long':
               $query = $this->entityTypeManager->getStorage($entity_storage_name)->getQuery();
               $query->condition('type', $type);
+              $query->accessCheck(FALSE);
               // Add a condition to filter entities with a specific textarea field containing "node/nid".
               $query->condition("$field_name.value", 'node/', 'CONTAINS');
 
               // Execute the query and get a list of entity IDs.
               $entity_ids = $query->execute();
+
               if ($entity_ids) {
                 $entities = $this->entityTypeManager->getStorage($entity_storage_name)->loadMultiple($entity_ids);
                 foreach ($entities as $entity) {
@@ -283,22 +286,24 @@ class MassContentCommands extends DrushCommands {
                     $value = $item->getValue()['value'];
                     $dom = Html::load($value);
                     $xpath = new \DOMXPath($dom);
-                    foreach ($xpath->query("//a[starts-with(@href, '/node/')  and translate(substring(@href, 7), '0123456789', '') = '']") as $element) {
+                    foreach ($xpath->query("//a[(starts-with(@href, 'node/') or starts-with(@href, '/node/')) and translate(substring-before(substring-after(@href, 'node/'), '?#'), '0123456789', '') = '']") as $element) {
                       $pattern = '/\d+/';
                       if (preg_match($pattern, $element->getAttribute('href'), $matches)) {
                         if ($nid = $matches[0]) {
                           $node = $this->entityTypeManager->getStorage('node')->load($nid);
                           if ($node) {
-                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath($element->getAttribute('href'));
+                            $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid);
                             if ($alias) {
-                              $changed = TRUE;
-                              $href_url = parse_url($element->getAttribute('href'));
-                              $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
-                              $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
-                              $element->setAttribute('data-entity-uuid', $node->uuid());
-                              $element->setAttribute('data-entity-substitution', 'canonical');
-                              $element->setAttribute('data-entity-type', 'node');
-                              $element->setAttribute('href', $alias . $query . $anchor);
+                              if (!preg_match('/node\/\d+/', $alias)) {
+                                $changed = TRUE;
+                                $href_url = parse_url($element->getAttribute('href'));
+                                $anchor = empty($href_url["fragment"]) ? '' : '#' . $href_url["fragment"];
+                                $query = empty($href_url["query"]) ? '' : '?' . $href_url["query"];
+                                $element->setAttribute('data-entity-uuid', $node->uuid());
+                                $element->setAttribute('data-entity-substitution', 'canonical');
+                                $element->setAttribute('data-entity-type', 'node');
+                                $element->setAttribute('href', $alias . $query . $anchor);
+                              }
                             }
                           }
                         }
@@ -409,9 +414,8 @@ class MassContentCommands extends DrushCommands {
 
       $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
       $changedEntities = 0;
+      $changed_revisions = 0;
       foreach ($ids as $id) {
-        // After successfully processing the entity, update the last processed ID
-        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
         $entity = $storage->load($id);
         if ($entity) {
           $changed = FALSE;
@@ -423,6 +427,27 @@ class MassContentCommands extends DrushCommands {
                 if ($processed['changed']) {
                   $item->value = $processed['text'];
                   $changed = TRUE;
+                }
+              }
+            }
+            elseif ($fieldType === 'link') {
+              foreach ($field as $key => $item) {
+                if ($item->uri) {
+                  if (strpos($item->uri, 'internal:') === 0) {
+                    $url = substr($item->uri, strlen('internal:'));
+                    $processed = $urlReplacementService->processLink($url);
+                    if ($processed['changed']) {
+                      $item->value = 'internal:' . $processed['link'];
+                      $changed = TRUE;
+                    }
+                  }
+                  elseif (preg_match($this->externalDownloadMatch, $item->uri)) {
+                    $processed = $urlReplacementService->processLink($item->uri);
+                    if ($processed['changed']) {
+                      $item->value = 'internal:' . $processed['link'];
+                      $changed = TRUE;
+                    }
+                  }
                 }
               }
             }
@@ -438,7 +463,13 @@ class MassContentCommands extends DrushCommands {
             $changedEntities++;
 
             if ($entityType == 'paragraph') {
-              $node = Helper::getParentNode($entity);
+              if ($node = Helper::getParentNode($entity)) {
+                $node->setNewRevision();
+                $node->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                $node->setRevisionCreationTime(\Drupal::time()
+                  ->getRequestTime());
+                $node->save();
+              }
               $this->output()
                 ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
                   '@type' => ucfirst($entityType),
@@ -452,15 +483,201 @@ class MassContentCommands extends DrushCommands {
                 ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
                   '@type' => ucfirst($entityType),
                   '@bundle' => $entity->bundle(),
-                  '@id' => $entity->id()
+                  '@id' => $entity->id(),
                 ]));
             }
           }
         }
+        if (!$entity->isLatestRevision()) {
+          $storage = \Drupal::entityTypeManager()->getStorage($entityType);
+          $query = $storage->getQuery()->accessCheck(FALSE);
+          $query->condition($idFieldName, $entity->id());
+          $query->latestRevision();
+          $rids = $query->execute();
+          foreach ($rids as $rid => $value) {
+            $latest_revision = $storage->loadRevision($rid);
+            if (isset($latest_revision)) {
+              $changed = FALSE;
+              $entity = $latest_revision;
+              foreach ($entity->getFields() as $field) {
+                $fieldType = $field->getFieldDefinition()->getType();
+                if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'])) {
+                  foreach ($field as $item) {
+                    $processed = $urlReplacementService->processText($item->value);
+                    if ($processed['changed']) {
+                      $item->value = $processed['text'];
+                      $changed = TRUE;
+                    }
+                  }
+                }
+                elseif ($fieldType === 'link') {
+                  foreach ($field as $key => $item) {
+                    if ($item->uri) {
+                      if (strpos($item->uri, 'internal:') === 0) {
+                        $url = substr($item->uri, strlen('internal:'));
+                        $processed = $urlReplacementService->processLink($url);
+                        if ($processed['changed']) {
+                          $item->value = 'internal:' . $processed['link'];
+                          $changed = TRUE;
+                        }
+                      }
+                      elseif (preg_match($this->externalDownloadMatch, $item->uri)) {
+                        $processed = $urlReplacementService->processLink($item->uri);
+                        if ($processed['changed']) {
+                          $item->value = 'internal:' . $processed['link'];
+                          $changed = TRUE;
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              if ($changed) {
+                if (method_exists($entity, 'setRevisionLogMessage')) {
+                  $entity->setNewRevision();
+                  $entity->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                  $entity->setRevisionCreationTime(\Drupal::time()
+                    ->getRequestTime());
+                }
+                $entity->save();
+                $changed_revisions++;
+
+                if ($entityType == 'paragraph') {
+                  if ($node = Helper::getParentNode($entity)) {
+                    $node->setNewRevision();
+                    $node->setRevisionLogMessage('Revision created to fix raw media/ or files/ URL in the content.');
+                    $node->setRevisionCreationTime(\Drupal::time()
+                      ->getRequestTime());
+                    $node->save();
+                  }
+                  $this->output()
+                    ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved. Appears on node: @nid', [
+                      '@type' => ucfirst($entityType),
+                      '@bundle' => $entity->bundle(),
+                      '@id' => $entity->id(),
+                      '@nid' => $node ? $node->id() : 'N/A',
+                    ]));
+                }
+                else {
+                  $this->output()
+                    ->writeln(t('@type entity, Bundle @bundle with ID @id processed and saved.', [
+                      '@type' => ucfirst($entityType),
+                      '@bundle' => $entity->bundle(),
+                      '@id' => $entity->id(),
+                    ]));
+                }
+              }
+            }
+          }
+        }
+        // After successfully processing the entity, update the last processed ID
+        \Drupal::state()->set("mass_content.last_processed_id.{$entityType}", $id);
       }
 
       $this->output()->writeln(t('Processed @count @type entities.', ['@count' => $changedEntities, '@type' => $entityType]));
+      $this->output()->writeln(t('Processed @count @type entity revisions.', ['@count' => $changed_revisions, '@type' => $entityType]));
     }
+  }
+
+  /**
+   * Processes 'service-details/[something]' links in all entities.
+   *
+   * Use --simulate to get a report, and skip healing.
+   *
+   * @command mass-content:process-service-details
+   * @field-labels
+   *   success: Success
+   *   entity_type: Entity Type
+   *   entity_id: Entity ID
+   *   processed_links: Processed Links
+   * @default-fields success,entity_type,entity_id,processed_links
+   * @aliases mpsd
+   * @option simulate If set, no changes will be saved.
+   */
+  public function processServiceDetails($options = ['simulate' => FALSE, 'format' => 'table']) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    $rows = [];
+    $entityTypes = ['node', 'paragraph'];
+    $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
+
+    foreach ($entityTypes as $entityType) {
+      $lastProcessedId = 0;
+      if (!$options['simulate']) {
+        $lastProcessedId = \Drupal::state()
+          ->get("mass_content.service_details.last_processed_id.{$entityType}", 0);
+      }
+      $idFieldName = $entityType === 'node' ? 'nid' : 'id';
+      $storage = $this->entityTypeManager->getStorage($entityType);
+      $ids = $storage->getQuery()
+        ->condition($idFieldName, $lastProcessedId, '>')
+        ->sort($idFieldName)
+        ->accessCheck(FALSE)
+        ->execute();
+
+      $totalEntities = count($ids);
+      $this->output()->writeln(t('Processing @count @type entities...', ['@count' => $totalEntities, '@type' => $entityType]));
+
+      $changedEntities = 0;
+
+      foreach ($ids as $id) {
+
+        $entity = $storage->load($id);
+        if ($entity) {
+          $changed = $urlReplacementService->processServiceDetailsLink($entity);
+
+          // Only output rows where changes will happen.
+          if ($changed) {
+            $row = [
+              'success' => 'No',
+              'entity_type' => $entityType,
+              'entity_id' => $entity->id(),
+              'processed_links' => $changed,
+            ];
+
+            $this->output()->writeln(t('Entity ID @id of @type has @changes changes.', [
+              '@id' => $entity->id(),
+              '@type' => $entityType,
+              '@changes' => $changed,
+            ]));
+
+            if (!$options['simulate']) {
+              if (method_exists($entity, 'setRevisionLogMessage')) {
+                $entity->setNewRevision();
+                $entity->setRevisionLogMessage('Revision created to update service-details links.');
+                $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+              }
+              $entity->save();
+              $row['success'] = 'Yes';
+              $changedEntities++;
+            }
+            else {
+              $this->output()->writeln(t('Simulating: Entity @id changes not saved.', ['@id' => $entity->id()]));
+            }
+
+            $rows[] = $row;
+          }
+
+          if (!$options['simulate']) {
+            // Update the last processed ID after each entity.
+            \Drupal::state()
+              ->set("mass_content.service_details.last_processed_id.{$entityType}", $id);
+          }
+        }
+      }
+
+      $this->output()->writeln(t('Processed @count @type entities with changes.', ['@count' => $changedEntities, '@type' => $entityType]));
+    }
+
+    if ($changedEntities > 0) {
+      $this->output()->writeln(t('Finished processing all entities with changes. Exporting results...'));
+    }
+    else {
+      $this->output()->writeln(t('No changes were detected during processing.'));
+    }
+
+    // Only return rows where changes happened.
+    return new RowsOfFields($rows);
   }
 
 }

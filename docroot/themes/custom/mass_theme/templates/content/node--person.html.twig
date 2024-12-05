@@ -104,7 +104,7 @@
   {% if node.field_contact is not empty and (node.field_contact_source is empty or node.field_contact_source.value == 'contact') %}
     {{ content.field_contact }}
   {% elseif node.field_ref_single_address is not empty or node.field_ref_phone is not empty or node.field_ref_fax is not empty or node.field_ref_links is not empty %}
-    {% embed "@organisms/by-author/contact-list.twig" with {
+    {% embed "@organisms/contact/contact-list.twig" with {
       "contactList": {
         "viewSpecific": false,
         "compHeading": {

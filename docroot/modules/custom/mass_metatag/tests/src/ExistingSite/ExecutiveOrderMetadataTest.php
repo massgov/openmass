@@ -3,9 +3,9 @@
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 
 /**
  * Executive Order metadata tests.
@@ -55,6 +55,7 @@ class ExecutiveOrderMetadataTest extends MetadataTestCase {
       'mg_type' => 'executive-order',
       'mg_date' => '20121231',
       'mg_organization' => 'testorgpage',
+      'twitter:card' => 'summary_large_image',
     ]);
   }
 

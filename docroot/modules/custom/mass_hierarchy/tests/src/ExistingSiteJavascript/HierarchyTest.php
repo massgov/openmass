@@ -3,22 +3,18 @@
 namespace Drupal\Tests\mass_hierarchy\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests Hierachy tab.
  */
 class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
 
-  use LoginTrait;
-
   /**
    * Creates a random user with a specified role.
    */
   private function createRandomUser($role) {
-    $user = User::create(['name' => $this->randomMachineName(20)]);
+    $user = $this->createUser();
     $user->addRole($role);
     // Also add editor role for testing Content Administrator permissions.
     if ($role == 'content_team') {
@@ -101,7 +97,7 @@ class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
    */
   public function testCronErasesOtherRevisions() {
     $this->drupalLogin($this->createRandomUser('content_team'));
-    list($parent1Node, $child1Node,) = $this->createParentAndChildren();
+    [$parent1Node, $child1Node] = $this->createParentAndChildren();
 
     // Save child node.
     $child1Node->moderation_state = MassModeration::DRAFT;

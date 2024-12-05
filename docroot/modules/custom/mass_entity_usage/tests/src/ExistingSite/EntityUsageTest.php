@@ -6,18 +6,17 @@ use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\user\Entity\User;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use MassGov\Dtt\MassExistingSiteBase;
+use weitzman\DrupalTestTraits\ConfigTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Class EntityUsageTest.
  */
 class EntityUsageTest extends MassExistingSiteBase {
 
-  use LoginTrait;
+  use ConfigTrait;
   use MediaCreationTrait;
   use QueueRunnerTrait;
 
@@ -33,8 +32,11 @@ class EntityUsageTest extends MassExistingSiteBase {
    */
   protected function setUp(): void {
     parent::setUp();
-
-    $GLOBALS['config']['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
+    $this->setConfigValues([
+      'entity_usage_queue_tracking.settings' => [
+        'queue_tracking' => TRUE,
+      ],
+    ]);
     $this->container->get('config.factory')->clearStaticCache();
 
     // Remove everything from the entity_usage table
@@ -44,12 +46,18 @@ class EntityUsageTest extends MassExistingSiteBase {
     \Drupal::service('database')->truncate('entity_usage')->execute();
 
     $this->emptyEntityUsageQueues();
-    $user = User::create(['name' => $this->randomMachineName()]);
+    $user = $this->createUser();
     $user->addRole('administrator');
     $user->activate();
     $user->save();
     $this->user = $user;
     $this->drupalLogin($user);
+  }
+
+  protected function tearDown(): void {
+    // Restore original configurations.
+    $this->restoreConfigValues();
+    parent::tearDown();
   }
 
   /**
@@ -363,7 +371,7 @@ class EntityUsageTest extends MassExistingSiteBase {
     // Verify the usage tab contents.
     $page = $this->getSession()->getPage()->getContent();
     $this->assertStringContainsString('Test Curated List', $page, 'Test Curated List not found on usage page.');
-    $table_caption = '<caption>The list below shows pages that include a link to this page in structured and rich text fields. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here">Learn how to use Linking Pages.</a></caption>';
+    $table_caption = '<caption>The list below shows pages that include a link to this page in structured and rich text fields. <a href="https://www.mass.gov/kb/pages-linking-here">Learn how to use Linking Pages.</a></caption>';
     $this->assertStringContainsString($table_caption, $page, 'Table caption not found on usage page.');
     $table_headers = '<thead>
       <tr>

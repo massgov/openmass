@@ -3,9 +3,9 @@
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 
 /**
  * Advisory metadata tests.
@@ -67,6 +67,7 @@ class AdvisoryMetadataTest extends MetadataTestCase {
       'mg_date' => '20121231',
       'mg_organization' => 'testorgpage,testorgpagetwo',
       'mg_type' => 'testtype',
+      'twitter:card' => 'summary_large_image',
     ]);
   }
 

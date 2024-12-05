@@ -10,14 +10,11 @@ use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests basic alert functionality, including JSONAPI customizations.
  */
 class EmergencyAlertsTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   private $editor;
   private $orgNode;
@@ -29,13 +26,13 @@ class EmergencyAlertsTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $user1 = User::create(['name' => $this->randomMachineName()]);
+    $user1 = $this->createUser();
     $user1->addRole('editor');
     $user1->activate();
     $user1->save();
     $this->editor = $user1;
 
-    $user2 = User::create(['name' => $this->randomMachineName()]);
+    $user2 = $this->createUser();
     $user2->addRole('emergency_alert_publisher');
     $user2->activate();
     $user2->save();
@@ -82,20 +79,17 @@ class EmergencyAlertsTest extends MassExistingSiteBase {
       ],
     ]);
 
-    $session = $this->getSession();
-    $session->visit('/alerts/sitewide');
-    $page = $session->getPage();
-    $this->assertStringContainsString($alert_message_text, $page->getText());
+    $this->drupalGet('/alerts/sitewide');
+    $this->assertSession()->pageTextContains($alert_message_text);
 
-    $headers = $session->getResponseHeaders();
-    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
+    $this->assertSession()->responseHeaderContains('Cache-Control', 'max-age=60');
     $duration = StaleResponseSubscriber::DURATION;
-    $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
-    $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
-    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
+    $this->assertSession()->responseHeaderContains('Cache-Control', "stale-if-error=$duration");
+    $this->assertSession()->responseHeaderContains('Cache-Control', "stale-while-revalidate=$duration");
+    $this->assertSession()->responseHeaderContains('Cache-Control', 'max-age=60');
 
-    $this->assertStringContainsString(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
-    $this->assertStringContainsString('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertSession()->responseHeaderContains('X-Drupal-Cache-Tags', MASS_ALERTS_TAG_SITEWIDE . ':list');
+    $this->assertSession()->responseHeaderContains('X-Drupal-Cache-Tags', 'node:' . $node->id());
   }
 
   /**

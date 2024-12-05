@@ -33,7 +33,7 @@ module.exports = async (page, scenario, viewport) => {
         z-index: 80;
       }
 
-      .ma__organization-navigation.stuck {
+      .ma__details__sticky-nav.stuck {
         position: static !important;
         top: auto !important;
         left: auto !important;
@@ -111,6 +111,14 @@ module.exports = async (page, scenario, viewport) => {
   // Wait for iFrame resizer.
   await page.waitForFunction(() => document.querySelectorAll('.js-ma-responsive-iframe iframe[height=auto]').length === 0);
 
+  // Wait for sticky nav to shift.
+  const stickyNavs = await page.locator('.ma__sticky-nav').count();
+  if (stickyNavs > 0) {
+    // Remove active class.
+    await page.evaluate(() => { for (link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
+    await page.waitForSelector('.ma__sticky-nav');
+  }
+
   switch (scenario.label) {
     case 'InfoDetails1':
     case 'InfoDetailsImageWrapLeft':
@@ -121,12 +129,10 @@ module.exports = async (page, scenario, viewport) => {
     case 'InfoDetailsImageRightAlign':
       await page.waitForSelector('.ma__fixed-feedback-button');
       break;
+    case 'OrgElectedOfficial':
     case 'ExpansionOfAccordions1':
       await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
       await page.waitForSelector('.ma__sticky-nav');
-      break;
-    case 'OrgElectedOfficial':
-      await page.waitForSelector('.ma__organization-navigation');
       break;
     case 'ServiceDetails':
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
@@ -143,14 +149,6 @@ module.exports = async (page, scenario, viewport) => {
     await page.locator('.ma__footer-new__logo');
     await page.locator('.ma__footer-new__container').waitFor();
     await page.locator('.ma__footer-new__copyright--bold').hover();
-  }
-
-  // Wait for sticky nav to shift.
-  const stickyNavs = await page.locator('.ma__sticky-nav').count();
-  if (stickyNavs > 0) {
-    // Remove active class.
-    await page.evaluate(() => { for (link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
-    await page.waitForSelector('.ma__sticky-nav');
   }
 
   await page.waitForTimeout(4 * 1000);

@@ -2,8 +2,6 @@
 
 namespace Drupal\mass_utility;
 
-use DrushBatchContext;
-
 /**
  * Class BatchService.
  *
@@ -21,10 +19,10 @@ class BatchService {
    *   The timestamp to use when pruning revisions.
    * @param int $batch
    *   The number of revisions to queue at a time.
-   * @param \DrushBatchContext $context
+   * @param array $context
    *   Context for operations.
    */
-  public static function populateRevisionsCleanupQueue(array $nids, $timestamp, $batch, DrushBatchContext &$context) {
+  public static function populateRevisionsCleanupQueue(array $nids, $timestamp, $batch, array &$context) {
     if (empty($context['sandbox'])) {
       $context['sandbox']['progress'] = 0;
     }

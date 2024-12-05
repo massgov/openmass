@@ -30,7 +30,7 @@ class MassRedirectsCommands extends DrushCommands {
     protected EntityTypeManagerInterface $entityTypeManager,
     protected Connection $connection,
     #[Autowire(service: 'redirect.repository')]
-    protected RedirectRepository $redirectRepository
+    protected RedirectRepository $redirectRepository,
   ) {
     parent::__construct();
   }
@@ -86,28 +86,29 @@ EOD;
           try {
 
             $usage = $this->entityTypeManager->getStorage($record->source_type)->load($record->source_id);
+            if ($usage) {
+              if ($record->source_type == 'paragraph') {
+                if (Helper::isParagraphOrphan($usage)) {
+                  continue;
+                }
+              }
 
-            if ($record->source_type == 'paragraph') {
-              if (Helper::isParagraphOrphan($usage)) {
+              if (in_array(EntityPublishedInterface::class, class_implements($usage)) && !$usage->isPublished()) {
+                // Usage is unpublished so don't bother fixing.
                 continue;
               }
-            }
+              if (str_starts_with($record->field_name, 'computed')) {
+                // We can't edit computed fields.
+                continue;
+              }
 
-            if (in_array(EntityPublishedInterface::class, class_implements($usage)) && !$usage->isPublished()) {
-              // Usage is unpublished so don't bother fixing.
-              continue;
-            }
-            if (str_starts_with($record->field_name, 'computed')) {
-              // We can't edit computed fields.
-              continue;
-            }
-
-            $parent = $usage;
-            // Climb up to find a non-paragraph parent.
-            while (method_exists($parent, 'getParentEntity')) {
-              $parent = $parent->getParentEntity();
-              if (!$parent->isPublished()) {
-                continue 2;
+              $parent = $usage;
+              // Climb up to find a non-paragraph parent.
+              while (method_exists($parent, 'getParentEntity')) {
+                $parent = $parent->getParentEntity();
+                if (!$parent->isPublished()) {
+                  continue 2;
+                }
               }
             }
           }
@@ -146,7 +147,7 @@ EOD;
             'to_id' => $parameters['node'],
             'to_type' => 'node',
           ];
-          if (!Drush::simulate()) {
+          if (!Drush::simulate() && isset($usage)) {
             // Re-point this usage.
             if ($this->heal($usage, $result)) {
               $result['success'] = 'Yes';
@@ -240,7 +241,7 @@ EOD;
                             ->createInstance('canonical')
                             ->getUrl($entity_new);
                           $element->setAttribute('data-entity-uuid', $entity_new->uuid());
-                          $element->setAttribute('href', $url->getGeneratedUrl() . $query . $anchor);
+                          $element->setAttribute('href', $url->toString() . $query . $anchor);
                           $changed = TRUE;
                         }
                       }

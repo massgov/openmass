@@ -80,27 +80,32 @@ $configureMemcache = function($settings) use ($app_root, $site_path, $class_load
   // Replace lock implementation with the memcache version:
   $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.memcache.yml';
 
+  // Decrease latency.
+  $settings['memcache']['options'][Memcached::OPT_TCP_NODELAY] = TRUE;
+
   // Override default configuration for static cache bins.
   // Specialized cache bin configuration.
   // See https://jira.state.ma.us/browse/DP-5906 for how this was selected.
   $settings['cache']['bins']['bootstrap'] = 'cache.backend.memcache';
-  $settings['cache']['bins']['config'] = 'cache.backend.chainedfast';
-  $settings['cache']['bins']['data'] = 'cache.backend.memcache';
   $settings['cache']['bins']['default'] = 'cache.backend.memcache';
-  $settings['cache']['bins']['discovery'] = 'cache.backend.chainedfast';
+  $settings['cache']['bins']['config'] = 'cache.backend.memcache';
+  $settings['cache']['bins']['discovery'] = 'cache.backend.memcache';
   $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.database';
 
   // Acquia doesn't recommend these in memcache and we are seeing Revision confusion at https://edit.mass.gov/info-details/covid-19-response-reporting/revisions
+  // See https://github.com/acquia/memcache-settings/blob/main/memcache.settings.php
   // $settings['cache']['bins']['entity'] = 'cache.backend.memcache';
-  $settings['cache']['bins']['render'] = 'cache.backend.memcache';
-
-  $settings['cache']['bins']['menu'] = 'cache.backend.memcache';
+  // $settings['cache']['bins']['render'] = 'cache.backend.memcache';
+  // $settings['cache']['bins']['data'] = 'cache.backend.memcache';
+  // $settings['cache']['bins']['menu'] = 'cache.backend.memcache';
   // All other cache bins are stored in the database.
 
   return $settings;
 };
 
 $settings['config_sync_directory'] = '../conf/drupal/config';
+
+$settings['state_cache'] = TRUE;
 
 /**
  * Page caching:

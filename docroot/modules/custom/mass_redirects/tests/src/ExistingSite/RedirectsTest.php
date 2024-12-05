@@ -6,16 +6,12 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
 use Drupal\node\Entity\Node;
 use Drupal\redirect\Entity\Redirect;
-use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Test Redirects.
  */
 class RedirectsTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   private $editor;
   private $orgNode;
@@ -23,12 +19,19 @@ class RedirectsTest extends MassExistingSiteBase {
   private $sourcePaths;
 
   /**
+   * Un-cacheable dynamic page patterns.
+   */
+  protected static array $uncacheableDynamicPagePatterns = [
+    'orgs/*',
+  ];
+
+  /**
    * Create an editor and a node with url redirects.
    */
   protected function setUp(): void {
     parent::setUp();
 
-    $user1 = User::create(['name' => $this->randomMachineName()]);
+    $user1 = $this->createUser();
     $user1->addRole('editor');
     $user1->activate();
     $user1->save();

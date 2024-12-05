@@ -58,7 +58,7 @@ if (isset($GLOBALS['request']) && $GLOBALS['request']->headers->get(DebugCachabi
 }
 
 /**
- * Show all error messages with backtrace information, except during Behat runs.
+ * Show all error messages with backtrace information, except during Behat/Browserkit runs.
  * Those would fail dynamic page cache tests (at minimum).
  */
 if (getenv('HTTP_USER_AGENT') !== 'Symfony BrowserKit') {
@@ -96,8 +96,8 @@ $settings['skip_permissions_hardening'] = TRUE;
  *
  * @see https://wiki.php.net/rfc/expectations
  */
-assert_options(ASSERT_ACTIVE, TRUE);
-assert_options(ASSERT_EXCEPTION, TRUE);
+// See https://www.drupal.org/node/3391611
+ini_set('zend.assertions', 1);
 
 // If Memcache needs to be disabled, comment out this block.
 if($memcached_host = getenv('MEMCACHED_HOST')) {

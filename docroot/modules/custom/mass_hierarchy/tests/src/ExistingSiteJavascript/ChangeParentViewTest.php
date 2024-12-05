@@ -4,14 +4,11 @@ namespace Drupal\Tests\mass_hierarchy\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests move children action in the change_parents views.
  */
 class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * Loads the admin and logs in.
@@ -26,7 +23,7 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
    * Creates a random user.
    */
   private function createRandomUser($role) {
-    $user = User::create(['name' => $this->randomMachineName(20)]);
+    $user = $this->createUser();
     $user->addRole($role);
     // Also add editor role for testing Content Administrator permissions.
     if ($role == 'content_team') {

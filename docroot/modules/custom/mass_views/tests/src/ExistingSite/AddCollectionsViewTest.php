@@ -7,17 +7,14 @@ namespace Drupal\Tests\mass_views\ExistingSite;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests add media to collections bulk.
  */
 class AddCollectionsViewTest extends MassExistingSiteBase {
 
-  use LoginTrait;
   use MediaCreationTrait;
   use StringTranslationTrait;
 
@@ -27,7 +24,7 @@ class AddCollectionsViewTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin = $this->createUser();
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();

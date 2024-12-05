@@ -15,8 +15,11 @@ use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Url;
+use Drupal\mass_fields\FormAlter\TopicPageFormAlter;
+use Drupal\mass_fields\Plugin\Field\FieldWidget\EntityReferenceEditLinkAutocompleteWidget;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 
@@ -708,7 +711,7 @@ function mass_fields_paragraph_view(array &$build, EntityInterface $entity, Enti
 /**
  * Implements hook_entity_field_access().
  */
-function mass_fields_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+function mass_fields_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
   // This is being used to hide the custom HTML field from all roles without permission.
   // At this point only Admin have access.
   if ($operation === 'edit') {
@@ -872,6 +875,7 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
  */
 function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInterface $form_state) {
   _mass_fields_form_node_topic_page_edit_restrict_fields($form, $form_state);
+  \Drupal::classResolver(TopicPageFormAlter::class)->topicFieldsControlAccess($form, $form_state);
 }
 
 /**
@@ -889,15 +893,55 @@ function mass_fields_field_widget_single_element_entity_reference_paragraphs_for
  * Approach comes from https://stackoverflow.com/a/66096376/265501https://stackoverflow.com/a/66096376/265501.
  */
 function mass_fields_field_widget_single_element_image_image_form_alter(&$element, FormStateInterface $form_state, $context) {
-  if (in_array($element['#field_name'], ['field_featured_item_highlight', 'field_featured_item_image'])) {
-    $element['#process'][] = 'mass_fields_image_widget_alt_help_text_process';
+  $field_process_map = [
+    'field_featured_item_highlight' => '_mass_fields_image_widget_alt_help_text_process',
+    'field_featured_item_image' => '_mass_fields_image_widget_alt_help_text_process',
+    'field_event_image' => '_mass_fields_event_image_widget_alt_help_text_process',
+    'field_event_logo' => '_mass_fields_event_image_widget_alt_help_text_process',
+  ];
+
+  // Handle fields that have a direct mapping
+  if (isset($field_process_map[$element['#field_name']])) {
+    $element['#process'][] = $field_process_map[$element['#field_name']];
+  }
+
+  // Handle special cases with additional conditions
+  if ($element['#field_name'] === 'field_image' && isset($element['#field_parents'])) {
+    if (in_array('field_info_details_sections', $element['#field_parents']) || in_array('field_organization_sections', $element['#field_parents'])) {
+      $element['#process'][] = '_mass_fields_image_paragraph_widget_alt_help_text_process';
+    }
   }
 }
 
-function mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
+/**
+ * Helper function to change alt text.
+ */
+function _mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
   if (isset($element['alt'])) {
     $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
-    $element['alt']['#description'] = new \Drupal\Core\StringTranslation\TranslatableMarkup($text);
+    $element['alt']['#description'] = new TranslatableMarkup($text);
+  }
+  return $element;
+}
+
+/**
+ * Helper function to change alt text.
+ */
+function _mass_fields_image_paragraph_widget_alt_help_text_process($element, &$form_state, $form) {
+  if (isset($element['alt'])) {
+    $text = 'Alternative Text is read by screen readers and should be a concise description of the image’s purpose. If the image is purely decorative, leave this field blank.';
+    $element['alt']['#description'] = new TranslatableMarkup($text);
+  }
+  return $element;
+}
+
+/**
+ * Helper function to change alt text.
+ */
+function _mass_fields_event_image_widget_alt_help_text_process($element, &$form_state, $form) {
+  if (isset($element['alt'])) {
+    $text = 'Enter a short description of the image to be used by screen readers ONLY if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank.';
+    $element['alt']['#description'] = new TranslatableMarkup($text);
   }
   return $element;
 }
@@ -917,7 +961,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
 
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_header' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_header' || $paragraph_entity_reference_field_name == 'field_info_details_header_media' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
@@ -937,6 +981,25 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
             ],
           ];
           $element['subform']['field_text_overlay_color']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
+          $element['subform']['field_use_half_image']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'image'],
+            ],
+            'invisible' => [
+              $selector => ['value' => 'color'],
+            ],
+          ];
+          $element['subform']['field_image']['#states'] = [
+            'required' => [
+              $selector => ['value' => 'image'],
+            ],
             'visible' => [
               $selector => ['value' => 'image'],
             ],
@@ -1033,8 +1096,12 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
 
         case 'iframe':
           $dependee_field_name = 'field_iframe_height_config';
-          $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
-
+          if ($paragraph_entity_reference_field_name == 'field_info_details_header_media') {
+            $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          }
+          else {
+            $selector = sprintf('input[name="%s[%d][subform][%s][%d][subform][%s]"]', $element['#field_parents'][0], $element['#field_parents'][1], $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          }
           // Dependent fields.
           $element['subform']['field_verify_iframe_100_confirm']['widget']['value']['#states'] = [
             'required' => [
@@ -1110,6 +1177,7 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
 function mass_fields_entity_presave(EntityInterface $entity) {
   if ($entity instanceof Node || $entity instanceof Paragraph) {
     // Get the URL replacement service.
+    /** @var  \Drupal\mass_fields\MassUrlReplacementService $urlReplacementService */
     $urlReplacementService = \Drupal::service('mass_fields.url_replacement_service');
 
     foreach ($entity->getFields() as $field) {
@@ -1122,6 +1190,88 @@ function mass_fields_entity_presave(EntityInterface $entity) {
           }
         }
       }
+      elseif ($fieldType === 'link') {
+        foreach ($field as $item) {
+          if ($item->uri) {
+            if (strpos($item->uri, 'internal:') === 0) {
+              $url = substr($item->uri, strlen('internal:'));
+              $processed = $urlReplacementService->processLink($url);
+              if ($processed['changed']) {
+                $item->uri = 'internal:' . $processed['link'];
+              }
+            }
+            elseif (preg_match('/(https?:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)(\/download|\/|$)|files\/)/', $item->uri)) {
+              $processed = $urlReplacementService->processLink($item->uri);
+              if ($processed['changed']) {
+                $item->uri = 'internal:' . $processed['link'];
+              }
+            }
+          }
+        }
+      }
     }
   }
+}
+
+/**
+ * Implements hook_field_widget_info_alter().
+ */
+function mass_fields_field_widget_info_alter(array &$info) {
+  $info['entity_reference_autocomplete']['class'] = EntityReferenceEditLinkAutocompleteWidget::class;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_fields_preprocess_field_multiple_value_form(&$variables) {
+  if (!isset($variables['element'][0]['_link'])) {
+    return;
+  }
+
+  // Adds link column to the table header.
+  $variables['table']['#header'][] = t('Edit Entity', [], ['context' => 'Link']);
+  $element = $variables['element'];
+  // Copied some part of the code from the another hook just to add the correct
+  // values to the render array.
+  /* @see \template_preprocess_field_multiple_value_form() */
+  foreach (Element::children($element) as $key) {
+    if ($key === 'add_more') {
+      $variables['button'] = &$element[$key];
+    }
+    else {
+      $items[] = &$element[$key];
+    }
+  }
+
+  foreach ($items as $item) {
+    $order_class = $element['#field_name'] . '-delta-order';
+    $item['_weight']['#attributes']['class'] = [$order_class];
+    // Remove weight and link form elements from item render array,
+    // so they can be rendered in a separate table column.
+    $delta_element = $item['_weight'];
+    $link_element = $item['_link'] ?? NULL;
+    unset($item['_weight']);
+    unset($item['_link']);
+
+    // Render actions in a separate column.
+    $actions = [];
+    if (isset($item['_actions'])) {
+      $actions = $item['_actions'];
+      unset($item['_actions']);
+    }
+
+    $cells = [
+      ['data' => '', 'class' => ['field-multiple-drag']],
+      ['data' => $item],
+      ['data' => $actions],
+      ['data' => $delta_element, 'class' => ['delta-order']],
+      // Adds link element to the render array.
+      ['data' => $link_element, 'class' => ['reference-link']],
+    ];
+    $rows[] = [
+      'data' => $cells,
+      'class' => ['draggable'],
+    ];
+  }
+  $variables['table']['#rows'] = $rows;
 }

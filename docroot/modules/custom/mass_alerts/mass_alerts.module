@@ -253,25 +253,36 @@ function mass_alerts_mail($key, &$message, $params) {
  */
 function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
   // Only send notifications after an alert has been published.
-  if ($node->bundle() === "sitewide_alert" && !MassModeration::isPrepublish($node)) {
+  if ($node->bundle() === "sitewide_alert") {
     // Only send notifications if the alert is site-wide.
-    $langcode = $node->language()->getId();
-    $email_addresses = \Drupal::state()->get('mass_alerts.alert_emails');
-    if (!empty($email_addresses)) {
-      $message_body = 'A sitewide alert was added or updated on Mass.gov (https://www.mass.gov):' . "\r\n\r\n" . $node->title->value . "\r\n\r\n";
-      if ($node->hasField('field_sitewide_alert')) {
-        $paragraph = $node->get('field_sitewide_alert')->referencedEntities();
-        foreach ($paragraph as $p) {
-          if ($p->hasField('field_sitewide_alert_message')) {
-            $value[] = $p->get('field_sitewide_alert_message')->value;
+    // Get the current moderation state.
+    $current_state = $node->getModerationState()->getString();
+
+    // Check if this is an update (node->original exists) to get the previous state.
+    $previous_state = NULL;
+    if (!empty($node->original)) {
+      $previous_state = $node->original->getModerationState()->getString();
+    }
+
+    if ($current_state == MassModeration::PUBLISHED || $previous_state == MassModeration::PUBLISHED) {
+      $langcode = $node->language()->getId();
+      $email_addresses = \Drupal::state()->get('mass_alerts.alert_emails');
+      if (!empty($email_addresses)) {
+        $message_body = 'A sitewide alert was added or updated on Mass.gov (https://www.mass.gov):' . "\r\n\r\n" . $node->title->value . "\r\n\r\n";
+        if ($node->hasField('field_sitewide_alert')) {
+          $paragraph = $node->get('field_sitewide_alert')->referencedEntities();
+          foreach ($paragraph as $p) {
+            if ($p->hasField('field_sitewide_alert_message')) {
+              $value[] = $p->get('field_sitewide_alert_message')->value;
+            }
           }
+          $message_body .= implode("\r\n", $value);
         }
-        $message_body .= implode("\r\n", $value);
-      }
-      foreach ($email_addresses as $to_email) {
-        \Drupal::service('plugin.manager.mail')->mail('mass_alerts',
-          'mass_alerts_sitewide', $to_email, $langcode,
-          ['message' => $message_body, 'subject' => $node->title->value]);
+        foreach ($email_addresses as $to_email) {
+          \Drupal::service('plugin.manager.mail')->mail('mass_alerts',
+            'mass_alerts_sitewide', $to_email, $langcode,
+            ['message' => $message_body, 'subject' => $node->title->value]);
+        }
       }
     }
   }

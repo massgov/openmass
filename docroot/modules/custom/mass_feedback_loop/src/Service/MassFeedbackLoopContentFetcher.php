@@ -14,10 +14,8 @@ use Drupal\Core\Pager\PagerManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Url;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Service class for interacting with external Mass.gov API.
@@ -48,8 +46,6 @@ class MassFeedbackLoopContentFetcher {
   const EXTERNAL_API_CONFIG = [
     'api_endpoints' => [
       'feedback_endpoint' => 'feedback/',
-      'tags_endpoint' => 'tags/',
-      'tag_lookup_endpoint' => 'tag_lookup/',
       'label_lookup_endpoint' => 'labels/',
     ],
     'api_headers' => [
@@ -125,7 +121,7 @@ class MassFeedbackLoopContentFetcher {
     ClientFactory $http_client_factory,
     LoggerInterface $logger,
     EntityTypeManagerInterface $entity_type_manager,
-    PagerManagerInterface $pager_manager
+    PagerManagerInterface $pager_manager,
   ) {
     $this->currentUser = $current_user;
     $this->database = $database;
@@ -157,7 +153,7 @@ class MassFeedbackLoopContentFetcher {
    * @return array
    *   Array of NIDs for content flagged by user.
    */
-  public function fetchFlaggedContent($flag_id = 'watch_content', AccountProxy $account = NULL, $title_order = 'ASC') {
+  public function fetchFlaggedContent($flag_id = 'watch_content', ?AccountProxy $account = NULL, $title_order = 'ASC') {
     // Uses current user's account if none is provided.
     if (empty($account)) {
       $account = $this->currentUser;
@@ -171,42 +167,12 @@ class MassFeedbackLoopContentFetcher {
   }
 
   /**
-   * Fetches all tags from Mass.gov API.
-   *
-   * @return array
-   *   Array of all existing tags in human-readable format, keyed by ID.
-   */
-  public function fetchAllTags() {
-    try {
-      $request = $this->httpClient->get(self::EXTERNAL_API_CONFIG['api_endpoints']['tag_lookup_endpoint'], [
-        'json' => [
-          'author_id' => $this->currentUser->id(),
-        ],
-      ]);
-      $response = Json::decode($request->getBody());
-      $tags = [];
-      foreach ($response as $tag) {
-        if (!empty($tag['tag_id']) && !empty($tag['tag_name'])) {
-          $tags[$tag['tag_id']] = $tag['tag_name'];
-        }
-      }
-      // Sorts array values alphabetically.
-      asort($tags);
-      return $tags;
-    }
-    catch (RequestException $e) {
-      $this->handleRequestException($e);
-      return [];
-    }
-  }
-
-  /**
    * Fetches feedback from Mass.gov API.
    *
    * @param array $feedback_api_params
    *   Parameters to be sent to the feedback API's fetch feedback endpoint.
    *   Possible keys: 'org_id', 'node_id', 'author_id', 'date_from',
-   *   'date_to', 'tag_id', 'info_found', 'sort_by', 'page'.
+   *   'date_to', 'info_found', 'sort_by', 'page'.
    *
    * @return array
    *   Decoded JSON data.
@@ -283,67 +249,6 @@ class MassFeedbackLoopContentFetcher {
   }
 
   /**
-   * Adds a tag to a piece of feedback via the external API.
-   *
-   * @param int $comment_id
-   *   Comment ID number.
-   * @param int $tag_id
-   *   Tag ID number.
-   */
-  public function addTag($comment_id, $tag_id) {
-    try {
-      $this->httpClient->post(self::EXTERNAL_API_CONFIG['api_endpoints']['tags_endpoint'], [
-        'json' => [
-          'comment_id' => $comment_id,
-          'tag_id' => $tag_id,
-          'author_id' => $this->currentUser->id(),
-        ],
-      ]);
-    }
-    catch (RequestException $e) {
-      $this->handleRequestException($e);
-    }
-  }
-
-  /**
-   * Removes a tag from a piece of feedback via the external API.
-   *
-   * @param int $comment_id
-   *   Comment ID number.
-   * @param int $tag_id
-   *   Tag ID number.
-   * @param int $tag_unique_id
-   *   Unique tag ID number (generated on a per-feedback basis).
-   */
-  public function removeTag($comment_id, $tag_id, $tag_unique_id) {
-    try {
-      $this->httpClient->delete(self::EXTERNAL_API_CONFIG['api_endpoints']['tags_endpoint'], [
-        'json' => [
-          'comment_id' => $comment_id,
-          'tag_id' => $tag_id,
-          'id' => $tag_unique_id,
-          'author_id' => $this->currentUser->id(),
-        ],
-      ]);
-    }
-    catch (RequestException $e) {
-      $this->handleRequestException($e);
-    }
-  }
-
-  /**
-   * Custom exception handler for making requests to external API.
-   *
-   * @param \GuzzleHttp\Exception\RequestException $e
-   *   Exception object.
-   */
-  protected function handleRequestException(RequestException $e) {
-    // Throws error in case of httpClient request failure.
-    $this->logger->error($e->getRequest()->getMethod() . ' ' . $e->getRequest()->getUri() . ':<br/>' . $e->getResponse()->getBody());
-    throw new NotFoundHttpException();
-  }
-
-  /**
    * Helper function to format URL query parameters for the feeedback API.
    *
    * @param array $params
@@ -388,8 +293,6 @@ class MassFeedbackLoopContentFetcher {
    *
    * @param array $results
    *   Array of feedback data from external API.
-   * @param array $all_tags
-   *   Array of all existing tags in human-readable format, keyed by ID.
    * @param bool $is_watching_content
    *   Boolean to check whether user is currently watching content.
    * @param array $limit_fields
@@ -398,7 +301,7 @@ class MassFeedbackLoopContentFetcher {
    * @return array
    *   Render array.
    */
-  public function buildFeedbackTable(array $results, array $all_tags, $is_watching_content = TRUE, array $limit_fields = []) {
+  public function buildFeedbackTable(array $results, $is_watching_content = TRUE, array $limit_fields = []) {
     // Builds base table.
     $table = [
       '#type' => 'table',
@@ -439,17 +342,6 @@ class MassFeedbackLoopContentFetcher {
         ],
         'class' => ['feedback-wide'],
       ];
-    }
-
-    if (empty($limit_fields) || in_array('tags', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Tags'),
-        ],
-      ];
-      // Adds an additional empty column to match results column count.
-      // Needed for the 'Add Tag' results column.
-      $table['#header'][] = [];
     }
 
     // Builds table rows from feedback.
@@ -505,84 +397,6 @@ class MassFeedbackLoopContentFetcher {
             $row['text'] = [
               '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span>',
               '#wrapper_attributes' => ['class' => 'survey-response'],
-            ];
-          }
-
-          if (empty($limit_fields) || in_array('tags', $limit_fields)) {
-            // Builds Tags section.
-            $feedback_tags = [];
-            if (isset($feedback['tags']) && !empty($tags = $feedback['tags'])) {
-              foreach ($tags as $tag) {
-                // Creates link to Remove Tag form with necessary data as arguments.
-                $url = Url::fromRoute(
-                  'mass_feedback_loop.open_modal_tag_form',
-                  [
-                    'action' => 'remove',
-                    'comment_id' => $feedback['id'],
-                    'tag_id' => $tag['tag_id'],
-                    'tag_unique_id' => $tag['id'],
-                  ],
-                  [
-                    'attributes' => [
-                      'class' => [
-                        'link-open-modal-remove-tag',
-                        'use-ajax',
-                      ],
-                      'data-dialog-type' => 'modal',
-                      'title' => $this->t('Remove tag'),
-                    ],
-                  ]
-                );
-                $link = Link::fromTextAndUrl($this->t('Remove tag'), $url)->toString();
-                $unique_feedback_tag_id = "feedback-$feedback[id]-tag-$tag[tag_id]";
-                $feedback_tags[] = [
-                  '#prefix' => "<div class='button' id='$unique_feedback_tag_id'>",
-                  '#markup' => $all_tags[$tag['tag_id']] . ' ' . $link,
-                  '#suffix' => '</div>',
-                ];
-              }
-            }
-            else {
-              // When there are no tags to show, instead of using the `#empty` form item-list property, we let there be
-              // one item in the list called "Not tagged". This way a list "ul" element is rendered, which helps in
-              // showing new tags added via ajax later.
-              $feedback_tags[] = [
-                '#markup' => '<span id="feedback-' . $feedback['id'] . '-not-tagged">Not tagged</span>',
-              ];
-            }
-
-            // Creates item list to render tag-related content.
-            $row['tags'] = [
-              '#type' => 'markup',
-              '#theme' => 'item_list',
-              '#list_type' => 'ul',
-              '#attributes' => [
-                'id' => 'feedback-tags-list',
-                'class' => [
-                  'feedback-' . $feedback['id'] . '-tags-list',
-                ],
-              ],
-              '#items' => $feedback_tags,
-            ];
-
-            // Creates link for adding a tag.
-            $row['add_tag'] = [
-              '#type' => 'link',
-              '#title' => $this->t('Add tag'),
-              // Creates link to Add Tag form with necessary data as arguments.
-              '#url' => Url::fromRoute('mass_feedback_loop.open_modal_tag_form', [
-                'action' => 'add',
-                'comment_id' => $feedback['id'],
-              ]),
-              '#attributes' => [
-                'class' => [
-                  'link-open-modal-add-tag',
-                  'use-ajax',
-                  'button',
-                ],
-                'data-dialog-type' => 'modal',
-                'title' => $this->t('Add tag'),
-              ],
             ];
           }
 

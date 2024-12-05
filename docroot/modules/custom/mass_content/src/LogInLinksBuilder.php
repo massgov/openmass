@@ -106,6 +106,7 @@ class LogInLinksBuilder {
                 ],
               ],
             ],
+            'class' => 'gtm-login-contextual',
             'links' => $links,
           ],
           '#cache' => [

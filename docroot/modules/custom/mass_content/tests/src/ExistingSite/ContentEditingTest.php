@@ -2,16 +2,12 @@
 
 namespace Drupal\Tests\mass_content\ExistingSite;
 
-use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures editor can save the nodes.
  */
 class ContentEditingTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   const QAG_PATHS = [
     "/forms/qag-form-with-file-uploads",
@@ -52,7 +48,7 @@ class ContentEditingTest extends MassExistingSiteBase {
    * Creates an editor, saves it and returns it.
    */
   private function createEditor() {
-    $editor = User::create(['name' => $this->randomMachineName()]);
+    $editor = $this->createUser();
     $editor->addRole('editor');
     $editor->activate();
     $editor->save();

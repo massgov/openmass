@@ -127,12 +127,12 @@ class BigqueryStorage implements BigqueryStorageInterface {
     $time = \Drupal::time()->getRequestTime();
     // Fetch data from Bigquery.
     $query =
-        'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_testing.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
+      'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_prod.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
     $queryResults = $this->bigqueryClient->runQuery($query);
     foreach ($queryResults as $row) {
       $nos_per_1000 = $row['nosPerKUniquePageViews'];
       $pageviews = $row['totalPageViews'];
-      $total_no = $row['negativeSurveys'];
+      $total_no = $row['negativeSurveys'] ?? 0;
       $this->database->merge($this->table)
         ->key('nid', $row['nodeId'])
         ->fields([
@@ -151,6 +151,28 @@ class BigqueryStorage implements BigqueryStorageInterface {
         ->execute();
     }
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getRecords(array $ids): array {
+
+    if (getenv('GOOGLE_APPLICATION_CREDENTIALS') === FALSE) {
+      $this->logger->warning('Could not find credentials for BigQuery connection.');
+      return [];
+    }
+    // Delete any previously existing records for these IDs.
+    $this->database->delete($this->table)->condition('nid', $ids, 'IN')->execute();
+    // Fetch data from Bigquery.
+    $query =
+      'SELECT nodeId, totalPageViews, nosPerKUniquePageViews, ejectRate, negativeSurveys, positiveSurveys, brokenLinks, gradeLevel FROM `MassgovGA4_prod.aggregated_node_analytics` WHERE nodeId IN(' . implode(', ', $ids) . ')';
+    $queryResults = $this->bigqueryClient->runQuery($query);
+    $result = [];
+    foreach ($queryResults as $row) {
+      $result[$row['nodeId']] = $row;
+    }
+    return $result;
   }
 
   /**

@@ -2,19 +2,17 @@
 
 namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
-use Drupal\user\Entity\User;
+use Behat\Mink\Element\DocumentElement;
+use Behat\Mink\Element\NodeElement;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.
  */
 class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
-  use LoginTrait;
-
-  private \Behat\Mink\Element\NodeElement $view;
-  private \Behat\Mink\Element\DocumentElement $page;
+  private NodeElement $view;
+  private DocumentElement $page;
 
   /**
    * {@inheritdoc}
@@ -26,7 +24,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->page = $this->getSession()->getPage();
 
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin = $this->createUser();
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();

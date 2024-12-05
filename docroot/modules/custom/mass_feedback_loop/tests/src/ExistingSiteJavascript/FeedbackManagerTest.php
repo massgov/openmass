@@ -3,16 +3,12 @@
 namespace Drupal\Tests\mass_feedback_loop\ExistingSiteJavascript;
 
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "Feedback Manager" page at admin/ma-dash/feedback.
  */
 class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * The element for the entire document.
@@ -41,7 +37,7 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
     $this->page = $this->getSession()->getPage();
 
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin = $this->createUser();
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();
@@ -134,7 +130,6 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
     $this->checkTextFilter('Start Date', $yesterday);
     $this->checkTextFilter('End Date', $today);
     $this->checkSelectFilter('Sort by', ['Date (Newest first)', 'Date (Oldest first)']);
-    $this->checkSelectFilter('Filter by feedback tag', ['Information Request', 'Fishing', 'Boats and Boating']);
     $this->checkSelectFilter('filter_by_info_found', ['true', 'false', 0]);
     $this->checkCheckboxFilter('Watched pages only');
     $this->checkCheckboxFilter('Show feedback flagged as low quality');

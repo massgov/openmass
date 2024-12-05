@@ -23,7 +23,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
    *
    * @dataProvider accordionDataProvider
    */
-  public function testAccordion(string $path, string $css_selector, \Closure $before_function = NULL): void {
+  public function testAccordion(string $path, string $css_selector, ?\Closure $before_function = NULL): void {
     $session = $this->getSession();
     $this->drupalGet($path);
     if ($before_function) {
@@ -86,7 +86,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
    *     - An optional function to call before running the test case, accepting
    *       a reference to the test object.
    */
-  public function accordionDataProvider(): array {
+  public static function accordionDataProvider(): array {
     return [
       '_QAG Binder_Report Table of Contents' => [
         'report/qag-binderreport',

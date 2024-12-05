@@ -17,7 +17,7 @@ final class MassEntityUsageCommands extends DrushCommands {
     protected EntityUsageQueueBatchManager $queueBatchManager,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected ConfigFactoryInterface $config_factory,
-    protected Connection $database
+    protected Connection $database,
   ) {
     parent::__construct();
   }

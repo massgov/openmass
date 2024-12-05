@@ -1,69 +1,182 @@
-uuid: 984946dd-9a95-4026-bead-2f40b1086716
+uuid: 24246df9-b5a9-4f80-8a0b-0189127c55d9
 langcode: en
 status: true
 dependencies:
   config:
     - filter.format.rules_of_court_section
   module:
-    - ckeditor
+    - ckeditor5
 format: rules_of_court_section
-editor: ckeditor
+editor: ckeditor5
 settings:
   toolbar:
-    rows:
-      -
-        -
-          name: Formatting
-          items:
-            - Bold
-            - Italic
-            - Strike
-            - Superscript
-            - Subscript
-            - RemoveFormat
-        -
-          name: Linking
-          items:
-            - DrupalLink
-            - DrupalUnlink
-            - MediaEntityDownload
-        -
-          name: Lists
-          items:
-            - BulletedList
-            - NumberedList
-        -
-          name: Media
-          items:
-            - Blockquote
-            - file_browser
-            - Table
-            - HorizontalRule
-        -
-          name: 'Block Formatting'
-          items:
-            - Format
-            - Styles
-        -
-          name: Tools
-          items:
-            - Maximize
-            - ShowBlocks
-            - SpecialChar
-            - Source
+    items:
+      - bold
+      - italic
+      - strikethrough
+      - superscript
+      - subscript
+      - removeFormat
+      - '|'
+      - link
+      - mediaEntityDownload
+      - '|'
+      - bulletedList
+      - numberedList
+      - '|'
+      - blockQuote
+      - file_browser
+      - insertTable
+      - horizontalLine
+      - '|'
+      - heading
+      - style
+      - '|'
+      - Fullscreen
+      - showBlocks
+      - specialCharacters
+      - sourceEditing
   plugins:
-    stylescombo:
-      styles: ul.ma__checklist|Checklist
-    mediaentitydownload:
-      entity_browser: media_browser
-    drupallink:
+    ckeditor5_heading:
+      enabled_headings:
+        - heading2
+        - heading3
+        - heading4
+        - heading5
+        - heading6
+    ckeditor5_list:
+      properties:
+        reversed: false
+        startIndex: true
+        styles: false
+      multiBlock: true
+    ckeditor5_paste_filter_pasteFilter:
+      enabled: true
+      filters:
+        -
+          enabled: true
+          weight: -10
+          search: '<o:p><\/o:p>'
+          replace: ''
+        -
+          enabled: true
+          weight: -9
+          search: '(<[^>]*) (style="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -8
+          search: '(<[^>]*) (face="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -7
+          search: '(<[^>]*) (class="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -6
+          search: '(<[^>]*) (valign="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -5
+          search: '<font[^>]*>'
+          replace: ''
+        -
+          enabled: true
+          weight: -4
+          search: '<\/font>'
+          replace: ''
+        -
+          enabled: true
+          weight: -3
+          search: '<span[^>]*>'
+          replace: ''
+        -
+          enabled: true
+          weight: -2
+          search: '<\/span>'
+          replace: ''
+        -
+          enabled: true
+          weight: -1
+          search: '<p>&nbsp;<\/p>'
+          replace: ''
+        -
+          enabled: true
+          weight: 0
+          search: '<p><\/p>'
+          replace: ''
+        -
+          enabled: true
+          weight: 1
+          search: '<b><\/b>'
+          replace: ''
+        -
+          enabled: true
+          weight: 2
+          search: '<i><\/i>'
+          replace: ''
+        -
+          enabled: true
+          weight: 3
+          search: '<a name="OLE_LINK[^"]*">(.*?)<\/a>'
+          replace: $1
+    ckeditor5_sourceEditing:
+      allowed_tags:
+        - '<cite>'
+        - '<dl>'
+        - '<dt>'
+        - '<dd>'
+        - '<span>'
+        - '<img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption>'
+        - '<a hreflang>'
+        - '<blockquote cite>'
+        - '<h2 id>'
+        - '<h3 id>'
+        - '<h4 id>'
+        - '<h5 id>'
+        - '<h6 id>'
+        - '<drupal-entity data-entity-type data-entity-substitution data-embed-button>'
+    ckeditor5_style:
+      styles:
+        -
+          label: 'No List Style'
+          element: '<ul class="list-style-none">'
+        -
+          label: Disc
+          element: '<ul class="list-style-disc">'
+        -
+          label: Circle
+          element: '<ul class="list-style-circle">'
+        -
+          label: Square
+          element: '<ul class="list-style-square">'
+        -
+          label: Decimal
+          element: '<ol class="list-style-decimal">'
+        -
+          label: 'Decimal Leading Zero'
+          element: '<ol class="list-style-decimal-leading-zero">'
+        -
+          label: 'Upper Roman'
+          element: '<ol class="list-style-upper-roman">'
+        -
+          label: 'Lower Roman'
+          element: '<ol class="list-style-lower-roman">'
+        -
+          label: 'Upper Alpha'
+          element: '<ol class="list-style-upper-alpha">'
+        -
+          label: 'Lower Alpha'
+          element: '<ol class="list-style-lower-alpha">'
+    linkit_extension:
       linkit_enabled: true
       linkit_profile: author
+    media_entity_download_ckeditor:
+      entity_browser_enabled: true
+      enabled_entity_browsers:
+        - media_browser
 image_upload:
   status: false
-  scheme: public
-  directory: inline-images
-  max_size: ''
-  max_dimensions:
-    width: null
-    height: null

@@ -10,6 +10,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -20,10 +21,12 @@ use Drupal\Core\Link;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\editor\Entity\Editor;
 use Drupal\file\Entity\File;
 use Drupal\link\LinkItemInterface;
+use Drupal\mass_utility\EntityAlter\ImageStyle;
 use Drupal\node\Entity\Node;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
@@ -79,9 +82,55 @@ function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_sta
 }
 
 /**
+ * Recurse through the provided form and hide any text_format elements.
+ *
+ * @param array $form
+ *   The form in which to iterate to hide the text_format elements.
+ */
+function _mass_utility_hide_text_format_elements(array &$form) {
+  foreach (Element::children($form) as $key) {
+    if (!isset($form[$key]['#type']) || $form[$key]['#type'] == 'container') {
+      _mass_utility_hide_text_format_elements($form[$key]);
+    }
+    elseif ($form[$key]['#type'] == 'text_format') {
+      $form[$key]['#after_build'][] = '_mass_utility_hide_text_format_element';
+    }
+  }
+}
+
+/**
+ * Hide a given text_format element.
+ *
+ * @param array $element
+ *   The element to hide.
+ *
+ * @return array
+ *   The hidden element.
+ */
+function _mass_utility_hide_text_format_element(array $element) {
+  if (!empty($element['format'])) {
+    $element['format']['#attributes']['class'][] = 'hidden';
+  }
+  return $element;
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Hide text_format form the form.
+  $current_user = \Drupal::currentUser();
+  if (!$current_user->hasRole('administrator') && !$current_user->hasRole('content_team')) {
+    _mass_utility_hide_text_format_elements($form);
+    // Initialize CacheableMetadata.
+    $cache_metadata = new CacheableMetadata();
+    // Add cache context for roles.
+    $cache_metadata->addCacheContexts(['user.roles']);
+    // Attach cache metadata to the form.
+    $cache_metadata->applyTo($form);
+  }
+
   /** @var \Drupal\node\NodeForm $node_form */
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
@@ -96,6 +145,21 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
       // Only display our element in entity edit forms.
       $form['access_unpublished_settings']['#access'] = $is_operation_edit_default;
     }
+    // Remove 'Unlimited' option for Temporary Unpublished Access.
+    $options = $form['access_unpublished_settings']['duration']['#options'];
+    // The array key for 'Unlimited' access is '-1'.
+    unset($options['-1']);
+    $form['access_unpublished_settings']['duration']['#options'] = $options;
+
+    $temporary_url = Url::fromUri('https://www.mass.gov/kb/share-content');
+    $form['access_unpublished_settings']['description'] = [
+      '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url)->toString(),
+      '#weight' => -30,
+    ];
+
+    // Add help text link for Temporary Unpublished Access.
+    $form['access_unpublished_settings']['duration']['#options'][3628800] =
+      t('6 weeks');
   }
 
   if (isset($form['url_redirects']) && empty($form['url_redirects']['#access'])) {
@@ -108,32 +172,12 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     $form['rabbit_hole']['#access'] = $is_operation_edit_default;
   }
 
-  // Remove 'Unlimited' option for Temporary Unpublished Access.
-  if (isset($form['access_unpublished_settings'])) {
-    $options = $form['access_unpublished_settings']['duration']['#options'];
-    // The array key for 'Unlimited' access is '-1'.
-    unset($options['-1']);
-    $form['access_unpublished_settings']['duration']['#options'] = $options;
-  }
-
   // Add help text link for Scheduling options.
   if (isset($form['publish_on']['widget'][0]['value']['#description'])) {
-    $schedule_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/schedule-publishing-and-unpublishing');
+    $schedule_url = Url::fromUri('https://www.mass.gov/kb/schedule-content');
     $form['publish_on']['widget'][0]['value']['#description'] = new FormattableMarkup('Enter a date. The time part is optional. The default time is 09:00:00. Leave the date blank for no scheduled publishing.' . ' @schedule', [
       '@schedule' => Link::fromTextAndUrl('Learn how to schedule your content for publishing or unpublishing.', $schedule_url)->toString(),
     ]);
-  }
-
-  // Add help text link for Temporary Unpublished Access.
-  if (isset($form['access_unpublished_settings'])) {
-    $temporary_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/temporary-unpublished-access');
-    $form['access_unpublished_settings']['description'] = [
-      '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url)->toString(),
-      '#weight' => -30,
-    ];
-
-    $form['access_unpublished_settings']['duration']['#options'][3628800] =
-      t('6 weeks');
   }
 
   // Hide the preview button when a node is unsaved.
@@ -470,7 +514,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       'field_social_links',
     ];
     if (in_array($field_name, $social_link_fields)) {
-      $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, X (formerly Twitter), Threads, Instagram, LinkedIn, or Medium.',
+      $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, X (formerly Twitter), Threads, Instagram, LinkedIn, Vimeo or Medium.',
         [
           '%front' => '<front>',
           '%add-node' => '/node/add',
@@ -698,20 +742,22 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
 function mass_utility_entity_embed_context_alter(array &$context, EntityInterface $entity) {
   if ($entity instanceof File) {
 
-    if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
-      if (isset($context['class'])) {
-        $context['class'] .= " half-width";
+    if (!empty($context['data-entity-embed-display-settings']['image_style'])) {
+      if ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_half_width') {
+        if (isset($context['class'])) {
+          $context['class'] .= " half-width";
+        }
+        else {
+          $context['class'] = "half-width";
+        }
       }
-      else {
-        $context['class'] = "half-width";
-      }
-    }
-    elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
-      if (isset($context['class'])) {
-        $context['class'] .= " full-width";
-      }
-      else {
-        $context['class'] = "full-width";
+      elseif ($context['data-entity-embed-display-settings']['image_style'] == 'embedded_full_width') {
+        if (isset($context['class'])) {
+          $context['class'] .= " full-width";
+        }
+        else {
+          $context['class'] = "full-width";
+        }
       }
     }
   }
@@ -1125,7 +1171,7 @@ function mass_utility_mail_alter(&$message) {
       $view_builder = \Drupal::entityTypeManager()
         ->getViewBuilder($contact_message->getEntityTypeId());
       $build = $view_builder->view($contact_message, 'mail');
-      $message['body'][] = \Drupal::service('renderer')->renderPlain($build);
+      $message['body'][] = \Drupal::service('renderer')->renderInIsolation($build);
   }
 }
 
@@ -1190,7 +1236,7 @@ function mass_utility_media_view(array &$build, EntityInterface $entity, EntityV
     $file = $entity->field_upload_file->entity;
 
     if ($file && $display->getComponent('calculated_file_size')) {
-      $file_size = strtoupper(format_size($file->getSize()));
+      $file_size = strtoupper(ByteSizeMarkup::create($file->getSize()));
 
       $build['calculated_file_size'] = [
         '#type' => 'markup',
@@ -1347,7 +1393,7 @@ function mass_utility_clean_file_managed() {
  * @param \Drupal\Core\Database\Connection $connection
  *   Optional database connection.
  */
-function mass_utility_delete_fids(array $bad_fids, Connection $connection = NULL) {
+function mass_utility_delete_fids(array $bad_fids, ?Connection $connection = NULL) {
   if (!$connection) {
     $connection = \Drupal::database();
   }
@@ -1372,7 +1418,8 @@ function mass_utility_query_linkit_entity_autocomplete_alter(AlterableInterface 
 /**
  * Implements hook_views_data_alter().
  *
- * Add a relationship between the node_field_data and node_field_revision tables.
+ * Add a relationship between the node_field_data and node_field_revision
+ * tables.
  *
  * As it stands, by default there's no way to get comprehensive infromation
  * about a node's most recent revision when using node_field_data as the base
@@ -1451,4 +1498,13 @@ function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_i
  */
 function mass_utility_ckeditor_css_alter(array &$css, Editor $editor) {
   $css[] = \Drupal::service('extension.list.module')->getPath('mass_utility') . '/css/ckeditor.css';
+}
+
+/**
+ * Implements hook__entity_type_build().
+ */
+function mass_utility_entity_type_build(&$entity_types) {
+  if (isset($entity_types['image_style'])) {
+    $entity_types['image_style']->setClass(ImageStyle::class);
+  }
 }

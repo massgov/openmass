@@ -830,6 +830,7 @@ display:
         type: mini
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 25
           total_pages: null
           id: 0
@@ -3180,63 +3181,31 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        type_1:
-          id: type_1
+        type_2:
+          id: type_2
           table: node_field_data
           field: type
-          relationship: vid
+          relationship: nid
           group_type: group
           admin_label: ''
           entity_type: node
           entity_field: type
           plugin_id: bundle
           operator: in
-          value:
-            advisory: advisory
-            alert: alert
-            page: page
-            binder: binder
-            campaign_landing: campaign_landing
-            contact_information: contact_information
-            curated_list: curated_list
-            decision: decision
-            decision_tree: decision_tree
-            decision_tree_branch: decision_tree_branch
-            decision_tree_conclusion: decision_tree_conclusion
-            error_page: error_page
-            event: event
-            executive_order: executive_order
-            fee: fee
-            form_page: form_page
-            guide_page: guide_page
-            how_to_page: how_to_page
-            info_details: info_details
-            interstitial: interstitial
-            location: location
-            location_details: location_details
-            news: news
-            org_page: org_page
-            person: person
-            regulation: regulation
-            action: action
-            rules: rules
-            service_page: service_page
-            stacked_layout: stacked_layout
-            topic_page: topic_page
-            utility_drawer: utility_drawer
+          value: {  }
           group: 1
           exposed: true
           expose:
-            operator_id: type_1_op
+            operator_id: type_2_op
             label: 'Content type'
             description: ''
             use_operator: false
-            operator: type_1_op
+            operator: type_2_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: type_1
+            identifier: type_2
             required: false
-            remember: true
+            remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
@@ -3251,7 +3220,10 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-            reduce: true
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -3303,6 +3275,116 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        uid_3:
+          id: uid_3
+          table: node_field_data
+          field: uid
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: uid
+          plugin_id: user_name
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: uid_3_op
+            label: Author
+            description: ''
+            use_operator: false
+            operator: uid_3_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid_3
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        uid_1:
+          id: uid_1
+          table: users_field_data
+          field: uid
+          relationship: revision_uid
+          group_type: group
+          admin_label: ''
+          entity_type: user
+          entity_field: uid
+          plugin_id: user_name
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: uid_1_op
+            label: 'Last revised by'
+            description: ''
+            use_operator: false
+            operator: uid_1_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -3411,6 +3493,101 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          relationship: vid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+          operator: in
+          value:
+            en: en
+            af: af
+            sq: sq
+            am: am
+            ar: ar
+            hy: hy
+            my: my
+            cv: cv
+            zh-hans: zh-hans
+            zh-hant: zh-hant
+            prs: prs
+            nl: nl
+            fr: fr
+            de: de
+            el: el
+            ht: ht
+            he: he
+            hi: hi
+            hmn: hmn
+            it: it
+            ja: ja
+            rw: rw
+            km: km
+            ko: ko
+            lo: lo
+            ne: ne
+            pst: pst
+            fa: fa
+            pl: pl
+            pt-br: pt-br
+            pt-pt: pt-pt
+            ro: ro
+            ru: ru
+            so: so
+            es: es
+            sw: sw
+            tw: tw
+            uk: uk
+            ur: ur
+            vi: vi
+          group: 1
+          exposed: true
+          expose:
+            operator_id: langcode_op
+            label: Language
+            description: ''
+            use_operator: false
+            operator: langcode_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: langcode
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: true
           is_grouped: false
           group_info:
             label: ''

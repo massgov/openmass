@@ -2,11 +2,8 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures access links for unpublished content are generated properly.
@@ -16,8 +13,6 @@ use weitzman\LoginTrait\LoginTrait;
  * array even if it doesn't have a value.
  */
 class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use LoginTrait;
 
   /**
    * To generate a unpublished access link.
@@ -68,7 +63,7 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
    */
   private function createAdmin() {
     // An admin is needed.
-    $admin = User::create(['name' => $this->randomMachineName()]);
+    $admin = $this->createUser();
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();

@@ -6,6 +6,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\GeneratedUrl;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\crop\Entity\Crop;
@@ -82,21 +83,32 @@ class Helper {
   /**
    * Provide the URL of an image.
    *
-   * @param object $entity
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The node with the field on it.
-   * @param string $style_name
+   * @param string|null $style_name
    *   (Optional) The name of an image style.
-   * @param string $field
-   *   The name of an the image field.
-   * @param int $delta
+   * @param string|null $field
+   *   The name of the image field.
+   * @param int|string|null $delta
    *   (Optional) the delta of the image field to display, defaults to 0.
    *
-   * @return string
+   * @return \Drupal\Core\GeneratedUrl|string
    *   The URL to the styled image, or to the original image if the style
    *   does not exist.
    */
-  public static function getFieldImageUrl($entity, $style_name = NULL, $field = NULL, $delta = 0) {
+  public static function getFieldImageUrl(ContentEntityInterface $entity, ?string $style_name = NULL, ?string $field = NULL, int|string|null $delta = 0): GeneratedUrl|string {
     $url = '';
+
+    if (!$entity->hasField($field)) {
+      \Drupal::logger('mayflower')
+        ->error('Field not found in method: @method, style name: @style_name, field @field', [
+          '@method' => __METHOD__,
+          '@style_name' => $style_name,
+          '@field' => $field,
+        ]
+      );
+      return $url;
+    }
 
     $fields = $entity->get($field);
 
@@ -147,6 +159,7 @@ class Helper {
         $url = $image->createFileUrl();
       }
     }
+
     return $url;
   }
 
@@ -829,11 +842,13 @@ class Helper {
    *   Which generates the heading before a section.
    * @param string $titleContext
    *   Add supplemental information to the heading.
+   * @param int $level
+   *   Heading level optional value.
    *
    * @return array
    *   Return structured array.
    */
-  public static function buildHours($hours, $title, $titleContext = NULL) {
+  public static function buildHours($hours, $title, $titleContext = NULL, $level = 5) {
     $rteElements = [];
 
     // Hours section.
@@ -858,9 +873,9 @@ class Helper {
 
       if (!empty($field['label']) && Helper::isFieldPopulated($entity, $field['label'])) {
         $rteElements[] = [
-          'path' => '@atoms/04-headings/heading-5.twig',
+          'path' => '@atoms/04-headings/heading-' . $level . '.twig',
           'data' => [
-            'heading5' => [
+            'heading' . $level => [
               'text' => Helper::fieldValue($entity, $field['label']),
             ],
           ],
@@ -900,6 +915,7 @@ class Helper {
           'property' => '',
           'rteElements' => $rteElements,
         ],
+        'headerIndent' => $level < 5 ? 'rich-text-override' : '',
       ],
     ];
   }
@@ -1076,13 +1092,13 @@ class Helper {
    * @param array &$cache_tags
    *   The array of node cache tags.
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
    *   [ [
-   *       'path' => '@molecules/contact-us.twig',
+   *       'path' => '@organisms/contact/contact-us.twig',
    *       'data' => [
    *         'contactUs' => [ contact us data structure ]
    *       ],
@@ -1102,7 +1118,7 @@ class Helper {
       }
 
       $optionalContentsContactUs[] = [
-        'path' => '@molecules/contact-us.twig',
+        'path' => '@organisms/contact/contact-us.twig',
         'data' => ['contactUs' => $contactUs],
       ];
     }
@@ -1120,13 +1136,13 @@ class Helper {
    * @param array $options
    *   An array of options for header contact.
    *
-   * @see @molecules/contact-us.twig
+   * @see @organisms/contact/contact-us.twig
    * @see @organisms/page-header/page-header.twig
    *
    * @return array
    *   Returns an array with the following structure:
    *   [ [
-   *       'path' => '@molecules/contact-us.twig',
+   *       'path' => '@organisms/contact/contact-us.twig',
    *       'data' => [
    *         'contactUs' => [ contact us data structure ]
    *       ],
@@ -1142,7 +1158,7 @@ class Helper {
       }
 
       $optionalContentsContactUs[] = [
-        'path' => '@molecules/contact-us.twig',
+        'path' => '@organisms/contact/contact-us.twig',
         'data' => ['contactUs' => $contactUs],
       ];
     }
@@ -1802,7 +1818,7 @@ class Helper {
     // Make sure the file exists before trying to fetch it and parse it as an
     // XML document.
     if (!file_exists($path)) {
-      trigger_error(sprintf('Not a valid file: "%s"', $path), E_USER_DEPRECATED);
+      @trigger_error(sprintf('Not a valid file: "%s"', $path), E_USER_DEPRECATED);
       return;
     }
     // For security reasons, we don't want to allow anything but an .svg file

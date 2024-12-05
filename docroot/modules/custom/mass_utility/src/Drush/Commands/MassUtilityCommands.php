@@ -6,13 +6,11 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Utils\StringUtils;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Client\ClientInterface;
 
 final class MassUtilityCommands extends DrushCommands {
@@ -23,7 +21,7 @@ final class MassUtilityCommands extends DrushCommands {
     protected Connection $connection,
     protected MessengerInterface $messenger,
     protected EntityTypeManagerInterface $entityTypeManager,
-    protected ClientInterface $httpClient
+    protected ClientInterface $httpClient,
   ) {
     parent::__construct();
   }
@@ -154,33 +152,6 @@ final class MassUtilityCommands extends DrushCommands {
   }
 
   /**
-   * Submits sitemap to Google.
-   *
-   * @throws \Exception
-   *
-   * @command ma:ping-google-sitemap
-   */
-  public function pingGoogleSitemap() {
-    $sitemap_url = Url::fromUri('base://sitemap.xml')
-      ->setAbsolute(TRUE)
-      ->toString();
-    $ping_url = "http://www.google.com/webmasters/tools/ping?sitemap={$sitemap_url}";
-    try {
-      $request = $this->httpClient->get($ping_url);
-      $this->logger()->notice(dt('Submitted the sitemap to %url and received response @code.', ['%url' => $ping_url, '@code' => $request->getStatusCode()]));
-    }
-    catch (RequestException $ex) {
-      $received = '';
-      if ($ex->hasResponse()) {
-        $response = $ex->getResponse();
-        $code = $response->getStatusCode();
-        $received = " and received response {$code}";
-      }
-      $this->logger()->alert(dt('Submitted the sitemap to %url' . $received, ['%url' => $ping_url]));
-    }
-  }
-
-  /**
    * Takes in google analytics 404 report and breaks it down by causes of 404.
    *
    * @param string $fullpath_ga_404_csv_file
@@ -257,14 +228,16 @@ final class MassUtilityCommands extends DrushCommands {
    *
    * @command ma:queue-revision-cleanup
    */
-  public function queueRevisionsCleanup(array $options = [
-    'batch' => 50,
-    'bundle' => NULL,
-    'idlist' => NULL,
-    'limit' => 200,
-    'offset' => 0,
-    'timestamp' => NULL,
-  ]) {
+  public function queueRevisionsCleanup(
+    array $options = [
+      'batch' => 50,
+      'bundle' => NULL,
+      'idlist' => NULL,
+      'limit' => 200,
+      'offset' => 0,
+      'timestamp' => NULL,
+    ],
+  ) {
     extract($options);
     $bundle = !empty($options['bundle']) ? explode(',', $options['bundle']) : [];
     $idlist = !empty($options['idlist']) ? explode(',', $options['idlist']) : [];
@@ -283,7 +256,7 @@ final class MassUtilityCommands extends DrushCommands {
       $batch_size = $limit;
     }
     while (!$finished) {
-      $query = $this->database
+      $query = $this->connection
         ->select('node_field_revision', 'r')
         ->fields('r', ['nid']);
       $query->join('node_field_data', 'n', 'n.nid = r.nid');

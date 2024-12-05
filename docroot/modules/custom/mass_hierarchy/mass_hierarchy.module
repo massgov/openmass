@@ -9,17 +9,12 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Url;
 use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
 use Drupal\mass_hierarchy\MassHierarchyBatch;
-use Drupal\mass_hierarchy\MassHierarchyRouteMatch;
 use Drupal\node\Entity\Node;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
-use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionCompletedTrait;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Implements hook_help().
@@ -100,27 +95,17 @@ function mass_hierarchy_entity_type_build(array &$entity_types) {
 }
 
 /**
- * Implements hook_views_pre_view().
+ * Implements hook_views_query_alter().
  */
-function mass_hierarchy_views_pre_view($view) {
+function mass_hierarchy_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   /** @var \Drupal\views\Entity\View $view */
-  if ($view->id() != 'change_parents') {
-    return;
+  if ($view->id() == 'change_parents') {
+    if (!\Drupal::currentUser()->hasPermission('mass_hierarchy - change topic page parent')) {
+      // Add the condition to exclude nodes of type 'topic_page'.
+      $query->addWhere(0, "node_field_data.type", 'topic_page', '!=');
+    }
   }
 
-  $filters = $view->display_handler->getOption('filters');
-
-  if (!isset($filters['type_1'])) {
-    return;
-  }
-
-  if (!\Drupal::currentUser()->hasPermission('mass_hierarchy - change topic page parent')) {
-    return;
-  }
-
-  // Include topic pages on the view by unsetting a filter that removes them.
-  unset($filters['type_1']);
-  $view->display_handler->overrideOption('filters', $filters);
 }
 
 /**
@@ -187,10 +172,10 @@ function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
     // If the field has a default value, render the breadcrumb preview.
     if (isset($form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'])) {
       $node_parent = $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'];
-      $requestStack = \Drupal::service('request_stack');
-      $customRouteMatch = new MassHierarchyRouteMatch($requestStack);
-      $customRouteMatch->setParameter('parent_node', $node_parent);
-      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->build($customRouteMatch)->toRenderable();
+
+      $current_route_match = \Drupal::routeMatch();
+      $current_route_match->getRouteObject()->setOption('parent_node', $node_parent);
+      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->build($current_route_match)->toRenderable();
       $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
     }
     // If the field has a new value, render the breadcrumb based on that value.
@@ -198,10 +183,9 @@ function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
       $parent_id = $form_state->getValue('field_primary_parent')[0]['target_id']['target_id'];
       if ($parent_id) {
         $node_loaded = Node::load($parent_id);
-        $requestStack = \Drupal::service('request_stack');
-        $customRouteMatch = new MassHierarchyRouteMatch($requestStack);
-        $customRouteMatch->setParameter('parent_node', $node_loaded);
-        $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->build($customRouteMatch)->toRenderable();
+        $current_route_match = \Drupal::routeMatch();
+        $current_route_match->getRouteObject()->setOption('parent_node', $node_loaded);
+        $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->build($current_route_match)->toRenderable();
         $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
       }
     }
@@ -227,9 +211,8 @@ function _mass_hierarchy_breadcrumb_ajax(array &$form, FormStateInterface $form_
   // Load the referenced node from the field value.
   if ($parent_id) {
     $node_loaded = Node::load($parent_id);
-    $requestStack = \Drupal::service('request_stack');
-    $customRouteMatch = new MassHierarchyRouteMatch($requestStack);
-    $customRouteMatch->setParameter('parent_node', $node_loaded);
+    $current_route_match = \Drupal::routeMatch();
+    $current_route_match->getRouteObject()->setOption('parent_node', $node_loaded);
     // Create a render array replacement with the new breadcrumb preview block.
     $rendered_block['field_primary_parent']['breadcrumb'] = [
       '#type' => 'container',
@@ -239,7 +222,7 @@ function _mass_hierarchy_breadcrumb_ajax(array &$form, FormStateInterface $form_
         "id" => "breadcrumb-preview-wrapper",
       ],
       'block' => Drupal::service("entity_hierarchy.breadcrumb")
-        ->build($customRouteMatch)
+        ->build($current_route_match)
         ->toRenderable(),
     ];
 

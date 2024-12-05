@@ -6,3 +6,41 @@
 #cke_1_bottom {
   background-color: #f2f2f2;
 }
+
+.ck-editor figure {
+  margin-top: 0;
+  margin-right: .5em;
+  margin-bottom: 1em;
+  margin-left: 0;
+}
+
+.ck-editor h1,
+.ck-editor h2,
+.ck-editor h3,
+.ck-editor h4,
+.ck-editor h5,
+.ck-editor h6 {
+  clear: left;
+}
+
+.ck-editor figure.drupal-entity.align-left.ck-widget + ul {
+  list-style-position: inside;
+}
+
+.ck-content ul ul,
+.ck-content ol ul {
+  padding-left: 20px;
+}
+
+.ck-content figure.drupal-entity.align-left.ck-widget + ul,
+.ck-content figure.drupal-entity.align-left.ck-widget + ul ul {
+  margin: 0;
+}
+
+html:has([data-fullscreen="fullscreenoverlay"]) div#block-mass-admin-theme-primary-tabs,
+html:has([data-fullscreen="fullscreenoverlay"]) div.filter-help,
+html:has([data-fullscreen="fullscreenoverlay"]) div.paragraph-type-top,
+html:has([data-fullscreen="fullscreenoverlay"]) div.ck-editor:not([data-fullscreen]),
+html:has([data-fullscreen="fullscreenoverlay"]) div.paragraphs-add-wrapper {
+  display: none;
+}

@@ -53,7 +53,7 @@ executors:
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     docker:
-      - image: massgov/drupal-container:1.1.0-ci
+      - image: massgov/drupal-container:1.2.0-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -104,10 +104,6 @@ parameters:
     type: boolean
     default: true
 
-  # These params for currently used in drush ma:cf-deploy
-  ma-cf-deploy:
-    type: boolean
-    default: false
   # These params for currently used in drush ma:backstop. target is declared later.
   reference:
     type: string
@@ -141,7 +137,10 @@ parameters:
   skip-maint:
     type: string
     default: ""
-  # target also used by ma-cf-deploy, ma-backstop
+  varnish:
+    type: string
+    default: ""
+  # target used by ma-backstop
   target:
     type: string
     default: ""
@@ -156,7 +155,7 @@ jobs:
   build:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - checkout
       - *restore_composer_cache
@@ -171,7 +170,7 @@ jobs:
 #  build_with_latest_mayflower:
 #    working_directory: ~/project/code
 #    docker:
-#      - image: cimg/php:8.2-node
+#      - image: cimg/php:8.3-node
 #    steps:
 #      - checkout
 #      - *restore_composer_cache
@@ -189,7 +188,7 @@ jobs:
   push_acquia:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - *no_host_check
       - *no_ssh_timeout
@@ -211,7 +210,7 @@ jobs:
   danger:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - run:
@@ -222,7 +221,7 @@ jobs:
   tagging_github:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -233,7 +232,7 @@ jobs:
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - *no_host_check
       - checkout
@@ -246,7 +245,7 @@ jobs:
   acquia_db_backup:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: { at: /tmp }
       - fetch_drush_aliases
@@ -257,7 +256,7 @@ jobs:
   validate:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -283,10 +282,11 @@ jobs:
         default: massgov/mysql-sanitized:latest
       command:
         type: enum
-        enum: ['phpunit', 'behat']
+        enum: ['phpunit']
     executor:
       name: base
       instance: << parameters.instance >>
+    parallelism: 4
     steps:
       - attach_workspace: {at: /var/www}
       - *vendor_bin_add_path
@@ -309,21 +309,20 @@ jobs:
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
       # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-      # Run DTT or Behat test command
-      - when:
-          condition:
-            and:
-              - equal: [ behat, << parameters.command >> ]
-          steps:
-            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
+            - run:
+                # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
+                name: Run functional tests
+                command: |
+                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -340,7 +339,7 @@ jobs:
   cut_release_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -356,7 +355,7 @@ jobs:
   mayflower_develop_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -371,7 +370,7 @@ jobs:
   # Log a new release in New Relic
   new_relic_change_tracking:
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     parameters:
       version:
         type: string
@@ -387,7 +386,7 @@ jobs:
   master_to_develop:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: { at: /tmp }
       - *vendor_bin_add_path
@@ -413,9 +412,13 @@ jobs:
         type: enum
         enum: ["", "--refresh-db"]
         default: ""
+      varnish:
+        type: enum
+        enum: [ "", "--varnish" ]
+        default: ""
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -423,7 +426,7 @@ jobs:
       - *vendor_bin_add_path
       - fetch_drush_aliases
       - run:
-          command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
+          command: "drush ma:deploy -v -y << parameters.varnish >> << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
       - jira/notify:
           environment: << parameters.target >>
@@ -439,7 +442,7 @@ jobs:
         type: string
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -451,6 +454,55 @@ jobs:
           name: Nightcrawler
           command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=<< parameters.target >> --samples=<< parameters.samples >>
           no_output_timeout: 300m
+      - store_test_results:
+          path: /tmp/results
+      - store_artifacts:
+          path: /tmp/results
+
+  browserstack_percy_test:
+    parameters:
+      target:
+        type: string
+        default: test
+      list:
+        type: string
+        default: post-release
+      tugboat:
+        type: string
+        default: ""
+    working_directory: /tmp/code/browserstack
+    docker:
+      - image: cimg/php:8.3-node
+        environment:
+          BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
+          BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
+          BROWSERSTACK_LOCAL: false
+          BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
+          MASS_BYPASS_RATE_LIMIT: $MASS_BYPASS_RATE_LIMIT
+          PERCY_TOKEN: $PERCY_TOKEN
+          PERCY_TARGET: << parameters.target >>
+          PERCY_LIST: << parameters.list >>
+          PERCY_DO_NOT_CAPTURE_RESPONSIVE_ASSETS: true
+          PERCY_CLIENT_ERROR_LOGS: false
+    steps:
+      - attach_workspace: {at: /tmp}
+      - *vendor_bin_add_path
+      - *no_host_check
+      - *no_ssh_timeout
+      - *yarn_install
+      - when:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Percy on BrowserStack Automate test (Tugboat target)
+                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test
+      - unless:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Percy on BrowserStack Automate test (non Tugboat target)
+                command: npm run percy-snapshots-test
+                no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
@@ -647,7 +699,7 @@ jobs:
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     machine:
-      image: ubuntu-2004:202101-01
+      image: default
     steps:
       - attach_workspace: {at: /home/circleci}
       - fetch_drush_aliases:
@@ -668,13 +720,13 @@ jobs:
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
+      - run: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
       - run: docker push << parameters.instance >>
 
   pending_security:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.2-node
+      - image: cimg/php:8.3-node
     steps:
       - attach_workspace: {at: /tmp}
       - run: "composer audit --no-interaction --no-dev"
@@ -716,16 +768,9 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
 
   # This is to automate the creation of the release branch.
-  # The cron time needs to be updated every Fall/Spring for daylight saving time.
+  # The trigger time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
     when:
       and:
@@ -753,13 +798,6 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^release\/.*$/
       - deploy:
           name: deploy-test-refresh-db
           requires:
@@ -767,6 +805,7 @@ workflows:
             - push_acquia
           target: test
           refresh-db: "--refresh-db"
+          varnish: "--varnish"
           filters:
             branches:
               only: /^release\/.*$/
@@ -783,6 +822,14 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-test-refresh-db]
+          target: test
+          list: all
           filters:
             branches:
               only: /^release\/.*$/
@@ -813,13 +860,6 @@ workflows:
           filters:
            branches:
              only: /^hotfix\/.*$/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^hotfix\/.*$/
       - hold - Release manager only:
             type: approval
             requires:
@@ -849,6 +889,14 @@ workflows:
             requires: [deploy-test-no-refresh-db]
             target: test
             reference: prod
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
+      - browserstack_percy_test:
+            name: browserstack-percy-test
+            requires: [deploy-test-no-refresh-db]
+            target: test
+            list: all
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -889,13 +937,6 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^mayflower\/.*$/
       - hold - Release manager only:
           type: approval
           requires:
@@ -910,6 +951,7 @@ workflows:
             - hold - Release manager only
           target: test
           refresh-db: "--refresh-db"
+          varnish: "--varnish"
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -929,6 +971,14 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [deploy-test-refresh-db]
+          target: test
+          list: all
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
 
   # This is to tag the release in the GitHub repository
   build_github_tag:
@@ -941,13 +991,6 @@ workflows:
       - test:
           name: test-phpunit
           command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: master
-      - test:
-          name: test-behat
-          command: behat
           requires: [build]
           filters:
             branches:
@@ -1007,6 +1050,7 @@ workflows:
             - tagging_acquia
             - hold_for_stage Release manager only
           gitRef: tags/$CIRCLE_TAG
+          varnish: "--varnish"
           target: test
           filters:
             branches:
@@ -1031,6 +1075,7 @@ workflows:
             - hold_for_prod_maint Release manager only
           target: prod
           gitRef: tags/$CIRCLE_TAG
+          varnish: "--varnish"
           filters:
             branches:
               ignore: /.*/
@@ -1055,6 +1100,7 @@ workflows:
           target: prod
           gitRef: tags/$CIRCLE_TAG
           skip-maint: --skip-maint
+          varnish: "--varnish"
           filters:
             branches:
               ignore: /.*/
@@ -1127,12 +1173,6 @@ workflows:
           command: phpunit
           instance: massgov/mysql-sanitized:super
           requires: [build]
-      - test:
-          name: test-super-behat
-          command: behat
-          instance: massgov/mysql-sanitized:super
-          requires: [build]
-
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
@@ -1175,6 +1215,7 @@ workflows:
           gitRef: << pipeline.parameters.git-ref >>
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
+          varnish: << pipeline.parameters.varnish >>
 
   # Nightly On Demand Prod DB Backup
   nightly_prod_db_backup:
@@ -1221,6 +1262,19 @@ workflows:
           tugboat: << pipeline.parameters.tugboat >>
           cachebuster: << pipeline.parameters.cachebuster >>
 
+  browserstack_percy_compare:
+    when:
+      and:
+        - equal: [ api, << pipeline.trigger_source >> ]
+        - equal: [ browserstack_percy_compare, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - build
+      - browserstack_percy_test:
+          requires: [ build ]
+          target: << pipeline.parameters.target >>
+          list: << pipeline.parameters.list >>
+          tugboat: << pipeline.parameters.tugboat >>
+
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
@@ -1234,10 +1288,16 @@ workflows:
           requires: [ build ]
           target: cd
           refresh-db: "--refresh-db"
+          varnish: "--varnish"
       - backstop_test:
           requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
+      - browserstack_percy_test:
+          name: browserstack-percy-test
+          requires: [ deploy-cd-refresh-db ]
+          target: cd
+          list: all
       - crawl:
           name: crawl-deploy-450
           requires: [ deploy-cd-refresh-db ]
