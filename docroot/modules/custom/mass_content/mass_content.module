@@ -39,7 +39,6 @@ use Drupal\mass_content\Entity\Bundle\node\PageBundle;
 use Drupal\mass_content\Entity\Bundle\node\PersonBundle;
 use Drupal\mass_content\Entity\Bundle\node\RegulationBundle;
 use Drupal\mass_content\Entity\Bundle\node\RulesBundle;
-use Drupal\mass_content\Entity\Bundle\node\ServiceDetailsBundle;
 use Drupal\mass_content\Entity\Bundle\node\ServicePageBundle;
 use Drupal\mass_content\Entity\Bundle\node\SitewideAlertBundle;
 use Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle;
@@ -1090,9 +1089,6 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
   }
   if (isset($bundles['node']['rules'])) {
     $bundles['node']['rules']['class'] = RulesBundle::class;
-  }
-  if (isset($bundles['node']['service_details'])) {
-    $bundles['node']['service_details']['class'] = ServiceDetailsBundle::class;
   }
   if (isset($bundles['node']['service_page'])) {
     $bundles['node']['service_page']['class'] = ServicePageBundle::class;
