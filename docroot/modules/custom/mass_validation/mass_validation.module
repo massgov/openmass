@@ -1828,7 +1828,7 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
   foreach ($sections as $section_key => $section) {
     if ($section_key != 'add_more') {
       // If at least 1 section is populated, validation passed.
-      $section_populated = isset($section['subform']);
+      $section_populated = isset($section['entity']);
     }
     // External links should have a title.
     if (isset($section['subform']['field_section_long_form_addition'])) {
