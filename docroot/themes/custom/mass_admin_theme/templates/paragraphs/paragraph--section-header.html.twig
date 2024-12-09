@@ -1,0 +1,18 @@
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% set compHeading = {
+        "title": (content.field_section_long_form_heading|field_value)
+      } %}
+      {% include "@atoms/04-headings/comp-heading.twig" %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

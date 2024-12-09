@@ -680,4 +680,120 @@ class MassContentCommands extends DrushCommands {
     return new RowsOfFields($rows);
   }
 
+  /**
+   * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
+   *
+   * @command mass-content:migrate-layout-paragraphs
+   * @option batch-size The number of nodes to process per batch.
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50
+   * @aliases mclp
+   */
+  public function migrateLayoutParagraphs($options = ['batch-size' => 50]) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Disable entity hierarchy writes for better performance during processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    $batch_size = (int) $options['batch-size'];
+
+    do {
+      // Get the last processed nid from state.
+      $last_processed_nid = \Drupal::state()->get('mass_content_deploy.info_details_migration_last_processed_nid', 0);
+
+      // Query all nodes of type 'info_details' starting from the last processed nid.
+      $query = $this->entityTypeManager->getStorage('node')->getQuery()
+        ->condition('type', 'info_details')
+        ->condition('nid', $last_processed_nid, '>')
+        ->accessCheck(FALSE)
+        ->sort('nid')
+        ->range(0, $batch_size);
+
+      $nids = $query->execute();
+      if (empty($nids)) {
+        $this->output()->writeln('No more nodes to process.');
+        break;
+      }
+
+      $node_storage = $this->entityTypeManager->getStorage('node');
+      $paragraph_storage = $this->entityTypeManager->getStorage('paragraph');
+
+      $this->output()->writeln("Processing batch of " . count($nids) . " nodes...");
+
+      foreach ($nids as $nid) {
+        $node = $node_storage->load($nid);
+        if (!$node) {
+          continue;
+        }
+
+        $this->output()->writeln("Processing node {$nid}...");
+
+        if ($node->hasField('field_info_details_sections')) {
+          $sections = $node->get('field_info_details_sections')->referencedEntities();
+          $new_sections = [];
+
+          foreach ($sections as $section) {
+            if ($section->bundle() === 'section_long_form') {
+              // Check if heading is not hidden.
+              if (!$section->get('field_hide_heading')->value) {
+                // Create a new 'section_header' paragraph for the heading.
+                $section_header_paragraph = $paragraph_storage->create([
+                  'type' => 'section_header',
+                  'field_section_long_form_heading' => $section->get('field_section_long_form_heading')->value,
+                ]);
+                $section_header_paragraph->save();
+                $new_sections[] = [
+                  'target_id' => $section_header_paragraph->id(),
+                  'target_revision_id' => $section_header_paragraph->getRevisionId(),
+                ];
+              }
+
+              // Migrate each content paragraph in field_section_long_form_content.
+              $content_paragraphs = $section->get('field_section_long_form_content')->referencedEntities();
+              foreach ($content_paragraphs as $content_paragraph) {
+                $new_sections[] = [
+                  'target_id' => $content_paragraph->id(),
+                  'target_revision_id' => $content_paragraph->getRevisionId(),
+                ];
+              }
+              $additional_resources = $section->get('field_section_long_form_addition')->referencedEntities();
+              if (!empty($additional_resources)) {
+                foreach ($additional_resources as $additional_resource) {
+                  if (!$additional_resource->get('field_links_downloads_down')->isEmpty() || !$additional_resource->get('field_links_downloads_link')->isEmpty()) {
+                    $new_sections[] = [
+                      'target_id' => $additional_resource->id(),
+                      'target_revision_id' => $additional_resource->getRevisionId(),
+                    ];
+                  }
+                }
+              }
+            }
+          }
+
+          // Update the node with the newly structured paragraphs.
+          $node->set('field_info_details_sections', $new_sections);
+          if (method_exists($node, 'setRevisionLogMessage')) {
+            $node->setNewRevision();
+            $node->setRevisionLogMessage('Revision created for layout paragraphs.');
+            $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+          }
+          $node->save();
+
+          // Update the last processed nid in the state to allow resuming from this point if needed.
+          \Drupal::state()->set('mass_content_deploy.info_details_migration_last_processed_nid', $nid);
+
+          $this->output()->writeln("Node {$nid} processed successfully.");
+        }
+      }
+
+    } while (!empty($nids));
+
+    // Re-enable entity hierarchy writes after processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
+    $this->output()->writeln("All nodes processed. Last processed id is: " . \Drupal::state()->get('mass_content_deploy.info_details_migration_last_processed_nid'));
+
+    // Reset the last processed nid in state after completion.
+    \Drupal::state()->delete('mass_content_deploy.info_details_migration_last_processed_nid');
+  }
+
 }

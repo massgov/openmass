@@ -1,0 +1,29 @@
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% if paragraph.field_links_downloads_link.uri or paragraph.field_links_downloads_down.target_id %}
+        {% embed "@organisms/by-author/form-downloads.twig" with {
+          "formDownloads": {
+            "compHeading": {
+              "title": "Additional Resources",
+              "sub": true
+            }
+          }
+        } %}
+          {% block formDownloadLinks %}
+            {{ content.field_links_downloads_link }}
+            {{ content.field_links_downloads_down }}
+          {% endblock %}
+        {% endembed %}
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

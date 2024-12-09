@@ -69,6 +69,20 @@ function mayflower_library_info_build() {
       'mayflower/modernizr',
     ],
   ];
+  $libraries['layout_paragraphs'] = [
+    'version' => $mf_installed_version . '-' . $mf_installed_reference,
+    'js' => [
+      "/$artifacts/assets/js/vendor-generated.js" => [
+        'minified' => TRUE,
+        'weight' => -20,
+      ],
+    ],
+    'css' => [
+      'theme' => [
+        "/$artifacts/assets/css/index-lp.css" => [],
+      ],
+    ],
+  ];
   return $libraries;
 }
 
