@@ -241,6 +241,47 @@ function mass_admin_theme_form_media_form_alter(&$form, FormStateInterface $form
 
 }
 
+function mass_admin_theme_form_layout_paragraphs_component_form_alter(array &$form, FormStateInterface $form_state) {
+  if ($form['#paragraph']->bundle() == 'iframe') {
+    if (isset($form['field_iframe_height_config'])) {
+
+      $selector = ':input[name="field_iframe_height_config"]';
+      // Dependent fields.
+      $form['field_verify_iframe_100_confirm']['widget']['value']['#states'] = [
+        'required' => [
+          $selector => ['value' => '100'],
+        ],
+      ];
+      $form['field_verify_iframe_100_confirm']['#states'] = [
+        'visible' => [
+          $selector => ['value' => '100'],
+        ],
+      ];
+      $form['field_aspect_ratio']['widget']['#states'] = [
+        'required' => [
+          $selector => ['value' => 'ratio'],
+        ],
+      ];
+      $form['field_aspect_ratio']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'ratio'],
+        ],
+      ];
+      $form['field_height']['widget'][0]['value']['#states'] = [
+        'required' => [
+          $selector => ['value' => 'fixed'],
+        ],
+      ];
+      $form['field_height']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'fixed'],
+        ],
+      ];
+    }
+  }
+}
+
+
 /**
  * Implements hook_form_alter().
  */
