@@ -33,4 +33,9 @@ echo "***** Running Drush cron"
 PHP_INI_SCAN_DIR=:$HOME/.drush drush  --root="/var/www/html/${AH_SITE_NAME}/docroot/"  --uri="${uri}" cron
 echo
 
+echo "***** Running Drush entity usage tracking"
+PHP_INI_SCAN_DIR=:$HOME/.drush drush  --root="/var/www/html/${AH_SITE_NAME}/docroot/"  --uri="${uri}" --time-limit=60 queue:run entity_usage_tracker
+
+echo
+
 echo -e "***** Script Completed: $(date --rfc-3339=seconds) *****\\n"
