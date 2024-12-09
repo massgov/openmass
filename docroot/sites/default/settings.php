@@ -221,3 +221,42 @@ if (PHP_SAPI === 'cli') {
 if (extension_loaded('newrelic')) { // Ensure PHP agent is available
   newrelic_disable_autorum();
 }
+
+// If this is a CLI call, set some parameters so that
+// it can be logged to New Relic
+if (PHP_SAPI === 'cli') {
+  $cli_arg = NULL;
+
+  $_SERVER['REQUEST_METHOD'] = 'CLI';
+
+  // If we are in a drush environment, set the REQUEST_URI to the command.
+  try {
+    // Check if we have the \Drush\Drush::input() method - that is we expect to use a later Drush version
+
+    $method = new ReflectionMethod('\Drush\Drush::input');
+
+    if ( $method->isStatic() )
+    {
+      // Method exists!
+      // Retrieve the drush command and set New Relic transaction name
+      $cli_arg = \Drush\Drush::input()->getFirstArgument();
+      $_SERVER['REQUEST_URI'] = $cli_arg;
+
+      if (extension_loaded('newrelic')) {
+        // Using the function newrelic_name_transaction()
+        // <https://docs.newrelic.com/docs/apm/agents/php-agent/php-agent-api/newrelic_name_transaction/>
+        if (function_exists('newrelic_name_transaction') && !empty($cli_arg)) {
+          $cli_arg = 'drush ' . $cli_arg;
+
+          // Define the Transaction Name for New Relic
+          newrelic_name_transaction($cli_arg);
+        }
+      }
+    }
+  }
+  catch ( ReflectionException $e )
+  {
+    // The method \Drush\Drush::input() method does not exist
+    // We will do nothing, so as to allow rest of script to continue
+  }
+}
