@@ -81,14 +81,14 @@ class MassViewsController extends ControllerBase {
 
           // Append the crawl_auth_key query string if it exists.
           if (!empty($crawl_auth_key)) {
-            $href .= (strpos($href, '?') === false ? '?' : '&') . 'crawl-auth=' . urlencode($crawl_auth_key);
+            $href .= (strpos($href, '?') === FALSE ? '?' : '&') . 'crawl-auth=' . urlencode($crawl_auth_key);
           }
 
           // Handle DocumentBundle case.
           if ($row->_entity instanceof DocumentBundle) {
             $href = $row->_entity->toUrl()->toString() . '/download';
             if (!empty($crawl_auth_key)) {
-              $href .= (strpos($href, '?') === false ? '?' : '&') . 'crawl-auth=' . urlencode($crawl_auth_key);
+              $href .= (strpos($href, '?') === FALSE ? '?' : '&') . 'crawl-auth=' . urlencode($crawl_auth_key);
             }
             $text = $row->_entity->getTitle()->getString();
           }
