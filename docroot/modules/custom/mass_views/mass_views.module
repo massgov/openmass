@@ -19,6 +19,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->getStorage('view');
 
+  if (($view['view']->id() == 'crawler_pages' && $view['view']->getDisplay()->display['id'] == 'page_1') || ($view['view']->id() == 'crawler_documents' && $view['view']->getDisplay()->display['id'] == 'media_page_list')) {
+    $form['crawl-auth'] = [
+      '#type' => 'textfield',
+      '#title' => t('Crawl auth key'),
+    ];
+  }
   if ($view['view']->id() === "non_english_documents" && $view['view']->getDisplay()->display['id'] === "page_1") {
     if ($form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']) {
       $form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']['#type'] = 'radios';
@@ -135,6 +141,80 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
         }
       }
     }
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function mass_views_preprocess_views_view_field(&$variables) {
+  // Get the View and field information.
+  $view = $variables['view'];
+  $field = $variables['field'];
+
+  // Check if this is the correct View, display, and field.
+  if ($view->id() == 'crawler_pages' && $view->current_display == 'page_1' && $field->field == 'title') {
+    // Add cache contexts for the 'crawl_auth_key' query parameter.
+    $variables['#cache']['contexts'][] = 'url.query_args:crawl-auth';
+
+    // Add additional cache tags to ensure invalidation when necessary.
+    $variables['#cache']['tags'][] = 'node_list';
+
+    // Get the custom filter value from the request.
+    $auth_key = \Drupal::request()->query->get('crawl-auth');
+
+    // Get the current row.
+    $row = $variables['row'];
+
+    // Get the Node ID (nid) from the row data.
+    $nid = $row->node_field_data_node_field_revision_nid;
+
+    // Construct the URL manually.
+    $url = Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE]);
+    if (!empty($auth_key)) {
+      $url = $url->setOption('query', ['crawl-auth' => $auth_key]);
+    }
+
+    // Get the title (label) from the entity.
+    $title = $row->_entity->label();
+
+    // Use the Link class to generate the anchor tag.
+    $link = Link::fromTextAndUrl($title, $url);
+    $field->options['alter']['cache_contexts'][] = 'url.query_args:crawl_auth_key';
+    // Render the link and update the output.
+    $variables['output'] = $link->toString();
+  }
+
+  if ($view->id() == 'crawler_documents' && $view->current_display == 'media_page_list' && $field->field == 'field_title') {
+    // Add cache contexts for the 'crawl_auth_key' query parameter.
+    $variables['#cache']['contexts'][] = 'url.query_args:crawl-auth';
+
+    // Add additional cache tags to ensure invalidation when necessary.
+    $variables['#cache']['tags'][] = 'media_list';
+
+    // Get the custom filter value from the request.
+    $auth_key = \Drupal::request()->query->get('crawl-auth');
+
+    // Get the current row.
+    $row = $variables['row'];
+
+    // Get the Node ID (nid) from the row data.
+    $mid = $row->mid;
+
+    // Construct the URL manually.
+    $url = Url::fromRoute('entity.media.canonical', ['media' => $mid], ['absolute' => TRUE]);
+    if (!empty($auth_key)) {
+      $url = $url->setOption('query', ['crawl-auth' => $auth_key]);
+    }
+
+    // Get the title (label) from the entity.
+    $title = $row->_entity->label();
+
+    // Use the Link class to generate the anchor tag.
+    $link = Link::fromTextAndUrl($title, $url);
+    $field->options['alter']['cache_contexts'][] = 'url.query_args:crawl_auth_key';
+    // Render the link and update the output.
+    $variables['output'] = $link->toString();
   }
 }
 
