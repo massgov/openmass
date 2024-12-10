@@ -55,25 +55,46 @@ function mass_validation_entity_type_alter(array &$entity_types) {
  * Implements hook_entity_bundle_field_info_alter().
  */
 function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
-  /** @var Drupal\field\Entity\FieldConfig $field_social_links */
-  if ($entity_type->id() == 'node' && array_key_exists('field_social_links', $fields) && !empty($fields['field_social_links'])) {
-    $field_social_links = &$fields['field_social_links'];
-    $field_social_links->addConstraint('SocialLink', [
-      'allowedValues' => [
-        'twitter.com',
-        'x.com',
-        'flickr.com',
-        'facebook.com',
-        'threads.net',
-        'instagram.com',
-        'linkedin.com',
-        'youtube.com',
-        'vimeo.com',
-        'medium.com',
-        'blog.mass.gov',
-        'www.mass.gov',
-      ],
-    ]);
+
+  if ($entity_type->id() == 'node') {
+    if (array_key_exists('field_social_links', $fields) && !empty($fields['field_social_links'])) {
+      /** @var Drupal\field\Entity\FieldConfig $field_social_links */
+      $field_social_links = &$fields['field_social_links'];
+      $field_social_links->addConstraint('SocialLink', [
+        'allowedValues' => [
+          'twitter.com',
+          'x.com',
+          'flickr.com',
+          'facebook.com',
+          'threads.net',
+          'instagram.com',
+          'linkedin.com',
+          'youtube.com',
+          'vimeo.com',
+          'medium.com',
+          'blog.mass.gov',
+          'www.mass.gov',
+        ],
+      ]);
+    }
+    if (array_key_exists('field_form_url', $fields) && !empty($fields['field_form_url'])) {
+      $field_form_url = &$fields['field_form_url'];
+      $field_form_url->addConstraint('GravityForm', [
+        'allowedValues' => [
+          'dev.forms.mass.gov',
+          'live.forms.mass.gov',
+          'test.forms.mass.gov',
+          'forms.mass.gov',
+          'live-mass-forms.pantheonsite.io',
+          'dev-mass-forms.pantheonsite.io',
+          'test-mass-forms.pantheonsite.io',
+          'embed-test2-mass-forms.pantheonsite.io',
+          'embed-test3-mass-forms.pantheonsite.io',
+          'embed-test-mass-forms.pantheonsite.io',
+        ]
+      ]);
+    }
+
   }
 
   if ($entity_type->id() === 'paragraph') {
