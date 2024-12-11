@@ -69,21 +69,31 @@
         {% set formRequirements = formRequirements|merge({'level': level}) %}
         {% include "@organisms/by-author/form-requirements.twig" %}
       {% endif %}
-      <div aria-live="polite" aria-relevant="all" class="form_embed feedback">
-        <script type="text/javascript" src="{{ form_url }}"></script>
-        <noscript><a href="{{ form_url_noscript }}" title="{{ node.title.value }}">Online Form - {{ node.title.value }}</a></noscript>
-      </div>
-      <script>
-        (function() {
-          var root = document.querySelector('.form_embed.feedback');
-          root.addEventListener('click', function(event) {
-            //find target element, if submit button, scroll to top of form.
-            if(event.target.tagName === 'INPUT' && event.target.type === 'submit') {
-              root.scrollIntoView();
-            }
-          });
-        })();
-      </script>
+      {% if node.getPlatform().getString() == constant('Drupal\\mass_content\\Entity\\Bundle\\node\\FormPageBundle::PLATFORM_FORMSTACK') %}
+        <div aria-live="polite" aria-relevant="all" class="form_embed feedback">
+          <script type="text/javascript" src="{{ form_url }}"></script>
+          <noscript><a href="{{ form_url_noscript }}" title="{{ node.title.value }}">Online Form - {{ node.title.value }}</a></noscript>
+        </div>
+        <script>
+          (function() {
+            var root = document.querySelector('.form_embed.feedback');
+            root.addEventListener('click', function(event) {
+              //find target element, if submit button, scroll to top of form.
+              if(event.target.tagName === 'INPUT' && event.target.type === 'submit') {
+                root.scrollIntoView();
+              }
+            });
+          })();
+        </script>
+      {% elseif node.getPlatform().getString() == constant('Drupal\\mass_content\\Entity\\Bundle\\node\\FormPageBundle::PLATFORM_GRAVITY_FORMS') %}
+        {% include "@atoms/09-media/iframe.twig" with {
+          "iframe": {
+            "customClass": 'js-iframe-resizer',
+            "src": node.field_form_url.uri,
+            "height": 'auto',
+          }
+        } %}
+      {% endif %}
     {% endblock %}
     </div>
     <aside class="sidebar">
