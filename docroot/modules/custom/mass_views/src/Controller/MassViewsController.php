@@ -65,6 +65,9 @@ class MassViewsController extends ControllerBase {
       $current_page = $request->query->get('page', 0);
       $view->setCurrentPage($current_page);
 
+      // Get the crawl_auth_key from the query string.
+      $crawl_auth_key = $request->query->get('crawl-auth');
+
       // Execute the view.
       $view->execute();
 
@@ -72,13 +75,24 @@ class MassViewsController extends ControllerBase {
         // Build the output as an HTML list of links.
         $output = '<ul>';
         foreach ($view->result as $row) {
+          // Get the entity's URL and title.
           $href = $row->_entity->toUrl()->toString();
           $text = $row->_entity->getTitle();
+
+          // Append the crawl_auth_key query string if it exists.
+          if (!empty($crawl_auth_key)) {
+            $href .= (strpos($href, '?') === FALSE ? '?' : '&') . 'crawl-auth=' . urlencode($crawl_auth_key);
+          }
+
           if ($row->_entity instanceof DocumentBundle) {
             $href = $row->_entity->toUrl()->toString() . '/download';
+            if (!empty($crawl_auth_key)) {
+              $href .= (strpos($href, '?') === FALSE ? '?' : '&') . 'crawl-auth=' . urlencode($crawl_auth_key);
+            }
             $text = $row->_entity->getTitle()->getString();
           }
-          $output .= '<li><a href="' . $href . '">' . $text . '</a></li>';
+          // Append the link to the output.
+          $output .= '<li><a href="' . htmlspecialchars($href) . '">' . htmlspecialchars($text) . '</a></li>';
         }
         $output .= '</ul>';
 
