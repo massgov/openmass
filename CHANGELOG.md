@@ -1,5 +1,21 @@
 
 
+## [0.418.0] - December 10, 2024
+
+### Added
+  - DP-32553: Enabled and configured ClamAV for running daemon via executable.
+  - DP-34883: Modify form content type to accomodate other form types.
+  
+### Changed
+  - DP-35408: Upgrade admin theme to Drupal 11
+  - DP-35689: added Romanian to the page language bar.
+  - DP-36056: Remove unused custom code and modules
+  
+### Fixed
+  - DP-36052: Admin toolbar with view and translate showing on non-English pages.
+  
+
+
 ## [0.417.0] - November 26, 2024
 
 ### Added
