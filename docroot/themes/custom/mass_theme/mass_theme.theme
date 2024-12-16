@@ -3836,12 +3836,12 @@ function mass_theme_preprocess_block(&$variables) {
 
     // Check if the current page is a node page.
     if ($node instanceof NodeInterface) {
-      $cache_tags = [];
+      $cache_tags = $node->getCacheTags();
       $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
       // Add cache context for the current URL path.
-      $cache_contexts = ['url.path'];
+      $cache_contexts = array_merge(['url.path'], $node->getCacheContexts());
       CacheableMetadata::createFromRenderArray($variables)
         ->addCacheTags($cache_tags)
         ->addCacheContexts($cache_contexts)
