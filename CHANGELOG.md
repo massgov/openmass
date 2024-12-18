@@ -1,5 +1,21 @@
 
 
+## [0.419.0] - December 17, 2024
+
+### Fixed
+  - DP-36114: Increase feedback button border color contrast for a11y.
+  
+### Deprecated
+  - DP-36160: Disabled the memcache module.
+  
+### Added
+  - DP-36217: Append query string to crawler pages.
+  
+### Changed
+  - DP-36300: Updated memcache module.
+  
+
+
 ## [0.418.0] - December 10, 2024
 
 ### Added
