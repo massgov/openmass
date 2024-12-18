@@ -12,8 +12,15 @@
  * @ingroup themeable
  */
 #}
+{{ dump(content) }}
+{% if content['#listing'] is defined %}
+  <p>Listing: {{ content['#listing'] }}</p>
+{% else %}
+  <p>Listing is not set.</p>
+{% endif %}
 {% include "@molecules/download-link-multilang.twig" with {
   "downloadLink": {
+    "listing": content['#listing'] ?? false,
     "iconSize": '',
     "icon": content.extra_file_icon['#markup'],
     "decorativeLink": {

@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -95,6 +96,36 @@ function mass_media_process_file_widget(&$element, $form_state) {
     $element['remove_button']['#attached']['library'][] = 'mass_media/delete_confirm';
   }
   return $element;
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function mass_media_preprocess_media(array &$variables) {
+  // Check the view mode.
+  if ($variables['view_mode'] === 'media_download_link') {
+    $media = $variables['media'];
+
+    // Check if _referringItem exists and is valid.
+    if (!empty($media->_referringItem)) {
+      $referring_item = $media->_referringItem;
+
+      // Get the field name and delta (index in the field items list).
+      $field_name = $referring_item->getFieldDefinition()->getName();
+      $delta = $referring_item->getName();
+
+      // Check the field name and set 'listing' if it matches.
+      if ($field_name === 'field_downloads') {
+        // Add custom unique inline property for additional uniqueness.
+        $variables['content']['#listing'] = TRUE;
+      }
+
+      dump($referring_item->getFieldDefinition()->getCacheTags());
+      // Add a unique cache key for the media instance based on field and delta.
+      $variables['#cache']['keys'][] = "media_instance_{$field_name}_{$delta}";
+
+    }
+  }
 }
 
 /**
