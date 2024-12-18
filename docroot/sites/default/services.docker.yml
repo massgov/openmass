@@ -6,7 +6,7 @@ services:
 parameters:
   monolog.channel_handlers:
     # Log to stderr.
-    default: ['stderr']
+    default: ['drupal.dblog', 'stderr']
     # Log php channel to web server's error log.
     php: ['error_log', 'stderr']
     # Silence purge warnings.
