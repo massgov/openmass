@@ -49,16 +49,9 @@
     {% block content %}
       {% embed "@organisms/by-author/rich-text.twig" %}
         {% block rteElements %}
-          {{ content|without('field_component_add_separator') }}
+          {{ content }}
         {% endblock %}
       {% endembed %}
-      {% if content.field_component_add_separator|field_value|render == "True" %}
-        {% include "@atoms/divider.twig" with {
-          "divider": {
-            "thin": true
-          }
-        } %}
-      {% endif %}
     {% endblock %}
   </div>
 {% endblock paragraph %}
