@@ -1,16 +1,20 @@
 {#
 /**
  * @file
- * Theme implementation to display a Rich Text paragraph.
+ * Default theme implementation to display a paragraph.
+ *
+ * If we are using the default paragraph, we only want it to print the content.
  *
  * Available variables:
  * - paragraph: Full paragraph entity.
- *   - id: The paragraph ID.
- *   - bundle: The type of the paragraph, for example, "image" or "text".
- *   - authorid: The user ID of the paragraph author.
- *   - createdtime: Formatted creation date. Preprocess functions can
- *     reformat it by calling format_date() with the desired parameters on
- *     $variables['paragraph']->getCreatedTime().
+ *   Only method names starting with "get", "has", or "is" and a few common
+ *   methods such as "id", "label", and "bundle" are available. For example:
+ *   - paragraph.getCreatedTime() will return the paragraph creation timestamp.
+ *   - paragraph.id(): The paragraph ID.
+ *   - paragraph.bundle(): The type of the paragraph, for example, "image" or "text".
+ *   - paragraph.getOwnerId(): The user ID of the paragraph author.
+ *   See Drupal\paragraphs\Entity\Paragraph for a full list of public properties
+ *   and methods for the paragraph object.
  * - content: All paragraph items. Use {{ content }} to print them all,
  *   or print a subset such as {{ content.field_example }}. Use
  *   {{ content|without('field_example') }} to temporarily suppress the printing
@@ -36,8 +40,27 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-author/rich-text.twig" %}
-  {% block rteElements %}
-    {{ content }}
-  {% endblock %}
-{% endembed %}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% include "@atoms/09-media/figure--caspio.twig" with {
+        "figure": {
+          "caspio": {
+            "dataId": content.field_caspio_data_identifier[0]['#context'].value
+          },
+          "title": {
+            "text": content.field_caspio_admin_title[0]['#context'].value
+          }
+        }
+      } %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

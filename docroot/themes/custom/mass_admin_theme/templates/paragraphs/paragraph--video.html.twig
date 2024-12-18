@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Theme implementation to display a Rich Text paragraph.
+ * Default theme implementation to display a paragraph.
  *
  * Available variables:
  * - paragraph: Full paragraph entity.
@@ -36,8 +36,20 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-author/rich-text.twig" %}
-  {% block rteElements %}
-    {{ content }}
-  {% endblock %}
-{% endembed %}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% if video %}
+        {% include "@atoms/09-media/video.twig" with video %}
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

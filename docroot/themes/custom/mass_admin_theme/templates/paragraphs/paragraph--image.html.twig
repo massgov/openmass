@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Theme implementation to display a Rich Text paragraph.
+ * Theme implementation to display an image paragraph.
  *
  * Available variables:
  * - paragraph: Full paragraph entity.
@@ -36,8 +36,32 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-author/rich-text.twig" %}
-  {% block rteElements %}
-    {{ content }}
-  {% endblock %}
-{% endembed %}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% include "@atoms/09-media/figure--image.twig" with {
+        "figure": {
+          "image": {
+            "alt": paragraph.field_image.alt,
+            "src": file_url(paragraph.field_image.entity.fileuri ?? '')
+          },
+          "align": paragraph.field_image_alignment.value,
+          "size": paragraph.field_image_display_size.value,
+          "caption": paragraph.field_image_caption.value ? content.field_image_caption : null,
+          "wrap": paragraph.field_image_wrapping.value ? TRUE : FALSE,
+          "title": {
+            "text": paragraph.field_image_administrative_title.value
+          }
+        }
+      } %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

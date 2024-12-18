@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Theme implementation to display a Rich Text paragraph.
+ * Default theme implementation to display a paragraph.
  *
  * Available variables:
  * - paragraph: Full paragraph entity.
@@ -36,8 +36,25 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-author/rich-text.twig" %}
-  {% block rteElements %}
-    {{ content }}
-  {% endblock %}
-{% endembed %}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {%
+        set statsCallout = {
+        pull: content.field_alignment|field_value|render.__toString(),
+        stat: content.field_stat|field_value|render.__toString(),
+        content: content.field_description|field_value|render.__toString()
+      }
+      %}
+      {% include "@molecules/callout-stats.twig" with statsCallout %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

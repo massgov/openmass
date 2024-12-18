@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Theme implementation to display a Rich Text paragraph.
+ * Theme implementation to display an csvtable paragraph.
  *
  * Available variables:
  * - paragraph: Full paragraph entity.
@@ -36,8 +36,51 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-author/rich-text.twig" %}
-  {% block rteElements %}
-    {{ content }}
-  {% endblock %}
-{% endembed %}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% set caption = {
+        '#type': 'processed_text',
+        '#text': paragraph.field_csvtable_caption.value ?: '',
+        '#format': paragraph.field_csvtable_caption.format ?: 'basic_html',
+      } %}
+
+      {% set figure = {
+        'align': '',
+        'wrap': FALSE,
+        'size': paragraph.field_csvtable_display_size.value,
+        'class': 'ma__csvtable',
+        'ariaLive': 'polite',
+        'caption': caption|render|striptags|trim ? caption : '',
+        'skiplink': {
+          'add': false,
+          'text': "embedded content"
+        },
+        'content': content.field_csv_file
+      } %}
+
+      {% set figure_title_value = paragraph.field_csvtable_title.value|render|striptags|trim %}
+
+      {% if figure_title_value is not empty %}
+        {% set figure_title = {
+          'title': {
+            'text': figure_title_value,
+            'visible': true,
+            'level': 3
+          },
+        } %}
+        {% set figure = figure|merge(figure_title) %}
+      {% endif %}
+
+      {% include "@atoms/09-media/figure.twig" with figure %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}
