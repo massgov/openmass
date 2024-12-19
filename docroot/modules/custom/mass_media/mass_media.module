@@ -99,31 +99,22 @@ function mass_media_process_file_widget(&$element, $form_state) {
 }
 
 /**
- * Implements hook_preprocess().
+ * Implements hook_entity_view_mode_alter().
  */
-function mass_media_preprocess_media(array &$variables) {
-  // Check the view mode.
-  if ($variables['view_mode'] === 'media_download_link') {
-    $media = $variables['media'];
-
-    // Check if _referringItem exists and is valid.
-    if (!empty($media->_referringItem)) {
-      $referring_item = $media->_referringItem;
+function mass_media_entity_view_mode_alter(&$view_mode, $entity, $context) {
+  // Check if the entity is a media entity and the view mode is 'media_download_link'.
+  if ($entity->getEntityTypeId() === 'media' && $view_mode === 'media_download_link') {
+    // Access the _referringItem property if it exists.
+    if (!empty($entity->_referringItem)) {
+      $referring_item = $entity->_referringItem;
 
       // Get the field name and delta (index in the field items list).
       $field_name = $referring_item->getFieldDefinition()->getName();
-      $delta = $referring_item->getName();
 
-      // Check the field name and set 'listing' if it matches.
+      // Check if the field name matches 'field_downloads'.
       if ($field_name === 'field_downloads') {
-        // Add custom unique inline property for additional uniqueness.
-        $variables['content']['#listing'] = TRUE;
+       $view_mode = 'media_download_link_listing';
       }
-
-      dump($referring_item->getFieldDefinition()->getCacheTags());
-      // Add a unique cache key for the media instance based on field and delta.
-      $variables['#cache']['keys'][] = "media_instance_{$field_name}_{$delta}";
-
     }
   }
 }
