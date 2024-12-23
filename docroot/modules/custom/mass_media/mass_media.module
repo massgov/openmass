@@ -17,6 +17,7 @@ use Drupal\file\FileInterface;
 use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
+use Drupal\mass_content\Entity\Bundle\node\BinderBundle;
 use Drupal\media\MediaInterface;
 
 /**
@@ -106,14 +107,16 @@ function mass_media_entity_view_mode_alter(&$view_mode, $entity, $context) {
   if ($entity->getEntityTypeId() === 'media' && $view_mode === 'media_download_link') {
     // Access the _referringItem property if it exists.
     if (!empty($entity->_referringItem)) {
-      $referring_item = $entity->_referringItem;
+      if ($referring_item = $entity->_referringItem) {
+        if ($referring_item->getEntity() instanceof BinderBundle) {
+          // Get the field name and delta (index in the field items list).
+          $field_name = $referring_item->getFieldDefinition()->getName();
 
-      // Get the field name and delta (index in the field items list).
-      $field_name = $referring_item->getFieldDefinition()->getName();
-
-      // Check if the field name matches 'field_downloads'.
-      if ($field_name === 'field_downloads') {
-        $view_mode = 'media_download_link_listing';
+          // Check if the field name matches 'field_downloads'.
+          if ($field_name === 'field_downloads') {
+            $view_mode = 'media_download_link_listing';
+          }
+        }
       }
     }
   }
