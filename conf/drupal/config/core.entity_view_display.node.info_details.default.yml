@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.info_details.field_data_topic
     - field.field.node.info_details.field_date_published
     - field.field.node.info_details.field_details_data_type
+    - field.field.node.info_details.field_disable_login_links
     - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_hide_table_of_contents
@@ -138,6 +139,16 @@ content:
       link: true
     third_party_settings: {  }
     weight: 20
+    region: content
+  field_disable_login_links:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 142
     region: content
   field_english_version:
     type: entity_reference_label

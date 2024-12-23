@@ -20,6 +20,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
@@ -720,6 +721,55 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         $element['description']['info'] = [
           '#markup' => '<div>' . $element['#description'] . '</div>',
         ];
+      }
+    }
+  }
+  elseif ($type == 'boolean') {
+    if ($field_name == 'field_disable_login_links') {
+        // Load the current node.
+      $node = $context['items']->getEntity();
+
+      // Instantiate the LogInLinksBuilder service.
+      $login_links_builder = \Drupal::service('mass_content.log_in_links_builder');
+
+      // Get the contextual links.
+      $links_data = $login_links_builder->getLoginLinksWithCacheTags($node);
+
+      // Build the description with the login links using render arrays.
+      if (!empty($links_data['links'])) {
+        $links = [];
+        foreach ($links_data['links'] as $link) {
+          if (isset($link['href'])) {
+            $links[] = [
+              '#type' => 'link',
+              '#title' => $link['text'],
+              '#url' => Url::fromUri($link['href'], ['attributes' => ['target' => '_blank']]),
+            ];
+          }
+        }
+        // Append the links to the existing description.
+        $existing_description = $element['value']['#description'] ?? '';
+        $element['value']['#description'] = [
+          '#markup' => t('This page will currently show these login links that are inherited from a parent organization or service page:'),
+        ];
+
+        // Render the links list.
+        $links_render_array = [
+          '#theme' => 'item_list',
+          '#items' => $links,
+          '#cache' => [
+            'tags' => $links_data['cache_tags'] ?? [],
+          ],
+        ];
+        $links_rendered = \Drupal::service('renderer')->renderPlain($links_render_array);
+
+        // Add the links list below the existing description.
+        $element['value']['#description']['#markup'] .= $links_rendered;
+        $element['value']['#description']['#markup'] .= $existing_description;
+      }
+      else {
+        $element['#access'] = FALSE;
+        unset($element);
       }
     }
   }

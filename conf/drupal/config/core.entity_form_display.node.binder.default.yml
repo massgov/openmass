@@ -25,6 +25,7 @@ dependencies:
     - field.field.node.binder.field_data_search_content
     - field.field.node.binder.field_data_topic
     - field.field.node.binder.field_date_published
+    - field.field.node.binder.field_disable_login_links
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
@@ -80,6 +81,7 @@ third_party_settings:
         - field_binder_serial_number
         - field_binder_overview
         - field_primary_parent
+        - field_disable_login_links
         - field_organizations
         - field_data_flag
         - field_binder_data_type
@@ -165,7 +167,7 @@ content:
     third_party_settings: {  }
   field_binder_data_type:
     type: options_buttons
-    weight: 24
+    weight: 25
     region: content
     settings: {  }
     third_party_settings:
@@ -200,6 +202,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_binder_overview:
     type: entity_reference_paragraphs
@@ -237,7 +240,7 @@ content:
     third_party_settings: {  }
   field_binder_related:
     type: link_default
-    weight: 33
+    weight: 34
     region: content
     settings:
       placeholder_url: ''
@@ -273,7 +276,7 @@ content:
     third_party_settings: {  }
   field_collections:
     type: entity_reference_tree
-    weight: 31
+    weight: 32
     region: content
     settings:
       theme: default
@@ -301,7 +304,7 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 23
+    weight: 24
     region: content
     settings: {  }
     third_party_settings:
@@ -340,7 +343,7 @@ content:
             selector: ''
   field_data_format:
     type: options_buttons
-    weight: 26
+    weight: 27
     region: content
     settings: {  }
     third_party_settings:
@@ -365,7 +368,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 25
+    weight: 26
     region: content
     settings: {  }
     third_party_settings:
@@ -389,7 +392,7 @@ content:
             selector: ''
   field_data_search_content:
     type: string_textarea
-    weight: 28
+    weight: 29
     region: content
     settings:
       rows: 5
@@ -415,7 +418,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 27
+    weight: 28
     region: content
     settings:
       start_minimized: true
@@ -449,6 +452,13 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_disable_login_links:
+    type: boolean_checkbox
+    weight: 22
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_downloads:
     type: inline_entity_form_complex
     weight: 35
@@ -466,18 +476,19 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
   field_intended_audience:
     type: options_buttons
-    weight: 30
+    weight: 31
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 22
+    weight: 23
     region: content
     settings:
       match_operator: CONTAINS
@@ -498,7 +509,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 29
+    weight: 30
     region: content
     settings:
       match_operator: CONTAINS

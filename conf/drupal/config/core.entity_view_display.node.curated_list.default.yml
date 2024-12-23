@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.curated_list.field_data_resource_type
     - field.field.node.curated_list.field_data_search_content
     - field.field.node.curated_list.field_data_topic
+    - field.field.node.curated_list.field_disable_login_links
     - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
@@ -134,6 +135,16 @@ content:
       link: true
     third_party_settings: {  }
     weight: 21
+    region: content
+  field_disable_login_links:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 142
     region: content
   field_english_version:
     type: entity_reference_label

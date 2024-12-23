@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.curated_list.field_data_resource_type
     - field.field.node.curated_list.field_data_search_content
     - field.field.node.curated_list.field_data_topic
+    - field.field.node.curated_list.field_disable_login_links
     - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
@@ -62,6 +63,7 @@ third_party_settings:
         - field_curatedlist_lede
         - field_curatedlist_overview
         - field_primary_parent
+        - field_disable_login_links
         - field_organizations
         - field_data_flag
         - field_data_topic
@@ -122,7 +124,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 20
+    weight: 21
     region: content
     settings:
       theme: default
@@ -140,7 +142,7 @@ content:
     third_party_settings: {  }
   field_contact:
     type: entity_reference_autocomplete
-    weight: 109
+    weight: 23
     region: content
     settings:
       match_operator: CONTAINS
@@ -192,6 +194,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_curatedlist_overview:
     type: text_textarea
@@ -203,13 +206,13 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 10
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
   field_data_format:
     type: options_buttons
-    weight: 15
+    weight: 16
     region: content
     settings: {  }
     third_party_settings:
@@ -233,7 +236,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 14
+    weight: 15
     region: content
     settings: {  }
     third_party_settings:
@@ -257,7 +260,7 @@ content:
             selector: ''
   field_data_search_content:
     type: string_textarea
-    weight: 12
+    weight: 13
     region: content
     settings:
       rows: 5
@@ -283,7 +286,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 11
+    weight: 12
     region: content
     settings:
       start_minimized: true
@@ -310,9 +313,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_disable_login_links:
+    type: boolean_checkbox
+    weight: 9
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 17
+    weight: 18
     region: content
     settings:
       match_operator: CONTAINS
@@ -340,13 +350,13 @@ content:
             selector: ''
   field_intended_audience:
     type: options_buttons
-    weight: 18
+    weight: 19
     region: content
     settings: {  }
     third_party_settings: {  }
   field_list_data_type:
     type: options_buttons
-    weight: 13
+    weight: 14
     region: content
     settings: {  }
     third_party_settings:
@@ -406,7 +416,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 9
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS
@@ -427,7 +437,7 @@ content:
     third_party_settings: {  }
   field_related_links:
     type: link_default
-    weight: 111
+    weight: 24
     region: content
     settings:
       placeholder_url: ''
@@ -435,7 +445,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 19
+    weight: 20
     region: content
     settings:
       match_operator: CONTAINS
@@ -453,7 +463,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 16
+    weight: 17
     region: content
     settings:
       include_locked: false

@@ -50,21 +50,23 @@ class LogInLinksBuilder {
   }
 
   /**
-   * Build the list of contextual log in links for the current page.
+   * Retrieves login links with cache tags.
    *
-   * @param array $build
-   *   The render array to augment with contextual link data.
    * @param \Drupal\node\NodeInterface $node
-   *   The node to use when adding contextual nav links.
+   *   The node to retrieve links for.
+   *
+   * @return array
+   *   An array with 'links' and 'cache_tags'.
    */
-  public function buildContextualLogInLinks(array &$build, NodeInterface $node) {
-    $links = $list_links = $cache_tags = [];
+  public function getLoginLinksWithCacheTags(NodeInterface $node) {
+    $links = [];
+    $cache_tags = [];
 
     if (
       $node->hasField('field_log_in_links') ||
       $node->hasField('field_application_login_links') ||
       $node->hasField('computed_log_in_links')
-      ) {
+    ) {
       $entities_hierarchy = [];
       $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy);
 
@@ -74,47 +76,62 @@ class LogInLinksBuilder {
       }
 
       foreach ($list_links as $link) {
-        $uri = $link->uri;
-        $is_external = UrlHelper::isExternal($uri);
-        $links[] = [
-          'type' => $is_external ? 'external' : 'internal',
-          'text' => $link->computed_title,
-          'href' => $is_external ? $uri : Url::fromUri($uri),
-        ];
-        if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
-          $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
+        if ($uri = $link->uri) {
+          $is_external = UrlHelper::isExternal($uri);
+          $links[] = [
+            'type' => $is_external ? 'external' : 'internal',
+            'text' => $link->computed_title,
+            'href' => $is_external ? $uri : Url::fromUri($uri),
+          ];
+          if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
+            $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
+          }
         }
       }
-      $cache_tags = array_unique($cache_tags);
+    }
 
-      // Add the links to the render array for the node.
-      if (!empty($links)) {
-        $build['contextual_log_in_links'] = [
-          '#theme' => 'mass_content_contextual_log_in_links',
-          '#links' => [
-            'description' => [
-              'richText' => [
-                'rteElements' => [
-                  [
-                    'path' => '@atoms/11-text/paragraph.twig',
-                    'data' => [
-                      'paragraph' => [
-                        'text' => t('Log in links for this page'),
-                      ],
+    return [
+      'links' => $links,
+      'cache_tags' => array_unique($cache_tags),
+    ];
+  }
+
+  /**
+   * Builds the render array for contextual log in links.
+   *
+   * @param array $build
+   *   The render array to augment with contextual link data.
+   * @param \Drupal\node\NodeInterface $node
+   *   The node to use when adding contextual nav links.
+   */
+  public function buildContextualLogInLinks(array &$build, NodeInterface $node) {
+    $login_links_data = $this->getLoginLinksWithCacheTags($node);
+
+    if (!empty($login_links_data['links'])) {
+      $build['contextual_log_in_links'] = [
+        '#theme' => 'mass_content_contextual_log_in_links',
+        '#links' => [
+          'description' => [
+            'richText' => [
+              'rteElements' => [
+                [
+                  'path' => '@atoms/11-text/paragraph.twig',
+                  'data' => [
+                    'paragraph' => [
+                      'text' => t('Log in links for this page'),
                     ],
                   ],
                 ],
               ],
             ],
-            'class' => 'gtm-login-contextual',
-            'links' => $links,
           ],
-          '#cache' => [
-            'tags' => $cache_tags,
-          ],
-        ];
-      }
+          'class' => 'gtm-login-contextual',
+          'links' => $login_links_data['links'],
+        ],
+        '#cache' => [
+          'tags' => $login_links_data['cache_tags'],
+        ],
+      ];
     }
   }
-
 }
