@@ -1,5 +1,12 @@
 
 
+## [0.420.0] - December 24, 2024
+
+### Changed
+  - DP-36025: Upgraded the ckeditor fullscreen module to beta10 in order to fix z-index problems.
+  
+
+
 ## [0.419.0] - December 17, 2024
 
 ### Fixed
