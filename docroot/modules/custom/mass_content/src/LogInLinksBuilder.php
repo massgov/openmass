@@ -18,11 +18,16 @@ class LogInLinksBuilder {
   /**
    * Searches for contextual login links on current node and its ancestors.
    */
-  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS) {
+  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS, &$disable_login_links_flag = FALSE) {
     // No login links found and we have reached the max number of ancestors
     // to look for them. Bye!
     if ($max_level <= 0) {
       return [];
+    }
+
+    // Check if the current entity disables login links.
+    if ($entity->hasField('field_disable_login_links') && $entity->get('field_disable_login_links')->value) {
+      $disable_login_links_flag = TRUE;
     }
 
     $bundle = $entity->bundle();
@@ -45,10 +50,12 @@ class LogInLinksBuilder {
         return $list;
       }
     }
+
+    // Traverse to the parent entity.
     $refs = $entity->getPrimaryParent()->referencedEntities();
     $parent_entity = $refs[0] ?? FALSE;
     $entities_hierarchy[] = $entity;
-    return $parent_entity ? $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level) : [];
+    return $parent_entity ? $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level, $disable_login_links_flag) : [];
   }
 
   /**
@@ -70,8 +77,8 @@ class LogInLinksBuilder {
       $node->hasField('computed_log_in_links')
     ) {
       $entities_hierarchy = [];
-      $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy);
-
+      $disable_login_links_flag = FALSE;
+      $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy, self::MAX_ANCESTORS, $disable_login_links_flag);
       // Adding cache tags of all the ancestors needed to build the links.
       foreach ($entities_hierarchy as $entity) {
         $cache_tags[] = 'node:' . $entity->id();
@@ -95,6 +102,7 @@ class LogInLinksBuilder {
     return [
       'links' => $links,
       'cache_tags' => array_unique($cache_tags),
+      'disable_login_links_flag' => $disable_login_links_flag,
     ];
   }
 
@@ -128,7 +136,9 @@ class LogInLinksBuilder {
     }
 
     $login_links_data = $this->getLoginLinksWithCacheTags($node);
-    $links = array_merge($links, $login_links_data['links']);
+    if (!$login_links_data['disable_login_links_flag']) {
+      $links = array_merge($links, $login_links_data['links']);
+    }
     $cache_tags = array_merge($cache_tags, $login_links_data['cache_tags']);
     if (!empty($links)) {
       $build['log_in_links'] = [
