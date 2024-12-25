@@ -12,7 +12,7 @@
 {% block preContent %}
   {# If the contextual navigation should be set for this node, then add it. #}
   {% if node.field_application_login_links is not empty %}
-    {{ contextual_log_in_links }}
+    {% set buttons = log_in_links %}
   {% endif %}
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
@@ -65,7 +65,8 @@
         "pageHeader": {
           "title": node.title.value,
           "titleSubText": subtext,
-          "links": links
+          "links": links,
+          "buttons": [buttons]
         }
       }
     } %}

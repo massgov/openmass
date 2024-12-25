@@ -2,8 +2,10 @@
 
 namespace Drupal\mass_content;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
 /**
@@ -105,31 +107,42 @@ class LogInLinksBuilder {
    *   The node to use when adding contextual nav links.
    */
   public function buildContextualLogInLinks(array &$build, NodeInterface $node) {
-    $login_links_data = $this->getLoginLinksWithCacheTags($node);
+    $links = [];
+    $cache_tags = [];
+    // This is the node used to populate global login links.
+    $node_id = 4206;
+    $login_node = Node::load($node_id);
+    if ($login_node->hasField('field_links') && !$login_node->get('field_links')->isEmpty()) {
+      foreach ($login_node->get('field_links') as $field_link) {
+        $uri = $field_link->uri;
+        $is_external = UrlHelper::isExternal($uri);
+        $links[] = [
+          'type' => $is_external ? 'external' : 'internal',
+          'text' => $field_link->title,
+          'href' => $is_external ? $uri : Url::fromUri($uri),
+        ];
+        if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
+          $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
+        }
+      }
+    }
 
-    if (!empty($login_links_data['links'])) {
-      $build['contextual_log_in_links'] = [
-        '#theme' => 'mass_content_contextual_log_in_links',
-        '#links' => [
-          'description' => [
-            'richText' => [
-              'rteElements' => [
-                [
-                  'path' => '@atoms/11-text/paragraph.twig',
-                  'data' => [
-                    'paragraph' => [
-                      'text' => t('Log in links for this page'),
-                    ],
-                  ],
-                ],
-              ],
-            ],
-          ],
-          'class' => 'gtm-login-contextual',
-          'links' => $login_links_data['links'],
-        ],
+    $login_links_data = $this->getLoginLinksWithCacheTags($node);
+    $links = array_merge($links, $login_links_data['links']);
+    $cache_tags = array_merge($cache_tags, $login_links_data['cache_tags']);
+    if (!empty($links)) {
+      $build['log_in_links'] = [
+        "text" => 'Log In to...',
+        "ariaLabelText" => "Log in to one of Mass.gov's most frequently accessed services",
+        'id' => 'contextual-login-links',
+        "size" => "small",
+        "usage" => "secondary",
+        "theme" => "c-primary",
+        "menuId" => "contextual-login-links-menu",
+        'class' => 'gtm-login-contextual',
+        'items' => $links,
         '#cache' => [
-          'tags' => $login_links_data['cache_tags'],
+          'tags' => $cache_tags,
         ],
       ];
     }

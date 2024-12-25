@@ -1505,7 +1505,6 @@ function mass_theme_preprocess_node_info_details(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
-    $page_title = $node->getTitle();
 
     // Create the map of all possible field names to use.
     $map = [
