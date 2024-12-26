@@ -60,23 +60,6 @@
 
   {# NOTE: At this time a service page node's design does not require the optional page-banner template #}
   {# values for "icon", "primaryLink", and "secondaryLink", so we don't set them. We may in the future. #}
-
-{#  {% set logInButtons = [] %}#}
-{#  {% if node.field_log_in_links is not empty %}#}
-{#    {% for item in node.field_log_in_links %}#}
-{#      {% set button = {#}
-{#          "href": item.url,#}
-{#          "text": item.title,#}
-{#          "size": "small",#}
-{#          "usage": "primary",#}
-{#          "theme": "c-white",#}
-{#          "icon": "login",#}
-{#          "uppercaseOverride": true#}
-{#        }#}
-{#      %}#}
-{#      {% set logInButtons = logInButtons|merge([button]) %}#}
-{#    {% endfor %}#}
-{#  {% endif %}#}
   {% if translationLinks %}
     {% include "@organisms/by-author/inline-links-language.twig" with {
       "inlineLinks": translationLinks
