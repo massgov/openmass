@@ -18,7 +18,7 @@ class LogInLinksBuilder {
   /**
    * Searches for contextual login links on current node and its ancestors.
    */
-  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS, &$disable_login_links_flag = FALSE) {
+  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS, &$disable_login_links_flag = NULL) {
     // No login links found and we have reached the max number of ancestors
     // to look for them. Bye!
     if ($max_level <= 0) {
@@ -27,7 +27,7 @@ class LogInLinksBuilder {
 
     // Check if the current entity disables login links.
     if ($entity->hasField('field_disable_login_links') && $entity->get('field_disable_login_links')->value) {
-      $disable_login_links_flag = TRUE;
+      $disable_login_links_flag = $entity->id();
     }
 
     $bundle = $entity->bundle();
@@ -77,7 +77,7 @@ class LogInLinksBuilder {
       $node->hasField('computed_log_in_links')
     ) {
       $entities_hierarchy = [];
-      $disable_login_links_flag = FALSE;
+      $disable_login_links_flag = NULL;
       $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy, self::MAX_ANCESTORS, $disable_login_links_flag);
       // Adding cache tags of all the ancestors needed to build the links.
       foreach ($entities_hierarchy as $entity) {

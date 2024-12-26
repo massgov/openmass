@@ -735,6 +735,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       // Get the contextual links.
       $links_data = $login_links_builder->getLoginLinksWithCacheTags($node);
 
+
       // Build the description with the login links using render arrays.
       if (!empty($links_data['links'])) {
         $links = [];
@@ -752,6 +753,18 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         $element['value']['#description'] = [
           '#markup' => t('This page will currently show these login links that are inherited from a parent organization or service page:'),
         ];
+        if (!empty($links_data['disable_login_links_flag'])) {
+          if ($links_data['disable_login_links_flag'] != $node->id()) {
+            if ($disabled_node = Node::load($links_data['disable_login_links_flag'])) {
+              $element['value']['#description'] = [
+                '#markup' => t('This page will <strong>NOT</strong> currently show these login links that are inherited from a parent organization or service page since it has been disabled on the parent page <a href="@url" target="_blank">@title</a>:', [
+                  '@url' => $disabled_node->toUrl()->toString(),
+                  '@title' => $disabled_node->getTitle(),
+                ]),
+              ];
+            }
+          }
+        }
 
         // Render the links list.
         $links_render_array = [
