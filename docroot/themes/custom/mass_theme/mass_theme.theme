@@ -3870,9 +3870,6 @@ function mass_theme_preprocess_menu(&$variables) {
       if ($item['url']->isRouted()) {
         $ref_node = $item['url']->getRouteParameters();
         // Load it up and get the field.
-//        if ($ref_node['node'] == ) {
-//
-//        }
         if ($node = Node::load($ref_node['node'])) {
           // Add the Utility Drawer node id into the cache tags for this page so
           // when the Utility nav nodes are updated, it triggers updates on all
