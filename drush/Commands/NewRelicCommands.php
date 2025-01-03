@@ -19,8 +19,8 @@ final class NewRelicCommands extends DrushCommands {
    * Set NR name before command is run.
    */
   #[CLI\Hook(type: HookManager::PRE_COMMAND_HOOK, target: '*')]
-  public function preName($result, CommandData $commandData) {
-    $this->name($result, $commandData, 'start');
+  public function preName(CommandData $commandData) {
+    $this->name($commandData, 'start');
   }
 
   /**
@@ -28,13 +28,13 @@ final class NewRelicCommands extends DrushCommands {
    */
   #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: '*')]
   public function postName($result, CommandData $commandData) {
-    $this->name($result, $commandData, 'finish');
+    $this->name($commandData, 'finish');
   }
 
   /**
    * Set NR name.
    */
-  private function name($result, CommandData $commandData, $prefix = '') {
+  private function name(CommandData $commandData, $prefix = '') {
     if (!extension_loaded('newrelic')) {
       $this->logger()->debug('New Relic extension is not loaded.');
       return;
