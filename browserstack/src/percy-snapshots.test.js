@@ -65,7 +65,8 @@ describe("massgov-screenshots", () => {
         ignore_region_selectors: ['.__fsr'],
         requestHeaders: {
           'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
-        }
+        },
+        percyCSS: `.__fsr { display: none; }`
       };
       await percyScreenshot(driver, page.label, options);
     });
