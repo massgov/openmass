@@ -596,6 +596,10 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
       $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
 
+      // Override title description of the URL field in callout link field. Dima to make this condition more narrow then remove this part of comment.
+      if ($field_name == 'field_link') {
+        $element['title']['#description'] = t('Keep link text as short as possible since it will appear on a button.');
+      }
       // Override description of the URL field in External data resource content type.
       if ($field_name == 'field_externaldata_url') {
         $element['uri']['#description'] = t('Enter a complete URL. It must begin with "https://" or "http://".');
