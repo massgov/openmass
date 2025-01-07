@@ -19,6 +19,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->getStorage('view');
 
+  if (($view['view']->id() == 'crawler_pages' && $view['view']->getDisplay()->display['id'] == 'page_1') || ($view['view']->id() == 'crawler_documents' && $view['view']->getDisplay()->display['id'] == 'media_page_list')) {
+    $form['crawl-auth'] = [
+      '#type' => 'textfield',
+      '#title' => t('Crawl auth key'),
+    ];
+  }
   if ($view['view']->id() === "non_english_documents" && $view['view']->getDisplay()->display['id'] === "page_1") {
     if ($form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']) {
       $form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']['#type'] = 'radios';
@@ -134,6 +140,73 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
           }
         }
       }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function mass_views_preprocess_views_view_field(&$variables) {
+  // Get the View and field information.
+  $view = $variables['view'];
+  $field = $variables['field'];
+  $row = $variables['row'];
+
+  // Define configurations for different views and displays.
+  $configurations = [
+    'crawler_pages' => [
+      'page_1' => [
+        'field' => 'title',
+        'route_parameter' => 'node',
+        'route' => 'entity.node.canonical',
+        'id_field' => 'node_field_data_node_field_revision_nid',
+        'cache_tag' => 'node_list',
+      ],
+    ],
+    'crawler_documents' => [
+      'media_page_list' => [
+        'field' => 'field_title',
+        'route_parameter' => 'media',
+        'route' => 'entity.media.canonical',
+        'id_field' => 'mid',
+        'cache_tag' => 'media_list',
+      ],
+    ],
+  ];
+
+  // Check if the current view and display are configured.
+  if (isset($configurations[$view->id()][$view->current_display])) {
+    $config = $configurations[$view->id()][$view->current_display];
+
+    // Check if the field matches the configured field.
+    if ($field->field == $config['field']) {
+      // Add cache contexts for the 'crawl-auth' query parameter.
+      $variables['#cache']['contexts'][] = 'url.query_args:crawl-auth';
+
+      // Add additional cache tags to ensure invalidation when necessary.
+      $variables['#cache']['tags'][] = $config['cache_tag'];
+
+      // Get the custom filter value from the request.
+      $auth_key = \Drupal::request()->query->get('crawl-auth');
+
+      // Get the entity ID from the row data.
+      $entity_id = $row->{$config['id_field']};
+
+      // Construct the URL manually.
+      $url = Url::fromRoute($config['route'], [$config['route_parameter'] => $entity_id], ['absolute' => TRUE]);
+      if (!empty($auth_key)) {
+        $url = $url->setOption('query', ['crawl-auth' => $auth_key]);
+      }
+
+      // Get the title (label) from the entity.
+      $title = $row->_entity->label();
+
+      // Use the Link class to generate the anchor tag.
+      $link = Link::fromTextAndUrl($title, $url);
+
+      // Render the link and update the output.
+      $variables['output'] = $link->toString();
     }
   }
 }
