@@ -31,8 +31,8 @@
 3. Edit debug configurations:
    - ![edit config](./assets/drupal-debug/edit-config.png)
    - Click on the "+" sign to add new configuration and choose `PHP Web Page`
-   - Set server to `mass.local` in your config. 
-  
+   - Set server to `mass.local` in your config.
+
 
 For more information, refer to [PHP frameworks and external tools/Drupal](https://www.jetbrains.com/help/phpstorm/drupal-support.html)
 
@@ -56,8 +56,22 @@ For more information, refer to [PHP frameworks and external tools/Drupal](https:
 
    ![set breakpoint](./assets/drupal-debug/set-bp-twig.png)
 
-> Please note: this method is not working consistently. Refer to the quickest debug method for Twig template logging for now. If you can get this the Twig debug working consistently with Xdebug, please suggest changes to these steps. 
+> Please note: this method is not working consistently. Refer to the quickest debug method for Twig template logging for now. If you can get this the Twig debug working consistently with Xdebug, please suggest changes to these steps.
 
+### Use Xdebug with Drush 13 in PHPStorm.
+In order use xdebug with Drush in PHPStorm follow this steps:
+
+1. `ddev xdebug on`
+2. `ddev ssh`
+3. `export PHP_IDE_CONFIG="serverName=mass.local"`
+4. `exit`
+5. Start listening for PHP Debug Connections in PHPStorm \
+   Switch ![start-listening-disabled.png](assets/drupal-debug/start-listening-disabled.png) to ![start-listening.png](assets/drupal-debug/start-listening.png).
+6. Set the break point in your PHP code. \
+   ![set breakpoint](./assets/drupal-debug/set-bp.png)
+7. Execute the Drush command with `--xdebug` parameter, for example `ddev drush status --xdebug`. See more [here](https://www.drush.org/13.x/commands/#xdebug).
+8. For debugging purposes, if you can't get xdebug work with drush, set check "Break at the first line in PHP scripts" in PHPStorm Settings > PHP > Debug.
+   1. Make sure "Ignore external connections through unregistered server configurations" is unchecked.
 
 ## Additional Resources
 
