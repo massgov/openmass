@@ -99,8 +99,8 @@ window.addEventListener('load', function () {
 
     observer.observe(document.body, config);
 
-    // Sent another update after 1/3 of a second just in case
-    window.setTimeout(sendDimensionsToParent, 300);
+    // Sent another update after 1/2 of a second just in case
+    window.setTimeout(sendDimensionsToParent, 500);
 
   }
   // if mutationobserver is NOT supported
