@@ -55,8 +55,8 @@ third_party_settings:
   field_group:
     group_information_details_edit_f:
       children:
-        - group_overview
         - group_content
+        - group_overview
         - group_info_details_related
         - group_additional_info
       label: 'Information Details Edit Form'
@@ -96,12 +96,13 @@ third_party_settings:
       label: Overview
       region: content
       parent_name: group_information_details_edit_f
-      weight: 7
+      weight: 9
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
-        formatter: open
+        formatter: closed
         description: ''
         required_fields: true
     group_content:
@@ -116,7 +117,7 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
-        formatter: closed
+        formatter: open
         description: 'Either a populated overview field or a content section is required.'
         required_fields: true
     group_info_details_related:
