@@ -36,7 +36,7 @@ class MayflowerExtension extends AbstractExtension {
   public function getFunctions() {
     return [
       new TwigFunction('icon',
-        [$this, 'displayIcon'],
+        $this->displayIcon(...),
         ['is_safe' => ['html']]
       ),
     ];
@@ -82,7 +82,7 @@ class MayflowerExtension extends AbstractExtension {
     // Temporary BC layer to convert twig SVG names to file ones.
     if ($parts['dirname'] === '@atoms/05-icons') {
       $newName = preg_replace('/^svg-/', '', $parts['filename']);
-      trigger_error(sprintf('Deprecated icon path used: %s. This will be converted to %s for the time being, but you should replace the in-code reference so it does not break in the future.', $name, $newName), E_USER_DEPRECATED);
+      @trigger_error(sprintf('Deprecated icon path used: %s. This will be converted to %s for the time being, but you should replace the in-code reference so it does not break in the future.', $name, $newName), E_USER_DEPRECATED);
       $parts = pathinfo($newName);
     }
     // Pass a named icon through to the predefined icons directory.

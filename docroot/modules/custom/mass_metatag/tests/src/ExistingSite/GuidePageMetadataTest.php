@@ -3,10 +3,10 @@
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 
 /**
  * Guide Page metadata tests.

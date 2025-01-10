@@ -15,6 +15,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
@@ -611,25 +612,41 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $variables['mainContent'] = $mainContent;
     $variables['sideContent'] = $sideContent;
 
-    if (!empty($node->field_form_embed->value)) {
-      try {
-        $crawler = new Crawler($node->field_form_embed->value);
-        $script_url = $crawler->filterXPath('//script[@src]')->attr('src');
-        $noscript_url = $crawler->filterXPath('//noscript/a[@href]')->attr('href');
-        $validate_script_url = parse_url($script_url, PHP_URL_HOST);
-        $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
+    if (!$node->getPlatform()->isEmpty()) {
+      // Check if the platform is FormStack.
+      if ($node->isFormStack()) {
+        if (!$node->getFormEmbed()->isEmpty()) {
+          try {
+            if ($form_embed = $node->getFormEmbed()->getString()) {
+              $crawler = new Crawler($form_embed);
+              $script_url = $crawler->filterXPath('//script[@src]')
+                ->attr('src');
+              $noscript_url = $crawler->filterXPath('//noscript/a[@href]')
+                ->attr('href');
 
-        if (str_ends_with($validate_script_url, "formstack.com")) {
-          $variables['form_url'] = Url::fromUri($script_url);
-        }
-        if (str_ends_with($validate_noscript_url, "formstack.com")) {
-          $variables['form_url_noscript'] = $noscript_url;
+              $validate_script_url = parse_url($script_url, PHP_URL_HOST);
+              $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
+
+              if (str_ends_with($validate_script_url, 'formstack.com')) {
+                $variables['form_url'] = Url::fromUri($script_url);
+              }
+              if (str_ends_with($validate_noscript_url, 'formstack.com')) {
+                $variables['form_url_noscript'] = $noscript_url;
+              }
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('mass_fields')
+              ->warning('Parsing of formstack URL failed: %message', [
+                '%message' => $e->getMessage(),
+              ]);
+          }
         }
       }
-      catch (\Exception $e) {
-        \Drupal::logger('mass_fields')->warning('Parsing of formstack URL failed: %message', [
-          '%message' => $e->getMessage(),
-        ]);
+
+      // Check if the platform is Gravity Forms.
+      elseif ($node->isGravityForms()) {
+        $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       }
     }
 
@@ -2714,7 +2731,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
 
   if (!empty($fields['subheading']) && Helper::isFieldPopulated($node, $fields['subheading'])) {
     $subCategory = [
-      'title' => Helper::fieldFullView($node, $fields['subheading'])
+      'title' => Helper::fieldFullView($node, $fields['subheading']),
     ];
   }
 
@@ -3819,12 +3836,12 @@ function mass_theme_preprocess_block(&$variables) {
 
     // Check if the current page is a node page.
     if ($node instanceof NodeInterface) {
-      $cache_tags = [];
+      $cache_tags = $node->getCacheTags();
       $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
       // Add cache context for the current URL path.
-      $cache_contexts = ['url.path'];
+      $cache_contexts = array_merge(['url.path'], $node->getCacheContexts());
       CacheableMetadata::createFromRenderArray($variables)
         ->addCacheTags($cache_tags)
         ->addCacheContexts($cache_contexts)
@@ -6018,7 +6035,7 @@ function mass_theme_preprocess_file_link(&$variables) {
 
   // Get the human readable file size.
   $bytes = $file->getSize();
-  $readable_size = format_size($bytes);
+  $readable_size = ByteSizeMarkup::create($bytes)->render();
   $variables['download']['size'] = $readable_size;
 
   // Use the description as the link text if available,
@@ -7519,7 +7536,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
 
             if ($variables['display_type'] == "buttons") {
               $original_file = $media->field_upload_file->entity;
-              $links[$index]['file_size'] = strtoupper(format_size($original_file->getSize()));
+              $links[$index]['file_size'] = strtoupper(ByteSizeMarkup::create($original_file->getSize())->render());
               $file_info = new \SplFileInfo($original_file->getFilename());
               $file_extension = strtoupper($file_info->getExtension());
               $file_icon = 'doc-' . strtolower($file_extension);
@@ -7548,7 +7565,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
                   $render_array = [];
 
                   // Manually add calculated file size.
-                  $file_size = strtoupper(format_size($file_media->getSize()));
+                  $file_size = strtoupper(ByteSizeMarkup::create($file_media->getSize())->render());
                   $render_array['calculated_file_size'] = [
                     '#type' => 'markup',
                     '#markup' => $file_size,

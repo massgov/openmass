@@ -22,7 +22,7 @@ class EntityUrl extends FieldItemList {
   /**
    * {@inheritdoc}
    */
-  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
+  public function access($operation = 'view', ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     return $this->getEntity()
       ->access($operation, $account, $return_as_object);
   }

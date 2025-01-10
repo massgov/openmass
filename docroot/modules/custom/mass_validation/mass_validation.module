@@ -14,7 +14,6 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
-use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Implements hook_help().
@@ -56,25 +55,46 @@ function mass_validation_entity_type_alter(array &$entity_types) {
  * Implements hook_entity_bundle_field_info_alter().
  */
 function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
-  /** @var Drupal\field\Entity\FieldConfig $field_social_links */
-  if ($entity_type->id() == 'node' && array_key_exists('field_social_links', $fields) && !empty($fields['field_social_links'])) {
-    $field_social_links = &$fields['field_social_links'];
-    $field_social_links->addConstraint('SocialLink', [
-      'allowedValues' => [
-        'twitter.com',
-        'x.com',
-        'flickr.com',
-        'facebook.com',
-        'threads.net',
-        'instagram.com',
-        'linkedin.com',
-        'youtube.com',
-        'vimeo.com',
-        'medium.com',
-        'blog.mass.gov',
-        'www.mass.gov',
-      ],
-    ]);
+
+  if ($entity_type->id() == 'node') {
+    if (array_key_exists('field_social_links', $fields) && !empty($fields['field_social_links'])) {
+      /** @var Drupal\field\Entity\FieldConfig $field_social_links */
+      $field_social_links = &$fields['field_social_links'];
+      $field_social_links->addConstraint('SocialLink', [
+        'allowedValues' => [
+          'twitter.com',
+          'x.com',
+          'flickr.com',
+          'facebook.com',
+          'threads.net',
+          'instagram.com',
+          'linkedin.com',
+          'youtube.com',
+          'vimeo.com',
+          'medium.com',
+          'blog.mass.gov',
+          'www.mass.gov',
+        ],
+      ]);
+    }
+    if (array_key_exists('field_form_url', $fields) && !empty($fields['field_form_url'])) {
+      $field_form_url = &$fields['field_form_url'];
+      $field_form_url->addConstraint('GravityForm', [
+        'allowedValues' => [
+          'dev.forms.mass.gov',
+          'live.forms.mass.gov',
+          'test.forms.mass.gov',
+          'forms.mass.gov',
+          'live-mass-forms.pantheonsite.io',
+          'dev-mass-forms.pantheonsite.io',
+          'test-mass-forms.pantheonsite.io',
+          'embed-test2-mass-forms.pantheonsite.io',
+          'embed-test3-mass-forms.pantheonsite.io',
+          'embed-test-mass-forms.pantheonsite.io',
+        ]
+      ]);
+    }
+
   }
 
   if ($entity_type->id() === 'paragraph') {
@@ -1542,6 +1562,42 @@ function mass_validation_get_title_from_uri($uri) {
       }
     }
   }
+  // Add condition to the helper function to try finding the titles
+  // from other uri schemas as well even if it is a redirected one.
+  elseif (stripos($uri, 'internal:/') === 0) {
+    // Extract the path from the internal URI.
+    $internal_path = str_replace('internal:/', '', $uri);
+
+    // Convert the internal path to its system path.
+    $path_alias_manager = \Drupal::service('path_alias.manager');
+    $system_path = $path_alias_manager->getPathByAlias('/' . $internal_path);
+
+    // Check if the path corresponds to a node.
+    if (preg_match('/node\/(\d+)/', $system_path, $matches)) {
+      $nid = $matches[1];
+      $node = Node::load($nid);
+      if ($node) {
+        return $node->getTitle();
+      }
+    }
+    else {
+      $redirects = Drupal::entityTypeManager()->getStorage('redirect')->loadByProperties(['redirect_source__path' => $internal_path]);
+      if ($redirect = reset($redirects)) {
+        if ($target = $redirect->getRedirectUrl()->toString()) {
+          $system_path = $path_alias_manager->getPathByAlias($target);
+          // Check if the path corresponds to a node.
+          if (preg_match('/node\/(\d+)/', $system_path, $matches)) {
+            $nid = $matches[1];
+            $node = Node::load($nid);
+            if ($node) {
+              return $node->getTitle();
+            }
+          }
+        }
+      }
+    }
+  }
+
   return NULL;
 }
 

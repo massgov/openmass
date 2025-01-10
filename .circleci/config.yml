@@ -1118,16 +1118,6 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [deploy-tag-prod-acquia-maint]
-          target: prod
-          list: all
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
       - new_relic_change_tracking:
           name: new-relic-change-tracking-prod-maint
           requires: [deploy-tag-prod-acquia-maint]

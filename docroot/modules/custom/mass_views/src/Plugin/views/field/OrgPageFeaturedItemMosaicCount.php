@@ -17,7 +17,7 @@ class OrgPageFeaturedItemMosaicCount extends OrgPageCountBase {
   /**
    * {@inheritdoc}
    */
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
+  public function init(ViewExecutable $view, DisplayPluginBase $display, ?array &$options = NULL) {
     $this->pseudoTableAlias = 'pifd_fim_count';
     $this->pseudoFieldName = 'org_featured_item_mosaic_count';
     $this->paragraphBundle = 'featured_item_mosaic';

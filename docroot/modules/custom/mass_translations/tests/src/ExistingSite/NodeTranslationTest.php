@@ -4,16 +4,12 @@ namespace Drupal\Tests\mass_translations\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\user\Entity\User;
 use MassGov\Dtt\MassExistingSiteBase;
-use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Service Details translation tests.
  */
 class NodeTranslationTest extends MassExistingSiteBase {
-
-  use LoginTrait;
 
   private $editor;
   private $orgNode;
