@@ -20,13 +20,6 @@ class MassUtilityServiceProvider extends ServiceProviderBase {
       $processors[] = 'backtrace_removal';
       $container->setParameter('monolog.processors', $processors);
     }
-
-    // @todo Consider commenting this out after https://massgov.atlassian.net/browse/DP-33081 is resolved.
-    if ($container->hasDefinition('renderer')) {
-      $definition = $container->getDefinition('renderer');
-      $definition->setClass('Drupal\mass_utility\Renderer');
-    }
-
   }
 
 }
