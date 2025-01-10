@@ -105,8 +105,8 @@ window.addEventListener('load', function () {
   }
   // if mutationobserver is NOT supported
   else {
-    // check for changes on a timed interval, every 1/3 of a second
-    window.setInterval(sendDimensionsToParent, 300);
+    // check for changes on a timed interval, every 1/2 of a second
+    window.setInterval(sendDimensionsToParent, 500);
   }
 
 
