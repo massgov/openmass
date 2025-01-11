@@ -778,7 +778,6 @@ class MassContentCommands extends DrushCommands {
                     ) {
                       $additional_resource->set('field_links_downloads_header', 'Additional Resources');
                       $additional_resource->save();
-                      $this->output()->writeln("Node with links_downloads: $nid");
                     }
                     $new_sections[] = [
                       'target_id' => $additional_resource->id(),
