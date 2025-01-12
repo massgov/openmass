@@ -1,4 +1,4 @@
-{% if paragraph.field_links_downloads_link.uri or paragraph.field_links_downloads_down.target_id %}
+{% if paragraph.field_links_downloads_link.uri or paragraph.field_links_downloads_down.target_id or paragraph.field_links_downloads_header.value %}
   {% if paragraph.field_links_downloads_header.value %}
     {% embed "@organisms/by-author/form-downloads.twig" with {
       "formDownloads": {
