@@ -51,8 +51,9 @@ class MassUrlReplacementService {
       // Extract the 'href' attribute value
       $href = $anchor->getAttribute('href');
       $is_external = UrlHelper::isExternal($href);
+      $external_is_local = UrlHelper::externalIsLocal($href, \Drupal::request()->getHost());
 
-      if ($is_external) {
+      if ($is_external || !$external_is_local) {
         continue;
       }
 
