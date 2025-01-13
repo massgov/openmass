@@ -50,11 +50,11 @@ class MassUrlReplacementService {
     foreach ($anchors as $anchor) {
       // Extract the 'href' attribute value
       $href = $anchor->getAttribute('href');
-      $is_external = UrlHelper::isExternal($href);
-      $external_is_local = UrlHelper::externalIsLocal($href, \Drupal::request()->getHost());
-
-      if ($is_external || !$external_is_local) {
-        continue;
+      $base_host = \Drupal::request()->getSchemeAndHttpHost();
+      if (UrlHelper::isExternal($href)) {
+        if (!UrlHelper::externalIsLocal($href, $base_host)) {
+          continue;
+        }
       }
 
       // Check for 'media/[id]' or 'media/[id]/download' pattern and extract ID
