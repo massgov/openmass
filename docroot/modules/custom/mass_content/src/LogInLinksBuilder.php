@@ -5,6 +5,8 @@ namespace Drupal\mass_content;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url;
+use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\ServicePageBundle;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
@@ -102,7 +104,7 @@ class LogInLinksBuilder {
     return [
       'links' => $links,
       'cache_tags' => array_unique($cache_tags),
-      'disable_login_links_flag' => $disable_login_links_flag,
+      'disable_login_links_flag' => $disable_login_links_flag ?? NULL,
     ];
   }
 
@@ -118,26 +120,32 @@ class LogInLinksBuilder {
     $links = [];
     $cache_tags = [];
     // This is the node used to populate global login links.
-    $node_id = 4206;
-    $login_node = Node::load($node_id);
-    if ($login_node->hasField('field_links') && !$login_node->get('field_links')->isEmpty()) {
-      foreach ($login_node->get('field_links') as $field_link) {
-        $uri = $field_link->uri;
-        $is_external = UrlHelper::isExternal($uri);
-        $links[] = [
-          'type' => $is_external ? 'external' : 'internal',
-          'text' => $field_link->title,
-          'href' => $is_external ? $uri : Url::fromUri($uri),
-        ];
-        if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
-          $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
-        }
-      }
-    }
+    //    $node_id = 4206;
+    //    $login_node = Node::load($node_id);
+    //    if ($login_node->hasField('field_links') && !$login_node->get('field_links')->isEmpty()) {
+    //      foreach ($login_node->get('field_links') as $field_link) {
+    //        $uri = $field_link->uri;
+    //        $is_external = UrlHelper::isExternal($uri);
+    //        $links[] = [
+    //          'type' => $is_external ? 'external' : 'internal',
+    //          'text' => $field_link->title,
+    //          'href' => $is_external ? $uri : Url::fromUri($uri),
+    //        ];
+    //        if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
+    //          $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
+    //        }
+    //      }
+    //    }
 
     $login_links_data = $this->getLoginLinksWithCacheTags($node);
     if (!$login_links_data['disable_login_links_flag']) {
       $links = array_merge($links, $login_links_data['links']);
+    }
+    $theme = "c-primary";
+    $usage = "secondary";
+    if ($node instanceof ServicePageBundle || $node instanceof OrgPageBundle) {
+      $theme = "c-white";
+      $usage = "";
     }
     $cache_tags = array_merge($cache_tags, $login_links_data['cache_tags']);
     if (!empty($links)) {
@@ -146,8 +154,8 @@ class LogInLinksBuilder {
         "ariaLabelText" => "Log in to one of Mass.gov's most frequently accessed services",
         'id' => 'contextual-login-links',
         "size" => "small",
-        "usage" => "secondary",
-        "theme" => "c-primary",
+        "usage" => $usage,
+        "theme" => $theme,
         "menuId" => "contextual-login-links-menu",
         'class' => 'gtm-login-contextual',
         'items' => $links,
