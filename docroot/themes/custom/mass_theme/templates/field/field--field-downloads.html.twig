@@ -1,20 +1,29 @@
 {# Set top heading level for the component. #}
 {% set level = 2 %}
-{% embed "@organisms/by-author/download-links-list.twig" with {
-  "downloadList": {
+
+{% embed "@organisms/by-author/link-list.twig" with  {
+  "linkList": {
+    "sectionClass": "",
+    "stacked": true,
     "compHeading": {
       "title": label,
-      "titleContext": "",
-      "level": level,
+      "sub": "",
       "color": "",
       "id": "",
-      "centered": ""
-    }
+      "centered": false,
+      "level": level
+    },
+    "description": null,
+    "stacked": false,
+    "hideBullets": true
   }
 } %}
-  {% block downloadListLinks %}
-    {% for item in items %}
-      {{ item.content }}
+
+  {% block linkListDecorativeLink %}
+    {% for decorativeLink in items %}
+      <li class="ma__link-list__item">
+        {{ decorativeLink.content }}
+      </li>
     {% endfor %}
   {% endblock %}
 {% endembed %}
