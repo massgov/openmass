@@ -1,5 +1,18 @@
 
 
+## [0.420.0] - January 7, 2025
+
+### Added
+  - DP-35022: Add proper cache tags to the Search block on mobile.
+  
+### Changed
+  - DP-36025: Upgraded the ckeditor fullscreen module to beta10 in order to fix z-index problems.
+  
+### Fixed
+  - DP-36349: Collections report.
+  
+
+
 ## [0.419.0] - December 17, 2024
 
 ### Fixed
