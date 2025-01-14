@@ -772,19 +772,62 @@ class MassContentCommands extends DrushCommands {
               $additional_resources = $section->get('field_section_long_form_addition')->referencedEntities();
               if (!empty($additional_resources)) {
                 foreach ($additional_resources as $additional_resource) {
-                  if (!$additional_resource->get('field_links_downloads_down')->isEmpty() || !$additional_resource->get('field_links_downloads_link')->isEmpty()) {
-                    if ($additional_resource->hasField('field_links_downloads_header')
-                      && $additional_resource->get('field_links_downloads_header')->isEmpty()
-                    ) {
-                      $additional_resource->set('field_links_downloads_header', 'Additional Resources');
-                      $additional_resource->save();
+                  $link_group_links = [];
+                  if (!$additional_resource->get('field_links_downloads_link')->isEmpty()) {
+                    $field_links_downloads_link = $additional_resource->get('field_links_downloads_link')->getValue();
+
+                    foreach ($field_links_downloads_link as $link) {
+                      // Create a new link_group_link paragraph.
+                      $link_group_link = Paragraph::create([
+                        'type' => 'link_group_link',
+                      ]);
+
+                      $link_group_link->set('field_link_group_link', $link);
+                      $link_group_link->save();
+                      $link_group_links[] = [
+                        'target_id' => $link_group_link->id(),
+                        'target_revision_id' => $link_group_link->getRevisionId(),
+                      ];
                     }
-                    $new_sections[] = [
-                      'target_id' => $additional_resource->id(),
-                      'target_revision_id' => $additional_resource->getRevisionId(),
-                    ];
+                  }
+                  if (!$additional_resource->get('field_links_downloads_down')->isEmpty()) {
+                    // Get the field value.
+                    $field_links_downloads_down = $additional_resource->get('field_links_downloads_down')->getValue();
+
+                    foreach ($field_links_downloads_down as $file) {
+                      // Create a new link_group_document paragraph.
+                      $link_group_document = Paragraph::create([
+                        'type' => 'link_group_document',
+                      ]);
+
+                      $link_group_document->set('field_file_download_single', $file);
+                      $link_group_document->save();
+                      $link_group_links[] = [
+                        'target_id' => $link_group_document->id(),
+                        'target_revision_id' => $link_group_document->getRevisionId(),
+                      ];;
+                    }
+
                   }
                 }
+                if (!empty($link_group_links)) {
+                  // Create a new flexible_link_group paragraph.
+                  $flexible_link_group = Paragraph::create([
+                    'type' => 'flexible_link_group',
+                  ]);
+
+                  dump($link_group_links);
+                  $flexible_link_group->set('field_featured', 0);
+                  $flexible_link_group->set('field_display_type', 'links');
+                  $flexible_link_group->set('field_flexible_link_group_title', 'Additional Resources');
+                  $flexible_link_group->set('field_link_group', $link_group_links);
+                  $flexible_link_group->save();
+                  $new_sections[] = [
+                    'target_id' => $flexible_link_group->id(),
+                    'target_revision_id' => $flexible_link_group->getRevisionId(),
+                  ];
+                }
+
               }
             }
           }

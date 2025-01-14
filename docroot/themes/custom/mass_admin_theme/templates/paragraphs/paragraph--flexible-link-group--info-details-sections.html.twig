@@ -1,0 +1,53 @@
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% set items = [] %}
+      {% for flexible_link in flexible_links_group %}
+        {% set links = [] %}
+        {% for link in flexible_link.links %}
+          {% set content = link.download_link ?
+            {
+              "iconSize": "",
+              "icon": link.download_link.extra_file_icon['#markup'],
+              "decorativeLink": {
+              "text": link.download_link.file_title,
+              "href": url('media_entity_download.download', {'media': link.download_link.mid}),
+              "info": ""
+            },
+              "size": link.download_link.calculated_file_size,
+              "format": link.download_link.extra_file_extension,
+              "inlineLinks": link.download_link.translationLinks
+            }
+            :
+            {
+              "text": link.text,
+              "href": link.href
+            }
+          %}
+
+          {% set links = links|merge([content]) %}
+        {% endfor %}
+        {% include "@organisms/by-author/link-list.twig" with {
+          "linkList": {
+            "compHeading": {
+              "title": flexible_link.title,
+              "level": 3
+            },
+            "stacked": true,
+            "links": links,
+            "hideBullets": true
+          }
+        } %}
+      {% endfor %}
+
+    {% endblock %}
+  </div>
+{% endblock paragraph %}
