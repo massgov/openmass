@@ -815,8 +815,7 @@ class MassContentCommands extends DrushCommands {
                   $flexible_link_group = Paragraph::create([
                     'type' => 'flexible_link_group',
                   ]);
-
-                  dump($link_group_links);
+                  
                   $flexible_link_group->set('field_featured', 0);
                   $flexible_link_group->set('field_display_type', 'links');
                   $flexible_link_group->set('field_flexible_link_group_title', 'Additional Resources');
