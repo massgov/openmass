@@ -3,7 +3,7 @@
 ## [0.421.1] - January 15, 2025
 
 ### Fixed
-  - DP-36298: Fixed performance issues for authoring with update to Core, CKEditor patch, and memcache changes.
+  - DP-36298: Fixed performance issues for authors with update to Core, CKEditor patch, and memcache changes.
 
 ### Removed
   - DP-36298: Removed render debug output.
