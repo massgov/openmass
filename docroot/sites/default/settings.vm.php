@@ -103,7 +103,6 @@ ini_set('zend.assertions', 1);
 if($memcached_host = getenv('MEMCACHED_HOST')) {
   $memcached_port = getenv('MEMCACHED_PORT') ?: 11211;
   $settings['memcache']['servers'] = ["{$memcached_host}:{$memcached_port}" => 'default'];
-  $settings = $configureMemcache($settings);
 }
 
 /**
