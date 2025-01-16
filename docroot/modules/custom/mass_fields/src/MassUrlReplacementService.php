@@ -3,6 +3,7 @@
 namespace Drupal\mass_fields;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
@@ -49,6 +50,12 @@ class MassUrlReplacementService {
     foreach ($anchors as $anchor) {
       // Extract the 'href' attribute value
       $href = $anchor->getAttribute('href');
+      $base_host = \Drupal::request()->getSchemeAndHttpHost();
+      if (UrlHelper::isExternal($href)) {
+        if (!UrlHelper::externalIsLocal($href, $base_host)) {
+          continue;
+        }
+      }
 
       // Check for 'media/[id]' or 'media/[id]/download' pattern and extract ID
       if (preg_match('/media\/([0-9]+)(\/download)?(\?.*)?$/', $href, $matches)) {
