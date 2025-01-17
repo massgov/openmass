@@ -27,6 +27,7 @@ use Drupal\editor\Entity\Editor;
 use Drupal\file\Entity\File;
 use Drupal\link\LinkItemInterface;
 use Drupal\mass_utility\EntityAlter\ImageStyle;
+use Drupal\mass_utility\EntityViewBuildAlterGravityFormToken;
 use Drupal\node\Entity\Node;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
@@ -1065,6 +1066,13 @@ function mass_utility_entity_view(array &$build, EntityInterface $entity, Entity
       }
     }
   }
+}
+
+/**
+ * Implements hook_entity_view_alter().
+ */
+function mass_utility_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+  \Drupal::classResolver(EntityViewBuildAlterGravityFormToken::class)->alter($build, $entity, $display);
 }
 
 /**
