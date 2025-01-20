@@ -709,7 +709,6 @@ class MassContentCommands extends DrushCommands {
     // Get the last processed nid for the selected state key.
     $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
-
     $total_nodes = count($this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', 'info_details')
       ->condition('nid', $last_processed_nid, '>')
@@ -818,7 +817,7 @@ class MassContentCommands extends DrushCommands {
                       $link_group_links[] = [
                         'target_id' => $link_group_document->id(),
                         'target_revision_id' => $link_group_document->getRevisionId(),
-                      ];;
+                      ];
                     }
 
                   }

@@ -28,7 +28,6 @@ use Drupal\file\Entity\File;
 use Drupal\link\LinkItemInterface;
 use Drupal\mass_utility\EntityAlter\ImageStyle;
 use Drupal\node\Entity\Node;
-use Drupal\node\NodeInterface;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\user\Entity\User;
@@ -472,7 +471,7 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
  */
 function mass_utility_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   // Hide the map name field on the address google map field.
-  /** @var  $field_definition \Drupal\Core\Field\FieldDefinitionInterface|\Drupal\Core\TypedData\DataDefinitionInterface */
+  /** @var \Drupal\Core\Field\FieldDefinitionInterface|\Drupal\Core\TypedData\DataDefinitionInterface $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
 
   /** Field Type @var string $type */

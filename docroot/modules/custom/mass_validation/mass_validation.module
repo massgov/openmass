@@ -1440,7 +1440,6 @@ function _mass_validation_validate_custom_iframe(FormStateInterface $form_state,
  * Implements hook_form_layout_paragraphs_component_form_alter().
  */
 function mass_validation_form_layout_paragraphs_component_form_alter(array &$form, FormStateInterface &$form_state) {
-  //
   switch ($form['#paragraph']->bundle()) {
     case 'iframe':
       $form['#validate'][] = '_mass_validation_validate_custom_iframe_layout_paragraphs';
