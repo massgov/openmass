@@ -134,6 +134,29 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
       return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
     }
     elseif ($response instanceof AjaxResponse) {
+      $commands = &$response->getCommands();
+      foreach ($commands as &$command) {
+        if (isset($command['data'])) {
+          $svgs = Helper::findSvg($command['data']);
+          $inlined = [];
+
+          if ($svgs) {
+            foreach ($svgs as $path) {
+              $replacement = '';
+              if ($svgNode = Helper::getSvg($path)) {
+                $hash = md5($path);
+                $svgNode->setAttribute('id', $hash);
+                $replacement = Helper::getSvgEmbed($hash);
+                $inlined[] = Helper::getSvgSource($hash, $svgNode);
+              }
+              $command['data'] = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $command['data']);
+            }
+          }
+
+          // Add inlined SVGs as a sprite or placeholder.
+          $command['data'] .= Helper::wrapInlinedSvgs($inlined);
+        }
+      }
       return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
     }
     else {
