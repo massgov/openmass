@@ -473,8 +473,6 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
   // Hide the map name field on the address google map field.
   /** @var \Drupal\Core\Field\FieldDefinitionInterface|\Drupal\Core\TypedData\DataDefinitionInterface $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
-
-  /** Field Type @var string $type */
   $type = $field_definition->getType();
   $field_name = $field_definition->getName();
   if ($type == 'google_map_field') {
