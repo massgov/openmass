@@ -837,7 +837,6 @@ class MassContentCommands extends DrushCommands {
                     'target_revision_id' => $flexible_link_group->getRevisionId(),
                   ];
                 }
-
               }
             }
           }
