@@ -612,25 +612,41 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $variables['mainContent'] = $mainContent;
     $variables['sideContent'] = $sideContent;
 
-    if (!empty($node->field_form_embed->value)) {
-      try {
-        $crawler = new Crawler($node->field_form_embed->value);
-        $script_url = $crawler->filterXPath('//script[@src]')->attr('src');
-        $noscript_url = $crawler->filterXPath('//noscript/a[@href]')->attr('href');
-        $validate_script_url = parse_url($script_url, PHP_URL_HOST);
-        $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
+    if (!$node->getPlatform()->isEmpty()) {
+      // Check if the platform is FormStack.
+      if ($node->isFormStack()) {
+        if (!$node->getFormEmbed()->isEmpty()) {
+          try {
+            if ($form_embed = $node->getFormEmbed()->getString()) {
+              $crawler = new Crawler($form_embed);
+              $script_url = $crawler->filterXPath('//script[@src]')
+                ->attr('src');
+              $noscript_url = $crawler->filterXPath('//noscript/a[@href]')
+                ->attr('href');
 
-        if (str_ends_with($validate_script_url, "formstack.com")) {
-          $variables['form_url'] = Url::fromUri($script_url);
-        }
-        if (str_ends_with($validate_noscript_url, "formstack.com")) {
-          $variables['form_url_noscript'] = $noscript_url;
+              $validate_script_url = parse_url($script_url, PHP_URL_HOST);
+              $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
+
+              if (str_ends_with($validate_script_url, 'formstack.com')) {
+                $variables['form_url'] = Url::fromUri($script_url);
+              }
+              if (str_ends_with($validate_noscript_url, 'formstack.com')) {
+                $variables['form_url_noscript'] = $noscript_url;
+              }
+            }
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('mass_fields')
+              ->warning('Parsing of formstack URL failed: %message', [
+                '%message' => $e->getMessage(),
+              ]);
+          }
         }
       }
-      catch (\Exception $e) {
-        \Drupal::logger('mass_fields')->warning('Parsing of formstack URL failed: %message', [
-          '%message' => $e->getMessage(),
-        ]);
+
+      // Check if the platform is Gravity Forms.
+      elseif ($node->isGravityForms()) {
+        $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       }
     }
 
@@ -3820,12 +3836,12 @@ function mass_theme_preprocess_block(&$variables) {
 
     // Check if the current page is a node page.
     if ($node instanceof NodeInterface) {
-      $cache_tags = [];
+      $cache_tags = $node->getCacheTags();
       $variables['headerSearch'] = Molecules::prepareHeaderSearch($node, $cache_tags);
       // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
       // Add cache context for the current URL path.
-      $cache_contexts = ['url.path'];
+      $cache_contexts = array_merge(['url.path'], $node->getCacheContexts());
       CacheableMetadata::createFromRenderArray($variables)
         ->addCacheTags($cache_tags)
         ->addCacheContexts($cache_contexts)
@@ -5870,7 +5886,7 @@ function mass_theme_preprocess_paragraph__contact_info(&$variables) {
     $svg_type = '';
 
     switch ($type['value']) {
-      case 'phone';
+      case 'phone':
       case 'fax':
         $svg_type = $svg_types['phone'];
         break;
@@ -5879,7 +5895,7 @@ function mass_theme_preprocess_paragraph__contact_info(&$variables) {
         $svg_type = $svg_types['laptop'];
         break;
 
-      case 'email';
+      case 'email':
       case 'mail':
         $svg_type = $svg_types['mail'];
         break;

@@ -38,12 +38,15 @@ describe("massgov-screenshots", () => {
 
   beforeAll(async () => {
     // Functionality currently unavailable, but is in beta: https://www.browserstack.com/docs/automate/selenium/custom-header
-    // capabilities = {
+    const massBypassRateLimit = process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, '');
+    // const capabilities = {
     //   'bstack:options': {
-    //     "headerParams": `{"mass-bypass-rate-limit":"${process.env.MASS_BYPASS_RATE_LIMIT}"}`
+    //     headerParams: JSON.stringify({
+    //       'mass-bypass-rate-limit': massBypassRateLimit
+    //     })
     //   }
-    // }
-    capabilities = {};
+    // };
+    const capabilities = {};
     driver = await new Builder()
       .withCapabilities(capabilities)
       .build();
@@ -59,10 +62,11 @@ describe("massgov-screenshots", () => {
 
       let options = {
         fullPage: true,
-        ignore_region_selectors: [],
+        ignore_region_selectors: ['.__fsr'],
         requestHeaders: {
           'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT.replace(/(^["']|["']$)/g, ''),
-        }
+        },
+        percyCSS: `.__fsr, .__acs { display: none; }`
       };
       await percyScreenshot(driver, page.label, options);
     });

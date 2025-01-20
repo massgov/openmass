@@ -154,6 +154,7 @@
         "drupal/cache_metrics": "^2",
         "drupal/ckeditor5_fullscreen": "^1.0@beta",
         "drupal/ckeditor5_paste_filter": "^1.0",
+        "drupal/clamav": "^2.0",
         "drupal/color": "^1",
         "drupal/components": "^3",
         "drupal/conditional_fields": "4.0.0-alpha5",
@@ -173,7 +174,6 @@
         "drupal/editoria11y": "^2.1",
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
-        "drupal/entity_diff_ui": "dev-1.0.x",
         "drupal/entity_embed": "^1.5",
         "drupal/entity_hierarchy": "^3.3",
         "drupal/entity_reference_revisions": "^1.7",
@@ -189,8 +189,6 @@
         "drupal/focal_point": "dev-2.x",
         "drupal/geocoder": "^4.23",
         "drupal/geofield": "^1.57",
-        "drupal/gin": "^3",
-        "drupal/gin_toolbar": "^1",
         "drupal/google_map_field": "^2.0",
         "drupal/google_tag": "^2.0",
         "drupal/http_response_headers": "^2",
@@ -344,14 +342,10 @@
                 "Invalid argument supplied for foreach SettingsForm->prepareHeadersDisplay (https://www.drupal.org/project/access_unpublished/issues/3252499)": "https://www.drupal.org/files/issues/2021-12-03/3252499-warning-invalid-argument-2.patch",
                 "Hardcode preview links based on environment": "patches/access_unpublished/DP-25897_change_unpublish_preview_links_v2.patch"
             },
-            "drupal/ckeditor5_fullscreen": {
-                "Fullscreen mode interferes with link button (https://www.drupal.org/files/issues/2024-05-30/3381084_fullscreen_mode_interferes_with_link_button.patch)": "https://www.drupal.org/files/issues/2024-05-30/3381084_fullscreen_mode_interferes_with_link_button_2.patch"
-            },
             "drupal/core": {
                 "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577)": "https://www.drupal.org/files/issues/2022-07-12/2575577-38.patch",
                 "Remove final from a class in order to inherit from it": "patches/DP-11721-jsonapi-serializer.patch",
                 "Remove type hint which allows usage in combination with workbench_moderation": "patches/jsonapi-2.3.0-no-type-hint.patch",
-                "Notice: Undefined index: #type in drupal_process_states() (https://www.drupal.org/project/drupal/issues/2700667)": "https://www.drupal.org/files/issues/2019-12-05/2700667-89.patch",
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch",
                 "Batch is dependent on the order of query string parameters (https://www.drupal.org/project/drupal/issues/2879023)": "https://git.drupalcode.org/issue/drupal-2879023/-/commit/c68aa376a7fc262886cb56d9ac762e4b06e6b174.patch",
                 "3075454 - combine fields filter doesn't recognise taxonomy description field": "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
@@ -366,7 +360,8 @@
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch",
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
                 "Use CKEditor 5's native <ol type> and <ul type> UX (https://www.drupal.org/project/drupal/issues/3274635)": "https://www.drupal.org/files/issues/2024-08-11/3274635--ckeditor_list_styles-10.3.2--108.patch",
-                "Diffs with different line endings leads to Invalid $mode 3 specified (https://www.drupal.org/project/drupal/issues/3389715)": "https://www.drupal.org/files/issues/2024-01-09/Diffs-with-different-line-endings-leads-to-Invalid-mode-3-specified.patch"
+                "Diffs with different line endings leads to Invalid $mode 3 specified (https://www.drupal.org/project/drupal/issues/3389715)": "https://www.drupal.org/files/issues/2024-01-09/Diffs-with-different-line-endings-leads-to-Invalid-mode-3-specified.patch",
+                "Statically cache editor attachments per format (https://www.drupal.org/i/3447794)": "patches/3447794-mr-9609.patch"
             },
             "drupal/entity_embed": {
                 "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "https://git.drupalcode.org/project/entity_embed/-/merge_requests/39.diff",
