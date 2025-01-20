@@ -686,33 +686,46 @@ class MassContentCommands extends DrushCommands {
    *
    * @command mass-content:migrate-layout-paragraphs
    * @option batch-size The number of nodes to process per batch.
+   * @option unpublished-only Process only unpublished nodes.
    * @usage mass-content:migrate-layout-paragraphs --batch-size=50
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --unpublished-only
    * @aliases mclp
    */
-  public function migrateLayoutParagraphs($options = ['batch-size' => 50, 'detailed-verbalization' => FALSE]) {
+  public function migrateLayoutParagraphs($options = ['batch-size' => 50, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     // Disable entity hierarchy writes for better performance during processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
-    $last_processed_nid = \Drupal::state()->get('mass_content_deploy.info_details_migration_last_processed_nid', 0);
     $batch_size = (int) $options['batch-size'];
+    $unpublished_only = (bool) $options['unpublished-only'];
+    // Set the default status condition based on the presence of the --unpublished-only option.
+    $status_condition = $unpublished_only ? 0 : 1;
+    // Use a unique state key based on the published/unpublished condition.
+    $state_key = $unpublished_only
+      ? 'mass_content_deploy.info_details_migration_last_processed_nid_unpublished'
+      : 'mass_content_deploy.info_details_migration_last_processed_nid_published';
+
+    // Get the last processed nid for the selected state key.
+    $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
 
     $total_nodes = count($this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', 'info_details')
       ->condition('nid', $last_processed_nid, '>')
+      ->condition('status', $status_condition)
       ->accessCheck(FALSE)->execute());
 
     $batch_step = 0;
     do {
       // Get the last processed nid from state.
-      $last_processed_nid = \Drupal::state()->get('mass_content_deploy.info_details_migration_last_processed_nid', 0);
+      $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
       // Query all nodes of type 'info_details' starting from the last processed nid.
       $query = $this->entityTypeManager->getStorage('node')->getQuery()
         ->condition('type', 'info_details')
         ->condition('nid', $last_processed_nid, '>')
+        ->condition('status', $status_condition)
         ->accessCheck(FALSE)
         ->sort('nid')
         ->range(0, $batch_size);
@@ -829,19 +842,20 @@ class MassContentCommands extends DrushCommands {
             }
           }
 
-          // Update the node with the newly structured paragraphs.
-          $node->set('field_info_details_sections', $new_sections);
+          if ($new_sections) {
+            // Update the node with the newly structured paragraphs.
+            $node->set('field_info_details_sections', $new_sections);
 
-          if (method_exists($node, 'setRevisionLogMessage')) {
-            $node->setNewRevision();
-            $node->setRevisionLogMessage('Revision created for layout paragraphs.');
-            $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+            if (method_exists($node, 'setRevisionLogMessage')) {
+              $node->setNewRevision();
+              $node->setRevisionLogMessage('Revision created for layout paragraphs.');
+              $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+            }
+
+            $node->save();
           }
-
-          $node->save();
-
-          // Update the last processed nid in the state to allow resuming from this point if needed.
-          \Drupal::state()->set('mass_content_deploy.info_details_migration_last_processed_nid', $nid);
+          // Update the state with the last processed nid for the current context.
+          \Drupal::state()->set($state_key, $nid);
 
           if ($options['detailed-verbalization']) {
             $this->output()->writeln("Node {$nid} processed successfully.");
@@ -856,10 +870,10 @@ class MassContentCommands extends DrushCommands {
     // Re-enable entity hierarchy writes after processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
 
-    $this->output()->writeln("All nodes processed. Last processed id is: " . \Drupal::state()->get('mass_content_deploy.info_details_migration_last_processed_nid'));
+    $this->output()->writeln("All nodes processed. Last processed id for " . ($unpublished_only ? 'unpublished' : 'published') . " nodes is: " . \Drupal::state()->get($state_key));
 
-    // Reset the last processed nid in state after completion.
-    \Drupal::state()->delete('mass_content_deploy.info_details_migration_last_processed_nid');
+    // Reset the last processed nid in state after completion, if necessary.
+    \Drupal::state()->delete($state_key);
   }
 
 }
