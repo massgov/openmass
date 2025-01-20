@@ -10,7 +10,7 @@
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
       {% set items = [] %}
-      {% for flexible_link in flexible_links_group %}
+      {% for flexible_link in links_downloads_flexible %}
         {% set links = [] %}
         {% for link in flexible_link.links %}
           {% set content = link.download_link ?
@@ -35,19 +35,24 @@
 
           {% set links = links|merge([content]) %}
         {% endfor %}
-        {% include "@organisms/by-author/link-list.twig" with {
-          "linkList": {
+
+        {% set linkList = {
+          "stacked": true,
+          "links": links,
+          "hideBullets": true
+        } %}
+
+        {% if flexible_link.title is not empty %}
+          {% set linkList = linkList|merge({
             "compHeading": {
               "title": flexible_link.title,
               "level": 3
-            },
-            "stacked": true,
-            "links": links,
-            "hideBullets": true
-          }
-        } %}
-      {% endfor %}
+            }
+          }) %}
+        {% endif %}
 
+        {% include "@organisms/by-author/link-list.twig" with { "linkList": linkList } %}
+      {% endfor %}
     {% endblock %}
   </div>
 {% endblock paragraph %}

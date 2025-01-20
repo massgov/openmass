@@ -1445,12 +1445,6 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
     case 'iframe':
       $form['#validate'][] = '_mass_validation_validate_custom_iframe_layout_paragraphs';
       break;
-    case 'flexible_link_group':
-      $form['field_display_type']['#access'] = FALSE;
-      $form['field_featured']['#access'] = FALSE;
-      $form['field_group_expanded']['#access'] = FALSE;
-      $form['field_flexible_link_group_desc']['#access'] = FALSE;
-      break;
   }
 }
 
