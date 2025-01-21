@@ -880,7 +880,7 @@ class MassContentCommands extends DrushCommands {
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
 
     $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
-    
+
     // Clean up state key if all nodes are processed.
     if (empty($nids)) {
       \Drupal::state()->delete($state_key);
