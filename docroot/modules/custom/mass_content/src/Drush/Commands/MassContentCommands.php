@@ -687,12 +687,13 @@ class MassContentCommands extends DrushCommands {
    * @command mass-content:migrate-layout-paragraphs
    * @option batch-size The number of nodes to process per batch.
    * @option limit The maximum number of nodes to process in this execution. If not set, process all nodes.
+   * @option max-runtime The maximum runtime (in minutes) for this command. If not set, process indefinitely.
    * @option unpublished-only Process only unpublished nodes.
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --max-runtime=55
    * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --limit=1000
-   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --unpublished-only
    * @aliases mclp
    */
-  public function migrateLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
+  public function migrateLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     // Disable entity hierarchy writes for better performance during processing.
@@ -700,6 +701,8 @@ class MassContentCommands extends DrushCommands {
 
     $batch_size = (int) $options['batch-size'];
     $limit = isset($options['limit']) ? (int) $options['limit'] : NULL;
+    // Default to 55 minutes.
+    $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
     $unpublished_only = (bool) $options['unpublished-only'];
     // Set the default status condition based on the presence of the --unpublished-only option.
     $status_condition = $unpublished_only ? 0 : 1;
@@ -717,9 +720,18 @@ class MassContentCommands extends DrushCommands {
       ->condition('status', $status_condition)
       ->accessCheck(FALSE)->execute());
 
+    // Record the start time.
+    $start_time = time();
     $batch_step = 0;
     $processed_nodes = 0;
     do {
+
+      // Check if max runtime has been exceeded (if set).
+      if ($max_runtime !== NULL && (time() - $start_time) >= $max_runtime * 60) {
+        $this->output()->writeln("Max runtime of {$max_runtime} minutes reached. Stopping execution.");
+        break;
+      }
+
       // Get the last processed nid from state.
       $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
