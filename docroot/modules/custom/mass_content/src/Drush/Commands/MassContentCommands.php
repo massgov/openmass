@@ -686,18 +686,20 @@ class MassContentCommands extends DrushCommands {
    *
    * @command mass-content:migrate-layout-paragraphs
    * @option batch-size The number of nodes to process per batch.
+   * @option limit The maximum number of nodes to process in this execution. If not set, process all nodes.
    * @option unpublished-only Process only unpublished nodes.
-   * @usage mass-content:migrate-layout-paragraphs --batch-size=50
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --limit=1000
    * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --unpublished-only
    * @aliases mclp
    */
-  public function migrateLayoutParagraphs($options = ['batch-size' => 50, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
+  public function migrateLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     // Disable entity hierarchy writes for better performance during processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
     $batch_size = (int) $options['batch-size'];
+    $limit = isset($options['limit']) ? (int) $options['limit'] : NULL;
     $unpublished_only = (bool) $options['unpublished-only'];
     // Set the default status condition based on the presence of the --unpublished-only option.
     $status_condition = $unpublished_only ? 0 : 1;
@@ -716,6 +718,7 @@ class MassContentCommands extends DrushCommands {
       ->accessCheck(FALSE)->execute());
 
     $batch_step = 0;
+    $processed_nodes = 0;
     do {
       // Get the last processed nid from state.
       $last_processed_nid = \Drupal::state()->get($state_key, 0);
@@ -852,6 +855,7 @@ class MassContentCommands extends DrushCommands {
 
             $node->save();
           }
+          $processed_nodes++;
           // Update the state with the last processed nid for the current context.
           \Drupal::state()->set($state_key, $nid);
 
@@ -859,19 +863,28 @@ class MassContentCommands extends DrushCommands {
             $this->output()->writeln("Node {$nid} processed successfully.");
           }
         }
+
+        // Stop processing if the total processed nodes exceed the limit (if set).
+        if ($limit !== NULL && $processed_nodes >= $limit) {
+          $this->output()->writeln("Reached the defined limit of {$limit} nodes. Stopping execution.");
+          // Exit both foreach and do-while loop.
+          break 2;
+        }
       }
 
-      $batch_step += 1;
+      $batch_step++;
 
     } while (!empty($nids));
 
     // Re-enable entity hierarchy writes after processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
 
-    $this->output()->writeln("All nodes processed. Last processed id for " . ($unpublished_only ? 'unpublished' : 'published') . " nodes is: " . \Drupal::state()->get($state_key));
-
-    // Reset the last processed nid in state after completion, if necessary.
-    \Drupal::state()->delete($state_key);
+    $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
+    
+    // Clean up state key if all nodes are processed.
+    if (empty($nids)) {
+      \Drupal::state()->delete($state_key);
+    }
   }
 
 }
