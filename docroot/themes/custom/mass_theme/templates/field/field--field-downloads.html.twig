@@ -1,17 +1,29 @@
 {# Set top heading level for the component. #}
 {% set level = 2 %}
 
-{% include "@atoms/04-headings/comp-heading.twig" with {
-  "compHeading": {
-    "title": label,
-    "titleContext": "",
-    "level": level,
-    "color": "",
-    "id": "",
-    "centered": ""
-}
+{% embed "@organisms/by-author/link-list.twig" with  {
+  "linkList": {
+    "sectionClass": "",
+    "stacked": true,
+    "compHeading": {
+      "title": label,
+      "sub": "",
+      "color": "",
+      "id": "",
+      "centered": false,
+      "level": level
+    },
+    "description": null,
+    "stacked": false,
+    "hideBullets": true
+  }
 } %}
 
-{% for item in items %}
-  {{ item.content }}
-{% endfor %}
+  {% block linkListDecorativeLink %}
+    {% for decorativeLink in items %}
+      <li class="ma__link-list__item">
+        {{ decorativeLink.content }}
+      </li>
+    {% endfor %}
+  {% endblock %}
+{% endembed %}
