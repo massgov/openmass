@@ -1,5 +1,16 @@
 
 
+## [0.422.0] - January 21, 2025
+
+### Changed
+  - DP-35481: Download links spacing and markup fixes.
+  - DP-35726: Hide the Verint survey from Percy comparisons and allows scheduled comparsions.
+  
+### Fixed
+  - DP-36861: Updated composer.lock to fix warning.
+  
+
+
 ## [0.421.1] - January 15, 2025
 
 ### Fixed
