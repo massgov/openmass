@@ -115,7 +115,6 @@ class LogInLinksBuilder {
       if ($node->hasField('field_login_links_options')) {
         $login_option = $node->get('field_login_links_options')->value;
 
-
         switch ($login_option) {
           case "inherit_parent_page_login_options":
             foreach ($links as $key => $link) {
@@ -126,7 +125,6 @@ class LogInLinksBuilder {
             break;
           case "disable_login_options":
             return [];
-            break;
           case "define_new_login_options":
             // Nothing to do here.
             break;
