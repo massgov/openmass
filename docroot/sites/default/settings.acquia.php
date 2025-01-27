@@ -75,7 +75,7 @@ $config['system.file']['path']['temporary'] = "/mnt/gfs/{$_ENV['AH_SITE_GROUP']}
  *
  * Acquia docs on memcache: https://docs.acquia.com/acquia-cloud/performance/memcached/
  */
-$settings = $configureMemcache($settings);
+//$settings = $configureMemcache($settings);
 
 /**
  * Password protect non-prod environments.

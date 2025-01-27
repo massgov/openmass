@@ -1,5 +1,37 @@
 
 
+## [0.422.0] - January 21, 2025
+
+### Changed
+  - DP-35481: Download links spacing and markup fixes.
+  - DP-35726: Hide the Verint survey from Percy comparisons and allows scheduled comparsions.
+  
+### Fixed
+  - DP-36861: Updated composer.lock to fix warning.
+  
+
+
+## [0.421.1] - January 15, 2025
+
+### Fixed
+  - DP-36298: Fixed performance issues for authors with update to Core, CKEditor patch, and memcache changes.
+
+### Removed
+  - DP-36298: Removed render debug output.
+
+
+
+## [0.421.0] - January 14, 2025
+
+### Changed
+  - DP-34926: Mass.gov font system responsive to browser settings.
+  
+### Fixed
+  - DP-36660: Increase iframe resizer JS send dimensions to parent timeout from 1/3 second to 1/2 second.
+  - DP-36751: Fixed issue with external link paths being changed to internal paths.
+  
+
+
 ## [0.420.0] - January 7, 2025
 
 ### Added
