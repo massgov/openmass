@@ -20,44 +20,49 @@ class LogInLinksBuilder {
   /**
    * Searches for contextual login links on current node and its ancestors.
    */
-  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS, &$disable_login_links_flag = NULL) {
-    // No login links found and we have reached the max number of ancestors
-    // to look for them. Bye!
+  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS) {
+    // No login links found and we have reached the max number of ancestors.
     if ($max_level <= 0) {
       return [];
     }
 
-    // Check if the current entity disables login links.
-    if ($entity->hasField('field_disable_login_links') && $entity->get('field_disable_login_links')->value) {
-      $disable_login_links_flag = $entity->id();
-    }
-
+    $all_links = [];
     $bundle = $entity->bundle();
-    // If page is service or organization, try to get direct links.
+
+    // If the page is a service or organization, try to get direct links.
     if (in_array($bundle, ['service_page', 'org_page'])) {
       $login_links_fields_per_bundle = [
         'service_page' => 'field_log_in_links',
         'org_page' => 'field_application_login_links',
       ];
       $field = $login_links_fields_per_bundle[$bundle];
-      /** @var \Drupal\Core\Field\FieldItemList */
+
+      /** @var \Drupal\Core\Field\FieldItemList $login_links */
       $login_links = $entity->$field ?? FALSE;
-      // Login links found.
+
+      // Collect links if they exist.
       if ($login_links && $login_links->count()) {
-        $list = [];
-        // Collecting links.
         foreach ($login_links as $login_link) {
-          $list[] = $login_link;
+          $all_links[] = [
+            'link' => $login_link,
+            'source' => $entity->id(),
+          ];
         }
-        return $list;
       }
     }
 
-    // Traverse to the parent entity.
+    // Continue with the parent entity if available.
     $refs = $entity->getPrimaryParent()->referencedEntities();
     $parent_entity = $refs[0] ?? FALSE;
     $entities_hierarchy[] = $entity;
-    return $parent_entity ? $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level, $disable_login_links_flag) : [];
+
+    // Merge the current links with those from the parent entity.
+    if ($parent_entity) {
+      $parent_links = $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level);
+      $all_links = array_merge($all_links, $parent_links);
+    }
+
+    return $all_links;
   }
 
   /**
@@ -78,33 +83,61 @@ class LogInLinksBuilder {
       $node->hasField('field_application_login_links') ||
       $node->hasField('computed_log_in_links')
     ) {
+
       $entities_hierarchy = [];
-      $disable_login_links_flag = NULL;
-      $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy, self::MAX_ANCESTORS, $disable_login_links_flag);
+      $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy);
+
       // Adding cache tags of all the ancestors needed to build the links.
       foreach ($entities_hierarchy as $entity) {
         $cache_tags[] = 'node:' . $entity->id();
       }
 
-      foreach ($list_links as $link) {
+      foreach ($list_links as $link_data) {
+        $link = $link_data['link'];
+        // Source entity ID.
+        $source = $link_data['source'];
+
         if ($uri = $link->uri) {
           $is_external = UrlHelper::isExternal($uri);
           $links[] = [
             'type' => $is_external ? 'external' : 'internal',
             'text' => $link->computed_title,
-            'href' => $is_external ? $uri : Url::fromUri($uri),
+            'href' => Url::fromUri($uri),
+            'source' => $source,
           ];
           if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
             $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
           }
         }
       }
+
+      // Check the login option field to decide the behavior.
+      if ($node->hasField('field_login_links_options')) {
+        $login_option = $node->get('field_login_links_options')->value;
+
+
+        switch ($login_option) {
+          case "inherit_parent_page_login_options":
+            foreach ($links as $key => $link) {
+              if ($link['source'] == $node->id()) {
+                unset($links[$key]);
+              }
+            }
+            break;
+          case "disable_login_options":
+            return [];
+            break;
+          case "define_new_login_options":
+            // Nothing to do here.
+            break;
+        }
+      }
+
     }
 
     return [
       'links' => $links,
       'cache_tags' => array_unique($cache_tags),
-      'disable_login_links_flag' => $disable_login_links_flag ?? NULL,
     ];
   }
 
@@ -117,52 +150,35 @@ class LogInLinksBuilder {
    *   The node to use when adding contextual nav links.
    */
   public function buildContextualLogInLinks(array &$build, NodeInterface $node) {
-    $links = [];
-    $cache_tags = [];
-    // This is the node used to populate global login links.
-    //    $node_id = 4206;
-    //    $login_node = Node::load($node_id);
-    //    if ($login_node->hasField('field_links') && !$login_node->get('field_links')->isEmpty()) {
-    //      foreach ($login_node->get('field_links') as $field_link) {
-    //        $uri = $field_link->uri;
-    //        $is_external = UrlHelper::isExternal($uri);
-    //        $links[] = [
-    //          'type' => $is_external ? 'external' : 'internal',
-    //          'text' => $field_link->title,
-    //          'href' => $is_external ? $uri : Url::fromUri($uri),
-    //        ];
-    //        if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
-    //          $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
-    //        }
-    //      }
-    //    }
-
+    $build['log_in_links'] = [];
     $login_links_data = $this->getLoginLinksWithCacheTags($node);
-    if (!$login_links_data['disable_login_links_flag']) {
-      $links = array_merge($links, $login_links_data['links']);
-    }
-    $theme = "c-primary";
-    $usage = "secondary";
-    if ($node instanceof ServicePageBundle || $node instanceof OrgPageBundle) {
-      $theme = "c-white";
-      $usage = "";
-    }
-    $cache_tags = array_merge($cache_tags, $login_links_data['cache_tags']);
-    if (!empty($links)) {
-      $build['log_in_links'] = [
-        "text" => 'Log In to...',
-        "ariaLabelText" => "Log in to one of Mass.gov's most frequently accessed services",
-        'id' => 'contextual-login-links',
-        "size" => "small",
-        "usage" => $usage,
-        "theme" => $theme,
-        "menuId" => "contextual-login-links-menu",
-        'class' => 'gtm-login-contextual',
-        'items' => $links,
-        '#cache' => [
-          'tags' => $cache_tags,
-        ],
-      ];
+
+    if (!empty($login_links_data)) {
+      $cache_tags = [];
+      $links = $login_links_data['links'];
+      $theme = "c-primary";
+      $usage = "secondary";
+      if ($node instanceof ServicePageBundle || $node instanceof OrgPageBundle) {
+        $theme = "c-white";
+        $usage = "";
+      }
+      $cache_tags = array_merge($cache_tags, $login_links_data['cache_tags']);
+      if (!empty($links)) {
+        $build['log_in_links'] = [
+          "text" => 'Log In to...',
+          "ariaLabelText" => "Log in to one of Mass.gov's most frequently accessed services",
+          'id' => 'contextual-login-links',
+          "size" => "small",
+          "usage" => $usage,
+          "theme" => $theme,
+          "menuId" => "contextual-login-links-menu",
+          'class' => 'gtm-login-contextual',
+          'items' => $links,
+          '#cache' => [
+            'tags' => $cache_tags,
+          ],
+        ];
+      }
     }
   }
 

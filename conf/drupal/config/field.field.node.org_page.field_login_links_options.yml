@@ -1,0 +1,23 @@
+uuid: 76d5074d-4614-4fe0-be50-a42faf261059
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_login_links_options
+    - node.type.org_page
+  module:
+    - options
+id: node.org_page.field_login_links_options
+field_name: field_login_links_options
+entity_type: node
+bundle: org_page
+label: 'Application Login Link(s)'
+description: 'You have the options to define new login links or disable them for this page'
+required: false
+translatable: false
+default_value:
+  -
+    value: inherit_parent_page_login_options
+default_value_callback: ''
+settings: {  }
+field_type: list_string

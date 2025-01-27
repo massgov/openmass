@@ -9,12 +9,12 @@ dependencies:
     - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_data_search_content
     - field.field.node.service_page.field_data_topic
-    - field.field.node.service_page.field_disable_login_links
     - field.field.node.service_page.field_english_version
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_log_in_links
+    - field.field.node.service_page.field_login_links_options
     - field.field.node.service_page.field_organizations
     - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
@@ -96,16 +96,6 @@ content:
     third_party_settings: {  }
     weight: 32
     region: content
-  field_disable_login_links:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 142
-    region: content
   field_english_version:
     type: entity_reference_label
     label: above
@@ -148,6 +138,13 @@ content:
       target: ''
     third_party_settings: {  }
     weight: 18
+    region: content
+  field_login_links_options:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 143
     region: content
   field_organizations:
     type: entity_reference_label

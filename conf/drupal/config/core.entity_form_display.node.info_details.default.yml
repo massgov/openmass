@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.info_details.field_application_login_links
     - field.field.node.info_details.field_banner_image
     - field.field.node.info_details.field_collections
     - field.field.node.info_details.field_contact
@@ -13,7 +14,6 @@ dependencies:
     - field.field.node.info_details.field_data_topic
     - field.field.node.info_details.field_date_published
     - field.field.node.info_details.field_details_data_type
-    - field.field.node.info_details.field_disable_login_links
     - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_hide_table_of_contents
@@ -26,6 +26,7 @@ dependencies:
     - field.field.node.info_details.field_info_details_sections
     - field.field.node.info_details.field_infodetails_metatags
     - field.field.node.info_details.field_intended_audience
+    - field.field.node.info_details.field_login_links_options
     - field.field.node.info_details.field_migrated_node_id
     - field.field.node.info_details.field_organizations
     - field.field.node.info_details.field_page_template
@@ -168,6 +169,51 @@ targetEntityType: node
 bundle: info_details
 mode: default
 content:
+  field_application_login_links:
+    type: link_default
+    weight: 23
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        040aa824-b3ad-447a-9411-72ae048f2471:
+          entity_type: node
+          bundle: org_page
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
+        db35bfe1-ab04-470e-a6c0-9727589a74b7:
+          entity_type: node
+          bundle: binder
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_banner_image:
     type: image_focal_point
     weight: 8
@@ -345,13 +391,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_disable_login_links:
-    type: boolean_checkbox
-    weight: 16
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
     weight: 26
@@ -464,6 +503,12 @@ content:
   field_intended_audience:
     type: options_buttons
     weight: 27
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_login_links_options:
+    type: options_buttons
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }

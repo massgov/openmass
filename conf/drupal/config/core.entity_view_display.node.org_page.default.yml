@@ -9,12 +9,12 @@ dependencies:
     - field.field.node.org_page.field_billing_organization
     - field.field.node.org_page.field_career_opportunities
     - field.field.node.org_page.field_constituent_communication
-    - field.field.node.org_page.field_disable_login_links
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
     - field.field.node.org_page.field_intended_audience
+    - field.field.node.org_page.field_login_links_options
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
     - field.field.node.org_page.field_more_about_leadership
@@ -191,16 +191,6 @@ content:
     third_party_settings: {  }
     weight: 41
     region: content
-  field_disable_login_links:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 142
-    region: content
   field_get_updates_links:
     type: dynamic_link_separate
     label: above
@@ -227,6 +217,13 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 46
+    region: content
+  field_login_links_options:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 143
     region: content
   field_more_about_agency_link:
     type: dynamic_link_separate

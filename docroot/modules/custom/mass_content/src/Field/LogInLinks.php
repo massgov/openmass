@@ -19,7 +19,7 @@ class LogInLinks extends FieldItemList {
     if (!$entity->isNew()) {
       /** @var \Drupal\mass_content\LogInLinksBuilder */
       $logInLinksBuilder = \Drupal::service('mass_content.log_in_links_builder');
-      $this->list = $logInLinksBuilder->getContextualLoginLinks($entity, $entities_hierarchy);
+      $this->list = $logInLinksBuilder->getContextualLoginLinks($entity);
     }
   }
 

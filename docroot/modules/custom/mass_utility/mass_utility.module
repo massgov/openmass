@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -724,8 +725,8 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       }
     }
   }
-  elseif ($type == 'boolean') {
-    if ($field_name == 'field_disable_login_links') {
+  elseif ($type == 'list_string') {
+    if ($field_name == 'field_login_links_options') {
       // Load the current node.
       $node = $context['items']->getEntity();
 
@@ -738,51 +739,46 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       // Build the description with the login links using render arrays.
       if (!empty($links_data['links'])) {
         $links = [];
-        foreach ($links_data['links'] as $link) {
+        foreach ($links_data['links'] as $key => $link) {
+
+          if ($link['source'] == $node->id()) {
+            continue;
+          }
           if (isset($link['href'])) {
+            // Add target="_blank" to the Url object if it's external.
+            if ($link['type'] === 'external' && $link['href'] instanceof Url) {
+              $link['href']->setOption('attributes', ['target' => '_blank']);
+            }
             $links[] = [
               '#type' => 'link',
               '#title' => $link['text'],
-              '#url' => Url::fromUri($link['href'], ['attributes' => ['target' => '_blank']]),
+              '#url' => $link['href'],
             ];
           }
         }
-        // Append the links to the existing description.
-        $existing_description = $element['value']['#description'] ?? '';
-        $element['value']['#description'] = [
-          '#markup' => t('This page will currently show these login links that are inherited from a parent organization or service page:'),
-        ];
-        if (!empty($links_data['disable_login_links_flag'])) {
-          if ($links_data['disable_login_links_flag'] != $node->id()) {
-            if ($disabled_node = Node::load($links_data['disable_login_links_flag'])) {
-              $element['value']['#description'] = [
-                '#markup' => t('This page will <strong>NOT</strong> currently show these login links that are inherited from a parent organization or service page since it has been disabled on the parent page <a href="@url" target="_blank">@title</a>:', [
-                  '@url' => $disabled_node->toUrl()->toString(),
-                  '@title' => $disabled_node->getTitle(),
-                ]),
-              ];
-            }
-          }
+
+        if ($links) {
+          // Render the links list.
+          $links_render_array = [
+            '#theme' => 'item_list',
+            '#items' => $links,
+            '#cache' => [
+              'tags' => $links_data['cache_tags'] ?? [],
+            ],
+          ];
+          $links_rendered = \Drupal::service('renderer')
+            ->renderPlain($links_render_array);
+
+          // Add the links list below the existing description.
+          $element['#description'] .= $links_rendered;
         }
-
-        // Render the links list.
-        $links_render_array = [
-          '#theme' => 'item_list',
-          '#items' => $links,
-          '#cache' => [
-            'tags' => $links_data['cache_tags'] ?? [],
-          ],
-        ];
-        $links_rendered = \Drupal::service('renderer')->renderPlain($links_render_array);
-
-        // Add the links list below the existing description.
-        $element['value']['#description']['#markup'] .= $links_rendered;
-        $element['value']['#description']['#markup'] .= $existing_description;
+        else {
+          $element['#description'] .= t('<strong>Nothing from the parent page to inherit</strong>');
+        }
+        $element['#description'] .= t('You have the options to define new login link or disable them for this page:');
+        unset($element['#options']['_none']);
       }
-      else {
-        $element['#access'] = FALSE;
-        unset($element);
-      }
+
     }
   }
 }
