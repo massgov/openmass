@@ -2,12 +2,11 @@
 
 namespace Drupal\mass_content;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url;
+use Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle;
 use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\ServicePageBundle;
-use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 
 /**
@@ -156,7 +155,7 @@ class LogInLinksBuilder {
       $links = $login_links_data['links'];
       $theme = "c-primary";
       $usage = "secondary";
-      if ($node instanceof ServicePageBundle || $node instanceof OrgPageBundle) {
+      if ($node instanceof ServicePageBundle || $node instanceof OrgPageBundle || $node instanceof InfoDetailsBundle) {
         $theme = "c-white";
         $usage = "";
       }
