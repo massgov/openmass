@@ -4,6 +4,7 @@ namespace Drupal\mass_content\Drush\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
@@ -678,6 +679,224 @@ class MassContentCommands extends DrushCommands {
 
     // Only return rows where changes happened.
     return new RowsOfFields($rows);
+  }
+
+  /**
+   * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
+   *
+   * @command mass-content:migrate-layout-paragraphs
+   * @option batch-size The number of nodes to process per batch.
+   * @option limit The maximum number of nodes to process in this execution. If not set, process all nodes.
+   * @option max-runtime The maximum runtime (in minutes) for this command. If not set, process indefinitely.
+   * @option unpublished-only Process only unpublished nodes.
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --max-runtime=55
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --limit=1000
+   * @aliases mclp
+   */
+  public function migrateLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Disable entity hierarchy writes for better performance during processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    $batch_size = (int) $options['batch-size'];
+    $limit = isset($options['limit']) ? (int) $options['limit'] : NULL;
+    // Default to 55 minutes.
+    $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
+    $unpublished_only = (bool) $options['unpublished-only'];
+    // Set the default status condition based on the presence of the --unpublished-only option.
+    $status_condition = $unpublished_only ? 0 : 1;
+    // Use a unique state key based on the published/unpublished condition.
+    $state_key = $unpublished_only
+      ? 'mass_content_deploy.info_details_migration_last_processed_nid_unpublished'
+      : 'mass_content_deploy.info_details_migration_last_processed_nid_published';
+
+    // Get the last processed nid for the selected state key.
+    $last_processed_nid = \Drupal::state()->get($state_key, 0);
+
+    $total_nodes = count($this->entityTypeManager->getStorage('node')->getQuery()
+      ->condition('type', 'info_details')
+      ->condition('nid', $last_processed_nid, '>')
+      ->condition('status', $status_condition)
+      ->accessCheck(FALSE)->execute());
+
+    // Record the start time.
+    $start_time = time();
+    $batch_step = 0;
+    $processed_nodes = 0;
+    do {
+
+      // Check if max runtime has been exceeded (if set).
+      if ($max_runtime !== NULL && (time() - $start_time) >= $max_runtime * 60) {
+        $this->output()->writeln("Max runtime of {$max_runtime} minutes reached. Stopping execution.");
+        break;
+      }
+
+      // Get the last processed nid from state.
+      $last_processed_nid = \Drupal::state()->get($state_key, 0);
+
+      // Query all nodes of type 'info_details' starting from the last processed nid.
+      $query = $this->entityTypeManager->getStorage('node')->getQuery()
+        ->condition('type', 'info_details')
+        ->condition('nid', $last_processed_nid, '>')
+        ->condition('status', $status_condition)
+        ->accessCheck(FALSE)
+        ->sort('nid')
+        ->range(0, $batch_size);
+
+      $nids = $query->execute();
+      if (empty($nids)) {
+        $this->output()->writeln('No more nodes to process.');
+        break;
+      }
+
+      $node_storage = $this->entityTypeManager->getStorage('node');
+      $paragraph_storage = $this->entityTypeManager->getStorage('paragraph');
+
+      $this->output()->writeln("Processing batch of " . $batch_size * $batch_step . "-" . $batch_size * $batch_step + $batch_size . " nodes from $total_nodes");
+
+      foreach ($nids as $nid) {
+        $node = $node_storage->load($nid);
+        if (!$node) {
+          continue;
+        }
+
+        if ($options['detailed-verbalization']) {
+          $this->output()->writeln("Processing node {$nid}...");
+        }
+
+        if ($node->hasField('field_info_details_sections')) {
+          /** @var \Drupal\paragraphs\ParagraphInterface[] $sections */
+          $sections = $node->get('field_info_details_sections')->referencedEntities();
+          $new_sections = [];
+
+          foreach ($sections as $section) {
+            if ($section->bundle() === 'section_long_form') {
+              // Check if heading is not hidden.
+              if (!$section->get('field_hide_heading')->value) {
+                // Create a new 'section_header' paragraph for the heading.
+                $section_header_paragraph = $paragraph_storage->create([
+                  'type' => 'section_header',
+                  'field_section_long_form_heading' => $section->get('field_section_long_form_heading')->value,
+                ]);
+                $section_header_paragraph->save();
+                $new_sections[] = [
+                  'target_id' => $section_header_paragraph->id(),
+                  'target_revision_id' => $section_header_paragraph->getRevisionId(),
+                ];
+              }
+
+              // Migrate each content paragraph in field_section_long_form_content to the node field_info_details_sections itself.
+              /** @var \Drupal\paragraphs\ParagraphInterface[] $content_paragraphs */
+              $content_paragraphs = $section->get('field_section_long_form_content')->referencedEntities();
+              foreach ($content_paragraphs as $content_paragraph) {
+                $new_sections[] = [
+                  'target_id' => $content_paragraph->id(),
+                  'target_revision_id' => $content_paragraph->getRevisionId(),
+                ];
+              }
+
+              $additional_resources = $section->get('field_section_long_form_addition')->referencedEntities();
+              if (!empty($additional_resources)) {
+                foreach ($additional_resources as $additional_resource) {
+                  $link_group_links = [];
+                  if (!$additional_resource->get('field_links_downloads_link')->isEmpty()) {
+                    $field_links_downloads_link = $additional_resource->get('field_links_downloads_link')->getValue();
+
+                    foreach ($field_links_downloads_link as $link) {
+                      // Create a new link_group_link paragraph.
+                      $link_group_link = Paragraph::create([
+                        'type' => 'link_group_link',
+                      ]);
+
+                      $link_group_link->set('field_link_group_link', $link);
+                      $link_group_link->save();
+                      $link_group_links[] = [
+                        'target_id' => $link_group_link->id(),
+                        'target_revision_id' => $link_group_link->getRevisionId(),
+                      ];
+                    }
+                  }
+                  if (!$additional_resource->get('field_links_downloads_down')->isEmpty()) {
+                    // Get the field value.
+                    $field_links_downloads_down = $additional_resource->get('field_links_downloads_down')->getValue();
+
+                    foreach ($field_links_downloads_down as $file) {
+                      // Create a new link_group_document paragraph.
+                      $link_group_document = Paragraph::create([
+                        'type' => 'link_group_document',
+                      ]);
+
+                      $link_group_document->set('field_file_download_single', $file);
+                      $link_group_document->save();
+                      $link_group_links[] = [
+                        'target_id' => $link_group_document->id(),
+                        'target_revision_id' => $link_group_document->getRevisionId(),
+                      ];
+                    }
+
+                  }
+                }
+                if (!empty($link_group_links)) {
+                  // Create a new flexible_link_group paragraph.
+                  $flexible_link_group = Paragraph::create([
+                    'type' => 'links_downloads_flexible',
+                  ]);
+
+                  $flexible_link_group->set('field_links_downloads_header', 'Additional Resources');
+                  $flexible_link_group->set('field_link_group', $link_group_links);
+                  $flexible_link_group->save();
+                  $new_sections[] = [
+                    'target_id' => $flexible_link_group->id(),
+                    'target_revision_id' => $flexible_link_group->getRevisionId(),
+                  ];
+                }
+              }
+            }
+          }
+
+          if ($new_sections) {
+            // Update the node with the newly structured paragraphs.
+            $node->set('field_info_details_sections', $new_sections);
+
+            if (method_exists($node, 'setRevisionLogMessage')) {
+              $node->setNewRevision();
+              $node->setRevisionLogMessage('Revision created for layout paragraphs.');
+              $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+            }
+
+            $node->save();
+          }
+          $processed_nodes++;
+          // Update the state with the last processed nid for the current context.
+          \Drupal::state()->set($state_key, $nid);
+
+          if ($options['detailed-verbalization']) {
+            $this->output()->writeln("Node {$nid} processed successfully.");
+          }
+        }
+
+        // Stop processing if the total processed nodes exceed the limit (if set).
+        if ($limit !== NULL && $processed_nodes >= $limit) {
+          $this->output()->writeln("Reached the defined limit of {$limit} nodes. Stopping execution.");
+          // Exit both foreach and do-while loop.
+          break 2;
+        }
+      }
+
+      $batch_step++;
+
+    } while (!empty($nids));
+
+    // Re-enable entity hierarchy writes after processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
+    $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
+
+    // Clean up state key if all nodes are processed.
+    if (empty($nids)) {
+      \Drupal::state()->delete($state_key);
+    }
   }
 
 }
