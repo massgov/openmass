@@ -1,0 +1,27 @@
+uuid: 7c826372-29d0-4d40-b5bd-3ea6720d95ee
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.info_details_sections
+    - field.field.paragraph.links_downloads_flexible.field_link_group
+    - field.field.paragraph.links_downloads_flexible.field_links_downloads_header
+    - paragraphs.paragraphs_type.links_downloads_flexible
+  module:
+    - entity_reference_revisions
+id: paragraph.links_downloads_flexible.info_details_sections
+targetEntityType: paragraph
+bundle: links_downloads_flexible
+mode: info_details_sections
+content:
+  field_link_group:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 3
+    region: content
+hidden:
+  field_links_downloads_header: true
