@@ -780,7 +780,8 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         ];
         $links_rendered = \Drupal::service('renderer')->renderPlain($links_render_array);
         $element['#description'] .= $links_rendered;
-      } else {
+      }
+      else {
         // Ensure the message is rendered when there are no links.
         $element['#description'] .= t('<br><strong>Nothing from the parent page to inherit</strong><br>');
       }
