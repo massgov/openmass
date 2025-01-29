@@ -7,7 +7,73 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\mayflower\Helper;
+use Drupal\mayflower\Prepare\Molecules;
 use Drupal\views\Views;
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Break out url pieces for callout link paragraphs.
+ */
+function mass_admin_theme_preprocess_paragraph__callout_link(&$variables) {
+  $paragraph = $variables['elements']['#paragraph'];
+  $variables['calloutLinks'] = Molecules::prepareCalloutLinks($paragraph);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Prepare video values for template.
+ */
+function mass_admin_theme_preprocess_paragraph__video(&$variables) {
+  $variables['video'] = Helper::getVideoAtomData($variables['paragraph']);
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ *
+ * Process info_details card group/
+ */
+function mass_admin_theme_preprocess_paragraph__info_details_card_group(&$variables) {
+  $entity = $variables['paragraph'];
+
+  if (!$entity->field_card->isEmpty()) {
+    $entities = $entity->get('field_card')->referencedEntities();
+    foreach ($entities as $index => $p) {
+      $numOfSections = ++$index;
+      $variables['numOfSections'] = $numOfSections;
+      $link = Helper::separatedLinks($p, 'field_card_link');
+      $sectionLinks[] = [
+        'title' => [
+          'href' => $link[0]['href'] ?? '',
+          'text' => $p->get('field_card_header')->value,
+        ],
+        'level' => 3,
+        'type' => '',
+        'description' => Helper::fieldFullView($p, 'field_content'),
+        'links' => '',
+      ];
+      $sections = ['sections' => $sectionLinks];
+    }
+    $variables['sectionContent'][$numOfSections]['sectionThreeUp'] = $sections;
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ */
+function mass_admin_theme_preprocess_paragraph__iframe(&$variables) {
+  if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
+    if (!$variables['paragraph']->get('field_height')->isEmpty()) {
+      $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    }
+    if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
+      $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+      $variables['iframe_height'] = 'auto';
+    }
+  }
+}
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -175,10 +241,54 @@ function mass_admin_theme_form_media_form_alter(&$form, FormStateInterface $form
 
 }
 
+function mass_admin_theme_form_layout_paragraphs_component_form_alter(array &$form, FormStateInterface $form_state) {
+  if ($form['#paragraph']->bundle() == 'iframe') {
+    if (isset($form['field_iframe_height_config'])) {
+
+      $selector = ':input[name="field_iframe_height_config"]';
+      // Dependent fields.
+      $form['field_verify_iframe_100_confirm']['widget']['value']['#states'] = [
+        'required' => [
+          $selector => ['value' => '100'],
+        ],
+      ];
+      $form['field_verify_iframe_100_confirm']['#states'] = [
+        'visible' => [
+          $selector => ['value' => '100'],
+        ],
+      ];
+      $form['field_aspect_ratio']['widget']['#states'] = [
+        'required' => [
+          $selector => ['value' => 'ratio'],
+        ],
+      ];
+      $form['field_aspect_ratio']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'ratio'],
+        ],
+      ];
+      $form['field_height']['widget'][0]['value']['#states'] = [
+        'required' => [
+          $selector => ['value' => 'fixed'],
+        ],
+      ];
+      $form['field_height']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'fixed'],
+        ],
+      ];
+    }
+  }
+}
+
 /**
  * Implements hook_form_alter().
  */
 function mass_admin_theme_form_alter(&$form, &$form_state, $form_id) {
+
+  if ($form_id == 'node_info_details_form' || $form_id == 'node_info_details_edit_form') {
+    $form['#attached']['library'][] = 'mass_theme/global-styling-lp';
+  }
 
   if (!empty($form['last_updated'])) {
     $form['last_updated']['#options']['All'] = t('All');

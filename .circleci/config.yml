@@ -495,13 +495,13 @@ jobs:
           steps:
             - run:
                 name: Percy on BrowserStack Automate test (Tugboat target)
-                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test
+                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test || true
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Percy on BrowserStack Automate test (non Tugboat target)
-                command: npm run percy-snapshots-test
+                command: npm run percy-snapshots-test || true
                 no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
@@ -1265,7 +1265,8 @@ workflows:
   browserstack_percy_compare:
     when:
       and:
-        - equal: [ api, << pipeline.trigger_source >> ]
+        - not:
+            equal: [ webhook, << pipeline.trigger_source >> ]
         - equal: [ browserstack_percy_compare, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build

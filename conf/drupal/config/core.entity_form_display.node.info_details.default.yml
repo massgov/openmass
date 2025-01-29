@@ -43,6 +43,7 @@ dependencies:
     - entity_reference_tree
     - field_group
     - focal_point
+    - layout_paragraphs
     - link
     - mass_validation
     - maxlength
@@ -116,7 +117,7 @@ third_party_settings:
         show_empty_fields: false
         id: ''
         formatter: closed
-        description: 'Either a populated overview field or a content section is required.'
+        description: 'Either a populated overview field or a content section is required. Read the <a href="http://www.mass.gov/kb/info-details">Knowledge Base article on Information Details pages</a>. '
         required_fields: true
     group_info_details_related:
       children:
@@ -433,16 +434,16 @@ content:
           - contact_information
           - fee
   field_info_details_sections:
-    type: entity_reference_paragraphs
+    type: layout_paragraphs
     weight: 9
     region: content
     settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: button
+      view_mode: default
+      preview_view_mode: default
       form_display_mode: default
-      default_paragraph_type: _none
+      nesting_depth: 0
+      require_layouts: 0
+      empty_message: Empty
     third_party_settings: {  }
   field_infodetails_metatags:
     type: metatag_firehose
@@ -450,6 +451,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons

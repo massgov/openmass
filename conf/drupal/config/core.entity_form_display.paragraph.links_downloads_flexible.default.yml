@@ -1,0 +1,38 @@
+uuid: 36f19bbc-ddf7-4612-a8ce-17b1717cbb88
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.links_downloads_flexible.field_link_group
+    - field.field.paragraph.links_downloads_flexible.field_links_downloads_header
+    - paragraphs.paragraphs_type.links_downloads_flexible
+  module:
+    - paragraphs
+id: paragraph.links_downloads_flexible.default
+targetEntityType: paragraph
+bundle: links_downloads_flexible
+mode: default
+content:
+  field_link_group:
+    type: entity_reference_paragraphs
+    weight: 5
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+  field_links_downloads_header:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

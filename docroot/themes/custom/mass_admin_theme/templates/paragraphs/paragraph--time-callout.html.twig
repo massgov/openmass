@@ -1,0 +1,22 @@
+{# Callout Time #}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% if content.field_time_callout_text|render is not empty %}
+        {% include "@organisms/by-author/callout-time.twig" with {
+          "calloutTime": {
+            "text": content.field_time_callout_text
+          }
+        } %}
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

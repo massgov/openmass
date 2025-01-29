@@ -20,10 +20,9 @@ third_party_settings:
       label: Spacer
       region: content
       parent_name: ''
-      weight: 1
+      weight: 2
       format_type: html_element
       format_settings:
-        label: Spacer
         classes: ''
         id: spacer
         element: p
@@ -49,15 +48,19 @@ content:
       label_plural: ''
       allow_new: true
       allow_existing: true
+      allow_edit: true
       match_operator: CONTAINS
+      allow_duplicate: false
       collapsible: false
       collapsed: false
+      revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
   field_links_downloads_link:
     type: link_default
-    weight: 0
+    weight: 1
     region: content
     settings:
       placeholder_url: ''

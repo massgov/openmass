@@ -1,5 +1,93 @@
 
 
+## [0.423.0] - January 28, 2025
+
+### Added
+  - DP-36546: Add content type field to crawler view.
+  - DP-35734: Adding layout paragraphs plus config changes to info detail sections.
+  
+### Fixed
+  - DP-36959: Fixed database image rebuilds.
+  
+
+
+## [0.422.0] - January 21, 2025
+
+### Changed
+  - DP-35481: Download links spacing and markup fixes.
+  - DP-35726: Hide the Verint survey from Percy comparisons and allows scheduled comparsions.
+  
+### Fixed
+  - DP-36861: Updated composer.lock to fix warning.
+  
+
+
+## [0.421.1] - January 15, 2025
+
+### Fixed
+  - DP-36298: Fixed performance issues for authors with update to Core, CKEditor patch, and memcache changes.
+
+### Removed
+  - DP-36298: Removed render debug output.
+
+
+
+## [0.421.0] - January 14, 2025
+
+### Changed
+  - DP-34926: Mass.gov font system responsive to browser settings.
+  
+### Fixed
+  - DP-36660: Increase iframe resizer JS send dimensions to parent timeout from 1/3 second to 1/2 second.
+  - DP-36751: Fixed issue with external link paths being changed to internal paths.
+  
+
+
+## [0.420.0] - January 7, 2025
+
+### Added
+  - DP-35022: Add proper cache tags to the Search block on mobile.
+  
+### Changed
+  - DP-36025: Upgraded the ckeditor fullscreen module to beta10 in order to fix z-index problems.
+  
+### Fixed
+  - DP-36349: Collections report.
+  
+
+
+## [0.419.0] - December 17, 2024
+
+### Fixed
+  - DP-36114: Increase feedback button border color contrast for a11y.
+  
+### Deprecated
+  - DP-36160: Disabled the memcache module.
+  
+### Added
+  - DP-36217: Append query string to crawler pages.
+  
+### Changed
+  - DP-36300: Updated memcache module.
+  
+
+
+## [0.418.0] - December 10, 2024
+
+### Added
+  - DP-32553: Enabled and configured ClamAV for running daemon via executable.
+  - DP-34883: Modify form content type to accomodate other form types.
+  
+### Changed
+  - DP-35408: Upgrade admin theme to Drupal 11
+  - DP-35689: added Romanian to the page language bar.
+  - DP-36056: Remove unused custom code and modules
+  
+### Fixed
+  - DP-36052: Admin toolbar with view and translate showing on non-English pages.
+  
+
+
 ## [0.417.0] - November 26, 2024
 
 ### Added
