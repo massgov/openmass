@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.curated_list.field_application_login_links
     - field.field.node.curated_list.field_collections
     - field.field.node.curated_list.field_contact
     - field.field.node.curated_list.field_curatedlist_lede
@@ -14,12 +15,12 @@ dependencies:
     - field.field.node.curated_list.field_data_resource_type
     - field.field.node.curated_list.field_data_search_content
     - field.field.node.curated_list.field_data_topic
-    - field.field.node.curated_list.field_disable_login_links
     - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
     - field.field.node.curated_list.field_list_type
+    - field.field.node.curated_list.field_login_links_options
     - field.field.node.curated_list.field_organizations
     - field.field.node.curated_list.field_primary_parent
     - field.field.node.curated_list.field_related_links
@@ -63,7 +64,8 @@ third_party_settings:
         - field_curatedlist_lede
         - field_curatedlist_overview
         - field_primary_parent
-        - field_disable_login_links
+        - field_login_links_options
+        - field_application_login_links
         - field_organizations
         - field_data_flag
         - field_data_topic
@@ -122,9 +124,72 @@ targetEntityType: node
 bundle: curated_list
 mode: default
 content:
+  field_application_login_links:
+    type: link_default
+    weight: 10
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        040aa824-b3ad-447a-9411-72ae048f2471:
+          entity_type: node
+          bundle: org_page
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
+        db35bfe1-ab04-470e-a6c0-9727589a74b7:
+          entity_type: node
+          bundle: binder
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
+        ba34321f-b21b-48a0-8a59-672c47cd4444:
+          entity_type: node
+          bundle: curated_list
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_collections:
     type: entity_reference_tree
-    weight: 21
+    weight: 22
     region: content
     settings:
       theme: default
@@ -206,13 +271,13 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 11
+    weight: 12
     region: content
     settings: {  }
     third_party_settings: {  }
   field_data_format:
     type: options_buttons
-    weight: 16
+    weight: 17
     region: content
     settings: {  }
     third_party_settings:
@@ -236,7 +301,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 15
+    weight: 16
     region: content
     settings: {  }
     third_party_settings:
@@ -260,7 +325,7 @@ content:
             selector: ''
   field_data_search_content:
     type: string_textarea
-    weight: 13
+    weight: 14
     region: content
     settings:
       rows: 5
@@ -286,7 +351,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 12
+    weight: 13
     region: content
     settings:
       start_minimized: true
@@ -313,16 +378,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_disable_login_links:
-    type: boolean_checkbox
-    weight: 9
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 18
+    weight: 19
     region: content
     settings:
       match_operator: CONTAINS
@@ -350,13 +408,13 @@ content:
             selector: ''
   field_intended_audience:
     type: options_buttons
-    weight: 19
+    weight: 20
     region: content
     settings: {  }
     third_party_settings: {  }
   field_list_data_type:
     type: options_buttons
-    weight: 14
+    weight: 15
     region: content
     settings: {  }
     third_party_settings:
@@ -414,9 +472,15 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_login_links_options:
+    type: options_buttons
+    weight: 9
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 10
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -437,7 +501,7 @@ content:
     third_party_settings: {  }
   field_related_links:
     type: link_default
-    weight: 24
+    weight: 26
     region: content
     settings:
       placeholder_url: ''
@@ -445,7 +509,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 20
+    weight: 21
     region: content
     settings:
       match_operator: CONTAINS
@@ -463,7 +527,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 17
+    weight: 18
     region: content
     settings:
       include_locked: false

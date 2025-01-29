@@ -28,11 +28,13 @@ class LogInLinksBuilder {
     $all_links = [];
     $bundle = $entity->bundle();
 
-    // If the page is a service or organization, try to get direct links.
-    if (in_array($bundle, ['service_page', 'org_page'])) {
+    if (in_array($bundle, ['service_page', 'org_page', 'binder', 'info_details', 'curated_list'])) {
       $login_links_fields_per_bundle = [
         'service_page' => 'field_log_in_links',
         'org_page' => 'field_application_login_links',
+        'binder' => 'field_application_login_links',
+        'info_details' => 'field_application_login_links',
+        'curated_list' => 'field_application_login_links',
       ];
       $field = $login_links_fields_per_bundle[$bundle];
 
@@ -113,12 +115,13 @@ class LogInLinksBuilder {
       // Check the login option field to decide the behavior.
       if ($node->hasField('field_login_links_options')) {
         $login_option = $node->get('field_login_links_options')->value;
-
         switch ($login_option) {
           case "inherit_parent_page_login_options":
-            foreach ($links as $key => $link) {
-              if ($link['source'] == $node->id()) {
-                unset($links[$key]);
+            if ($links) {
+              foreach ($links as $key => $link) {
+                if ($link['source'] == $node->id()) {
+                  unset($links[$key]);
+                }
               }
             }
             break;

@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.curated_list.field_application_login_links
     - field.field.node.curated_list.field_collections
     - field.field.node.curated_list.field_contact
     - field.field.node.curated_list.field_curatedlist_lede
@@ -14,12 +15,12 @@ dependencies:
     - field.field.node.curated_list.field_data_resource_type
     - field.field.node.curated_list.field_data_search_content
     - field.field.node.curated_list.field_data_topic
-    - field.field.node.curated_list.field_disable_login_links
     - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
     - field.field.node.curated_list.field_list_type
+    - field.field.node.curated_list.field_login_links_options
     - field.field.node.curated_list.field_organizations
     - field.field.node.curated_list.field_primary_parent
     - field.field.node.curated_list.field_related_links
@@ -65,6 +66,18 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 11
+    region: content
+  field_application_login_links:
+    type: dynamic_link_separate
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 44
     region: content
   field_contact:
     type: entity_reference_entity_view
@@ -136,16 +149,6 @@ content:
     third_party_settings: {  }
     weight: 21
     region: content
-  field_disable_login_links:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 142
-    region: content
   field_english_version:
     type: entity_reference_label
     label: above
@@ -184,6 +187,13 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 6
+    region: content
+  field_login_links_options:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 143
     region: content
   field_organizations:
     type: entity_reference_label

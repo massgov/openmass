@@ -746,16 +746,16 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       // Get the contextual links.
       $links_data = $login_links_builder->getLoginLinksWithCacheTags($node);
 
-      // Build the description with the login links using render arrays.
-      if (!empty($links_data['links'])) {
-        $links = [];
-        foreach ($links_data['links'] as $key => $link) {
+      $links = [];
 
+      if (!empty($links_data['links'])) {
+        foreach ($links_data['links'] as $key => $link) {
+          // Skip if the link originates from the current node.
           if ($link['source'] == $node->id()) {
             continue;
           }
           if (isset($link['href'])) {
-            // Add target="_blank" to the Url object if it's external.
+            // Add target="_blank" for external links.
             if ($link['type'] === 'external' && $link['href'] instanceof Url) {
               $link['href']->setOption('attributes', ['target' => '_blank']);
             }
@@ -766,29 +766,26 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
             ];
           }
         }
-
-        if ($links) {
-          // Render the links list.
-          $links_render_array = [
-            '#theme' => 'item_list',
-            '#items' => $links,
-            '#cache' => [
-              'tags' => $links_data['cache_tags'] ?? [],
-            ],
-          ];
-          $links_rendered = \Drupal::service('renderer')
-            ->renderPlain($links_render_array);
-
-          // Add the links list below the existing description.
-          $element['#description'] .= $links_rendered;
-        }
-        else {
-          $element['#description'] .= t('<br><strong>Nothing from the parent page to inherit</strong><br>');
-        }
-        $element['#description'] .= t('You have the options to define new login link or disable them for this page:');
-        unset($element['#options']['_none']);
       }
 
+      // Check if any links exist.
+      if (!empty($links)) {
+        // Render the links list.
+        $links_render_array = [
+          '#theme' => 'item_list',
+          '#items' => $links,
+          '#cache' => [
+            'tags' => $links_data['cache_tags'] ?? [],
+          ],
+        ];
+        $links_rendered = \Drupal::service('renderer')->renderPlain($links_render_array);
+        $element['#description'] .= $links_rendered;
+      } else {
+        // Ensure the message is rendered when there are no links.
+        $element['#description'] .= t('<br><strong>Nothing from the parent page to inherit</strong><br>');
+      }
+      $element['#description'] .= t('You have the options to define new login link or disable them for this page:');
+      unset($element['#options']['_none']);
     }
   }
 }
