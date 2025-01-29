@@ -5,7 +5,21 @@ dependencies:
   config:
     - field.storage.node.field_info_details_sections
     - node.type.info_details
-    - paragraphs.paragraphs_type.section_long_form
+    - paragraphs.paragraphs_type.alert
+    - paragraphs.paragraphs_type.callout_link
+    - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.csv_table
+    - paragraphs.paragraphs_type.iframe
+    - paragraphs.paragraphs_type.image
+    - paragraphs.paragraphs_type.info_details_card_group
+    - paragraphs.paragraphs_type.links_downloads_flexible
+    - paragraphs.paragraphs_type.pull_quote
+    - paragraphs.paragraphs_type.rich_text
+    - paragraphs.paragraphs_type.section_header
+    - paragraphs.paragraphs_type.stat
+    - paragraphs.paragraphs_type.tableau_embed
+    - paragraphs.paragraphs_type.time_callout
+    - paragraphs.paragraphs_type.video
   module:
     - entity_reference_revisions
 id: node.info_details.field_info_details_sections
@@ -22,7 +36,21 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
-      section_long_form: section_long_form
+      callout_link: callout_link
+      iframe: iframe
+      image: image
+      alert: alert
+      pull_quote: pull_quote
+      caspio_embed: caspio_embed
+      rich_text: rich_text
+      csv_table: csv_table
+      stat: stat
+      video: video
+      info_details_card_group: info_details_card_group
+      links_downloads_flexible: links_downloads_flexible
+      section_header: section_header
+      tableau_embed: tableau_embed
+      time_callout: time_callout
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -81,7 +109,7 @@ settings:
         enabled: false
       alert:
         weight: 132
-        enabled: false
+        enabled: true
       board_member:
         weight: 149
         enabled: false
@@ -93,7 +121,7 @@ settings:
         enabled: false
       callout_link:
         weight: 106
-        enabled: false
+        enabled: true
       campaign_features:
         weight: 153
         enabled: false
@@ -102,7 +130,7 @@ settings:
         enabled: false
       caspio_embed:
         weight: 155
-        enabled: false
+        enabled: true
       collection_search:
         weight: 156
         enabled: false
@@ -126,7 +154,7 @@ settings:
         enabled: false
       csv_table:
         weight: 163
-        enabled: false
+        enabled: true
       custom_html:
         weight: 164
         enabled: false
@@ -181,6 +209,9 @@ settings:
       footnotes:
         weight: 181
         enabled: false
+      from_library:
+        weight: 187
+        enabled: false
       full_bleed:
         weight: 120
         enabled: false
@@ -207,16 +238,16 @@ settings:
         enabled: false
       iframe:
         weight: 128
-        enabled: false
+        enabled: true
       image:
         weight: 129
-        enabled: false
+        enabled: true
       image_credit:
         weight: 192
         enabled: false
       info_details_card_group:
         weight: 193
-        enabled: false
+        enabled: true
       issuer:
         weight: 130
         enabled: false
@@ -241,6 +272,9 @@ settings:
       links_downloads:
         weight: 132
         enabled: false
+      links_downloads_flexible:
+        weight: 209
+        enabled: true
       list_board_members:
         weight: 202
         enabled: false
@@ -327,7 +361,7 @@ settings:
         enabled: false
       pull_quote:
         weight: 149
-        enabled: false
+        enabled: true
       quick_action:
         weight: 150
         enabled: false
@@ -345,7 +379,7 @@ settings:
         enabled: false
       rich_text:
         weight: 155
-        enabled: false
+        enabled: true
       rules_section:
         weight: 156
         enabled: false
@@ -364,12 +398,15 @@ settings:
       section_board_members:
         weight: 242
         enabled: false
+      section_header:
+        weight: 249
+        enabled: true
       section_heading_text:
         weight: 160
         enabled: false
       section_long_form:
         weight: 161
-        enabled: true
+        enabled: false
       section_with_heading:
         weight: 162
         enabled: false
@@ -396,7 +433,7 @@ settings:
         enabled: false
       stat:
         weight: 166
-        enabled: false
+        enabled: true
       state_organization:
         weight: 167
         enabled: false
@@ -405,10 +442,13 @@ settings:
         enabled: false
       tableau_embed:
         weight: 256
-        enabled: false
+        enabled: true
+      time_callout:
+        weight: 260
+        enabled: true
       video:
         weight: 170
-        enabled: false
+        enabled: true
       video_with_header:
         weight: 258
         enabled: false

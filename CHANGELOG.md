@@ -1,5 +1,16 @@
 
 
+## [0.423.0] - January 28, 2025
+
+### Added
+  - DP-36546: Add content type field to crawler view.
+  - DP-35734: Adding layout paragraphs plus config changes to info detail sections.
+  
+### Fixed
+  - DP-36959: Fixed database image rebuilds.
+  
+
+
 ## [0.422.0] - January 21, 2025
 
 ### Changed

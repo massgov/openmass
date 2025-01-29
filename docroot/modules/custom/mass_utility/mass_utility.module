@@ -473,6 +473,7 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
  */
 function mass_utility_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   // Hide the map name field on the address google map field.
+  /** @var \Drupal\Core\Field\FieldDefinitionInterface|\Drupal\Core\TypedData\DataDefinitionInterface $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
   $type = $field_definition->getType();
   $field_name = $field_definition->getName();
@@ -546,6 +547,16 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         );
       }
     }
+    // Override title description of the URL field in callout link field.
+    elseif ($field_name == 'field_link') {
+      // Retrieve the entity type and bundle to which the field belongs.
+      $entity_type = $field_definition->getTargetEntityTypeId();
+      $bundle = $field_definition->getTargetBundle();
+      // Keep description for callout_link > field_link > title (label) empty.
+      if ($entity_type === 'paragraph' && $bundle === 'callout_link') {
+        $element['title']['#description'] = '';
+      }
+    }
     // The typo in regulation is on the actual field name.
     elseif ($field_name == 'field_regluation_official_ver') {
 
@@ -597,7 +608,6 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       // Default description values.
       $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
       $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
-
       // Override description of the URL field in External data resource content type.
       if ($field_name == 'field_externaldata_url') {
         $element['uri']['#description'] = t('Enter a complete URL. It must begin with "https://" or "http://".');

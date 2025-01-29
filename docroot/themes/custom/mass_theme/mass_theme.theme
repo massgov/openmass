@@ -1523,15 +1523,12 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       $variables['bgPosition'] = Helper::getFieldImageFocalPoint($node, 'field_banner_image');
     }
 
-    foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
-      $ref_entities = $section->get('field_section_long_form_content')->referencedEntities();
-      foreach ($ref_entities as $index => $entity) {
-        if ($entity->bundle() == 'tableau_embed') {
-          $variables['tableauEmbeded'] = TRUE;
-        }
-        if ($entity->bundle() == 'info_details_card_group') {
-          $variables['cardGroup'] = TRUE;
-        }
+    foreach ($node->get('field_info_details_sections')->referencedEntities() as $entity) {
+      if ($entity->bundle() == 'tableau_embed') {
+        $variables['tableauEmbeded'] = TRUE;
+      }
+      if ($entity->bundle() == 'info_details_card_group') {
+        $variables['cardGroup'] = TRUE;
       }
     }
 
@@ -7497,133 +7494,6 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
   foreach ($variables['service_components'] as $key => &$service_component) {
     if ($service_component === FALSE) {
       unset($variables['service_components'][$key]);
-    }
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
-  /** @var \Drupal\paragraphs\Entity\Paragraph */
-  $flexible_lg = $variables['paragraph'];
-
-  $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
-
-  unset($flexible_lg->subsequent_links);
-
-  foreach ($all_flexible_links as $key => $flexible_lg) {
-
-    $base = 'flexible_links_group';
-    $variables['display_type'] = $flexible_lg->field_display_type->value;
-
-    $variables[$base][$key]['title'] = $flexible_lg->field_flexible_link_group_title->value;
-    $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
-    $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
-    $variables[$base][$key]['links'] = [];
-    $variables[$base][$key]['expanded'] = (bool) intval($flexible_lg->field_group_expanded->value);
-
-    $links = &$variables[$base][$key]['links'];
-    foreach ($flexible_lg->field_link_group as $index => $item) {
-      if (empty($item->entity)) {
-        continue;
-      }
-      switch ($item->entity->bundle()) {
-        case 'link_group_link':
-          if (empty($item->entity->field_link_group_link)) {
-            break;
-          }
-          /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
-          $link = $item->entity->field_link_group_link[0];
-          if (empty($link->get('computed_title'))) {
-            break;
-          }
-          $computed_title = $link->get('computed_title')->getValue();
-          $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
-          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
-          break;
-
-        case 'link_group_document':
-          if (empty($item->entity->field_file_download_single)) {
-            break;
-          }
-          /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
-          $media = $item->entity->field_file_download_single[0]->entity;
-          if ($media) {
-
-            if ($variables['display_type'] == "buttons") {
-              $original_file = $media->field_upload_file->entity;
-              $links[$index]['file_size'] = strtoupper(ByteSizeMarkup::create($original_file->getSize())->render());
-              $file_info = new \SplFileInfo($original_file->getFilename());
-              $file_extension = strtoupper($file_info->getExtension());
-              $file_icon = 'doc-' . strtolower($file_extension);
-              if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
-                $file_icon = 'doc-generic';
-              }
-              $links[$index]['file_icon'] = $file_icon;
-              $links[$index]['downloadable_file'] = TRUE;
-              $links[$index]['file_extension'] = $file_extension;
-              if (!$media->field_title->isEmpty()) {
-                $links[$index]['file_title'] = $media->field_title->value;
-              }
-              else {
-                $links[$index]['file_title'] = $media->label();
-              }
-              $links[$index]['mid'] = $media->id();
-
-            }
-            else {
-              // Check if the media entity has the 'field_upload_file' field and it's not empty.
-              if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
-                $file_media = $media->get('field_upload_file')->entity;
-
-                if ($file_media) {
-                  // Initialize the render array.
-                  $render_array = [];
-
-                  // Manually add calculated file size.
-                  $file_size = strtoupper(ByteSizeMarkup::create($file_media->getSize())->render());
-                  $render_array['calculated_file_size'] = [
-                    '#type' => 'markup',
-                    '#markup' => $file_size,
-                  ];
-
-                  // Manually add extra file extension and icon.
-                  $file_info = new \SplFileInfo($file_media->getFilename());
-                  $file_extension = strtoupper($file_info->getExtension());
-                  $file_icon = 'doc-' . strtolower($file_extension);
-
-                  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
-                    $file_icon = 'doc-generic';
-                  }
-
-                  $render_array['extra_file_extension'] = [
-                    '#type' => 'markup',
-                    '#markup' => $file_extension,
-                  ];
-
-                  $render_array['extra_file_icon'] = [
-                    '#type' => 'markup',
-                    '#markup' => $file_icon,
-                  ];
-                  if (!$media->field_title->isEmpty()) {
-                    $render_array['file_title'] = $media->field_title->value;
-                  }
-                  else {
-                    $render_array['file_title'] = $media->label();
-                  }
-                  $render_array['mid'] = $media->id();
-                  $render_array['media'] = $media;
-                  _mass_translations_media_helper($render_array);
-                  $links[$index]['download_link'] = $render_array;
-                }
-              }
-            }
-            $links[$index]['href'] = $media->toURL()->setAbsolute()->toString();
-            $links[$index]['text'] = $media->label();
-          }
-          break;
-      }
     }
   }
 }

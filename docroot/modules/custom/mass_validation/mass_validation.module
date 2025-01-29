@@ -1437,6 +1437,70 @@ function _mass_validation_validate_custom_iframe(FormStateInterface $form_state,
 }
 
 /**
+ * Implements hook_form_layout_paragraphs_component_form_alter().
+ */
+function mass_validation_form_layout_paragraphs_component_form_alter(array &$form, FormStateInterface &$form_state) {
+  switch ($form['#paragraph']->bundle()) {
+    case 'iframe':
+      $form['#validate'][] = '_mass_validation_validate_custom_iframe_layout_paragraphs';
+      break;
+  }
+}
+
+/**
+ * Validates the iframe paragraph in layout paragraphs.
+ */
+function _mass_validation_validate_custom_iframe_layout_paragraphs(array &$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  if ($values['field_iframe_height_config']) {
+    $subtype = $values['field_iframe_height_config'][0]['value'];
+    switch ($subtype) {
+      case '100':
+        $report = FALSE;
+        if (empty($values['field_verify_iframe_100_confirm'])) {
+          $report = TRUE;
+        }
+        elseif ($values['field_verify_iframe_100_confirm']['value'] != 1) {
+          $report = TRUE;
+        }
+
+        if ($report) {
+          $form_state->setErrorByName(
+            'field_verify_iframe_100_confirm',
+            t('The "Verify dynamic height configuration" field is required.')
+          );
+        }
+        break;
+      case 'fixed':
+        $report = FALSE;
+        if (empty($values['field_height'])) {
+          $report = TRUE;
+        }
+        elseif (empty($values['field_height'][0]['value'])) {
+          $report = TRUE;
+        }
+
+        if ($report) {
+          $form_state->setErrorByName(
+            'field_height',
+            t('The "Set Fixed Height" field is required.')
+          );
+        }
+
+        break;
+      case 'ratio':
+        if (empty($values['field_aspect_ratio'])) {
+          $form_state->setErrorByName(
+             'field_aspect_ratio',
+            t('The "Set Aspect Ratio" field is required.')
+          );
+        }
+        break;
+    }
+  }
+}
+
+/**
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_org_page_form_validate(array &$form, FormStateInterface $form_state) {
@@ -1828,7 +1892,7 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
   foreach ($sections as $section_key => $section) {
     if ($section_key != 'add_more') {
       // If at least 1 section is populated, validation passed.
-      $section_populated = isset($section['subform']);
+      $section_populated = isset($section['entity']);
     }
     // External links should have a title.
     if (isset($section['subform']['field_section_long_form_addition'])) {

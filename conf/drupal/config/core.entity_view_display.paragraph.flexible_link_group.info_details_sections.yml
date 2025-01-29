@@ -1,0 +1,74 @@
+uuid: ef219d92-0b46-4b9c-aa96-92236387c8fd
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.info_details_sections
+    - field.field.paragraph.flexible_link_group.field_display_type
+    - field.field.paragraph.flexible_link_group.field_featured
+    - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
+    - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
+    - field.field.paragraph.flexible_link_group.field_group_expanded
+    - field.field.paragraph.flexible_link_group.field_link_group
+    - paragraphs.paragraphs_type.flexible_link_group
+  module:
+    - entity_reference_revisions
+    - options
+id: paragraph.flexible_link_group.info_details_sections
+targetEntityType: paragraph
+bundle: flexible_link_group
+mode: info_details_sections
+content:
+  field_display_type:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_featured:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_flexible_link_group_desc:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_flexible_link_group_title:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_group_expanded:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_link_group:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 3
+    region: content
+hidden: {  }
