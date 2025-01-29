@@ -350,8 +350,8 @@ function mass_content_deploy_login_links_options_update(&$sandbox) {
     $sandbox['max'] = $count_query->count()->execute();
   }
 
-  // Set batch size to avoid memory exhaustion.
-  $batch_size = 50;
+  // Increase batch size to process more nodes per iteration.
+  $batch_size = 500;
 
   // Fetch node IDs in batches.
   $nids = $query->condition('nid', $sandbox['current'], '>')
@@ -359,39 +359,33 @@ function mass_content_deploy_login_links_options_update(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
-  // Load the nodes from the fetched node IDs.
+  if (empty($nids)) {
+    // If no nodes are left, mark the process as complete.
+    $sandbox['#finished'] = 1;
+    return t('All specified content type nodes have been updated with the new login options value.');
+  }
+
+  // Load the nodes in bulk.
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
   $nodes = $node_storage->loadMultiple($nids);
 
-  // Temporarily disable entity hierarchy writes to avoid issues during batch processing.
+  // Temporarily disable entity hierarchy writes.
   \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
+  // Process all nodes efficiently.
   foreach ($nodes as $node) {
-    // Update the sandbox current nid.
-    $sandbox['current'] = $node->id();
-    try {
-      // Check if the field exists.
-      if ($node->hasField('field_login_links_options')) {
-        // Set the field value.
-        $node->set('field_login_links_options', 'define_new_login_options');
-        // Save the node.
-        $node->save();
-      }
+    if ($node->hasField('field_login_links_options')) {
+      $node->set('field_login_links_options', 'define_new_login_options');
+      $node->save();
     }
-    catch (\Exception $e) {
-      // Log the error and continue processing.
-      \Drupal::logger('mass_content')->error('Failed to update node @nid: @message', [
-        '@nid' => $node->id(),
-        '@message' => $e->getMessage(),
-      ]);
-    }
-
-    // Track progress.
-    $sandbox['progress']++;
   }
 
-  // Log progress for each batch.
-  \Drupal::logger('mass_content')->notice('Processed @progress out of @max nodes.', [
+  // Track progress.
+  $sandbox['progress'] += count($nodes);
+  $sandbox['current'] = max($nids); // Move forward in processing.
+
+  // Log progress for debugging.
+  \Drupal::logger('mass_validation')->notice('Processed @progress out of @max nodes.', [
     '@progress' => $sandbox['progress'],
     '@max' => $sandbox['max'],
   ]);
