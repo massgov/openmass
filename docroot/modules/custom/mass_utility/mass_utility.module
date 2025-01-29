@@ -783,7 +783,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
           $element['#description'] .= $links_rendered;
         }
         else {
-          $element['#description'] .= t('<strong>Nothing from the parent page to inherit</strong>');
+          $element['#description'] .= t('<br><strong>Nothing from the parent page to inherit</strong><br>');
         }
         $element['#description'] .= t('You have the options to define new login link or disable them for this page:');
         unset($element['#options']['_none']);
