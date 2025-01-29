@@ -351,7 +351,7 @@ function mass_content_deploy_login_links_options_update(&$sandbox) {
   }
 
   // Set batch size to avoid memory exhaustion.
-  $batch_size = 10;
+  $batch_size = 50;
 
   // Fetch node IDs in batches.
   $nids = $query->condition('nid', $sandbox['current'], '>')
