@@ -329,3 +329,79 @@ function mass_content_deploy_form_platform_update(&$sandbox) {
     return t('All form_page nodes have been updated with the "Formstack" value in field_form_platform.');
   }
 }
+
+/**
+ * Deploy hook to update field_login_links_options to 'define_new_login_options' for all nodes.
+ */
+function mass_content_deploy_login_links_options_update(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $content_types = ['service_page', 'org_page', 'binder', 'info_details', 'curated_list'];
+
+  $query = \Drupal::entityQuery('node')
+    ->accessCheck(FALSE)
+    ->condition('type', $content_types, 'IN');
+
+  // Initialize sandbox if this is the first run.
+  if (empty($sandbox)) {
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count_query = clone $query;
+    $sandbox['max'] = $count_query->count()->execute();
+  }
+
+  // Set batch size to avoid memory exhaustion.
+  $batch_size = 10;
+
+  // Fetch node IDs in batches.
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  // Load the nodes from the fetched node IDs.
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+  $nodes = $node_storage->loadMultiple($nids);
+
+  // Temporarily disable entity hierarchy writes to avoid issues during batch processing.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  foreach ($nodes as $node) {
+    // Update the sandbox current nid.
+    $sandbox['current'] = $node->id();
+    try {
+      // Check if the field exists.
+      if ($node->hasField('field_login_links_options')) {
+        // Set the field value.
+        $node->set('field_login_links_options', 'define_new_login_options');
+        // Save the node.
+        $node->save();
+      }
+    }
+    catch (\Exception $e) {
+      // Log the error and continue processing.
+      \Drupal::logger('mass_content')->error('Failed to update node @nid: @message', [
+        '@nid' => $node->id(),
+        '@message' => $e->getMessage(),
+      ]);
+    }
+
+    // Track progress.
+    $sandbox['progress']++;
+  }
+
+  // Log progress for each batch.
+  \Drupal::logger('mass_content')->notice('Processed @progress out of @max nodes.', [
+    '@progress' => $sandbox['progress'],
+    '@max' => $sandbox['max'],
+  ]);
+
+  // Update finished state.
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+
+  if ($sandbox['#finished'] >= 1) {
+    // Re-enable entity hierarchy writes after all nodes are processed.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('All specified content type nodes have been updated with the new login options value.');
+  }
+}
