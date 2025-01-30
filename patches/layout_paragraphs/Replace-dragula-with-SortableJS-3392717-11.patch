@@ -1,0 +1,330 @@
+diff --git a/composer.libraries.json b/composer.libraries.json
+index 122943a..7a666c2 100644
+--- a/composer.libraries.json
++++ b/composer.libraries.json
+@@ -11,31 +11,12 @@
+   "license": "GPL-2.0+",
+   "minimum-stability": "dev",
+   "require": {
+-    "bevacqua/dragula": "*",
+     "drupal/paragraphs": "^1.6"
+   },
+   "repositories": {
+     "drupal": {
+       "type": "composer",
+       "url": "https://packages.drupal.org/8"
+-    },
+-    "dragula": {
+-        "type": "package",
+-        "package": {
+-            "name": "bevacqua/dragula",
+-            "version": "3.7.3",
+-            "type": "drupal-library",
+-            "extra": {
+-                "installer-name": "dragula"
+-            },
+-            "dist": {
+-                "url": "https://github.com/bevacqua/dragula/archive/v3.7.3.zip",
+-                "type": "zip"
+-            },
+-            "require": {
+-                "composer/installers": "*"
+-            }
+-        }
+     }
+   }
+ }
+diff --git a/js/builder.js b/js/builder.js
+index 2d385cb..7ad5c72 100644
+--- a/js/builder.js
++++ b/js/builder.js
+@@ -1,6 +1,41 @@
+-(($, Drupal, debounce, dragula, once) => {
++(($, Drupal, debounce, Sortable, once) => {
+   const idAttr = 'data-lpb-id';
+ 
++  let triggerElement = null; // To track the element that triggered the AJAX request.
++  let scrollPosition = 0; // To store the scroll position.
++  /**
++   * Hook into Drupal.ajax and capture the triggering element.
++   */
++  Drupal.behaviors.captureAjaxTrigger = {
++    attach: function (context, settings) {
++      // Iterate over all AJAX objects to bind a `beforeSend` hook.
++      if (Drupal.ajax) {
++        Object.values(Drupal.ajax.instances || {}).forEach((ajaxInstance) => {
++          if (!ajaxInstance || ajaxInstance.captureTriggerHook) {
++            // Skip already hooked instances.
++            return;
++          }
++          // Add a custom beforeSend handler.
++          ajaxInstance.options.beforeSend = function (xhr, ajaxSettings) {
++            const element = $(ajaxInstance.element);
++            // Check if the triggering element is the Edit button.
++            if (element.is('.lpb-edit.use-ajax')) {
++              // Capture the triggering element and save the scroll position.
++              triggerElement = element;
++              scrollPosition = $(window).scrollTop();
++            }
++            // Call the original beforeSend if it exists.
++            if (ajaxInstance.originalBeforeSend) {
++              return ajaxInstance.originalBeforeSend(xhr, ajaxSettings);
++            }
++          };
++          // Mark this instance as hooked.
++          ajaxInstance.captureTriggerHook = true;
++        });
++      }
++    },
++  };
++
+   /**
+    * Attaches UI elements to $container.
+    * @param {jQuery} $container
+@@ -95,7 +130,7 @@
+   const reorderComponents = debounce(doReorderComponents);
+ 
+   /**
+-   * Returns a list of errors for the "accepts" dragula callback, or an empty array if there are no errors.
++   * Returns a list of errors for the "accepts" Sortable callback, or an empty array if there are no errors.
+    * @param {Element} settings The builder settings.
+    * @param {Element} el The element being moved.
+    * @param {Element} target The destination
+@@ -112,7 +147,7 @@
+   }
+ 
+   /**
+-   * Returns a list of errors for the "moves" dragula callback, or an empty array if there are no errors.
++   * Returns a list of errors for the "moves" Sortable callback, or an empty array if there are no errors.
+    * @param {Element} settings The builder settings.
+    * @param {Element} el The element being moved.
+    * @param {Element} source The source
+@@ -411,49 +446,44 @@
+     });
+   }
+ 
+-  function initDragAndDrop($element, settings) {
+-    const containers = once('is-dragula-enabled', '.js-lpb-component-list, .js-lpb-region', $element[0]);
+-    const drake = dragula(
+-      containers,
+-      {
+-        accepts: (el, target, source, sibling) =>
+-          acceptsErrors(settings, el, target, source, sibling).length === 0,
+-        moves: (el, source, handle) =>
+-          movesErrors(settings, el, source, handle).length === 0,
+-      },
+-    );
+-    drake.on('drop', (el) => {
+-      const $el = $(el);
+-      if ($el.prev().is('a')) {
+-        $el.insertBefore($el.prev());
+-      }
+-      $element.trigger('lpb-component:drop', [$el.attr('data-uuid')]);
+-    });
+-    drake.on('drag', (el) => {
+-      $element.addClass('is-dragging');
+-      if (el.className.indexOf('lpb-layout') > -1) {
+-        $element.addClass('is-dragging-layout');
+-      } else {
+-        $element.addClass('is-dragging-item');
+-      }
+-      $element.trigger('lpb-component:drag', [$(el).attr('data-uuid')]);
+-    });
+-    drake.on('dragend', () => {
+-      $element
+-        .removeClass('is-dragging')
+-        .removeClass('is-dragging-layout')
+-        .removeClass('is-dragging-item');
+-    });
+-    drake.on('over', (el, container) => {
+-      $(container).addClass('drag-target');
+-    });
+-    drake.on('out', (el, container) => {
+-      $(container).removeClass('drag-target');
++  /**
++   * Initializes Sortable.js for drag-and-drop.
++   * @param {jQuery} $element The builder element.
++   * @param {Object} settings The builder settings.
++   */
++  function initSortable($element, settings) {
++    // Find all containers that should support drag-and-drop.
++    const containers = once('is-sortable-enabled', '.js-lpb-component-list, .js-lpb-region', $element[0]);
++
++    containers.forEach((container) => {
++      Sortable.create(container, {
++        group: 'shared',
++          draggable: '.js-lpb-component',
++          handle: '.lpb-drag',
++          animation: 150,
++          onStart: (evt) => {
++          const $el = $(evt.item);
++          $el.addClass('is-dragging');
++          $element.addClass('is-dragging');
++          $element.trigger('lpb-component:drag', [$el.attr('data-uuid')]);
++          },
++          onEnd: (evt) => {
++          const $el = $(evt.item);
++          $el.removeClass('is-dragging');
++          $element.removeClass('is-dragging');
++          reorderComponents($element); // Trigger reordering logic.
++            $element.trigger('lpb-component:drop', [$el.attr('data-uuid')]);
++            },
++          onMove: (evt) => {
++          // Validate move using acceptsErrors (if applicable).
++            const errors = acceptsErrors(settings, evt.dragged, evt.to, evt.from, evt.related);
++            return errors.length === 0; // Allow move only if no errors.
++          },
++      });
+     });
+-    return drake;
+   }
+ 
+-  // An object with arrays for "accepts" and "moves" dragula callback functions.
++  // An object with arrays for "accepts" and "moves" Sortable callback functions.
+   Drupal._lpbMoveErrors = {
+     'accepts': [],
+     'moves': [],
+@@ -461,7 +491,7 @@
+   /**
+    * Registers a move validation function.
+    * @param {Function} f The validator function.
+-   * @param {String} t The dragula callback to register the validator for.
++   * @param {String} t The Sortable callback to register the validator for.
+    */
+   Drupal.registerLpbMoveError = (f, c = 'accepts') => {
+     Drupal._lpbMoveErrors[c].push(f);
+@@ -561,7 +591,21 @@
+       once('lpb-events', '[data-lpb-id]').forEach((el) => {
+         $(el).on('lpb-builder:init.lpb lpb-component:insert.lpb lpb-component:update.lpb lpb-component:move.lpb lpb-component:drop.lpb lpb-component:delete.lpb', (e) => {
+           const $element = $(e.currentTarget);
++          // Trigger scroll restoration for  'update' event.
++          if (e.type === 'lpb-component:update') {
++            if (triggerElement) {
++              window.scrollTo({
++                  top: scrollPosition,
++                  behavior: 'auto',
++              });
++            }
++          }
+           updateUi($element);
++          // Remove focus from all `+` buttons after a new component is inserted.
++          const $addButton = $element.find('.lpb-btn--add:focus');
++          if ($addButton.length) {
++            $addButton.blur();
++          }
+         });
+       });
+ 
+@@ -570,17 +614,52 @@
+         const $element = $(el);
+         const id = $element.attr(idAttr);
+         const lpbSettings = settings.lpBuilder[id];
+-        // Attach event listeners and init dragula just once.
+-        $element.data('drake', initDragAndDrop($element, lpbSettings));
++        // Attach event listeners and initialize Sortable.js.
++        initSortable($element, lpbSettings);
+         attachEventListeners($element, lpbSettings);
+         $element.trigger('lpb-builder:init');
+       });
+ 
+-      // Add new containers to the dragula instance.
+-      once('is-dragula-enabled', '.js-lpb-region').forEach((c) => {
+-        const builderElement = c.closest('[data-lpb-id]');
+-        const drake = $(builderElement).data('drake');
+-        drake.containers.push(c);
++
++      // Add new containers dynamically to Sortable instances.
++      once('is-sortable-enabled', '.js-lpb-region').forEach((container) => {
++        const $builderElement = $(container).closest('[data-lpb-id]');
++        const sortableInstance = $builderElement.data('sortable');
++        if (sortableInstance) {
++          // Dynamically add the container to the existing Sortable instance.
++          Sortable.create(container, {
++            group: sortableInstance.options.group,
++              draggable: '.js-lpb-component',
++              handle: '.lpb-drag',
++              animation: 150,
++              onStart: (evt) => {
++              const $el = $(evt.item);
++              $el.addClass('is-dragging');
++              $builderElement.addClass('is-dragging');
++              $builderElement.trigger('lpb-component:drag', [$el.attr('data-uuid')]);
++              },
++              onEnd: (evt) => {
++              const $el = $(evt.item);
++              $el.removeClass('is-dragging');
++              $builderElement.removeClass('is-dragging');
++              reorderComponents($builderElement); // Trigger reordering logic.
++                $builderElement.trigger('lpb-component:drop', [$el.attr('data-uuid')]);
++                },
++              onMove: (evt) => {
++              // Validate move using acceptsErrors (if applicable).
++                const errors = acceptsErrors(
++                  sortableInstance.options.settings,
++                  evt.dragged,
++                  evt.to,
++                  evt.from,
++                  evt.related
++                );
++                return errors.length === 0; // Allow move only if no errors.
++              },
++          });
++        } else {
++          console.warn('No Sortable instance found for:', $builderElement);
++        }
+       });
+ 
+       // If UI elements have been attached to the DOM, we need to attach behaviors.
+@@ -611,6 +690,13 @@
+     const $element = $dialog || jQuery(event.target);
+     if ($element.attr('id').startsWith('lpb-dialog-')) {
+       updateDialogButtons($element);
++      if (triggerElement) {
++        window.scrollTo({
++            top: scrollPosition,
++            behavior: 'auto',
++        });
++        triggerElement.focus();
++      }
+       clearInterval(lpDialogInterval);
+       lpDialogInterval = setInterval(
+         repositionDialog.bind(null, lpDialogInterval),
+@@ -624,4 +710,4 @@
+     window.addEventListener('dialog:aftercreate', handleAfterDialogCreate);
+   }
+ 
+-})(jQuery, Drupal, Drupal.debounce, dragula, once);
++})(jQuery, Drupal, Drupal.debounce, Sortable, once);
+diff --git a/layout_paragraphs.libraries.yml b/layout_paragraphs.libraries.yml
+index f62170d..2809da3 100644
+--- a/layout_paragraphs.libraries.yml
++++ b/layout_paragraphs.libraries.yml
+@@ -1,19 +1,3 @@
+-dragula:
+-  remote: https://github.com/bevacqua/dragula
+-  version: 3.7.3
+-  license:
+-    name: MIT
+-    url: https://github.com/bevacqua/dragula/blob/master/license
+-    gpl-compatible: true
+-  directory: dragula
+-  cdn:
+-    /libraries/dragula/dist/: https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.3/
+-  css:
+-    theme:
+-      /libraries/dragula/dist/dragula.min.css: { minified: true }
+-  js:
+-    /libraries/dragula/dist/dragula.min.js: { minified: true }
+-
+ component_form:
+   js:
+     js/component-form.js: {}
+@@ -36,7 +20,7 @@ builder:
+   js:
+     js/builder.js: {}
+   dependencies:
+-    - layout_paragraphs/dragula
++    - core/sortable
+     - core/jquery
+     - core/once
+     - core/drupal.dialog
