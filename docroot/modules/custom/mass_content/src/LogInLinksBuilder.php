@@ -158,7 +158,7 @@ class LogInLinksBuilder {
       $links = $login_links_data['links'];
       $theme = "c-primary";
       $usage = "secondary";
-      if ($node instanceof ServicePageBundle || $node instanceof OrgPageBundle || $node instanceof InfoDetailsBundle) {
+      if ($node instanceof ServicePageBundle || $node instanceof OrgPageBundle) {
         $theme = "c-white";
         $usage = "";
       }
