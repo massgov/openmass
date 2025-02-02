@@ -413,6 +413,20 @@ function mass_validation_form_node_service_page_form_alter(&$form, FormStateInte
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_binder_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_binder_alter_helper($form);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_binder_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_binder_alter_helper($form);
+}
+
+/**
  * For logic needed by both flavors of Service Page node form alter.
  *
  * @param array $form
@@ -421,6 +435,16 @@ function mass_validation_form_node_service_page_form_alter(&$form, FormStateInte
 function mass_validation_service_page_alter_helper(array &$form) {
   $form['#validate'][] = '_mass_validation_form_node_service_page_form_validate';
   $form['#attached']['library'][] = 'mass_validation/service_page_edit_form';
+}
+
+/**
+ * For logic needed by both flavors of Binder node form alter.
+ *
+ * @param array $form
+ *   The form array passed by reference.
+ */
+function mass_validation_binder_alter_helper(array &$form) {
+  $form['#validate'][] = '_mass_validation_form_node_binder_form_validate';
 }
 
 /**
@@ -454,8 +478,16 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
 /**
  * Validates submission values in the FORM_ID() form.
  */
+function _mass_validation_form_node_binder_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_validation_mass_link_validate($form_state, 'field_application_login_links');
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
 function _mass_validation_form_node_service_page_form_validate(array &$form, FormStateInterface $form_state) {
   _mass_validation_service_page_sections_validate($form, $form_state);
+  _mass_validation_mass_link_validate($form_state, 'field_log_in_links');
 
   // Check that the KPIs have values if the box is checked.
   // Map the KPI fields with the Key performance indicators options in the form.
@@ -512,6 +544,7 @@ function mass_validation_form_node_curated_list_form_alter(&$form, FormStateInte
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_curated_list_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_validation_mass_link_validate($form_state, 'field_application_login_links');
   // Get the paragraphs field that contain the link fields.
   if ($form_state->hasValue('field_curatedlist_list_section')) {
     $paragraphs = $form_state->getValue('field_curatedlist_list_section');
@@ -578,15 +611,6 @@ function mass_validation_form_node_service_details_form_alter(&$form, FormStateI
  */
 function mass_validation_form_node_service_details_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_validation_form_node_service_details_form_validate';
-}
-
-/**
- * Validates submission values in the FORM_ID() form.
- */
-function _mass_validation_form_node_service_details_form_validate(array &$form, FormStateInterface $form_state) {
-  // Verify links have titles.
-  _mass_validation_mass_link_validate_paragraph($form_state, 'field_service_detail_sections', ['field_section_links']);
-  _mass_validation_mass_link_validate($form_state, 'field_service_detail_links_5');
 }
 
 /**
@@ -1504,6 +1528,7 @@ function _mass_validation_validate_custom_iframe_layout_paragraphs(array &$form,
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_org_page_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_validation_mass_link_validate($form_state, 'field_application_login_links');
   if ($form_state->hasValue('field_organization_sections')) {
     $sections = $form_state->getValue('field_organization_sections');
     foreach ($sections as $section_key => $section) {
@@ -1885,6 +1910,7 @@ function mass_validation_form_node_info_details_form_alter(&$form, FormStateInte
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_info_details_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_validation_mass_link_validate($form_state, 'field_application_login_links');
   $sections = $form_state->getValue('field_info_details_sections');
   $overview_populated = FALSE;
   $section_populated = FALSE;
