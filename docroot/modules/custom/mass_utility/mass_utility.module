@@ -749,7 +749,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       $links = [];
 
       if (!empty($links_data['links'])) {
-        foreach ($links_data['links'] as $key => $link) {
+        foreach ($links_data['links'] as $link) {
           // Skip if the link originates from the current node.
           if ($link['source'] == $node->id()) {
             continue;
@@ -786,9 +786,6 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         $element['#description'] .= t('<br><strong>Nothing from the parent page to inherit</strong><br>');
       }
       $element['#description'] .= t('You have the options to define new login link or disable them for this page:');
-      if ($element['#default_value'] == NULL) {
-        $element['#default_value'] = 'define_new_login_options';
-      }
       unset($element['#options']['_none']);
     }
   }
@@ -1555,6 +1552,38 @@ function mass_utility_path_alias_update(PathAliasInterface $path) {
  * Implements hook_form_alter().
  */
 function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Set default value dynamically for the login links options.
+  if (isset($form['field_login_links_options'])) {
+    if ($form['field_application_login_links'] || $form['field_log_in_links']) {
+      $has_value = FALSE;
+      $node = $form_state->getFormObject()->getEntity();
+      if ($node instanceof Node) {
+        $login_links_fields_per_bundle = [
+          'service_page' => 'field_log_in_links',
+          'org_page' => 'field_application_login_links',
+          'binder' => 'field_application_login_links',
+          'info_details' => 'field_application_login_links',
+          'curated_list' => 'field_application_login_links',
+        ];
+        $field = $login_links_fields_per_bundle[$node->bundle()];
+        if ($values = $node->$field->getValue()) {
+          foreach ($values as $value) {
+            if ($value['uri'] != NULL) {
+              $has_value = TRUE;
+              break;
+            }
+          }
+        }
+      }
+      if ($has_value) {
+        $form['field_login_links_options']['widget']['#default_value'] = 'define_new_login_options';
+      }
+      else {
+        $form['field_login_links_options']['widget']['#default_value'] = 'inherit_parent_page_login_optionsDescription';
+      }
+    }
+  }
+
   // Hide "Reset to alphabetical" option on the
   // collection admin form (https://massgov.atlassian.net/browse/DP-24413).
   $form['actions']['reset_alphabetical']['#access'] = FALSE;

@@ -20,47 +20,68 @@ class LogInLinksBuilder {
    * Searches for contextual login links on current node and its ancestors.
    */
   public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS) {
-    // No login links found and we have reached the max number of ancestors.
-    if ($max_level <= 0) {
-      return [];
-    }
-
     $all_links = [];
-    $bundle = $entity->bundle();
+    $disable_inheritance = FALSE; // Tracks if any parent disables login links.
+    $first_defined_level = FALSE;
 
-    if (in_array($bundle, ['service_page', 'org_page', 'binder', 'info_details', 'curated_list'])) {
-      $login_links_fields_per_bundle = [
-        'service_page' => 'field_log_in_links',
-        'org_page' => 'field_application_login_links',
-        'binder' => 'field_application_login_links',
-        'info_details' => 'field_application_login_links',
-        'curated_list' => 'field_application_login_links',
-      ];
-      $field = $login_links_fields_per_bundle[$bundle];
+    while ($entity && $max_level > 0) {
+      $bundle = $entity->bundle();
+      $entities_hierarchy[] = $entity; // Track hierarchy for cache tags.
 
-      /** @var \Drupal\Core\Field\FieldItemList $login_links */
-      $login_links = $entity->$field ?? FALSE;
+      // Process only specific bundles.
+      if (in_array($bundle, ['service_page', 'org_page', 'binder', 'info_details', 'curated_list'])) {
+        $login_links_fields_per_bundle = [
+          'service_page' => 'field_log_in_links',
+          'org_page' => 'field_application_login_links',
+          'binder' => 'field_application_login_links',
+          'info_details' => 'field_application_login_links',
+          'curated_list' => 'field_application_login_links',
+        ];
+        $field = $login_links_fields_per_bundle[$bundle];
 
-      // Collect links if they exist.
-      if ($login_links && $login_links->count()) {
-        foreach ($login_links as $login_link) {
-          $all_links[] = [
-            'link' => $login_link,
-            'source' => $entity->id(),
-          ];
+        /** @var \Drupal\Core\Field\FieldItemList $login_links */
+        $login_links = $entity->$field ?? FALSE;
+
+        // Check the login option field to decide the behavior.
+        if ($entity->hasField('field_login_links_options')) {
+          $login_option = $entity->get('field_login_links_options')->value;
+
+          switch ($login_option) {
+            case "inherit_parent_page_login_options":
+              // Continue processing parents unless a parent disables inheritance.
+              break;
+
+            case "disable_login_options":
+              // Stop processing and disable links for this and all descendants.
+              $disable_inheritance = TRUE;
+              break;
+            case "define_new_login_options":
+              // Collect links from this node and stop processing further.
+              if (!$first_defined_level) {
+                $first_defined_level = TRUE; // Mark that we found the first define_new_login_options.
+                $all_links = [];
+                if ($login_links && $login_links->count()) {
+                  foreach ($login_links as $login_link) {
+                    $all_links[] = [
+                      'link' => $login_link,
+                      'source' => $entity->id(),
+                    ];
+                  }
+                }
+              }
+              break;
+          }
+        }
+
+        if ($disable_inheritance) {
+          return [];
         }
       }
-    }
 
-    // Continue with the parent entity if available.
-    $refs = $entity->getPrimaryParent()->referencedEntities();
-    $parent_entity = $refs[0] ?? FALSE;
-    $entities_hierarchy[] = $entity;
-
-    // Merge the current links with those from the parent entity.
-    if ($parent_entity) {
-      $parent_links = $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level);
-      $all_links = array_merge($all_links, $parent_links);
+      // Move to the parent node.
+      $refs = $entity->getPrimaryParent()->referencedEntities();
+      $entity = $refs[0] ?? NULL;
+      $max_level--; // Reduce max levels to prevent infinite loops.
     }
 
     return $all_links;
@@ -111,28 +132,6 @@ class LogInLinksBuilder {
           }
         }
       }
-
-      // Check the login option field to decide the behavior.
-      if ($node->hasField('field_login_links_options')) {
-        $login_option = $node->get('field_login_links_options')->value;
-        switch ($login_option) {
-          case "inherit_parent_page_login_options":
-            if ($links) {
-              foreach ($links as $key => $link) {
-                if ($link['source'] == $node->id()) {
-                  unset($links[$key]);
-                }
-              }
-            }
-            break;
-          case "disable_login_options":
-            return [];
-          case "define_new_login_options":
-            // Nothing to do here.
-            break;
-        }
-      }
-
     }
 
     return [
@@ -162,7 +161,15 @@ class LogInLinksBuilder {
         $theme = "c-white";
         $usage = "";
       }
+
       $cache_tags = array_merge($cache_tags, $login_links_data['cache_tags']);
+      if (isset($build['#cache']['tags'])) {
+        $build['#cache']['tags'] = array_merge($cache_tags, $build['#cache']['tags']);
+      }
+      else {
+        $build['#cache']['tags'] = $cache_tags;
+      }
+
       if (!empty($links)) {
         $build['log_in_links'] = [
           "text" => 'Log In to...',
@@ -174,9 +181,6 @@ class LogInLinksBuilder {
           "menuId" => "contextual-login-links-menu",
           'class' => 'gtm-login-contextual',
           'items' => $links,
-          '#cache' => [
-            'tags' => $cache_tags,
-          ],
         ];
       }
     }
