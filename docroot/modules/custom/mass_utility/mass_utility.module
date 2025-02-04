@@ -256,29 +256,6 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
       $form['field_intended_audience']['widget']['#default_value'] = '_none';
     }
   }
-
-  foreach (array_keys($form['actions']) as $action) {
-    if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
-      $form['actions'][$action]['#submit'][] = 'mass_utility_invalidate_node_tags_submit';
-    }
-  }
-}
-
-/**
- * Form submission handler to invalidate node cache tags.
- *
- * This callback is added as a submit handler to node form submits to address
- * an issue sometimes triggered when multiple nodes are saved within a short
- * period of time, resulting in the appearance that the node was not saved.
- *
- * @see https://jira.mass.gov/browse/DP-19001#Implementationdetails
- */
-function mass_utility_invalidate_node_tags_submit($form, FormStateInterface $form_state) {
-  if ($callback_object = $form_state->getBuildInfo()['callback_object']) {
-    $nid = $callback_object->getEntity()->id();
-    $tags = ['node:' . $nid];
-    \Drupal::service('cache_tags.invalidator')->invalidateTags($tags);
-  }
 }
 
 /**

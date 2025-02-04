@@ -49,6 +49,7 @@ use Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle;
 use Drupal\mass_content\Entity\Bundle\paragraph\ListItemDocumentsBundle;
 use Drupal\mass_content\Entity\Bundle\taxonomy_term\CollectionsBundle;
 use Drupal\mass_content\Entity\Bundle\user\UserBundle;
+use Drupal\node\Entity\Node;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -1432,5 +1433,34 @@ function mass_content_preprocess_layout_paragraphs_builder_component_menu(&$vari
       // Default sorting: Alphabetical by label.
       return strcmp($a['label'], $b['label']);
     });
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function mass_content_node_update(EntityInterface $node) {
+  // Compare the entity cache-stored vid to the vid stored in the database.
+  // @see https://massgov.atlassian.net/browse/DP-37000?focusedCommentId=425633
+  $nid = $node->id();
+
+  // Retrieve the vid value via Node::load to get the currently cached value.
+  $vid_cache = Node::load($nid)->getRevisionId();
+
+  // Query for vid.
+  $database = \Drupal::database();
+  $query = $database->select('node', 'n');
+  $vid_db = $query
+    ->fields('n', ['vid'])
+    ->condition('n.nid', $nid)
+    ->execute()
+    ->fetchField();
+
+  if ($vid_db !== $vid_cache) {
+    Drupal::logger('content')->info('Node @nid updated to revision @vid_db in the database, but revision @vid_cache was retrieved from cache.', [
+      '@nid' => $nid,
+      '@vid_db' => $vid_db,
+      '@vid_cache' => $vid_cache,
+    ]);
   }
 }
