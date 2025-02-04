@@ -21,12 +21,14 @@ class LogInLinksBuilder {
    */
   public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS) {
     $all_links = [];
-    $disable_inheritance = FALSE; // Tracks if any parent disables login links.
+    // Tracks if any parent disables login links.
+    $disable_inheritance = FALSE;
     $first_defined_level = FALSE;
 
     while ($entity && $max_level > 0) {
       $bundle = $entity->bundle();
-      $entities_hierarchy[] = $entity; // Track hierarchy for cache tags.
+      // Track hierarchy for cache tags.
+      $entities_hierarchy[] = $entity;
 
       // Process only specific bundles.
       if (in_array($bundle, ['service_page', 'org_page', 'binder', 'info_details', 'curated_list'])) {
@@ -58,7 +60,8 @@ class LogInLinksBuilder {
             case "define_new_login_options":
               // Collect links from this node and stop processing further.
               if (!$first_defined_level) {
-                $first_defined_level = TRUE; // Mark that we found the first define_new_login_options.
+                // Mark that we found the first define_new_login_options.
+                $first_defined_level = TRUE;
                 $all_links = [];
                 if ($login_links && $login_links->count()) {
                   foreach ($login_links as $login_link) {
@@ -81,7 +84,8 @@ class LogInLinksBuilder {
       // Move to the parent node.
       $refs = $entity->getPrimaryParent()->referencedEntities();
       $entity = $refs[0] ?? NULL;
-      $max_level--; // Reduce max levels to prevent infinite loops.
+      // Reduce max levels to prevent infinite loops.
+      $max_level--;
     }
 
     return $all_links;
