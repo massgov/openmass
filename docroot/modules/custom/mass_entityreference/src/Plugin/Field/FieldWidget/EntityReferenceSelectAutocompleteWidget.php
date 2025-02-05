@@ -59,7 +59,7 @@ class EntityReferenceSelectAutocompleteWidget extends EntityReferenceAutocomplet
    */
   public static function setFilterSelect(array $form, FormStateInterface $form_state) {
     $select = $form_state->getTriggeringElement();
-    user_cookie_save(['autocomplete_select_filter' => serialize($select['#value'])]);
+    user_cookie_save(['autocomplete_select_filter' => json_encode($select['#value'])]);
     return new AjaxResponse();
   }
 
