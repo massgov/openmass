@@ -1,5 +1,21 @@
 
 
+## [0.424.0] - February 4, 2025
+
+### Fixed
+  - DP-36608: Table of contents is displaying for info details pages even when <3 sections.
+  - DP-37120: Fix layout paragraphs module patch.
+  - DP-37164: Clear heading float to fix iframe issue in layout paragraphs.
+  
+### Changed
+  - DP-37000: Added a patch and logging, removed old code to potentially fix and track existing revision issues.
+  
+### Security
+  - DP-37148: Updated google_tag
+  - DP-37148: Fixed unsafe unserialization
+  
+
+
 ## [0.423.0] - January 28, 2025
 
 ### Added
