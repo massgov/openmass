@@ -179,7 +179,6 @@ class LogInLinksBuilder {
           "text" => 'Log In to...',
           "ariaLabelText" => "Log in to one of Mass.gov's most frequently accessed services",
           'id' => 'contextual-login-links',
-          "size" => "small",
           "usage" => $usage,
           "theme" => $theme,
           "menuId" => "contextual-login-links-menu",
