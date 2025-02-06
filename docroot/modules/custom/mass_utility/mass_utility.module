@@ -27,6 +27,7 @@ use Drupal\editor\Entity\Editor;
 use Drupal\file\Entity\File;
 use Drupal\link\LinkItemInterface;
 use Drupal\mass_utility\EntityAlter\ImageStyle;
+use Drupal\mass_utility\EntityViewBuildAlterGravityFormToken;
 use Drupal\node\Entity\Node;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
@@ -254,29 +255,6 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
       $form['field_intended_audience']['widget']['#default_value'] = '_none';
     }
   }
-
-  foreach (array_keys($form['actions']) as $action) {
-    if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
-      $form['actions'][$action]['#submit'][] = 'mass_utility_invalidate_node_tags_submit';
-    }
-  }
-}
-
-/**
- * Form submission handler to invalidate node cache tags.
- *
- * This callback is added as a submit handler to node form submits to address
- * an issue sometimes triggered when multiple nodes are saved within a short
- * period of time, resulting in the appearance that the node was not saved.
- *
- * @see https://jira.mass.gov/browse/DP-19001#Implementationdetails
- */
-function mass_utility_invalidate_node_tags_submit($form, FormStateInterface $form_state) {
-  if ($callback_object = $form_state->getBuildInfo()['callback_object']) {
-    $nid = $callback_object->getEntity()->id();
-    $tags = ['node:' . $nid];
-    \Drupal::service('cache_tags.invalidator')->invalidateTags($tags);
-  }
 }
 
 /**
@@ -471,6 +449,7 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
  */
 function mass_utility_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   // Hide the map name field on the address google map field.
+  /** @var \Drupal\Core\Field\FieldDefinitionInterface|\Drupal\Core\TypedData\DataDefinitionInterface $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
   $type = $field_definition->getType();
   $field_name = $field_definition->getName();
@@ -544,6 +523,16 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
         );
       }
     }
+    // Override title description of the URL field in callout link field.
+    elseif ($field_name == 'field_link') {
+      // Retrieve the entity type and bundle to which the field belongs.
+      $entity_type = $field_definition->getTargetEntityTypeId();
+      $bundle = $field_definition->getTargetBundle();
+      // Keep description for callout_link > field_link > title (label) empty.
+      if ($entity_type === 'paragraph' && $bundle === 'callout_link') {
+        $element['title']['#description'] = '';
+      }
+    }
     // The typo in regulation is on the actual field name.
     elseif ($field_name == 'field_regluation_official_ver') {
 
@@ -595,7 +584,6 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       // Default description values.
       $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
       $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
-
       // Override description of the URL field in External data resource content type.
       if ($field_name == 'field_externaldata_url') {
         $element['uri']['#description'] = t('Enter a complete URL. It must begin with "https://" or "http://".');
@@ -1055,6 +1043,13 @@ function mass_utility_entity_view(array &$build, EntityInterface $entity, Entity
       }
     }
   }
+}
+
+/**
+ * Implements hook_entity_view_alter().
+ */
+function mass_utility_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+  \Drupal::classResolver(EntityViewBuildAlterGravityFormToken::class)->alter($build, $entity, $display);
 }
 
 /**

@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\file\Entity\File;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle;
@@ -48,6 +49,7 @@ use Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle;
 use Drupal\mass_content\Entity\Bundle\paragraph\ListItemDocumentsBundle;
 use Drupal\mass_content\Entity\Bundle\taxonomy_term\CollectionsBundle;
 use Drupal\mass_content\Entity\Bundle\user\UserBundle;
+use Drupal\node\Entity\Node;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -774,6 +776,233 @@ function mass_content_field_widget_entity_reference_paragraphs_form_alter(&$elem
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables) {
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $flexible_lg = $variables['paragraph'];
+
+  $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
+
+  unset($flexible_lg->subsequent_links);
+
+  foreach ($all_flexible_links as $key => $flexible_lg) {
+
+    $base = 'links_downloads_flexible';
+    $variables[$base][$key]['links'] = [];
+    $variables[$base][$key]['title'] = $flexible_lg->field_links_downloads_header->value;
+
+    $links = &$variables[$base][$key]['links'];
+    foreach ($flexible_lg->field_link_group as $index => $item) {
+      if (empty($item->entity)) {
+        continue;
+      }
+      switch ($item->entity->bundle()) {
+        case 'link_group_link':
+          if (empty($item->entity->field_link_group_link)) {
+            break;
+          }
+          /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
+          $link = $item->entity->field_link_group_link[0];
+          if (empty($link->get('computed_title'))) {
+            break;
+          }
+          $computed_title = $link->get('computed_title')->getValue();
+          $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
+          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
+          break;
+
+        case 'link_group_document':
+          if (empty($item->entity->field_file_download_single)) {
+            break;
+          }
+          /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
+          $media = $item->entity->field_file_download_single[0]->entity;
+          if ($media) {
+
+            // Check if the media entity has the 'field_upload_file' field and it's not empty.
+            if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
+              $file_media = $media->get('field_upload_file')->entity;
+
+              if ($file_media) {
+                // Initialize the render array.
+                $render_array = [];
+
+                // Manually add calculated file size.
+                $file_size = strtoupper(ByteSizeMarkup::create($file_media->getSize())->render());
+                $render_array['calculated_file_size'] = [
+                  '#type' => 'markup',
+                  '#markup' => $file_size,
+                ];
+
+                // Manually add extra file extension and icon.
+                $file_info = new \SplFileInfo($file_media->getFilename());
+                $file_extension = strtoupper($file_info->getExtension());
+                $file_icon = 'doc-' . strtolower($file_extension);
+
+                if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                  $file_icon = 'doc-generic';
+                }
+
+                $render_array['extra_file_extension'] = [
+                  '#type' => 'markup',
+                  '#markup' => $file_extension,
+                ];
+
+                $render_array['extra_file_icon'] = [
+                  '#type' => 'markup',
+                  '#markup' => $file_icon,
+                ];
+                if (!$media->field_title->isEmpty()) {
+                  $render_array['file_title'] = $media->field_title->value;
+                }
+                else {
+                  $render_array['file_title'] = $media->label();
+                }
+                $render_array['mid'] = $media->id();
+                $render_array['media'] = $media;
+                _mass_translations_media_helper($render_array);
+                $links[$index]['download_link'] = $render_array;
+              }
+            }
+
+            $links[$index]['href'] = $media->toURL()->setAbsolute()->toString();
+            $links[$index]['text'] = $media->label();
+          }
+          break;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_content_preprocess_paragraph__flexible_link_group(&$variables) {
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $flexible_lg = $variables['paragraph'];
+
+  $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
+
+  unset($flexible_lg->subsequent_links);
+
+  foreach ($all_flexible_links as $key => $flexible_lg) {
+
+    $base = 'flexible_links_group';
+    $variables['display_type'] = $flexible_lg->field_display_type->value;
+
+    $variables[$base][$key]['title'] = $flexible_lg->field_flexible_link_group_title->value;
+    $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
+    $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
+    $variables[$base][$key]['links'] = [];
+    $variables[$base][$key]['expanded'] = (bool) intval($flexible_lg->field_group_expanded->value);
+
+    $links = &$variables[$base][$key]['links'];
+    foreach ($flexible_lg->field_link_group as $index => $item) {
+      if (empty($item->entity)) {
+        continue;
+      }
+      switch ($item->entity->bundle()) {
+        case 'link_group_link':
+          if (empty($item->entity->field_link_group_link)) {
+            break;
+          }
+          /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
+          $link = $item->entity->field_link_group_link[0];
+          if (empty($link->get('computed_title'))) {
+            break;
+          }
+          $computed_title = $link->get('computed_title')->getValue();
+          $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
+          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
+          break;
+
+        case 'link_group_document':
+          if (empty($item->entity->field_file_download_single)) {
+            break;
+          }
+          /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
+          $media = $item->entity->field_file_download_single[0]->entity;
+          if ($media) {
+
+            if ($variables['display_type'] == "buttons") {
+              $original_file = $media->field_upload_file->entity;
+              $links[$index]['file_size'] = strtoupper(ByteSizeMarkup::create($original_file->getSize())->render());
+              $file_info = new \SplFileInfo($original_file->getFilename());
+              $file_extension = strtoupper($file_info->getExtension());
+              $file_icon = 'doc-' . strtolower($file_extension);
+              if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                $file_icon = 'doc-generic';
+              }
+              $links[$index]['file_icon'] = $file_icon;
+              $links[$index]['downloadable_file'] = TRUE;
+              $links[$index]['file_extension'] = $file_extension;
+              if (!$media->field_title->isEmpty()) {
+                $links[$index]['file_title'] = $media->field_title->value;
+              }
+              else {
+                $links[$index]['file_title'] = $media->label();
+              }
+              $links[$index]['mid'] = $media->id();
+
+            }
+            else {
+              // Check if the media entity has the 'field_upload_file' field and it's not empty.
+              if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
+                $file_media = $media->get('field_upload_file')->entity;
+
+                if ($file_media) {
+                  // Initialize the render array.
+                  $render_array = [];
+
+                  // Manually add calculated file size.
+                  $file_size = strtoupper(ByteSizeMarkup::create($file_media->getSize())->render());
+                  $render_array['calculated_file_size'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_size,
+                  ];
+
+                  // Manually add extra file extension and icon.
+                  $file_info = new \SplFileInfo($file_media->getFilename());
+                  $file_extension = strtoupper($file_info->getExtension());
+                  $file_icon = 'doc-' . strtolower($file_extension);
+
+                  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                    $file_icon = 'doc-generic';
+                  }
+
+                  $render_array['extra_file_extension'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_extension,
+                  ];
+
+                  $render_array['extra_file_icon'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_icon,
+                  ];
+                  if (!$media->field_title->isEmpty()) {
+                    $render_array['file_title'] = $media->field_title->value;
+                  }
+                  else {
+                    $render_array['file_title'] = $media->label();
+                  }
+                  $render_array['mid'] = $media->id();
+                  $render_array['media'] = $media;
+                  _mass_translations_media_helper($render_array);
+                  $links[$index]['download_link'] = $render_array;
+                }
+              }
+            }
+            $links[$index]['href'] = $media->toURL()->setAbsolute()->toString();
+            $links[$index]['text'] = $media->label();
+          }
+          break;
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_entity_view_mode_alter().
  */
 function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
@@ -1201,5 +1430,65 @@ function mass_content_entity_embed_alter(array &$build, EntityInterface $entity,
     if (isset($build['#attributes']['title'])) {
       unset($build['#attributes']['title']);
     }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess the layout_paragraphs_builder_component_menu theme.
+ */
+function mass_content_preprocess_layout_paragraphs_builder_component_menu(&$variables) {
+  // Ensure the 'content' array exists.
+  if (isset($variables['types']['content']) && is_array($variables['types']['content'])) {
+    $types = &$variables['types']['content'];
+
+    // Update the label for 'links_downloads' if it exists.
+    if (isset($types['section_header'])) {
+      $types['section_header']['label'] .= ' (NEW)';
+    }
+
+    // Sort the content components, prioritizing 'section_header' as the first item.
+    uasort($types, function ($a, $b) {
+      if ($a['id'] === 'section_header') {
+        // Move 'section_header' to the top.
+        return -1;
+      }
+      if ($b['id'] === 'section_header') {
+        // Ensure 'section_header' stays at the top.
+        return 1;
+      }
+      // Default sorting: Alphabetical by label.
+      return strcmp($a['label'], $b['label']);
+    });
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function mass_content_node_update(EntityInterface $node) {
+  // Compare the entity cache-stored vid to the vid stored in the database.
+  // @see https://massgov.atlassian.net/browse/DP-37000?focusedCommentId=425633
+  $nid = $node->id();
+
+  // Retrieve the vid value via Node::load to get the currently cached value.
+  $vid_cache = Node::load($nid)->getRevisionId();
+
+  // Query for vid.
+  $database = \Drupal::database();
+  $query = $database->select('node', 'n');
+  $vid_db = $query
+    ->fields('n', ['vid'])
+    ->condition('n.nid', $nid)
+    ->execute()
+    ->fetchField();
+
+  if ($vid_db !== $vid_cache) {
+    Drupal::logger('content')->info('Node @nid updated to revision @vid_db in the database, but revision @vid_cache was retrieved from cache.', [
+      '@nid' => $nid,
+      '@vid_db' => $vid_db,
+      '@vid_cache' => $vid_cache,
+    ]);
   }
 }
