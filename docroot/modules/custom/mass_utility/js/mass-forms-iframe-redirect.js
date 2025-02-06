@@ -10,11 +10,11 @@
 
   Drupal.behaviors.massFormsIframeRedirect = {
     attach: function (context, settings) {
-      window.addEventListener('message', function(event) {
-        var iframe = document.querySelector(".js-iframe-resizer");
+      window.addEventListener('message', function (event) {
+        var iframe = document.querySelector('.js-iframe-resizer');
 
         if (iframe) {
-          var srcUrl = iframe.getAttribute("src");
+          var srcUrl = iframe.getAttribute('src');
           var urlObject = new URL(srcUrl);
           // Extract the domain (protocol + hostname)
           var domain = urlObject.origin;
