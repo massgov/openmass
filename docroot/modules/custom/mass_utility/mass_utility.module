@@ -1481,6 +1481,7 @@ function mass_utility_path_alias_update(PathAliasInterface $path) {
  * Implements hook_form_alter().
  */
 function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  \Drupal::service('page_cache_kill_switch')->trigger();
   // Hide "Reset to alphabetical" option on the
   // collection admin form (https://massgov.atlassian.net/browse/DP-24413).
   $form['actions']['reset_alphabetical']['#access'] = FALSE;
