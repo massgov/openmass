@@ -923,7 +923,7 @@ class MassContentCommands extends DrushCommands {
     $status_condition = $unpublished_only ? 0 : 1;
 
     $nodeTypes = ['service_page', 'org_page', 'binder', 'info_details', 'curated_list'];
-    $state_key = 'mass_content.last_processed_login_links_node_id';
+    $state_key = $unpublished_only ? 'mass_content.last_processed_login_links_node_id_unpublished' : 'mass_content.last_processed_login_links_node_id_published';
     $lastProcessedId = \Drupal::state()->get($state_key, 0);
 
     $storage = $this->entityTypeManager->getStorage('node');
