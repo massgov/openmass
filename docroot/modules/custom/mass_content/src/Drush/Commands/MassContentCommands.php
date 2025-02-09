@@ -998,8 +998,7 @@ class MassContentCommands extends DrushCommands {
                     }
                   }
                   $default_value = $revision_has_value ? 'define_new_login_options' : 'inherit_parent_page_login_options';
-                  if ($latest_revision->get('field_login_links_options')
-                      ->getString() !== $default_value) {
+                  if ($latest_revision->get('field_login_links_options')->getString() !== $default_value) {
                     $latest_revision->set('field_login_links_options', $default_value);
                     $latest_revision->setNewRevision();
                     $latest_revision->setRevisionLogMessage('Automatically set default login link options on latest revision.');
