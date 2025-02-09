@@ -1047,9 +1047,8 @@ class MassContentCommands extends DrushCommands {
           $processed_revisions++;
         }
         $lastProcessedId = $nid;
+        \Drupal::state()->set($state_key, $lastProcessedId);
       }
-
-      \Drupal::state()->set($state_key, $lastProcessedId);
 
     } while (!empty($nids));
 
