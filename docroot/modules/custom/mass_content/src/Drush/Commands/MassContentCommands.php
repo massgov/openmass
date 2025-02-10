@@ -914,6 +914,9 @@ class MassContentCommands extends DrushCommands {
   public function setLoginLinksOptions($options = ['batch-size' => 50, 'max-runtime' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
+    // Disable entity hierarchy writes before processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
     $batch_size = (int) $options['batch-size'];
     $debug = $options['detailed-verbalization'];
     // Default to 55 minutes.
@@ -1051,6 +1054,9 @@ class MassContentCommands extends DrushCommands {
       }
 
     } while (!empty($nids));
+
+    // Re-enable entity hierarchy writes after processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
 
     $this->output()->writeln(t('Processed @count nodes.', ['@count' => $processed_count]));
     $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
