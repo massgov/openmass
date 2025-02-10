@@ -25,6 +25,7 @@ class SocialLinks extends InjectParentField {
       'instagram',
       'medium',
       'youtube',
+      'bluesky',
     ];
     parent::computeValue();
 
@@ -32,6 +33,10 @@ class SocialLinks extends InjectParentField {
       foreach ($services as $service) {
         if (strpos($item->uri, $service)) {
           $item->set('icon', Helper::getIconPath($service));
+          break;
+        }
+        elseif (strpos($item->uri, 'bsky')) {
+          $item->set('icon', Helper::getIconPath('bluesky'));
           break;
         }
       }
