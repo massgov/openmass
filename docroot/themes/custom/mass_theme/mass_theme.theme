@@ -7288,6 +7288,7 @@ function mass_theme_preprocess_paragraph__social_media(&$variables) {
 function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables) {
   $paragraph = $variables['paragraph'];
   $node = Helper::getParentNode($paragraph);
+  $variables['current_node_url'] = $node->toUrl()->toString();
   $variables['contactNode'] = $node->get('field_ref_contact_info_1')->referencedEntities()[0] ?? NULL;
   $variables['org_logo'] = $node->get('field_sub_brand')->view('logo_link');
 }
