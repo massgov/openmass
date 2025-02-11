@@ -74,6 +74,7 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
           'medium.com',
           'blog.mass.gov',
           'www.mass.gov',
+          'bsky.app',
         ],
       ]);
     }
@@ -81,6 +82,7 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
       $field_form_url = &$fields['field_form_url'];
       $field_form_url->addConstraint('GravityForm', [
         'allowedValues' => [
+          'mass-forms.ddev.site',
           'dev.forms.mass.gov',
           'live.forms.mass.gov',
           'test.forms.mass.gov',

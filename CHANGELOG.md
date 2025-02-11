@@ -1,5 +1,25 @@
 
 
+## [0.425.0] - February 11, 2025
+
+### Fixed
+  - DP-35365: Fix image styles in rich text with text wrapping.
+  - DP-37249: We should see contact in the table of contents if the TOC appears.
+  
+### Added
+  - DP-35898: Add Social Media Support for Bluesky.
+  - DP-36718: Add Mass Form submit redirect behavior for iframe-embedded forms.
+  - DP-36788: Posibility to route the `gf_token` request paramater to Mass Forms iframe URL if it exists in the request.
+  
+### Removed
+  - DP-37195: Removed patch that allowed authors to use ol and ul element type attribute.
+  
+### Changed
+  - DP-37242: Don't render contact links that point to the same page.
+  - DP-37308: Changed Bing ID code to claim site ownership
+  
+
+
 ## [0.424.0] - February 4, 2025
 
 ### Fixed
