@@ -946,12 +946,14 @@ class MassContentCommands extends DrushCommands {
         ->condition('type', $nodeTypes, 'IN')
         ->condition('nid', $lastProcessedId, '>')
         ->condition('status', $status_condition)
+        ->condition('field_login_links_options', NULL, 'IS NULL')
         ->sort('nid')
         ->range(0, $batch_size)
         ->accessCheck(FALSE);
 
       $nids = $query->execute();
       if (empty($nids)) {
+        $this->output()->writeln('No more nodes to process.');
         break;
       }
 
