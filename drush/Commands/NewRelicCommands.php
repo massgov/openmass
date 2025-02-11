@@ -29,13 +29,8 @@ final class NewRelicCommands extends DrushCommands {
     if ($commandData->input()->hasOption('nrname') && $commandData->input()->getOption('nrname')) {
       $name = $commandData->input()->getOption('nrname');
     }
-    $success = newrelic_record_custom_event("cli.drush.$name", ["color" => "green"]);
-    if (!$success) {
-      $this->logger()->error('Failed to set New Relic transaction name.');
-    }
-    else {
-      $this->logger()->info('New Relic transaction name set.');
-    }
+    newrelic_record_custom_event("cli.drush.$name", ["color" => "green"]);
+    $this->logger()->info('New Relic custom event recorded.');
   }
 
 }
