@@ -136,5 +136,4 @@ if (PHP_SAPI === 'cli') {
 
 if (extension_loaded('newrelic')) { // Ensure PHP agent is available
   newrelic_disable_autorum();
-  ini_set('newrelic.daemon.app_timeout', '3h');
 }
