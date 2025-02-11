@@ -64,7 +64,7 @@
 {% if contactNode.field_ref_fax_number is not empty %}
   {% set faxContactGroup = true %}
 {% endif %}
-{% if contactNode.field_contact_more_info_link is not empty and current_node_url != (contactNode.field_contact_more_info_link[0].url|render) %}
+{% if contactNode.field_contact_more_info_link is not empty %}
   {% set moreLink = true %}
 {% endif %}
 {% if org_logo is not empty %}
