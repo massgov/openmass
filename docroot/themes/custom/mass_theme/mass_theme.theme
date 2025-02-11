@@ -5061,6 +5061,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
       'medium',
       'youtube',
       'vimeo',
+      'bluesky'
     ];
 
     foreach ($variables['items'] as $index => &$item) {
@@ -6986,6 +6987,7 @@ function mass_theme_preprocess_field__node__field_social_links(&$variables) {
     'instagram',
     'medium',
     'youtube',
+    'bluesky',
   ];
 
   foreach ($variables['items'] as $index => &$item) {
@@ -6993,6 +6995,9 @@ function mass_theme_preprocess_field__node__field_social_links(&$variables) {
     foreach ($services as $service) {
       if (strpos($url, $service)) {
         $item['icon'] = Helper::getIconPath($service);
+      }
+      elseif (strpos($url, 'bsky')) {
+        $item['icon'] = Helper::getIconPath('bluesky');
       }
     }
   }
