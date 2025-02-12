@@ -193,7 +193,6 @@ class Organisms {
 
     $ref_contacts = Helper::getReferencedEntitiesFromField($entity, $fields['contacts']);
 
-    $options['groups']['current_node_url'] = $entity->toURL()->toString();
     $options['groups']['display_title'] = TRUE;
     $options['groups']['link_title'] = FALSE;
 

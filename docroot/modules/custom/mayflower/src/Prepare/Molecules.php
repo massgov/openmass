@@ -578,9 +578,6 @@ class Molecules {
         // The item is then appended to the contact group's item array.
         if (!empty($entity['url'])) {
           $url = $entity['url'];
-          if ($entity['url']->toString() == $options['current_node_url']) {
-            continue;
-          }
           $item['link'] = $url->toString();
           $item['value'] = t('Learn more about this organization');
           $item['type'] = 'online';
@@ -651,9 +648,6 @@ class Molecules {
         }
         else {
           $link = Helper::separatedLinks($entity, $fields['link']);
-          if ($options['current_node_url'] == $link[0]['href']) {
-            continue;
-          }
           $item['link'] = $link[0]['href'];
           $item['value'] = $link[0]['text'];
         }
