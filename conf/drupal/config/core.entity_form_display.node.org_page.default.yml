@@ -14,7 +14,6 @@ dependencies:
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
     - field.field.node.org_page.field_intended_audience
-    - field.field.node.org_page.field_login_links_options
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
     - field.field.node.org_page.field_more_about_leadership
@@ -81,6 +80,7 @@ third_party_settings:
         - field_bg_wide
         - field_image_credit
         - field_primary_parent
+        - field_application_login_links
         - field_organizations
         - field_reusable_label
       label: 'Title Banner'
@@ -120,8 +120,6 @@ third_party_settings:
         - field_hide_short_description
         - field_sub_brand
         - field_org_page_thumbnail
-        - field_login_links_options
-        - field_application_login_links
         - field_social_links
         - group_organization_parent_mass_g
         - field_organization_type
@@ -243,31 +241,13 @@ mode: default
 content:
   field_application_login_links:
     type: link_default
-    weight: 140
+    weight: 12
     region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
-      conditional_fields:
-        040aa824-b3ad-447a-9411-72ae048f2471:
-          entity_type: node
-          bundle: org_page
-          dependee: field_login_links_options
-          settings:
-            state: visible
-            reset: false
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: define_new_login_options
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_bg_wide:
     type: image_focal_point
     weight: 9
@@ -366,12 +346,6 @@ content:
   field_intended_audience:
     type: options_buttons
     weight: 147
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_login_links_options:
-    type: options_buttons
-    weight: 139
     region: content
     settings: {  }
     third_party_settings: {  }

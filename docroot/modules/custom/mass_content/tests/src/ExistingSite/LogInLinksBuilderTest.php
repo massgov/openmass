@@ -73,10 +73,10 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
   }
 
   /**
-   * Creates an Organization with links.
+   * Creates an Info Details with links.
    */
-  private function createOrganizationWithLinks($links) {
-    $data = ['type' => 'org_page'];
+  private function createInfoDetailsWithLinks($links) {
+    $data = ['type' => 'info_details'];
     $data['field_login_links_options'] = 'define_new_login_options';
     $data['field_application_login_links'] = $links;
     $data['moderation_state'] = 'published';
@@ -109,26 +109,26 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
   }
 
   /**
-   * Test organization with own contextual login links.
+   * Test info details with own contextual login links.
    */
-  public function testOrganizationOwnContextualLoginLinks() {
+  public function testInfoDetailsOwnContextualLoginLinks() {
     // 1st level define new.
-    $org_1 = $this->createOrganizationWithLinks(self::LINKS_1);
-    $this->checkContextualLogInLinks($org_1, self::LINKS_1);
+    $info_details = $this->createInfoDetailsWithLinks(self::LINKS_1);
+    $this->checkContextualLogInLinks($info_details, self::LINKS_1);
 
     // 1st level disable_login_options.
-    $org_1->set('field_login_links_options', 'disable_login_options');
-    $org_1->save();
+    $info_details->set('field_login_links_options', 'disable_login_options');
+    $info_details->save();
 
-    $this->drupalGet('/node/' . $org_1->id());
+    $this->drupalGet('/node/' . $info_details->id());
     $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
 
     // 1st level inherit_parent_page_login_options.
-    $org_1->set('field_login_links_options', 'inherit_parent_page_login_options');
-    $org_1->save();
+    $info_details->set('field_login_links_options', 'inherit_parent_page_login_options');
+    $info_details->save();
 
     // No parent set, should not be visible
-    $this->drupalGet('/node/' . $org_1->id());
+    $this->drupalGet('/node/' . $info_details->id());
     $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
   }
 
@@ -137,7 +137,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
    */
   public function testNodeInheritsContextualLoginLinksFromAncestors() {
 
-    $parent_org = $this->createOrganizationWithLinks(self::LINKS_1);
+    $parent_info_details = $this->createInfoDetailsWithLinks(self::LINKS_1);
     $child_service = $this->createServiceWithLinks(self::LINKS_2);
 
     // If set to define new option, it should render own links.
@@ -145,7 +145,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
     $this->checkContextualLogInLinks($child_service, self::LINKS_2);
 
     // Set the parent page.
-    $child_service->set('field_primary_parent', $parent_org);
+    $child_service->set('field_primary_parent', $parent_info_details);
     $child_service->set('field_login_links_options', 'inherit_parent_page_login_options');
     $child_service->save();
 
@@ -154,13 +154,13 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
     $this->checkContextualLogInLinks($child_service, self::LINKS_1);
 
     // If parent has disabled option, child should not render anything
-    $parent_org->set('field_login_links_options', 'disable_login_options');
-    $parent_org->save();
+    $parent_info_details->set('field_login_links_options', 'disable_login_options');
+    $parent_info_details->save();
 
     // If set to inherit should render parent links.
     $this->drupalGet('/node/' . $child_service->id());
     $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
-    $this->drupalGet('/node/' . $parent_org->id());
+    $this->drupalGet('/node/' . $parent_info_details->id());
     $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
 
     // If set to disabled, it should not render anything.

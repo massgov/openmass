@@ -45,9 +45,12 @@ class LogInLinksBuilder {
         $login_links = $entity->$field ?? FALSE;
 
         // Check the login option field to decide the behavior.
-        if ($entity->hasField('field_login_links_options')) {
+        if ($entity->hasField('field_login_links_options') || $entity instanceof OrgPageBundle) {
           $login_option = $entity->get('field_login_links_options')->value;
 
+          if ($entity instanceof OrgPageBundle) {
+            $login_option = "define_new_login_options";
+          }
           switch ($login_option) {
             case "inherit_parent_page_login_options":
               // Continue processing parents unless a parent disables inheritance.
