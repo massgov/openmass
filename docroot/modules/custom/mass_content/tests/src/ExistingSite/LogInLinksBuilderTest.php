@@ -73,6 +73,16 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
   }
 
   /**
+   * Creates an Organization with links.
+   */
+  private function createOrganizationWithLinks($links) {
+    $data = ['type' => 'org_page'];
+    $data['field_application_login_links'] = $links;
+    $data['moderation_state'] = 'published';
+    return $this->createNode($data);
+  }
+
+  /**
    * Creates an Info Details with links.
    */
   private function createInfoDetailsWithLinks($links) {
@@ -171,5 +181,29 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
     $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
 
   }
+
+  /**
+   * Test inheritance of contextual login links from ancestors.
+   */
+  public function testOrgPageContextualLoginLinksFromAncestors() {
+
+    $parent_org = $this->createOrganizationWithLinks(self::LINKS_1);
+    $child_service = $this->createServiceWithLinks(self::LINKS_2);
+
+    // If set to define new option, it should render own links.
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->checkContextualLogInLinks($child_service, self::LINKS_2);
+
+    // Set the parent page.
+    $child_service->set('field_primary_parent', $parent_org);
+    $child_service->set('field_login_links_options', 'inherit_parent_page_login_options');
+    $child_service->save();
+
+    // If set to inherit should render parent links.
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->checkContextualLogInLinks($child_service, self::LINKS_1);
+
+  }
+
 
 }
