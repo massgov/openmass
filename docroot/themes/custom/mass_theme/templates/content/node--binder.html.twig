@@ -49,8 +49,8 @@
 
 {% block preContent %}
   {# If the contextual navigation should be set for this node, then add it. #}
-  {% if node.computed_log_in_links is not empty %}
-    {{ contextual_log_in_links }}
+  {% if log_in_links is not empty %}
+    {% set buttons = log_in_links %}
   {% endif %}
 
   {# Check if primary indicator content exists. #}
@@ -95,7 +95,8 @@
       "pageHeader": {
         "title": label,
         "category": node.field_binder_binder_type.entity.label,
-        "description": node.field_binder_short_desc.value ?? ""
+        "description": node.field_binder_short_desc.value ?? "",
+        "buttons": buttons is defined ? [buttons] : null
       }
     }
   } %}
