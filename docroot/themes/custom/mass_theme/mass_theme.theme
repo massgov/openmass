@@ -3965,7 +3965,7 @@ function mass_theme_preprocess_menu(&$variables) {
     if ($params->has('node')) {
       $node = $params->get('node');
       $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
-      $microsites = $microsite_lookup->findMicrositesForNodeAndField($node, 'field_parent');
+      $microsites = $microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
       /**
        * @var MicrositeInterface
        */
