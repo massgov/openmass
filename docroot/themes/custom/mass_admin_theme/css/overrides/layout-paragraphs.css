@@ -254,3 +254,31 @@ input[type="radio"]{
   position: absolute;
   left: -99999px;
 }
+
+.ck.ck-balloon-panel.ck-balloon-panel_visible, .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
+  z-index: calc(var(--ck-z-modal) * 15) !important;
+}
+
+html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-balloon-panel.ck-balloon-panel_visible,
+html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
+  z-index: calc(var(--ck-z-modal) * 20) !important;
+}
+
+html:has([data-fullscreen="fullscreenoverlay"]) .layout-paragraphs-component-form {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-dropdown__panel.ck-dropdown__panel-visible {
+  top: 30px;
+  left: 0;
+  z-index: calc(var(--ck-z-modal) * 15) !important;
+}
+
+.ck-body-wrapper .ck.ck-button[data-cke-tooltip-text="You do not have the permissions needed to edit this file."],
+.ck-body-wrapper .ck.ck-button[data-cke-tooltip-text="Edit the embedded entity (opens in new tab)"] {
+  display: none;
+}
