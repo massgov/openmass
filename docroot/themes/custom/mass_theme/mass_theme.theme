@@ -5053,6 +5053,9 @@ function mass_theme_preprocess_field(&$variables, $hook) {
         if (strpos($url, $service)) {
           $item['icon'] = Helper::getIconPath($service);
         }
+        elseif (strpos($url, 'bsky')) {
+          $item['icon'] = Helper::getIconPath('bluesky');
+        }
       }
     }
   }

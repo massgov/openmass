@@ -578,9 +578,6 @@ class Molecules {
         // The item is then appended to the contact group's item array.
         if (!empty($entity['url'])) {
           $url = $entity['url'];
-          if ($entity['url']->toString() == $options['current_node_url']) {
-            continue;
-          }
           $item['link'] = $url->toString();
           $item['value'] = t('Learn more about this organization');
           $item['type'] = 'online';
@@ -651,9 +648,6 @@ class Molecules {
         }
         else {
           $link = Helper::separatedLinks($entity, $fields['link']);
-          if ($options['current_node_url'] == $link[0]['href']) {
-            continue;
-          }
           $item['link'] = $link[0]['href'];
           $item['value'] = $link[0]['text'];
         }
@@ -890,6 +884,20 @@ class Molecules {
     // Check our groups for value.
     foreach ($groups as $index => $group) {
 
+      foreach ($group['items'] as $item_index => $item) {
+        if (isset($options['current_node_url']) && ($item['type'] == 'online' && $item['link'] == $options['current_node_url'])) {
+          unset($groups[$index]['items'][$item_index]);
+        }
+      }
+
+      // Reindex the 'items' array to remove gaps
+      $groups[$index]['items'] = array_values($groups[$index]['items']);
+
+      // If 'items' array is now empty, remove the entire group
+      if (empty($groups[$index]['items'])) {
+        unset($groups[$index]);
+      }
+
       // If the value is empty, but the link is in place,
       // we are setting the value to be the same as link.
       if (!empty($group['items'][0]['link']) && empty($group['items'][0]['value'])) {
@@ -901,6 +909,9 @@ class Molecules {
       }
     }
 
+    // Reindex the array to ensure no missing keys
+    $groups = array_values($groups);
+
     if (isset($options['order'])) {
       $reordered_groups = [];
       foreach ($options['order'] as $order) {
@@ -909,12 +920,16 @@ class Molecules {
             foreach ($group['items'] as $item) {
               if ($item['type'] == $order) {
                 $extracted_group = array_slice($groups, $index, 1);
-                $reordered_groups[] = reset($extracted_group);
+                if (!empty($extracted_group)) {
+                  $reordered_groups[] = reset($extracted_group);
+                }
                 break 2;
               }
               if ($item['type'] == 'email' && $order == 'online') {
                 $extracted_group = array_slice($groups, $index, 1);
-                $reordered_groups[] = reset($extracted_group);
+                if (!empty($extracted_group)) {
+                  $reordered_groups[] = reset($extracted_group);
+                }
                 break 2;
               }
             }
@@ -923,7 +938,9 @@ class Molecules {
             if (isset($options['is_more_info'])) {
               if ($options['is_more_info'] == TRUE && empty($group['name'])) {
                 $extracted_group = array_slice($groups, $index, 1);
-                $reordered_groups[] = reset($extracted_group);
+                if (!empty($extracted_group)) {
+                  $reordered_groups[] = reset($extracted_group);
+                }
               }
             }
           }
