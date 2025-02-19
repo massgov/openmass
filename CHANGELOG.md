@@ -1,5 +1,16 @@
 
 
+## [0.426.0] - February 18, 2025
+
+### Changed
+  - DP-37242: Don't render contact links that point to the same page.
+  
+### Fixed
+  - DP-37445: Fix bugs with layout paragraphs reported by customers.
+  - DP-37489: Fixed items missing from pushed data layer.
+  
+
+
 ## [0.425.0] - February 11, 2025
 
 ### Fixed
