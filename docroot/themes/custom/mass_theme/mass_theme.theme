@@ -1349,22 +1349,32 @@ function mass_theme_preprocess_node_location(&$variables) {
       if (!$contact_information_entity->field_ref_hours->isEmpty()) {
         $hours_paragraph = $contact_information_entity->field_ref_hours->entity;
         if (!is_null($hours_paragraph) && !isset($hours_paragraph->field_hours_structured->entity)) {
-          $hours = $hours_paragraph->field_hours_structured->view('default');
-          if ($hours) {
-            $hours = \Drupal::service('renderer')->render($hours);
-            $hours = str_replace('<p>', '', $hours);
-            $hours = str_replace('</p>', '|', $hours);
-            $hours = array_map('trim', explode('|', $hours));
-            foreach ($hours as $hour) {
-              $hour = trim(strip_tags($hour, '<br>'));
-              if (!$hour) {
-                continue;
-              }
+          if (!$hours_paragraph->field_hours_structured->isEmpty()) {
+            $hours = $hours_paragraph->field_hours_structured->view('default');
+            if ($hours) {
+              $hours = \Drupal::service('renderer')->render($hours);
+              $hours = str_replace('<p>', '', $hours);
+              $hours = str_replace('</p>', '|', $hours);
+              $hours = array_map('trim', explode('|', $hours));
+              foreach ($hours as $hour) {
+                $hour = trim(strip_tags($hour, '<br>'));
+                if (!$hour) {
+                  continue;
+                }
 
-              $hour = array_map('trim', explode('<br>', $hour));
+                $hour = array_map('trim', explode('<br>', $hour));
+                $variables['imagePromo']['hours'][] = [
+                  'label' => trim($hour[0] ?? ''),
+                  'text' => trim($hour[1] ?? ''),
+                ];
+              }
+            }
+          }
+          if ($hours_paragraph->field_hours_structured->isEmpty() && !$hours_paragraph->field_hours_description->isEmpty()) {
+            $hours = $hours_paragraph->field_hours_description->view('default');
+            if ($hours) {
               $variables['imagePromo']['hours'][] = [
-                'label' => trim($hour[0] ?? ''),
-                'text' => trim($hour[1] ?? ''),
+                "label" => $hours,
               ];
             }
           }
