@@ -1,23 +1,39 @@
 
+## [0.426.1] - February 20, 2025
+
+### Security:
+- DP-37579: HOTFIX Drupal core update.
+
+
+## [0.426.0] - February 18, 2025
+
+### Changed
+  - DP-37242: Don't render contact links that point to the same page.
+
+### Fixed
+  - DP-37445: Fix bugs with layout paragraphs reported by customers.
+  - DP-37489: Fixed items missing from pushed data layer.
+
+
 
 ## [0.425.0] - February 11, 2025
 
 ### Fixed
   - DP-35365: Fix image styles in rich text with text wrapping.
   - DP-37249: We should see contact in the table of contents if the TOC appears.
-  
+
 ### Added
   - DP-35898: Add Social Media Support for Bluesky.
   - DP-36718: Add Mass Form submit redirect behavior for iframe-embedded forms.
   - DP-36788: Posibility to route the `gf_token` request paramater to Mass Forms iframe URL if it exists in the request.
-  
+
 ### Removed
   - DP-37195: Removed patch that allowed authors to use ol and ul element type attribute.
-  
+
 ### Changed
   - DP-37242: Don't render contact links that point to the same page.
   - DP-37308: Changed Bing ID code to claim site ownership
-  
+
 
 
 ## [0.424.0] - February 4, 2025
@@ -26,14 +42,14 @@
   - DP-36608: Table of contents is displaying for info details pages even when <3 sections.
   - DP-37120: Fix layout paragraphs module patch.
   - DP-37164: Clear heading float to fix iframe issue in layout paragraphs.
-  
+
 ### Changed
   - DP-37000: Added a patch and logging, removed old code to potentially fix and track existing revision issues.
-  
+
 ### Security
   - DP-37148: Updated google_tag
   - DP-37148: Fixed unsafe unserialization
-  
+
 
 
 ## [0.423.0] - January 28, 2025
@@ -41,10 +57,10 @@
 ### Added
   - DP-36546: Add content type field to crawler view.
   - DP-35734: Adding layout paragraphs plus config changes to info detail sections.
-  
+
 ### Fixed
   - DP-36959: Fixed database image rebuilds.
-  
+
 
 
 ## [0.422.0] - January 21, 2025
@@ -52,10 +68,10 @@
 ### Changed
   - DP-35481: Download links spacing and markup fixes.
   - DP-35726: Hide the Verint survey from Percy comparisons and allows scheduled comparsions.
-  
+
 ### Fixed
   - DP-36861: Updated composer.lock to fix warning.
-  
+
 
 
 ## [0.421.1] - January 15, 2025
@@ -72,40 +88,40 @@
 
 ### Changed
   - DP-34926: Mass.gov font system responsive to browser settings.
-  
+
 ### Fixed
   - DP-36660: Increase iframe resizer JS send dimensions to parent timeout from 1/3 second to 1/2 second.
   - DP-36751: Fixed issue with external link paths being changed to internal paths.
-  
+
 
 
 ## [0.420.0] - January 7, 2025
 
 ### Added
   - DP-35022: Add proper cache tags to the Search block on mobile.
-  
+
 ### Changed
   - DP-36025: Upgraded the ckeditor fullscreen module to beta10 in order to fix z-index problems.
-  
+
 ### Fixed
   - DP-36349: Collections report.
-  
+
 
 
 ## [0.419.0] - December 17, 2024
 
 ### Fixed
   - DP-36114: Increase feedback button border color contrast for a11y.
-  
+
 ### Deprecated
   - DP-36160: Disabled the memcache module.
-  
+
 ### Added
   - DP-36217: Append query string to crawler pages.
-  
+
 ### Changed
   - DP-36300: Updated memcache module.
-  
+
 
 
 ## [0.418.0] - December 10, 2024
@@ -113,29 +129,29 @@
 ### Added
   - DP-32553: Enabled and configured ClamAV for running daemon via executable.
   - DP-34883: Modify form content type to accomodate other form types.
-  
+
 ### Changed
   - DP-35408: Upgrade admin theme to Drupal 11
   - DP-35689: added Romanian to the page language bar.
   - DP-36056: Remove unused custom code and modules
-  
+
 ### Fixed
   - DP-36052: Admin toolbar with view and translate showing on non-English pages.
-  
+
 
 
 ## [0.417.0] - November 26, 2024
 
 ### Added
   - DP-34459: Added reporting views for internal use - trival content and org feedback settings.
-  
+
 ### Changed
   - DP-35406: Bump Prod No Redirect and Asset Cache Bust modules to D11 compat.
   - DP-35513: Hide survey popup in Percy.io base screenshots.
-  
+
 ### Security
   - DP-35999: Drupal core update.
-  
+
 
 
 ## [0.416.0] - November 19, 2024
@@ -146,7 +162,7 @@
   - DP-35462: Fix backstop config for org pages related to org nav bar.
   - DP-35727: Fix overlapping elements in ckeditor fullscreen mode.
   - DP-35737: Media usage tracking for redirected URLs.
-  
+
 ### Changed
   - DP-34964: Updates to purge modules and DTT, Drush
   - DP-35160: Review and update .htaccess to make sure it reflects the latest changes in the Drupal core 10.3.x
@@ -156,13 +172,13 @@
   - DP-35553: Change Contact header in right column from H1 to H2 on info detail.
   - DP-35609: Change sitewide alert notifications to only send emails when an alert is published or transitioned out of published state.
   - DP-35809: Altered BigQuery module to query against changed name.
-  
+
 ### Added
   - DP-35475: Reports to evaluate effect of hidden headings.
-  
+
 ### Removed
   - DP-35680: Remove Portainer from ddev dependencies.
-  
+
 
 
 ## [0.415.0] - October 22, 2024
@@ -172,25 +188,25 @@
   - DP-35150: Empty Location Page Appearing in Search.
   - DP-35215: Increase backstop screenshots mobile size
   - DP-35381: CircleCI image for Mysql rebuild jobs
-  
+
 ### Added
   - DP-35074: Replace service details links on site with info details links.
   - DP-35142: Add new URL list views for LLM crawlers to use for pages and documents.
   - DP-35245: Create Jira issue on Dependabot PR
-  
+
 ### Removed
   - DP-35403: Removed Percy job from post-release workflow.
-  
+
 
 
 ## [0.414.0] - October 15, 2024
 
 ### Changed
   - DP-35080: Usability improvements to rich text tables related to horizontal scrolling.
-  
+
 ### Fixed
   - DP-35223: Unable to Embed YouTube Video.
-  
+
 
 
 ## [0.413.0] - October 8, 2024
@@ -202,17 +218,17 @@
   - DP-35078: Start versioning Mayflower Artifacts library definition to make sure cache can be invalidated correctly.
   - DP-35125: Configure image paragraph in Drupal to allow decorative images.
   - DP-35159: Changed CircleCI Percy jobs to only run against the "all" list of screenshots.
-  
+
 ### Added
   - DP-34662: Configure Dependabot for composer updates
-  
+
 ### Fixed
   - DP-34715: Fix JS error related to Drupallike not defined.
   - DP-35232: Fixed alerts positioning on org pages.
-  
+
 ### Security
   - DP-35261: Security updates to OpenMass.
-  
+
 
 
 ## [0.412.0] - September 24, 2024
@@ -222,16 +238,16 @@
   - DP-34965: Short description not displaying for topic pages when display is enabled.
   - DP-35035: Resolve watchdog errors.
   - DP-35042: Unpublishing doesn't change alias for non-English title page.
-  
+
 ### Changed
   - DP-34680: Users unable to edit old Executive Orders on Mass.gov
   - DP-34940: Full Varnish clear at end of deploys
   - DP-34966: Modify feedback component to display even if a Topic Page has no organization.
-  
+
 ### Added
   - DP-34731: Update to Drush 13.1 for bulk entity unpublish.
   - DP-35068: Add Romanian language to Drupal site.
-  
+
 
 
 ## [0.411.0] - September 17, 2024
@@ -239,20 +255,20 @@
 ### Changed
   - DP-30412: Bulk update of help text and minor changes.
   - DP-34911: Updated GitBook references to d2d redirects for an easier transition to the SharePoint knowledge base.
-  
+
 ### Added
   - DP-33490: Added Percy configurations for visual regression testing.
   - DP-34621: Added logging to entity_usage queue generation and processing.
   - DP-34716: Get newrelic browser working on other environments.
   - DP-35008: Added intended audience to dataLayer.
-  
+
 ### Fixed
   - DP-34850: Some test are missing by phpunit-finder because of incorrect test file location..
   - DP-34424,DP-34976: Rollback heading clear floats and fix the comp heading styles in floats
-  
+
 ### Security
   - DP-34962: Update security kit module.
-  
+
 
 
 ## [0.410.0] - September 10, 2024
@@ -262,19 +278,19 @@
   - DP-34675: Add Urdu language
   - DP-34727: Flag to Show/Hide Feedback form on Topic Page, for users with 'create topic_page content' permission.
   - DP-34727: Flag to make optional organization field on Topic Page edit form, for users with 'create topic_page content' permission.
-  
+
 ### Fixed
   - DP-34424: Fixed the issue with styles in rich text related to images.
   - DP-34678: Empty table being added to rules of court pages with no dates.
   - DP-34797: 500 Error on https://edit.mass.gov/guides/massachusetts-energy-rebates-incentives
-  
+
 ### Security
   - DP-34468: Resolve dependabot issues.
-  
+
 ### Changed
   - DP-34515: Email validation in the feedback component.
   - DP-34568: Don't show authors and editors the text format options.
-  
+
 
 
 ## [0.409.0] - September 3, 2024
@@ -282,10 +298,10 @@
 ### Fixed
   - DP-34561: Fix download links in bulleted list. Adjust collapsible content spacing on mobile.
   - DP-34687: Orphan page report now available again.
-  
+
 ### Removed
   - DP-34585: Removed descendant manager code from mass_content_api and re-enabled.
-  
+
 ## [0.408.1] - August 29, 2024
 
 ### Fixed:
