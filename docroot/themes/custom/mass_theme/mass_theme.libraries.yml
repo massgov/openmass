@@ -124,6 +124,15 @@ tableau:
     https://public.tableau.com/javascripts/api/tableau-2.3.0.min.js: { type: external }
     overrides/js/tableau_settings.js: {}
 
+tableau_connected_app:
+  js:
+    https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.js: {
+      type: external,
+      attributes: {
+        type: module
+      }
+    }
+
 iframe-resizer:
   js:
     overrides/js/iframe_resizer_parent.js: { scope: footer }
