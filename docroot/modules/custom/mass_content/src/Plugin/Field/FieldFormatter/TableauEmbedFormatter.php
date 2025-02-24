@@ -42,14 +42,14 @@ class TableauEmbedFormatter extends LinkFormatter {
 
     $paragraph = $items->getEntity();
 
-    // Fields from the paragraph.
+    // Determine the embed type from the paragraph field.
     $embed_type = $paragraph->get('field_tableau_embed_type')->value ?? 'default';
     $token_url = $paragraph->get('field_tableau_url_token')->uri ?? NULL;
     $viz_url = $paragraph->get('field_url')->uri ?? NULL;
 
     $token = '';
 
-    // If embed type is 'connected_apps', fetch the token.
+    // Fetch token only if embed type is 'connected_apps' and a token URL is provided.
     if ($embed_type === 'connected_apps' && !empty($token_url)) {
       try {
         $client = \Drupal::httpClient();
@@ -75,11 +75,14 @@ class TableauEmbedFormatter extends LinkFormatter {
       $elements[$delta] = [
         '#theme' => 'mass_content_tableau_embed',
         '#url' => $url,
-        '#token' => $token, // Can be empty if not 'connected_apps'
         '#randId' => $id,
+        '#embed_type' => $embed_type,
+        '#token_url' => ($embed_type === 'connected_apps' && $token_url) ? $token_url : NULL,
+        '#token' => $token, // This is optional; can be used for debugging or preloading.
       ];
     }
 
     return $elements;
   }
+
 }

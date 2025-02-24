@@ -12,7 +12,15 @@
  * @see template_preprocess_link_formatter_link_separate()
  */
 #}
-{{ attach_library('mass_theme/tableau') }}
+{% if embed_type == 'connected_apps' %}
+  {{ attach_library('mass_theme/tableau_v3') }}
+{% else %}
+  {{ attach_library('mass_theme/tableau') }}
+{% endif %}
 <div class="ma_tableau_container" style="max-width:100%">
-  <div class="ma_tableau_item" id="{{ randId }}" data-tableau-url="{{ url }}"></div>
+  <div class="ma_tableau_item"
+       id="{{ randId }}"
+       data-tableau-url="{{ url }}"
+       {% if token_url %}data-token-url="{{ token_url }}"{% endif %}>
+  </div>
 </div>
