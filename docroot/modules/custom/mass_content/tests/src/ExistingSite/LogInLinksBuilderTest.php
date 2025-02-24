@@ -29,7 +29,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
     $this->drupalGet('/node/' . $node->id());
     foreach ($links as $link) {
       $href = $link['uri'];
-      $this->assertSession()->elementExists('css', "#contextual-login-links-menu [href=\"$href\"]");
+      $this->assertSession()->elementExists('css', ".ma__button-dropdown__subitems-container [href=\"$href\"]");
     }
   }
 
@@ -106,7 +106,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
     $service_1->save();
 
     $this->drupalGet('/node/' . $service_1->id());
-    $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
 
     // 1st level inherit_parent_page_login_options.
     $service_1->set('field_login_links_options', 'inherit_parent_page_login_options');
@@ -114,7 +114,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
 
     // No parent set, should not be visible
     $this->drupalGet('/node/' . $service_1->id());
-    $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
 
   }
 
@@ -131,7 +131,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
     $info_details->save();
 
     $this->drupalGet('/node/' . $info_details->id());
-    $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
 
     // 1st level inherit_parent_page_login_options.
     $info_details->set('field_login_links_options', 'inherit_parent_page_login_options');
@@ -139,7 +139,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
 
     // No parent set, should not be visible
     $this->drupalGet('/node/' . $info_details->id());
-    $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
   }
 
   /**
@@ -169,16 +169,16 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
 
     // If set to inherit should render parent links.
     $this->drupalGet('/node/' . $child_service->id());
-    $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
     $this->drupalGet('/node/' . $parent_info_details->id());
-    $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
 
     // If set to disabled, it should not render anything.
     $child_service->set('field_login_links_options', 'disable_login_options');
     $child_service->save();
 
     $this->drupalGet('/node/' . $child_service->id());
-    $this->assertSession()->elementNotExists('css', "#contextual-login-links-menu");
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
 
   }
 
