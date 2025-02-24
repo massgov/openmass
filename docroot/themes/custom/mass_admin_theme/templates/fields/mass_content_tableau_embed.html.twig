@@ -12,15 +12,14 @@
  * @see template_preprocess_link_formatter_link_separate()
  */
 #}
-{% if embed_type == 'connected_apps' %}
-  {{ attach_library('mass_theme/tableau_v3') }}
+{% if token %}
+  {{ attach_library('mass_theme/tableau_connected_app') }}
+  <div class="ma_tableau_item" style="max-width:100%">
+    <tableau-viz id="tableau-viz" src="{{ url }}" toolbar="bottom" hide-tabs token="{{ token }}"></tableau-viz>
+  </div>
 {% else %}
   {{ attach_library('mass_theme/tableau') }}
-{% endif %}
-<div class="ma_tableau_container" style="max-width:100%">
-  <div class="ma_tableau_item"
-       id="{{ randId }}"
-       data-tableau-url="{{ url }}"
-       {% if token_url %}data-token-url="{{ token_url }}"{% endif %}>
+  <div class="ma_tableau_container" style="max-width:100%">
+    <div class="ma_tableau_item" id="{{ randId }}" data-tableau-url="{{ url }}"></div>
   </div>
-</div>
+{% endif %}
