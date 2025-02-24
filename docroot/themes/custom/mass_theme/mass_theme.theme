@@ -3898,57 +3898,20 @@ function mass_theme_preprocess_menu(&$variables) {
           // Get links.
           $panels = [];
           $panel = [];
-          if ($node->id() != 4206) {
-            if ($node->hasField('field_links')) {
-              $links = [];
-              foreach ($node->get('field_links') as $link) {
-                $uri = $link->uri;
-                $is_external = UrlHelper::isExternal($uri);
-                $links[] = [
-                  'type' => $is_external ? 'external' : 'internal',
-                  'text' => $link->computed_title,
-                  'href' => $is_external ? $uri : Url::fromUri($uri),
-                ];
-                if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
-                  $variables['#cache']['tags'][] = 'node:' . preg_replace('/\D/', '', $uri);
-                }
-              }
-              $panel['links'] = $links;
-            }
-            if ($node->hasField('body') && !$node->body->isEmpty()) {
-              $panel['description'] = [
-                'richText' => [
-                  'rteElements' => [
-                    [
-                      'path' => '@atoms/11-text/paragraph.twig',
-                      'data' => [
-                        'paragraph' => [
-                          'text' => $node->hasField('body') ? strip_tags($node->body->value, '<br><a><b>') : '',
-                        ],
-                      ],
-                    ],
-                  ],
-                ],
-              ];
-            }
-            $panel['class'] = 'gtm-login-global';
-          }
-          else {
-            $panel['description'] = [
-              'richText' => [
-                'rteElements' => [
-                  [
-                    'path' => '@atoms/11-text/paragraph.twig',
-                    'data' => [
-                      'paragraph' => [
-                        'text' => 'We have moved any relevant application login links below the page title where they are easier to find.',
-                      ],
+          $panel['description'] = [
+            'richText' => [
+              'rteElements' => [
+                [
+                  'path' => '@atoms/11-text/paragraph.twig',
+                  'data' => [
+                    'paragraph' => [
+                      'text' => 'We have moved any relevant application login links below the page title where they are easier to find.',
                     ],
                   ],
                 ],
               ],
-            ];
-          }
+            ],
+          ];
           $panels[] = $panel;
 
           $items[] = [
