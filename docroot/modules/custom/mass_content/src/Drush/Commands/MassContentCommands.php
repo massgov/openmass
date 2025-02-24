@@ -925,7 +925,7 @@ class MassContentCommands extends DrushCommands {
     // Set the default status condition based on the presence of the --unpublished-only option.
     $status_condition = $unpublished_only ? 0 : 1;
 
-    $nodeTypes = ['service_page', 'org_page', 'binder', 'info_details', 'curated_list'];
+    $nodeTypes = ['service_page', 'binder', 'info_details', 'curated_list'];
     $state_key = $unpublished_only ? 'mass_content.last_processed_login_links_node_id_unpublished' : 'mass_content.last_processed_login_links_node_id_published';
     $lastProcessedId = \Drupal::state()->get($state_key, 0);
 
@@ -959,7 +959,6 @@ class MassContentCommands extends DrushCommands {
 
       $login_links_fields_per_bundle = [
         'service_page' => 'field_log_in_links',
-        'org_page' => 'field_application_login_links',
         'binder' => 'field_application_login_links',
         'info_details' => 'field_application_login_links',
         'curated_list' => 'field_application_login_links',
