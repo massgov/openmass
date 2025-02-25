@@ -7349,6 +7349,10 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
   /** @var \Drupal\paragraphs\Entity\Paragraph[] */
   $paragraphs = Helper::getReferencedEntitiesFromField($container, $field);
 
+  // Get the content type of the parent node
+  $parent_node = $container->getParentEntity();
+  $content_type = $parent_node->getType();
+
   for ($i = 0; $i < count($paragraphs); $i++) {
     $component = [];
     // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
@@ -7370,6 +7374,19 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
 
       $component = ['group' => 'default', 'items' => $items];
     }
+    // Special case for "Stat" paragraph on "service_page" content type, to get them to display inline.
+    elseif ($content_type == 'service_page' && $paragraphs[$i]->getType() == 'stat') {
+      
+      // Preserve the wrapping selection
+      if (mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
+        $component = ['group' => 'self', 'items' => $paragraphs[$i]];
+      }else {
+        // If wrapping field isn't checked, just show inline.
+        $component[] = $paragraphs[$i];
+      }
+      
+    }
+
     // There are some special paragraphs that should have a right margin.
     elseif (in_array($paragraphs[$i]->getType(), $contained) !== FALSE) {
       $component = ['group' => 'contained', 'items' => $paragraphs[$i]];
