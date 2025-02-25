@@ -7376,15 +7376,14 @@ function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
     }
     // Special case for "Stat" paragraph on "service_page" content type, to get them to display inline.
     elseif ($content_type == 'service_page' && $paragraphs[$i]->getType() == 'stat') {
-      
       // Preserve the wrapping selection
       if (mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
         $component = ['group' => 'self', 'items' => $paragraphs[$i]];
-      }else {
+      }
+      else {
         // If wrapping field isn't checked, just show inline.
         $component[] = $paragraphs[$i];
       }
-      
     }
 
     // There are some special paragraphs that should have a right margin.
