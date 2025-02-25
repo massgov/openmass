@@ -32,7 +32,7 @@
 
           var id = $tableauItem.attr('id');
           var url = $tableauItem.data('tableau-url');
-          var options = { device: deviceType };
+          var options = {device: deviceType};
 
           /* eslint-disable */
           new tableau.Viz(document.getElementById(id), url, options);
