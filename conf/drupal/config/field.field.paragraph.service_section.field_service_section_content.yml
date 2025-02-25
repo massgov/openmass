@@ -8,12 +8,16 @@ dependencies:
     - paragraphs.paragraphs_type.collection_search
     - paragraphs.paragraphs_type.contact_placeholder
     - paragraphs.paragraphs_type.featured_item_mosaic
+    - paragraphs.paragraphs_type.featured_message
     - paragraphs.paragraphs_type.flexible_link_group
+    - paragraphs.paragraphs_type.info_details_card_group
+    - paragraphs.paragraphs_type.key_message
     - paragraphs.paragraphs_type.org_events
     - paragraphs.paragraphs_type.org_locations
     - paragraphs.paragraphs_type.service_rich_text
     - paragraphs.paragraphs_type.service_section
     - paragraphs.paragraphs_type.social_media
+    - paragraphs.paragraphs_type.stat
     - paragraphs.paragraphs_type.tableau_embed
     - paragraphs.paragraphs_type.video
   module:
@@ -32,13 +36,17 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
+      info_details_card_group: info_details_card_group
       caspio_embed: caspio_embed
       featured_item_mosaic: featured_item_mosaic
+      featured_message: featured_message
       org_events: org_events
       social_media: social_media
       org_locations: org_locations
+      stat: stat
       tableau_embed: tableau_embed
       video: video
+      key_message: key_message
       flexible_link_group: flexible_link_group
       collection_search: collection_search
       contact_placeholder: contact_placeholder
@@ -98,6 +106,9 @@ settings:
         enabled: false
       advisory_section:
         weight: 39
+        enabled: false
+      alert:
+        weight: 154
         enabled: false
       board_member:
         weight: 40
@@ -182,7 +193,7 @@ settings:
         enabled: true
       featured_message:
         weight: 6
-        enabled: false
+        enabled: true
       featured_topics:
         weight: 7
         enabled: false
@@ -197,6 +208,9 @@ settings:
         enabled: true
       footnotes:
         weight: 64
+        enabled: false
+      from_library:
+        weight: 188
         enabled: false
       full_bleed:
         weight: 65
@@ -233,18 +247,15 @@ settings:
         enabled: false
       info_details_card_group:
         weight: 2
-        enabled: false
+        enabled: true
       issuer:
         weight: 74
         enabled: false
       key_message:
         weight: 75
-        enabled: false
+        enabled: true
       key_message_section:
         weight: 76
-        enabled: false
-      link_group:
-        weight: 77
         enabled: false
       link_group_accordion:
         weight: 90
@@ -260,6 +271,9 @@ settings:
         enabled: false
       links_downloads:
         weight: 81
+        enabled: false
+      links_downloads_flexible:
+        weight: 206
         enabled: false
       list_board_members:
         weight: 10
@@ -384,6 +398,9 @@ settings:
       section_board_members:
         weight: 114
         enabled: false
+      section_header:
+        weight: 251
+        enabled: false
       section_heading_text:
         weight: 115
         enabled: false
@@ -416,7 +433,7 @@ settings:
         enabled: false
       stat:
         weight: 19
-        enabled: false
+        enabled: true
       state_organization:
         weight: 121
         enabled: false
@@ -426,6 +443,9 @@ settings:
       tableau_embed:
         weight: 20
         enabled: true
+      time_callout:
+        weight: 266
+        enabled: false
       video:
         weight: 21
         enabled: true

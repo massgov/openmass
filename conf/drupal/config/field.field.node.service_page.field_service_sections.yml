@@ -5,11 +5,8 @@ dependencies:
   config:
     - field.storage.node.field_service_sections
     - node.type.service_page
-    - paragraphs.paragraphs_type.featured_message
-    - paragraphs.paragraphs_type.info_details_card_group
     - paragraphs.paragraphs_type.key_message_section
     - paragraphs.paragraphs_type.service_section
-    - paragraphs.paragraphs_type.stat
   module:
     - entity_reference_revisions
 id: node.service_page.field_service_sections
@@ -17,7 +14,7 @@ field_name: field_service_sections
 entity_type: node
 bundle: service_page
 label: 'Service Sections'
-description: "<p>You can add a Featured Message, Card Group, Stat or Service Section here (see notes below).</p>\r\n<p>&nbsp;</p>\r\n<p><strong>Service Sections</strong></p>\r\nChoose to add either a <a href=\"https://www.mass.gov/kb/key-message\" target=\"_blank\">Key Message</a> to display a call to action, or a <a href=\"https://www.mass.gov/kb/service-page-section\" target=\"_blank\">Service Section</a>, which can include numerous elements, including Flexible Link Groups, Rich Text, Events, Contact Information, Video, and more. Multiple sections can be added. "
+description: 'Choose to add either a <a href="https://www.mass.gov/kb/key-message" target="_blank">Key Message</a> to display a call to action, or a <a href="https://www.mass.gov/kb/service-page-section" target="_blank">Service Section</a>, which can include numerous elements, including Flexible Link Groups, Rich Text, Events, Contact Information, Video, and more. Multiple sections can be added.'
 required: false
 translatable: false
 default_value: {  }
@@ -26,11 +23,8 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
-      featured_message: featured_message
-      info_details_card_group: info_details_card_group
       key_message_section: key_message_section
       service_section: service_section
-      stat: stat
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -86,9 +80,6 @@ settings:
         enabled: false
       advisory_section:
         weight: 144
-        enabled: false
-      alert:
-        weight: 154
         enabled: false
       board_member:
         weight: 145
@@ -173,7 +164,7 @@ settings:
         enabled: false
       featured_message:
         weight: 170
-        enabled: true
+        enabled: false
       featured_topics:
         weight: 171
         enabled: false
@@ -188,9 +179,6 @@ settings:
         enabled: false
       footnotes:
         weight: 174
-        enabled: false
-      from_library:
-        weight: 188
         enabled: false
       full_bleed:
         weight: 175
@@ -227,7 +215,7 @@ settings:
         enabled: false
       info_details_card_group:
         weight: 186
-        enabled: true
+        enabled: false
       issuer:
         weight: 187
         enabled: false
@@ -251,9 +239,6 @@ settings:
         enabled: false
       links_downloads:
         weight: 191
-        enabled: false
-      links_downloads_flexible:
-        weight: 206
         enabled: false
       list_board_members:
         weight: 196
@@ -378,9 +363,6 @@ settings:
       section_board_members:
         weight: 236
         enabled: false
-      section_header:
-        weight: 251
-        enabled: false
       section_heading_text:
         weight: 237
         enabled: false
@@ -413,7 +395,7 @@ settings:
         enabled: false
       stat:
         weight: 245
-        enabled: true
+        enabled: false
       state_organization:
         weight: 246
         enabled: false
@@ -422,9 +404,6 @@ settings:
         enabled: false
       tableau_embed:
         weight: 248
-        enabled: false
-      time_callout:
-        weight: 266
         enabled: false
       video:
         weight: 249
