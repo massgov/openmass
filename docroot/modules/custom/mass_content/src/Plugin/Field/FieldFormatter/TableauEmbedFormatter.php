@@ -75,8 +75,7 @@ class TableauEmbedFormatter extends LinkFormatter {
         '#url' => $url,
         '#randId' => $id,
         '#embed_type' => $embed_type,
-        '#token_url' => ($embed_type === 'connected_apps' && $token_url) ? $token_url : NULL,
-        '#token' => $token,
+        '#token' => ($embed_type === 'connected_apps' && $token) ? $token : NULL,
       ];
     }
 
