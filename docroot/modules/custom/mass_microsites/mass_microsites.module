@@ -1,0 +1,93 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Mass Microsites module.
+ */
+
+use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
+use Drupal\entity_hierarchy\Storage\NestedSetStorage;
+use PNX\NestedSet\NodeKey;
+use PNX\NestedSet\Node;
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_microsites_preprocess_menu(&$variables) {
+
+  if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'entity-hierarchy-microsite') {
+    $params = \Drupal::routeMatch()->getParameters();
+
+    if ($params->has('node')) {
+      $node = $params->get('node');
+      $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
+      $microsites = $microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
+      /**
+       * @var MicrositeInterface
+       */
+      $microsite = reset($microsites);
+
+      $home_item = [
+        "is_expanded" => false,
+        "is_collapsed" => false,
+        "in_active_trail" => false,
+        "title" => $microsite->getHome()->label(),
+        "url" => $microsite->getHome()->toUrl(),
+        "below" => [],
+        "altClass" => true,
+      ];
+
+      // Adds home item to items array, but we're not going to use this for now.
+      array_unshift($variables['items'], $home_item);
+
+      // Duplicate and translate menu structure for use with patternlab
+      $variables['mainNav'] = [];
+
+      foreach ($variables['items'] as $item) {
+        $navitem = [
+          "text" => $item['title'],
+          "href" => $item['url'],
+          "active" => $item['in_active_trail'],
+          "altClass" => $item['altClass'] ?? false,
+        ];
+
+        if ($item['below']) {
+          $navitem['subNav'] = [];
+          foreach ($item['below'] as $subitem) {
+            $navitem['subNav'][] = [
+              "text" => $subitem['title'],
+              "href" => $subitem['url'],
+            ];
+          }
+        }
+
+        $variables['mainNav'][] = $navitem;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_help().
+ */
+function mass_microsites_help($route_name, \Drupal\Core\Routing\RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.mass_microsites':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Mass Microsites module provides functionality for managing Mass.gov microsites.') . '</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_microsites_theme($existing, $type, $theme, $path) {
+  return [
+    'menu__entity_hierarchy_microsite' => [
+      'template' => 'menu--entity-hierarchy-microsite',
+      'base hook' => 'menu',
+    ],
+  ];
+}
