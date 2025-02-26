@@ -45,8 +45,6 @@ class TableauEmbedFormatter extends LinkFormatter {
     // Determine the embed type from the paragraph field.
     $embed_type = $paragraph->get('field_tableau_embed_type')->value ?? 'default';
     $token_url = $paragraph->get('field_tableau_url_token')->uri ?? NULL;
-    $viz_url = $paragraph->get('field_url')->uri ?? NULL;
-
     $token = '';
 
     // Fetch token only if embed type is 'connected_apps' and a token URL is provided.
@@ -78,7 +76,7 @@ class TableauEmbedFormatter extends LinkFormatter {
         '#randId' => $id,
         '#embed_type' => $embed_type,
         '#token_url' => ($embed_type === 'connected_apps' && $token_url) ? $token_url : NULL,
-        '#token' => $token, // This is optional; can be used for debugging or preloading.
+        '#token' => $token,
       ];
     }
 
