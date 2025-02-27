@@ -28,13 +28,13 @@ function mass_microsites_preprocess_menu(&$variables) {
       $microsite = reset($microsites);
 
       $home_item = [
-        "is_expanded" => false,
-        "is_collapsed" => false,
-        "in_active_trail" => false,
+        "is_expanded" => FALSE,
+        "is_collapsed" => FALSE,
+        "in_active_trail" => FALSE,
         "title" => $microsite->getHome()->label(),
         "url" => $microsite->getHome()->toUrl(),
         "below" => [],
-        "altClass" => true,
+        "altClass" => TRUE,
       ];
 
       // Adds home item to items array, but we're not going to use this for now.
@@ -48,7 +48,7 @@ function mass_microsites_preprocess_menu(&$variables) {
           "text" => $item['title'],
           "href" => $item['url'],
           "active" => $item['in_active_trail'],
-          "altClass" => $item['altClass'] ?? false,
+          "altClass" => $item['altClass'] ?? FALSE,
         ];
 
         if ($item['below']) {
