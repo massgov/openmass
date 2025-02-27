@@ -12,10 +12,10 @@
  * @see template_preprocess_link_formatter_link_separate()
  */
 #}
-{% if token %}
+{% if embed_type == 'connected_apps' %}
   {{ attach_library('mass_theme/tableau_connected_app') }}
   <div class="ma_tableau_item" style="max-width:100%">
-    <tableau-viz id="tableau-viz" src="{{ url }}" toolbar="bottom" hide-tabs token="{{ token }}"></tableau-viz>
+    <tableau-viz id="{{ randId }}" src="{{ url }}" toolbar="bottom" hide-tabs data-token-url="{{ token_url }}"></tableau-viz>
   </div>
 {% else %}
   {{ attach_library('mass_theme/tableau') }}
