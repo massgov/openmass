@@ -125,13 +125,14 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
    *   The node.
    *
    * @return MicrositeInterface
+   *   The microsite with the fewest pages between the current node and the microsite's "home" page.
    */
   private function selectNearestMicrosite(array $microsites, NodeInterface $node) {
     /**
      * The microsite for which the "homepage" is closest to the current node.
      * @var MicrositeInterface|null
      */
-    $nearest_microsite = null;
+    $nearest_microsite = NULL;
     $microsites_by_home_id = [];
 
     foreach ($microsites as $microsite) {
