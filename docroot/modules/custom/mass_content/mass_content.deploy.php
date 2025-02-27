@@ -330,7 +330,6 @@ function mass_content_deploy_form_platform_update(&$sandbox) {
   }
 }
 
-
 /**
  * Deploy hook to update field_tableau_embed_type to 'default' for all tableau_embed paragraphs.
  */
@@ -374,7 +373,8 @@ function mass_content_deploy_tableau_embed_type_update(&$sandbox) {
         // Save the paragraph.
         $paragraph->save();
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       // Catch any exception and continue processing.
       \Drupal::logger('mass_content')
         ->error('Failed to update paragraph @pid: @message', [
