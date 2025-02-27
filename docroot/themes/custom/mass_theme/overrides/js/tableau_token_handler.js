@@ -16,21 +16,22 @@
         if (!tokenUrl) {
           return;
         }
-        
+
         $.ajax({
           url: tokenUrl,
-          type: "GET",
-          dataType: "json",
+          type: 'GET',
+          dataType: 'json',
           success: function (data) {
             if (data.token) {
               // Modify HTML to include the token attribute
               $tableauItem.attr('token', data.token);
-            } else {
-              console.error("Token not found in response.");
+            }
+            else {
+              console.error('Token not found in response.');
             }
           },
           error: function (xhr, status, error) {
-            console.error("Error fetching Tableau token:", status, error);
+            console.error('Error fetching Tableau token:', status, error);
           }
         });
       });
