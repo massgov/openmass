@@ -5,7 +5,6 @@ namespace Drupal\mass_content\Plugin\Field\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
-use GuzzleHttp\Exception\RequestException;
 
 /**
  * Plugin implementation of the 'tableau_embed' formatter.
@@ -45,26 +44,6 @@ class TableauEmbedFormatter extends LinkFormatter {
     // Determine the embed type from the paragraph field.
     $embed_type = $paragraph->get('field_tableau_embed_type')->value ?? 'default';
     $token_url = $paragraph->get('field_tableau_url_token')->uri ?? NULL;
-    $token = '';
-
-    // Fetch token only if embed type is 'connected_apps' and a token URL is provided.
-    if ($embed_type === 'connected_apps' && !empty($token_url)) {
-      try {
-        $client = \Drupal::httpClient();
-        $response = $client->get($token_url, ['timeout' => 5]);
-        $data = json_decode($response->getBody()->getContents(), TRUE);
-
-        if (!empty($data['token'])) {
-          $token = $data['token'];
-        }
-      }
-      catch (RequestException $e) {
-        \Drupal::logger('mass_content')->error('Failed to retrieve Tableau token from @url: @message', [
-          '@url' => $token_url,
-          '@message' => $e->getMessage(),
-        ]);
-      }
-    }
 
     foreach ($items as $delta => $item) {
       $id = bin2hex(random_bytes(8));
@@ -75,7 +54,7 @@ class TableauEmbedFormatter extends LinkFormatter {
         '#url' => $url,
         '#randId' => $id,
         '#embed_type' => $embed_type,
-        '#token' => ($embed_type === 'connected_apps' && $token) ? $token : NULL,
+        '#token_url' => ($embed_type === 'connected_apps' && $token_url) ? $token_url : NULL,
       ];
     }
 
