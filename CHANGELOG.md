@@ -1,4 +1,20 @@
 
+
+## [0.427.0] - February 25, 2025
+
+### Fixed
+  - DP-35012: Inconsistent Formatting for Non-Typical Hours on Organization Location Pages.
+  - DP-36964: Fix error responses significantly affecting Apdex app server score.
+  - DP-37449: Update packages identified by Dependabot.
+  - DP-37609: Fix node JS version in Tugboat.
+  - Map hard coded fontsize REM overrides to the new scale.
+  
+### Added
+  - DP-37203: update the publication status filter in all documents to match all content.
+  - DP-37372: update help text for social media links to mention BlueSky is allowed.
+  - DP-37630: Accessibility report for authors now allows filtering by multiple issue types.
+  
+
 ## [0.426.1] - February 20, 2025
 
 ### Security:
