@@ -13,9 +13,14 @@
         var minTablet = 501;
 
         $('.ma_tableau_container', context).each(function () {
-          var $tableauItem = $(this).children('.ma_tableau_item');
+          var $tableauContainer = $(this);
+          var $tableauItem = $tableauContainer.children('.ma_tableau_item');
 
-          // Skip this if it's a v3 (Connected Apps) embed.
+          // Skip execution if this contains a v3 (Connected Apps) embed.
+          if ($tableauItem.find('tableau-viz').length) {
+            return;
+          }
+
           if ($tableauItem.data('token-url')) {
             return;
           }
