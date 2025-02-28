@@ -83,6 +83,7 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
       $field_form_url->addConstraint('GravityForm', [
         'allowedValues' => [
           'mass-forms.ddev.site',
+          'forms.mass.local',
           'dev.forms.mass.gov',
           'live.forms.mass.gov',
           'test.forms.mass.gov',
@@ -93,6 +94,9 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
           'embed-test2-mass-forms.pantheonsite.io',
           'embed-test3-mass-forms.pantheonsite.io',
           'embed-test-mass-forms.pantheonsite.io',
+          'embed-test.forms.mass.gov',
+          'embed-test2.forms.mass.gov',
+          'embed-test3.forms.mass.gov',
         ]
       ]);
     }
