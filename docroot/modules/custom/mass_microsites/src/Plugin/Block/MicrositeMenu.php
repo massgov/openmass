@@ -50,10 +50,10 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
    *   The menu tree service.
    * @param \Drupal\Core\Menu\MenuActiveTrailInterface $menu_active_trail
    *   The active menu trail service.
-   * @param \Drupal\Core\Menu\MenuLinkTreeInterface $menu_tree
-   *   The menu tree service.
-   * @param \Drupal\Core\Menu\MenuActiveTrailInterface $menu_active_trail
-   *   The active menu trail service.
+   * @param NestedSetStorageFactory $nested_set_storage_factory
+   *   The nested set storage service.
+   * @param NestedSetNodeKeyFactory $nested_set_node_key_factory
+   *   The nested set node key service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, MenuLinkTreeInterface $menu_tree, MenuActiveTrailInterface $menu_active_trail, NestedSetStorageFactory $nested_set_storage_factory, NestedSetNodeKeyFactory $nested_set_node_key_factory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $menu_tree, $menu_active_trail);
