@@ -3,8 +3,12 @@
 namespace Drupal\mass_microsites\Plugin\Block;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Menu\MenuActiveTrailInterface;
+use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
+use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
 use Drupal\entity_hierarchy_microsite\Plugin\MicrositePluginTrait;
 use Drupal\node\NodeInterface;
@@ -29,14 +33,52 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     create as traitCreate;
   }
 
+  protected NestedSetStorageFactory $nestedSetStorageFactory;
+
+  protected NestedSetNodeKeyFactory $nestedSetNodeKeyFactory;
+
+  /**
+   * Constructs a new SystemMenuBlock.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param array $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Menu\MenuLinkTreeInterface $menu_tree
+   *   The menu tree service.
+   * @param \Drupal\Core\Menu\MenuActiveTrailInterface $menu_active_trail
+   *   The active menu trail service.
+   * @param \Drupal\Core\Menu\MenuLinkTreeInterface $menu_tree
+   *   The menu tree service.
+   * @param \Drupal\Core\Menu\MenuActiveTrailInterface $menu_active_trail
+   *   The active menu trail service.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, MenuLinkTreeInterface $menu_tree, MenuActiveTrailInterface $menu_active_trail, NestedSetStorageFactory $nested_set_storage_factory, NestedSetNodeKeyFactory $nested_set_node_key_factory) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $menu_tree, $menu_active_trail);
+    $this->nestedSetStorageFactory = $nested_set_storage_factory;
+    $this->nestedSetNodeKeyFactory = $nested_set_node_key_factory;
+  }
+
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    /** @var \Drupal\entity_hierarchy_microsite\Plugin\Block\MicrositeMenu $instance */
-    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-    return $instance->setChildOfMicrositeLookup($container->get('entity_hierarchy_microsite.microsite_lookup'))
-      ->setEntityFieldManager($container->get('entity_field.manager'));
+    /** @var \Drupal\mass_microsites\Plugin\Block\MicrositeMenu $instance */
+    $instance = new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('menu.link_tree'),
+      $container->get('menu.active_trail'),
+      $container->get('entity_hierarchy.nested_set_storage_factory'),
+      $container->get('entity_hierarchy.nested_set_node_factory')
+    );
+
+    return $instance->setChildOfMicrositeLookup(
+      $container->get('entity_hierarchy_microsite.microsite_lookup')
+    )->setEntityFieldManager($container->get('entity_field.manager'));
   }
 
   /**
@@ -44,6 +86,7 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
    */
   public function build() {
     $cache = new CacheableMetadata();
+
     if (!($node = $this->getContextValue('node')) ||
       !($node instanceof NodeInterface) ||
       !($microsites = $this->childOfMicrositeLookup->findMicrositesForNodeAndField($node, $this->configuration['field']))) {
@@ -140,15 +183,8 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     }
 
     if (count($microsites_by_home_id)) {
-      /**
-       * @var NestedSetStorage
-       */
-      $nestedSetStorage = \Drupal::service('entity_hierarchy.nested_set_storage_factory')->get('field_primary_parent', 'node');
-
-      /**
-       * @var NodeKey
-       */
-      $key = \Drupal::service('entity_hierarchy.nested_set_node_factory')->fromEntity($node);
+      $nestedSetStorage = $this->nestedSetStorageFactory->get('field_primary_parent', 'node');
+      $key = $this->nestedSetNodeKeyFactory->fromEntity($node);
 
       /**
        * Array of ancestors in hierarchy, starting with field_primary_parent and climbing upward.
