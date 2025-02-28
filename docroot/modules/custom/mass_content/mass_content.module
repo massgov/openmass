@@ -1495,14 +1495,11 @@ function mass_content_node_update(EntityInterface $node) {
 }
 
 /**
+ * Implements iframe_resizer_host_settings_alter().
+ *
  * Alters the iFrame Resizer host settings for specific node bundles.
- *
- * @param array $settings
- *   The iFrame Resizer host settings array to be altered.
- *
- * @return void
  */
-function mass_content_iframe_resizer_host_settings_alter(&$settings) {
+function mass_content_iframe_resizer_host_settings_alter(&$settings): void {
   $node = \Drupal::requestStack()->getCurrentRequest()->get('node');
   if (!$node instanceof NodeInterface) {
     return;
@@ -1524,6 +1521,6 @@ function mass_content_iframe_resizer_host_settings_alter(&$settings) {
   // Probably this option should be set to false always, since I don't know
   // when we use iframes which src host matches with current site host.
   // Read more https://iframe-resizer.com/api/parent/#checkorigin.
-  $settings['options']['checkOrigin'] = false;
-  $settings['options']['inPageLinks'] = true;
+  $settings['options']['checkOrigin'] = FALSE;
+  $settings['options']['inPageLinks'] = TRUE;
 }
