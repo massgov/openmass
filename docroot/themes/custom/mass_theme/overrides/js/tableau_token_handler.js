@@ -27,14 +27,15 @@
             if (data.token) {
               // Replace the placeholder with tableau-viz
               var tableauViz = $('<tableau-viz>', {
-                src: url,
-                toolbar: "bottom",
-                "hide-tabs": "",
-                "token": data.token
+                'src': url,
+                'toolbar': 'bottom',
+                'hide-tabs': '',
+                'token': data.token
               });
 
               $placeholder.replaceWith(tableauViz);
-            } else {
+            }
+            else {
               console.error('Token not found in response.');
             }
           },
