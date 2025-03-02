@@ -9,11 +9,13 @@
   Drupal.behaviors.tableauTokenHandler = {
     attach: function (context, settings) {
 
-      $('.ma_tableau_container', context).each(function () {
-        var $tableauItem = $(this).children('.ma_tableau_item tableau-viz');
-        var tokenUrl = $tableauItem.data('token-url');
+      $('.ma_tableau_placeholder', context).each(function () {
+        var $placeholder = $(this);
+        var url = $placeholder.data('tableau-url');
+        var tokenUrl = $placeholder.data('token-url');
 
         if (!tokenUrl) {
+          console.error('Token URL missing.');
           return;
         }
 
@@ -23,10 +25,16 @@
           dataType: 'json',
           success: function (data) {
             if (data.token) {
-              // Modify HTML to include the token attribute
-              $tableauItem.attr('token', data.token);
-            }
-            else {
+              // Replace the placeholder with tableau-viz
+              var tableauViz = $('<tableau-viz>', {
+                src: url,
+                toolbar: "bottom",
+                "hide-tabs": "",
+                "token": data.token
+              });
+
+              $placeholder.replaceWith(tableauViz);
+            } else {
               console.error('Token not found in response.');
             }
           },

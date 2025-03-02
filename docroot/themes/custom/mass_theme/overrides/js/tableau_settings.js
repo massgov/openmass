@@ -16,15 +16,10 @@
           var $tableauContainer = $(this);
           var $tableauItem = $tableauContainer.children('.ma_tableau_item');
 
-          // Skip execution if this contains a v3 (Connected Apps) embed.
-          if ($tableauItem.find('tableau-viz').length) {
+          // Skip execution if the container has the v3 class (.tableau-connected-apps)
+          if ($tableauContainer.hasClass('tableau-connected-apps')) {
             return;
           }
-
-          if ($tableauItem.data('token-url')) {
-            return;
-          }
-
           var currentWidth = $(this).outerWidth();
 
           var deviceType = 'phone';
