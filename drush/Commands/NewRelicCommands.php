@@ -25,36 +25,33 @@ final class NewRelicCommands extends DrushCommands {
    */
   #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: '*')]
   public function name($result, CommandData $commandData) {
-    $annotationData = $commandData->annotationData();
-    $name = $annotationData['command'];
     if ($commandData->input()->hasOption('nrname') && $commandData->input()->getOption('nrname')) {
       $name = $commandData->input()->getOption('nrname');
-    }
+      $nr_api_key = getenv('MASS_NEWRELIC_KEY');
+      $nr_account_id = getenv('MASS_NEWRELIC_APPLICATION');
 
-    $nr_api_key = getenv('MASS_NEWRELIC_KEY');
-    $nr_account_id = getenv('MASS_NEWRELIC_APPLICATION');
-
-    $stack = $this->getStack();
-    $client = new Client(['handler' => $stack]);
-    $options = [
-      'headers' => [
-        'Api-Key' => $nr_api_key,
-      ],
-      'json' => [
-        [
-          'eventType' => 'drushCommand',
-          'name' => $name,
+      $stack = $this->getStack();
+      $client = new Client(['handler' => $stack]);
+      $options = [
+        'headers' => [
+          'Api-Key' => $nr_api_key,
         ],
-      ],
-    ];
+        'json' => [
+          [
+            'eventType' => 'drushCommand',
+            'name' => $name,
+          ],
+        ],
+      ];
 
-    $response = $client->request('POST', "https://gov-insights-collector.newrelic.com/v1/accounts/{$nr_account_id}/events", $options);
-    $code = $response->getStatusCode();
-    if ($code >= 400) {
-      throw new \Exception('New Relic API response was a ' . $code . '. Use -v for more Guzzle information.');
+      $response = $client->request('POST', "https://gov-insights-collector.newrelic.com/v1/accounts/{$nr_account_id}/events", $options);
+      $code = $response->getStatusCode();
+      if ($code >= 400) {
+        throw new \Exception('New Relic API response was a ' . $code . '. Use -v for more Guzzle information.');
+      }
+
+      $this->logger()->success("Event named {$name} sent to New Relic.");
     }
-
-    $this->logger()->success("Event named {$name} sent to New Relic.");
   }
 
   /**
