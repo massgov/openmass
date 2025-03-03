@@ -50,6 +50,7 @@ use Drupal\mass_content\Entity\Bundle\paragraph\ListItemDocumentsBundle;
 use Drupal\mass_content\Entity\Bundle\taxonomy_term\CollectionsBundle;
 use Drupal\mass_content\Entity\Bundle\user\UserBundle;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -1491,4 +1492,35 @@ function mass_content_node_update(EntityInterface $node) {
       '@vid_cache' => $vid_cache,
     ]);
   }
+}
+
+/**
+ * Implements iframe_resizer_host_settings_alter().
+ *
+ * Alters the iFrame Resizer host settings for specific node bundles.
+ */
+function mass_content_iframe_resizer_host_settings_alter(&$settings): void {
+  $node = \Drupal::requestStack()->getCurrentRequest()->get('node');
+  if (!$node instanceof NodeInterface) {
+    return;
+  }
+
+  if ($node->bundle() !== 'form_page') {
+    return;
+  }
+
+  if (!$node->hasField('field_form_platform')) {
+    return;
+  }
+
+  if ($node->get('field_form_platform')->value !== 'gravity_forms') {
+    return;
+  }
+
+  $settings['override_defaults'] = TRUE;
+  // Probably this option should be set to false always, since I don't know
+  // when we use iframes which src host matches with current site host.
+  // Read more https://iframe-resizer.com/api/parent/#checkorigin.
+  $settings['options']['checkOrigin'] = FALSE;
+  $settings['options']['inPageLinks'] = TRUE;
 }
