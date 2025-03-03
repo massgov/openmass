@@ -82,17 +82,11 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
       $field_form_url = &$fields['field_form_url'];
       $field_form_url->addConstraint('GravityForm', [
         'allowedValues' => [
-          'mass-forms.ddev.site',
-          'dev.forms.mass.gov',
-          'live.forms.mass.gov',
-          'test.forms.mass.gov',
-          'forms.mass.gov',
-          'live-mass-forms.pantheonsite.io',
-          'dev-mass-forms.pantheonsite.io',
-          'test-mass-forms.pantheonsite.io',
-          'embed-test2-mass-forms.pantheonsite.io',
-          'embed-test3-mass-forms.pantheonsite.io',
-          'embed-test-mass-forms.pantheonsite.io',
+          '/^mass-forms\.ddev\.site$/',
+          '/^forms\.mass\.local$/',
+          '/^forms\.mass\.gov$/',
+          '/^[a-zA-Z0-9\-]+-mass-forms\.pantheonsite\.io$/',
+          '/^[a-zA-Z0-9\-]+\.forms\.mass\.gov$/',
         ]
       ]);
     }
