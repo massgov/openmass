@@ -49,11 +49,17 @@ function mass_microsites_preprocess_menu(&$variables) {
        */
       $microsite = reset($microsites);
 
+      $home_node = $microsite->getHome();
+      $home_title = $home_node->label();
+      if ($short_title = $home_node->get('field_short_title')->value) {
+        $home_title = $short_title;
+      }
+
       $home_item = [
         "is_expanded" => FALSE,
         "is_collapsed" => FALSE,
         "in_active_trail" => FALSE,
-        "title" => $microsite->getHome()->label(),
+        "title" => $home_title,
         "url" => $microsite->getHome()->toUrl(),
         "below" => [],
         "altClass" => TRUE,
@@ -112,4 +118,31 @@ function mass_microsites_theme($existing, $type, $theme, $path) {
       'base hook' => 'menu',
     ],
   ];
+}
+
+/**
+ * Implements hook_entity_hierarchy_microsite_links_alter().
+ *
+ * @see entity_hierarchy_microsite.api.php
+ */
+function mass_microsites_entity_hierarchy_microsite_links_alter(array &$links) {
+  foreach ($links as $key => $link) {
+    if (
+      empty($link['menu_name']) ||
+      $link['menu_name'] !== 'entity-hierarchy-microsite'
+    ) {
+      continue;
+    }
+    if (
+      empty($link['options']['entity']) ||
+      (!$node = $link['options']['entity']) ||
+      !$node instanceof \Drupal\node\NodeInterface ||
+      !$node->hasField('field_short_title')
+    ) {
+      continue;
+    }
+    if ($short_title = $node->get('field_short_title')->value) {
+      $links[$key]['title'] = $short_title;
+    }
+  }
 }
