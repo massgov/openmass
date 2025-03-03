@@ -36,10 +36,18 @@
  * @ingroup themeable
  */
 #}
+
+{% set author = "" %}
+{% if content.field_name|field_value %}
+  {% set author = content.field_name %}
+{% else %}
+  {% set author = "" %}
+{% endif %}
+
 {%
   set callOut = {
     "text": content.field_quote|field_value,
-    "author": content.field_name,
+    "author": author,
     "title": content.field_title
 }
 
