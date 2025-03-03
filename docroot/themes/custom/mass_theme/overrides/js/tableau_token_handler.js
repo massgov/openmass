@@ -13,6 +13,7 @@
         var $placeholder = $(this);
         var url = $placeholder.data('tableau-url');
         var tokenUrl = $placeholder.data('token-url');
+        var id = $placeholder.attr('id');
 
         if (!tokenUrl) {
           console.error('Token URL missing.');
@@ -28,6 +29,7 @@
               // Replace the placeholder with tableau-viz
               var tableauViz = $('<tableau-viz>', {
                 'src': url,
+                'id': id,
                 'toolbar': 'bottom',
                 'hide-tabs': '',
                 'token': data.token
