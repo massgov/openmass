@@ -666,14 +666,16 @@ display:
             operator_id: result_name_op
             label: 'Issue type'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: result_name_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
             identifier: result_name
             required: false
-            remember: false
-            multiple: false
+            remember: true
+            multiple: true
             remember_roles:
               authenticated: authenticated
               anonymous: '0'

@@ -18,7 +18,7 @@ class AllDocumentsTest extends MassExistingSiteBase {
   public function testMyContent() {
     $this->drupalGet('admin/ma-dash/documents');
     // Verify that all exposed filters are present.
-    $inputs = ['edit-field-title-value', 'edit-filename', 'edit-mid', 'edit-moderation-state-1', 'edit-uid', 'edit-media-org-filter', 'edit-langcode', 'edit-labels', 'edit-field-collections-target-id'];
+    $inputs = ['edit-field-title-value', 'edit-filename', 'edit-mid', 'edit-status', 'edit-uid', 'edit-media-org-filter', 'edit-langcode', 'edit-labels', 'edit-field-collections-target-id'];
     foreach ($inputs as $input) {
       $this->assertSession()->fieldExists($input);
     }
