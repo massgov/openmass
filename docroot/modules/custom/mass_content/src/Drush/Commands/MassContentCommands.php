@@ -914,9 +914,6 @@ class MassContentCommands extends DrushCommands {
   public function setLoginLinksOptions($options = ['batch-size' => 50, 'max-runtime' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-    // Disable entity hierarchy writes before processing.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
-
     $batch_size = (int) $options['batch-size'];
     $debug = $options['detailed-verbalization'];
     // Default to 55 minutes.
@@ -1056,9 +1053,6 @@ class MassContentCommands extends DrushCommands {
 
     } while (!empty($nids));
 
-    // Re-enable entity hierarchy writes after processing.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-
     $this->output()->writeln(t('Processed @count nodes.', ['@count' => $processed_count]));
     $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
 
@@ -1066,6 +1060,21 @@ class MassContentCommands extends DrushCommands {
     if (empty($nids)) {
       \Drupal::state()->delete($state_key);
     }
+
+    // Capture the end time.
+    $end_time = microtime(TRUE);
+
+    // Calculate execution duration in minutes using floor to prevent accumulation errors.
+    $execution_time_minutes = floor(($end_time - $start_time) / 60);
+
+    // Retrieve the existing accumulated execution time.
+    $previous_execution_time = \Drupal::state()->get('mass_content.total_execution_duration', 0);
+
+    // Add the current execution time to the existing value.
+    $total_execution_time = $previous_execution_time + $execution_time_minutes;
+
+    // Store the updated total execution time in state.
+    \Drupal::state()->set('mass_content.total_execution_duration', $total_execution_time);
   }
 
 }
