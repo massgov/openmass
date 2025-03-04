@@ -13,12 +13,28 @@ targetEntityType: paragraph
 bundle: pull_quote
 mode: media_caption_and_display
 content:
+  field_name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_quote:
     type: string_textarea
     weight: 0
     region: content
     settings:
       rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_title:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
       placeholder: ''
     third_party_settings: {  }
   paragraphs_type_help__default:
@@ -28,7 +44,5 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_name: true
-  field_title: true
   status: true
   uid: true
