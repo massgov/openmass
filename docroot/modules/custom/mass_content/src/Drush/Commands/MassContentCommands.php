@@ -1067,14 +1067,15 @@ class MassContentCommands extends DrushCommands {
     // Calculate execution duration in minutes using floor to prevent accumulation errors.
     $execution_time_minutes = floor(($end_time - $start_time) / 60);
 
+    $execution_key = $unpublished_only ? 'mass_content.total_execution_duration_unpublished': 'mass_content.total_execution_duration_published';
     // Retrieve the existing accumulated execution time.
-    $previous_execution_time = \Drupal::state()->get('mass_content.total_execution_duration', 0);
+    $previous_execution_time = \Drupal::state()->get($execution_key, 0);
 
     // Add the current execution time to the existing value.
     $total_execution_time = $previous_execution_time + $execution_time_minutes;
 
     // Store the updated total execution time in state.
-    \Drupal::state()->set('mass_content.total_execution_duration', $total_execution_time);
+    \Drupal::state()->set($execution_key, $total_execution_time);
   }
 
 }
