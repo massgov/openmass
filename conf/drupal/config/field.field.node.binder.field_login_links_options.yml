@@ -1,0 +1,23 @@
+uuid: 3e99f0e3-d50b-48b0-959e-71e627b16710
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_login_links_options
+    - node.type.binder
+  module:
+    - options
+id: node.binder.field_login_links_options
+field_name: field_login_links_options
+entity_type: node
+bundle: binder
+label: 'Application Login Link(s)'
+description: "Provide quick access to external applications that are frequently used in the context of this page. Links will display in the page header behind \"Log in to\" button. See our <a href=\"www.mass.gov/kb/loginlinks\" target=\"_blank\">Knowledge Base page on Application Login Links</a> for more information.\r\n<br><br>\r\nBy default, this page will show these login links that are inherited from it's parent page:"
+required: false
+translatable: false
+default_value:
+  -
+    value: inherit_parent_page_login_options
+default_value_callback: ''
+settings: {  }
+field_type: list_string

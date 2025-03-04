@@ -35,8 +35,8 @@
 
 {% block preContent %}
   {# If the contextual navigation should be set for this node, then add it. #}
-  {% if node.computed_log_in_links is not empty %}
-    {{ contextual_log_in_links }}
+  {% if log_in_links is not empty %}
+    {% set buttons = log_in_links %}
   {% endif %}
 
   {# Check if primary indicator content exists. #}
@@ -79,6 +79,9 @@
     } %}
   {% endif %}
   {% if node.field_banner_image is not empty %}
+    {% if buttons %}
+      {% set buttons = buttons|merge({'theme': 'c-white', 'usage': ''}) %}
+    {% endif %}
     {% include "@organisms/page-banner/page-banner.twig" with {
       "pageBanner": {
         "image": bgImage,
@@ -87,7 +90,8 @@
         "theme": "c-primary",
         "pageHeader": {
           "title": label,
-          "description": node.field_short_desc.value ?? ''
+          "description": node.field_short_desc.value ?? '',
+          "buttons": buttons is defined ? [buttons] : null
         }
       }
     } %}
@@ -97,7 +101,8 @@
       "divider": false,
       "title": label,
       "subTitle": node.field_short_desc.value,
-      "widgets": null
+      "widgets": null,
+      "buttons": buttons is defined ? [buttons] : null
     },
   } %}
   {% endif %}

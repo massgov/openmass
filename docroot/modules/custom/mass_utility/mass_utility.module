@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -20,6 +21,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
@@ -709,6 +711,60 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
           '#markup' => '<div>' . $element['#description'] . '</div>',
         ];
       }
+    }
+  }
+  elseif ($type == 'list_string') {
+    if ($field_name == 'field_login_links_options') {
+      // Load the current node.
+      $node = $context['items']->getEntity();
+
+      // Instantiate the LogInLinksBuilder service.
+      $login_links_builder = \Drupal::service('mass_content.log_in_links_builder');
+
+      // Get the contextual links.
+      $links_data = $login_links_builder->getLoginLinksWithCacheTags($node);
+
+      $links = [];
+
+      if (!empty($links_data['links'])) {
+        foreach ($links_data['links'] as $link) {
+          // Skip if the link originates from the current node.
+          if ($link['source'] == $node->id()) {
+            continue;
+          }
+          if (isset($link['href'])) {
+            // Add target="_blank" for external links.
+            if ($link['type'] === 'external' && $link['href'] instanceof Url) {
+              $link['href']->setOption('attributes', ['target' => '_blank']);
+            }
+            $links[] = [
+              '#type' => 'link',
+              '#title' => $link['text'],
+              '#url' => $link['href'],
+            ];
+          }
+        }
+      }
+
+      // Check if any links exist.
+      if (!empty($links)) {
+        // Render the links list.
+        $links_render_array = [
+          '#theme' => 'item_list',
+          '#items' => $links,
+          '#cache' => [
+            'tags' => $links_data['cache_tags'] ?? [],
+          ],
+        ];
+        $links_rendered = \Drupal::service('renderer')->renderPlain($links_render_array);
+        $element['#description'] .= $links_rendered;
+      }
+      else {
+        // Ensure the message is rendered when there are no links.
+        $element['#description'] .= t('<br><strong>Nothing from the parent page to inherit</strong><br>');
+      }
+      $element['#description'] .= t('You have the options to define new login link or disable them for this page:');
+      unset($element['#options']['_none']);
     }
   }
 }
@@ -1481,6 +1537,7 @@ function mass_utility_path_alias_update(PathAliasInterface $path) {
  * Implements hook_form_alter().
  */
 function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
   // Hide "Reset to alphabetical" option on the
   // collection admin form (https://massgov.atlassian.net/browse/DP-24413).
   $form['actions']['reset_alphabetical']['#access'] = FALSE;
