@@ -8,9 +8,12 @@ dependencies:
     - field.field.paragraph.tableau_embed.field_tabl_caption
     - field.field.paragraph.tableau_embed.field_tabl_display_size
     - field.field.paragraph.tableau_embed.field_tabl_wrapping
+    - field.field.paragraph.tableau_embed.field_tableau_embed_type
+    - field.field.paragraph.tableau_embed.field_tableau_url_token
     - field.field.paragraph.tableau_embed.field_url
     - paragraphs.paragraphs_type.tableau_embed
   module:
+    - link
     - mass_content
     - options
     - text
@@ -54,6 +57,25 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 4
+    region: content
+  field_tableau_embed_type:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_tableau_url_token:
+    type: link
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 6
     region: content
   field_url:
     type: tableau_embed
