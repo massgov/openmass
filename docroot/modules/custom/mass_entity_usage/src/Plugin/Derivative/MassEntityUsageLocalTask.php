@@ -12,7 +12,7 @@ class MassEntityUsageLocalTask extends EntityUsageLocalTask {
   /**
    * {@inheritdoc}
    */
-  public function getDerivativeDefinitions($base_plugin_definition) {
+  public function getDerivativeDefinitions($base_plugin_definition): array {
     parent::getDerivativeDefinitions($base_plugin_definition);
 
     foreach ($this->derivatives as &$entry) {
