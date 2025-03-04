@@ -1067,7 +1067,7 @@ class MassContentCommands extends DrushCommands {
     // Calculate execution duration in minutes using floor to prevent accumulation errors.
     $execution_time_minutes = floor(($end_time - $start_time) / 60);
 
-    $execution_key = $unpublished_only ? 'mass_content.total_execution_duration_unpublished': 'mass_content.total_execution_duration_published';
+    $execution_key = $unpublished_only ? 'mass_content.total_execution_duration_unpublished' : 'mass_content.total_execution_duration_published';
     // Retrieve the existing accumulated execution time.
     $previous_execution_time = \Drupal::state()->get($execution_key, 0);
 
