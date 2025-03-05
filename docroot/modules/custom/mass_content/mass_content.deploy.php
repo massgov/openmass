@@ -329,3 +329,76 @@ function mass_content_deploy_form_platform_update(&$sandbox) {
     return t('All form_page nodes have been updated with the "Formstack" value in field_form_platform.');
   }
 }
+
+/**
+ * Deploy hook to update field_tableau_embed_type to 'default' for all tableau_embed paragraphs.
+ */
+function mass_content_deploy_tableau_embed_type_update(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+  $query = \Drupal::entityQuery('paragraph')->accessCheck(FALSE);
+  $query->condition('type', 'tableau_embed');
+
+  // Initialize sandbox if this is the first run.
+  if (empty($sandbox)) {
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count_query = clone $query;
+    $sandbox['max'] = $count_query->count()->execute();
+  }
+
+  // Set batch size to avoid memory exhaustion.
+  $batch_size = 50;
+
+  // Fetch paragraph IDs in batches.
+  $pids = $query->condition('id', $sandbox['current'], '>')
+    ->sort('id')
+    ->range(0, $batch_size)
+    ->execute();
+
+  // Load the paragraphs from the fetched IDs.
+  $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+  $paragraphs = $paragraph_storage->loadMultiple($pids);
+
+  // Temporarily disable entity hierarchy writes to avoid issues during batch processing.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  foreach ($paragraphs as $paragraph) {
+    // Update the sandbox current pid.
+    $sandbox['current'] = $paragraph->id();
+    try {
+      // Check if the field exists and is not already set.
+      if ($paragraph->hasField('field_tableau_embed_type') && !$paragraph->get('field_tableau_embed_type')->value) {
+        // Set the field value to 'default'.
+        $paragraph->set('field_tableau_embed_type', 'default');
+        // Save the paragraph.
+        $paragraph->save();
+      }
+    }
+    catch (\Exception $e) {
+      // Catch any exception and continue processing.
+      \Drupal::logger('mass_content')
+        ->error('Failed to update paragraph @pid: @message', [
+          '@pid' => $paragraph->id(),
+          '@message' => $e->getMessage(),
+        ]);
+    }
+
+    // Track progress.
+    $sandbox['progress']++;
+  }
+
+  // Log progress for each batch.
+  \Drupal::logger('mass_content')
+    ->notice('Processed @progress out of @max paragraphs.', [
+      '@progress' => $sandbox['progress'],
+      '@max' => $sandbox['max'],
+    ]);
+
+  // Update finished state.
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    // Re-enable entity hierarchy writes after all paragraphs are processed.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('All tableau_embed paragraphs have been updated with the "default" value in field_tableau_embed_type and reflected in the referencing nodes.');
+  }
+}

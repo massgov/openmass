@@ -8,6 +8,8 @@ dependencies:
     - field.field.paragraph.tableau_embed.field_tabl_caption
     - field.field.paragraph.tableau_embed.field_tabl_display_size
     - field.field.paragraph.tableau_embed.field_tabl_wrapping
+    - field.field.paragraph.tableau_embed.field_tableau_embed_type
+    - field.field.paragraph.tableau_embed.field_tableau_url_token
     - field.field.paragraph.tableau_embed.field_url
     - paragraphs.paragraphs_type.tableau_embed
   module:
@@ -22,7 +24,7 @@ mode: default
 content:
   field_tabl_administrative_title:
     type: string_textfield
-    weight: 1
+    weight: 3
     region: content
     settings:
       size: 60
@@ -30,14 +32,14 @@ content:
     third_party_settings: {  }
   field_tabl_alignment:
     type: options_buttons
-    weight: 4
+    weight: 6
     region: content
     settings: {  }
     third_party_settings:
       conditional_fields: {  }
   field_tabl_caption:
     type: text_textarea
-    weight: 2
+    weight: 4
     region: content
     settings:
       rows: 5
@@ -53,19 +55,33 @@ content:
         maxlength_js_truncate_html: true
   field_tabl_display_size:
     type: options_select
-    weight: 3
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
   field_tabl_wrapping:
     type: options_buttons
-    weight: 5
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_tableau_embed_type:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_tableau_url_token:
+    type: link_default
+    weight: 1
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
   field_url:
     type: link_default
-    weight: 0
+    weight: 2
     region: content
     settings:
       placeholder_url: ''
