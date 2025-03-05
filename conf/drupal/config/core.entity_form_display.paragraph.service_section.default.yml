@@ -7,9 +7,12 @@ dependencies:
     - field.field.paragraph.service_section.field_section_style
     - field.field.paragraph.service_section.field_service_section_content
     - field.field.paragraph.service_section.field_service_section_heading
+    - field.field.paragraph.service_section.field_service_section_link
+    - field.field.paragraph.service_section.field_subtitle
     - paragraphs.paragraphs_type.service_section
   module:
     - field_group
+    - link
     - paragraphs
 third_party_settings:
   field_group:
@@ -19,7 +22,7 @@ third_party_settings:
       label: 'Section content'
       region: content
       parent_name: ''
-      weight: 3
+      weight: 5
       format_type: details
       format_settings:
         classes: ''
@@ -35,14 +38,14 @@ mode: default
 content:
   field_hide_heading:
     type: boolean_checkbox
-    weight: 1
+    weight: 3
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_section_style:
     type: options_buttons
-    weight: 2
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -61,6 +64,22 @@ content:
   field_service_section_heading:
     type: string_textfield
     weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_service_section_link:
+    type: link_default
+    weight: 2
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_subtitle:
+    type: string_textfield
+    weight: 1
     region: content
     settings:
       size: 60
