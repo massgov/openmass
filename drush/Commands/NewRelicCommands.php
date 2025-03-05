@@ -6,6 +6,11 @@ use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
+use Drush\Drush;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
 
 #[CLI\Bootstrap(level: DrupalBootLevels::NONE)]
 final class NewRelicCommands extends DrushCommands {
@@ -20,22 +25,42 @@ final class NewRelicCommands extends DrushCommands {
    */
   #[CLI\Hook(type: HookManager::POST_COMMAND_HOOK, target: '*')]
   public function name($result, CommandData $commandData) {
-    if (!extension_loaded('newrelic')) {
-      $this->logger()->debug('New Relic extension is not loaded.');
-      return;
-    }
-    $annotationData = $commandData->annotationData();
-    $name = $annotationData['command'];
     if ($commandData->input()->hasOption('nrname') && $commandData->input()->getOption('nrname')) {
       $name = $commandData->input()->getOption('nrname');
+      $nr_api_key = getenv('MASS_NEWRELIC_KEY');
+      $nr_account_id = getenv('MASS_NEWRELIC_APPLICATION');
+
+      $stack = $this->getStack();
+      $client = new Client(['handler' => $stack]);
+      $options = [
+        'headers' => [
+          'Api-Key' => $nr_api_key,
+        ],
+        'json' => [
+          [
+            'eventType' => 'drushCommand',
+            'name' => $name,
+          ],
+        ],
+      ];
+
+      $response = $client->request('POST', "https://gov-insights-collector.newrelic.com/v1/accounts/{$nr_account_id}/events", $options);
+      $code = $response->getStatusCode();
+      if ($code >= 400) {
+        throw new \Exception('New Relic API response was a ' . $code . '. Use -v for more Guzzle information.');
+      }
+
+      $this->logger()->success("Event named {$name} sent to New Relic.");
     }
-    $success = newrelic_name_transaction("cli.drush.$name");
-    if (!$success) {
-      $this->logger()->error('Failed to set New Relic transaction name.');
-    }
-    else {
-      $this->logger()->info('New Relic transaction name set.');
-    }
+  }
+
+  /**
+   * Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
+   */
+  protected function getStack(): HandlerStack {
+    $stack = HandlerStack::create();
+    $stack->push(Middleware::log($this->logger(), new MessageFormatter(Drush::verbose() ? MessageFormatter::DEBUG : MessageFormatter::SHORT)));
+    return $stack;
   }
 
 }
