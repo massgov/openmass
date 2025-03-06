@@ -1464,6 +1464,17 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
     case 'iframe':
       $form['#validate'][] = '_mass_validation_validate_custom_iframe_layout_paragraphs';
       break;
+    case 'tableau_embed':
+      // Check if the embed type field exists.
+      if (isset($form['field_tableau_embed_type'], $form['field_tableau_url_token'])) {
+        // Add states to hide the URL token field when embed type is "Default".
+        $form['field_tableau_url_token']['#states'] = [
+          'visible' => [
+            ':input[name="field_tableau_embed_type"]' => ['!value' => 'default'],
+          ],
+        ];
+      }
+      break;
   }
 }
 
