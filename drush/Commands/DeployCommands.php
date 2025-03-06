@@ -522,7 +522,7 @@ class DeployCommands extends DrushCommands {
    *
    * @throws \Exception
    */
-  public function waitForTaskToComplete(string $uuid, int $interval = 5, int $max_retries = 3) {
+  public function waitForTaskToComplete(string $uuid, int $interval = 5, int $max_retries = 120) {
     $client = $this->getClient();
     $retries = 0;
 
