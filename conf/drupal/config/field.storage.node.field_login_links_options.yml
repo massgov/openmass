@@ -1,0 +1,30 @@
+uuid: 4ae9c3d9-afbc-4852-8c9b-df0229b47144
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_login_links_options
+field_name: field_login_links_options
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: inherit_parent_page_login_options
+      label: 'Inherit parent page login options'
+    -
+      value: define_new_login_options
+      label: 'Define new login options'
+    -
+      value: disable_login_options
+      label: 'Disable login options'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
