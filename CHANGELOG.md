@@ -1,5 +1,17 @@
 
 
+## [0.428.0] - March 4, 2025
+
+### Changed
+  - DP-34362: Updated drush option for New Relic reporting to use Event API
+  - DP-37544: Adds 'Featured Message', 'Card Group', 'Key Message' and 'Stat' Paragraph types to the Services Content Type.
+  
+### Added
+  - DP-34536: Added iframe resizer option to ignore Origin and enable inPageLinks.
+  - DP-37162: Add Tigrinya & Filipino language to Drupal site .
+  
+
+
 ## [0.427.0] - February 25, 2025
 
 ### Fixed
