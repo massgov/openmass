@@ -731,6 +731,10 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
         // paste in additional content to search.
       case 'field_data_search_content':
         return AccessResult::forbiddenIf(!$account->hasPermission("access data flag fields"));
+
+      // New permission for field_two_column in Service Section Paragraph type.
+      case 'field_two_column':
+        return AccessResult::forbiddenIf(!$account->hasPermission("use prototype design features"));
     }
   }
   return AccessResult::neutral();
