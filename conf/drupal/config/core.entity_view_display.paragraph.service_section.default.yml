@@ -9,6 +9,7 @@ dependencies:
     - field.field.paragraph.service_section.field_service_section_heading
     - field.field.paragraph.service_section.field_service_section_link
     - field.field.paragraph.service_section.field_subtitle
+    - field.field.paragraph.service_section.field_two_column
     - paragraphs.paragraphs_type.service_section
   module:
     - entity_reference_revisions
@@ -72,5 +73,15 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 5
+    region: content
+  field_two_column:
+    type: boolean
+    label: above
+    settings:
+      format: boolean
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 7
     region: content
 hidden: {  }
