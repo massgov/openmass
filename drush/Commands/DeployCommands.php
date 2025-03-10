@@ -332,7 +332,7 @@ class DeployCommands extends DrushCommands {
       $operationResponse = $databases->copy($env_from->get('uuid'), 'massgov', $env_target->get('uuid'));
       $href = $operationResponse->links->notification->href;
       /** @noinspection PhpParamsInspection */
-      $this->waitForTaskToComplete(basename($href), 30);
+      $this->waitForTaskToComplete(basename($href), 30, 180);
     }
 
     if ($options['skip-maint'] == FALSE) {
