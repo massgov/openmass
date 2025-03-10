@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.binder.field_application_login_links
     - field.field.node.binder.field_binder_appendix
     - field.field.node.binder.field_binder_banner_image
     - field.field.node.binder.field_binder_binder_type
@@ -28,6 +29,7 @@ dependencies:
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_glossaries
     - field.field.node.binder.field_intended_audience
+    - field.field.node.binder.field_login_links_options
     - field.field.node.binder.field_organizations
     - field.field.node.binder.field_primary_parent
     - field.field.node.binder.field_reusable_label
@@ -38,6 +40,7 @@ dependencies:
     - entity_reference_revisions
     - image
     - link
+    - mass_content
     - metatag
     - options
     - user
@@ -68,6 +71,18 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 9
+    region: content
+  field_application_login_links:
+    type: dynamic_link_separate
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 44
     region: content
   field_binder_appendix:
     type: entity_reference_revisions_entity_view
@@ -245,6 +260,13 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 19
+    region: content
+  field_login_links_options:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 143
     region: content
   field_organizations:
     type: entity_reference_label

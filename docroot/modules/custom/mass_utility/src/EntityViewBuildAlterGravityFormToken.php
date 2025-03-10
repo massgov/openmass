@@ -25,17 +25,17 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
   private RequestStack $requestStack;
 
   /**
-   * Alters the render array of a specified entity.
+   * Alters the render array of an entity view display.
    *
    * @param array $build
-   *   The render array of the entity to be altered, passed by reference.
+   *   The render array for the entity view.
    * @param EntityInterface $entity
-   *   The entity object being rendered.
+   *   The entity being viewed.
    * @param EntityViewDisplayInterface $display
-   *   The display configuration for the entity's view mode.
+   *   The display plugin used for rendering the entity.
    *
    * @return void
-   *   This method does not return a value, it alters the render array by reference.
+   *   No return value, modifies the $build array by reference.
    */
   public function alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
     if ($entity instanceof NodeInterface
@@ -54,6 +54,9 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
       if (!($iframe_url instanceof Url)) {
         return;
       }
+
+      // Normalize iframe URL to always point to slashed url.
+      $iframe_url = Url::fromUri(trim($iframe_url->setAbsolute()->toString(), '/') . '/');
 
       $build["field_form_url"]["iframe_url"]['#markup'] = $iframe_url->toString();
       $gf_token = $this->requestStack->getCurrentRequest()->get('gf_token');
