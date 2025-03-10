@@ -8,6 +8,7 @@ dependencies:
     - file_browser
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
   enforced:
     module:
       - file_browser
@@ -342,7 +343,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'use mass dashboard'
       cache:
         type: none
         options: {  }
@@ -521,7 +522,10 @@ display:
             format: full_html
           tokenize: false
       footer: {  }
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       field_langcode: '***LANGUAGE_language_content***'
       field_langcode_add_to_query: null
     cache_metadata:
