@@ -13,8 +13,8 @@
 
 {% block preContent %}
   {# If the contextual navigation should be set for this node, then add it. #}
-  {% if node.computed_log_in_links is not empty %}
-    {{ contextual_log_in_links }}
+  {% if log_in_links is not empty %}
+    {% set buttons = log_in_links %}
   {% endif %}
 
   {% set primaryIndicators = null %}
@@ -73,7 +73,8 @@
       "title": label,
       "subTitle": node.field_curatedlist_lede.value,
       "divider": false,
-      "optionalContents": optionalContents
+      "optionalContents": optionalContents,
+      "buttons": buttons is defined ? [buttons] : null
     }
   %}
   {% include "@organisms/page-header/page-header.twig" %}

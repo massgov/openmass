@@ -22,23 +22,14 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
     ['title' => 'number 5', 'uri' => 'https://example.link/number-5'],
   ];
 
-  private const LINKS_3 = [
-    ['title' => 'number 6', 'uri' => 'https://example.link/number-6'],
-    ['title' => 'number 7', 'uri' => 'https://example.link/number-7'],
-  ];
-
-  private const LINKS_4 = [
-    ['title' => 'number 8', 'uri' => 'https://example.link/number-8'],
-  ];
-
   /**
    * Check links on the UI.
    */
-  private function checkLinksRendered(NodeInterface $node, $links) {
+  private function checkNewLinksDefined(NodeInterface $node, $links) {
     $this->drupalGet('/node/' . $node->id());
     foreach ($links as $link) {
       $href = $link['uri'];
-      $this->assertSession()->elementExists('css', ".ma__utility-panel__items [href=\"$href\"]");
+      $this->assertSession()->elementExists('css', ".ma__button-dropdown__subitems-container [href=\"$href\"]");
     }
   }
 
@@ -46,15 +37,15 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
    * Checks contextual login links data.
    */
   private function checkLinksData($links, $generated_links) {
-    $this->assertCount(count($links), $generated_links,
+    $this->assertCount(count($links), $generated_links['links'],
       "Different number of links found."
     );
 
-    foreach ($generated_links as $index => $generated_link) {
-      $this->assertEquals($generated_link->title, $links[$index]['title'],
+    foreach ($generated_links['links'] as $index => $generated_link) {
+      $this->assertEquals($generated_link['text'], $links[$index]['title'],
         "Title is not equal at position $index");
 
-      $this->assertEquals($generated_link->uri, $links[$index]['uri'],
+      $this->assertEquals($generated_link['href']->toString(), $links[$index]['uri'],
         "URI is different at positoin $index");
     }
   }
@@ -64,30 +55,19 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
    */
   private function checkContextualLogInLinks($node, $links) {
     $llb = new LogInLinksBuilder();
-    $generated_links = $llb->getContextualLoginLinks($node);
+    $generated_links = $llb->getLoginLinksWithCacheTags($node);
 
     $this->checkLinksData($links, $generated_links);
-    $this->checkLinksRendered($node, $links);
-  }
-
-  /**
-   * Creates a node with a specific parent.
-   */
-  private function createNodeWithParent(NodeInterface $parent, $bundle) {
-    $data = [];
-    $data = ['type' => $bundle];
-    $data['field_primary_parent'] = $parent;
-    $data['moderation_state'] = 'published';
-    return $this->createNode($data);
+    $this->checkNewLinksDefined($node, $links);
   }
 
   /**
    * Creates a Service node with links.
    */
   private function createServiceWithLinks($links) {
-    $data = [];
     $data = ['type' => 'service_page'];
     $data['field_log_in_links'] = $links;
+    $data['field_login_links_options'] = 'define_new_login_options';
     $data['moderation_state'] = 'published';
     return $this->createNode($data);
   }
@@ -96,7 +76,6 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
    * Creates an Organization with links.
    */
   private function createOrganizationWithLinks($links) {
-    $data = [];
     $data = ['type' => 'org_page'];
     $data['field_application_login_links'] = $links;
     $data['moderation_state'] = 'published';
@@ -104,87 +83,126 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
   }
 
   /**
-   * Changes links on a node: service or organization.
+   * Creates an Info Details with links.
    */
-  private function changeLinks(NodeInterface $node, $links) {
-    if ($node->bundle() == 'service_page') {
-      $this->changeServiceLinks($node, $links);
-    }
-    elseif ($node->bundle() == 'org_page') {
-      $this->changeOrganizationLinks($node, $links);
-    }
-    else {
-      throw new \Exception("Bundle links change not implemented.");
-    }
-    $node->save();
-  }
-
-  /**
-   * Changes links on a Service page.
-   */
-  private function changeServiceLinks($service, $links) {
-    $service->field_log_in_links = $links;
-  }
-
-  /**
-   * Changes links on an Organization page.
-   */
-  private function changeOrganizationLinks($organization, $links) {
-    $organization->field_application_login_links = $links;
+  private function createInfoDetailsWithLinks($links) {
+    $data = ['type' => 'info_details'];
+    $data['field_login_links_options'] = 'define_new_login_options';
+    $data['field_application_login_links'] = $links;
+    $data['moderation_state'] = 'published';
+    return $this->createNode($data);
   }
 
   /**
    * Test service with own contextual login links.
    */
   public function testServiceOwnContextualLoginLinks() {
-    // A few links.
+    // 1st level define new
     $service_1 = $this->createServiceWithLinks(self::LINKS_2);
     $this->checkContextualLogInLinks($service_1, self::LINKS_2);
 
-    // No links.
-    $service_2 = $this->createServiceWithLinks([]);
-    $this->checkContextualLogInLinks($service_2, []);
+    // 1st level disable_login_options.
+    $service_1->set('field_login_links_options', 'disable_login_options');
+    $service_1->save();
+
+    $this->drupalGet('/node/' . $service_1->id());
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
+
+    // 1st level inherit_parent_page_login_options.
+    $service_1->set('field_login_links_options', 'inherit_parent_page_login_options');
+    $service_1->save();
+
+    // No parent set, should not be visible
+    $this->drupalGet('/node/' . $service_1->id());
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
+
   }
 
   /**
-   * Test organization with own conextual login links.
+   * Test info details with own contextual login links.
    */
-  public function testOrganizationOwnContextualLoginLinks() {
-    // A few links.
-    $org_1 = $this->createOrganizationWithLinks(self::LINKS_1);
-    $this->checkContextualLogInLinks($org_1, self::LINKS_1);
+  public function testInfoDetailsOwnContextualLoginLinks() {
+    // 1st level define new.
+    $info_details = $this->createInfoDetailsWithLinks(self::LINKS_1);
+    $this->checkContextualLogInLinks($info_details, self::LINKS_1);
 
-    // No links.
-    $org_1 = $this->createOrganizationWithLinks([]);
-    $this->checkContextualLogInLinks($org_1, []);
+    // 1st level disable_login_options.
+    $info_details->set('field_login_links_options', 'disable_login_options');
+    $info_details->save();
+
+    $this->drupalGet('/node/' . $info_details->id());
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
+
+    // 1st level inherit_parent_page_login_options.
+    $info_details->set('field_login_links_options', 'inherit_parent_page_login_options');
+    $info_details->save();
+
+    // No parent set, should not be visible
+    $this->drupalGet('/node/' . $info_details->id());
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
   }
 
   /**
    * Test inheritance of contextual login links from ancestors.
    */
   public function testNodeInheritsContextualLoginLinksFromAncestors() {
-    $org_1 = $this->createOrganizationWithLinks(self::LINKS_1);
-    $node_1 = $this->createNodeWithParent($org_1, 'news');
-    $node_2 = $this->createNodeWithParent($node_1, 'advisory');
-    $node_3 = $this->createNodeWithParent($node_2, 'topic_page');
-    $node_4 = $this->createNodeWithParent($node_3, 'service_page');
-    $node_5 = $this->createNodeWithParent($node_4, 'service_page');
-    $this->checkContextualLogInLinks($node_5, self::LINKS_1);
 
-    // Should not inherit links due to LoginLinksBuilder::MAX_ANCESTORS.
-    $node_6 = $this->createNodeWithParent($node_5, 'service_page');
-    $this->checkContextualLogInLinks($node_6, []);
+    $parent_info_details = $this->createInfoDetailsWithLinks(self::LINKS_1);
+    $child_service = $this->createServiceWithLinks(self::LINKS_2);
 
-    // Checks when an ancestor changes.
-    $this->changeLinks($org_1, self::LINKS_2);
-    $this->checkContextualLogInLinks($node_5, self::LINKS_2);
+    // If set to define new option, it should render own links.
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->checkContextualLogInLinks($child_service, self::LINKS_2);
 
-    $this->changeLinks($node_4, self::LINKS_3);
-    $this->checkContextualLogInLinks($node_5, self::LINKS_3);
+    // Set the parent page.
+    $child_service->set('field_primary_parent', $parent_info_details);
+    $child_service->set('field_login_links_options', 'inherit_parent_page_login_options');
+    $child_service->save();
 
-    // // Checks when ancestor have links the service page has its own links.
-    $this->changeLinks($node_5, self::LINKS_4);
-    $this->checkContextualLogInLinks($node_5, self::LINKS_4);
+    // If set to inherit should render parent links.
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->checkContextualLogInLinks($child_service, self::LINKS_1);
+
+    // If parent has disabled option, child should not render anything
+    $parent_info_details->set('field_login_links_options', 'disable_login_options');
+    $parent_info_details->save();
+
+    // If set to inherit should render parent links.
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
+    $this->drupalGet('/node/' . $parent_info_details->id());
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
+
+    // If set to disabled, it should not render anything.
+    $child_service->set('field_login_links_options', 'disable_login_options');
+    $child_service->save();
+
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->assertSession()->elementNotExists('css', ".ma__button-dropdown__subitems-container");
+
+  }
+
+  /**
+   * Test inheritance of contextual login links from ancestors.
+   */
+  public function testOrgPageContextualLoginLinksFromAncestors() {
+
+    $parent_org = $this->createOrganizationWithLinks(self::LINKS_1);
+    $child_service = $this->createServiceWithLinks(self::LINKS_2);
+
+    // If set to define new option, it should render own links.
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->checkContextualLogInLinks($child_service, self::LINKS_2);
+
+    // Set the parent page.
+    $child_service->set('field_primary_parent', $parent_org);
+    $child_service->set('field_login_links_options', 'inherit_parent_page_login_options');
+    $child_service->save();
+
+    // If set to inherit should render parent links.
+    $this->drupalGet('/node/' . $child_service->id());
+    $this->checkContextualLogInLinks($child_service, self::LINKS_1);
+
   }
 
 }

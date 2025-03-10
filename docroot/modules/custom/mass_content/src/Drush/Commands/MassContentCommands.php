@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mayflower\Helper;
+use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -897,6 +898,190 @@ class MassContentCommands extends DrushCommands {
     if (empty($nids)) {
       \Drupal::state()->delete($state_key);
     }
+  }
+
+  /**
+   * Set default values for field_login_links_options in batches.
+   *
+   * @command mass-content:set-login-links-options
+   *
+   * @option batch-size The number of nodes to process per batch.
+   * @option max-runtime The maximum runtime (in minutes) for this command. If not set, process indefinitely.
+   * @option unpublished-only Process only unpublished nodes.
+   * @option detailed-verbalization Enable debug output.
+   * @aliases msllo
+   */
+  public function setLoginLinksOptions($options = ['batch-size' => 50, 'max-runtime' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Disable entity hierarchy writes for better performance during processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    $batch_size = (int) $options['batch-size'];
+    $debug = $options['detailed-verbalization'];
+    // Default to 55 minutes.
+    $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
+    $unpublished_only = (bool) $options['unpublished-only'];
+    // Set the default status condition based on the presence of the --unpublished-only option.
+    $status_condition = $unpublished_only ? 0 : 1;
+
+    $nodeTypes = ['service_page', 'binder', 'info_details', 'curated_list'];
+    $state_key = $unpublished_only ? 'mass_content.last_processed_login_links_node_id_unpublished' : 'mass_content.last_processed_login_links_node_id_published';
+    $lastProcessedId = \Drupal::state()->get($state_key, 0);
+
+    $storage = $this->entityTypeManager->getStorage('node');
+
+    $start_time = time();
+    $processed_count = 0;
+    $processed_revisions = 0;
+    do {
+
+      // Check if max runtime has been exceeded (if set).
+      if ($max_runtime !== NULL && (time() - $start_time) >= $max_runtime * 60) {
+        $this->output()->writeln("Max runtime of {$max_runtime} minutes reached. Stopping execution.");
+        break;
+      }
+
+      $query = $storage->getQuery()
+        ->condition('type', $nodeTypes, 'IN')
+        ->condition('nid', $lastProcessedId, '>')
+        ->condition('status', $status_condition)
+        ->condition('field_login_links_options', NULL, 'IS NULL')
+        ->sort('nid')
+        ->range(0, $batch_size)
+        ->accessCheck(FALSE);
+
+      $nids = $query->execute();
+      if (empty($nids)) {
+        $this->output()->writeln('No more nodes to process.');
+        break;
+      }
+
+      $login_links_fields_per_bundle = [
+        'service_page' => 'field_log_in_links',
+        'binder' => 'field_application_login_links',
+        'info_details' => 'field_application_login_links',
+        'curated_list' => 'field_application_login_links',
+      ];
+
+      foreach ($nids as $nid) {
+        $node = $storage->load($nid);
+        if (!$node) {
+          continue;
+        }
+        $bundle = $node->bundle();
+        $field_name = $login_links_fields_per_bundle[$bundle] ?? NULL;
+
+        // We only process the revisions for the published nodes.
+        $revisions_to_save = NULL;
+        if (!$unpublished_only) {
+          // Process the latest revision first
+          $query = $storage->getQuery()->accessCheck(FALSE);
+          $query->condition('nid', $node->id());
+          $query->latestRevision();
+          $rids = $query->execute();
+          if ($rids) {
+            $rid = array_key_first($rids);
+            $latest_revision = $storage->loadRevision($rid);
+            if ($latest_revision) {
+
+              // Check if the latest revision is already published
+              if ($latest_revision->isPublished()) {
+                if ($debug) {
+                  $this->output()->writeln("Skipping revision {$rid} of node {$nid} because it is already published.");
+                }
+              }
+              else {
+                if ($field_name && $latest_revision->hasField($field_name)) {
+                  $revision_has_value = FALSE;
+                  $values = $latest_revision->get($field_name)->getValue();
+                  foreach ($values as $value) {
+                    if (!empty($value['uri'])) {
+                      $revision_has_value = TRUE;
+                      break;
+                    }
+                  }
+                  $default_value = $revision_has_value ? 'define_new_login_options' : 'inherit_parent_page_login_options';
+                  if ($latest_revision->get('field_login_links_options')->getString() !== $default_value) {
+                    $latest_revision->set('field_login_links_options', $default_value);
+                    $latest_revision->setNewRevision();
+                    $latest_revision->setRevisionLogMessage('Automatically set default login link options on latest revision.');
+                    $latest_revision->setRevisionCreationTime(time());
+                    $revisions_to_save = $latest_revision;
+                    if ($debug) {
+                      $this->output()
+                        ->writeln("Processed revision: {$rid} of node: {$nid}, bundle: {$bundle}");
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Now process the node itself
+        if ($field_name && $node->hasField($field_name)) {
+          $has_value = FALSE;
+          $values = $node->get($field_name)->getValue();
+
+          foreach ($values as $value) {
+            if (!empty($value['uri'])) {
+              $has_value = TRUE;
+              break;
+            }
+          }
+
+          $default_value = $has_value ? 'define_new_login_options' : 'inherit_parent_page_login_options';
+          if ($node->get('field_login_links_options')->getString() !== $default_value) {
+            $node->set('field_login_links_options', $default_value);
+            $node->setNewRevision();
+            $node->setRevisionLogMessage('Automatically set default login link options.');
+            $node->setRevisionCreationTime(time());
+            $node->save();
+            $processed_count++;
+            if ($debug) {
+              $this->output()->writeln("Processed node: {$nid}, bundle: {$bundle}");
+            }
+          }
+        }
+
+        if ($revisions_to_save) {
+          // We save this later to preserve the order and keep this as the latest revision.
+          $revisions_to_save->save();
+          $processed_revisions++;
+        }
+        $lastProcessedId = $nid;
+        \Drupal::state()->set($state_key, $lastProcessedId);
+      }
+
+    } while (!empty($nids));
+
+    $this->output()->writeln(t('Processed @count nodes.', ['@count' => $processed_count]));
+    $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
+
+    // Re-enable entity hierarchy writes after processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
+    // Clean up state key if all nodes are processed.
+    if (empty($nids)) {
+      \Drupal::state()->delete($state_key);
+    }
+
+    // Capture the end time.
+    $end_time = microtime(TRUE);
+
+    // Calculate execution duration in minutes using floor to prevent accumulation errors.
+    $execution_time_minutes = floor(($end_time - $start_time) / 60);
+
+    $execution_key = $unpublished_only ? 'mass_content.total_execution_duration_unpublished' : 'mass_content.total_execution_duration_published';
+    // Retrieve the existing accumulated execution time.
+    $previous_execution_time = \Drupal::state()->get($execution_key, 0);
+
+    // Add the current execution time to the existing value.
+    $total_execution_time = $previous_execution_time + $execution_time_minutes;
+
+    // Store the updated total execution time in state.
+    \Drupal::state()->set($execution_key, $total_execution_time);
   }
 
 }
