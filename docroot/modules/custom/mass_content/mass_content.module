@@ -28,6 +28,7 @@ use Drupal\mass_content\Entity\Bundle\node\ExecutiveOrderBundle;
 use Drupal\mass_content\Entity\Bundle\node\ExternalDataResourceBundle;
 use Drupal\mass_content\Entity\Bundle\node\FeeBundle;
 use Drupal\mass_content\Entity\Bundle\node\FormPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\GlossaryBundle;
 use Drupal\mass_content\Entity\Bundle\node\GuidePageBundle;
 use Drupal\mass_content\Entity\Bundle\node\HowToPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle;
@@ -1285,6 +1286,9 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
   }
   if (isset($bundles['node']['form_page'])) {
     $bundles['node']['form_page']['class'] = FormPageBundle::class;
+  }
+  if (isset($bundles['node']['glossary'])) {
+    $bundles['node']['glossary']['class'] = GlossaryBundle::class;
   }
   if (isset($bundles['node']['guide_page'])) {
     $bundles['node']['guide_page']['class'] = GuidePageBundle::class;

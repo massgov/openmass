@@ -26,6 +26,7 @@ dependencies:
     - field.field.node.binder.field_data_topic
     - field.field.node.binder.field_date_published
     - field.field.node.binder.field_downloads
+    - field.field.node.binder.field_glossaries
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
     - field.field.node.binder.field_primary_parent
@@ -88,6 +89,7 @@ third_party_settings:
         - field_data_topic
         - field_data_search_content
         - field_reusable_label
+        - field_glossaries
         - field_intended_audience
         - field_collections
       label: Overview
@@ -200,6 +202,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_binder_overview:
     type: entity_reference_paragraphs
@@ -273,7 +276,7 @@ content:
     third_party_settings: {  }
   field_collections:
     type: entity_reference_tree
-    weight: 31
+    weight: 32
     region: content
     settings:
       theme: default
@@ -466,12 +469,23 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 30
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 30
+    weight: 31
     region: content
     settings: {  }
     third_party_settings: {  }
