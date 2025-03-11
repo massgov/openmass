@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\file\Entity\File;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
@@ -836,6 +837,11 @@ function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables
                 }
                 $render_array['mid'] = $media->id();
                 $render_array['media'] = $media;
+                $language = $media->language();
+
+                // Get the human-readable language name
+                $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
+                $render_array['language'] = $language_name;
                 _mass_translations_media_helper($render_array);
                 $links[$index]['download_link'] = $render_array;
               }
@@ -963,6 +969,11 @@ function mass_content_preprocess_paragraph__flexible_link_group(&$variables) {
                   }
                   $render_array['mid'] = $media->id();
                   $render_array['media'] = $media;
+                  $language = $media->language();
+
+                  // Get the human-readable language name
+                  $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
+                  $render_array['language'] = $language_name;
                   _mass_translations_media_helper($render_array);
                   $links[$index]['download_link'] = $render_array;
                 }
