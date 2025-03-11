@@ -3898,7 +3898,8 @@ function mass_theme_preprocess_menu(&$variables) {
           // Get links.
           $panels = [];
           $panel = [];
-          if ($node->hasField('field_links') && $node->id() != 4206) {
+
+          if ($node->hasField('field_links') && $node->getTitle() != 'Log in to...') {
             $links = [];
             foreach ($node->get('field_links') as $link) {
               $uri = $link->uri;
