@@ -380,7 +380,7 @@ jobs:
       # https://docs.newrelic.com/docs/change-tracking/change-tracking-cli/
       # https://circleci.com/docs/variables/#built-in-environment-variables
       # The GUID is for the mass.gov prod entity. Browse all entities with `newrelic apm application search --name mass.gov`
-      - run: NEW_RELIC_API_KEY=$MASS_NEWRELIC_KEY newrelic entity deployment create --accountId $MASS_NEWRELIC_APPLICATION --guid MTUyMjA0MXxBUE18QVBQTElDQVRJT058NzIwNjAyNjQz --version << parameters.version >> --commit $CIRCLE_SHA1 --deepLink $CIRCLE_BUILD_URL
+      - run: NEW_RELIC_API_KEY=$MASS_NEWRELIC_USER_KEY newrelic entity deployment create --accountId $MASS_NEWRELIC_APPLICATION --guid MTUyMjA0MXxBUE18QVBQTElDQVRJT058NzIwNjAyNjQz --version << parameters.version >> --commit $CIRCLE_SHA1 --deepLink $CIRCLE_BUILD_URL
 
       # Post-release merge from master to develop.
   master_to_develop:
