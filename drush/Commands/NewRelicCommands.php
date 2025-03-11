@@ -27,7 +27,7 @@ final class NewRelicCommands extends DrushCommands {
   public function name($result, CommandData $commandData) {
     if ($commandData->input()->hasOption('nrname') && $commandData->input()->getOption('nrname')) {
       $name = $commandData->input()->getOption('nrname');
-      $nr_api_key = getenv('MASS_NEWRELIC_KEY');
+      $nr_api_key = getenv('MASS_NEWRELIC_LICENSE_KEY');
       $nr_account_id = getenv('MASS_NEWRELIC_APPLICATION');
 
       $stack = $this->getStack();
