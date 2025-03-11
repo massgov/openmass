@@ -1,0 +1,23 @@
+uuid: 83b21ac6-0413-4e9f-a90e-7b95ecdfc551
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_application_login_links
+    - node.type.binder
+  module:
+    - link
+id: node.binder.field_application_login_links
+field_name: field_application_login_links
+entity_type: node
+bundle: binder
+label: 'Define new Application Login Link(s)'
+description: 'Add up to 3 login links to external applications that are frequently used for this organization. Links will display in the page header behind a “Log in to” button. They will also automatically display on all child pages that are Binders, Information Details, Organization, Service or Curated Lists. You will have an option on all child pages to disable login links. You should use the application name for the link text. Please don’t link to social media accounts or a Mass.gov page.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 1
+  link_type: 17
+field_type: link

@@ -356,29 +356,6 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
       $fields['computed_related_to'] = $field_definition;
     }
 
-    // Add computed log in links field onto child content types.
-    $log_in_link_bundles = [
-      'binder',
-      'curated_list',
-      'decision_tree',
-      'form_page',
-      'guide_page',
-      'how_to_page',
-      'info_details',
-      'location',
-      'location_details',
-      'service_details',
-    ];
-    if (in_array($bundle, $log_in_link_bundles)) {
-      $fields['computed_log_in_links'] = BaseFieldDefinition::create('link')
-        ->setLabel(t('Computed Log in links'))
-        ->setComputed(TRUE)
-        ->setSetting('link_type', 17)
-        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
-        ->setClass('\Drupal\mass_content\Field\LogInLinks')
-        ->setDisplayConfigurable('view', TRUE);
-    }
-
     if ($bundle === 'org_page') {
       $fields['recent_news'] = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Recent news'))
@@ -576,11 +553,6 @@ function mass_content_paragraph_view(array &$build, EntityInterface $entity, Ent
  */
 function mass_content_theme() {
   return [
-    'mass_content_contextual_log_in_links' => [
-      'variables' => [
-        'links' => NULL,
-      ],
-    ],
     'mass_content_tableau_embed' => [
       'variables' => [
         'url' => NULL,
