@@ -1,0 +1,188 @@
+diff --git a/css/builder.css b/css/builder.css
+index e01d327..b43e724 100644
+--- a/css/builder.css
++++ b/css/builder.css
+@@ -421,3 +421,7 @@ a.lpb-enable-button::before {
+ .ck.ck-balloon-panel.ck-balloon-panel_visible {
+   z-index: 1500;
+ }
++
++.js-lpb-component[data-type="rich_text"] {
++  cursor: text;
++}
+diff --git a/js/builder.js b/js/builder.js
+index 7ad5c72..ea3d18c 100644
+--- a/js/builder.js
++++ b/js/builder.js
+@@ -609,6 +609,171 @@
+         });
+       });
+ 
++      // Function to get all text nodes inside an element
++      function getTextNodesIn(node) {
++        var textNodes = [];
++        if (node.nodeType === 3) { // Text node
++          textNodes.push(node);
++        } else {
++          var children = node.childNodes;
++          for (var i = 0; i < children.length; i++) {
++            textNodes.push.apply(textNodes, getTextNodesIn(children[i]));
++          }
++        }
++        return textNodes;
++      }
++
++      // Function to move cursor and handle scrolling (outer first, then CKEditor)
++      function setCursorAndScroll(el, charIndex) {
++        if (!el) return;
++
++        var range = document.createRange();
++        var textNodes = getTextNodesIn(el);
++        var charCount = 0;
++        var found = false;
++
++        // Ensure charIndex is within valid range
++        let totalTextLength = textNodes.reduce((sum, node) => sum + node.length, 0);
++        charIndex = Math.min(charIndex, totalTextLength - 1);
++
++        for (var i = 0; i < textNodes.length; i++) {
++          var textNode = textNodes[i];
++          var endCharCount = charCount + textNode.length;
++
++          if (charIndex >= charCount && charIndex < endCharCount) {
++            range.setStart(textNode, charIndex - charCount);
++            range.collapse(true);
++            found = true;
++            break;
++          }
++
++          charCount = endCharCount;
++        }
++
++        if (found) {
++          var sel = window.getSelection();
++          sel.removeAllRanges();
++          sel.addRange(range);
++
++          // Get CKEditor container and outer modal
++          var editorContainer = el.closest(".ck-editor__editable");
++          var modalContent = el.closest(".ui-dialog-content");
++
++          if (modalContent) {
++            // 🔹 Step 1: Scroll Outer Modal so CKEditor appears at the top
++            let modalRect = modalContent.getBoundingClientRect();
++            let editorRect = editorContainer.getBoundingClientRect();
++
++            let scrollToY = modalContent.scrollTop + (editorRect.top - modalRect.top) - 50;
++
++            modalContent.scrollTo({
++              top: Math.max(scrollToY, 0),
++              behavior: "smooth"
++            });
++          }
++
++          setTimeout(() => {
++            if (editorContainer) {
++              // 🔹 Step 2: Scroll Inside CKEditor AFTER outer modal
++              let containerRect = editorContainer.getBoundingClientRect();
++              let rect = range.getBoundingClientRect();
++              let extraPadding = 80; // Extra padding for visibility
++
++              let targetScrollTop = editorContainer.scrollTop + (rect.top - containerRect.top) - extraPadding;
++              let maxScroll = editorContainer.scrollHeight - editorContainer.clientHeight;
++
++              // 🔹 If clicked character is in last 4 lines, scroll CKEditor to bottom
++              let lineHeight = parseFloat(window.getComputedStyle(editorContainer).lineHeight) || 20;
++              let remainingLines = (totalTextLength - charIndex) / lineHeight;
++
++              if (remainingLines <= 4) {
++                targetScrollTop = maxScroll;
++              }
++
++              targetScrollTop = Math.min(targetScrollTop, maxScroll);
++              editorContainer.scrollTo({
++                top: Math.max(0, targetScrollTop),
++                behavior: "smooth"
++              });
++            }
++          }, 600); // Ensure outer modal scroll completes first
++        }
++      }
++
++      // Function to get cursor position in `.text-formatted`
++      function getCaretCharacterOffsetWithin(element) {
++        let range = document.createRange();
++        let selection = window.getSelection();
++
++        if (!selection.rangeCount) return 0;
++
++        range.setStart(element, 0);
++        range.setEnd(selection.anchorNode, selection.anchorOffset);
++
++        return range.toString().length;
++      }
++
++      // Store correct cursor position when clicking `.text-formatted`
++      $(document).on('click.lp-builder', '.js-lpb-component[data-type="rich_text"]', function (e) {
++        e.preventDefault();
++
++        const component = $(this);
++        const editButton = component.find('.lpb-edit.use-ajax');
++        const textElement = component.find('.text-formatted').get(0);
++
++        $('.js-lpb-component[data-type="rich_text"]').removeData("cursorPosition");
++
++        if (textElement) {
++          const cursorPosition = getCaretCharacterOffsetWithin(textElement);
++          component.data("cursorPosition", cursorPosition);
++        }
++
++        if (editButton.length) {
++          editButton.trigger('click');
++        }
++      });
++
++      // When modal opens, find correct paragraph's character index and apply it
++      $(document).on('dialog:aftercreate', function (event, dialog, $element) {
++        setTimeout(() => {
++          let editorElement = $element.find('.ck-editor__editable')[0];
++
++          if (editorElement) {
++            let editorInstance = editorElement.ckeditorInstance;
++
++            // Get the correct component that was clicked (last stored value)
++            let parentComponent = $('.js-lpb-component[data-type="rich_text"]').filter(function() {
++              return $(this).data("cursorPosition") !== undefined;
++            }).last();
++
++            if (editorInstance && parentComponent.length) {
++              let charIndex = parentComponent.data("cursorPosition");
++
++              // Convert HTML structure differences before applying cursor
++              let textBeforeConversion = $("<div>").html(parentComponent.find('.text-formatted').html()).text();
++              let ckText = $("<div>").html(editorInstance.getData()).text();
++              let adjustedCharIndex = adjustCharIndexForHTML(textBeforeConversion, ckText, charIndex);
++              setCursorAndScroll(editorElement, adjustedCharIndex);
++            }
++          }
++        }, 1000); // Adjusted delay for better CKEditor loading time
++      });
++
++      // Adjust character index due to HTML structure differences
++      function adjustCharIndexForHTML(originalText, ckText, charIndex) {
++        let cleanedOriginalText = originalText.replace(/\s+/g, ' ').trim();
++        let cleanedCkText = ckText.replace(/\s+/g, ' ').trim();
++
++        let adjustedIndex = charIndex;
++
++        for (let i = 0, j = 0; i < cleanedOriginalText.length && j < cleanedCkText.length; i++, j++) {
++          if (i === charIndex) return j;
++          while (cleanedOriginalText[i] !== cleanedCkText[j] && j < cleanedCkText.length) j++;
++        }
++
++        return Math.min(adjustedIndex, cleanedCkText.length - 1);
++      }
++
+       // Initialize the editor drag and drop ui.
+       once('lpb-enabled', '[data-lpb-id].has-components').forEach((el) => {
+         const $element = $(el);
