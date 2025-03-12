@@ -20,19 +20,19 @@ class NearestMicrositeLookup {
   protected ChildOfMicrositeLookup $micrositeLookup;
 
   /**
-   * Constructs a new NestedSetStorageFactory object.
+   * Constructs a new NearestMicrositeLookup object.
    *
-   * @param \Doctrine\DBAL\Connection $connection
-   *   Dbal Connection.
-   * @param \Drupal\Core\Database\Connection $drupalConnection
-   *   Drupal connection.
-   * @param \Psr\Log\LoggerInterface $logger
-   *   Logger.
+   * @param NestedSetStorageFactory $nested_set_storage_factory
+   *   The nested set storage factory.
+   * @param NestedSetNodeKeyFactory $nested_set_node_key_factory
+   *   The nested set node key factory.
+   * @param ChildOfMicrositeLookup $microsite_lookup
+   *   The child of microsite lookup.
    */
   public function __construct(
     NestedSetStorageFactory $nested_set_storage_factory,
     NestedSetNodeKeyFactory $nested_set_node_key_factory,
-    ChildOfMicrositeLookup $microsite_lookup
+    ChildOfMicrositeLookup $microsite_lookup,
   ) {
     $this->nestedSetStorageFactory = $nested_set_storage_factory;
     $this->nestedSetNodeKeyFactory = $nested_set_node_key_factory;
@@ -93,6 +93,7 @@ class NearestMicrositeLookup {
    *   The node.
    *
    * @return MicrositeInterface|null
+   *   The nearest microsite, or NULL if no microsite is found.
    */
   public function getNearestMicrosite(NodeInterface $node) {
     if ($microsites = $this->micrositeLookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
@@ -101,4 +102,5 @@ class NearestMicrositeLookup {
 
     return NULL;
   }
+
 }
