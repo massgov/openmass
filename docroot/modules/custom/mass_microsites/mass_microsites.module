@@ -55,19 +55,6 @@ function mass_microsites_preprocess_menu(&$variables) {
         $home_title = $short_title;
       }
 
-      $home_item = [
-        "is_expanded" => FALSE,
-        "is_collapsed" => FALSE,
-        "in_active_trail" => FALSE,
-        "title" => $home_title,
-        "url" => $microsite->getHome()->toUrl(),
-        "below" => [],
-        "altClass" => TRUE,
-      ];
-
-      // Adds home item to items array, but we're not going to use this for now.
-      array_unshift($variables['items'], $home_item);
-
       // Duplicate and translate menu structure for use with patternlab
       $variables['mainNav'] = [];
 
