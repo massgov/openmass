@@ -38,17 +38,23 @@ function mass_microsites_node_update(NodeInterface $node) {
 function mass_microsites_preprocess_page(&$variables) {
   $params = \Drupal::routeMatch()->getParameters();
 
-    if ($params->has('node')) {
-      $node = $params->get('node');
-      /** @var MicrositeInterface */
-      $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
-      $variables['microsite_info'] = [
-        'title' => $microsite->label(),
-        'url' => $microsite->getHome()->toUrl(),
-        'altTitle' => $microsite->label() . ' home page',
-        'hideImage' => FALSE,
-      ];
-    }
+  $node_full_view_routes = [
+    'entity.node.canonical',
+    'entity.node.revision',
+    'entity.node.preview',
+  ];
+
+  if (in_array(\Drupal::routeMatch()->getRouteName(), $node_full_view_routes)) {
+    $node = $params->get('node');
+    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
+    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+    $variables['microsite_info'] = [
+      'title' => $microsite->label(),
+      'url' => $microsite->getHome()->toUrl(),
+      'altTitle' => $microsite->label() . t(' home page'),
+      'hideImage' => FALSE,
+    ];
+  }
 }
 
 /**
@@ -63,9 +69,7 @@ function mass_microsites_preprocess_menu(&$variables) {
       $node = $params->get('node');
       $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
       $microsites = $microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
-      /**
-       * @var MicrositeInterface
-       */
+      /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
       $microsite = reset($microsites);
 
       $home_node = $microsite->getHome();
