@@ -104,6 +104,10 @@ function mass_microsites_theme($existing, $type, $theme, $path) {
       'template' => 'menu--entity-hierarchy-microsite',
       'base hook' => 'menu',
     ],
+    'block__mainnavigation_3__microsite' => [
+      'template' => 'block--mainnavigation-3--microsite',
+      'base hook' => 'block',
+    ],
   ];
 }
 
@@ -130,6 +134,25 @@ function mass_microsites_entity_hierarchy_microsite_links_alter(array &$links) {
     }
     if ($short_title = $node->get('field_short_title')->value) {
       $links[$key]['title'] = $short_title;
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function mass_microsites_theme_suggestions_block_alter(array &$suggestions, array &$variables) {
+  $params = \Drupal::routeMatch()->getParameters();
+  if ($params->has('node')) {
+    $node = $params->get('node');
+
+    /** @var ChildOfMicrositeLookup */
+    $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
+
+    if ($microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
+      if (isset($variables['elements']) && isset($variables['elements']['#id'])) {
+        $suggestions[] = 'block__' . str_replace('-', '_', $variables['elements']['#id']) . '__microsite';
+      }
     }
   }
 }
