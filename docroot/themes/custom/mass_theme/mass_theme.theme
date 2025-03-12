@@ -1515,7 +1515,6 @@ function mass_theme_preprocess_node_info_details(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
-    $page_title = $node->getTitle();
 
     // Create the map of all possible field names to use.
     $map = [
@@ -3899,7 +3898,8 @@ function mass_theme_preprocess_menu(&$variables) {
           // Get links.
           $panels = [];
           $panel = [];
-          if ($node->hasField('field_links')) {
+
+          if ($node->hasField('field_links') && $node->getTitle() != 'Log in to...') {
             $links = [];
             foreach ($node->get('field_links') as $link) {
               $uri = $link->uri;
@@ -3915,23 +3915,20 @@ function mass_theme_preprocess_menu(&$variables) {
             }
             $panel['links'] = $links;
           }
-          if ($node->hasField('body') && !$node->body->isEmpty()) {
-            $panel['description'] = [
-              'richText' => [
-                'rteElements' => [
-                  [
-                    'path' => '@atoms/11-text/paragraph.twig',
-                    'data' => [
-                      'paragraph' => [
-                        'text' => $node->hasField('body') ? strip_tags($node->body->value, '<br><a><b>') : '',
-                      ],
+          $panel['description'] = [
+            'richText' => [
+              'rteElements' => [
+                [
+                  'path' => '@atoms/11-text/paragraph.twig',
+                  'data' => [
+                    'paragraph' => [
+                      'text' => 'We have moved any relevant application login links below the page title where they are easier to find.',
                     ],
                   ],
                 ],
               ],
-            ];
-          }
-          $panel['class'] = 'gtm-login-global';
+            ],
+          ];
           $panels[] = $panel;
 
           $items[] = [

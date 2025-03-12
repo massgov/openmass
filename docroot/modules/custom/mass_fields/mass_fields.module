@@ -1135,6 +1135,16 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
             ],
           ];
           break;
+        case 'tableau_embed':
+          $dependee_field_name = 'field_tableau_embed_type';
+          $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]', $element['#field_parents'][0], $element['#field_parents'][1], $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+          // Dependent fields.
+          $element['subform']['field_tableau_url_token']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'connected_apps'],
+            ],
+          ];
+          break;
         case 'key_message_section':
           $dependee_field_name = 'field_background_type';
           $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);

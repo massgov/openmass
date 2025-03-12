@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.binder.field_application_login_links
     - field.field.node.binder.field_binder_appendix
     - field.field.node.binder.field_binder_banner_image
     - field.field.node.binder.field_binder_binder_type
@@ -27,6 +28,7 @@ dependencies:
     - field.field.node.binder.field_date_published
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
+    - field.field.node.binder.field_login_links_options
     - field.field.node.binder.field_organizations
     - field.field.node.binder.field_primary_parent
     - field.field.node.binder.field_reusable_label
@@ -80,6 +82,8 @@ third_party_settings:
         - field_binder_serial_number
         - field_binder_overview
         - field_primary_parent
+        - field_login_links_options
+        - field_application_login_links
         - field_organizations
         - field_data_flag
         - field_binder_data_type
@@ -137,6 +141,51 @@ targetEntityType: node
 bundle: binder
 mode: default
 content:
+  field_application_login_links:
+    type: link_default
+    weight: 23
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        040aa824-b3ad-447a-9411-72ae048f2471:
+          entity_type: node
+          bundle: org_page
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
+        db35bfe1-ab04-470e-a6c0-9727589a74b7:
+          entity_type: node
+          bundle: binder
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_binder_appendix:
     type: entity_reference_paragraphs
     weight: 34
@@ -165,7 +214,7 @@ content:
     third_party_settings: {  }
   field_binder_data_type:
     type: options_buttons
-    weight: 24
+    weight: 26
     region: content
     settings: {  }
     third_party_settings:
@@ -200,6 +249,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_binder_overview:
     type: entity_reference_paragraphs
@@ -237,7 +287,7 @@ content:
     third_party_settings: {  }
   field_binder_related:
     type: link_default
-    weight: 33
+    weight: 34
     region: content
     settings:
       placeholder_url: ''
@@ -273,7 +323,7 @@ content:
     third_party_settings: {  }
   field_collections:
     type: entity_reference_tree
-    weight: 31
+    weight: 33
     region: content
     settings:
       theme: default
@@ -301,7 +351,7 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 23
+    weight: 25
     region: content
     settings: {  }
     third_party_settings:
@@ -340,7 +390,7 @@ content:
             selector: ''
   field_data_format:
     type: options_buttons
-    weight: 26
+    weight: 28
     region: content
     settings: {  }
     third_party_settings:
@@ -365,7 +415,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 25
+    weight: 27
     region: content
     settings: {  }
     third_party_settings:
@@ -389,7 +439,7 @@ content:
             selector: ''
   field_data_search_content:
     type: string_textarea
-    weight: 28
+    weight: 30
     region: content
     settings:
       rows: 5
@@ -415,7 +465,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 27
+    weight: 29
     region: content
     settings:
       start_minimized: true
@@ -466,18 +516,25 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
   field_intended_audience:
     type: options_buttons
-    weight: 30
+    weight: 32
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_login_links_options:
+    type: options_buttons
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 22
+    weight: 24
     region: content
     settings:
       match_operator: CONTAINS
@@ -498,7 +555,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 29
+    weight: 31
     region: content
     settings:
       match_operator: CONTAINS
