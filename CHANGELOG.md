@@ -1,5 +1,29 @@
 
 
+## [0.429.0] - March 11, 2025
+
+### Changed
+  - DP-36119: Change sticky table header to be sensitive to browser zoom.
+  - DP-36332: Login links architecture.
+  - DP-37860: Split New Relic AP keys between user and license types.
+  - DP-37981: Changed help text for Form Platform field on form content type to reflect limited production use of Gravity.
+  
+### Added
+  - DP-36769: Normalize Mass Forms iframe URL handling
+  - DP-37481: Add Tableau Connected Apps variation of Tableau component.
+  - DP-37503: Enabled the "Entity Hierarchy Microsite" module.
+  - DP-37503: Added microsite menu block to breadcrumbs region.
+  - DP-37798: Add Turkish language to Drupal site.
+  - DP-37870: Added max retry limit for Acquia notifications requests.
+  
+### Removed
+  - DP-37567: Remove mosaic tiles folding on mobile.
+  
+### Fixed
+  - DP-37609: Update packages identified by Dependabot.
+  
+
+
 ## [0.428.0] - March 4, 2025
 
 ### Changed
