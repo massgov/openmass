@@ -332,7 +332,7 @@ class DeployCommands extends DrushCommands {
       $operationResponse = $databases->copy($env_from->get('uuid'), 'massgov', $env_target->get('uuid'));
       $href = $operationResponse->links->notification->href;
       /** @noinspection PhpParamsInspection */
-      $this->waitForTaskToComplete(basename($href), 30);
+      $this->waitForTaskToComplete(basename($href), 30, 180);
     }
 
     if ($options['skip-maint'] == FALSE) {
@@ -522,10 +522,11 @@ class DeployCommands extends DrushCommands {
    *
    * @throws \Exception
    */
-  public function waitForTaskToComplete(string $uuid, int $interval = 5) {
+  public function waitForTaskToComplete(string $uuid, int $interval = 5, int $max_retries = 120) {
     $client = $this->getClient();
+    $retries = 0;
 
-    while (TRUE) {
+    while ($retries < $max_retries) {
       $notification = (new Notifications($client))->get($uuid);
       if ($notification->status == 'completed') {
         $this->logger()->success(dt('!desc is complete: Notification !uuid.', ['!desc' => $notification->description, '!uuid' => $uuid]));
@@ -535,6 +536,10 @@ class DeployCommands extends DrushCommands {
         throw new \Exception(dt("!desc - Notification !uuid failed.", ['!desc' => $notification->description, '!uuid' => $uuid]));
       }
       else {
+        $retries++;
+        if ($retries == $max_retries) {
+          throw new \Exception(dt("Notification max retries reached. Failing job."));
+        }
         $this->logger()->notice(dt('!desc: Will re-check Notification !uuid for completion in !interval seconds.', ['!desc' => $notification->description, '!uuid' => $uuid, '!interval' => $interval]));
         sleep($interval);
       }

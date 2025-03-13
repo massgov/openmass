@@ -3899,6 +3899,23 @@ function mass_theme_preprocess_menu(&$variables) {
           // Get links.
           $panels = [];
           $panel = [];
+
+          if ($node->hasField('field_links') && $node->getTitle() != 'Log in to...') {
+            $links = [];
+            foreach ($node->get('field_links') as $link) {
+              $uri = $link->uri;
+              $is_external = UrlHelper::isExternal($uri);
+              $links[] = [
+                'type' => $is_external ? 'external' : 'internal',
+                'text' => $link->computed_title,
+                'href' => $is_external ? $uri : Url::fromUri($uri),
+              ];
+              if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
+                $variables['#cache']['tags'][] = 'node:' . preg_replace('/\D/', '', $uri);
+              }
+            }
+            $panel['links'] = $links;
+          }
           $panel['description'] = [
             'richText' => [
               'rteElements' => [
