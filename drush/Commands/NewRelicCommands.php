@@ -4,6 +4,7 @@ namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
+use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
 use Drush\Drush;
@@ -30,6 +31,17 @@ final class NewRelicCommands extends DrushCommands {
       $nr_api_key = getenv('MASS_NEWRELIC_LICENSE_KEY');
       $nr_account_id = getenv('MASS_NEWRELIC_APPLICATION');
 
+      if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
+        $environment = "{$_ENV['AH_SITE_GROUP']}.{$_ENV['AH_SITE_ENVIRONMENT']}";
+      }
+      else {
+        $environment = getenv('TUGBOAT_ROOT') ? 'tugboat' : 'local';
+      }
+
+      $startTime = \Drupal::time()->getRequestMicroTime();
+      $endTime = \Drupal::time()->getCurrentMicroTime();
+      $duration = $endTime - $startTime;
+
       $stack = $this->getStack();
       $client = new Client(['handler' => $stack]);
       $options = [
@@ -40,6 +52,9 @@ final class NewRelicCommands extends DrushCommands {
           [
             'eventType' => 'drushCommand',
             'name' => $name,
+            'environment' => $environment,
+            'status' => 'success',
+            'duration' => $duration,
           ],
         ],
       ];
