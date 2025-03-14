@@ -31,14 +31,54 @@
  * http://www.w3.org/TR/WCAG-TECHS/H42.html for more information.
  */
 #}
+
+
 {# Hamburger menu only for non home pages #}
 <nav class="ma__header__hamburger__nav" aria-label="main navigation" id="main-navigation">
+
+  {# Centering container #}
   <div class="ma__header__hamburger-wrapper">
 
+    {# Hamburger & Mass.gov link #}
     <div class="ma__header__hamburger__button-container js-sticky-header">
-      <a class="ma__header__hamburger__menu-button" href="/">Mass.gov</a>
-    </div>{# .ma__header__hamburger__button-container #}
 
+      {# Hamburger to open flyout #}
+      <button
+        type="button"
+        aria-label="Open the main menu for mass.gov"
+        aria-expanded="false"
+        class="ma__header__hamburger__menu-button js-header-menu-button"
+      >
+        <span class="ma__header__hamburger__menu-icon"></span>
+        {# Visible menu label is managed with CSS.  The button has aria-label and the button label via aria-label is visible to screen reader users. #}
+        <span class="ma__header__hamburger__menu-text--mobile js-header__menu-text--mobile show">
+          Mass.gov
+        </span>
+        <span class="ma__header__hamburger__menu-text js-header__menu-text show">
+          Menu
+        </span>
+        <span class="ma__header__hamburger__menu-text--close js-header__menu-text--close">
+          Close
+        </span>
+      </button>
+
+      {# Link to Mass.gov homepage (only visible within microsites) #}
+      <a href="/" class="ma__header__hamburger__menu-home-link">
+        {% include directory ~ "/templates/includes/atoms-svg.html.twig" with {'iconName': 'home'} %}
+        <span>Mass.gov</span>
+      </a>
+
+      {# Skip button to search. (only visible on mobile)#}
+      <button type="button"
+              aria-expanded="false"
+              class="ma__header__hamburger__search-access-button js-header-search-access-button">
+        <span class="ma__visually-hidden">Access to search</span>
+        {{ icon('search') }}
+      </button>
+
+    </div>
+
+    {# Desktop utility nav #}
     <div class="ma__header__hamburger__utility-nav ma__header__hamburger__utility-nav--wide js-utility-nav--wide">
       {{ render_menu('utility') }}
     </div>
@@ -47,5 +87,24 @@
 
     {{ title_suffix }}
 
+    {# Mobile Fly-out area #}
+    <div class="ma__header__hamburger__nav-container" aria-hidden="true">
+      <div class="ma__header__hamburger__logo ma__header__hamburger__logo--mobile">
+        {% include "@atoms/09-media/site-logo.twig" with {...microsite_info, sealImage} only %}
+      </div>
+      {% if not search_header_suppression_flag %}
+        <div class="ma__header__hamburger__nav-search js-header__nav-search">
+          {% include "@molecules/header-search.twig" %}
+        </div>
+      {% endif %}
+      <div class="ma__header__hamburger__main-nav">
+        {% block content %}
+          {{ content }}
+        {% endblock %}
+      </div>
+      <div class="ma__header__hamburger__utility-nav ma__header__hamburger__utility-nav--narrow js-utility-nav--narrow">
+        {{ render_menu('utility') }}
+      </div>
+    </div>
   </div>
 </nav>
