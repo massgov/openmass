@@ -92,6 +92,12 @@ function mass_microsites_preprocess_menu__utility(&$variables) {
 function mass_microsites_preprocess_block(&$variables) {
   if ($variables['elements']['#id'] == 'mainnavigation_3') {
     if ($microsite = _get_microsite()) {
+      $variables['microsite_info'] = [
+        'title' => $microsite->label(),
+        'url' => $microsite->getHome()->toUrl(),
+        'altTitle' => $microsite->label() . ' ' . t('home page'),
+        'hideImage' => FALSE,
+      ];
     }
   }
 }
