@@ -36,22 +36,11 @@ function mass_microsites_node_update(NodeInterface $node) {
  * Implements hook_preprocess_HOOK().
  */
 function mass_microsites_preprocess_page(&$variables) {
-  $params = \Drupal::routeMatch()->getParameters();
-
-  $node_full_view_routes = [
-    'entity.node.canonical',
-    'entity.node.revision',
-    'entity.node.preview',
-  ];
-
-  if (in_array(\Drupal::routeMatch()->getRouteName(), $node_full_view_routes)) {
-    $node = $params->get('node');
-    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
-    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+  if ($microsite = _get_microsite()) {
     $variables['microsite_info'] = [
       'title' => $microsite->label(),
       'url' => $microsite->getHome()->toUrl(),
-      'altTitle' => $microsite->label() . t(' home page'),
+      'altTitle' => $microsite->label() . ' ' . t('home page'),
       'hideImage' => FALSE,
     ];
   }
@@ -63,45 +52,55 @@ function mass_microsites_preprocess_page(&$variables) {
 function mass_microsites_preprocess_menu(&$variables) {
 
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'entity-hierarchy-microsite') {
-    $params = \Drupal::routeMatch()->getParameters();
+    $variables['mainNav'] = [];
 
-    if ($params->has('node')) {
-      $node = $params->get('node');
-      $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
-      $microsites = $microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
-      /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
-      $microsite = reset($microsites);
+    foreach ($variables['items'] as $item) {
+      $navitem = [
+        "text" => $item['title'],
+        "href" => $item['url'],
+        "active" => $item['in_active_trail'],
+        "altClass" => $item['altClass'] ?? FALSE,
+      ];
 
-      $home_node = $microsite->getHome();
-      $home_title = $home_node->label();
-      if ($short_title = $home_node->get('field_short_title')->value) {
-        $home_title = $short_title;
-      }
-
-      // Duplicate and translate menu structure for use with patternlab
-      $variables['mainNav'] = [];
-
-      foreach ($variables['items'] as $item) {
-        $navitem = [
-          "text" => $item['title'],
-          "href" => $item['url'],
-          "active" => $item['in_active_trail'],
-          "altClass" => $item['altClass'] ?? FALSE,
-        ];
-
-        if ($item['below']) {
-          $navitem['subNav'] = [];
-          foreach ($item['below'] as $subitem) {
-            $navitem['subNav'][] = [
-              "text" => $subitem['title'],
-              "href" => $subitem['url'],
-            ];
-          }
+      if ($item['below']) {
+        $navitem['subNav'] = [];
+        foreach ($item['below'] as $subitem) {
+          $navitem['subNav'][] = [
+            "text" => $subitem['title'],
+            "href" => $subitem['url'],
+          ];
         }
-
-        $variables['mainNav'][] = $navitem;
       }
+
+      $variables['mainNav'][] = $navitem;
     }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_microsites_preprocess_menu__utility(&$variables) {
+  if ($microsite = _get_microsite()) {
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_microsites_preprocess_block(&$variables) {
+  if ($variables['elements']['#id'] == 'mainnavigation_3') {
+    if ($microsite = _get_microsite()) {
+    }
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function mass_microsites_page_attachments(array &$attachments) {
+  if (_get_microsite()) {
+    $attachments['#attached']['library'][] = 'mass_microsites/microsites';
   }
 }
 
@@ -165,17 +164,35 @@ function mass_microsites_entity_hierarchy_microsite_links_alter(array &$links) {
  * Implements hook_theme_suggestions_HOOK_alter().
  */
 function mass_microsites_theme_suggestions_block_alter(array &$suggestions, array &$variables) {
+  if (_get_microsite()) {
+    if (isset($variables['elements']) && isset($variables['elements']['#id'])) {
+      $suggestions[] = 'block__' . str_replace('-', '_', $variables['elements']['#id']) . '__microsite';
+    }
+  }
+}
+
+/**
+ * Helper function to get the nearest microsite.
+ *
+ * @return \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface|false
+ */
+function _get_microsite() {
   $params = \Drupal::routeMatch()->getParameters();
-  if ($params->has('node')) {
+
+  $node_full_view_routes = [
+    'entity.node.canonical',
+    'entity.node.revision',
+    'entity.node.preview',
+  ];
+
+  if (in_array(\Drupal::routeMatch()->getRouteName(), $node_full_view_routes)) {
     $node = $params->get('node');
-
-    /** @var ChildOfMicrositeLookup */
-    $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
-
-    if ($microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
-      if (isset($variables['elements']) && isset($variables['elements']['#id'])) {
-        $suggestions[] = 'block__' . str_replace('-', '_', $variables['elements']['#id']) . '__microsite';
-      }
+    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
+    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+    if ($microsite) {
+      return $microsite;
+    } else {
+      return FALSE;
     }
   }
 }
