@@ -44,22 +44,22 @@
 {% set card_link = content.field_url.0['#url'] %}
 {% set eyebrow = content.field_image_card_eyebrow.0 %}
 
-<a href="{{ card_link }}" class="ma__card--image-card-link">
-<div class="ma__card  ma__card--image-card">
+<a href="{{ card_link }}" class="ma__card--vertical-card-link">
+<div class="ma__card  ma__card--vertical-card">
   <div class="ma__card__wrapper">
       <div class="ma__card__img">
         {{ content.field_image }}
       </div>
-    <div class="ma__card__content ma__card__content--image-card">
+    <div class="ma__card__content ma__card__content--vertical-card">
       {% if eyebrow %}
-        <div class="ma__general-teaser__eyebrow ma__card__eyebrow--image-card">
+        <div class="ma__general-teaser__eyebrow ma__card__eyebrow--vertical-card">
           {{ content.field_image_card_eyebrow }}
         </div>
       {% endif %}
         <h3 class="ma__card__title">
           <span>{{ content.field_main_heading }}&nbsp;{{ icon('arrow') }}</span>
         </h3>
-      <div class="ma__card__details ma__card__details--image-card">
+      <div class="ma__card__details ma__card__details--vertical-card">
         <div class="ma__card__text">
           {{ content.field_rich_text_description }}
         </div>
