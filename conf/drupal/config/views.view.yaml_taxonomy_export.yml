@@ -9,6 +9,7 @@ dependencies:
     - user
     - views_autocomplete_filters
     - views_bulk_operations
+    - views_porter_stemmer
 id: yaml_taxonomy_export
 label: 'YAML Taxonomy Export'
 module: views
@@ -252,7 +253,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'use mass dashboard'
       cache:
         type: tag
         options: {  }
@@ -447,7 +448,10 @@ display:
             format: basic_html
           tokenize: false
       footer: {  }
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
     cache_metadata:
       max-age: 0
       contexts:
