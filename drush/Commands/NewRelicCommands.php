@@ -4,7 +4,6 @@ namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\AnnotatedCommand\Hooks\HookManager;
-use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
 use Drush\Attributes as CLI;
 use Drush\Boot\DrupalBootLevels;
 use Drush\Drush;
@@ -42,6 +41,8 @@ final class NewRelicCommands extends DrushCommands {
       $endTime = \Drupal::time()->getCurrentMicroTime();
       $duration = $endTime - $startTime;
 
+      $status = !$result ? 'success' : json_encode($result);
+
       $stack = $this->getStack();
       $client = new Client(['handler' => $stack]);
       $options = [
@@ -53,7 +54,7 @@ final class NewRelicCommands extends DrushCommands {
             'eventType' => 'drushCommand',
             'name' => $name,
             'environment' => $environment,
-            'status' => 'success',
+            'status' => $status,
             'duration' => $duration,
           ],
         ],
