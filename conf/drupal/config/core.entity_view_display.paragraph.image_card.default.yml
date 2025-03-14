@@ -1,0 +1,68 @@
+uuid: ca9f4ecc-0333-4840-bcdd-38b27a2a89a9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.image_card.field_image
+    - field.field.paragraph.image_card.field_image_card_eyebrow
+    - field.field.paragraph.image_card.field_main_heading
+    - field.field.paragraph.image_card.field_rich_text_description
+    - field.field.paragraph.image_card.field_url
+    - image.style.image_card
+    - paragraphs.paragraphs_type.image_card
+  module:
+    - image
+    - mass_content
+    - text
+id: paragraph.image_card.default
+targetEntityType: paragraph
+bundle: image_card
+mode: default
+content:
+  field_image:
+    type: image
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: image_card
+      image_loading:
+        attribute: lazy
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_image_card_eyebrow:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_main_heading:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_rich_text_description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_url:
+    type: dynamic_link_separate
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 3
+    region: content
+hidden: {  }
