@@ -9,8 +9,18 @@
 
 {# // @TODO hide the title, overflow hidden to service section #}
 
-{% set section_style_class = section_style == 'enhanced' ? 'service-section--enhanced' : 'service-section--simple' %}
+{% set get_section_style = content.field_section_style.0['#markup']|replace({'_': '-'}) %}
+{% set two_column_check = content.field_two_column['#items'].value %}
+{% if two_column_check %}
+  {% set two_column_class = "-two-column" %}
+{% else %}
+  {% set two_column_class = "" %}
+{% endif %}
+{% set section_style_class = 'service-section--' ~ get_section_style ~ two_column_class %}
 {% set hide_title_class = hide_heading ? 'service-section--hidden-title' : '' %}
+
+{% set section_style_link = content.field_service_section_link.0 %}
+{% set section_style_subtitle = content.field_subtitle.0 %}
 
 <div class="service-section {{ section_style_class }} {{ hide_title_class }}">
 
@@ -25,27 +35,74 @@
 
     {% block stackRowTitle %}
       {% if heading %}
-        {% if section_style == 'enhanced' %}
-          {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
-            "coloredHeadingFromLeft": {
-              "bgColor": "blue",
-              "title": (content.field_service_section_heading|field_value)
-            }}
-          %}
-        {% else %}
-          <div class="ma__stacked-row__container">
-            <div class="ma__stacked-row__title">
-              {% set compHeading = {
-                  "title": stackedRowSection.title,
-                  "sub": "",
-                  "color": "",
-                  "id": stackedRowSection.id
-                }
-              %}
-              {% include "@atoms/04-headings/comp-heading.twig" %}
+          {% if section_style == 'enhanced' and two_column_class != '-two-column' %}
+            {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
+              "coloredHeadingFromLeft": {
+                "bgColor": "blue",
+                "title": (content.field_service_section_heading|field_value)
+              }}
+            %}
+            {# Subtitle and CTA Link #}
+            {% if section_style_link or section_style_subtitle %}
+              <div class="ma__service-heading-content">
+                {# Subtitle #}
+                {% if section_style_subtitle %}
+                  <div class="ma__service-subtitle">
+                    {{ section_style_subtitle }}
+                  </div>
+                {% endif %}
+
+                {# Link #}
+                {% if section_style_link %}
+                  <div class="ma__service-link">
+                    <span class="ma__decorative-link">
+                      <a href="{{ content.field_service_section_link[0]['#url'] }}" class="js-clickable-link">
+                        {{ content.field_service_section_link[0]['#title'] }}
+                        {{ icon('arrow') }}
+                      </a>
+                    </span>
+                  </div>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="ma__stacked-row__container">
+              <div class="ma__stacked-row__title">
+                {% set compHeading = {
+                    "title": stackedRowSection.title,
+                    "sub": "",
+                    "color": "",
+                    "id": stackedRowSection.id
+                  }
+                %}
+                {% include "@atoms/04-headings/comp-heading.twig" %}
+              </div>
+
+              {# Reprinted to avoid the Enhanced wrapper #}
+              {% if section_style_link or section_style_subtitle %}
+                <div class="ma__service-heading-content">
+                  {# Subtitle #}
+                  {% if section_style_subtitle %}
+                    <div class="ma__service-subtitle">
+                      {{ section_style_subtitle }}
+                    </div>
+                  {% endif %}
+
+                  {# Link #}
+                  {% if section_style_link %}
+                    <div class="ma__service-link">
+                      <span class="ma__decorative-link">
+                        <a href="{{ content.field_service_section_link[0]['#url'] }}" class="js-clickable-link">
+                          {{ content.field_service_section_link[0]['#title'] }}
+                          {{ icon('arrow') }}
+                        </a>
+                      </span>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
             </div>
-          </div>
-        {% endif %}
+          {% endif %}
       {% endif %}
     {% endblock %}
 

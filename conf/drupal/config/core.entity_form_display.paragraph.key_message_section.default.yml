@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.paragraph.key_message_section.field_background_type
     - field.field.paragraph.key_message_section.field_button
+    - field.field.paragraph.key_message_section.field_eyebrow
     - field.field.paragraph.key_message_section.field_image
     - field.field.paragraph.key_message_section.field_main_heading
     - field.field.paragraph.key_message_section.field_rich_text_description
@@ -28,13 +29,13 @@ mode: default
 content:
   field_background_type:
     type: options_buttons
-    weight: 6
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
   field_button:
     type: link_default
-    weight: 5
+    weight: 4
     region: content
     settings:
       placeholder_url: ''
@@ -46,9 +47,17 @@ content:
         maxlength_js_enforce: true
       mass_validation:
         internal_link_content_type_blacklist: {  }
+  field_eyebrow:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_image:
     type: image_image
-    weight: 7
+    weight: 6
     region: content
     settings:
       progress_indicator: throbber
@@ -57,7 +66,7 @@ content:
       conditional_fields: {  }
   field_main_heading:
     type: string_textfield
-    weight: 1
+    weight: 0
     region: content
     settings:
       size: 60
@@ -65,7 +74,7 @@ content:
     third_party_settings: {  }
   field_rich_text_description:
     type: text_textarea
-    weight: 4
+    weight: 3
     region: content
     settings:
       rows: 5
@@ -82,14 +91,14 @@ content:
       conditional_fields: {  }
   field_section_background_color:
     type: options_buttons
-    weight: 8
+    weight: 7
     region: content
     settings: {  }
     third_party_settings:
       conditional_fields: {  }
   field_section_text_overlay_color:
     type: options_buttons
-    weight: 9
+    weight: 8
     region: content
     settings: {  }
     third_party_settings:
@@ -100,7 +109,7 @@ content:
       conditional_fields: {  }
   field_sub_heading:
     type: string_textfield
-    weight: 3
+    weight: 1
     region: content
     settings:
       size: 60

@@ -9,9 +9,13 @@
  */
 #}
 {% set subtitle = '' %}
+{% set eyebrow = '' %}
 {% set description = {} %}
 {% if paragraph.field_sub_heading is not empty %}
   {% set subtitle = paragraph.field_sub_heading.value %}
+{% endif %}
+{% if paragraph.field_eyebrow is not empty %}
+  {% set eyebrow = paragraph.field_eyebrow.value %}
 {% endif %}
 {% if paragraph.field_rich_text_description is not empty %}
   {% set description = {
@@ -42,6 +46,7 @@ set keyMessage = {
     "bgImage": content.field_image,
     "mobileBgImage": "",
     "subtitle": subtitle,
+    "eyebrow": eyebrow,
     "description": description,
     "button": button
   }
