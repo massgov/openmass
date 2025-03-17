@@ -1,0 +1,7 @@
+services:
+  mass_microsites.microsite_lookup:
+    class: Drupal\mass_microsites\ChildOfMicrositeLookup
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_hierarchy.nested_set_storage_factory'
+      - '@entity_hierarchy.nested_set_node_factory'

@@ -5,6 +5,11 @@
  * Primary module hooks for Mass Microsites module.
  */
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Entity\Element\EntityAutocomplete;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
 use Drupal\node\NodeInterface;
 use Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup;
@@ -145,4 +150,69 @@ function mass_microsites_entity_hierarchy_microsite_links_alter(array &$links) {
       $links[$key]['title'] = $short_title;
     }
   }
+}
+
+/**
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
+ *
+ * Alters the entity_reference_hierarchy_autocomplete widget for the
+ * field_primary_parent field in order to add some logic that will show the
+ * weight field only when a value is set that is part of a microsite.
+ */
+function mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter(array &$element, FormStateInterface $form_state, array $context) {
+  $items = $context['items'];
+  if (!$items instanceof FieldItemListInterface) {
+    return;
+  }
+  $field_name = $items->getFieldDefinition()->getName();
+  if ($field_name !== 'field_primary_parent') {
+    return;
+  }
+  $element['#after_build'][] = '_mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build';
+  $element['#attributes']['id'] = 'mass-microsites-field-primary-parent-wrapper';
+}
+
+/**
+ * #after_build callback for entity_reference_hierarchy_autocomplete widget for
+ * the field_primary_parent field. Adds logic that will show the weight field
+ * only when a value is set that is part of a microsite.
+ *
+ * @param array $element
+ *   The form API render array for the widget.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   Form state.
+ *
+ * @return array|void
+ *   Render array of the altered form element.
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ */
+function _mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build(array $element, FormStateInterface $form_state) {
+  $entity = $form_state->getFormObject()->getEntity();
+  // Ignore non-node entities.
+  if (!$entity instanceof NodeInterface) {
+    return;
+  }
+  /** @var \Drupal\mass_microsites\ChildOfMicrositeLookup $microsite_lookup */
+  $microsite_lookup = \Drupal::service('mass_microsites.microsite_lookup');
+  if ($parent_id = $form_state->getValue(['field_primary_parent', '0', 'target_id'])) {
+    $parent_id = trim(reset($parent_id));
+    if (!is_numeric($parent_id)) {
+      $parent_id = trim(EntityAutocomplete::extractEntityIdFromAutocompleteInput($parent_id));
+    }
+    $parent_id = (int) $parent_id;
+  }
+  else {
+    $parent_id = $entity->get('field_primary_parent')->target_id;
+  }
+  $element['weight']['#access'] = $parent_id && $microsite_lookup->hasMicrositeForChildNodeParentNid($entity, $parent_id, 'field_primary_parent');
+  return $element;
+}
+
+/**
+ * Implements hook_microsites_mass_hierarchy_breadcrumb_ajax_alter().
+ */
+function mass_microsites_mass_hierarchy_breadcrumb_ajax_alter(AjaxResponse $response, array &$form, FormStateInterface $form_state) {
+  $response->addCommand(new ReplaceCommand('#mass-microsites-field-primary-parent-wrapper', $form['field_primary_parent']['widget'][0]));
 }
