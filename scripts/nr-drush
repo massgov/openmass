@@ -42,6 +42,10 @@ ended=$(date +%s)
 # calculate duration in seconds
 duration=$((${ended}-${started}))
 
+# get newrelic environment variables
+MASS_NEWRELIC_APPLICATION=$(drush php-eval "echo getenv('MASS_NEWRELIC_APPLICATION');")
+MASS_NEWRELIC_LICENSE_KEY=$(drush php-eval "echo getenv('MASS_NEWRELIC_LICENSE_KEY');")
+
 # build json for newrelic
 events_json='[
 { "eventType": "drushCommand",
