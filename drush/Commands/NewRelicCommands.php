@@ -41,8 +41,6 @@ final class NewRelicCommands extends DrushCommands {
       $endTime = \Drupal::time()->getCurrentMicroTime();
       $duration = $endTime - $startTime;
 
-      $status = !$result ? 'success' : json_encode($result);
-
       $stack = $this->getStack();
       $client = new Client(['handler' => $stack]);
       $options = [
@@ -54,7 +52,6 @@ final class NewRelicCommands extends DrushCommands {
             'eventType' => 'drushCommand',
             'name' => $name,
             'environment' => $environment,
-            'status' => $status,
             'duration' => $duration,
           ],
         ],
