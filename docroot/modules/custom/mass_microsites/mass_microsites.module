@@ -36,7 +36,7 @@ function mass_microsites_node_update(NodeInterface $node) {
  * Implements hook_preprocess_HOOK().
  */
 function mass_microsites_preprocess_page(&$variables) {
-  if ($microsite = _get_microsite()) {
+  if ($microsite = _mass_microsites_get_microsite()) {
     $variables['microsite_info'] = [
       'title' => $microsite->label(),
       'url' => $microsite->getHome()->toUrl(),
@@ -81,7 +81,7 @@ function mass_microsites_preprocess_menu(&$variables) {
  * Implements hook_preprocess_HOOK().
  */
 function mass_microsites_preprocess_menu__utility(&$variables) {
-  if ($microsite = _get_microsite()) {
+  if ($microsite = _mass_microsites_get_microsite()) {
     $variables['items'] = [];
   }
 }
@@ -90,8 +90,8 @@ function mass_microsites_preprocess_menu__utility(&$variables) {
  * Implements hook_preprocess_HOOK().
  */
 function mass_microsites_preprocess_block(&$variables) {
-  if ($variables['elements']['#id'] == 'mainnavigation_3') {
-    if ($microsite = _get_microsite()) {
+  if ($variables['elements']['#id'] == 'mass_theme_nearestmicrositemenu_2') {
+    if ($microsite = _mass_microsites_get_microsite()) {
       $variables['microsite_info'] = [
         'title' => $microsite->label(),
         'url' => $microsite->getHome()->toUrl(),
@@ -106,7 +106,7 @@ function mass_microsites_preprocess_block(&$variables) {
  * Implements hook_page_attachments().
  */
 function mass_microsites_page_attachments(array &$attachments) {
-  if (_get_microsite()) {
+  if (_mass_microsites_get_microsite()) {
     $attachments['#attached']['library'][] = 'mass_microsites/microsites';
   }
 }
@@ -129,13 +129,33 @@ function mass_microsites_help($route_name, \Drupal\Core\Routing\RouteMatchInterf
  */
 function mass_microsites_theme($existing, $type, $theme, $path) {
   return [
-    'menu__entity_hierarchy_microsite' => [
-      'template' => 'menu--entity-hierarchy-microsite',
+    'menu__mass_theme_nearestmicrositemenu' => [
+      'template' => 'menu--mass-theme-nearestmicrositemenu',
+      'base hook' => 'menu',
+    ],
+    'menu__mass_theme_nearestmicrositemenu_2' => [
+      'template' => 'menu--mass-theme-nearestmicrositemenu-2',
       'base hook' => 'menu',
     ],
     'block__mainnavigation_3__microsite' => [
       'template' => 'block--mainnavigation-3--microsite',
       'base hook' => 'block',
+    ],
+    'block__mass_microsite_desktop_nav' => [
+      'template' => 'block--mass-microsite-desktop-nav',
+      'base hook' => 'block',
+    ],
+    'block__mass_microsite_header_bar' => [
+      'template' => 'block--mass-microsite-header-bar',
+      'base hook' => 'block',
+    ],
+    'page__microsite__node__without_main' => [
+      'template' => 'page--microsite--node--without-main',
+      'base hook' => 'page',
+    ],
+    'page__microsite' => [
+      'template' => 'page--microsite',
+      'base hook' => 'page',
     ],
   ];
 }
@@ -171,9 +191,38 @@ function mass_microsites_entity_hierarchy_microsite_links_alter(array &$links) {
  * Implements hook_theme_suggestions_HOOK_alter().
  */
 function mass_microsites_theme_suggestions_block_alter(array &$suggestions, array &$variables) {
-  if (_get_microsite()) {
-    if (isset($variables['elements']) && isset($variables['elements']['#id'])) {
-      $suggestions[] = 'block__' . str_replace('-', '_', $variables['elements']['#id']) . '__microsite';
+  if (_mass_microsites_get_microsite()) {
+    if ($variables['elements']['#plugin_id'] === 'mass_microsite_menu') {
+      if ($variables['elements']['#id'] === 'mass_theme_nearestmicrositemenu') {
+        $suggestions[] = 'block__mass_microsite_desktop_nav';
+      }
+
+      if ($variables['elements']['#id'] === 'mass_theme_nearestmicrositemenu_2') {
+        $suggestions[] = 'block__mass_microsite_header_bar';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function mass_microsites_theme_suggestions_page_alter(array &$suggestions, array &$variables) {
+  $node = _mass_microsites_get_node();
+
+  if ($node && _mass_microsites_get_microsite()) {
+
+    $without_main = [
+      'binder',
+      'info_details',
+      'guide_page',
+      'service_page',
+    ];
+    if (in_array($node->getType(), $without_main)) {
+      array_splice($suggestions, 1, 0, 'page__microsite__node__without_main');
+    }
+    else {
+      array_splice($suggestions, 1, 0, 'page__microsite');
     }
   }
 }
@@ -181,9 +230,28 @@ function mass_microsites_theme_suggestions_block_alter(array &$suggestions, arra
 /**
  * Helper function to get the nearest microsite.
  *
- * @return \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface|false
+ * @return \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface|False
+ *   The microsite object or FALSE if no microsite is found.
  */
-function _get_microsite() {
+function _mass_microsites_get_microsite() {
+  if ($node = _mass_microsites_get_node()) {
+    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
+    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+    if ($microsite) {
+      return $microsite;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Helper function to get the node based on the current route.
+ *
+ * @return \Drupal\node\NodeInterface|False
+ *   The node object or FALSE if no node is found.
+ */
+function _mass_microsites_get_node() {
   $params = \Drupal::routeMatch()->getParameters();
 
   $node_full_view_routes = [
@@ -193,13 +261,9 @@ function _get_microsite() {
   ];
 
   if (in_array(\Drupal::routeMatch()->getRouteName(), $node_full_view_routes)) {
-    $node = $params->get('node');
-    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
-    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
-    if ($microsite) {
-      return $microsite;
-    } else {
-      return FALSE;
-    }
+    return $params->get('node');
+  }
+  else {
+    return FALSE;
   }
 }
