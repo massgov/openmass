@@ -30,12 +30,7 @@ final class NewRelicCommands extends DrushCommands {
       $nr_api_key = getenv('MASS_NEWRELIC_LICENSE_KEY');
       $nr_account_id = getenv('MASS_NEWRELIC_APPLICATION');
 
-      if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
-        $environment = "{$_ENV['AH_SITE_GROUP']}.{$_ENV['AH_SITE_ENVIRONMENT']}";
-      }
-      else {
-        $environment = getenv('TUGBOAT_ROOT') ? 'tugboat' : 'local';
-      }
+      $environment = isset($_ENV['AH_SITE_ENVIRONMENT']) ? "{$_ENV['AH_SITE_GROUP']}.{$_ENV['AH_SITE_ENVIRONMENT']}" : 'local';
 
       $startTime = \Drupal::time()->getRequestMicroTime();
       $endTime = \Drupal::time()->getCurrentMicroTime();

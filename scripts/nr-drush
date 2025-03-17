@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+if [[ $# -ne 2 ]]; then
+  echo "Script requires two parameters:" >&2
+  echo "${0} <drush command> <nrname>" >&2
+  exit 2
+fi
+
+if [[ $1 != "drush"* ]]; then
+  echo "First argument needs to be a drush command"
+  echo "${0} <drush command> <nrname>" >&2
+  exit 2
+fi
+
+# if there is a $HOME/.ssh/environment file,
+# then read each line and export each variable from the file
+SSH_ENVIRONMENT=$HOME/.ssh/environment
+if [[ -f "${SSH_ENVIRONMENT}" ]]; then
+   #export each of the variables from the file
+   while read line; do export $line; done < ${SSH_ENVIRONMENT}
+fi
+
+# set event name
+nrname=$2
+
+# set environment
+if [ -n "${AH_SITE_ENVIRONMENT}" ]; then
+  environment="${AH_SITE_GROUP}.${AH_SITE_ENVIRONMENT}"
+else
+  environment="local"
+fi
+
+# run command
+started=$(date +%s)
+if eval $1; then
+  status="success"
+else
+  status="fail"
+fi
+ended=$(date +%s)
+
+# calculate duration in seconds
+duration=$((${ended}-${started}))
+
+# build json for newrelic
+events_json='[
+{ "eventType": "drushCommand",
+"name": "'"${nrname}"'",
+"environment": "'"${environment}"'",
+"status": "'"${status}"'",
+"duration": "'"${duration}"'" } ]'
+
+# read json and post to newrelic insights
+echo ${events_json} | curl -d @- -X POST -H "Content-Type: application/json" -H "X-Insert-Key: ${MASS_NEWRELIC_LICENSE_KEY}" https://insights-collector.newrelic.com/v1/accounts/${MASS_NEWRELIC_APPLICATION}/events
+
+# capture return code and exit (on non-zero).
+RC=$?
+if (( $RC )); then
+  exit $RC;
+fi
