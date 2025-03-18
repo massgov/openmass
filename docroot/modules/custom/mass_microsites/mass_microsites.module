@@ -52,7 +52,7 @@ function mass_microsites_preprocess_page(&$variables) {
 function mass_microsites_preprocess_menu(&$variables) {
 
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'entity-hierarchy-microsite') {
-    $variables['mainNav'] = [];
+    $variables['navItems'] = [];
 
     foreach ($variables['items'] as $item) {
       $navitem = [
@@ -72,7 +72,7 @@ function mass_microsites_preprocess_menu(&$variables) {
         }
       }
 
-      $variables['mainNav'][] = $navitem;
+      $variables['navItems'][] = $navitem;
     }
   }
 }
