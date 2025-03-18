@@ -40,6 +40,7 @@
  * @ingroup themeable
  */
 #}
+{% set show_image_cards = content.field_use_image_cards['#items'].value %}
 {% if numOfSections %}
   {% for i in range(1, numOfSections) %}
     {% if sectionContent[i]['sectionThreeUp'] %}
@@ -47,12 +48,19 @@
       {% set linkHeading = 3 %}
       <section class="ma__sections-3up">
         <div class="ma__sections-3up__container">
+        {% if show_image_cards %}
+          {% for sectionLinks in sectionThreeUp.sections %}
+            {% set sectionLinks = sectionLinks|merge({'level': linkHeading}) %}
+            {% include "@molecules/card.twig" %}
+          {% endfor %}
+        {% else %}
           {% block sectionLinks %}
             {% for sectionLinks in sectionThreeUp.sections %}
               {% set sectionLinks = sectionLinks|merge({'level': linkHeading}) %}
               {% include "@molecules/section-links.twig" with sectionLinks %}
             {% endfor %}
           {% endblock %}
+        {% endif %}
         </div>
       </section>
     {% endif %}

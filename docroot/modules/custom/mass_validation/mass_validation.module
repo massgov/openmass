@@ -14,6 +14,7 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_help().
@@ -1971,5 +1972,76 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
   if ($overview_populated === FALSE && $section_populated === FALSE) {
     $form_state->setError($form['field_info_detail_overview']['widget'][0]['value'], t('One of these fields should be populated: "Overview" or "Sections"'));
     $form_state->setErrorByName('group_content', t('One of these fields should be populated: "Overview" or "Sections"'));
+  }
+}
+
+/**
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
+ */
+function mass_validation_field_widget_single_element_entity_reference_paragraphs_form_alter(array &$element, FormStateInterface $form_state, array $context) {
+  $var_blah = $element['#paragraph_type'];
+  if ($element['#paragraph_type'] === 'card') {
+    // Toggles fields to show if the "Use image card" checkbox is checked.
+    
+    // Get the paragraphs field that contain the link fields.
+      $paragraphs = $form_state->getValues();
+      // Validate each paragraph.
+      foreach ($paragraphs as $key => $paragraph) {
+        // Verify this is a paragraph with fields.
+        if (array_key_exists('subform', $paragraph)) {
+          // Look at each link field in the paragraph.
+          // BREAKS HERE
+          foreach ($element as $field_name) {
+            if (!empty($paragraph['subform'][$field_name])) {
+              foreach ($paragraph['subform'][$field_name] as $field_key => $field) {
+                if (is_array($field)) {
+                  $use_image_card = $element['field_use_image_cards']['#value'];
+                  if ($use_image_card === TRUE) {
+                    $element['subform']['field_card_eyebrow']['#states'] = [
+                      'visible' => [
+                        $use_image_card => ['checked' => TRUE],
+                      ],
+                    ];
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+    //$element['#attached']['library'][] = 'mass_validation/card_paragraph';
+
+    // Selector for "Use Image Card" checkbox.
+    $use_image_card = ':input[data-drupal-selector*="-subform-field-use-image-cards-value"]';
+
+    $element['subform']['field_card_eyebrow']['#states'] = [
+      'visible' => [
+        $use_image_card => ['checked' => TRUE],
+      ],
+    ];
+    $element['subform']['field_card_content']['#states'] = [
+      'visible' => [
+        $use_image_card => ['checked' => TRUE],
+      ],
+    ];
+    $element['subform']['field_content']['#states'] = [
+      'invisible' => [
+        $use_image_card => ['checked' => TRUE],
+      ],
+    ];
+
+    $element['subform']['field_image']['#states'] = [
+      'visible' => [
+        $use_image_card => ['checked' => TRUE],
+      ],
+    ];
+    $element['subform']['field_card_link']['#states'] = [
+      'required' => [
+        $use_image_card => ['checked' => TRUE],
+      ],
+    ];
+    
+
   }
 }
