@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\file\Entity\File;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
@@ -355,29 +356,6 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
       $fields['computed_related_to'] = $field_definition;
     }
 
-    // Add computed log in links field onto child content types.
-    $log_in_link_bundles = [
-      'binder',
-      'curated_list',
-      'decision_tree',
-      'form_page',
-      'guide_page',
-      'how_to_page',
-      'info_details',
-      'location',
-      'location_details',
-      'service_details',
-    ];
-    if (in_array($bundle, $log_in_link_bundles)) {
-      $fields['computed_log_in_links'] = BaseFieldDefinition::create('link')
-        ->setLabel(t('Computed Log in links'))
-        ->setComputed(TRUE)
-        ->setSetting('link_type', 17)
-        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
-        ->setClass('\Drupal\mass_content\Field\LogInLinks')
-        ->setDisplayConfigurable('view', TRUE);
-    }
-
     if ($bundle === 'org_page') {
       $fields['recent_news'] = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Recent news'))
@@ -575,11 +553,6 @@ function mass_content_paragraph_view(array &$build, EntityInterface $entity, Ent
  */
 function mass_content_theme() {
   return [
-    'mass_content_contextual_log_in_links' => [
-      'variables' => [
-        'links' => NULL,
-      ],
-    ],
     'mass_content_tableau_embed' => [
       'variables' => [
         'url' => NULL,
@@ -864,6 +837,11 @@ function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables
                 }
                 $render_array['mid'] = $media->id();
                 $render_array['media'] = $media;
+                $language = $media->language();
+
+                // Get the human-readable language name
+                $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
+                $render_array['language'] = $language_name;
                 _mass_translations_media_helper($render_array);
                 $links[$index]['download_link'] = $render_array;
               }
@@ -991,6 +969,11 @@ function mass_content_preprocess_paragraph__flexible_link_group(&$variables) {
                   }
                   $render_array['mid'] = $media->id();
                   $render_array['media'] = $media;
+                  $language = $media->language();
+
+                  // Get the human-readable language name
+                  $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
+                  $render_array['language'] = $language_name;
                   _mass_translations_media_helper($render_array);
                   $links[$index]['download_link'] = $render_array;
                 }

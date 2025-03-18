@@ -80,6 +80,7 @@ third_party_settings:
         - field_bg_wide
         - field_image_credit
         - field_primary_parent
+        - field_application_login_links
         - field_organizations
         - field_reusable_label
       label: 'Title Banner'
@@ -119,7 +120,6 @@ third_party_settings:
         - field_hide_short_description
         - field_sub_brand
         - field_org_page_thumbnail
-        - field_application_login_links
         - field_social_links
         - group_organization_parent_mass_g
         - field_organization_type
@@ -213,7 +213,7 @@ third_party_settings:
       label: 'Mass.gov Organization search filter'
       region: content
       parent_name: group_overview
-      weight: 135
+      weight: 145
       format_type: fieldset
       format_settings:
         classes: ''
@@ -222,12 +222,11 @@ third_party_settings:
         description: ''
         required_fields: true
     group_organization_parent_mass_g:
-      children:
-        - field_include_parent_org_search
+      children: {  }
       label: 'Organization parent Mass.gov search filter'
       region: content
       parent_name: group_overview
-      weight: 132
+      weight: 142
       format_type: fieldset
       format_settings:
         classes: ''
@@ -242,12 +241,13 @@ mode: default
 content:
   field_application_login_links:
     type: link_default
-    weight: 130
+    weight: 12
     region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields: {  }
   field_bg_wide:
     type: image_focal_point
     weight: 9
@@ -261,7 +261,7 @@ content:
       conditional_fields: {  }
   field_billing_organization:
     type: dynamic_entity_reference_options_select
-    weight: 136
+    weight: 146
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -279,7 +279,7 @@ content:
     third_party_settings: {  }
   field_career_opportunities:
     type: link_default
-    weight: 11
+    weight: 12
     region: content
     settings:
       placeholder_url: ''
@@ -287,7 +287,7 @@ content:
     third_party_settings: {  }
   field_feedback_com_link:
     type: link_default
-    weight: 134
+    weight: 12
     region: content
     settings:
       placeholder_url: ''
@@ -330,14 +330,14 @@ content:
     third_party_settings: {  }
   field_hide_short_description:
     type: boolean_checkbox
-    weight: 127
+    weight: 136
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_image_credit:
     type: string_textfield
-    weight: 11
+    weight: 10
     region: content
     settings:
       size: 60
@@ -345,7 +345,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 137
+    weight: 147
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -377,7 +377,7 @@ content:
     third_party_settings: {  }
   field_org_always_show_help_page:
     type: boolean_checkbox
-    weight: 136
+    weight: 13
     region: content
     settings:
       display_label: true
@@ -392,14 +392,14 @@ content:
     third_party_settings: {  }
   field_org_no_search_filter:
     type: boolean_checkbox
-    weight: 134
+    weight: 12
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_org_page_thumbnail:
     type: image_image
-    weight: 129
+    weight: 138
     region: content
     settings:
       progress_indicator: throbber
@@ -419,7 +419,7 @@ content:
     third_party_settings: {  }
   field_organization_type:
     type: options_buttons
-    weight: 133
+    weight: 143
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -435,7 +435,7 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 134
+    weight: 144
     region: content
     settings:
       match_operator: CONTAINS
@@ -510,7 +510,7 @@ content:
             selector: ''
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 12
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -521,7 +521,7 @@ content:
     third_party_settings: {  }
   field_public_records_link:
     type: link_default
-    weight: 12
+    weight: 13
     region: content
     settings:
       placeholder_url: ''
@@ -539,7 +539,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 15
+    weight: 14
     region: content
     settings:
       match_operator: CONTAINS
@@ -585,7 +585,7 @@ content:
     third_party_settings: {  }
   field_social_links:
     type: link_default
-    weight: 131
+    weight: 141
     region: content
     settings:
       placeholder_url: ''
@@ -593,7 +593,7 @@ content:
     third_party_settings: {  }
   field_sub_brand:
     type: image_image
-    weight: 128
+    weight: 137
     region: content
     settings:
       progress_indicator: throbber
@@ -601,7 +601,7 @@ content:
     third_party_settings: {  }
   field_sub_title:
     type: string_textarea
-    weight: 126
+    weight: 135
     region: content
     settings:
       rows: 5
@@ -624,7 +624,7 @@ content:
     third_party_settings: {  }
   field_urgent_warning:
     type: boolean_checkbox
-    weight: 137
+    weight: 14
     region: content
     settings:
       display_label: true

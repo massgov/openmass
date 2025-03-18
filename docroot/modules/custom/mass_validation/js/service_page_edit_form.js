@@ -18,10 +18,14 @@
       this.initVars(context);
       // Update the form based on the value of the Subtype field.
       self.updateElements(context);
-
+      // Attach event listener to template field.
       $('#edit-field-template', context).on('change', function () {
         self.updateElements(context);
       });
+      // Check if the targeted div exists before checking for the Two Column field.
+      if ($('[data-drupal-selector*="-subform-field-two-column-wrapper"]', context).length) {
+        self.handleCheckboxToggle(context);
+      }
     },
 
     initVars: function (context) {
@@ -66,6 +70,46 @@
         this.$conditionallyRequiredFields.removeClass('form-required');
         this.$conditionallyHide.removeClass('js-hide');
       }
+    },
+
+    // Add toggle functionality to the Two Column field for hiding/showing the Subtitle and Service Section Link fields.
+    handleCheckboxToggle: function (context) {
+      $('[data-drupal-selector*="-subform-field-two-column-wrapper"]', context).each(function () {
+        var $wrapper = $(this);
+        var $checkbox = $wrapper.find('input[type="checkbox"]');
+        var $subtitleWrapper = $wrapper.siblings('[data-drupal-selector*="-subform-field-subtitle-wrapper"]');
+        var $serviceSectionWrapper = $wrapper.siblings('[data-drupal-selector*="-subform-field-service-section-link-wrapper"]');
+
+        function toggleVisibility() {
+          if ($checkbox.is(':checked')) {
+            $subtitleWrapper.show();
+            $serviceSectionWrapper.show();
+          }
+          else {
+            $subtitleWrapper.hide();
+            $serviceSectionWrapper.hide();
+          }
+        }
+
+        toggleVisibility();
+      });
+
+      // Toggle the visibility of the Subtitle and Service Section Link fields.
+      $('[data-drupal-selector*="-subform-field-two-column-wrapper"] input[type="checkbox"]', context).on('change', function () {
+        var $checkbox = $(this);
+        var $wrapper = $checkbox.closest('[data-drupal-selector*="-subform-field-two-column-wrapper"]');
+        var $subtitleWrapper = $wrapper.siblings('[data-drupal-selector*="-subform-field-subtitle-wrapper"]');
+        var $serviceSectionWrapper = $wrapper.siblings('[data-drupal-selector*="-subform-field-service-section-link-wrapper"]');
+
+        if ($checkbox.is(':checked')) {
+          $subtitleWrapper.show();
+          $serviceSectionWrapper.show();
+        }
+        else {
+          $subtitleWrapper.hide();
+          $serviceSectionWrapper.hide();
+        }
+      });
     }
   };
 
