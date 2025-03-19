@@ -1982,7 +1982,7 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
  * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
 function mass_validation_field_widget_single_element_entity_reference_paragraphs_form_alter(array &$element, FormStateInterface $form_state, array $context) {
-  if ($element['#paragraph_type'] === 'info_details_card_group') {
+  if ($element['#paragraph_type'] === 'info_details_card_group' && isset($element['subform']['field_use_image_cards']['widget']['value'])) {
     $element['subform']['field_use_image_cards']['widget']['value']['#attributes']['class'][] = _mass_validation_form_hierarchy_class_helper('field-use-image-cards-checkbox', $element['subform']['field_use_image_cards']['widget']['value']['#field_parents']);
   }
   else if ($element['#paragraph_type'] === 'card') {
