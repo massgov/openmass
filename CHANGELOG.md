@@ -1,5 +1,14 @@
 
 
+## [0.430.0] - March 18, 2025
+
+### Changed
+  - DP-37834: Adds two new style options to the 'Service Section' Paragraph type, as well as two new fields. Adds a new field, 'Eyebrow' to the 'Key Message Section' Paragraph type.
+  - DP-37859: Document description is missing the word English.
+  - DP-37980: Updated nrname option to send more information.
+  
+
+
 ## [0.429.0] - March 11, 2025
 
 ### Changed
