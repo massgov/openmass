@@ -7,55 +7,65 @@ $bp-l-ex: 1000px !default;
 $bp-xl:   1200px !default;
 */
 
-/*
- * Link To Home Page
- */
-.ma__header__hamburger__menu-home-link {
-  color: #fff;
-  display: inline-flex;
-  gap: 0.5em;
-  align-items: center;
-  text-decoration: none;
-}
-
-.ma__header__hamburger__menu-home-link:hover {
-  text-decoration: underline;
-}
-
-.ma__header__hamburger__menu-home-link svg {
-  width: 17px;
-  height: 15px;
-  fill: currentColor;
-  opacity: 0.7;
-}
-
-/* $bp-header-toggle */
-@media (max-width: 940px) {
+/* wrapping styles in html to boost specificity */
+html {
+  .ma__header__hamburger {
+    background-color: transparent;
+  }
+  /*
+  * Link To Home Page
+  */
   .ma__header__hamburger__menu-home-link {
-    display: none !important;
+    color: #fff;
+    display: inline-flex;
+    gap: 0.5em;
+    align-items: center;
+    text-decoration: none;
   }
-}
 
-/*
- * Hamburger Menu
- */
-/* $bp-header-toggle */
-@media (min-width: 941px) {
-  .ma__header__hamburger__menu-button {
-    display: none !important;
+  .ma__header__hamburger__menu-home-link:hover {
+    text-decoration: underline;
   }
-}
 
-/*
- * Desktop Nav
- */
- @media (max-width: 941px) {
+  .ma__header__hamburger__menu-home-link svg {
+    width: 17px;
+    height: 15px;
+    fill: currentColor;
+    opacity: 0.7;
+  }
+
+  /* $bp-header-toggle */
+  @media (max-width: 940px) {
+    .ma__header__hamburger__menu-home-link {
+      display: none;
+    }
+  }
+
+  /*
+  * Hamburger Menu
+  */
+  /* $bp-header-toggle */
+  @media (min-width: 941px) {
+    .ma__header__hamburger__menu-button {
+      display: none;
+    }
+  }
+
+  /*
+  * Desktop Nav
+  */
   .ma__microsite-desktop-nav {
-    display: none !important;
+    border-block: 1px solid #dcdcdc;
   }
-}
 
-.ma__relationship-indicators {
-  display: none !important;
-}
+  @media (max-width: 941px) {
+    .ma__microsite-desktop-nav {
+      display: none;
+    }
+  }
 
+  .ma__relationship-indicators {
+    display: none;
+  }
+
+}
