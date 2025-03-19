@@ -66,4 +66,5 @@ class FilterHeadingAutoId extends FilterBase {
 
     return $id;
   }
+
 }
