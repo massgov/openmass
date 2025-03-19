@@ -40,6 +40,7 @@
  * @ingroup themeable
  */
 #}
+
 {% set show_image_cards = content.field_use_image_cards['#items'].value %}
 {% if numOfSections %}
   {% for i in range(1, numOfSections) %}
@@ -49,15 +50,32 @@
       <section class="ma__sections-3up">
         <div class="ma__sections-3up__container">
         {% if show_image_cards %}
-          {% for sectionLinks in sectionThreeUp.sections %}
-            {% set sectionLinks = sectionLinks|merge({'level': linkHeading}) %}
-            {% include "@molecules/card.twig" %}
+            {% for card_paragraph in paragraph.field_card %}
+              {% if card_paragraph.entity %}
+                {% set card_title = card_paragraph.entity.field_card_header.value %}
+                {% set card_link = card_paragraph.entity.field_card_link.0.url %}
+                {% set card_content = card_paragraph.entity.field_card_content.value %}
+                {% set card_eyebrow = card_paragraph.entity.field_card_eyebrow.value %}
+                {% set card_image = card_paragraph.entity.field_image.entity.uri.value|file_url %}
+                {%
+                  set card = {
+                    'card': {
+                      'link': card_link,
+                      'thumbnail': card_image,
+                      'title': card_title,
+                      'text': card_content, 
+                      'eyebrow': card_eyebrow,
+                      'usage': 'vertical'
+                    }
+                  }
+                %}
+                {% include "@molecules/card.twig" with card %}
+              {% endif %}
           {% endfor %}
         {% else %}
           {% block sectionLinks %}
-            {% for sectionLinks in sectionThreeUp.sections %}
-              {% set sectionLinks = sectionLinks|merge({'level': linkHeading}) %}
-              {% include "@molecules/section-links.twig" with sectionLinks %}
+            {% for sectionLink in sectionThreeUp.sections %}
+              {% include "@molecules/section-links.twig" with sectionLink %}
             {% endfor %}
           {% endblock %}
         {% endif %}

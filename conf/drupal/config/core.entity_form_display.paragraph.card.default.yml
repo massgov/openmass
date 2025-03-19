@@ -3,16 +3,16 @@ langcode: en
 status: true
 dependencies:
   config:
-    - entity_browser.browser.browse_files_modal
     - field.field.paragraph.card.field_card_content
     - field.field.paragraph.card.field_card_eyebrow
     - field.field.paragraph.card.field_card_header
     - field.field.paragraph.card.field_card_link
     - field.field.paragraph.card.field_content
     - field.field.paragraph.card.field_image
+    - image.style.medium
     - paragraphs.paragraphs_type.card
   module:
-    - entity_browser
+    - image
     - link
     - maxlength
     - text
@@ -66,18 +66,12 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_image:
-    type: entity_browser_file
+    type: image_image
     weight: 1
     region: content
     settings:
-      entity_browser: browse_files_modal
-      field_widget_edit: true
-      field_widget_remove: true
-      field_widget_replace: false
-      open: false
-      selection_mode: selection_append
-      view_mode: default
-      preview_image_style: thumbnail
+      progress_indicator: throbber
+      preview_image_style: medium
     third_party_settings: {  }
   paragraphs_type_help__default:
     weight: -100
