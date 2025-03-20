@@ -18,4 +18,12 @@
  *   - in_active_trail: TRUE if the link is in the active trail.
  */
 #}
-{% include '@molecules/secondary-nav.twig' %}
+{% set navItems = navItems|merge([{
+  'text': 'Mass.gov',
+  'href': path('<front>'),
+  'active': false,
+  'in_active_trail': false,
+  'altClass': false,
+}]) %}
+
+{% include '@molecules/secondary-nav-hamburger.twig' %}
