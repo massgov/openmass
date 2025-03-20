@@ -14,7 +14,6 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
-use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_help().
@@ -1982,13 +1981,14 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
  * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
  */
 function mass_validation_field_widget_single_element_entity_reference_paragraphs_form_alter(array &$element, FormStateInterface $form_state, array $context) {
+  // We need to setup a unique class for #states API to target. We're careful
+  // here to only set a class when the form is actually rendered to the page.
   if ($element['#paragraph_type'] === 'info_details_card_group' && isset($element['subform']['field_use_image_cards']['widget']['value'])) {
     $element['subform']['field_use_image_cards']['widget']['value']['#attributes']['class'][] = _mass_validation_form_hierarchy_class_helper('field-use-image-cards-checkbox', $element['subform']['field_use_image_cards']['widget']['value']['#field_parents']);
   }
+  // @todo test place where card's are used outside of a card group.
   else if ($element['#paragraph_type'] === 'card') {
-    // Toggles fields to show if the "Use image card" checkbox is checked.
-
-    // Selector for "Use Image Card" checkbox.
+    // Selector for "Use image cards with single call to action" checkbox.
     $use_image_card = sprintf('.%s', _mass_validation_form_hierarchy_class_helper('field-use-image-cards-checkbox', $element['#field_parents']));
 
     $element['subform']['field_card_eyebrow']['#states'] = [
@@ -2007,8 +2007,10 @@ function mass_validation_field_widget_single_element_entity_reference_paragraphs
       ],
     ];
 
-    // field_image should only be visible and required when field_use_image_cards
-    // is checked.
+    // field_image should only be visible and required when
+    // field_use_image_cards is checked. We use #states API to toggle required
+    // on the front-end, and an #element_validate function to validate that
+    // condition on the server side.
     $element['subform']['field_image']['#states'] = [
       'visible' => [
         $use_image_card => ['checked' => TRUE],
@@ -2017,8 +2019,6 @@ function mass_validation_field_widget_single_element_entity_reference_paragraphs
         $use_image_card => ['checked' => TRUE],
       ],
     ];
-    // We need a validation hook to conditionally check that an image is set
-    // when field_use_image_cards is checked.
     $element['subform']['field_image']['widget'][0]['#element_validate'][] = 'mass_validation_validate_image';
 
     // field_card_link should only be required when field_use_image_cards is
@@ -2041,12 +2041,10 @@ function mass_validation_field_widget_single_element_entity_reference_paragraphs
  *   The form element for field_card_link.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
- * @param array $complete_form
- *   The complete form that we're dealing with.
  *
  * @return void
  */
-function mass_validation_validate_card_link(array &$element, FormStateInterface $form_state, array &$complete_form) {
+function mass_validation_validate_card_link(array &$element, FormStateInterface $form_state) {
   if (!_mass_get_use_image_cards_value_from_card_element($element, $form_state)) {
     return;
   }
@@ -2065,12 +2063,10 @@ function mass_validation_validate_card_link(array &$element, FormStateInterface 
  *   The form element for field_image.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
- * @param array $complete_form
- *   The complete form that we're dealing with.
  *
  * @return void
  */
-function mass_validation_validate_image(array &$element, FormStateInterface $form_state, array &$complete_form) {
+function mass_validation_validate_image(array &$element, FormStateInterface $form_state) {
   if (!_mass_get_use_image_cards_value_from_card_element($element, $form_state)) {
     return;
   }
