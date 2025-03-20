@@ -12,7 +12,7 @@ dependencies:
     - image.style.medium
     - paragraphs.paragraphs_type.card
   module:
-    - image
+    - focal_point
     - link
     - maxlength
     - text
@@ -36,7 +36,11 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 45
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
   field_card_header:
     type: string_textfield
     weight: 0
@@ -66,12 +70,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_image:
-    type: image_image
+    type: image_focal_point
     weight: 1
     region: content
     settings:
       progress_indicator: throbber
       preview_image_style: medium
+      preview_link: true
+      offsets: '50,50'
     third_party_settings: {  }
   paragraphs_type_help__default:
     weight: -100
