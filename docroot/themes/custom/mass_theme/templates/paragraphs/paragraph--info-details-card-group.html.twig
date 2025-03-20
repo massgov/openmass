@@ -74,8 +74,9 @@
           {% endfor %}
         {% else %}
           {% block sectionLinks %}
-            {% for sectionLink in sectionThreeUp.sections %}
-              {% include "@molecules/section-links.twig" with sectionLink %}
+            {% for sectionLinks in sectionThreeUp.sections %}
+              {% set sectionLinks = sectionLinks|merge({'level': linkHeading}) %}
+              {% include "@molecules/section-links.twig" with sectionLinks %}
             {% endfor %}
           {% endblock %}
         {% endif %}
