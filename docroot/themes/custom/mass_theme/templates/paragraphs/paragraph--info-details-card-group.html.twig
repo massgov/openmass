@@ -56,7 +56,7 @@
                 {% set card_link = card_paragraph.entity.field_card_link.0.url %}
                 {% set card_content = card_paragraph.entity.field_card_content.value %}
                 {% set card_eyebrow = card_paragraph.entity.field_card_eyebrow.value %}
-                {% set card_image = card_paragraph.entity.field_image.entity.uri.value|file_url %}
+                {% set card_image = card_paragraph.entity.field_image.entity.uri.value|image_style('image_card') %}
                 {%
                   set card = {
                     'card': {
