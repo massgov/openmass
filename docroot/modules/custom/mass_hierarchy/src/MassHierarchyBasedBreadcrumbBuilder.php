@@ -125,7 +125,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
 
     /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface; $nearest_microsite */
     $nearest_microsite = $this->nearestMicrositeLookup->getNearestMicrosite($route_entity);
-    $microsite_root = $nearest_microsite ? $nearest_microsite->getHome() : NULL;
+    $microsite_root = $nearest_microsite?->getHome();
     $links = [];
     foreach ($ancestor_entities as $ancestor_entity) {
       if (!$ancestor_entities->contains($ancestor_entity)) {

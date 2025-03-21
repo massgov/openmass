@@ -40,7 +40,7 @@ function mass_microsites_preprocess_page(&$variables) {
     $variables['microsite_info'] = [
       'title' => $microsite->label(),
       'url' => $microsite->getHome()->toUrl(),
-      'altTitle' => $microsite->label() . ' ' . t('home page'),
+      'altTitle' => t('@label home page', ['@label' => $microsite->label()]),
       'hideImage' => FALSE,
     ];
   }
@@ -90,12 +90,12 @@ function mass_microsites_preprocess_menu__utility(&$variables) {
  * Implements hook_preprocess_HOOK().
  */
 function mass_microsites_preprocess_block(&$variables) {
-  if ($variables['elements']['#id'] == 'mass_theme_nearestmicrositemenu_2') {
+  if ($variables['elements']['#id'] === 'mass_theme_nearestmicrositemenu_2') {
     if ($microsite = _mass_microsites_get_microsite()) {
       $variables['microsite_info'] = [
         'title' => $microsite->label(),
         'url' => $microsite->getHome()->toUrl(),
-        'altTitle' => $microsite->label() . ' ' . t('home page'),
+        'altTitle' => t('@label home page', ['@label' => $microsite->label()]),
         'hideImage' => FALSE,
       ];
     }
@@ -241,8 +241,6 @@ function _mass_microsites_get_microsite() {
       return $microsite;
     }
   }
-
-  return FALSE;
 }
 
 /**
@@ -260,10 +258,10 @@ function _mass_microsites_get_node() {
     'entity.node.preview',
   ];
 
-  if (in_array(\Drupal::routeMatch()->getRouteName(), $node_full_view_routes)) {
-    return $params->get('node');
-  }
-  else {
-    return FALSE;
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  if (in_array($route_name, $node_full_view_routes)) {
+    $node = $route_name === 'entity.node.preview' ? $params->get('node_preview') : $params->get('node');
+    return $node;
   }
 }
