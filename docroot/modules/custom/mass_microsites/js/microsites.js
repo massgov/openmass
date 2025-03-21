@@ -1,24 +1,18 @@
-(function() {
+(function (once) {
   'use strict';
 
-  let hamburgerHeader, behaviorRun = false;
-
   Drupal.behaviors.microsites = {
-    attach: function(context, settings) {
-      hamburgerHeader = document.querySelector('.ma__header__hamburger__nav');
+    attach: function (context) {
+      var hamburgerHeader = once('microsite-header', '.ma__header__hamburger__nav', context)[0];
 
-      if (hamburgerHeader && !behaviorRun) {
-        behaviorRun = true;
-        document.addEventListener('nav-wrap-change', function(event) {
-          const {
-            detail: {
-              isWrapped
-            }
-          } = event;
+      if (hamburgerHeader) {
+        document.addEventListener('nav-wrap-change', function (event) {
+          var isWrapped = event.detail.isWrapped;
 
           if (isWrapped) {
             hamburgerHeader.classList.add('force-mobile');
-          } else {
+          }
+          else {
             hamburgerHeader.classList.remove('force-mobile');
           }
         });
@@ -26,4 +20,4 @@
     }
   };
 
-})();
+})(once);
