@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.paragraph.info_details_card_group.field_card
     - field.field.paragraph.info_details_card_group.field_section_title
+    - field.field.paragraph.info_details_card_group.field_use_image_cards
     - paragraphs.paragraphs_type.info_details_card_group
   module:
     - entity_reference_revisions
@@ -29,6 +30,16 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 0
+    region: content
+  field_use_image_cards:
+    type: boolean
+    label: hidden
+    settings:
+      format: boolean
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 6
     region: content
 hidden:
   paragraphs_type_help__default: true

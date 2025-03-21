@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.paragraph.info_details_card_group.field_card
     - field.field.paragraph.info_details_card_group.field_section_title
+    - field.field.paragraph.info_details_card_group.field_use_image_cards
     - paragraphs.paragraphs_type.info_details_card_group
   module:
     - paragraphs
@@ -15,7 +16,7 @@ mode: default
 content:
   field_card:
     type: entity_reference_paragraphs
-    weight: 4
+    weight: 2
     region: content
     settings:
       title: Paragraph
@@ -27,11 +28,18 @@ content:
     third_party_settings: {  }
   field_section_title:
     type: string_textfield
-    weight: 1
+    weight: 0
     region: content
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_use_image_cards:
+    type: boolean_checkbox
+    weight: 1
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   paragraphs_type_help__default:
     weight: 0
