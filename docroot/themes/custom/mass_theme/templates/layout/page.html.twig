@@ -75,7 +75,13 @@
 
     <div class="ma__header__container">
       <div class="ma__header__hamburger__logo" tabindex="-1">
-        {% include "@atoms/09-media/site-logo.twig" %}
+        {% include "@atoms/09-media/site-logo.twig" with {
+          title: microsite_info.title,
+          url: microsite_info.url,
+          altTitle: microsite_info.altTitle,
+          hideImage: microsite_info.hideImage,
+          sealImage,
+        } only %}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
@@ -99,7 +105,13 @@
 
     <div class="ma__header__container">
       <div class="ma__header__hamburger__logo" tabindex="-1">
-        {% include "@atoms/09-media/site-logo.twig" %}
+        {% include "@atoms/09-media/site-logo.twig" with {
+          title: microsite_info.title,
+          url: microsite_info.url,
+          altTitle: microsite_info.altTitle,
+          hideImage: microsite_info.hideImage,
+          sealImage,
+        } only %}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">

@@ -6,17 +6,42 @@ namespace Drupal\mass_hierarchy;
 
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_hierarchy\Storage\EntityTreeNodeMapperInterface;
+use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
+use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
+use Drupal\mass_microsites\NearestMicrositeLookup;
 use Drupal\node\Entity\Node;
 
 /**
  * Entity hierarchy based breadcrumb builder overrides.
  */
 class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilder {
+
+  /**
+   * The nearest microsite lookup service..
+   *
+   * @var \Drupal\mass_microsites\NearestMicrositeLookup
+   */
+  protected $nearestMicrositeLookup;
+
+  public function __construct(
+    NestedSetStorageFactory $storage_factory,
+    NestedSetNodeKeyFactory $node_key_factory,
+    EntityTreeNodeMapperInterface $mapper,
+    EntityFieldManagerInterface $entity_field_manager,
+    AdminContext $admin_context,
+    NearestMicrositeLookup $nearest_microsite_lookup,
+  ) {
+    parent::__construct($storage_factory, $node_key_factory, $mapper, $entity_field_manager, $admin_context);
+    $this->nearestMicrositeLookup = $nearest_microsite_lookup;
+  }
 
   /**
    * {@inheritdoc}
@@ -98,6 +123,9 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     // Pass in the breadcrumb object for caching.
     $ancestor_entities = $this->mapper->loadAndAccessCheckEntitysForTreeNodes($entity_type, $ancestors, $breadcrumb);
 
+    /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface; $nearest_microsite */
+    $nearest_microsite = $this->nearestMicrositeLookup->getNearestMicrosite($route_entity);
+    $microsite_root = $nearest_microsite?->getHome();
     $links = [];
     foreach ($ancestor_entities as $ancestor_entity) {
       if (!$ancestor_entities->contains($ancestor_entity)) {
@@ -105,6 +133,12 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
         continue;
       }
       $entity = $ancestor_entities->offsetGet($ancestor_entity);
+
+      if ($microsite_root && empty($links) && $entity->id() !== $microsite_root->id()) {
+        // If we're in a microsite, and the entity is not the microsite root, and we havn't found the root yet, skip.
+        continue;
+      }
+
       $breadcrumb->addCacheableDependency($entity);
 
       // Show just the label for the entity from the route.
@@ -136,7 +170,11 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
       }
     }
 
-    array_unshift($links, Link::createFromRoute(new TranslatableMarkup('Home'), '<front>'));
+    if (!$microsite_root) {
+      // For microsites, the home link is the microsite root.
+      // If we're not in a microsite, add the home link.
+      array_unshift($links, Link::createFromRoute(new TranslatableMarkup('Home'), '<front>'));
+    }
     $breadcrumb->setLinks($links);
     return $breadcrumb;
   }
