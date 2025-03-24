@@ -1202,6 +1202,23 @@ function mass_content_views_data() {
 
   $data = [];
 
+  // Add the custom contextual login links field to the node base table.
+  $data['node']['contextual_login_links'] = [
+    'field' => [
+      'title' => t('Contextual login links'),
+      'help' => t('Displays contextual login links inherited from parent nodes.'),
+      'id' => 'contextual_login_links',
+    ],
+  ];
+
+  $data['node']['contextual_login_links_count'] = [
+    'field' => [
+      'title' => t('Contextual login links count'),
+      'help' => t('Displays the number of contextual login links from parent nodes.'),
+      'id' => 'contextual_login_links_count',
+    ],
+  ];
+
   $data['node']['rendered_entity_mixed'] = [
     'field' => [
       'title' => t('Rendered entity mixed'),
