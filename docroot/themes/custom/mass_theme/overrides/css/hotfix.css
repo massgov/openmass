@@ -100,3 +100,13 @@ body {
 p#fsrDescription {
   line-height: 1.6;
 }
+
+/*
+ * This fix should address visual regression issue for 1px offset.
+ * It should be removed once the issue is resolved in mayflower.
+ */
+ @media (min-width: 781px) {
+  .ma__header__hamburger__nav {
+      margin-bottom: -1px;
+  }
+}
