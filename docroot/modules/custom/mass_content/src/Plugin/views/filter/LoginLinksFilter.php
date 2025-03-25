@@ -4,21 +4,18 @@ namespace Drupal\mass_content\Plugin\views\filter;
 
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\mass_content\LogInLinksBuilder;
 
 /**
- * Filter nodes by whether they define or inherit login links from a selected node.
+ * Filter nodes by login links.
  *
- * @ViewsFilter("inherits_login_links_from")
+ * @ViewsFilter("login_links_filter")
  */
-class InheritsLoginLinksFrom extends FilterPluginBase implements ContainerFactoryPluginInterface {
+class LoginLinksFilter extends FilterPluginBase implements ContainerFactoryPluginInterface {
 
   /**
    * {@inheritdoc}
@@ -53,7 +50,7 @@ class InheritsLoginLinksFrom extends FilterPluginBase implements ContainerFactor
    */
   protected function getSelectionSettingsKey() {
     $selection_settings = [];
-    $data = serialize($selection_settings) . 'node' . 'default';
+    $data = serialize($selection_settings) . 'nodedefault';
     return Crypt::hmacBase64($data, Settings::getHashSalt());
   }
 
