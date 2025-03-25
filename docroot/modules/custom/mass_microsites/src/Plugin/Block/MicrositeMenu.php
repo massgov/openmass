@@ -11,6 +11,7 @@ use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
 use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
 use Drupal\entity_hierarchy_microsite\Plugin\MicrositePluginTrait;
+use Drupal\mass_microsites\NearestMicrositeLookup;
 use Drupal\node\NodeInterface;
 use Drupal\system\Plugin\Block\SystemMenuBlock;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -37,6 +38,8 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
 
   protected NestedSetNodeKeyFactory $nestedSetNodeKeyFactory;
 
+  protected NearestMicrositeLookup $nearestMicrositeLookup;
+
   /**
    * Constructs a new SystemMenuBlock.
    *
@@ -55,10 +58,11 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
    * @param NestedSetNodeKeyFactory $nested_set_node_key_factory
    *   The nested set node key service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, MenuLinkTreeInterface $menu_tree, MenuActiveTrailInterface $menu_active_trail, NestedSetStorageFactory $nested_set_storage_factory, NestedSetNodeKeyFactory $nested_set_node_key_factory) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, MenuLinkTreeInterface $menu_tree, MenuActiveTrailInterface $menu_active_trail, NestedSetStorageFactory $nested_set_storage_factory, NestedSetNodeKeyFactory $nested_set_node_key_factory, NearestMicrositeLookup $nearest_microsite_lookup) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $menu_tree, $menu_active_trail);
     $this->nestedSetStorageFactory = $nested_set_storage_factory;
     $this->nestedSetNodeKeyFactory = $nested_set_node_key_factory;
+    $this->nearestMicrositeLookup = $nearest_microsite_lookup;
   }
 
   /**
@@ -73,7 +77,8 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
       $container->get('menu.link_tree'),
       $container->get('menu.active_trail'),
       $container->get('entity_hierarchy.nested_set_storage_factory'),
-      $container->get('entity_hierarchy.nested_set_node_factory')
+      $container->get('entity_hierarchy.nested_set_node_factory'),
+      $container->get('mass_microsites.nearest_microsite_lookup')
     );
 
     return $instance->setChildOfMicrositeLookup(
@@ -99,7 +104,7 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     }
 
     /** @var MicrositeInterface $microsite */
-    $microsite = $this->selectNearestMicrosite($microsites, $node);
+    $microsite = $this->nearestMicrositeLookup->selectNearestMicrosite($microsites, $node);
     $cache->addCacheableDependency($node);
     $cache->addCacheableDependency($microsite);
     if ($home = $microsite->getHome()) {
@@ -157,53 +162,6 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     $build = $this->menuTree->build($tree);
     $cache->applyTo($build);
     return $build;
-  }
-
-  /**
-   * Select the nearest microsite based on the node's hierarchy.
-   *
-   * @param array<MicrositeInterface> $microsites
-   *   An array of microsites in which the node exists.
-   * @param NodeInterface $node
-   *   The node.
-   *
-   * @return MicrositeInterface
-   *   The microsite with the fewest pages between the current node and the microsite's "home" page.
-   */
-  private function selectNearestMicrosite(array $microsites, NodeInterface $node) {
-    /**
-     * The microsite for which the "homepage" is closest to the current node.
-     * @var MicrositeInterface|null
-     */
-    $nearest_microsite = NULL;
-    $microsites_by_home_id = [];
-
-    foreach ($microsites as $microsite) {
-      $microsites_by_home_id[$microsite->getHome()->id()] = $microsite;
-    }
-
-    if (count($microsites_by_home_id)) {
-      $nestedSetStorage = $this->nestedSetStorageFactory->get('field_primary_parent', 'node');
-      $key = $this->nestedSetNodeKeyFactory->fromEntity($node);
-
-      /**
-       * Array of ancestors in hierarchy, starting with field_primary_parent and climbing upward.
-       * @var Node[]
-       */
-      $ancestors = array_reverse($nestedSetStorage->findAncestors($key));
-
-      foreach ($ancestors as $ancestor) {
-        $ancestor_id = $ancestor->getNodeKey()->getId();
-        if (
-          !$nearest_microsite &&
-          isset($microsites_by_home_id[$ancestor_id])
-        ) {
-          $nearest_microsite = $microsites_by_home_id[$ancestor_id];
-        }
-      }
-    }
-
-    return $nearest_microsite;
   }
 
   /**
