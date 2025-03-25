@@ -64,46 +64,15 @@
 {% if hide_main_nav %}
   {% set header_class = ' ma__header--hidden' %}
 {% endif %}
-{% if header_version_mixed %}
-  <header class="ma__header__hamburger ma__header__mixed{{ header_class }}" id="header">
-    <div class="menu-overlay"></div>
-    <a class="ma__header__hamburger__skip-nav ma__visually-hidden focusable" href="#main-content">
-      {{ 'Skip to main content'|t }}
-    </a>
-
-    {{ page.header.mainnavigation_2 }}
-
-    <div class="ma__header__container">
-      <div class="ma__header__hamburger__logo" tabindex="-1">
-        {% include "@atoms/09-media/site-logo.twig" with {
-          title: microsite_info.title,
-          url: microsite_info.url,
-          altTitle: microsite_info.altTitle,
-          hideImage: microsite_info.hideImage,
-          sealImage,
-        } only %}
-      </div>
-      {% if not search_header_suppression_flag %}
-        <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
-          {% include "@molecules/header-search.twig" %}
-        </div>
-      {% endif %}
-    </div>
-
-    {{ page.header.mainnavigation }}
-
-    {{ page.header|without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
-  </header>
-{% else %}
   <header class="ma__header__hamburger{{ header_class }}" id="header">
     <div class="menu-overlay"></div>
     <a class="ma__header__hamburger__skip-nav" href="#main-content">
       {{ 'Skip to main content'|t }}
     </a>
 
-    {{ page.header.mainnavigation_3 }}
+    {{ page.header.mass_theme_nearestmicrositemenu_2 }}
 
-    <div class="ma__header__container">
+    <div class="ma__header__hamburger__container">
       <div class="ma__header__hamburger__logo" tabindex="-1">
         {% include "@atoms/09-media/site-logo.twig" with {
           title: microsite_info.title,
@@ -120,9 +89,16 @@
       {% endif %}
     </div>
 
-    {{ page.header|without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
+    {{ page.header|without(
+      'mainnavigation',
+      'mainnavigation_2',
+      'mainnavigation_3',
+      'mass_theme_nearestmicrositemenu',
+      'mass_theme_nearestmicrositemenu_2',
+    ) }}
+
+    {{ page.header.mass_theme_nearestmicrositemenu }}
   </header>
-{% endif %}
 {% block breadcrumb %}
   {% if page.breadcrumb %}
     {{ page.breadcrumb }}
