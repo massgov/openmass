@@ -3,11 +3,16 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.card.field_card_content
+    - field.field.paragraph.card.field_card_eyebrow
     - field.field.paragraph.card.field_card_header
     - field.field.paragraph.card.field_card_link
     - field.field.paragraph.card.field_content
+    - field.field.paragraph.card.field_image
+    - image.style.image_card
     - paragraphs.paragraphs_type.card
   module:
+    - image
     - link
     - text
 id: paragraph.card.default
@@ -15,17 +20,32 @@ targetEntityType: paragraph
 bundle: card
 mode: default
 content:
-  field_card_header:
+  field_card_content:
+    type: basic_string
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_card_eyebrow:
     type: string
-    label: above
+    label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
     weight: 2
     region: content
+  field_card_header:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
   field_card_link:
     type: link
-    label: above
+    label: hidden
     settings:
       trim_length: 80
       url_only: false
@@ -33,12 +53,23 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 0
+    weight: 5
     region: content
   field_content:
     type: text_default
-    label: above
+    label: hidden
     settings: {  }
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_image:
+    type: image
+    label: hidden
+    settings:
+      image_link: ''
+      image_style: image_card
+      image_loading:
+        attribute: lazy
     third_party_settings: {  }
     weight: 1
     region: content

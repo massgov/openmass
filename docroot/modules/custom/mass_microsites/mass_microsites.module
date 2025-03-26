@@ -40,63 +40,79 @@ function mass_microsites_node_update(NodeInterface $node) {
 /**
  * Implements hook_preprocess_HOOK().
  */
+function mass_microsites_preprocess_page(&$variables) {
+  if ($microsite = _mass_microsites_get_microsite()) {
+    $variables['microsite_info'] = [
+      'title' => $microsite->label(),
+      'url' => $microsite->getHome()->toUrl(),
+      'altTitle' => t('@label home page', ['@label' => $microsite->label()]),
+      'hideImage' => FALSE,
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
 function mass_microsites_preprocess_menu(&$variables) {
 
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'entity-hierarchy-microsite') {
-    $params = \Drupal::routeMatch()->getParameters();
+    $variables['navItems'] = [];
 
-    if ($params->has('node')) {
-      $node = $params->get('node');
-      $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
-      $microsites = $microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
-      /**
-       * @var MicrositeInterface
-       */
-      $microsite = reset($microsites);
-
-      $home_node = $microsite->getHome();
-      $home_title = $home_node->label();
-      if ($short_title = $home_node->get('field_short_title')->value) {
-        $home_title = $short_title;
-      }
-
-      $home_item = [
-        "is_expanded" => FALSE,
-        "is_collapsed" => FALSE,
-        "in_active_trail" => FALSE,
-        "title" => $home_title,
-        "url" => $microsite->getHome()->toUrl(),
-        "below" => [],
-        "altClass" => TRUE,
+    foreach ($variables['items'] as $item) {
+      $navitem = [
+        "text" => $item['title'],
+        "href" => $item['url'],
+        "active" => $item['in_active_trail'],
+        "altClass" => $item['altClass'] ?? FALSE,
       ];
 
-      // Adds home item to items array, but we're not going to use this for now.
-      array_unshift($variables['items'], $home_item);
-
-      // Duplicate and translate menu structure for use with patternlab
-      $variables['mainNav'] = [];
-
-      foreach ($variables['items'] as $item) {
-        $navitem = [
-          "text" => $item['title'],
-          "href" => $item['url'],
-          "active" => $item['in_active_trail'],
-          "altClass" => $item['altClass'] ?? FALSE,
-        ];
-
-        if ($item['below']) {
-          $navitem['subNav'] = [];
-          foreach ($item['below'] as $subitem) {
-            $navitem['subNav'][] = [
-              "text" => $subitem['title'],
-              "href" => $subitem['url'],
-            ];
-          }
+      if ($item['below']) {
+        $navitem['subNav'] = [];
+        foreach ($item['below'] as $subitem) {
+          $navitem['subNav'][] = [
+            "text" => $subitem['title'],
+            "href" => $subitem['url'],
+          ];
         }
-
-        $variables['mainNav'][] = $navitem;
       }
+
+      $variables['navItems'][] = $navitem;
     }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_microsites_preprocess_menu__utility(&$variables) {
+  if ($microsite = _mass_microsites_get_microsite()) {
+    $variables['items'] = [];
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_microsites_preprocess_block(&$variables) {
+  if ($variables['elements']['#id'] === 'mass_theme_nearestmicrositemenu_2') {
+    if ($microsite = _mass_microsites_get_microsite()) {
+      $variables['microsite_info'] = [
+        'title' => $microsite->label(),
+        'url' => $microsite->getHome()->toUrl(),
+        'altTitle' => t('@label home page', ['@label' => $microsite->label()]),
+        'hideImage' => FALSE,
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function mass_microsites_page_attachments(array &$attachments) {
+  if (_mass_microsites_get_microsite()) {
+    $attachments['#attached']['library'][] = 'mass_microsites/microsites';
   }
 }
 
@@ -118,9 +134,33 @@ function mass_microsites_help($route_name, \Drupal\Core\Routing\RouteMatchInterf
  */
 function mass_microsites_theme($existing, $type, $theme, $path) {
   return [
-    'menu__entity_hierarchy_microsite' => [
-      'template' => 'menu--entity-hierarchy-microsite',
+    'menu__mass_theme_nearestmicrositemenu' => [
+      'template' => 'menu--mass-theme-nearestmicrositemenu',
       'base hook' => 'menu',
+    ],
+    'menu__mass_theme_nearestmicrositemenu_2' => [
+      'template' => 'menu--mass-theme-nearestmicrositemenu-2',
+      'base hook' => 'menu',
+    ],
+    'block__mainnavigation_3__microsite' => [
+      'template' => 'block--mainnavigation-3--microsite',
+      'base hook' => 'block',
+    ],
+    'block__mass_microsite_desktop_nav' => [
+      'template' => 'block--mass-microsite-desktop-nav',
+      'base hook' => 'block',
+    ],
+    'block__mass_microsite_header_bar' => [
+      'template' => 'block--mass-microsite-header-bar',
+      'base hook' => 'block',
+    ],
+    'page__microsite__node__without_main' => [
+      'template' => 'page--microsite--node--without-main',
+      'base hook' => 'page',
+    ],
+    'page__microsite' => [
+      'template' => 'page--microsite',
+      'base hook' => 'page',
     ],
   ];
 }
@@ -173,9 +213,10 @@ function mass_microsites_field_widget_single_element_entity_reference_hierarchy_
 }
 
 /**
- * #after_build callback for entity_reference_hierarchy_autocomplete widget for
- * the field_primary_parent field. Adds logic that will show the weight field
- * only when a value is set that is part of a microsite.
+ * Alters #after_build callback for field_primary_parent field widget.
+ *
+ * Adds logic that will show the weight field only when a value is set
+ * that is part of a microsite.
  *
  * @param array $element
  *   The form API render array for the widget.
@@ -215,4 +256,83 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
  */
 function mass_microsites_mass_hierarchy_breadcrumb_ajax_alter(AjaxResponse $response, array &$form, FormStateInterface $form_state) {
   $response->addCommand(new ReplaceCommand('#mass-microsites-field-primary-parent-wrapper', $form['field_primary_parent']['widget'][0]));
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function mass_microsites_theme_suggestions_block_alter(array &$suggestions, array &$variables) {
+  if (_mass_microsites_get_microsite()) {
+    if ($variables['elements']['#plugin_id'] === 'mass_microsite_menu') {
+      if ($variables['elements']['#id'] === 'mass_theme_nearestmicrositemenu') {
+        $suggestions[] = 'block__mass_microsite_desktop_nav';
+      }
+
+      if ($variables['elements']['#id'] === 'mass_theme_nearestmicrositemenu_2') {
+        $suggestions[] = 'block__mass_microsite_header_bar';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function mass_microsites_theme_suggestions_page_alter(array &$suggestions, array &$variables) {
+  $node = _mass_microsites_get_node();
+
+  if ($node && _mass_microsites_get_microsite()) {
+
+    $without_main = [
+      'binder',
+      'info_details',
+      'guide_page',
+      'service_page',
+    ];
+    if (in_array($node->getType(), $without_main)) {
+      array_splice($suggestions, 1, 0, 'page__microsite__node__without_main');
+    }
+    else {
+      array_splice($suggestions, 1, 0, 'page__microsite');
+    }
+  }
+}
+
+/**
+ * Helper function to get the nearest microsite.
+ *
+ * @return \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface|False
+ *   The microsite object or FALSE if no microsite is found.
+ */
+function _mass_microsites_get_microsite() {
+  if ($node = _mass_microsites_get_node()) {
+    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
+    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+    if ($microsite) {
+      return $microsite;
+    }
+  }
+}
+
+/**
+ * Helper function to get the node based on the current route.
+ *
+ * @return \Drupal\node\NodeInterface|False
+ *   The node object or FALSE if no node is found.
+ */
+function _mass_microsites_get_node() {
+  $params = \Drupal::routeMatch()->getParameters();
+
+  $node_full_view_routes = [
+    'entity.node.canonical',
+    'entity.node.revision',
+    'entity.node.preview',
+  ];
+
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  if (in_array($route_name, $node_full_view_routes)) {
+    $node = $route_name === 'entity.node.preview' ? $params->get('node_preview') : $params->get('node');
+    return $node;
+  }
 }
