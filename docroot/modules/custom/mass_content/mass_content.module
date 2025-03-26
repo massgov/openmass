@@ -1208,7 +1208,7 @@ function mass_content_views_post_build(ViewExecutable $view) {
 
   if ($filter && !empty($filter->value)) {
     // Only override the pager if filter input exists.
-    $view->query->setLimit(5000);
+    $view->query->setLimit(1000);
   }
 }
 
