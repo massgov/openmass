@@ -1248,7 +1248,8 @@ function mass_content_views_post_execute(ViewExecutable $view) {
 
   // Get the current page from the view or query string
   $current_page = (int) ($view->getRequest()->query->get('page') ?? 0);
-  $current_page = min($current_page, $max_page); // Clamp to valid max page
+  // Clamp to valid max page
+  $current_page = min($current_page, $max_page);
 
   // Set pager manually
   $view->pager->setItemsPerPage($page_size);
@@ -1261,7 +1262,6 @@ function mass_content_views_post_execute(ViewExecutable $view) {
 
   $view->total_rows = $total;
 }
-
 
 /**
  * Implements hook_views_data().
