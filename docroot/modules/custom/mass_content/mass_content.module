@@ -1196,6 +1196,74 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 }
 
 /**
+ * Implements hook_views_post_build().
+ */
+function mass_content_views_post_build(ViewExecutable $view) {
+  if ($view->id() !== 'content_login_links') {
+    return;
+  }
+
+  // Check if the login link filter is exposed and has a value.
+  $filter = $view->filter['login_links_filter'] ?? NULL;
+
+  if ($filter && !empty($filter->value)) {
+    // Only override the pager if filter input exists.
+    $view->query->setLimit(5000);
+  }
+}
+
+function mass_content_views_post_execute(ViewExecutable $view) {
+  if ($view->id() !== 'content_login_links') {
+    return;
+  }
+
+  $filtered = [];
+
+  foreach ($view->result as $row) {
+    $node = $row->_entity;
+    if (!$node instanceof \Drupal\node\NodeInterface) {
+      continue;
+    }
+
+    $links_data = \Drupal::service('mass_content.log_in_links_builder')->getLoginLinksWithCacheTags($node);
+
+    $count = 0;
+    foreach ($links_data['links'] ?? [] as $link) {
+      if ($link['source'] != $node->id()) {
+        $count++;
+      }
+    }
+
+    if ($count > 0) {
+      $filtered[] = $row;
+    }
+  }
+
+  // Total after filtering
+  $total = count($filtered);
+
+  // Set pagination values
+  $page_size = $view->pager->getItemsPerPage();
+  $max_page = ($page_size > 0) ? max(0, ceil($total / $page_size) - 1) : 0;
+
+  // Get the current page from the view or query string
+  $current_page = (int) ($view->getRequest()->query->get('page') ?? 0);
+  $current_page = min($current_page, $max_page); // Clamp to valid max page
+
+  // Set pager manually
+  $view->pager->setItemsPerPage($page_size);
+  $view->pager->total_items = $total;
+  $view->pager->updatePageInfo();
+
+  // Slice for current page
+  $offset = $current_page * $page_size;
+  $view->result = array_slice($filtered, $offset, $page_size);
+
+  $view->total_rows = $total;
+}
+
+
+/**
  * Implements hook_views_data().
  */
 function mass_content_views_data() {
