@@ -7238,8 +7238,21 @@ function mass_theme_featured_content_cards(&$variables) {
       'link' => '#',
       'thumbnail' => '',
     ];
+
     if (is_object($paragraph->field_image->entity)) {
-      $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      // Try to get the image style from the first rendered item
+      $style_name = NULL;
+      if (!empty($variables['field_image'][0]['#image_style'])) {
+        $style_name = $variables['field_image'][0]['#image_style'];
+      }
+      if ($style_name && ($style = ImageStyle::load($style_name))) {
+        $return_array['thumbnail'] = $style->buildUrl($paragraph->field_image->entity->getFileUri());
+      }
+      else {
+        // fallback to raw file URL
+        $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      }
+
     }
     if (!$paragraph->field_url->isEmpty()) {
       $return_array['link'] = $paragraph->field_url->first()->getUrl()->toString();
