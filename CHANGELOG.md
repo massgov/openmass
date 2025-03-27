@@ -1,5 +1,20 @@
 
 
+## [0.431.0] - March 25, 2025
+
+### Added
+  - DP-37067: Add id attributes for all headers in in rich text on info details page.
+  - DP-37552: Updates the site header if a page is part of a microsite.
+  
+### Changed
+  - DP-38060: Add image option to card group. This adds a toggle to turn on cards with an image, and adds an eyebrow option and a long plain text field.
+  - DP-38155: Modified backstop test pages.
+  
+### Security
+  - DP-38174: Update Drupal core.
+  
+
+
 ## [0.430.0] - March 18, 2025
 
 ### Changed
