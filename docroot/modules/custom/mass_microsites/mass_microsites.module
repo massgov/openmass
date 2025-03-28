@@ -238,9 +238,10 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
   /** @var \Drupal\mass_microsites\ChildOfMicrositeLookup $microsite_lookup */
   $microsite_lookup = \Drupal::service('mass_microsites.microsite_lookup');
   if ($parent_id = $form_state->getValue(['field_primary_parent', '0', 'target_id'])) {
-    $parent_id = trim(reset($parent_id));
+    $parent_id = reset($parent_id) ?? '';
     if (!is_numeric($parent_id)) {
-      $parent_id = trim(EntityAutocomplete::extractEntityIdFromAutocompleteInput($parent_id));
+      $extracted_id = EntityAutocomplete::extractEntityIdFromAutocompleteInput($parent_id);
+      $parent_id = $extracted_id !== NULL ? trim($extracted_id) : '';
     }
     $parent_id = (int) $parent_id;
   }
