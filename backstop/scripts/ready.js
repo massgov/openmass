@@ -137,23 +137,26 @@ module.exports = async (page, scenario, viewport) => {
     case 'ServiceDetails':
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
+    case 'CampaignLandingHeaderSolidColor':
+      // Wait for all card thumbnails to load.
+      await page.evaluate(async () => {
+        const images = Array.from(document.querySelectorAll('.ma__card_thumbnail img'));
+        await Promise.all(
+          images.map(img =>
+            img.complete
+              ? Promise.resolve()
+              : new Promise(resolve => {
+                img.onload = img.onerror = resolve;
+              })
+          )
+        );
+      });
+
+      // Final layout shift buffer.
+      await page.waitForTimeout(4 * 1000);
+      break;
   }
 
-  // Wait until all images have loaded or errored.
-  await page.evaluate(async () => {
-    const images = Array.from(document.images);
-    await Promise.all(
-      images.map((img) =>
-        img.complete
-          ? Promise.resolve()
-          : new Promise((resolve) => {
-            img.onload = img.onerror = resolve;
-          })
-      )
-    );
-  });
-
-  // Final pause for layout shifts or JS.
   await page.waitForTimeout(2 * 1000);
 
   // Wait for any layout shift that nudges the footer.
