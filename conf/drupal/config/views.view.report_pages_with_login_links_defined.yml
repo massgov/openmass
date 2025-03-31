@@ -12,7 +12,9 @@ dependencies:
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
   module:
+    - mass_views
     - node
+    - options
     - taxonomy
     - user
     - views_autocomplete_filters
@@ -428,53 +430,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        field_log_in_links_uri:
-          id: field_log_in_links_uri
-          table: node__field_log_in_links
-          field: field_log_in_links_uri
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: views_porter_stemmer_autocomplete_string
-          operator: 'not empty'
-          value: ''
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: ''
-            autocomplete_filter: 0
-            autocomplete_min_chars: 0
-            autocomplete_items: 10
-            autocomplete_field: ''
-            autocomplete_raw_suggestion: true
-            autocomplete_raw_dropdown: true
-            autocomplete_dependent: false
-            stem_query: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         status_1:
           id: status_1
           table: node_field_data
@@ -640,30 +595,28 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        field_organizations_target_id:
-          id: field_organizations_target_id
-          table: node__field_organizations
-          field: field_organizations_target_id
+        node_org_filter:
+          id: node_org_filter
+          table: node_field_data
+          field: node_org_filter
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: numeric
+          entity_type: node
+          plugin_id: mass_views_node_org_filter
           operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
+          value: null
           group: 2
           exposed: true
           expose:
-            operator_id: field_organizations_target_id_op
+            operator_id: node_org_filter_op
             label: Organization(s)
             description: ''
             use_operator: false
-            operator: field_organizations_target_id_op
+            operator: node_org_filter_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: field_organizations_target_id
+            identifier: node_org_filter
             required: false
             remember: false
             multiple: false
@@ -684,9 +637,6 @@ display:
               data_administrator: '0'
               collection_administrator: '0'
               prototype_design_access: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -819,6 +769,47 @@ display:
           hierarchy: false
           limit: true
           error_message: true
+        field_login_links_options_value:
+          id: field_login_links_options_value
+          table: node__field_login_links_options
+          field: field_login_links_options_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: list_field
+          operator: or
+          value:
+            define_new_login_options: define_new_login_options
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
       filter_groups:
         operator: AND
         groups:
