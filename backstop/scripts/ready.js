@@ -139,6 +139,21 @@ module.exports = async (page, scenario, viewport) => {
       break;
   }
 
+  // Wait until all images have loaded or errored.
+  await page.evaluate(async () => {
+    const images = Array.from(document.images);
+    await Promise.all(
+      images.map((img) =>
+        img.complete
+          ? Promise.resolve()
+          : new Promise((resolve) => {
+            img.onload = img.onerror = resolve;
+          })
+      )
+    );
+  });
+
+  // Final pause for layout shifts or JS.
   await page.waitForTimeout(2 * 1000);
 
   // Wait for any layout shift that nudges the footer.
