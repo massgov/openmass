@@ -18,7 +18,7 @@ dependencies:
     - views_autocomplete_filters
     - views_porter_stemmer
 id: report_pages_with_login_links_defined
-label: 'Report pages with login links defined'
+label: 'Report of pages with "log-in to" links defined'
 module: views
 description: ''
 tag: ''
@@ -357,7 +357,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'use mass dashboard'
       cache:
         type: tag
         options: {  }
@@ -858,12 +858,16 @@ display:
         - 'config:field.storage.node.field_organizations'
   page_1:
     id: page_1
-    display_title: Page
+    display_title: 'Pages with logins defined'
     display_plugin: page
     position: 1
     display_options:
-      display_extenders: {  }
-      path: report-pages-with-login-links-defined
+      display_description: ''
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
+      path: admin/reports/report-pages-with-login-links-defined
     cache_metadata:
       max-age: -1
       contexts:
