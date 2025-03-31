@@ -208,6 +208,9 @@ function mass_microsites_field_widget_single_element_entity_reference_hierarchy_
   if ($field_name !== 'field_primary_parent') {
     return;
   }
+  if (is_null($element['weight']['#default_value'])) {
+    $element['weight']['#default_value'] = 0;
+  }
   $element['#after_build'][] = '_mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build';
   $element['#attributes']['id'] = 'mass-microsites-field-primary-parent-wrapper';
 }
