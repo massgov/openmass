@@ -137,29 +137,6 @@ module.exports = async (page, scenario, viewport) => {
     case 'ServiceDetails':
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
-    case 'CampaignLandingHeaderSolidColor':
-      await page.evaluate(async () => {
-        const images = Array.from(document.querySelectorAll('.ma__card_img img'));
-
-        await Promise.all(
-          images.map((img) => {
-            return new Promise((resolve) => {
-              // Already loaded or errored? Resolve immediately.
-              if (img.complete) {
-                resolve();
-              } else {
-                const done = () => resolve();
-                img.addEventListener('load', done);
-                img.addEventListener('error', done);
-
-                // Failsafe in case load never fires
-                setTimeout(resolve, 8000);
-              }
-            });
-          })
-        );
-      });
-      break;
   }
 
   await page.waitForTimeout(2 * 1000);
@@ -175,4 +152,25 @@ module.exports = async (page, scenario, viewport) => {
   }
 
   await page.waitForTimeout(4 * 1000);
+
+  await page.evaluate(async () => {
+    return new Promise((resolve) => {
+      let lastHeight = document.body.scrollHeight;
+      let checks = 0;
+
+      const checkStable = () => {
+        const newHeight = document.body.scrollHeight;
+        if (newHeight === lastHeight) {
+          checks++;
+          if (checks >= 5) return resolve();
+        } else {
+          checks = 0;
+          lastHeight = newHeight;
+        }
+        setTimeout(checkStable, 500);
+      };
+
+      checkStable();
+    });
+  });
 }
