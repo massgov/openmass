@@ -138,11 +138,27 @@ module.exports = async (page, scenario, viewport) => {
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
     case 'CampaignLandingHeaderSolidColor':
-      const cardImages = await page.locator('.ma__card_img img');
-      const count = await cardImages.count();
-      for (let i = 0; i < count; i++) {
-        await cardImages.nth(i).waitFor({ state: 'visible', timeout: 10000 });
-      }
+      await page.evaluate(async () => {
+        const images = Array.from(document.querySelectorAll('.ma__card_img img'));
+
+        await Promise.all(
+          images.map((img) => {
+            return new Promise((resolve) => {
+              // Already loaded or errored? Resolve immediately.
+              if (img.complete) {
+                resolve();
+              } else {
+                const done = () => resolve();
+                img.addEventListener('load', done);
+                img.addEventListener('error', done);
+
+                // Failsafe in case load never fires
+                setTimeout(resolve, 8000);
+              }
+            });
+          })
+        );
+      });
       break;
   }
 
