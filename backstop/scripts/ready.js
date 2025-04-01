@@ -1,6 +1,73 @@
 module.exports = async (page, scenario, viewport) => {
   console.log(`SCENARIO > ${scenario.label}: ${viewport.label}`);
 
+  async function waitForFlexImageLayout(page, containerSelector, imgSelector = 'img') {
+    console.log(`⏳ Waiting for layout: ${containerSelector} with nested ${imgSelector}`);
+
+    // 1. Wait for all <img> inside the container to load or fail
+    await page.evaluate(async (containerSelector, imgSelector) => {
+      const containerEls = Array.from(document.querySelectorAll(containerSelector));
+      const images = containerEls.flatMap(el => Array.from(el.querySelectorAll(imgSelector)));
+
+      await Promise.all(
+        images.map(img =>
+          img.complete
+            ? Promise.resolve()
+            : new Promise(resolve => {
+              img.onload = img.onerror = resolve;
+              setTimeout(resolve, 10000); // Failsafe
+            })
+        )
+      );
+    }, containerSelector, imgSelector);
+
+    // 2. Wait for all containers to actually use flex layout
+    await page.evaluate(async (containerSelector) => {
+      const containers = Array.from(document.querySelectorAll(containerSelector));
+      await Promise.all(
+        containers.map(el =>
+          new Promise(resolve => {
+            const checkFlex = () => {
+              const display = getComputedStyle(el).display;
+              if (display === 'flex') {
+                resolve();
+              } else {
+                setTimeout(checkFlex, 100);
+              }
+            };
+            checkFlex();
+          })
+        )
+      );
+    }, containerSelector);
+
+    // 3. Wait for layout stabilization (no scrollHeight changes)
+    await page.evaluate(async () => {
+      return new Promise(resolve => {
+        let lastHeight = document.body.scrollHeight;
+        let stableChecks = 0;
+
+        const check = () => {
+          const newHeight = document.body.scrollHeight;
+          if (newHeight === lastHeight) {
+            stableChecks++;
+            if (stableChecks >= 3) {
+              return resolve();
+            }
+          } else {
+            stableChecks = 0;
+            lastHeight = newHeight;
+          }
+          setTimeout(check, 150);
+        };
+
+        check();
+      });
+    });
+
+    console.log(`✅ Flex image layout settled: ${containerSelector}`);
+  }
+
   await page.addStyleTag({
     content: `
       /* Disable animations. */
@@ -137,6 +204,9 @@ module.exports = async (page, scenario, viewport) => {
     case 'ServiceDetails':
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
+    case 'CampaignLandingHeaderSolidColor':
+      await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__card');
+      break;
   }
 
   await page.waitForTimeout(2 * 1000);
@@ -152,25 +222,4 @@ module.exports = async (page, scenario, viewport) => {
   }
 
   await page.waitForTimeout(4 * 1000);
-
-  await page.evaluate(async () => {
-    return new Promise((resolve) => {
-      let lastHeight = document.body.scrollHeight;
-      let checks = 0;
-
-      const checkStable = () => {
-        const newHeight = document.body.scrollHeight;
-        if (newHeight === lastHeight) {
-          checks++;
-          if (checks >= 5) return resolve();
-        } else {
-          checks = 0;
-          lastHeight = newHeight;
-        }
-        setTimeout(checkStable, 500);
-      };
-
-      checkStable();
-    });
-  });
 }
