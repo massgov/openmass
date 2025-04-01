@@ -2,35 +2,61 @@ module.exports = async (page, scenario, viewport) => {
   console.log(`SCENARIO > ${scenario.label}: ${viewport.label}`);
 
   async function waitForFlexImageLayout(page, containerSelector, imgSelector = 'img') {
-    console.log(`⏳ Waiting for layout: ${containerSelector} with nested ${imgSelector}`);
+    console.log(`⏳ [waitForFlexImageLayout] Starting for: ${containerSelector}`);
 
-    // 1. Wait for all <img> inside the container to load or fail
-    await page.evaluate(async (containerSelector, imgSelector) => {
+    // 1. Wait for all images to load or fail
+    await page.evaluate(async ({ containerSelector, imgSelector }) => {
       const containerEls = Array.from(document.querySelectorAll(containerSelector));
       const images = containerEls.flatMap(el => Array.from(el.querySelectorAll(imgSelector)));
+
+      console.log(`[waitForFlexImageLayout] Found ${images.length} images to check.`);
 
       await Promise.all(
         images.map(img =>
           img.complete
             ? Promise.resolve()
             : new Promise(resolve => {
-              img.onload = img.onerror = resolve;
-              setTimeout(resolve, 10000); // Failsafe
+              let resolved = false;
+
+              const done = () => {
+                if (!resolved) {
+                  resolved = true;
+                  resolve();
+                }
+              };
+
+              img.onload = done;
+              img.onerror = done;
+
+              // Failsafe after 10s
+              setTimeout(() => {
+                console.warn('[waitForFlexImageLayout] Image load timeout hit.');
+                done();
+              }, 10000);
             })
         )
       );
-    }, containerSelector, imgSelector);
+    }, { containerSelector, imgSelector });
 
-    // 2. Wait for all containers to actually use flex layout
-    await page.evaluate(async (containerSelector) => {
+    console.log(`✅ [waitForFlexImageLayout] All images in ${containerSelector} finished loading.`);
+
+    // 2. Wait for display:flex to apply to containers
+    await page.evaluate(async ({ containerSelector }) => {
       const containers = Array.from(document.querySelectorAll(containerSelector));
+      console.log(`[waitForFlexImageLayout] Checking ${containers.length} containers for flex display...`);
+
       await Promise.all(
         containers.map(el =>
           new Promise(resolve => {
+            const start = Date.now();
+
             const checkFlex = () => {
               const display = getComputedStyle(el).display;
               if (display === 'flex') {
                 resolve();
+              } else if (Date.now() - start > 10000) {
+                console.warn('[waitForFlexImageLayout] Flex check timed out.');
+                resolve(); // continue anyway
               } else {
                 setTimeout(checkFlex, 100);
               }
@@ -39,13 +65,16 @@ module.exports = async (page, scenario, viewport) => {
           })
         )
       );
-    }, containerSelector);
+    }, { containerSelector });
 
-    // 3. Wait for layout stabilization (no scrollHeight changes)
+    console.log(`✅ [waitForFlexImageLayout] display:flex confirmed or timeout passed.`);
+
+    // 3. Wait for scrollHeight to stop changing (layout settle)
     await page.evaluate(async () => {
       return new Promise(resolve => {
         let lastHeight = document.body.scrollHeight;
         let stableChecks = 0;
+        let tries = 0;
 
         const check = () => {
           const newHeight = document.body.scrollHeight;
@@ -58,6 +87,13 @@ module.exports = async (page, scenario, viewport) => {
             stableChecks = 0;
             lastHeight = newHeight;
           }
+
+          tries++;
+          if (tries >= 50) {
+            console.warn('[waitForFlexImageLayout] Layout check timed out.');
+            return resolve();
+          }
+
           setTimeout(check, 150);
         };
 
@@ -65,7 +101,7 @@ module.exports = async (page, scenario, viewport) => {
       });
     });
 
-    console.log(`✅ Flex image layout settled: ${containerSelector}`);
+    console.log(`✅ [waitForFlexImageLayout] Layout is stable.`);
   }
 
   await page.addStyleTag({
