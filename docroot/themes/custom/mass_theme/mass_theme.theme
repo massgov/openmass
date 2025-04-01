@@ -3916,20 +3916,6 @@ function mass_theme_preprocess_menu(&$variables) {
             }
             $panel['links'] = $links;
           }
-          $panel['description'] = [
-            'richText' => [
-              'rteElements' => [
-                [
-                  'path' => '@atoms/11-text/paragraph.twig',
-                  'data' => [
-                    'paragraph' => [
-                      'text' => 'We have moved any relevant application login links below the page title where they are easier to find.',
-                    ],
-                  ],
-                ],
-              ],
-            ],
-          ];
           $panels[] = $panel;
 
           $items[] = [
@@ -7259,8 +7245,21 @@ function mass_theme_featured_content_cards(&$variables) {
       'link' => '#',
       'thumbnail' => '',
     ];
+
     if (is_object($paragraph->field_image->entity)) {
-      $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      // Try to get the image style from the first rendered item
+      $style_name = NULL;
+      if (!empty($variables['field_image'][0]['#image_style'])) {
+        $style_name = $variables['field_image'][0]['#image_style'];
+      }
+      if ($style_name && ($style = ImageStyle::load($style_name))) {
+        $return_array['thumbnail'] = $style->buildUrl($paragraph->field_image->entity->getFileUri());
+      }
+      else {
+        // Fallback to raw file URL
+        $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      }
+
     }
     if (!$paragraph->field_url->isEmpty()) {
       $return_array['link'] = $paragraph->field_url->first()->getUrl()->toString();
