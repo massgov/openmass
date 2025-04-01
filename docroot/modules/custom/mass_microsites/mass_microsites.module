@@ -14,6 +14,7 @@ use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
 use Drupal\node\NodeInterface;
 use Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup;
 use Drupal\entity_hierarchy_microsite\MenuRebuildProcessor;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_ENTITY_TYPE_update().
@@ -238,8 +239,15 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
   if (!$entity instanceof NodeInterface) {
     return;
   }
-  /** @var \Drupal\mass_microsites\ChildOfMicrositeLookup $microsite_lookup */
-  $microsite_lookup = \Drupal::service('mass_microsites.microsite_lookup');
+
+  /** @var \Drupal\entity_hierarchy_microsite\NearestMicrositeLookup $nearest_microsite_lookup */
+  $microsite_lookup = \Drupal::service('mass_microsites.nearest_microsite_lookup');
+  /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface $microsite */
+  $microsite = $microsite_lookup->getNearestMicrosite($entity);
+  if (!$microsite) {
+    return;
+  }
+
   if ($parent_id = $form_state->getValue(['field_primary_parent', '0', 'target_id'])) {
     $parent_id = reset($parent_id) ?? '';
     if (!is_numeric($parent_id)) {
@@ -251,7 +259,14 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
   else {
     $parent_id = $entity->get('field_primary_parent')->target_id;
   }
-  $element['weight']['#access'] = $parent_id && $microsite_lookup->hasMicrositeForChildNodeParentNid($entity, $parent_id, 'field_primary_parent');
+
+  $microsite_hierarchy = Url::fromRoute('entity.node.entity_hierarchy_reorder', ['node' => $microsite->getHome()->id()])->toString();
+  $description = "This value is used to determine the order of the microsite navigation. <br/>";
+  $description .= "Lower weights float to the top and higher weights sink to the bottom. <br/>";
+  $description .= "To see the current state of the microsite structure, view the hierarchy <a href='" . $microsite_hierarchy . "'>here</a>.";
+
+  $element['weight']['#suffix'] = "<div class='clearfix'></div><div class='description'>" . $description . "</div>";
+  $element['weight']['#access'] = $parent_id && $microsite->getHome()->id() !== $entity->id();
   return $element;
 }
 
