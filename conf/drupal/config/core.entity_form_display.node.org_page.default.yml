@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
+    - field.field.node.org_page.field_glossaries
     - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
     - field.field.node.org_page.field_intended_audience
@@ -83,6 +84,7 @@ third_party_settings:
         - field_application_login_links
         - field_organizations
         - field_reusable_label
+        - field_glossaries
       label: 'Title Banner'
       region: content
       parent_name: group_node_edit_form
@@ -328,6 +330,16 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 15
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_hide_short_description:
     type: boolean_checkbox
     weight: 136
@@ -367,7 +379,7 @@ content:
     third_party_settings: {  }
   field_more_about_leadership:
     type: entity_reference_autocomplete
-    weight: 9
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS
@@ -384,7 +396,7 @@ content:
     third_party_settings: {  }
   field_org_directory_page:
     type: link_default
-    weight: 10
+    weight: 11
     region: content
     settings:
       placeholder_url: ''
@@ -392,7 +404,7 @@ content:
     third_party_settings: {  }
   field_org_no_search_filter:
     type: boolean_checkbox
-    weight: 12
+    weight: 10
     region: content
     settings:
       display_label: true
