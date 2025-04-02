@@ -967,8 +967,16 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   /** @var \Drupal\field\Entity\FieldConfig $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
-
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_header' || $paragraph_entity_reference_field_name == 'field_info_details_header_media' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+ 
+  if ($paragraph_entity_reference_field_name == 'field_service_sections' || 
+    $paragraph_entity_reference_field_name == 'field_header' || 
+    $paragraph_entity_reference_field_name == 'field_info_details_header_media' || 
+    $paragraph_entity_reference_field_name == 'field_organization_sections' || 
+    $paragraph_entity_reference_field_name == 'field_location_details_sections' || 
+    $paragraph_entity_reference_field_name == 'field_service_section_content' || 
+    $paragraph_entity_reference_field_name == 'field_sections' || 
+    $paragraph_entity_reference_field_name == 'field_section_long_form_content' ||
+    $paragraph_entity_reference_field_name == 'field_microsites_key_message') {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
