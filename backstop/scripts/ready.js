@@ -67,7 +67,7 @@ module.exports = async (page, scenario, viewport) => {
       );
     }, { containerSelector });
 
-    console.log(`✅ [waitForFlexImageLayout] display:flex confirmed or timeout passed.`);
+    console.log(`✅ [waitForFlexImageLayout] display:flex confirmed/timeout passed.`);
 
     // 3. Wait for scrollHeight to stop changing (layout settle)
     await page.evaluate(async () => {
