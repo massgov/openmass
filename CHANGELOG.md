@@ -1,3 +1,24 @@
+
+
+## [0.432.0] - April 1, 2025
+
+### Changed
+  - DP-37585: Review permissions on all views and make sure internal views are not public.
+  - DP-38308: Changes the text for making Cards a single action CTA; Unrequires the Image field; Shows image field conditionally if populated.
+  
+### Removed
+  - DP-38145: Remove blue bar login to link.
+  
+### Fixed
+  - DP-38226: Adjusts spacing below image cards when stacked. Adjusts Image Card on Cards field to require a larger image size to prevent stretching on larger mobile devices and adjusts appropriate Image Style.
+  - DP-38268: Fixes microsite header issue where fly-out menu is not visible when dropdown nav is hidden on wrap.
+  - DP-38279: Fix cards display after a floating element on info details.
+  - DP-38325: Fixes the max width for first card used in Campaign Feature.
+  - NA (Teams conversation): Add layout paragraphs styling to the "clone" page for Info Details content type
+  
+### Added
+  - DP-38278: Optimize image styles to reduce image size on promo pages.
+  
 ## [0.431.1] - March 27, 2025
 
 ### Added
