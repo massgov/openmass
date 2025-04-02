@@ -58,7 +58,7 @@ module.exports = async (page, scenario, viewport) => {
                 console.warn('[waitForFlexImageLayout] Flex check timed out.');
                 resolve(); // continue anyway
               } else {
-                setTimeout(checkFlex, 100);
+                setTimeout(checkFlex, 1000);
               }
             };
             checkFlex();
@@ -115,6 +115,13 @@ module.exports = async (page, scenario, viewport) => {
       /* Mask random homepage image. */
       body.is-front .ma__search-banner {
         background: none !important;
+      }
+
+      .ma__card__img--secondary img {
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        object-fit: cover !important;
       }
 
       /* Hide the focus-visible border around the mobile menu */
@@ -245,38 +252,7 @@ module.exports = async (page, scenario, viewport) => {
       await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__wrapper');
       await waitForFlexImageLayout(page, '.ma__card__details ma__card__details--secondary');
 
-      await page.evaluate(async () => {
-        const images = Array.from(document.querySelectorAll('.ma__card_thumbnail img'));
 
-        await Promise.all(
-          images.map((img) =>
-            new Promise((resolve) => {
-              const checkRendered = () => {
-                const rect = img.getBoundingClientRect();
-                const isVisible = rect.width > 0 && rect.height > 0;
-                const isLoaded = img.complete;
-
-                if (isVisible && isLoaded) {
-                  resolve();
-                } else {
-                  setTimeout(checkRendered, 100);
-                }
-              };
-
-              checkRendered();
-            })
-          )
-        );
-      });
-
-      await page.evaluate(() => {
-        // Force layout paint before Backstop captures
-        document.body.offsetHeight;
-        window.scrollBy(0, 0);
-      });
-
-      // Wait for iFrame resizer.
-      await page.waitForFunction(() => document.querySelectorAll('.js-ma-responsive-video iframe').length);
       await page.waitForTimeout(6 * 1000);
 
       break;
