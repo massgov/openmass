@@ -241,6 +241,7 @@ module.exports = async (page, scenario, viewport) => {
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
     case 'CampaignLandingHeaderSolidColor':
+      await waitForFlexImageLayout(page, '.ma__card__wrapper');
       await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__wrapper');
       await waitForFlexImageLayout(page, '.ma__card__details ma__card__details--secondary');
 
