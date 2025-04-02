@@ -241,6 +241,8 @@ module.exports = async (page, scenario, viewport) => {
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
     case 'CampaignLandingHeaderSolidColor':
+    case 'CampaignLandingHeaderVideo':
+    case 'CampaignLandingHeaderBg':
       await page.addStyleTag({
         content: `
           @media (min-width: 768px) {
