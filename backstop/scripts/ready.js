@@ -116,21 +116,18 @@ module.exports = async (page, scenario, viewport) => {
       body.is-front .ma__search-banner {
         background: none !important;
       }
-
-      .ma__card {
-        max-inline-size: none !important;
-        flex-flow: unset !important; /* Optional if flex-direction: row causes layout jitter */
-      }
-
+      
       /* Optional: set a safer width and layout direction */
       @media (min-width: 768px) {
         .ma__card {
+          max-inline-size: none !important;
+          flex-flow: unset !important; /* Optional if flex-direction: row causes layout jitter */
           max-width: 100% !important;
           flex-direction: row !important;
           flex-wrap: wrap !important;
         }
       }
-      
+
       /* Hide the focus-visible border around the mobile menu */
       .ma__header__hamburger__menu-button {
         outline: none !important;
