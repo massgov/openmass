@@ -1,0 +1,176 @@
+{#
+/**
+ * @file
+ * Theme override to display the home page of a microsite, if its a Service page.
+ */
+ #}
+
+{% extends '@templates/01-content-types/services.twig' %}
+
+{# title context for accessibility #}
+{% set titleContextFor = ' for ' ~ node.label %}
+{% set titleContextAbout = ' about ' ~ node.label %}
+{% set titleContextOf = ' of ' ~ node.label %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block preContent %}
+  {# If the contextual navigation should be set for this node, then add it. #}
+  {% if log_in_links is not empty %}
+    {% set buttons = log_in_links %}
+  {% endif %}
+
+  {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
+  {% if content.computed_related_to[0] %}
+    {% set primaryIndicators = { "label": "part of" } %}
+    {% set primaryRelationshipContent = content.computed_related_to %}
+  {% endif %}
+  #}
+  {% set secondaryIndicators = false %}
+  {% if content.field_organizations is not empty %}
+    {% set secondaryIndicators = {
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
+    } %}
+  {% endif %}
+
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "pageTitle": node.label,
+      "primary": primaryIndicators,
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ primaryRelationshipContent }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+  {% endembed %}
+
+  {# NOTE: At this time a service page node's design does not require the optional page-banner template #}
+  {# values for "icon", "primaryLink", and "secondaryLink", so we don't set them. We may in the future. #}
+  {% if translationLinks %}
+    {% include "@organisms/by-author/inline-links-language.twig" with {
+      "inlineLinks": translationLinks
+    } %}
+  {% endif %}
+
+  {# If the microsite home page key message is set, show. Otherwise show default banner. #}
+  {% if microsite_key_message %}
+    {# Load the Key Message, preprocessed in mass_theme.theme #}
+    <div class="ma__microsite-key-message">
+      {% for paragraph in microsite_key_message %}
+        {{ paragraph }}
+      {% endfor %}
+    </div>
+
+  {% else %}
+    {% include "@organisms/page-banner/page-banner.twig" with {
+    "pageBanner": {
+      "image": bannerImageWide,
+      "theme": "c-primary",
+      "pageHeader": {
+        "title": node.label,
+        "titleSubText": content.field_title_sub_text,
+        "description": content.field_service_lede,
+        "buttons": buttons is defined ? [buttons] : null
+      }
+    }
+  } %}
+  {% endif %}
+{% endblock %}
+
+
+
+{# Increase heading number from the parent heading. #}
+{% set level = level + 1 %}
+
+{% block pageContentIntro %}
+  {% if content.field_service_body|render is not empty %}
+    {# NOTE: teaser-text conditionally also includes "@atoms/decorative-link.twig" but Service Page teaser-text does #}
+    {# not use a "learn more / read more" sort of link, so we don't pass any "decorativeLink" values to the template. #}
+    {% include "@organisms/by-author/teaser-text.twig" with {
+      "teaserText": {
+        "richText": {
+          "property": "",
+          "rteElements": [{
+            "path": "@atoms/11-text/paragraph.twig",
+            "data": {
+              "paragraph": {
+                "text": content.field_service_body
+              }
+            }
+          }]
+        },
+      }
+    } %}
+  {% endif %}
+
+  {% if introPageContent.video %}
+    {% set video = introPageContent.video %}
+    {% set video = video|merge({"headingLevel": level}) %}
+    {% include "@atoms/09-media/video.twig" %}
+  {% endif %}
+{% endblock %}
+
+{% block pageContent %}
+
+  {{ content.field_service_sections }}
+
+  {% set seeAll = false %}
+
+  {% if contactList %}
+    {% include "@organisms/contact/contact-list.twig" %}
+  {% endif %}
+  {% if node.field_service_ref_services_6 is not empty %}
+    {% set moreInfo = "Related Services"|t %}
+    {# The "More Information" should only show if the split columns are being used. #}
+    <div class="more-info-header">
+      <h{{ level }} class="ma__comp-heading">
+        {{ moreInfo }}
+      </h{{ level }}>
+    </div>
+    {% embed "@organisms/by-author/split-columns.twig" %}
+      {% block columns %}
+        {{ content.field_service_ref_services_6 }}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
+  {# For the new template mapped markup to match the current PROD non-template mapped markup, image_credit will need #}
+  {# it's own block, which would need mayflower change. We however place image credit inside this block because #}
+  {# though the HTML markup is slightly different that way, the display of image credit remains same. #}
+  {# See: https://jira.mass.gov/browse/DP-12696 #}
+  {% if content.field_image_credit is not empty %}
+    {{ content.field_image_credit }}
+  {% endif %}
+{% endblock %}
+
+{% block schemaContent %}
+  {# Produce the .post-content div if either the twig block or the theme region is present #}
+  {% if _postContent is not empty or post_content %}
+    <div class="post-content">
+      {{ _postContent|raw }}
+      {{ post_content }}
+    </div>
+  {% endif %}
+
+  <div class="post-content">
+    {{ content.extra_org_feedback_form }}
+  </div>
+{% endblock %}
+
+{% block footer %}
+
+{% endblock %}

@@ -71,6 +71,8 @@ function mass_theme_theme_suggestions_paragraph_alter(array &$suggestions, array
  * Implements hook_theme_suggestions_alter().
  */
 function mass_theme_theme_suggestions_node_alter(array &$suggestions, array $variables) {
+  $node = $variables['elements']['#node'];
+
   // Force the template for specific view modes.
   if (in_array($variables['elements']['#view_mode'], ['link_only', 'link_and_description'])) {
     $suggestions = [];
@@ -96,6 +98,21 @@ function mass_theme_theme_suggestions_node_alter(array &$suggestions, array $var
     // Add the appropriate theme suggestions.
     if (array_key_exists($variables['elements']['#node']->getType(), $map)) {
       $suggestions[] = $map[$variables['elements']['#node']->getType()];
+    }
+  }
+
+  // Ensure its a node.
+  if ($node instanceof \Drupal\node\NodeInterface) {
+    // Get microsite information
+    $microsite = _mass_microsites_get_microsite();
+    
+    // Check if we're on a node that's part of a microsite
+    if ($microsite) {
+      // Check if the current node is the homepage of the microsite
+      if ($microsite->getHome()->id() == $node->id()) {
+        // Add a suggestion that combines node type and microsite homepage status
+        $suggestions[] = 'node__' . $node->getType() . '__microsite_homepage';
+      }
     }
   }
 }
@@ -4087,6 +4104,30 @@ function mass_theme_preprocess_node(&$variables) {
       else {
         $variables['data_listing_icon'] = $icon_map[$term->label()] ?? NULL;
         $variables['data_listing_icon_label'] = $term->label();
+      }
+    }
+  }
+
+  // Check if we're on a node that's part of a microsite
+  if ($node instanceof \Drupal\node\NodeInterface) {
+    // Get microsite information
+    if ($microsite = _mass_microsites_get_microsite()) {
+      // Check if the current node is the homepage of the microsite
+      if ($microsite->getHome()->id() == $node->id()) {
+        // Add the microsite entity to the template variables
+        $variables['microsite'] = $microsite;
+      }
+      // Render the microsite key message field.
+      if ($microsite->hasField('field_microsites_key_message') && !$microsite->get('field_microsites_key_message')->isEmpty()) {
+        $rendered_paragraphs = [];
+        $paragraph_view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
+        
+        foreach ($microsite->get('field_microsites_key_message') as $item) {
+          if ($item->entity) {
+            $rendered_paragraphs[] = $paragraph_view_builder->view($item->entity);
+          }
+        }
+        $variables['microsite_key_message'] = $rendered_paragraphs;
       }
     }
   }
