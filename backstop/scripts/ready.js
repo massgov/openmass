@@ -242,6 +242,42 @@ module.exports = async (page, scenario, viewport) => {
       break;
     case 'CampaignLandingHeaderSolidColor':
       await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__wrapper');
+      await waitForFlexImageLayout(page, '.ma__card__details ma__card__details--secondary');
+
+      await page.evaluate(async () => {
+        const images = Array.from(document.querySelectorAll('.ma__card_thumbnail img'));
+
+        await Promise.all(
+          images.map((img) =>
+            new Promise((resolve) => {
+              const checkRendered = () => {
+                const rect = img.getBoundingClientRect();
+                const isVisible = rect.width > 0 && rect.height > 0;
+                const isLoaded = img.complete;
+
+                if (isVisible && isLoaded) {
+                  resolve();
+                } else {
+                  setTimeout(checkRendered, 100);
+                }
+              };
+
+              checkRendered();
+            })
+          )
+        );
+      });
+
+      await page.evaluate(() => {
+        // Force layout paint before Backstop captures
+        document.body.offsetHeight;
+        window.scrollBy(0, 0);
+      });
+
+      // Wait for iFrame resizer.
+      await page.waitForFunction(() => document.querySelectorAll('.js-ma-responsive-video iframe').length);
+      await page.waitForTimeout(6 * 1000);
+
       break;
   }
 
