@@ -245,19 +245,7 @@ module.exports = async (page, scenario, viewport) => {
       await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__wrapper');
       await waitForFlexImageLayout(page, '.ma__card__details ma__card__details--secondary');
 
-      await page.evaluate(async () => {
-        const images = Array.from(document.querySelectorAll('.ma__card_thumbnail img'));
-
-        await page.evaluate(() => {
-          document.querySelectorAll('.ma__card_thumbnail img').forEach((img) => {
-            img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
-            img.style.width = '100%';
-            img.style.height = 'auto';
-            img.style.objectFit = 'cover';
-          });
-        });
-      });
-      await page.waitForTimeout(60 * 1000);
+      await page.waitForTimeout(6 * 1000);
       break;
   }
 
