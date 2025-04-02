@@ -105,7 +105,6 @@ function mass_theme_theme_suggestions_node_alter(array &$suggestions, array $var
   if ($node instanceof \Drupal\node\NodeInterface) {
     // Get microsite information
     $microsite = _mass_microsites_get_microsite();
-    
     // Check if we're on a node that's part of a microsite
     if ($microsite) {
       // Check if the current node is the homepage of the microsite
@@ -4121,7 +4120,6 @@ function mass_theme_preprocess_node(&$variables) {
       if ($microsite->hasField('field_microsites_key_message') && !$microsite->get('field_microsites_key_message')->isEmpty()) {
         $rendered_paragraphs = [];
         $paragraph_view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
-        
         foreach ($microsite->get('field_microsites_key_message') as $item) {
           if ($item->entity) {
             $rendered_paragraphs[] = $paragraph_view_builder->view($item->entity);
