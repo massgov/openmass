@@ -12,14 +12,27 @@ dependencies:
     - field.field.paragraph.image.field_image_wrapping
     - field.field.paragraph.image.field_media_display
     - paragraphs.paragraphs_type.image
+    - responsive_image.styles.full_width
   module:
     - options
+    - responsive_image
     - text
 id: paragraph.image.default
 targetEntityType: paragraph
 bundle: image
 mode: default
 content:
+  field_image:
+    type: responsive_image
+    label: hidden
+    settings:
+      responsive_image_style: full_width
+      image_link: ''
+      image_loading:
+        attribute: lazy
+    third_party_settings: { }
+    weight: 5
+    region: content
   field_image_administrative_title:
     type: string
     label: hidden
@@ -59,6 +72,5 @@ content:
 hidden:
   created: true
   field_caption: true
-  field_image: true
   field_media_display: true
   uid: true
