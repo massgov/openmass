@@ -116,17 +116,6 @@ module.exports = async (page, scenario, viewport) => {
       body.is-front .ma__search-banner {
         background: none !important;
       }
-      
-      /* Optional: set a safer width and layout direction */
-      @media (min-width: 768px) {
-        .ma__card {
-          max-inline-size: none !important;
-          flex-flow: unset !important; /* Optional if flex-direction: row causes layout jitter */
-          max-width: 100% !important;
-          flex-direction: row !important;
-          flex-wrap: wrap !important;
-        }
-      }
 
       /* Hide the focus-visible border around the mobile menu */
       .ma__header__hamburger__menu-button {
@@ -252,10 +241,22 @@ module.exports = async (page, scenario, viewport) => {
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
     case 'CampaignLandingHeaderSolidColor':
+      await page.addStyleTag({
+        content: `
+          @media (min-width: 768px) {
+          .ma__card {
+              max-inline-size: none !important;
+              flex-flow: unset !important; /* Optional if flex-direction: row causes layout jitter */
+              max-width: 100% !important;
+              flex-direction: row !important;
+              flex-wrap: wrap !important;
+            }
+          }
+    `,
+      });
       await waitForFlexImageLayout(page, '.ma__card__wrapper');
       await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__wrapper');
       await waitForFlexImageLayout(page, '.ma__card__details ma__card__details--secondary');
-
 
       await page.waitForTimeout(6 * 1000);
 
