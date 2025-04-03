@@ -737,6 +737,7 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
       case 'field_two_column':
       case 'field_service_section_link':
       case 'field_subtitle':
+      case 'field_use_two_columns':
         return AccessResult::forbiddenIf(!$account->hasPermission("use prototype design features"));
     }
   }
