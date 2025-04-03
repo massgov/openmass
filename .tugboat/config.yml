@@ -93,6 +93,8 @@ services:
       # skipping the init step, because the results of that step will
       # already be present.
       update:
+        - apt-get update
+        - apt-get install -y imagemagick
         - composer install --optimize-autoloader --no-cache
         - yarn install
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
