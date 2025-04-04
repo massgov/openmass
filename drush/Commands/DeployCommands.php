@@ -608,10 +608,12 @@ class DeployCommands extends DrushCommands {
     $this->logger()->info('try to ge UUID after' . $targetRecord->name() . '.' . $version);
     $client = $this->getClient();
 
+    $this->logger()->info('try to ge UUID after getClient' . $targetRecord->name() . '.' . $version);
     $currentVersion = (new Environments($client))->get($environmentUuid)
       ->configuration
       ->php
       ->version;
+    $this->logger()->info('try to ge UUID after Environments' . $targetRecord->name() . '.' . $version);
 
     $this->logger()->info("{name} is currently set to PHP {version}", [
       'name' => $targetRecord->name(),
