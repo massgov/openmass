@@ -9,7 +9,7 @@ class GlossaryBundle extends NodeBundle {
 
   public function getTerms() {
     $values = $this->get('field_terms')->getValue();
-    $formatted_terms = array_map(array($this, 'formatTerm'), $values);
+    $formatted_terms = array_map([$this, 'formatTerm'], $values);
     $merged = array_merge(...$formatted_terms);
     return $merged;
   }
@@ -36,4 +36,5 @@ class GlossaryBundle extends NodeBundle {
 
     return $combined_terms;
   }
+
 }
