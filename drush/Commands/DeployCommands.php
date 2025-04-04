@@ -345,17 +345,21 @@ class DeployCommands extends DrushCommands {
     $process = Drush::drush($targetRecord, 'cim', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
 
-    if ($options['skip-maint'] == FALSE) {
-      try {
-        // Turn on Maint mode.
-        $process = Drush::drush($targetRecord, 'maint:set', [1]);
-        $process->mustRun();
-        $this->logger()->success("Maintenance mode enabled in $target.");
-      }
-      catch (\Exception $e) {
-        $this->logger()->info('Unable to set maintenance mode. Proceeding - ' . $e->getMessage());
-      }
-    }
+    $process = Drush::drush($targetRecord, 'maint:set', [0]);
+    $process->mustRun($process->showRealtime());
+
+
+    //    if ($options['skip-maint'] == FALSE) {
+//      try {
+//        // Turn on Maint mode.
+//        $process = Drush::drush($targetRecord, 'maint:set', [1]);
+//        $process->mustRun();
+//        $this->logger()->success("Maintenance mode enabled in $target.");
+//      }
+//      catch (\Exception $e) {
+//        $this->logger()->info('Unable to set maintenance mode. Proceeding - ' . $e->getMessage());
+//      }
+//    }
 
     // We need to set the PHP version before we deploy the code, as the new
     // artifacts may have changes dependent on the PHP version.
@@ -384,9 +388,6 @@ class DeployCommands extends DrushCommands {
       $process->mustRun();
       $this->logger()->success("Extra cache rebuild completed at $target.");
     }
-
-    $process = Drush::drush($targetRecord, 'maint:set', [0]);
-    $process->mustRun();
 
 //    if (!$options['skip-maint']) {
 //      // Disable Maintenance mode.
