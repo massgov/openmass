@@ -104,12 +104,19 @@ div.ma__microsite-key-message .ma__key-message__content .ma__rich-text {
 
 
 /* --> Microsite --> Two Column */
+div.ma__microsite-key-message .ma__key-message__wrapper--top{
+  padding: 20px 0px;
+
+  @media (min-width: 781px) and (min-width: 911px) {
+    padding-inline: 0px;
+  }
+}
 div.ma__microsite-key-message .ma__key-message--image .ma__key-message__wrapper--overlay:has(.ma__key-message__columns--two) {
   top: 72%;
 }
 
 div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__key-message__columns--two) {
-  padding: 32px 24px;
+  padding: 0;
   transform: translateY(0%);
 
   @media (min-width: 781px) {
@@ -125,10 +132,10 @@ div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__
   margin-block-start: 0;
 }
 
-div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__key-message__columns--two) .ma__key-message__content {
-  margin-top: 25px;
-}
-
 div.ma__microsite-key-message .ma__key-message--message-text:not(:has(.ma__key-message__sub-title)) .ma__key-message__content {
   margin-block-start: 0;
+}
+
+div.ma__microsite-key-message .ma__key-message .ma__key-message--message-text:not(:has(.ma__key-message__sub-title)) .ma__key-message__block:has(.ma__key-message__columns--two) .ma__key-message__content {
+  margin-top: 25px;
 }
