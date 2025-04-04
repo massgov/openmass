@@ -5,6 +5,7 @@
   const UNACCEPTABLE_SELECTORS = 'script, style, a, button, h1, h2, h3, h4, h5, h6';
   const mainContentSelector = 'main .main-content .page-content';
   const mainContent = document.querySelector(mainContentSelector);
+  const template = document.getElementById('glossary-popup-template');
 
   Drupal.behaviors.glossaries = {
     attach: async (context) => {
@@ -137,8 +138,7 @@
    */
   function createTooltipContent(definitions) {
     return Object.entries(definitions).map(([uuid, definition]) => {
-      const { name, url } = glossaries[uuid];
-      return  `${definition}<cite><a href="${url}">${name}</a></cite>`
+      return  definition;
     }).join('<hr/>')
   }
 
@@ -159,41 +159,22 @@
    */
   function createTooltip(text, definition) {
     const tooltipId = generateTooltipId();
-    const markup = `
-      <span class="ma__tooltip">
-        <span class="ma__tooltip__inner">
-          <input
-            id="${tooltipId}"
-            type="checkbox"
-            class="ma__tooltip__control"
-            aria-label="show more information about ${text}"
-            aria-hidden="true" />
-          <label
-            for="${tooltipId}"
-            class="ma__tooltip__open"
-            aria-labelledby="${tooltipId}"
-            aria-hidden="true">
-            ${text}
-            <svg aria-hidden="true" focusable="false"><use xlink:href="#dabfd50784945c0631c8efda338195d5.0"></use></svg><svg xmlns="http://www.w3.org/2000/svg" style="display: none"><symbol xmlns="http://www.w3.org/2000/svg" aria-hidden="true" version="1.1" viewBox="0 0 16 16" id="dabfd50784945c0631c8efda338195d5.0"><path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm0 12.17a.84.84 0 0 1-.83-.84.83.83 0 1 1 1.67 0c0 .46-.38.84-.84.84zm1.3-3.96c-.6.65-.62 1.01-.62 1.46H7.35c0-.99.01-1.42.95-2.32.38-.36.69-.65.64-1.21-.04-.54-.48-.82-.9-.82-.48 0-1.03.35-1.03 1.35H5.67c0-1.6.94-2.64 2.4-2.64.68 0 1.29.23 1.7.64.37.38.57.91.56 1.53-.01.92-.57 1.53-1.02 2.01z"/></symbol></svg>
-          </label>
-          <section class="ma__tooltip__modal ma__tooltip__modal--below">
-            <div class="ma__tooltip__container">
-              <label
-                for="${tooltipId}"
-                class="ma__tooltip__close"
-                tabindex="-1"
-                aria-labelledby="${tooltipId}"
-                aria-hidden="true">Close</label>
-              <div class="ma__tooltip__message">
-                ${definition}
-              </div>
-            </div>
-          </section>
-        </span>
-      </span>`;
+    const element = template.content.cloneNode(true);
 
-      const element = Document.parseHTMLUnsafe(markup).body.firstElementChild;
-      return element;
+    const trigger = element.querySelector('.popover__trigger');
+    const dialog = element.querySelector('.popover__dialog');
+    const labelledby = dialog.getAttribute('aria-labelledby');
+    const title = dialog.querySelector('.popover__title');
+    const body = dialog.querySelector('.popover__body');
+
+    trigger.textContent = text;
+    body.innerHTML = definition;
+
+    dialog.id = dialog.id.replace('uniqueID', tooltipId);
+    dialog.setAttribute('aria-labelledby', labelledby.replace('uniqueID', tooltipId));
+    title.id = title.id.replace('uniqueID', tooltipId);
+
+    return element;
   }
 
   /**
