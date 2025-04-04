@@ -385,7 +385,7 @@ class DeployCommands extends DrushCommands {
       $this->logger()->success("Extra cache rebuild completed at $target.");
     }
 
-    $process = Drush::drush($targetRecord, 'maint:set', [1]);
+    $process = Drush::drush($targetRecord, 'maint:set', [0]);
     $process->mustRun();
 
 //    if (!$options['skip-maint']) {
