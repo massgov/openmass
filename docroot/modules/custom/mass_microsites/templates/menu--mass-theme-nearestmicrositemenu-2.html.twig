@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Default theme implementation to display a menu.
+ * Theme override to display a menu.
  *
  * Available variables:
  * - menu_name: The machine name of the menu.
@@ -9,16 +9,21 @@
  *   - attributes: HTML attributes for the menu item.
  *   - below: The menu item child items.
  *   - title: The menu link title.
- *   - url: The menu link URL, instance of \Drupal\Core\Url
+ *   - url: The menu link url, instance of \Drupal\Core\Url
  *   - localized_options: Menu link localized options.
  *   - is_expanded: TRUE if the link has visible children within the current
  *     menu tree.
  *   - is_collapsed: TRUE if the link has children within the current menu tree
  *     that are not currently visible.
  *   - in_active_trail: TRUE if the link is in the active trail.
- *
- * @ingroup themeable
  */
 #}
+{% set navItems = navItems|merge([{
+  'text': 'Mass.gov',
+  'href': path('<front>'),
+  'active': false,
+  'in_active_trail': false,
+  'altClass': false,
+}]) %}
 
-{% include '@molecules/main-nav.twig' %}
+{% include '@molecules/secondary-nav-hamburger.twig' %}

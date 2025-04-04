@@ -27,8 +27,14 @@ final class NewRelicCommands extends DrushCommands {
   public function name($result, CommandData $commandData) {
     if ($commandData->input()->hasOption('nrname') && $commandData->input()->getOption('nrname')) {
       $name = $commandData->input()->getOption('nrname');
-      $nr_api_key = getenv('MASS_NEWRELIC_KEY');
+      $nr_api_key = getenv('MASS_NEWRELIC_LICENSE_KEY');
       $nr_account_id = getenv('MASS_NEWRELIC_APPLICATION');
+
+      $environment = isset($_ENV['AH_SITE_ENVIRONMENT']) ? "{$_ENV['AH_SITE_GROUP']}.{$_ENV['AH_SITE_ENVIRONMENT']}" : 'local';
+
+      $startTime = \Drupal::time()->getRequestMicroTime();
+      $endTime = \Drupal::time()->getCurrentMicroTime();
+      $duration = $endTime - $startTime;
 
       $stack = $this->getStack();
       $client = new Client(['handler' => $stack]);
@@ -40,6 +46,8 @@ final class NewRelicCommands extends DrushCommands {
           [
             'eventType' => 'drushCommand',
             'name' => $name,
+            'environment' => $environment,
+            'duration' => $duration,
           ],
         ],
       ];

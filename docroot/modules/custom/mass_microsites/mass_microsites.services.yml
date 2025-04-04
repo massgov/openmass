@@ -1,0 +1,7 @@
+services:
+  mass_microsites.nearest_microsite_lookup:
+    class: Drupal\mass_microsites\NearestMicrositeLookup
+    arguments:
+      - '@entity_hierarchy.nested_set_storage_factory'
+      - '@entity_hierarchy.nested_set_node_factory'
+      - '@entity_hierarchy_microsite.microsite_lookup'

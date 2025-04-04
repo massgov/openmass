@@ -1,0 +1,29 @@
+uuid: e3c01c9c-3ee6-4d99-8aa4-75a27125ba63
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_glossaries
+    - node.type.glossary
+    - node.type.how_to_page
+id: node.how_to_page.field_glossaries
+field_name: field_glossaries
+entity_type: node
+bundle: how_to_page
+label: Glossaries
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      glossary: glossary
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

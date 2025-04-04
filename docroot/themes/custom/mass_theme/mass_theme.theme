@@ -3899,20 +3899,23 @@ function mass_theme_preprocess_menu(&$variables) {
           // Get links.
           $panels = [];
           $panel = [];
-          $panel['description'] = [
-            'richText' => [
-              'rteElements' => [
-                [
-                  'path' => '@atoms/11-text/paragraph.twig',
-                  'data' => [
-                    'paragraph' => [
-                      'text' => 'We have moved any relevant application login links below the page title where they are easier to find.',
-                    ],
-                  ],
-                ],
-              ],
-            ],
-          ];
+
+          if ($node->hasField('field_links') && $node->getTitle() != 'Log in to...') {
+            $links = [];
+            foreach ($node->get('field_links') as $link) {
+              $uri = $link->uri;
+              $is_external = UrlHelper::isExternal($uri);
+              $links[] = [
+                'type' => $is_external ? 'external' : 'internal',
+                'text' => $link->computed_title,
+                'href' => $is_external ? $uri : Url::fromUri($uri),
+              ];
+              if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
+                $variables['#cache']['tags'][] = 'node:' . preg_replace('/\D/', '', $uri);
+              }
+            }
+            $panel['links'] = $links;
+          }
           $panels[] = $panel;
 
           $items[] = [
@@ -7242,8 +7245,21 @@ function mass_theme_featured_content_cards(&$variables) {
       'link' => '#',
       'thumbnail' => '',
     ];
+
     if (is_object($paragraph->field_image->entity)) {
-      $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      // Try to get the image style from the first rendered item
+      $style_name = NULL;
+      if (!empty($variables['field_image'][0]['#image_style'])) {
+        $style_name = $variables['field_image'][0]['#image_style'];
+      }
+      if ($style_name && ($style = ImageStyle::load($style_name))) {
+        $return_array['thumbnail'] = $style->buildUrl($paragraph->field_image->entity->getFileUri());
+      }
+      else {
+        // Fallback to raw file URL
+        $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      }
+
     }
     if (!$paragraph->field_url->isEmpty()) {
       $return_array['link'] = $paragraph->field_url->first()->getUrl()->toString();

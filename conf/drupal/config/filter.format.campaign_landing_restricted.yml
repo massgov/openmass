@@ -4,10 +4,17 @@ status: true
 dependencies:
   module:
     - linkit
+    - mass_fields
 name: 'Campaign Landing Restricted'
 format: campaign_landing_restricted
 weight: 0
 filters:
+  auto_heading_id:
+    id: auto_heading_id
+    provider: mass_fields
+    status: true
+    weight: 0
+    settings: {  }
   filter_autop:
     id: filter_autop
     provider: filter
