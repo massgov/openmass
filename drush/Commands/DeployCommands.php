@@ -340,6 +340,10 @@ class DeployCommands extends DrushCommands {
 
     $process = Drush::drush($targetRecord, 'status', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
+//    $process = Drush::drush($targetRecord, 'cr', [], ['verbose' => TRUE]);
+//    $process->mustRun($process->showRealtime());
+    $process = Drush::drush($targetRecord, 'cim', [], ['verbose' => TRUE]);
+    $process->mustRun($process->showRealtime());
 
     if ($options['skip-maint'] == FALSE) {
       try {
