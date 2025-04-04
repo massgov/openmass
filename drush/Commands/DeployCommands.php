@@ -385,12 +385,15 @@ class DeployCommands extends DrushCommands {
       $this->logger()->success("Extra cache rebuild completed at $target.");
     }
 
-    if (!$options['skip-maint']) {
-      // Disable Maintenance mode.
-      $process = Drush::drush($targetRecord, 'maint:set', [0]);
-      $process->mustRun();
-      $this->logger()->success("Maintenance mode disabled in $target.");
-    }
+    $process = Drush::drush($targetRecord, 'maint:set', [1]);
+    $process->mustRun();
+
+//    if (!$options['skip-maint']) {
+//      // Disable Maintenance mode.
+//      $process = Drush::drush($targetRecord, 'maint:set', [0]);
+//      $process->mustRun();
+//      $this->logger()->success("Maintenance mode disabled in $target.");
+//    }
 
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
