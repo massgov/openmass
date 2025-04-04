@@ -2,7 +2,6 @@
  * @file
  * Contains customizations for search forms on the site.
  */
-/* globals Promise:true*/
 (function () {
   'use strict';
 
