@@ -602,7 +602,10 @@ class DeployCommands extends DrushCommands {
    * configuration as a part of a build.
    */
   private function setPhpVersion(SiteAlias $targetRecord, string $version): void {
+    $this->logger()->info('try to ge UUID' . $targetRecord->name() . '.' . $version);
+
     $environmentUuid = $targetRecord->get('uuid');
+    $this->logger()->info('try to ge UUID after' . $targetRecord->name() . '.' . $version);
     $client = $this->getClient();
 
     $currentVersion = (new Environments($client))->get($environmentUuid)
