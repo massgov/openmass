@@ -1,6 +1,7 @@
-(async (Drupal, drupalSettings) => {
+(async function (Drupal, drupalSettings) {
+  'use strict';
 
-  const { glossaries, terms } = drupalSettings.glossaries;
+  const {terms} = drupalSettings.glossaries;
   const searchRegexes = createSearchRegexes(Object.keys(terms));
   const UNACCEPTABLE_SELECTORS = 'script, style, a, button, h1, h2, h3, h4, h5, h6';
   const mainContentSelector = 'main .main-content .page-content';
@@ -10,18 +11,15 @@
   Drupal.behaviors.glossaries = {
     attach: async (context) => {
       // Scan page text for glossary terms and inject tooltips.
-      console.time('scan tooltip time');
-      console.clear();
       const matches = findMatches(context);
-      highlightMatches(matches, Object.keys(terms), terms);
-      console.timeEnd('scan tooltip time');
+      highlightMatches(matches);
     }
   };
 
   /**
    * Create a list of regexes for the search strings.
    * @param {string[]} searchStrings - The strings to search for.
-   * @returns {Map} A map where string -> regex
+   * @return {Map} A map where string -> regex
    */
   function createSearchRegexes(searchStrings) {
     const searches = new Map();
@@ -41,7 +39,7 @@
    * Determine if a node should be accepted by the TreeWalker.
    * This step filters out nodes before we look for matching terms.
    * @param {Text} node - The node to check.
-   * @returns {NodeFilter.FILTER_ACCEPT | NodeFilter.FILTER_REJECT} Whether the node should be accepted or rejected.
+   * @return {NodeFilter.FILTER_ACCEPT | NodeFilter.FILTER_REJECT} Whether the node should be accepted or rejected.
    */
   function shouldAcceptNode(node) {
     // Check text content first since it's the cheapest operation
@@ -75,22 +73,26 @@
    * Find all matches of the search strings in the given context.
    * @param {Node} context - The context to search in.
    * @param {Map<string, regex>} searchRegexes - The strings to search for.
-   * @returns {Object[]} A list of matches.
+   * @return {Object[]} A list of matches.
    */
   function findMatches(context) {
     const matches = [];
 
     // Use cached mainContent
-    if (!mainContent) return matches;
+    if (!mainContent) {
+      return matches;
+    }
 
     // Scan the main content of the page on initial page load.
     // Scan the context (if in main content) on subsequent behavior runs.
     let scanRoot;
     if (mainContent.contains(context)) {
       scanRoot = context;
-    } else if (context.contains(mainContent)) {
+    }
+    else if (context.contains(mainContent)) {
       scanRoot = mainContent;
-    } else {
+    }
+    else {
       return matches; // Exit if there's no relationship between context and main-content
     }
 
@@ -99,13 +101,13 @@
       scanRoot,
       NodeFilter.SHOW_TEXT,
       {
-        acceptNode: shouldAcceptNode,
+        acceptNode: shouldAcceptNode
       }
     );
 
     // Iterate over nodes to find useages of  terms.
-    let node;
-    while (node = walker.nextNode()) {
+    let node = walker.nextNode();
+    while (node) {
       const text = node.textContent;
 
       // Quit looping over nodes if we've used all the terms.
@@ -119,13 +121,14 @@
           matches.push({
             node,
             searchString,
-            searchRegex,
+            searchRegex
           });
 
           // Avoid searching for this term again.
           searchRegexes.delete(searchString);
         }
       }
+      node = walker.nextNode();
     }
 
     return matches;
@@ -134,17 +137,17 @@
   /**
    * Create HTML content for a tooltip by combining definitions with glossary source links.
    * @param {Object.<string, string>} definitions - Object mapping glossary UUIDs to definition text
-   * @returns {string} HTML string containing definition text and source citation links
+   * @return {string} HTML string containing definition text and source citation links
    */
   function createTooltipContent(definitions) {
     return Object.entries(definitions).map(([uuid, definition]) => {
-      return  definition;
-    }).join('<hr/>')
+      return definition;
+    }).join('<hr/>');
   }
 
   /**
    * Generate a unique ID for a tooltip.
-   * @returns {string} A unique ID for a tooltip.
+   * @return {string} A unique ID for a tooltip.
    */
   function generateTooltipId() {
     return 'tooltip_' + Math.random().toString(36).substring(2, 11);
@@ -153,9 +156,8 @@
   /**
    * Create the markup for a tooltip.
    * @param {string} text - The text to display in the tooltip.
-   * @param {string} tooltipId - The ID of the tooltip.
    * @param {string} definition - The definition of the tooltip.
-   * @returns {string} The markup for a tooltip.
+   * @return {string} The markup for a tooltip.
    */
   function createTooltip(text, definition) {
     const tooltipId = generateTooltipId();
@@ -180,7 +182,7 @@
   /**
    * Highlight matches in the text.
    * @param {Array<{node: Node, searchRegex: RegExp, searchString: string}>} matches - Array of matches containing text nodes, search regex and search string
-   * @returns {void}
+   * @return {void}
    */
   function highlightMatches(matches) {
     matches.forEach(({node, searchRegex, searchString}) => {
@@ -201,8 +203,8 @@
       const afterText = document.createTextNode(text.substring(matchEnd));
 
       // Create the tooltip.
-      const definition = createTooltipContent(terms[searchString])
-      const tooltip = createTooltip(match[0], definition)
+      const definition = createTooltipContent(terms[searchString]);
+      const tooltip = createTooltip(match[0], definition);
 
       // Replace the original text node.
       const parent = node.parentElement;
