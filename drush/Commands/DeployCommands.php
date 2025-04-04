@@ -335,6 +335,11 @@ class DeployCommands extends DrushCommands {
       $this->waitForTaskToComplete(basename($href), 30, 180);
     }
 
+    // Run deploy steps.
+    $process = Drush::drush($targetRecord, 'status', [], ['verbose' => TRUE]);
+    $process->mustRun($process->showRealtime());
+    $this->logger()->info('Unable to login to ' . $target . '.');
+
     if ($options['skip-maint'] == FALSE) {
       try {
         // Turn on Maint mode.
@@ -356,10 +361,6 @@ class DeployCommands extends DrushCommands {
     $href = $operationResponse->links->notification->href;
     /** @noinspection PhpParamsInspection */
     $this->waitForTaskToComplete(basename($href), 15);
-
-    // Run deploy steps.
-    $process = Drush::drush($targetRecord, 'status', [], ['verbose' => TRUE]);
-    $process->mustRun($process->showRealtime());
 
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
