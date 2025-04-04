@@ -358,6 +358,9 @@ class DeployCommands extends DrushCommands {
     $this->waitForTaskToComplete(basename($href), 15);
 
     // Run deploy steps.
+    $process = Drush::drush($targetRecord, 'status', [], ['verbose' => TRUE]);
+    $process->mustRun($process->showRealtime());
+
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
 
