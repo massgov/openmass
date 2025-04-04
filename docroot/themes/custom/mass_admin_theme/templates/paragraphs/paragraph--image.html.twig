@@ -49,10 +49,7 @@
     {% block content %}
       {% include "@atoms/09-media/figure--image.twig" with {
         "figure": {
-          "image": {
-            "alt": paragraph.field_image.alt,
-            "src": file_url(paragraph.field_image.entity.fileuri ?? '')
-          },
+          "content": content.field_image,
           "align": paragraph.field_image_alignment.value,
           "size": paragraph.field_image_display_size.value,
           "caption": paragraph.field_image_caption.value ? content.field_image_caption : null,

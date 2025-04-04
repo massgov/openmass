@@ -335,29 +335,44 @@ class DeployCommands extends DrushCommands {
       $this->waitForTaskToComplete(basename($href), 30, 180);
     }
 
-    if ($options['skip-maint'] == FALSE) {
-      try {
-        // Turn on Maint mode.
-        $process = Drush::drush($targetRecord, 'maint:set', [1]);
-        $process->mustRun();
-        $this->logger()->success("Maintenance mode enabled in $target.");
-      }
-      catch (\Exception $e) {
-        $this->logger()->info('Unable to set maintenance mode. Proceeding - ' . $e->getMessage());
-      }
-    }
+    // Run deploy steps.
+    $this->logger()->info('Unable to login to ' . $target . '.');
 
+    $process = Drush::drush($targetRecord, 'status', [], ['verbose' => TRUE]);
+    $process->mustRun($process->showRealtime());
+//    $process = Drush::drush($targetRecord, 'cr', [], ['verbose' => TRUE]);
+//    $process->mustRun($process->showRealtime());
+    $process = Drush::drush($targetRecord, 'cim', [], ['verbose' => TRUE]);
+    $process->mustRun($process->showRealtime());
+
+    $process = Drush::drush($targetRecord, 'maint:set', [0]);
+    $process->mustRun($process->showRealtime());
+
+
+    //    if ($options['skip-maint'] == FALSE) {
+//      try {
+//        // Turn on Maint mode.
+//        $process = Drush::drush($targetRecord, 'maint:set', [1]);
+//        $process->mustRun();
+//        $this->logger()->success("Maintenance mode enabled in $target.");
+//      }
+//      catch (\Exception $e) {
+//        $this->logger()->info('Unable to set maintenance mode. Proceeding - ' . $e->getMessage());
+//      }
+//    }
+
+    $this->logger()->info('Deploy the new code. $git_ref' . $git_ref . '.');
     // We need to set the PHP version before we deploy the code, as the new
     // artifacts may have changes dependent on the PHP version.
     $this->setPhpVersion($targetRecord, self::PHP_VERSION);
 
     // Deploy the new code.
+
     $operationResponse = (new Code($this->getClient()))->switch($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
     /** @noinspection PhpParamsInspection */
     $this->waitForTaskToComplete(basename($href), 15);
 
-    // Run deploy steps.
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
 
@@ -376,12 +391,12 @@ class DeployCommands extends DrushCommands {
       $this->logger()->success("Extra cache rebuild completed at $target.");
     }
 
-    if (!$options['skip-maint']) {
-      // Disable Maintenance mode.
-      $process = Drush::drush($targetRecord, 'maint:set', [0]);
-      $process->mustRun();
-      $this->logger()->success("Maintenance mode disabled in $target.");
-    }
+//    if (!$options['skip-maint']) {
+//      // Disable Maintenance mode.
+//      $process = Drush::drush($targetRecord, 'maint:set', [0]);
+//      $process->mustRun();
+//      $this->logger()->success("Maintenance mode disabled in $target.");
+//    }
 
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
@@ -587,13 +602,18 @@ class DeployCommands extends DrushCommands {
    * configuration as a part of a build.
    */
   private function setPhpVersion(SiteAlias $targetRecord, string $version): void {
+    $this->logger()->info('try to ge UUID' . $targetRecord->name() . '.' . $version);
+
     $environmentUuid = $targetRecord->get('uuid');
+    $this->logger()->info('try to ge UUID after' . $targetRecord->name() . '.' . $version);
     $client = $this->getClient();
 
+    $this->logger()->info('try to ge UUID after getClient' . $targetRecord->name() . '.' . $version);
     $currentVersion = (new Environments($client))->get($environmentUuid)
       ->configuration
       ->php
       ->version;
+    $this->logger()->info('try to ge UUID after Environments' . $targetRecord->name() . '.' . $version);
 
     $this->logger()->info("{name} is currently set to PHP {version}", [
       'name' => $targetRecord->name(),
