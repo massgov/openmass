@@ -1,0 +1,68 @@
+uuid: 471b272c-59be-4f28-94b0-053fff3f1a4d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.entity_hierarchy_microsite.entity_hierarchy_microsite.field_microsites_key_message
+  module:
+    - entity_hierarchy_microsite
+    - paragraphs
+id: entity_hierarchy_microsite.entity_hierarchy_microsite.default
+targetEntityType: entity_hierarchy_microsite
+bundle: entity_hierarchy_microsite
+mode: default
+content:
+  field_microsites_key_message:
+    type: paragraphs
+    weight: -4
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
+    third_party_settings: {  }
+  generate_menu:
+    type: boolean_checkbox
+    weight: -5
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  home:
+    type: entity_reference_autocomplete
+    weight: -5
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  logo:
+    type: entity_reference_autocomplete
+    weight: -5
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: -5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden: {  }
