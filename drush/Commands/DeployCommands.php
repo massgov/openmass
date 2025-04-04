@@ -336,9 +336,10 @@ class DeployCommands extends DrushCommands {
     }
 
     // Run deploy steps.
+    $this->logger()->info('Unable to login to ' . $target . '.');
+
     $process = Drush::drush($targetRecord, 'status', [], ['verbose' => TRUE]);
     $process->mustRun($process->showRealtime());
-    $this->logger()->info('Unable to login to ' . $target . '.');
 
     if ($options['skip-maint'] == FALSE) {
       try {
