@@ -365,6 +365,7 @@ class DeployCommands extends DrushCommands {
     // artifacts may have changes dependent on the PHP version.
     $this->setPhpVersion($targetRecord, self::PHP_VERSION);
 
+    $this->logger()->info('Deploy the new code. $git_ref' . $git_ref . '.');
     // Deploy the new code.
     $operationResponse = (new Code($this->getClient()))->switch($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
