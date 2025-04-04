@@ -115,6 +115,22 @@
     {{ page }}
     {{ page_bottom }}
 
+    {% if _context['#attached'].drupalSettings.glossaries %}
+      <template id="glossary-popup-template">
+        {% include '@molecules/popover.twig' with {
+          "tooltip": {
+            "controlId": "uniqueID",
+            "openText": "Term",
+            "closeText": "Close",
+            "title": "Definition",
+            "level": "2",
+            "message": "definition here."
+          }
+        }
+        %}
+      </template>
+    {% endif %}
+
     {# Google Translate JS #}
     <script>
       function googleTranslateElementInit() {
