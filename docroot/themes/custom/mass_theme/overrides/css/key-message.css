@@ -131,7 +131,11 @@ div.ma__microsite-key-message .ma__key-message__content .ma__rich-text {
 /* --> Microsite --> Two Column */
 
 div.ma__microsite-key-message .ma__key-message.ma__key-message--image-overlay .ma__key-message__block:has(.ma__key-message__columns--two) {
-  padding: 0px 24px;
+  padding: 24px 0;
+
+  @media (min-width: 620px) {
+    padding: 32px 0;
+  }
 
   @media (min-width: 781px) {
     padding: 40px;
@@ -163,6 +167,10 @@ div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__
   }
 
   @media (min-width: 911px) {
+    padding: 64px 36px;
+  }
+
+  @media (min-width: 1301px) {
     padding: 64px 0;
   }
 }
