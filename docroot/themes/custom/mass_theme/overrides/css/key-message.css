@@ -72,6 +72,31 @@ div:not(.ma__microsite-key-message) .ma__key-message__content+.ma__key-message__
 
 /* --> Microsite specific */
 
+div.ma__microsite-key-message:has(.ma__key-message--image-overlay) {
+  @media (min-width: 911px) {
+    margin-block-end: 220px;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message__wrapper--top:not(.ma__key-message--image-overlay):not(:has(.ma__key-message__columns--two)){
+  padding: 20px 0px;
+
+  @media (min-width: 781px) and (min-width: 911px) {
+    padding-inline: 0px;
+  }
+  @media(min-width: 781px){
+    padding: 40px;
+  }
+
+  @media (min-width: 911px) {
+    padding: 64px;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message--image-overlay {
+  padding: 0;
+}
+
 div.ma__microsite-key-message .ma__key-message--image .ma__key-message__wrapper--overlay .ma__key-message__block {
   padding: 32px 24px;
   box-shadow: none;
@@ -104,20 +129,9 @@ div.ma__microsite-key-message .ma__key-message__content .ma__rich-text {
 
 
 /* --> Microsite --> Two Column */
-div.ma__microsite-key-message .ma__key-message__wrapper--top{
-  padding: 20px 0px;
 
-  @media (min-width: 781px) and (min-width: 911px) {
-    padding-inline: 0px;
-  }
-}
-div.ma__microsite-key-message .ma__key-message--image .ma__key-message__wrapper--overlay:has(.ma__key-message__columns--two) {
-  top: 72%;
-}
-
-div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__key-message__columns--two) {
-  padding: 0;
-  transform: translateY(0%);
+div.ma__microsite-key-message .ma__key-message.ma__key-message--image-overlay .ma__key-message__block:has(.ma__key-message__columns--two) {
+  padding: 0px 24px;
 
   @media (min-width: 781px) {
     padding: 40px;
@@ -125,6 +139,27 @@ div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__
 
   @media (min-width: 911px) {
     padding: 64px;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message--image .ma__key-message__wrapper--overlay {
+  top: 72%;
+}
+
+div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__key-message__columns--two) {
+  padding: 0;
+  transform: translateY(0%);
+
+  @media (min-width: 621px) {
+    padding: 24px 0;
+  }
+
+  @media (min-width: 781px) {
+    padding: 40px 0;
+  }
+
+  @media (min-width: 911px) {
+    padding: 64px 0;
   }
 }
 
