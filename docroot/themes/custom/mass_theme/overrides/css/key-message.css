@@ -72,6 +72,14 @@ div:not(.ma__microsite-key-message) .ma__key-message__content+.ma__key-message__
 
 /* --> Microsite specific */
 
+.pre-content:has(div.ma__microsite-key-message):has(~ .mass-alerts-block .ma__container) {
+  margin-block-end: 56px;
+
+  @media(min-width: 781px){
+    margin-block-end: 0px;
+  }
+}
+
 div.ma__microsite-key-message:has(.ma__key-message--image-overlay):not(:has(.ma__key-message__columns--two)) {
   @media (min-width: 911px) {
     margin-block-end: 155px;
