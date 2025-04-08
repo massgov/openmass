@@ -10,16 +10,16 @@
   - DP-38401: Removed some backstop pages and added others.
   - DP-38411: Adjusts image cards within a .ma__rich-text to ensure they are equal width even if there are no images.
   - DP-38429: Modified form report to be more flexible.
-  
+
 ### Added
   - DP-38061: Create view report for authors showing pages with login links.
   - DP-38113: Add exposed date filters to All Documents view.
   - DP-38604: Merge master into develop.
-  
+
 ### Fixed
   - DP-38254: Fix backstop false positive on campaign landing page.
   - DP-38304: Fix image errors on first page load on local or tugboat.
-  
+
 
 
 ## [0.432.1] - April 2, 2025
