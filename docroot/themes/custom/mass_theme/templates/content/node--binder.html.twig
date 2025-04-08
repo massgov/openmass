@@ -84,10 +84,7 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
-  {% set bgImage = false %}
-  {% if node.field_binder_banner_image is not empty %}
-    {% set bgImage = file_url(node.field_binder_banner_image.entity.fileuri ?? '') %}
-  {% endif %}
+  {% set bgImage = node.field_binder_banner_image.entity.fileuri|image_style('570x') %}
   {% if buttons is defined %}
     {% set buttons = buttons|merge({'theme': 'c-white', 'usage': ''}) %}
   {% endif %}
