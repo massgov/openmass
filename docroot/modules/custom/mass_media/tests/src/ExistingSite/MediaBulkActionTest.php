@@ -98,7 +98,8 @@ class MediaBulkActionTest extends MassExistingSiteBase {
     $this->drupalGet('admin/ma-dash/documents');
 
     // Trigger search to get some results.
-    $this->submitForm([], (string) $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
+    $now = (new \DateTime())->format('Y-m-d H:i:s');
+    $this->submitForm(['changed_op'=> '<', 'changed[value]' => $now], (string) $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
 
     $edit = [
       'action' => $action,
