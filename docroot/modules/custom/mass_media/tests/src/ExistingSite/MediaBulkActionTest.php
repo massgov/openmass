@@ -99,7 +99,7 @@ class MediaBulkActionTest extends MassExistingSiteBase {
 
     // Trigger search to get some results.
     $now = (new \DateTime())->format('Y-m-d H:i:s');
-    $this->submitForm(['changed_op'=> '<', 'changed[value]' => $now], (string) $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
+    $this->submitForm(['changed_op' => '<', 'changed[value]' => $now], (string) $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
 
     $edit = [
       'action' => $action,
