@@ -182,7 +182,7 @@ class LogInLinksBuilder {
         $build['log_in_links'] = [
           "text" => 'Log In to...',
           "ariaLabelText" => "Log in to one of Mass.gov's most frequently accessed services",
-          'id' => 'contextual-login-links',
+          'id' => 'gtm-loginto',
           "usage" => $usage,
           "theme" => $theme,
           "menuId" => "contextual-login-links-menu",
