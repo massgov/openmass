@@ -59,13 +59,13 @@ class MicrositeController extends ControllerBase {
   }
 
   /**
-   * Gets all published Organization node IDs from the system.
+   * Gets all published Microsite IDs from the system.
    *
-   * @param \Drupal\Core\Entity\EntityStorageInterface $node_storage
+   * @param \Drupal\Core\Entity\EntityStorageInterface $microsite_storage
    *   A storage instance.
    *
    * @return array
-   *   The non-QA Organization node IDs.
+   *   The non-QA Microsite IDs.
    */
   protected function getMicrositeIds(EntityStorageInterface $microsite_storage) {
     $query = $microsite_storage->getQuery()
@@ -108,11 +108,11 @@ class MicrositeController extends ControllerBase {
   /**
    * Creates an item for the response listing with common Organization info.
    *
-   * @param \Drupal\node\Entity\Node $node
-   *   The Organization node to create a response item from.
+   * @param \Drupal\entity_hierarchy_microsite\Entity\Microsite $microsite
+   *   The Microsite entity to create a response item from.
    *
    * @return array
-   *   The formatted Organization item.
+   *   The formatted Microsite item.
    *
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
@@ -152,4 +152,5 @@ class MicrositeController extends ControllerBase {
 
     return $response;
   }
+
 }
