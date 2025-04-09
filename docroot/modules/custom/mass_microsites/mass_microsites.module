@@ -235,6 +235,7 @@ function mass_microsites_field_widget_single_element_entity_reference_hierarchy_
  */
 function _mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build(array $element, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
+
   // Ignore non-node entities.
   if (!$entity instanceof NodeInterface) {
     return;
@@ -242,11 +243,6 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
 
   /** @var \Drupal\entity_hierarchy_microsite\NearestMicrositeLookup $nearest_microsite_lookup */
   $microsite_lookup = \Drupal::service('mass_microsites.nearest_microsite_lookup');
-  /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface $microsite */
-  $microsite = $microsite_lookup->getNearestMicrosite($entity);
-  if (!$microsite) {
-    return;
-  }
 
   if ($parent_id = $form_state->getValue(['field_primary_parent', '0', 'target_id'])) {
     $parent_id = reset($parent_id) ?? '';
@@ -258,6 +254,17 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
   }
   else {
     $parent_id = $entity->get('field_primary_parent')->target_id;
+  }
+
+  /** @var \Drupal\node\NodeInterface $parent */
+  $parent = \Drupal::entityTypeManager()->getStorage('node')->load($parent_id);
+
+  /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface $microsite */
+  $microsite = $microsite_lookup->getNearestMicrosite($parent);
+
+  if (!$microsite || !$parent) {
+    $element['weight']['#access'] = FALSE;
+    return $element;
   }
 
   $microsite_hierarchy = Url::fromRoute('entity.node.entity_hierarchy_reorder', ['node' => $microsite->getHome()->id()])->toString();
