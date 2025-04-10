@@ -42,7 +42,7 @@ trait CorsResponseTrait {
     ];
 
     foreach ($allowed_origins as $allowed_origin) {
-      if (preg_match('/^(https?:\/\/)?' . $allowed_origin . '(:\d{4})?\/?$/', $origin)) {
+      if ($origin && preg_match('/^(https?:\/\/)?' . $allowed_origin . '(:\d{4})?\/?$/', $origin)) {
         $response->headers->set('Access-Control-Allow-Origin', $origin);
         break;
       }
