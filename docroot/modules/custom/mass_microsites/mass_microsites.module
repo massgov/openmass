@@ -236,9 +236,12 @@ function mass_microsites_field_widget_single_element_entity_reference_hierarchy_
 function _mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build(array $element, FormStateInterface $form_state) {
   $entity = $form_state->getFormObject()->getEntity();
 
+  // Hide the relationship weight by default.
+  $element['weight']['#access'] = FALSE;
+
   // Ignore non-node entities.
   if (!$entity instanceof NodeInterface) {
-    return;
+    return $element;
   }
 
   /** @var \Drupal\entity_hierarchy_microsite\NearestMicrositeLookup $nearest_microsite_lookup */
@@ -259,11 +262,14 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
   /** @var \Drupal\node\NodeInterface $parent */
   $parent = \Drupal::entityTypeManager()->getStorage('node')->load($parent_id);
 
+  if (!$parent) {
+    return $element;
+  }
+
   /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface $microsite */
   $microsite = $microsite_lookup->getNearestMicrosite($parent);
 
-  if (!$microsite || !$parent) {
-    $element['weight']['#access'] = FALSE;
+  if (!$microsite) {
     return $element;
   }
 
