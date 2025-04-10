@@ -16,7 +16,7 @@ use Drupal\entity_hierarchy_microsite\MenuRebuildProcessor;
 function mass_microsites_node_update(NodeInterface $node) {
   $original = $node->original;
 
-  // Update microsite menu on short title change, if needed.
+  // Update Microsite menu on short title change, if needed.
   if (
     $node->hasField('field_short_title') &&
     $node->get('field_short_title')->value !== $original->get('field_short_title')->value
