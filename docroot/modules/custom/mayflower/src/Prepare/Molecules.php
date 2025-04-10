@@ -1270,33 +1270,46 @@ class Molecules {
   public static function prepareHeaderSearch(?object $entity = NULL, array &$cache_tags = []) {
     $has_suggestions = FALSE;
     $suggested_scopes = [];
+    $additional_parameters = [];
     $orgs = [];
     if ($entity instanceof NodeInterface) {
+      /** @var \Drupal\mass_microsites\NearestMicrositeLookup $micrositeLookup */
+      $micrositeLookup = \Drupal::service('mass_microsites.nearest_microsite_lookup');
+      $microsite = $micrositeLookup->getNearestMicrosite($entity);
 
-      if ($entity->bundle() === 'org_page') {
-        $orgs[] = $entity;
-      }
+      if ($microsite) {
+        $suggested_scopes[] = 'this microsite';
+        $suggested_scopes[] = 'all of Mass.gov';
 
-      if ($entity->hasField('field_organizations')) {
-        if (!$entity->get('field_organizations')->isEmpty()) {
-          $org_field_values = $entity->get('field_organizations')->referencedEntities();
-          $orgs = array_merge($orgs, $org_field_values);
+        $utilities = \Drupal::service('mass_metatag.utilities');
+        $slug = str_replace("-", "", $utilities->slugify(trim($microsite->label())));
+        $additional_parameters['microsite'] = $slug;
+      } else {
+        if ($entity->bundle() === 'org_page') {
+          $orgs[] = $entity;
         }
-      }
 
-      if (!empty($orgs)) {
-        foreach ($orgs as $org) {
-          if ($org->hasField('field_org_no_search_filter')) {
-            if ($org->field_org_no_search_filter->value != 1) {
-              $cache_tags = array_merge($cache_tags, $org->getCacheTags());
-              $suggested_scopes[] = trim($org->label());
-            }
-            $parent = $org->field_parent->entity;
-            if ($parent) {
-              if ($parent->hasField('field_org_no_search_filter')) {
-                if ($parent->field_org_no_search_filter->value != 1) {
-                  $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
-                  $suggested_scopes[] = trim($parent->label());
+        if ($entity->hasField('field_organizations')) {
+          if (!$entity->get('field_organizations')->isEmpty()) {
+            $org_field_values = $entity->get('field_organizations')->referencedEntities();
+            $orgs = array_merge($orgs, $org_field_values);
+          }
+        }
+
+        if (!empty($orgs)) {
+          foreach ($orgs as $org) {
+            if ($org->hasField('field_org_no_search_filter')) {
+              if ($org->field_org_no_search_filter->value != 1) {
+                $cache_tags = array_merge($cache_tags, $org->getCacheTags());
+                $suggested_scopes[] = trim($org->label());
+              }
+              $parent = $org->field_parent->entity;
+              if ($parent) {
+                if ($parent->hasField('field_org_no_search_filter')) {
+                  if ($parent->field_org_no_search_filter->value != 1) {
+                    $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
+                    $suggested_scopes[] = trim($parent->label());
+                  }
                 }
               }
             }
@@ -1316,6 +1329,7 @@ class Molecules {
       'id' => 'header-search',
       'placeholder' => 'Search Mass.gov',
       'label' => 'Search terms',
+      'additionalParameters' => $additional_parameters
     ];
   }
 
