@@ -58,15 +58,12 @@ function mass_bigquery_schema() {
       ],
       'nos_per_1000_cleaned' => [
         'type' => 'float',
-        'description' => 'Populated if the node has 500 or more page views or 5 or more nos',
+        'description' => 'Populated if the node has 500 or more page views or 5 or more nos.',
       ],
     ],
+    'primary key' => ['nid'],
     'indexes' => [
-      'nid' => ['nid'],
       'last_updated' => ['last_updated'],
-    ],
-    'unique_keys' => [
-      'unique_nid' => ['nid'],
     ],
   ];
 
@@ -93,3 +90,21 @@ function mass_bigquery_update_9001() {
     $schema->addField($table, $field_to_add, $spec[$table]['fields'][$field_to_add]);
   }
 }
+
+/**
+ * Implements hook_update_N().
+ *
+ * Makes `nid` the primary key for the mass_bigquery_data table.
+ */
+function mass_bigquery_update_10002() {
+  $schema = Database::getConnection()->schema();
+  $table = 'mass_bigquery_data';
+
+  // Step 1: Drop any existing primary key (if any exists).
+  $schema->dropPrimaryKey($table);
+  $schema->dropUniqueKey($table, 'nid');
+
+  // Step 2: Add `nid` as the new primary key.
+  $schema->addPrimaryKey($table, ['nid']);
+}
+
