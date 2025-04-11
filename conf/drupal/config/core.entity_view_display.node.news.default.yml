@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.news.field_author
     - field.field.node.news.field_collections
+    - field.field.node.news.field_glossaries
     - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
@@ -90,6 +91,14 @@ content:
       link: true
     third_party_settings: {  }
     weight: 19
+    region: content
+  field_glossaries:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 22
     region: content
   field_image_credit:
     type: string

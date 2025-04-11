@@ -1,0 +1,29 @@
+uuid: 7d4b09f2-4925-4285-99b7-04008e0e9e19
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_glossaries
+    - node.type.executive_order
+    - node.type.glossary
+id: node.executive_order.field_glossaries
+field_name: field_glossaries
+entity_type: node
+bundle: executive_order
+label: Glossaries
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      glossary: glossary
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

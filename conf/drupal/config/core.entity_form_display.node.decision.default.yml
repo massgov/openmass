@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.decision.field_decision_related
     - field.field.node.decision.field_decision_section
     - field.field.node.decision.field_decision_sources
+    - field.field.node.decision.field_glossaries
     - field.field.node.decision.field_intended_audience
     - field.field.node.decision.field_organizations
     - field.field.node.decision.field_primary_parent
@@ -58,6 +59,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_decision_edit_form
@@ -123,7 +125,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 18
+    weight: 17
     region: content
     settings:
       theme: default
@@ -141,13 +143,13 @@ content:
     third_party_settings: {  }
   field_date_published:
     type: datetime_default
-    weight: 8
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   field_decision_docket_number:
     type: string_textfield
-    weight: 10
+    weight: 9
     region: content
     settings:
       size: 60
@@ -170,6 +172,7 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -183,7 +186,7 @@ content:
     third_party_settings: {  }
   field_decision_listing_desc:
     type: string_textfield
-    weight: 13
+    weight: 12
     region: content
     settings:
       size: 60
@@ -191,7 +194,7 @@ content:
     third_party_settings: {  }
   field_decision_location:
     type: string_textfield
-    weight: 11
+    weight: 10
     region: content
     settings:
       size: 60
@@ -203,10 +206,11 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_decision_overview:
     type: text_textarea
-    weight: 12
+    weight: 11
     region: content
     settings:
       rows: 5
@@ -236,7 +240,7 @@ content:
     third_party_settings: {  }
   field_decision_ref_organization:
     type: entity_reference_autocomplete
-    weight: 9
+    weight: 8
     region: content
     settings:
       match_operator: CONTAINS
@@ -272,21 +276,31 @@ content:
     third_party_settings: {  }
   field_decision_sources:
     type: link_default
-    weight: 4
+    weight: 5
     region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 18
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 16
+    weight: 15
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 15
+    weight: 14
     region: content
     settings:
       match_operator: CONTAINS
@@ -296,7 +310,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 14
+    weight: 13
     region: content
     settings:
       match_operator: CONTAINS
@@ -307,7 +321,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 17
+    weight: 16
     region: content
     settings:
       match_operator: CONTAINS
