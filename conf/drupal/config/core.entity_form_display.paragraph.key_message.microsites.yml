@@ -1,8 +1,9 @@
-uuid: a8786a40-423f-49cb-881a-c14f0b9d944d
+uuid: 2e57c577-11b9-435c-8f1a-669bdc9610af
 langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_form_mode.paragraph.microsites
     - field.field.paragraph.key_message.field_background_color
     - field.field.paragraph.key_message.field_background_type
     - field.field.paragraph.key_message.field_button
@@ -19,7 +20,7 @@ dependencies:
     - allowed_formats
     - conditional_fields
     - field_group
-    - focal_point
+    - image
     - link
     - mass_validation
     - maxlength
@@ -32,20 +33,102 @@ third_party_settings:
         - field_image
         - field_use_half_image
         - field_background_color
-      label: Background
+        - field_text_overlay_color
+      label: 'Background & Image'
       region: content
-      parent_name: ''
-      weight: 5
-      format_type: fieldset
+      parent_name: group_tabs
+      weight: 6
+      format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
+        formatter: closed
         description: 'Either a solid block of color or a primary image that sits at the top of page.'
         required_fields: true
-id: paragraph.key_message.default
+    group_tabs:
+      children:
+        - group_key_message_title
+        - group_description
+        - group_background
+        - group_button
+        - group_settings
+      label: Tabs
+      region: content
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        direction: horizontal
+        width_breakpoint: 640
+    group_description:
+      children:
+        - field_rich_text_description
+      label: Description
+      region: content
+      parent_name: group_tabs
+      weight: 5
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_key_message_title:
+      children:
+        - field_main_heading
+        - field_sub_heading
+      label: 'Key message title'
+      region: content
+      parent_name: group_tabs
+      weight: 4
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_settings:
+      children:
+        - field_use_two_columns
+      label: Settings
+      region: content
+      parent_name: group_tabs
+      weight: 8
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_button:
+      children:
+        - field_button
+      label: Button
+      region: content
+      parent_name: group_tabs
+      weight: 7
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+id: paragraph.key_message.microsites
 targetEntityType: paragraph
 bundle: key_message
-mode: default
+mode: microsites
 content:
   field_background_color:
     type: options_buttons
@@ -62,7 +145,7 @@ content:
     third_party_settings: {  }
   field_button:
     type: link_default
-    weight: 3
+    weight: 2
     region: content
     settings:
       placeholder_url: ''
@@ -75,14 +158,12 @@ content:
       mass_validation:
         internal_link_content_type_blacklist: {  }
   field_image:
-    type: image_focal_point
+    type: image_image
     weight: 6
     region: content
     settings:
       progress_indicator: throbber
       preview_image_style: embedded_half_width
-      preview_link: true
-      offsets: '50,50'
     third_party_settings: {  }
   field_main_heading:
     type: string_textfield
@@ -119,12 +200,11 @@ content:
     third_party_settings:
       conditional_fields: {  }
   field_text_overlay_color:
-    type: options_buttons
-    weight: 6
+    type: options_select
+    weight: 9
     region: content
     settings: {  }
-    third_party_settings:
-      conditional_fields: {  }
+    third_party_settings: {  }
   field_use_half_image:
     type: boolean_checkbox
     weight: 7
@@ -134,7 +214,7 @@ content:
     third_party_settings: {  }
   field_use_two_columns:
     type: boolean_checkbox
-    weight: 4
+    weight: 7
     region: content
     settings:
       display_label: true

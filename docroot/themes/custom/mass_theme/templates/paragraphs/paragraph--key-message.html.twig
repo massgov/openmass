@@ -10,6 +10,7 @@
 #}
 {% set subtitle = '' %}
 {% set description = {} %}
+{% set columns = "" %}
 {% if paragraph.field_sub_heading is not empty %}
   {% set subtitle = paragraph.field_sub_heading.value %}
 {% endif %}
@@ -36,6 +37,12 @@
 {% if paragraph.field_background_type.value == 'color' %}
   {% set textOverlay = backgroundColor ? backgroundColor : textOverlay %}
 {% endif %}
+{% if content.field_use_two_columns.0['#markup'] %}
+  {% set columns = "two" %}
+{% else %}
+  {% set columns = "" %}
+{% endif %}
+
 {%
 set keyMessage = {
   "keyMessage": {
@@ -50,7 +57,8 @@ set keyMessage = {
     "subtitle": subtitle,
     "description": description,
     "button": button,
-    "halfImage": halfImage
+    "halfImage": halfImage,
+    "columns": columns
   }
 }
 %}

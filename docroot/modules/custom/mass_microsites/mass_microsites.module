@@ -7,7 +7,10 @@
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
@@ -367,4 +370,23 @@ function _mass_microsites_get_node() {
     $node = $route_name === 'entity.node.preview' ? $params->get('node_preview') : $params->get('node');
     return $node;
   }
+}
+
+/**
+ * Implements hook_entity_type_view().
+ */
+function mass_microsites_node_view(array &$build, NodeInterface $node, EntityViewDisplayInterface $display, $view_mode) {
+  /**  @var Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup */
+  $microsites_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
+  /** @var  MicrositeInterface[] $microsites */
+  $microsites = $microsites_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
+  if (empty($microsites)) {
+    return;
+  }
+
+  foreach ($microsites as $microsite) {
+    $cache_metadata = CacheableMetadata::createFromObject($microsite);
+    $cache_metadata->applyTo($build);
+  }
+
 }
