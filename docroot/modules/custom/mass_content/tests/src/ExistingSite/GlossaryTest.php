@@ -52,6 +52,10 @@ class GlossaryTest extends MassExistingSiteBase {
           'key' => 'term2',
           'value' => 'definition2',
         ],
+        [
+          'key' => 'Lorem',
+          'value' => 'Ipsum',
+        ],
       ],
       'moderation_state' => 'published',
     ]);
@@ -91,6 +95,14 @@ class GlossaryTest extends MassExistingSiteBase {
       $page->findField('edit-field-glossaries-0-target-id')->setValue($this->glossary->label() . ' (' . $this->glossary->id() . ') - Glossary');
       $page->findButton('Save')->submit();
       $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
+
+      // Ensure the popup template is present.
+      $popupTemplate = $page->find('css', '#glossary-popup-template');
+      $this->assertNotNull($popupTemplate);
+
+      // Ensure glossaries are in the drupalSettings json
+      $drupalSettings = $page->find('css', '[data-drupal-selector="drupal-settings-json"]');
+      $this->assertStringContainsString('glossaries', $drupalSettings->getText());
     }
   }
 
