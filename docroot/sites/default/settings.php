@@ -11,7 +11,15 @@
 // see: https://docs.acquia.com/acquia-cloud/develop/env-variable
 // for why this is first.
 if (file_exists('/var/www/site-php')) {
+  global $conf, $databases;
+  $conf['acquia_hosting_settings_autoconnect'] = FALSE;
   require "/var/www/site-php/massgov/massgov-settings.inc";
+  $databases['default']['default']['init_commands'] = [
+    'isolation_level' => "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
+  ];
+  if (function_exists("acquia_hosting_db_choose_active")) {
+    acquia_hosting_db_choose_active();
+  }
 }
 
 // Include deployment identifier to invalidate internal twig cache.
@@ -134,6 +142,14 @@ if (PHP_SAPI === 'cli') {
   $databases['default']['default']['init_commands']['wait_timeout'] = 'SET SESSION wait_timeout = 3600';
 }
 
+//$databases['default']['default']['init_commands'] = [
+//  'isolation_level' => "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
+//];
+
 if (extension_loaded('newrelic')) { // Ensure PHP agent is available
   newrelic_disable_autorum();
 }
+
+//$databases['default']['default']['init_commands'] = [
+//    'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
+//];
