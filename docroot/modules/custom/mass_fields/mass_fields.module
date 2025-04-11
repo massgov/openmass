@@ -981,16 +981,18 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   /** @var \Drupal\field\Entity\FieldConfig $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
-
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' ||
-    $paragraph_entity_reference_field_name == 'field_header' ||
-    $paragraph_entity_reference_field_name == 'field_info_details_header_media' ||
-    $paragraph_entity_reference_field_name == 'field_organization_sections' ||
-    $paragraph_entity_reference_field_name == 'field_location_details_sections' ||
-    $paragraph_entity_reference_field_name == 'field_service_section_content' ||
-    $paragraph_entity_reference_field_name == 'field_sections' ||
-    $paragraph_entity_reference_field_name == 'field_section_long_form_content' |
-    $paragraph_entity_reference_field_name == 'field_microsites_key_message') {
+  $allowed_paragraph_entity_reference_field_names = [
+    'field_service_sections',
+    'field_header',
+    'field_info_details_header_media',
+    'field_organization_sections',
+    'field_location_details_sections',
+    'field_service_section_content',
+    'field_sections',
+    'field_section_long_form_content',
+    'field_microsites_key_message',
+  ];
+  if (in_array($paragraph_entity_reference_field_name, $allowed_paragraph_entity_reference_field_names)) {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
