@@ -3,9 +3,30 @@
 
   const {terms} = drupalSettings.glossaries;
   const searchRegexes = createSearchRegexes(Object.keys(terms));
-  const UNACCEPTABLE_SELECTORS = 'script, style, a, button, h1, h2, h3, h4, h5, h6';
-  const mainContentSelector = 'main .main-content .page-content';
-  const mainContent = document.querySelector(mainContentSelector);
+  const UNACCEPTABLE_ELEMENTS = [
+    'script',
+    'style',
+    'a',
+    'button',
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6'
+  ];
+  const UNACCEPTABLE_CONTAINERS = [
+    '.pre-content',
+    '.post-content',
+    '.ma__page-header',
+    '.ma__sticky-toc',
+    '.sidebar',
+    '.ma__listing-table',
+    '.ma__download-link',
+    '.ma__contact-list'
+  ];
+  const UNACCEPTABLE_SELECTORS = [...UNACCEPTABLE_ELEMENTS, ...UNACCEPTABLE_CONTAINERS].join(',');
+  const mainContentSelector = 'main';
   const template = document.getElementById('glossary-popup-template');
 
   Drupal.behaviors.glossaries = {
@@ -77,6 +98,7 @@
    */
   function findMatches(context) {
     const matches = [];
+    const mainContent = document.querySelector(mainContentSelector);
 
     // Use cached mainContent
     if (!mainContent) {
