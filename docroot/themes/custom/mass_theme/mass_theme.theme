@@ -4115,7 +4115,12 @@ function mass_theme_preprocess_node(&$variables) {
       if ($microsite->getHome()->id() == $node->id()) {
         // Add the microsite entity to the template variables
         $variables['microsite'] = $microsite;
+
+        // Add microsite cache tags to ensure proper invalidation when updated
+        $microsite_cache_tags = $microsite->getCacheTags();
+        $variables['#cache']['tags'] = Cache::mergeTags($variables['#cache']['tags'] ?? [], $microsite_cache_tags);
       }
+
       // Render the microsite key message field.
       if ($microsite->hasField('field_microsites_key_message') && !$microsite->get('field_microsites_key_message')->isEmpty()) {
         $rendered_paragraphs = [];
@@ -4123,9 +4128,22 @@ function mass_theme_preprocess_node(&$variables) {
         foreach ($microsite->get('field_microsites_key_message') as $item) {
           if ($item->entity) {
             $rendered_paragraphs[] = $paragraph_view_builder->view($item->entity);
+
+            // Add paragraph entity cache tags to ensure updates are reflected
+            if (!isset($variables['#cache']['tags'])) {
+              $variables['#cache']['tags'] = [];
+            }
+            $variables['#cache']['tags'] = Cache::mergeTags(
+              $variables['#cache']['tags'],
+              $item->entity->getCacheTags()
+            );
           }
         }
         $variables['microsite_key_message'] = $rendered_paragraphs;
+
+        // Apply cache metadata to ensure proper rendering for all users
+        CacheableMetadata::createFromRenderArray($variables)
+          ->applyTo($variables);
       }
     }
   }
