@@ -4093,26 +4093,23 @@ function mass_theme_preprocess_node(&$variables) {
     }
   }
 
-  // Check if we're on a node that's part of a microsite
-  if ($node instanceof \Drupal\node\NodeInterface) {
-    // Get microsite information
-    if ($microsite = _mass_microsites_get_microsite()) {
-      // Check if the current node is the homepage of the microsite
-      if ($microsite->getHome()->id() == $node->id()) {
-        // Add the microsite entity to the template variables
-        $variables['microsite'] = $microsite;
+  // Get microsite information
+  if ($microsite = _mass_microsites_get_microsite()) {
+    // Check if the current node is the homepage of the microsite
+    if ($microsite->getHome()->id() == $node->id()) {
+      // Add the microsite entity to the template variables
+      $variables['microsite'] = $microsite;
 
-        // Render the microsite key message field only for the homepage
-        if ($microsite->hasField('field_microsites_key_message') && !$microsite->get('field_microsites_key_message')->isEmpty()) {
-          $rendered_paragraphs = [];
-          $paragraph_view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
-          foreach ($microsite->get('field_microsites_key_message') as $item) {
-            if ($item->entity) {
-              $rendered_paragraphs[] = $paragraph_view_builder->view($item->entity);
-            }
+      // Render the microsite key message field only for the homepage
+      if ($microsite->hasField('field_microsites_key_message') && !$microsite->get('field_microsites_key_message')->isEmpty()) {
+        $rendered_paragraphs = [];
+        $paragraph_view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
+        foreach ($microsite->get('field_microsites_key_message') as $item) {
+          if ($item->entity) {
+            $rendered_paragraphs[] = $paragraph_view_builder->view($item->entity);
           }
-          $variables['microsite_key_message'] = $rendered_paragraphs;
         }
+        $variables['microsite_key_message'] = $rendered_paragraphs;
       }
     }
   }
