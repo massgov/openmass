@@ -737,6 +737,7 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
       case 'field_two_column':
       case 'field_service_section_link':
       case 'field_subtitle':
+      case 'field_use_two_columns':
         return AccessResult::forbiddenIf(!$account->hasPermission("use prototype design features"));
     }
   }
@@ -917,7 +918,20 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
     if (in_array('field_info_details_sections', $element['#field_parents']) || in_array('field_organization_sections', $element['#field_parents'])) {
       $element['#process'][] = '_mass_fields_image_paragraph_widget_alt_help_text_process';
     }
+    // Adjust help text for image field in microsite
+    if (in_array('field_microsites_key_message', $element['#field_parents'])) {
+      $element['#process'][] = '_mass_fields_microsite_key_message_image_process';
+    }
   }
+}
+
+/**
+ * Process callback for microsite key message image field.
+ */
+function _mass_fields_microsite_key_message_image_process($element, &$form_state, $form) {
+  // Modify the help text
+  $element['#description'] = t("Recommended image size is 2560x600, with a files size that doesn't exceed 5MB. Allowed types: png, gif, jpg, jpeg. Choose a high quality, decorative image that does not need text explanation. No ALT text is provided for visitors using a screenreader. If there is any text in the image, it should be repeated within the Key Message row.");
+  return $element;
 }
 
 /**
@@ -967,8 +981,18 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
   /** @var \Drupal\field\Entity\FieldConfig $field_definition */
   $field_definition = $context['items']->getFieldDefinition();
   $paragraph_entity_reference_field_name = $field_definition->getName();
-
-  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_header' || $paragraph_entity_reference_field_name == 'field_info_details_header_media' || $paragraph_entity_reference_field_name == 'field_organization_sections' || $paragraph_entity_reference_field_name == 'field_location_details_sections' || $paragraph_entity_reference_field_name == 'field_service_section_content' || $paragraph_entity_reference_field_name == 'field_sections' || $paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+  $allowed_paragraph_entity_reference_field_names = [
+    'field_service_sections',
+    'field_header',
+    'field_info_details_header_media',
+    'field_organization_sections',
+    'field_location_details_sections',
+    'field_service_section_content',
+    'field_sections',
+    'field_section_long_form_content',
+    'field_microsites_key_message',
+  ];
+  if (in_array($paragraph_entity_reference_field_name, $allowed_paragraph_entity_reference_field_names)) {
     $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
     /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
     $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
