@@ -107,8 +107,6 @@ $databases['default']['default']['init_commands'] = [
 ];
 
 // Add database connection for Service Details migration.
-// @todo Remove once thats complete.
-$databases['migrate'] = $databases['default'];
 
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
 if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
@@ -142,14 +140,6 @@ if (PHP_SAPI === 'cli') {
   $databases['default']['default']['init_commands']['wait_timeout'] = 'SET SESSION wait_timeout = 3600';
 }
 
-//$databases['default']['default']['init_commands'] = [
-//  'isolation_level' => "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
-//];
-
 if (extension_loaded('newrelic')) { // Ensure PHP agent is available
   newrelic_disable_autorum();
 }
-
-//$databases['default']['default']['init_commands'] = [
-//    'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
-//];
