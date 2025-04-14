@@ -13,47 +13,51 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
    * Test that short description rendering.
    */
   public function testGlossaryPopover() {
-    $hlc_reference = "Executive Office of Housing and Livable Communities (5191) - Organization";
+    $term = "Lorem";
+    $definition = "Ipsum";
 
     $glossary = $this->createNode([
       'type' => 'glossary',
       'title' => 'Test Glossary',
       'field_terms' => [
         [
-          'key' => 'Lorem',
-          'value' => 'Ipsum',
+          'key' => $term,
+          'value' => $definition,
         ],
       ],
-      'field_organizations' => $hlc_reference,
       'moderation_state' => 'published',
     ]);
 
     $node = $this->createNode([
       'type' => 'service_page',
       'title' => 'Test Service Page',
-      'field_organizations' => $hlc_reference,
-      'field_primary_parent' => $hlc_reference,
-      'field_glossary' => $glossary->label() . ' (' . $glossary->id() . ') - Glossary',
-      'field_service_body' => "Test definition popover Lorem",
+      'field_service_body' => "Test definition popover " . $term,
       'moderation_state' => 'published',
     ]);
 
-    echo("\nGlossary URL: " . $glossary->toUrl()->toString() . "\n");
-    echo("\nNode URL: " . $node->toUrl()->toString() . "\n");
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
     $this->drupalGet($node->toUrl()->toString());
     $page = $this->getSession()->getPage();
+
+    // The page should load with a <template id="glossary-popup-template"> and drupal settings JSON.
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    // Ensure the popup has been injected.
     $page->waitFor(10, function () use ($page) {
       $hasTemplate = $page->find('css', '#glossary-popup-template');
       return $hasTemplate !== NULL;
     });
-    $this->assertSession()->elementExists('css', 'main');
-    // $this->assertSession()->elementExists('css', '#glossary-popup-template');
-    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
 
-    $this->assertSession()->elementTextContains('css', '[data-drupal-selector="drupal-settings-json"]', 'glossaries');
-    $this->assertSession()->elementTextContains('css', '[data-drupal-selector="drupal-settings-json"]', 'Lorem');
-    $this->assertSession()->elementTextContains('css', '[data-drupal-selector="drupal-settings-json"]', 'Ipsum');
-    $this->assertSession()->elementTextContains('css', 'main', 'Lorem');
+    // Activate the popover and ensure it has the expected definition.
+    $trigger = $page->find('css', '.popover__trigger');
+    $dialog = $page->find('css', '.popover__dialog');
+
+    $trigger->click();
+    $this->assertTrue($dialog->isVisible());
+    $this->assertSession()->elementTextContains('css', '.popover__dialog', $definition);
   }
 
 }
