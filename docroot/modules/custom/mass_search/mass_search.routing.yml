@@ -9,6 +9,14 @@ mass_search.default_controller_search:
   requirements:
     _permission: 'access content'
 
+mass_search.microsites_list:
+  path: '/api/v1/microsites'
+  defaults:
+    _controller: '\Drupal\mass_search\Controller\MicrositeController::listMicrosites'
+    _title: 'Microsites List'
+  requirements:
+    _access: 'TRUE'
+
 mass_search.news_list:
   path: '/api/v1/news'
   defaults:

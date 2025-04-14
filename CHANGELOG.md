@@ -1,12 +1,84 @@
 
 
+## [0.433.0] - April 8, 2025
+
+### Changed
+  - DP-36941: temporarily pulling in a remote feature branch of mayflower-artifacts to Drupal for testing.
+  - DP-38024: Include help text in the Orphan Pages report to provide a disclaimer regarding data accuracy.
+  - DP-38339: Uses different branch of mayflower-artifacts for testing purposes, and adds an ID attribute to the button tag so we can then measure usage of the button and the links within.
+  - DP-38399: Form platform field help text and options modified based on Mass.gov Forms release.
+  - DP-38401: Removed some backstop pages and added others.
+  - DP-38411: Adjusts image cards within a .ma__rich-text to ensure they are equal width even if there are no images.
+  - DP-38429: Modified form report to be more flexible.
+
+### Added
+  - DP-38061: Create view report for authors showing pages with login links.
+  - DP-38113: Add exposed date filters to All Documents view.
+  - DP-38604: Merge master into develop.
+
+### Fixed
+  - DP-38254: Fix backstop false positive on campaign landing page.
+  - DP-38304: Fix image errors on first page load on local or tugboat.
+
+
+
+## [0.432.1] - April 2, 2025
+
+### Changed
+  - DP-38324: Disable imageapi_optimize for now, until we integrate it with the GIF improvements we made, or until we integrate that patch.
+
+### Added
+  - DP-38324: Add responsive_image_debugger to a composer dependencies.
+
+### Fixed
+  - DP-38324: Optimize images in specific locations: handbook header and info-details pre-content media.
+
+## [0.432.0] - April 1, 2025
+
+### Changed
+  - DP-37585: Review permissions on all views and make sure internal views are not public.
+  - DP-38308: Changes the text for making Cards a single action CTA; Unrequires the Image field; Shows image field conditionally if populated.
+
+### Removed
+  - DP-38145: Remove blue bar login to link.
+
+### Fixed
+  - DP-38226: Adjusts spacing below image cards when stacked. Adjusts Image Card on Cards field to require a larger image size to prevent stretching on larger mobile devices and adjusts appropriate Image Style.
+  - DP-38268: Fixes microsite header issue where fly-out menu is not visible when dropdown nav is hidden on wrap.
+  - DP-38279: Fix cards display after a floating element on info details.
+  - DP-38325: Fixes the max width for first card used in Campaign Feature.
+  - NA (Teams conversation): Add layout paragraphs styling to the "clone" page for Info Details content type
+
+### Added
+  - DP-38278: Optimize image styles to reduce image size on promo pages.
+
+## [0.431.1] - March 27, 2025
+
+### Added
+- DP-38278: Optimize image styles to reduce image size on promo pages.
+
+## [0.431.0] - March 25, 2025
+
+### Added
+  - DP-37067: Add id attributes for all headers in in rich text on info details page.
+  - DP-37552: Updates the site header if a page is part of a microsite.
+
+### Changed
+  - DP-38060: Add image option to card group. This adds a toggle to turn on cards with an image, and adds an eyebrow option and a long plain text field.
+  - DP-38155: Modified backstop test pages.
+
+### Security
+  - DP-38174: Update Drupal core.
+
+
+
 ## [0.430.0] - March 18, 2025
 
 ### Changed
   - DP-37834: Adds two new style options to the 'Service Section' Paragraph type, as well as two new fields. Adds a new field, 'Eyebrow' to the 'Key Message Section' Paragraph type.
   - DP-37859: Document description is missing the word English.
   - DP-37980: Updated nrname option to send more information.
-  
+
 
 
 ## [0.429.0] - March 11, 2025
@@ -16,7 +88,7 @@
   - DP-36332: Login links architecture.
   - DP-37860: Split New Relic AP keys between user and license types.
   - DP-37981: Changed help text for Form Platform field on form content type to reflect limited production use of Gravity.
-  
+
 ### Added
   - DP-36769: Normalize Mass Forms iframe URL handling
   - DP-37481: Add Tableau Connected Apps variation of Tableau component.
@@ -24,13 +96,13 @@
   - DP-37503: Added microsite menu block to breadcrumbs region.
   - DP-37798: Add Turkish language to Drupal site.
   - DP-37870: Added max retry limit for Acquia notifications requests.
-  
+
 ### Removed
   - DP-37567: Remove mosaic tiles folding on mobile.
-  
+
 ### Fixed
   - DP-37609: Update packages identified by Dependabot.
-  
+
 
 
 ## [0.428.0] - March 4, 2025
@@ -38,11 +110,11 @@
 ### Changed
   - DP-34362: Updated drush option for New Relic reporting to use Event API
   - DP-37544: Adds 'Featured Message', 'Card Group', 'Key Message' and 'Stat' Paragraph types to the Services Content Type.
-  
+
 ### Added
   - DP-34536: Added iframe resizer option to ignore Origin and enable inPageLinks.
   - DP-37162: Add Tigrinya & Filipino language to Drupal site .
-  
+
 
 
 ## [0.427.0] - February 25, 2025
@@ -53,12 +125,12 @@
   - DP-37449: Update packages identified by Dependabot.
   - DP-37609: Fix node JS version in Tugboat.
   - Map hard coded fontsize REM overrides to the new scale.
-  
+
 ### Added
   - DP-37203: update the publication status filter in all documents to match all content.
   - DP-37372: update help text for social media links to mention BlueSky is allowed.
   - DP-37630: Accessibility report for authors now allows filtering by multiple issue types.
-  
+
 
 ## [0.426.1] - February 20, 2025
 

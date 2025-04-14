@@ -194,6 +194,9 @@
         "drupal/http_response_headers": "^2",
         "drupal/hux": "^1.1",
         "drupal/iframe_resizer": "^2.0",
+        "drupal/imageapi_optimize": "^4.0",
+        "drupal/imageapi_optimize_resmushit": "^2.1@beta",
+        "drupal/imagemagick": "^4.0",
         "drupal/imagick": "^1",
         "drupal/inline_entity_form": "^1",
         "drupal/jquery_ui_autocomplete": "^2.0",
@@ -260,6 +263,7 @@
         "monolog/monolog": "^3",
         "phlak/semver": "^2.0",
         "previousnext/drupal-test-utils": "^0.0.1",
+        "previousnext/phpunit-finder": "^2.0.2",
         "symfony/dom-crawler": "^6",
         "symfony/http-client": "^6.3",
         "typhonius/acquia-php-sdk-v2": "^2"
@@ -270,13 +274,13 @@
         "behat/mink-goutte-driver": "^2.0",
         "drupal/core-dev": "^10",
         "drupal/drupal-extension": "^5",
+        "drupal/responsive_image_debugger": "^1.1",
         "drupaltest/queue-runner-trait": "dev-master",
         "friends-of-behat/mink-debug-extension": "^2",
         "imbo/behat-api-extension": "^2.0",
         "kint-php/kint": "^5",
         "palantirnet/drupal-rector": "^0.20.3",
         "phpspec/prophecy-phpunit": "^2",
-        "previousnext/phpunit-finder": "dev-main",
         "vincentlanglet/twig-cs-fixer": "^2.5",
         "weitzman/drupal-test-traits": "^2"
     },
@@ -364,11 +368,13 @@
                 "Statically cache editor attachments per format (https://www.drupal.org/i/3447794)": "patches/3447794-mr-9609.patch",
                 "An update to symfony/http-foundation plus a trailing space took down the views UI (https://www.drupal.org/project/drupal/issues/3486195)": "https://www.drupal.org/files/issues/2024-11-27/3486195-46.patch",
                 "Error: Cannot read properties of undefined (reading 'settings')\u2028 with dialog.position.js (https://www.drupal.org/project/drupal/issues/3356667)": "https://www.drupal.org/files/issues/2024-09-19/3356667-69-drupal-core-10.3.5-undefined.patch",
-                "CKEditor 5 balloons invisible when CKEditor 5 is used inside a modal (https://www.drupal.org/project/drupal/issues/3328425)": "https://www.drupal.org/files/issues/2024-09-19/3328425-50-drupal-core-10.3.5-ckeditor5-ballon.patch"
+                "CKEditor 5 balloons invisible when CKEditor 5 is used inside a modal (https://www.drupal.org/project/drupal/issues/3328425)": "https://www.drupal.org/files/issues/2024-09-19/3328425-50-drupal-core-10.3.5-ckeditor5-ballon.patch",
+                "Display Bug when using #states (Forms API) with Ajax Request (https://www.drupal.org/project/drupal/issues/1091852)": "https://www.drupal.org/files/issues/2023-12-18/1091852-186.patch"
             },
             "drupal/entity_embed": {
                 "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "https://git.drupalcode.org/project/entity_embed/-/merge_requests/39.diff",
-                "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch"
+                "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
+                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch"
             },
             "drupal/entity_usage": {
                 "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "https://git.drupalcode.org/project/entity_usage/-/merge_requests/55.diff"
