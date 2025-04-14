@@ -44,7 +44,7 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $page = $this->getSession()->getPage();
     $page->waitFor(10, function () use ($page) {
       $hasTemplate = $page->find('css', '#glossary-popup-template');
-      return $hasTemplate !== null;
+      return $hasTemplate !== NULL;
     });
     $this->assertSession()->elementExists('css', 'main');
     // $this->assertSession()->elementExists('css', '#glossary-popup-template');
