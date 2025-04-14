@@ -122,8 +122,8 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
       $this->assertNotNull($drupalSettings, 'drupalSettings element not found');
       $this->assertStringContainsString('glossaries', $drupalSettings->getOuterHtml(), 'Glossaries not found in drupalSettings on page ' . $path);
     }
-  }
 
+  }
 
   /**
    * Test that definitions from glossaries are displayed in popovers.
