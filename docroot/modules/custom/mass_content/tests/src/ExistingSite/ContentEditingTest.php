@@ -32,7 +32,8 @@ class ContentEditingTest extends MassExistingSiteBase {
     "/trial-court-rules/qag-rulesofcourt",
     "/qag-service1",
     "/topics/qag-topicpage1",
-    "/glossary/qag-glossary",
+    // @todo make the QAG glossary page
+    // "/glossary/qag-glossary",
   ];
 
   /**
