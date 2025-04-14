@@ -102,10 +102,6 @@ $config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] =
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 
-$databases['default']['default']['init_commands'] = [
-  'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
-];
-
 // Add database connection for Service Details migration.
 
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
