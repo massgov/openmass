@@ -113,6 +113,8 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
       $page->pressButton('Save');
       $this->assertSession()->addressEquals($path);
 
+      $this->capturePageContent('after-save');
+
       // Ensure the popup template is present.
       $popupTemplate = $page->find('css', '#glossary-popup-template');
       $this->assertNotNull($popupTemplate, 'Popup template not found on page ' . $path);
