@@ -18,6 +18,7 @@ dependencies:
     - field.field.node.executive_order.field_executive_order_overview
     - field.field.node.executive_order.field_executive_order_related
     - field.field.node.executive_order.field_executive_title
+    - field.field.node.executive_order.field_glossaries
     - field.field.node.executive_order.field_intended_audience
     - field.field.node.executive_order.field_organizations
     - field.field.node.executive_order.field_primary_parent
@@ -68,6 +69,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_node_edit_form
@@ -117,7 +119,7 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 37
+    weight: 36
     region: content
     settings:
       rows: 9
@@ -196,6 +198,7 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -224,6 +227,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_executive_order_number:
     type: number
@@ -260,6 +264,16 @@ content:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://www.mass.gov/kb/page-titles-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
         maxlength_js_enforce: false
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 21
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: 18
@@ -285,7 +299,7 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-      hide_weight: true
+      hide_weight: false
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete

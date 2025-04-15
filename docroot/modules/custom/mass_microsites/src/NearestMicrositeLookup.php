@@ -5,7 +5,6 @@ namespace Drupal\mass_microsites;
 use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
 use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
 use Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup;
-use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
 use Drupal\node\NodeInterface;
 
 /**

@@ -35,6 +35,7 @@ class ContentUrlTest extends MassExistingSiteBase {
       "action" => "",
       "stacked_layout" => "",
       "decision_tree" => "/decision-tree/",
+      "glossary" => "/glossary/",
     ];
     // NOTE: For some content types, like regulation, non-title fields are used
     // to generate the path alias. We cover such types in a separate test.
@@ -89,6 +90,7 @@ class ContentUrlTest extends MassExistingSiteBase {
       "action" => "",
       "stacked_layout" => "",
       "decision_tree" => "/decision-tree/",
+      "glossary" => "/glossary/",
     ];
     // NOTE: For some content types, like regulation, non-title fields are used
     // to generate the path alias. We cover such types in a separate test.

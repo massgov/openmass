@@ -11,7 +11,15 @@
 // see: https://docs.acquia.com/acquia-cloud/develop/env-variable
 // for why this is first.
 if (file_exists('/var/www/site-php')) {
+  global $conf, $databases;
+  $conf['acquia_hosting_settings_autoconnect'] = FALSE;
   require "/var/www/site-php/massgov/massgov-settings.inc";
+  $databases['default']['default']['init_commands'] = [
+    'isolation_level' => "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
+  ];
+  if (function_exists("acquia_hosting_db_choose_active")) {
+    acquia_hosting_db_choose_active();
+  }
 }
 
 // Include deployment identifier to invalidate internal twig cache.
@@ -94,13 +102,7 @@ $config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] =
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 
-$databases['default']['default']['init_commands'] = [
-  'isolation_level' => 'SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED',
-];
-
 // Add database connection for Service Details migration.
-// @todo Remove once thats complete.
-$databases['migrate'] = $databases['default'];
 
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
 if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
