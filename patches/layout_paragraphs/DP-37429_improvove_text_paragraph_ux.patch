@@ -30,10 +30,10 @@ index e01d327..353453c 100644
 +  background-color: rgba(0, 0, 255, 0.05);
 +}
 diff --git a/js/builder.js b/js/builder.js
-index 7ad5c72..6e837b6 100644
+index 7ad5c72..234825f 100644
 --- a/js/builder.js
 +++ b/js/builder.js
-@@ -688,26 +688,222 @@
+@@ -688,26 +688,217 @@
  
    const handleAfterDialogCreate = (event, dialog, $dialog) => {
      const $element = $dialog || jQuery(event.target);
@@ -113,11 +113,6 @@ index 7ad5c72..6e837b6 100644
 +
 +  // Generic handler: open other components on background click (no scroll).
 +  $(document).on('click.lp-builder', '.js-lpb-component:not([data-type="rich_text"])', function (e) {
-+    // Ignore clicks on interactive elements inside the component.
-+    if ($(e.target).closest('a, button, input, textarea, select, label').length) {
-+      return;
-+    }
-+
 +    e.preventDefault();
 +
 +    const $component = $(this);
