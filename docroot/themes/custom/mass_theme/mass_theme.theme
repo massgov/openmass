@@ -20,6 +20,7 @@ use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mass_content\EventsRendererOrgPages;
+use Drupal\mass_content\Entity\Bundle\node\GlossaryBundle;
 use Drupal\mass_utility\RelatedToHelper;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
@@ -4519,6 +4520,26 @@ function mass_theme_preprocess_html(&$variables) {
   // Get Theme settings languages if available.
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
+  }
+
+  // Add glossary functionality if the page references glossaries.
+  $params = \Drupal::routeMatch()->getParameters();
+  if ($params->has('node')) {
+    $node = $params->get('node');
+    if ($node->hasField('field_glossaries') && !$node->get('field_glossaries')->isEmpty()) {
+      /** @var GlossaryBundle[] $glossaries */
+      $glossaries = $node->get('field_glossaries')->referencedEntities();
+      $terms = GlossaryBundle::mergeGlossaries($glossaries);
+      $formatted_glossaries = [];
+      foreach ($glossaries as $glossary) {
+        $formatted_glossaries[$glossary->uuid()] = $glossary->getInfo();
+      }
+      $variables['#attached']['drupalSettings']['glossaries'] = [
+        'glossaries' => $formatted_glossaries,
+        'terms' => $terms,
+      ];
+      $variables['#attached']['library'][] = 'mass_theme/glossaries';
+    }
   }
 }
 

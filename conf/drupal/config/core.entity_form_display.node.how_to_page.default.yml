@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.how_to_page.field_downloads_header
     - field.field.node.how_to_page.field_english_version
     - field.field.node.how_to_page.field_fees_header
+    - field.field.node.how_to_page.field_glossaries
     - field.field.node.how_to_page.field_how_to_contacts_3
     - field.field.node.how_to_page.field_how_to_fee_description
     - field.field.node.how_to_page.field_how_to_files
@@ -81,6 +82,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_how_to_page_edit_form
@@ -192,7 +194,7 @@ content:
     third_party_settings: {  }
   field_downloads_header:
     type: string_textfield
-    weight: 65
+    weight: 66
     region: content
     settings:
       size: 60
@@ -268,6 +270,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 10
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_how_to_contacts_3:
     type: entity_reference_autocomplete
     weight: 4
@@ -430,7 +442,7 @@ content:
     third_party_settings: {  }
   field_manage_your_account:
     type: entity_reference_paragraphs
-    weight: 64
+    weight: 65
     region: content
     settings:
       title: 'Manage account link'
