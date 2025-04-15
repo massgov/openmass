@@ -5,6 +5,8 @@
  * Requirements and update functions for the mass_auto_parents module.
  */
 
+use Drupal\Core\Database\Database;
+
 /**
  * Implements hook_schema().
  */
@@ -42,6 +44,7 @@ function mass_auto_parents_schema() {
       'child_nid',
     ],
   ];
+
   $schema['relationships'] = [
     'description' => 'Relationships table used to determine parent relationships.',
     'fields' => [
@@ -75,10 +78,40 @@ function mass_auto_parents_schema() {
         'default' => NULL,
       ],
     ],
-    'primary key' => [
-      'parent_nid',
-      'child_nid',
-    ],
+
+    'primary key' => ['child_nid'],
+    'unique keys' => [
+      'parent_nid' => ['parent_nid', 'child_nid'],
+    ]
   ];
+
   return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Updates the schema of the 'relationships' table:
+ * - Drops unique keys: 'child' and 'parent_nid'.
+ * - Adds a composite unique key: ['parent_nid', 'child_nid'].
+ * - Removes the existing primary key, if any.
+ * - Sets 'child_nid' as the new primary key.
+ */
+function mass_auto_parents_update_10006() {
+  // Retrieve the schema object.
+  $schema = Database::getConnection()->schema();
+  $table = 'relationships';
+
+  // Drop the existing unique keys.
+  $schema->dropUniqueKey($table, 'child');
+  $schema->dropUniqueKey($table, 'parent_nid');
+
+  // Add a new composite unique key.
+  $schema->addUniqueKey($table, 'parent_nid', ['parent_nid', 'child_nid']);
+
+  // Drop the existing primary key.
+  $schema->dropPrimaryKey($table);
+
+  // Add a new primary key on 'child_nid'.
+  $schema->addPrimaryKey($table, ['child_nid']);
 }
