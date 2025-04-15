@@ -17,7 +17,7 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
   const QAG_PATHS = [
     "/memorandum/qag-advisory",
     "/report/qag-binderreport",
-    "/lists/qag-curatedlist",
+    "/lists/qag-curated-list2-people",
     "/mandate/qag-decisionmandate",
     "/executive-orders/no-1-qag-executiveorder",
     "/forms/qag-formwithoutfileuploads",
