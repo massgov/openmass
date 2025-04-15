@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.regulation.field_collections
     - field.field.node.regulation.field_date_published
+    - field.field.node.regulation.field_glossaries
     - field.field.node.regulation.field_intended_audience
     - field.field.node.regulation.field_organizations
     - field.field.node.regulation.field_primary_parent
@@ -59,6 +60,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_regulation_page_edit_form
@@ -121,7 +123,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 24
+    weight: 23
     region: content
     settings:
       theme: default
@@ -139,19 +141,29 @@ content:
     third_party_settings: {  }
   field_date_published:
     type: datetime_default
-    weight: 14
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 24
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 22
+    weight: 21
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 21
+    weight: 20
     region: content
     settings:
       match_operator: CONTAINS
@@ -161,18 +173,18 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 20
+    weight: 19
     region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
-      hide_weight: true
+      hide_weight: false
     third_party_settings: {  }
   field_regluation_official_ver:
     type: link_default
-    weight: 17
+    weight: 16
     region: content
     settings:
       placeholder_url: ''
@@ -221,12 +233,13 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
   field_regulation_link_org:
     type: link_default
-    weight: 15
+    weight: 14
     region: content
     settings:
       placeholder_url: ''
@@ -234,7 +247,7 @@ content:
     third_party_settings: {  }
   field_regulation_listing_desc:
     type: string_textfield
-    weight: 18
+    weight: 17
     region: content
     settings:
       size: 60
@@ -246,6 +259,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_regulation_ref_state_tax:
     type: options_select
@@ -255,7 +269,7 @@ content:
     third_party_settings: {  }
   field_regulation_reg_authority:
     type: link_default
-    weight: 16
+    weight: 15
     region: content
     settings:
       placeholder_url: ''
@@ -283,7 +297,7 @@ content:
     third_party_settings: {  }
   field_regulation_short_descr:
     type: text_textarea
-    weight: 19
+    weight: 18
     region: content
     settings:
       rows: 5
@@ -303,7 +317,7 @@ content:
         maxlength_js_enforce: false
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 23
+    weight: 22
     region: content
     settings:
       match_operator: CONTAINS

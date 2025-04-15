@@ -32,6 +32,11 @@ function mass_metatag_token_info() {
     'description' => t("The external organizations related to the current node."),
     'type' => 'node',
   ];
+  $info['tokens']['node']['mass_microsite'] = [
+    'name' => t('Containing microsites'),
+    'description' => t('The microsites which contain the current node within their hierarchy.'),
+    'type' => 'entity_hierarchy_microsite',
+  ];
   $info['tokens']['node']['mass_organizations'] = [
     'name' => t('Related organizations'),
     'description' => t('The organizations related to the current node.'),
@@ -280,6 +285,26 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           }
           break;
 
+        case 'mass_microsite':
+          if ($data['node'] instanceof NodeBundle) {
+            $node = $data['node'];
+            /**
+             * @var Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup
+             */
+            $micrositesLookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
+            $microsites = $micrositesLookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
+            $micrositeIds = [];
+
+            $utilities = \Drupal::service('mass_metatag.utilities');
+
+            foreach ($microsites as $microsite) {
+              $id = str_replace("-", "", $utilities->slugify(trim($microsite->label())));
+              $micrositeIds[] = $id;
+            }
+
+            $replacements[$original] = implode(',', $micrositeIds);
+          }
+          break;
         case 'mass_organizations':
           if ($data['node'] instanceof NodeBundle) {
             $org_nodes = $data['node']->getOrganizations()->referencedEntities();
