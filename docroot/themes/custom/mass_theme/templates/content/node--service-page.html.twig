@@ -65,18 +65,29 @@
       "inlineLinks": translationLinks
     } %}
   {% endif %}
-  {% include "@organisms/page-banner/page-banner.twig" with {
-    "pageBanner": {
-      "image": bannerImageWide,
-      "theme": "c-primary",
-      "pageHeader": {
-        "title": node.label,
-        "titleSubText": content.field_title_sub_text,
-        "description": content.field_service_lede,
-        "buttons": buttons is defined ? [buttons] : null
+    {# If the microsite home page key message is set, show. Otherwise show default banner. #}
+  {% if microsite_key_message %}
+    {# Load the Key Message, preprocessed in mass_theme.theme #}
+    <div class="ma__microsite-key-message">
+      {% for paragraph in microsite_key_message %}
+        {{ paragraph }}
+      {% endfor %}
+    </div>
+
+  {% else %}
+    {% include "@organisms/page-banner/page-banner.twig" with {
+      "pageBanner": {
+        "image": bannerImageWide,
+        "theme": "c-primary",
+        "pageHeader": {
+          "title": node.label,
+          "titleSubText": content.field_title_sub_text,
+          "description": content.field_service_lede,
+          "buttons": buttons is defined ? [buttons] : null
+        }
       }
-    }
-  } %}
+    } %}
+  {% endif %}
 {% endblock %}
 
 {# Increase heading number from the parent heading. #}
