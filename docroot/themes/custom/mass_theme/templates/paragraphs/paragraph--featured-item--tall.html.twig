@@ -44,9 +44,8 @@
 {% include "@molecules/featured-item.twig" with {
   "featuredItem": {
     "variation": "tall",
-    "content": drupal_image(paragraph.field_featured_item_image.entity.fileuri, 'full_width', responsive = true),
-    "featuredContent": drupal_image(paragraph.field_featured_item_highlight.entity.uri.0.value, 'full_width', responsive = true),
-
+    "content": content.field_featured_item_image,
+    "featuredContent": content.field_featured_item_highlight,
     "href": content.field_featured_item_link[0]['#url_title'],
     "text": content.field_featured_item_link[0]['#title']
   }
