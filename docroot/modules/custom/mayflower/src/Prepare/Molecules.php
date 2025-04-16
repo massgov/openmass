@@ -1293,7 +1293,8 @@ class Molecules {
         $suggested_scopes[] = [
           'label' => 'in all of Mass.gov',
         ];
-      } else {
+      }
+      else {
         if ($entity->bundle() === 'org_page') {
           $orgs[] = $entity;
         }
