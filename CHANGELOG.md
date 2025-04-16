@@ -1,5 +1,24 @@
 
 
+## [0.434.0] - April 15, 2025
+
+### Changed
+  - DP-35812: Uses different branch of mayflower-artifacts for testing purposes. (Removes aria hidden spans)
+  - DP-38280: Show entity_hierarchy_reference weights on field_primary_parent field widget when parent selected would place this node in a microsite.
+  - DP-38419: Change Database transaction isolation level to read committed.
+  - DP-38640: update date filters to All Documents view.
+  
+### Added
+  - DP-37841: Added glossary tooltip functionality.
+  - DP-38400: Adds the Key Message paragraph type to the Microsites configuration page to allow for a key message at the top of the page. Adds new TWIG template and preprocessing for just the microsite homepage. Adds a new field to Key Message to allow for a two column split in text to allow for the new Mayflower variant of Key Message.
+  - DP-38619: Creates new api endpoint for microsites list
+  - DP-38678: Added microsite-based metatags for future search improvements.
+  
+### Fixed
+  - DP-38642: User notice image path is empty.
+  
+
+
 ## [0.433.0] - April 8, 2025
 
 ### Changed
