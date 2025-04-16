@@ -25,7 +25,7 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     "/info-details/qag-info-detail-with-landing-page-features",
     "/locations/qag-locationgeneral1",
     "/news/qag-newsnews",
-    "/orgs/qag-digital-services",
+    "/orgs/qag-executive-office-of-technology-services-and-security",
     "/regulations/900-CMR-2-qag-regulation-title",
     "/trial-court-rules/qag-rulesofcourt",
     "/qag-service1"
