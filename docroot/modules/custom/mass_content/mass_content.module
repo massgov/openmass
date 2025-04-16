@@ -60,7 +60,7 @@ use Drupal\views\ViewExecutable;
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_content_form_node_form_alter(&$form, FormStateInterface $form_state) {
-  $form['#validate'][] = 'mass_content_nod e_form_validate';
+  $form['#validate'][] = 'mass_content_node_form_validate';
 
   if ($form['#form_id'] === 'node_glossary_form') {
     $form['field_terms']['widget']['#after_build'][] = '_mass_content_hide_text_formats';
