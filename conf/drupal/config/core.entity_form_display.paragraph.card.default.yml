@@ -3,18 +3,44 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.card.field_card_content
+    - field.field.paragraph.card.field_card_eyebrow
     - field.field.paragraph.card.field_card_header
     - field.field.paragraph.card.field_card_link
     - field.field.paragraph.card.field_content
+    - field.field.paragraph.card.field_image
+    - image.style.medium
     - paragraphs.paragraphs_type.card
   module:
+    - focal_point
     - link
+    - maxlength
     - text
 id: paragraph.card.default
 targetEntityType: paragraph
 bundle: card
 mode: default
 content:
+  field_card_content:
+    type: string_textarea
+    weight: 3
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_card_eyebrow:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 45
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
   field_card_header:
     type: string_textfield
     weight: 0
@@ -22,10 +48,14 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 300
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
   field_card_link:
     type: link_default
-    weight: 1
+    weight: 4
     region: content
     settings:
       placeholder_url: ''
@@ -33,11 +63,21 @@ content:
     third_party_settings: {  }
   field_content:
     type: text_textarea
-    weight: 2
+    weight: 5
     region: content
     settings:
       rows: 5
       placeholder: ''
+    third_party_settings: {  }
+  field_image:
+    type: image_focal_point
+    weight: 1
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: medium
+      preview_link: true
+      offsets: '50,50'
     third_party_settings: {  }
   paragraphs_type_help__default:
     weight: -100

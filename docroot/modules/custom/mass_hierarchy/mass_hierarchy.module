@@ -229,6 +229,12 @@ function _mass_hierarchy_breadcrumb_ajax(array &$form, FormStateInterface $form_
     // Replace the existing breadcrumb preview element with the new one.
     $response->addCommand(new ReplaceCommand('#breadcrumb-preview-wrapper', $rendered_block));
   }
+
+  // Allow others to adjust the response.
+  /** @var \Drupal\Core\Extension\ModuleHandlerInterface $module_handler */
+  $module_handler = \Drupal::service('module_handler');
+  $module_handler->alter('mass_hierarchy_breadcrumb_ajax', $response, $form, $form_state);
+
   return $response;
 }
 

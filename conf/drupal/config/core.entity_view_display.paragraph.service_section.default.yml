@@ -7,9 +7,13 @@ dependencies:
     - field.field.paragraph.service_section.field_section_style
     - field.field.paragraph.service_section.field_service_section_content
     - field.field.paragraph.service_section.field_service_section_heading
+    - field.field.paragraph.service_section.field_service_section_link
+    - field.field.paragraph.service_section.field_subtitle
+    - field.field.paragraph.service_section.field_two_column
     - paragraphs.paragraphs_type.service_section
   module:
     - entity_reference_revisions
+    - link
     - options
 id: paragraph.service_section.default
 targetEntityType: paragraph
@@ -27,7 +31,7 @@ content:
     weight: 2
     region: content
   field_section_style:
-    type: list_default
+    type: list_key
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -49,5 +53,35 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 3
+    region: content
+  field_service_section_link:
+    type: link
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 6
+    region: content
+  field_subtitle:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_two_column:
+    type: boolean
+    label: above
+    settings:
+      format: boolean
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 7
     region: content
 hidden: {  }

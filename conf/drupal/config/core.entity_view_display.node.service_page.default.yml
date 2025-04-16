@@ -10,10 +10,12 @@ dependencies:
     - field.field.node.service_page.field_data_search_content
     - field.field.node.service_page.field_data_topic
     - field.field.node.service_page.field_english_version
+    - field.field.node.service_page.field_glossaries
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_log_in_links
+    - field.field.node.service_page.field_login_links_options
     - field.field.node.service_page.field_organizations
     - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
@@ -93,7 +95,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 32
+    weight: 23
     region: content
   field_english_version:
     type: entity_reference_label
@@ -101,7 +103,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 34
+    weight: 25
     region: content
   field_image_credit:
     type: string
@@ -137,6 +139,13 @@ content:
       target: ''
     third_party_settings: {  }
     weight: 18
+    region: content
+  field_login_links_options:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 26
     region: content
   field_organizations:
     type: entity_reference_label
@@ -215,7 +224,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 33
+    weight: 24
     region: content
   field_service_video:
     type: entity_reference_label
@@ -250,6 +259,7 @@ content:
 hidden:
   field_collections: true
   field_data_search_content: true
+  field_glossaries: true
   field_primary_parent: true
   field_reusable_label: true
   field_short_title: true

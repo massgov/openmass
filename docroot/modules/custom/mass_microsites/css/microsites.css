@@ -1,0 +1,90 @@
+/*
+$bp-xs:   480px !default;
+$bp-s:    620px !default;
+$bp-m:    780px !default;
+$bp-l:    910px !default;
+$bp-l-ex: 1000px !default;
+$bp-xl:   1200px !default;
+*/
+
+/* wrapping styles in html to boost specificity */
+html {
+  .ma__header__hamburger {
+    background-color: transparent;
+  }
+  /*
+  * Link To Home Page
+  */
+  .ma__header__hamburger__menu-home-link {
+    color: #fff;
+    display: inline-flex;
+    gap: 0.5em;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .ma__header__hamburger__menu-home-link:hover {
+    text-decoration: underline;
+  }
+
+  .ma__header__hamburger__menu-home-link svg {
+    width: 17px;
+    height: 15px;
+    fill: currentColor;
+    opacity: 0.7;
+  }
+
+  /* $bp-header-toggle */
+  @media (max-width: 940px) {
+    .ma__header__hamburger__menu-home-link {
+      display: none;
+    }
+  }
+
+  /*
+  * Hamburger Menu
+  */
+  /* $bp-header-toggle */
+  @media (min-width: 941px) {
+    .ma__header__hamburger__menu-button {
+      display: none;
+    }
+  }
+
+  /*
+  * Desktop Nav
+  */
+  .ma__microsite-desktop-nav {
+    border-block: 1px solid #dcdcdc;
+  }
+
+  @media (max-width: 941px) {
+    .ma__microsite-desktop-nav {
+      display: none;
+    }
+  }
+
+  .ma__relationship-indicators {
+    display: none;
+  }
+
+  .ma__secondary-nav.is-wrapped .ma__secondary-nav__items {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    visibility: hidden;
+  }
+
+  #header:has(.ma__secondary-nav.is-wrapped) .ma__header__hamburger__menu-button {
+    display: block;
+  }
+
+  #header:has(.ma__secondary-nav.is-wrapped) .ma__header__hamburger__menu-home-link {
+    display: none;
+  }
+
+  /* Microsite key message */
+  .pre-content .ma__microsite-key-message .ma__key-message__block{
+    max-width: 1240px;
+  }
+}

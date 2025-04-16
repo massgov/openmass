@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.location.field_bg_narrow
     - field.field.node.location.field_bg_wide
     - field.field.node.location.field_collections
+    - field.field.node.location.field_glossaries
     - field.field.node.location.field_iframe
     - field.field.node.location.field_image_credit
     - field.field.node.location.field_intended_audience
@@ -81,6 +82,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
         - field_bg_wide
       label: Header
       region: content
@@ -151,7 +153,7 @@ mode: default
 content:
   field_accessibility:
     type: text_textarea
-    weight: 12
+    weight: 11
     region: content
     settings:
       rows: 5
@@ -184,6 +186,16 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+    third_party_settings: {  }
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 19
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_iframe:
     type: entity_reference_paragraphs
@@ -326,6 +338,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_location_more_information:
     type: text_textarea
@@ -384,7 +397,7 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-      hide_weight: true
+      hide_weight: false
     third_party_settings: {  }
   field_ref_contact_info:
     type: entity_reference_autocomplete

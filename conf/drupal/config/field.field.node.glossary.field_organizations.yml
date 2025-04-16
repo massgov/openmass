@@ -1,0 +1,29 @@
+uuid: 792881ee-f541-436f-b31a-849f826e27b6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.glossary
+    - node.type.org_page
+id: node.glossary.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: glossary
+label: Organization(s)
+description: 'Choose the organization(s) that manages this glossary. This is for internal use only. Visitors will not see this organization when viewing glossary definitions.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

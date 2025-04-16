@@ -1,0 +1,254 @@
+/* This overrides the updated Key Message changes from Mayflower implemented in April 2025
+  to use the older Key Message Mayflower styles. The :not() psuedo-selector is to
+  avoid applying the updated Mayflower styles to anything except the Microsite Key Message.
+*/
+
+div:not(.ma__microsite-key-message) .ma__key-message--image .ma__key-message__wrapper--overlay {
+  top: 50%;
+  padding: 0;
+
+  @media (min-width: 621px) {
+    padding: 0 0 10px;
+  }
+  @media (min-width: 781px) {
+    padding: 0 30px;
+  }
+  @media (min-width: 911px) {
+    padding: 0 30px;
+  }
+  
+  @media (min-width: 1200px) {
+    padding: 0;
+  }
+}
+
+div:not(.ma__microsite-key-message) .ma__key-message__wrapper--top {
+  padding: 40px 20px;
+
+  @media(min-width: 621px){
+    padding-block: 60px;
+  }
+}
+
+div:not(.ma__microsite-key-message) .ma__key-message--image .ma__key-message__wrapper--overlay .ma__key-message__block,
+div:not(.ma__microsite-key-message) .ma__key-message--image.ma__key-message__wrapper--top,
+div:not(.ma__microsite-key-message) .ma__key-message {
+  padding: 0;
+
+  @media (min-width: 621px) {
+    padding: 0px;
+  }
+
+  @media (min-width: 781px) and (min-width: 911px) {
+    padding-inline: 0px;
+  }
+}
+
+div:not(.ma__microsite-key-message) .ma__key-message--image .ma__key-message__wrapper--overlay .ma__key-message__block {
+  padding: 20px 20px 30px;
+
+  @media (min-width: 621px) {
+    padding: 20px;
+  }
+
+  @media (min-width: 781px) {
+    box-shadow: 0 .25rem .5rem rgba(1,1,1,.25);
+  }
+  
+}
+
+div:not(.ma__microsite-key-message) h1.ma__key-message__title {
+  font-size: 2.25rem;
+  line-height: 1.1;
+
+  @media (min-width: 781px) {
+    font-size: 2.5rem;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 2.75rem;
+  }
+}
+
+div:not(.ma__microsite-key-message) h1.ma__key-message__title+.ma__key-message__sub-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: .5em;
+
+  @media (min-width: 781px) {
+    font-size: 2rem;
+  }
+
+  @media (min-width: 1200px) {
+    font-size: 2.25rem;
+  }
+}
+
+div:not(.ma__microsite-key-message) h2.ma__key-message__title {
+  font-size: 28px;
+  line-height: 1.2;
+
+  @media (min-width: 781px) {
+    font-size: 2rem;
+  }
+
+  @media (min-width: 1201px) {
+    font-size: 2.25rem;
+  }
+}
+
+div:not(.ma__microsite-key-message) h2.ma__key-message__title+.ma__key-message__sub-title {
+  font-weight: 600;
+  font-size: 1.625rem;
+  line-height: 1.2;
+  margin-bottom: .5em;
+}
+
+div:not(.ma__microsite-key-message) .ma__key-message__content .ma__rich-text {
+
+  @media (min-width: 621px) {
+    font-size: 1.125rem;
+  }
+}
+
+div:not(.ma__microsite-key-message) .ma__key-message__content,
+div:not(.ma__microsite-key-message) .ma__key-message__content+.ma__key-message__cta,
+div:not(.ma__microsite-key-message) .ma__key-message .ma__key-message__sub-title {
+  margin-top: 20px;
+}
+
+div:not(.ma__microsite-key-message) .ma__key-message__wrapper--top .ma__key-message__cta {
+  margin-block-end: 10px;
+}
+
+div:not(.ma__microsite-key-message) .ma__key-message__content+.ma__key-message__cta .ma__button {
+  box-shadow: 0 .25rem .5rem rgba(0,0,0,.25);
+}
+
+/* *** Areas to utilize the new Key Message styling */
+
+/* --> Microsite specific */
+
+.pre-content:has(div.ma__microsite-key-message):has(~ .mass-alerts-block .ma__container) {
+  margin-block-end: 56px;
+
+  @media(min-width: 781px){
+    margin-block-end: 0px;
+  }
+}
+
+div.ma__microsite-key-message:has(.ma__key-message--image-overlay):not(:has(.ma__key-message__columns--two)) {
+  @media (min-width: 911px) {
+    margin-block-end: 155px;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message__wrapper--top:not(.ma__key-message--image-overlay):not(:has(.ma__key-message__columns--two)){
+  padding: 20px 0px;
+
+  @media (min-width: 781px) and (min-width: 911px) {
+    padding-inline: 0px;
+  }
+  @media(min-width: 781px){
+    padding: 40px;
+  }
+
+  @media (min-width: 911px) {
+    padding: 64px;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message--image-overlay {
+  padding: 0;
+}
+
+div.ma__microsite-key-message .ma__key-message--image .ma__key-message__wrapper--overlay .ma__key-message__block {
+  padding: 32px 24px;
+  box-shadow: none;
+
+  @media(min-width: 781px){
+    box-shadow: 0px 0px 8px -4px rgba(0,0,0,.16),0px 8px 16px -8px rgba(0,0,0,.08),0px 16px 64px -16px rgba(0,0,0,.12);
+    padding: 40px;
+  }
+
+  @media (min-width: 911px) {
+    padding: 64px;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message__content+.ma__key-message__cta .ma__button {
+  box-shadow: none;
+}
+
+div.ma__microsite-key-message .ma__key-message .ma__key-message__block--c-gray-lightest .ma__key-message__content+.ma__key-message__cta .ma__button {
+  box-shadow: 0 .25rem .5rem rgba(0,0,0,.25);
+}
+
+div.ma__microsite-key-message h1.ma__key-message__title+.ma__key-message__sub-title {
+  font-size: 1.125rem;
+}
+
+div.ma__microsite-key-message .ma__key-message__content .ma__rich-text {
+  font-size: 1rem;
+}
+
+
+/* --> Microsite --> Two Column */
+
+div.ma__microsite-key-message .ma__key-message.ma__key-message--image-overlay .ma__key-message__block:has(.ma__key-message__columns--two) {
+  padding: 24px 16px;
+
+  @media (min-width: 620px) {
+    padding: 32px 24px;
+  }
+
+  @media (min-width: 781px) {
+    padding: 40px;
+  }
+
+  @media (min-width: 911px) {
+    padding: 64px;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message--image .ma__key-message__wrapper--overlay {
+  top: 60%;
+}
+
+div.ma__microsite-key-message .ma__key-message--image.ma__key-message--half-image .ma__key-message__wrapper--overlay:not(:has(.ma__key-message__columns--two)) {
+  top: 40%;
+}
+
+div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__key-message__columns--two) {
+  padding: 0;
+  transform: translateY(0%);
+
+  @media (min-width: 621px) {
+    padding: 24px 0;
+  }
+
+  @media (min-width: 781px) {
+    padding: 40px 0;
+  }
+
+  @media (min-width: 911px) {
+    padding: 64px 36px;
+  }
+
+  @media (min-width: 1301px) {
+    padding: 64px 0;
+  }
+}
+
+div.ma__microsite-key-message .ma__key-message .ma__key-message__block:has(.ma__key-message__columns--two) .ma__key-message__sub-title {
+  margin-block-start: 0;
+}
+
+div.ma__microsite-key-message .ma__key-message--message-text:not(:has(.ma__key-message__sub-title)) .ma__key-message__content {
+  margin-block-start: 0;
+}
+
+div.ma__microsite-key-message .ma__key-message .ma__key-message--message-text:not(:has(.ma__key-message__sub-title)) .ma__key-message__block:has(.ma__key-message__columns--two) .ma__key-message__content {
+  margin-top: 25px;
+}

@@ -1,0 +1,33 @@
+uuid: bebdf1c1-6a0c-4b3e-a5d3-eac41f843182
+langcode: en
+status: true
+dependencies:
+  module:
+    - entity_hierarchy_microsite
+    - mass_microsites
+  theme:
+    - mass_theme
+id: mass_theme_nearestmicrositemenu_2
+theme: mass_theme
+region: header
+weight: 0
+provider: null
+plugin: mass_microsite_menu
+settings:
+  id: mass_microsite_menu
+  label: 'Nearest Microsite Menu'
+  label_display: '0'
+  provider: mass_microsites
+  context_mapping:
+    node: '@node.node_route_context:node'
+  field: field_primary_parent
+  level: '1'
+  depth: '2'
+  expand_all_items: 1
+visibility:
+  entity_hierarchy_microsite_child:
+    id: entity_hierarchy_microsite_child
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    field: field_primary_parent

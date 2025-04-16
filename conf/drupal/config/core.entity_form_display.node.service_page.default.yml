@@ -10,10 +10,12 @@ dependencies:
     - field.field.node.service_page.field_data_search_content
     - field.field.node.service_page.field_data_topic
     - field.field.node.service_page.field_english_version
+    - field.field.node.service_page.field_glossaries
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_log_in_links
+    - field.field.node.service_page.field_login_links_options
     - field.field.node.service_page.field_organizations
     - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
@@ -71,6 +73,8 @@ third_party_settings:
         - field_service_bg_wide
         - field_image_credit
         - field_primary_parent
+        - field_login_links_options
+        - field_log_in_links
         - field_organizations
         - field_data_flag
         - field_list_data_type
@@ -83,6 +87,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Banner
       region: content
       parent_name: group_service_edit_form
@@ -102,7 +107,6 @@ third_party_settings:
         - field_service_ref_guide_page_1
         - field_service_eligibility_info
         - field_ref_contact_info
-        - field_log_in_links
       label: Overview
       region: content
       parent_name: group_service_edit_form
@@ -150,7 +154,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 86
+    weight: 88
     region: content
     settings:
       theme: default
@@ -168,13 +172,13 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 76
+    weight: 78
     region: content
     settings: {  }
     third_party_settings: {  }
   field_data_format:
     type: options_buttons
-    weight: 79
+    weight: 81
     region: content
     settings: {  }
     third_party_settings:
@@ -198,7 +202,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 78
+    weight: 80
     region: content
     settings: {  }
     third_party_settings:
@@ -222,7 +226,7 @@ content:
             selector: ''
   field_data_search_content:
     type: string_textarea
-    weight: 81
+    weight: 83
     region: content
     settings:
       rows: 5
@@ -248,7 +252,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 80
+    weight: 82
     region: content
     settings:
       start_minimized: true
@@ -277,7 +281,7 @@ content:
             selector: ''
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 83
+    weight: 85
     region: content
     settings:
       match_operator: CONTAINS
@@ -303,6 +307,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 89
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 73
@@ -313,13 +327,13 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 84
+    weight: 86
     region: content
     settings: {  }
     third_party_settings: {  }
   field_list_data_type:
     type: options_buttons
-    weight: 77
+    weight: 79
     region: content
     settings: {  }
     third_party_settings:
@@ -358,15 +372,58 @@ content:
             selector: ''
   field_log_in_links:
     type: link_default
-    weight: 41
+    weight: 76
     region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        f61a0058-b4c6-46b9-abe6-f19e6e548e77:
+          entity_type: node
+          bundle: service_page
+          dependee: field_login_links_options
+          settings:
+            state: required
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
+        7f1a4601-f98c-4e0e-8760-80ceab4944ce:
+          entity_type: node
+          bundle: service_page
+          dependee: field_login_links_options
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: define_new_login_options
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_login_links_options:
+    type: options_buttons
+    weight: 75
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 75
+    weight: 77
     region: content
     settings:
       match_operator: CONTAINS
@@ -383,11 +440,11 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-      hide_weight: true
+      hide_weight: false
     third_party_settings: {  }
   field_ref_contact_info:
     type: entity_reference_autocomplete
-    weight: 40
+    weight: 48
     region: content
     settings:
       match_operator: CONTAINS
@@ -397,7 +454,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 85
+    weight: 87
     region: content
     settings:
       match_operator: CONTAINS
@@ -417,7 +474,7 @@ content:
     third_party_settings: {  }
   field_service_body:
     type: string_textarea
-    weight: 34
+    weight: 42
     region: content
     settings:
       rows: 5
@@ -425,7 +482,7 @@ content:
     third_party_settings: {  }
   field_service_eligibility_info:
     type: entity_reference_autocomplete
-    weight: 39
+    weight: 47
     region: content
     settings:
       match_operator: CONTAINS
@@ -448,10 +505,11 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_service_ref_guide_page_1:
     type: entity_reference_autocomplete
-    weight: 38
+    weight: 46
     region: content
     settings:
       match_operator: CONTAINS
@@ -484,7 +542,7 @@ content:
     third_party_settings: {  }
   field_service_video:
     type: inline_entity_form_complex
-    weight: 35
+    weight: 43
     region: content
     settings:
       form_mode: default
@@ -505,7 +563,7 @@ content:
         entity_browser_id: video_browser
   field_services_social_links:
     type: link_default
-    weight: 37
+    weight: 44
     region: content
     settings:
       placeholder_url: ''
@@ -522,7 +580,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 82
+    weight: 84
     region: content
     settings:
       include_locked: true

@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\file\Entity\File;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
@@ -28,6 +29,7 @@ use Drupal\mass_content\Entity\Bundle\node\ExecutiveOrderBundle;
 use Drupal\mass_content\Entity\Bundle\node\ExternalDataResourceBundle;
 use Drupal\mass_content\Entity\Bundle\node\FeeBundle;
 use Drupal\mass_content\Entity\Bundle\node\FormPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\GlossaryBundle;
 use Drupal\mass_content\Entity\Bundle\node\GuidePageBundle;
 use Drupal\mass_content\Entity\Bundle\node\HowToPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle;
@@ -355,29 +357,6 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
       $fields['computed_related_to'] = $field_definition;
     }
 
-    // Add computed log in links field onto child content types.
-    $log_in_link_bundles = [
-      'binder',
-      'curated_list',
-      'decision_tree',
-      'form_page',
-      'guide_page',
-      'how_to_page',
-      'info_details',
-      'location',
-      'location_details',
-      'service_details',
-    ];
-    if (in_array($bundle, $log_in_link_bundles)) {
-      $fields['computed_log_in_links'] = BaseFieldDefinition::create('link')
-        ->setLabel(t('Computed Log in links'))
-        ->setComputed(TRUE)
-        ->setSetting('link_type', 17)
-        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
-        ->setClass('\Drupal\mass_content\Field\LogInLinks')
-        ->setDisplayConfigurable('view', TRUE);
-    }
-
     if ($bundle === 'org_page') {
       $fields['recent_news'] = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Recent news'))
@@ -575,11 +554,6 @@ function mass_content_paragraph_view(array &$build, EntityInterface $entity, Ent
  */
 function mass_content_theme() {
   return [
-    'mass_content_contextual_log_in_links' => [
-      'variables' => [
-        'links' => NULL,
-      ],
-    ],
     'mass_content_tableau_embed' => [
       'variables' => [
         'url' => NULL,
@@ -864,6 +838,11 @@ function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables
                 }
                 $render_array['mid'] = $media->id();
                 $render_array['media'] = $media;
+                $language = $media->language();
+
+                // Get the human-readable language name
+                $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
+                $render_array['language'] = $language_name;
                 _mass_translations_media_helper($render_array);
                 $links[$index]['download_link'] = $render_array;
               }
@@ -991,6 +970,11 @@ function mass_content_preprocess_paragraph__flexible_link_group(&$variables) {
                   }
                   $render_array['mid'] = $media->id();
                   $render_array['media'] = $media;
+                  $language = $media->language();
+
+                  // Get the human-readable language name
+                  $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
+                  $render_array['language'] = $language_name;
                   _mass_translations_media_helper($render_array);
                   $links[$index]['download_link'] = $render_array;
                 }
@@ -1213,11 +1197,104 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 }
 
 /**
+ * Implements hook_views_post_build().
+ */
+function mass_content_views_post_build(ViewExecutable $view) {
+  if ($view->id() !== 'content_login_links') {
+    return;
+  }
+
+  // Check if the login link filter is exposed and has a value.
+  $filter = $view->filter['login_links_filter'] ?? NULL;
+
+  if ($filter && !empty($filter->value)) {
+    // Only override the pager if filter input exists.
+    $view->query->setLimit(1000);
+  }
+}
+
+function mass_content_views_post_execute(ViewExecutable $view) {
+  if ($view->id() !== 'content_login_links') {
+    return;
+  }
+
+  $filtered = [];
+
+  foreach ($view->result as $row) {
+    $node = $row->_entity;
+    if (!$node instanceof \Drupal\node\NodeInterface) {
+      continue;
+    }
+
+    $links_data = \Drupal::service('mass_content.log_in_links_builder')->getLoginLinksWithCacheTags($node);
+
+    $count = 0;
+    foreach ($links_data['links'] ?? [] as $link) {
+      if ($link['source'] != $node->id()) {
+        $count++;
+      }
+    }
+
+    if ($count > 0) {
+      $filtered[] = $row;
+    }
+  }
+
+  // Total after filtering
+  $total = count($filtered);
+
+  // Set pagination values
+  $page_size = $view->pager->getItemsPerPage();
+  $max_page = ($page_size > 0) ? max(0, ceil($total / $page_size) - 1) : 0;
+
+  // Get the current page from the view or query string
+  $current_page = (int) ($view->getRequest()->query->get('page') ?? 0);
+  // Clamp to valid max page
+  $current_page = min($current_page, $max_page);
+
+  // Set pager manually
+  $view->pager->setItemsPerPage($page_size);
+  $view->pager->total_items = $total;
+  $view->pager->updatePageInfo();
+
+  // Slice for current page
+  $offset = $current_page * $page_size;
+  $view->result = array_slice($filtered, $offset, $page_size);
+
+  $view->total_rows = $total;
+}
+
+/**
  * Implements hook_views_data().
  */
 function mass_content_views_data() {
 
   $data = [];
+
+  // Add the custom contextual login links field to the node base table.
+  $data['node']['contextual_login_links'] = [
+    'field' => [
+      'title' => t('Contextual login links'),
+      'help' => t('Displays contextual login links inherited from parent nodes.'),
+      'id' => 'contextual_login_links',
+    ],
+  ];
+
+  $data['node']['login_links_filter'] = [
+    'filter' => [
+      'title' => t('Login Links filter'),
+      'help' => t('Filter nodes by Login links.'),
+      'id' => 'login_links_filter',
+    ],
+  ];
+
+  $data['node']['contextual_login_links_count'] = [
+    'field' => [
+      'title' => t('Contextual login links count'),
+      'help' => t('Displays the number of contextual login links from parent nodes.'),
+      'id' => 'contextual_login_links_count',
+    ],
+  ];
 
   $data['node']['rendered_entity_mixed'] = [
     'field' => [
@@ -1285,6 +1362,9 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
   }
   if (isset($bundles['node']['form_page'])) {
     $bundles['node']['form_page']['class'] = FormPageBundle::class;
+  }
+  if (isset($bundles['node']['glossary'])) {
+    $bundles['node']['glossary']['class'] = GlossaryBundle::class;
   }
   if (isset($bundles['node']['guide_page'])) {
     $bundles['node']['guide_page']['class'] = GuidePageBundle::class;
