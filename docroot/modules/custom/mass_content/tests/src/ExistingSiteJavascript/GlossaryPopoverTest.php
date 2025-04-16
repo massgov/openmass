@@ -25,7 +25,7 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     "/info-details/qag-info-detail-with-landing-page-features",
     "/locations/qag-locationgeneral1",
     "/news/qag-newsnews",
-    "/orgs/qag-executive-office-of-technology-services-and-security",
+    "/orgs/qag-digital-services",
     "/regulations/900-CMR-2-qag-regulation-title",
     "/trial-court-rules/qag-rulesofcourt",
     "/qag-service1"
@@ -111,9 +111,8 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
       $page = $session->getPage();
       $page->findField('edit-field-glossaries-0-target-id')->setValue($this->glossary->label() . ' (' . $this->glossary->id() . ') - Glossary');
       $page->pressButton('Save');
-      $this->assertSession()->addressEquals($path);
-
       $this->capturePageContent('after-save');
+      $this->assertSession()->addressEquals($path);
 
       // Ensure the popup template is present.
       $popupTemplate = $page->find('css', '#glossary-popup-template');
