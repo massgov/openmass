@@ -17,6 +17,7 @@ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
 use Drupal\media\MediaInterface;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Immediately delete any old file entity on this media entity.
@@ -273,6 +274,31 @@ function mass_media_media_presave(MediaInterface $entity) {
         }
         if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
           throw new \RuntimeException("Unable to move file to '$file_destination'");
+        }
+      }
+    }
+  }
+}
+
+function mass_media_entity_presave(EntityInterface $entity) {
+  if ($entity instanceof Paragraph && $entity->bundle() === 'list_item_document') {
+    if (!$entity->get('field_reusable_label')->isEmpty()) {
+      $new_label_ids = array_column($entity->get('field_reusable_label')->getValue(), 'target_id');
+
+      foreach ($entity->get('field_liststaticdoc_item')->referencedEntities() as $media) {
+        if ($media instanceof MediaInterface) {
+          // Get current term IDs.
+          $existing_label_ids = array_column($media->get('field_document_label')->getValue(), 'target_id');
+
+          // Merge and deduplicate.
+          $merged_ids = array_unique(array_merge($existing_label_ids, $new_label_ids));
+
+          // Set merged values back.
+          $media->set('field_document_label', array_map(function ($tid) {
+            return ['target_id' => $tid];
+          }, $merged_ids));
+
+          $media->save();
         }
       }
     }
