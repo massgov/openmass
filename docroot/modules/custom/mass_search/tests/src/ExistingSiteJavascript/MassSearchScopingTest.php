@@ -23,7 +23,11 @@ class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
     $suggestions_length = count($this->getSearchSuggestions($query));
 
     // Perform search
-    $search_field->submit();
+    $form = $search_field;
+    while ($form && $form->getTagName() !== 'form') {
+      $form = $form->getParent();
+    }
+    $form->submit();
     $this->assertSession();
 
     // Assert search results are scoped to microsite.
@@ -57,7 +61,11 @@ class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
     $suggestions_length = count($this->getSearchSuggestions($query));
 
     // Perform search
-    $search_field->submit();
+    $form = $search_field;
+    while ($form && $form->getTagName() !== 'form') {
+      $form = $form->getParent();
+    }
+    $form->submit();
 
     // Assert search results are scoped to microsite.
     $search_url = parse_url($this->getUrl());
