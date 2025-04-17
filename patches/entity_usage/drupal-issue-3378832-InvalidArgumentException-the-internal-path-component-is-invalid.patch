@@ -1,0 +1,25 @@
+diff --git a/src/Plugin/EntityUsage/Track/Link.php b/src/Plugin/EntityUsage/Track/Link.php
+--- a/src/Plugin/EntityUsage/Track/Link.php
++++ b/src/Plugin/EntityUsage/Track/Link.php	(date 1744855985812)
+@@ -21,13 +21,18 @@
+    * {@inheritdoc}
+    */
+   public function getTargetEntities(FieldItemInterface $link) {
++    try {
++      $url = $link->getUrl();
++    } catch (\InvalidArgumentException $e) {
++      // The URL is malformed.
++      return [];
++    }
++
+     /** @var \Drupal\link\LinkItemInterface $link */
+     if ($link->isExternal()) {
+-      $url = $link->getUrl()->toString();
+-      $entity = $this->findEntityByUrlString($url);
++      $entity = $this->findEntityByUrlString($url->toString());
+     }
+     else {
+-      $url = $link->getUrl();
+       $entity = $this->findEntityByRoutedUrl($url);
+     }
+
