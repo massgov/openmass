@@ -5,25 +5,36 @@
 @media (min-width: 610px) {
   .toolbar-fixed .ma__sticky-toc .ma__sticky-toc__stuck,
   .toolbar-fixed .ma__sticky-toc__stuck-menu,
-  .toolbar-fixed .ma__sticky-toc__stuck-menu.sticky-nav-open .ma__sticky-toc__secondary-label {
-    top: 56px;
+  .toolbar-fixed .ma__sticky-toc__stuck-menu.sticky-nav-open .ma__sticky-toc__secondary-label,
+  .toolbar-fixed .dialog-off-canvas-main-canvas:has(.ma__sticky-toc.stuck)~ .dtfh-floatingparent-head {
+    top: 56px !important; /* edit toolbar collapsed height */
   }
 
   .toolbar-fixed.toolbar-tray-open .ma__sticky-toc .ma__sticky-toc__stuck,
   .toolbar-fixed.toolbar-tray-open .ma__sticky-toc__stuck-menu,
-  .toolbar-fixed.toolbar-tray-open .ma__sticky-toc__stuck-menu.sticky-nav-open .ma__sticky-toc__secondary-label {
-    top: 116px;
+  .toolbar-fixed.toolbar-tray-open .ma__sticky-toc__stuck-menu.sticky-nav-open .ma__sticky-toc__secondary-label,
+  .toolbar-fixed.toolbar-tray-open .dialog-off-canvas-main-canvas:has(.ma__sticky-toc.stuck)~ .dtfh-floatingparent-head {
+    top: 172px !important; /* 56px + 116px (edit toolbar expansion height - two rows) */
+  }
+}
+
+@media (min-width: 1462px) {
+  .toolbar-fixed.toolbar-tray-open .ma__sticky-toc .ma__sticky-toc__stuck,
+  .toolbar-fixed.toolbar-tray-open .ma__sticky-toc__stuck-menu,
+  .toolbar-fixed.toolbar-tray-open .ma__sticky-toc__stuck-menu.sticky-nav-open .ma__sticky-toc__secondary-label,
+  .toolbar-fixed.toolbar-tray-open .dialog-off-canvas-main-canvas:has(.ma__sticky-toc.stuck)~ .dtfh-floatingparent-head {
+    top: 114px !important; /* 56px + 58px (expansion height - one row) */
   }
 }
 
 @media (min-width: 941px) {
-  .dialog-off-canvas-main-canvas:has(.ma__sticky-toc.stuck)~ .dtfh-floatingparent-head .dataTable.fixedHeader-floating {
-    padding-top: 70px;
+  .dialog-off-canvas-main-canvas:has(.ma__sticky-toc.stuck)~ .dtfh-floatingparent-head {
+    padding-top: 70px; /* additional height of the sticky toc */
   }
 }
 
 @media (max-width: 940px) {
-  ..dialog-off-canvas-main-canvas:has(.ma__sticky-toc.stuck)~ .dtfh-floatingparent-head .dataTable.fixedHeader-floating {
-    padding-top: 75px;
+  .dialog-off-canvas-main-canvas:has(.ma__sticky-toc.stuck)~ .dtfh-floatingparent-head {
+    padding-top: 75px; /* additional height of the sticky toc */
   }
 }
