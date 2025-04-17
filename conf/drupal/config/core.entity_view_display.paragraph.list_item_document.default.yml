@@ -6,6 +6,7 @@ dependencies:
     - field.field.paragraph.list_item_document.field_listitemdoc_desc_manual
     - field.field.paragraph.list_item_document.field_listitemdoc_desc_type
     - field.field.paragraph.list_item_document.field_liststaticdoc_item
+    - field.field.paragraph.list_item_document.field_reusable_label
     - paragraphs.paragraphs_type.list_item_document
   module:
     - options
@@ -47,5 +48,13 @@ content:
       link: false
     third_party_settings: {  }
     weight: 0
+    region: content
+  field_reusable_label:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 3
     region: content
 hidden: {  }
