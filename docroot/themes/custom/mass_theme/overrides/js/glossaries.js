@@ -255,13 +255,11 @@
         }
       });
 
-      // Sort match positions by their start index (ascending)
-      matchPositions.sort((a, b) => a.start - b.start);
+      // Sort match positions by their start index (descending)
+      matchPositions.sort((a, b) => b.start - a.start);
 
       // Process matches from right to left to avoid position shifts
-      for (let i = matchPositions.length - 1; i >= 0; i--) {
-        const {start, end, matchText, searchString} = matchPositions[i];
-
+      matchPositions.forEach(({start, end, matchText, searchString}) => {
         // Create text nodes for before and after the match
         const beforeText = document.createTextNode(text.substring(0, start));
         const afterText = document.createTextNode(text.substring(end));
@@ -279,7 +277,7 @@
         // Update the text for the next iteration
         text = text.substring(0, start);
         currentNode = beforeText;
-      }
+      });
     });
   }
 })(Drupal, drupalSettings);
