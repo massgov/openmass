@@ -1,0 +1,46 @@
+diff --git a/css/builder.css b/css/builder.css
+index e01d327..14adad2 100644
+--- a/css/builder.css
++++ b/css/builder.css
+@@ -46,7 +46,7 @@
+   outline: 3px solid blue;
+ }
+ .js-lpb-component {
+-  cursor: grab;
++  cursor: pointer;
+ }
+ .js-lpb-component:hover .js-lpb-region,
+ .js-lpb-component:focus-within .js-lpb-region {
+@@ -421,3 +421,7 @@ a.lpb-enable-button::before {
+ .ck.ck-balloon-panel.ck-balloon-panel_visible {
+   z-index: 1500;
+ }
++
++.lp-builder:not(.is-navigating) .js-lpb-component:hover {
++  background-color: rgba(0, 0, 255, 0.05);
++}
+diff --git a/js/builder.js b/js/builder.js
+index 7ad5c72..17c7a56 100644
+--- a/js/builder.js
++++ b/js/builder.js
+@@ -704,6 +704,20 @@
+       );
+     }
+   };
++
++  // Generic handler: open other components on background click (no scroll).
++  $(document).on('click.lp-builder', '.js-lpb-component', function (e) {
++    e.preventDefault();
++
++    const $component = $(this);
++    const $editButton = $component.find('.lpb-edit.use-ajax');
++
++    if ($editButton.length) {
++      // Trigger modal open.
++      $editButton.trigger('click');
++    }
++  });
++
+   if (typeof DrupalDialogEvent === 'undefined') {
+     $(window).on('dialog:aftercreate', handleAfterDialogCreate);
+   } else {
