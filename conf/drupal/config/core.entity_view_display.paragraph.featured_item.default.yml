@@ -7,31 +7,32 @@ dependencies:
     - field.field.paragraph.featured_item.field_featured_item_image
     - field.field.paragraph.featured_item.field_featured_item_link
     - paragraphs.paragraphs_type.featured_item
+    - responsive_image.styles.full_width
   module:
-    - image
     - mass_content
+    - responsive_image
 id: paragraph.featured_item.default
 targetEntityType: paragraph
 bundle: featured_item
 mode: default
 content:
   field_featured_item_highlight:
-    type: image
+    type: responsive_image
     label: hidden
     settings:
+      responsive_image_style: full_width
       image_link: ''
-      image_style: ''
       image_loading:
         attribute: lazy
     third_party_settings: {  }
     weight: 0
     region: content
   field_featured_item_image:
-    type: image
+    type: responsive_image
     label: hidden
     settings:
+      responsive_image_style: full_width
       image_link: ''
-      image_style: ''
       image_loading:
         attribute: lazy
     third_party_settings: {  }
