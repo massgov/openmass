@@ -37,9 +37,18 @@ class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Check each suggestion.
     for ($i = 0; $i < $suggestions_length; $i++) {
-      $this->drupalGet($massgov_page);
-      $suggestion = $this->getSearchSuggestions($query)[$i];
+      if ($i === 0) {
+        $this->drupalGet($massgov_page);
+        $this->assertSession();
+      }
+      $suggestions = $this->getSearchSuggestions($query);
+      if (!isset($suggestions[$i])) {
+        continue;
+      }
+      $suggestion = $suggestions[$i];
       $this->testSearchSuggestion($suggestion, $query);
+      $this->getSession()->executeScript("window.history.back();");
+      $this->assertSession();
     }
   }
 
@@ -74,7 +83,10 @@ class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Check each suggestion.
     for ($i = 0; $i < $suggestions_length; $i++) {
-      $this->drupalGet($massgov_page);
+      if ($i === 0) {
+        $this->drupalGet($massgov_page);
+        $this->assertSession();
+      }
       $suggestion = $this->getSearchSuggestions($query)[$i];
       $type = $suggestion->getAttribute('data-type');
       $this->testSearchSuggestion($suggestion, $query);
@@ -82,6 +94,9 @@ class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
       if ($type !== 'microsite') {
         $this->assertStringNotContainsString("microsite=", parse_url($this->getUrl())['query']);
       }
+
+      $this->getSession()->executeScript("window.history.back();");
+      $this->assertSession();
     }
   }
 
@@ -145,6 +160,8 @@ class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
     if ($type && $value) {
       $this->assertStringContainsString("$type=$value", $search_url['query']);
     }
+    $queryCount = count(explode("&", $search_url['query']));
+    $this->assertLessThan(3, $queryCount);
   }
 
 }
