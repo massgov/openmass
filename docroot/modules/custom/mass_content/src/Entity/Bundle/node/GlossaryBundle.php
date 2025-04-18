@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_content\Entity\Bundle\node;
 
+use Drupal\Core\Entity\EntityStorageInterface;
+
 /**
  * A bundle class for node entities.
  */
@@ -28,6 +30,17 @@ class GlossaryBundle extends NodeBundle {
       'uuid' => $this->uuid(),
       'url' => $this->toUrl()->toString(),
     ];
+  }
+
+  public function preSave(EntityStorageInterface $storage) {
+    parent::preSave($storage);
+
+    // Alphabetize the terms on save.
+    /** @var \Drupal\Core\Field\FieldItemList $terms */
+    $field_terms = $this->field_terms;
+    $terms = $field_terms->getValue();
+    usort($terms, fn($a, $b) => strcasecmp($a['key'], $b['key']));
+    $field_terms->setValue($terms);
   }
 
   public static function mergeGlossaries($glossaries) {
