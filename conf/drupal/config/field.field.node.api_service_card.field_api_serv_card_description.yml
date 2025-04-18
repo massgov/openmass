@@ -1,0 +1,29 @@
+uuid: 10a74c99-358c-4de4-ae43-697274399109
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_api_serv_card_description
+    - filter.format.plain_text
+    - node.type.api_service_card
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    allowed_formats:
+      - plain_text
+id: node.api_service_card.field_api_serv_card_description
+field_name: field_api_serv_card_description
+entity_type: node
+bundle: api_service_card
+label: Description
+description: 'Short summary of the service.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - plain_text
+field_type: text_long
