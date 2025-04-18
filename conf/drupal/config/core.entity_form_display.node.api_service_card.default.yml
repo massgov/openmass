@@ -1,0 +1,149 @@
+uuid: 03493a13-9c42-4e64-b102-a35071b7ca76
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.api_service_card.field_api_serv_card_description
+    - field.field.node.api_service_card.field_api_serv_card_link
+    - field.field.node.api_service_card.field_api_serv_card_machine_name
+    - field.field.node.api_service_card.field_api_srv_card_idv_ret_urls
+    - field.field.node.api_service_card.field_api_srv_card_logout_locale
+    - field.field.node.api_service_card.field_api_srv_card_logout_urls
+    - field.field.node.api_service_card.field_api_srv_card_ret_locale
+    - field.field.node.api_service_card.field_api_srv_card_status
+    - field.field.node.api_service_card.field_api_srv_card_tenant
+    - field.field.node.api_service_card.field_environment
+    - node.type.api_service_card
+  module:
+    - key_value_field
+    - link
+    - text
+id: node.api_service_card.default
+targetEntityType: node
+bundle: api_service_card
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 12
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_api_serv_card_description:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_api_serv_card_link:
+    type: link_default
+    weight: 3
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_api_serv_card_machine_name:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_api_srv_card_idv_ret_urls:
+    type: key_value_textarea
+    weight: 6
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+      key_size: 60
+      key_label: Key
+      key_placeholder: ''
+      value_label: Value
+      description_enabled: true
+      description_label: Description
+      description_rows: 5
+      description_placeholder: ''
+    third_party_settings: {  }
+  field_api_srv_card_logout_locale:
+    type: boolean_checkbox
+    weight: 9
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_api_srv_card_logout_urls:
+    type: key_value_textarea
+    weight: 8
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+      key_size: 60
+      key_label: Key
+      key_placeholder: ''
+      value_label: Value
+      description_enabled: true
+      description_label: Description
+      description_rows: 5
+      description_placeholder: ''
+    third_party_settings: {  }
+  field_api_srv_card_ret_locale:
+    type: boolean_checkbox
+    weight: 7
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_api_srv_card_status:
+    type: boolean_checkbox
+    weight: 4
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_api_srv_card_tenant:
+    type: options_select
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_environment:
+    type: options_select
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 11
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  langcode: true
+  moderation_state: true
+  path: true
+  promote: true
+  search: true
+  search_nosnippet: true
+  simple_sitemap: true
+  status: true
+  sticky: true
+  url_redirects: true
