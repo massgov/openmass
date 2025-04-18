@@ -14,7 +14,7 @@ trait MediaModerationStateActionTrait {
   /**
    * {@inheritdoc}
    */
-  public function createRevision(?MediaInterface $entity = NULL, $moderation_state) {
+  public function createRevision(MediaInterface $entity, $moderation_state) {
     $revision_message = $this->t('Bulk action: Moderation state set to @moderation_state for media item @entity_id.', [
       '@moderation_state' => $moderation_state,
       '@entity_id' => $entity->id(),

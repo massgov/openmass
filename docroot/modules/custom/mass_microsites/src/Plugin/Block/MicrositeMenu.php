@@ -14,6 +14,7 @@ use Drupal\entity_hierarchy_microsite\Plugin\MicrositePluginTrait;
 use Drupal\mass_microsites\NearestMicrositeLookup;
 use Drupal\node\NodeInterface;
 use Drupal\system\Plugin\Block\SystemMenuBlock;
+use PNX\NestedSet\NodeKey;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -110,6 +111,9 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     if ($home = $microsite->getHome()) {
       $cache->addCacheableDependency($home);
     }
+
+    $cache->addCacheTags($this->getSubPagesCacheTags($home));
+
     $menu_name = $this->getDerivativeId();
     if ($this->configuration['expand_all_items']) {
       $parameters = new MenuTreeParameters();
@@ -161,7 +165,31 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     $tree = $this->menuTree->transform($tree, $manipulators);
     $build = $this->menuTree->build($tree);
     $cache->applyTo($build);
+
     return $build;
+  }
+
+  /**
+   * Retrieves cache tags for sub-pages of the given home node.
+   *
+   * @param \Drupal\node\NodeInterface $home
+   *   The node entity representing the home page.
+   *
+   * @return string[]
+   *   An array of cache tags for the sub-pages of the given home node.
+   */
+  private function getSubPagesCacheTags(NodeInterface $home): array {
+    $parent_node = new NodeKey($home->id(), $home->getRevisionId());
+    $tree_storage = $this->nestedSetStorageFactory->get($this->configuration['field'], 'node');
+    $root_node = $tree_storage->getNode($parent_node);
+    $children = $tree_storage->findChildren($root_node->getNodeKey());
+    $children_node_cache_tags = [];
+
+    foreach ($children as $child) {
+      $children_node_cache_tags[] = 'node:' . $child->getNodeKey()->getId();
+    }
+
+    return $children_node_cache_tags;
   }
 
   /**

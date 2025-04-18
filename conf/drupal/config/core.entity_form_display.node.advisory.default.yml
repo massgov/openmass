@@ -18,6 +18,7 @@ dependencies:
     - field.field.node.advisory.field_advisory_type_tax
     - field.field.node.advisory.field_collections
     - field.field.node.advisory.field_date_published
+    - field.field.node.advisory.field_glossaries
     - field.field.node.advisory.field_intended_audience
     - field.field.node.advisory.field_organizations
     - field.field.node.advisory.field_primary_parent
@@ -71,6 +72,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_advisory_page_edit_form
@@ -119,7 +121,7 @@ third_party_settings:
       label: '  '
       region: content
       parent_name: group_advisory_overview
-      weight: 17
+      weight: 16
       format_type: fieldset
       format_settings:
         classes: ''
@@ -148,6 +150,7 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -181,7 +184,7 @@ content:
     third_party_settings: {  }
   field_advisory_listing_desc:
     type: string_textfield
-    weight: 20
+    weight: 19
     region: content
     settings:
       size: 60
@@ -193,10 +196,11 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_advisory_overview:
     type: text_textarea
-    weight: 19
+    weight: 18
     region: content
     settings:
       rows: 5
@@ -220,7 +224,7 @@ content:
     third_party_settings: {  }
   field_advisory_ref_sources:
     type: link_default
-    weight: 18
+    weight: 17
     region: content
     settings:
       placeholder_url: ''
@@ -250,7 +254,7 @@ content:
     third_party_settings: {  }
   field_collections:
     type: entity_reference_tree
-    weight: 25
+    weight: 24
     region: content
     settings:
       theme: default
@@ -268,19 +272,29 @@ content:
     third_party_settings: {  }
   field_date_published:
     type: datetime_default
-    weight: 16
+    weight: 15
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 25
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 23
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 22
+    weight: 21
     region: content
     settings:
       match_operator: CONTAINS
@@ -290,7 +304,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 21
+    weight: 20
     region: content
     settings:
       match_operator: CONTAINS
@@ -301,7 +315,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 24
+    weight: 23
     region: content
     settings:
       match_operator: CONTAINS
