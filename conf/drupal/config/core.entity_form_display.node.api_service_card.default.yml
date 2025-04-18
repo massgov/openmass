@@ -14,10 +14,127 @@ dependencies:
     - field.field.node.api_service_card.field_api_srv_card_tenant
     - field.field.node.api_service_card.field_environment
     - node.type.api_service_card
+    - workflows.workflow.api_cards
   module:
+    - content_moderation
+    - field_group
     - key_value_field
     - link
+    - maxlength
     - text
+third_party_settings:
+  field_group:
+    group_tabs:
+      children:
+        - group_card_details
+        - group_card_meta
+        - group_idv_settings
+      label: Tabs
+      region: content
+      parent_name: ''
+      weight: 4
+      format_type: tabs
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        direction: vertical
+        width_breakpoint: 640
+    group_card_details:
+      children:
+        - field_api_serv_card_description
+        - field_api_serv_card_machine_name
+      label: 'Card Details'
+      region: content
+      parent_name: group_tabs
+      weight: 20
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_card_meta:
+      children:
+        - field_api_serv_card_link
+        - field_api_srv_card_tenant
+        - field_environment
+      label: 'Card Meta'
+      region: content
+      parent_name: group_tabs
+      weight: 21
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_idv_settings:
+      children:
+        - group_idv_details
+      label: 'IDV Settings'
+      region: content
+      parent_name: group_tabs
+      weight: 23
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_idv_details:
+      children:
+        - group_idv_logout_url_locale
+        - group_idv_return_url
+      label: 'IDV Details'
+      region: content
+      parent_name: group_idv_settings
+      weight: 7
+      format_type: tabs
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        direction: horizontal
+        width_breakpoint: 640
+    group_idv_logout_url_locale:
+      children:
+        - field_api_srv_card_logout_locale
+        - field_api_srv_card_logout_urls
+      label: 'IDV Logout URL'
+      region: content
+      parent_name: group_idv_details
+      weight: 20
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_idv_return_url:
+      children:
+        - field_api_srv_card_ret_locale
+        - field_api_srv_card_idv_ret_urls
+      label: 'IDV Return URL'
+      region: content
+      parent_name: group_idv_details
+      weight: 21
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.api_service_card.default
 targetEntityType: node
 bundle: api_service_card
@@ -25,7 +142,7 @@ mode: default
 content:
   created:
     type: datetime_timestamp
-    weight: 12
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -39,7 +156,7 @@ content:
     third_party_settings: {  }
   field_api_serv_card_link:
     type: link_default
-    weight: 3
+    weight: 2
     region: content
     settings:
       placeholder_url: ''
@@ -55,7 +172,7 @@ content:
     third_party_settings: {  }
   field_api_srv_card_idv_ret_urls:
     type: key_value_textarea
-    weight: 6
+    weight: 11
     region: content
     settings:
       rows: 5
@@ -64,21 +181,27 @@ content:
       key_label: Key
       key_placeholder: ''
       value_label: Value
-      description_enabled: true
+      description_enabled: false
       description_label: Description
       description_rows: 5
       description_placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: null
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_summary: null
+        maxlength_js_label_summary: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: false
   field_api_srv_card_logout_locale:
     type: boolean_checkbox
-    weight: 9
+    weight: 8
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_api_srv_card_logout_urls:
     type: key_value_textarea
-    weight: 8
+    weight: 9
     region: content
     settings:
       rows: 5
@@ -87,34 +210,53 @@ content:
       key_label: Key
       key_placeholder: ''
       value_label: Value
-      description_enabled: true
+      description_enabled: false
       description_label: Description
       description_rows: 5
       description_placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: null
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_summary: null
+        maxlength_js_label_summary: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: false
   field_api_srv_card_ret_locale:
     type: boolean_checkbox
-    weight: 7
+    weight: 10
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_api_srv_card_status:
     type: boolean_checkbox
-    weight: 4
+    weight: 1
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_api_srv_card_tenant:
     type: options_select
-    weight: 5
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   field_environment:
     type: options_select
-    weight: 10
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 5
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  moderation_state:
+    type: moderation_state_default
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -128,7 +270,7 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 11
+    weight: 2
     region: content
     settings:
       match_operator: CONTAINS
@@ -137,8 +279,6 @@ content:
       placeholder: ''
     third_party_settings: {  }
 hidden:
-  langcode: true
-  moderation_state: true
   path: true
   promote: true
   search: true
