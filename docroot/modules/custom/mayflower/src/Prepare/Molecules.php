@@ -1310,8 +1310,7 @@ class Molecules {
             if ($org->hasField('field_org_no_search_filter')) {
               if ($org->field_org_no_search_filter->value != 1) {
                 $cache_tags = array_merge($cache_tags, $org->getCacheTags());
-                $suggested_scopes[] = [
-                  'label' => trim($org->label()),
+                  'label' => "in " . trim($org->label()),
                   'type' => 'org',
                   'value' => $utilities->slugify(trim($org->label()))
                 ];
@@ -1321,8 +1320,7 @@ class Molecules {
                 if ($parent->hasField('field_org_no_search_filter')) {
                   if ($parent->field_org_no_search_filter->value != 1) {
                     $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
-                    $suggested_scopes[] = [
-                      'label' => trim($parent->label()),
+                      'label' => "in " . trim($parent->label()),
                       'type' => 'org',
                       'value' => $utilities->slugify(trim($parent->label()))
                     ];
