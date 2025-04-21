@@ -1287,7 +1287,6 @@ class Molecules {
           'value' => str_replace("-", "", $utilities->slugify(trim($microsite->label()))),
           'type' => 'microsite',
           'label' => 'in ' . $microsite->label(),
-          'hideLabel' => TRUE
         ];
         $placeholder = 'Search ' . $microsite->label();
         $suggested_scopes[] = [
