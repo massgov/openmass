@@ -1310,9 +1310,11 @@ class Molecules {
             if ($org->hasField('field_org_no_search_filter')) {
               if ($org->field_org_no_search_filter->value != 1) {
                 $cache_tags = array_merge($cache_tags, $org->getCacheTags());
+                $slug = $utilities->slugify(trim($org->label()));
+                $suggested_scopes[$slug] = [
                   'label' => "in " . trim($org->label()),
                   'type' => 'org',
-                  'value' => $utilities->slugify(trim($org->label()))
+                  'value' => $slug
                 ];
               }
               $parent = $org->field_parent->entity;
@@ -1320,9 +1322,11 @@ class Molecules {
                 if ($parent->hasField('field_org_no_search_filter')) {
                   if ($parent->field_org_no_search_filter->value != 1) {
                     $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
+                    $parent_slug = $utilities->slugify(trim($parent->label()));
+                    $suggested_scopes[$parent_slug] = [
                       'label' => "in " . trim($parent->label()),
                       'type' => 'org',
-                      'value' => $utilities->slugify(trim($parent->label()))
+                      'value' => $parent_slug
                     ];
                   }
                 }
@@ -1341,7 +1345,7 @@ class Molecules {
       'hasSuggestions' => $has_suggestions,
       'showDefaultScope' => $show_default_scope,
       'defaultScope' => $default_scope,
-      'suggestedScopes' => $suggested_scopes,
+      'suggestedScopes' => array_values($suggested_scopes),
       'name' => 'header-search',
       'id' => 'header-search',
       'placeholder' => $placeholder,
