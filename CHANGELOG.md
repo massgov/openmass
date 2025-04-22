@@ -1,5 +1,22 @@
 
 
+## [0.435.0] - April 22, 2025
+
+### Fixed
+  - DP-36970: Inconsistent indentation for translated text.
+  - DP-38710: Microsite Menu Caching.
+  
+### Added
+  - DP-37429: Improve Layout paragraphs UX for rich text.
+  
+### Changed
+  - DP-38375: Use responsive images in paragraph--featured-item.html.twig and paragraph--featured-item--tall.html.twig.
+  
+### Security
+  - DP-38869: Update stage file proxy module.
+  
+
+
 ## [0.434.0] - April 15, 2025
 
 ### Changed
