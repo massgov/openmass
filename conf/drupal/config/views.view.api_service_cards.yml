@@ -8,7 +8,7 @@ dependencies:
     - field.storage.node.field_api_srv_card_tenant
     - field.storage.node.field_environment
     - node.type.api_service_card
-    - system.menu.admin
+    - system.menu.mass-dashboard
   module:
     - link
     - node
@@ -886,12 +886,16 @@ display:
         metatag_display_extender:
           metatags: {  }
           tokenize: false
-      path: admin/content/api-service-cards
+      path: admin/ma-dash/api-service-cards
       menu:
         type: normal
         title: 'API Service Cards'
-        menu_name: admin
-        parent: system.admin_content
+        description: ''
+        weight: 0
+        expanded: false
+        menu_name: mass-dashboard
+        parent: ''
+        context: '0'
     cache_metadata:
       max-age: -1
       contexts:
