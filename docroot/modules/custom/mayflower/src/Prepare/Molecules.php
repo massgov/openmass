@@ -1272,7 +1272,7 @@ class Molecules {
     $show_default_scope = TRUE;
     $default_scope = [];
     $suggested_scopes = [];
-    $placeholder = 'Search Mass.gov';
+    $placeholder = t('Search Mass.gov');
     $orgs = [];
 
     $utilities = \Drupal::service('mass_metatag.utilities');
@@ -1286,11 +1286,11 @@ class Molecules {
         $default_scope = [
           'value' => str_replace("-", "", $utilities->slugify(trim($microsite->label()))),
           'type' => 'microsite',
-          'label' => 'in ' . $microsite->label(),
+          'label' => t('in @microsite', ['@microsite' => $microsite->label()]),
         ];
-        $placeholder = 'Search ' . $microsite->label();
+        $placeholder = t('Search @microsite', ['@microsite' => $microsite->label()]);
         $suggested_scopes[] = [
-          'label' => 'in all of Mass.gov',
+          'label' => t('in all of Mass.gov'),
         ];
       }
       else {
@@ -1312,7 +1312,7 @@ class Molecules {
                 $cache_tags = array_merge($cache_tags, $org->getCacheTags());
                 $slug = $utilities->slugify(trim($org->label()));
                 $suggested_scopes[$slug] = [
-                  'label' => "in " . trim($org->label()),
+                  'label' => t('in @org', ['@org' => trim($org->label())]),
                   'type' => 'org',
                   'value' => $slug
                 ];
@@ -1324,7 +1324,7 @@ class Molecules {
                     $cache_tags = array_merge($cache_tags, $parent->getCacheTags());
                     $parent_slug = $utilities->slugify(trim($parent->label()));
                     $suggested_scopes[$parent_slug] = [
-                      'label' => "in " . trim($parent->label()),
+                      'label' => t('in @org', ['@org' => trim($parent->label())]),
                       'type' => 'org',
                       'value' => $parent_slug
                     ];
@@ -1349,7 +1349,7 @@ class Molecules {
       'name' => 'header-search',
       'id' => 'header-search',
       'placeholder' => $placeholder,
-      'label' => 'Search terms',
+      'label' => t('Search terms'),
     ];
   }
 
