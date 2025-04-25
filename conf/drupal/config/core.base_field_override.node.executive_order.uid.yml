@@ -1,0 +1,20 @@
+uuid: 6572b706-e020-4e50-9d53-4d3c32ce064f
+langcode: sq
+status: true
+dependencies:
+  config:
+    - node.type.executive_order
+id: node.executive_order.uid
+field_name: uid
+entity_type: node
+bundle: executive_order
+label: 'Authored by'
+description: 'The username of the content author.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: 'Drupal\node\Entity\Node::getDefaultEntityOwner'
+settings:
+  handler: default
+  handler_settings: {  }
+field_type: entity_reference

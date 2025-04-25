@@ -1,0 +1,20 @@
+uuid: 43da4fe4-97f1-4599-8048-518cf780d264
+langcode: sq
+status: true
+dependencies:
+  config:
+    - node.type.rules
+id: node.rules.uid
+field_name: uid
+entity_type: node
+bundle: rules
+label: 'Authored by'
+description: 'The username of the content author.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: 'Drupal\node\Entity\Node::getDefaultEntityOwner'
+settings:
+  handler: default
+  handler_settings: {  }
+field_type: entity_reference
