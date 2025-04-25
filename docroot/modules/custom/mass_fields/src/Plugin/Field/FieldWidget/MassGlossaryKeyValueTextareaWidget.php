@@ -23,18 +23,20 @@ use Drupal\Core\Form\FormStateInterface;
 class MassGlossaryKeyValueTextareaWidget extends KeyValueTextareaWidget {
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $build = parent::formElement($items, $delta, $element, $form, $form_state);
     $build["#allowed_formats"] = ['plain_text'];
-    $build['#after_build'][] = [$this, 'hideHelpTextAfterBuild'];;
+    $build['#after_build'][] = [$this, 'hideHelpTextAfterBuild'];
     return $build;
   }
 
   /**
-   * Removes unnecessary help text and formatting wrappers from the given element
-   * after the form has been built.
+   * Removes unnecessary help text.
+   *
+   * Also, remove formatting wrappers from the given element after the form has
+   * been built.
    *
    * @param array $element
    *   The form element to be modified.
