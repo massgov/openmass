@@ -171,7 +171,13 @@ function mass_translations_preprocess_node(&$variables) {
 function mass_translations_page_attachments(array &$attachments) {
   $cache = CacheableMetadata::createFromRenderArray($attachments);
   $route_match = Drupal::routeMatch();
-
+  $entity = $route_match->getParameter('node');
+  if (!$entity) {
+    return;
+  }
+  if ($entity->bundle() === 'api_service_card') {
+    return;
+  }
   // If the current route has no parameters, return.
   if (!($route = $route_match->getRouteObject()) || !($parameters = $route->getOption('parameters'))) {
     return;
