@@ -66,7 +66,7 @@ class NodeTranslationsController extends TranslationsController {
     if ($this->currentUser->isAuthenticated()) {
       // Check if the node has multiple translations.
       $languages = parent::getTranslationLanguages($node, $this->nodeStorage, $node->getEnglishFieldName());
-      return AccessResult::allowedIf(count($languages) > 1);
+      return AccessResult::allowedIf(count($languages) > 1 && $node->bundle() !== 'api_service_card');
     }
 
     // Deny access for anonymous users.
