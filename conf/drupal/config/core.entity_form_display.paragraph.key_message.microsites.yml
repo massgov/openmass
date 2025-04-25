@@ -1,0 +1,230 @@
+uuid: 2e57c577-11b9-435c-8f1a-669bdc9610af
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.microsites
+    - field.field.paragraph.key_message.field_background_color
+    - field.field.paragraph.key_message.field_background_type
+    - field.field.paragraph.key_message.field_button
+    - field.field.paragraph.key_message.field_image
+    - field.field.paragraph.key_message.field_main_heading
+    - field.field.paragraph.key_message.field_rich_text_description
+    - field.field.paragraph.key_message.field_sub_heading
+    - field.field.paragraph.key_message.field_text_overlay_color
+    - field.field.paragraph.key_message.field_use_half_image
+    - field.field.paragraph.key_message.field_use_two_columns
+    - image.style.embedded_half_width
+    - paragraphs.paragraphs_type.key_message
+  module:
+    - allowed_formats
+    - conditional_fields
+    - field_group
+    - image
+    - link
+    - mass_validation
+    - maxlength
+    - text
+third_party_settings:
+  field_group:
+    group_background:
+      children:
+        - field_background_type
+        - field_image
+        - field_use_half_image
+        - field_background_color
+        - field_text_overlay_color
+      label: 'Background & Image'
+      region: content
+      parent_name: group_tabs
+      weight: 6
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: 'Either a solid block of color or a primary image that sits at the top of page.'
+        required_fields: true
+    group_tabs:
+      children:
+        - group_key_message_title
+        - group_description
+        - group_background
+        - group_button
+        - group_settings
+      label: Tabs
+      region: content
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        direction: horizontal
+        width_breakpoint: 640
+    group_description:
+      children:
+        - field_rich_text_description
+      label: Description
+      region: content
+      parent_name: group_tabs
+      weight: 5
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_key_message_title:
+      children:
+        - field_main_heading
+        - field_sub_heading
+      label: 'Key message title'
+      region: content
+      parent_name: group_tabs
+      weight: 4
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_settings:
+      children:
+        - field_use_two_columns
+      label: Settings
+      region: content
+      parent_name: group_tabs
+      weight: 8
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_button:
+      children:
+        - field_button
+      label: Button
+      region: content
+      parent_name: group_tabs
+      weight: 7
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+id: paragraph.key_message.microsites
+targetEntityType: paragraph
+bundle: key_message
+mode: microsites
+content:
+  field_background_color:
+    type: options_buttons
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings:
+      conditional_fields: {  }
+  field_background_type:
+    type: options_buttons
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_button:
+    type: link_default
+    weight: 2
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 50
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
+      mass_validation:
+        internal_link_content_type_blacklist: {  }
+  field_image:
+    type: image_image
+    weight: 6
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: embedded_half_width
+    third_party_settings: {  }
+  field_main_heading:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_rich_text_description:
+    type: text_textarea
+    weight: 2
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      allowed_formats:
+        hide_help: '1'
+        hide_guidelines: '1'
+      maxlength:
+        maxlength_js: 300
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
+        maxlength_js_truncate_html: true
+      conditional_fields: {  }
+  field_sub_heading:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields: {  }
+  field_text_overlay_color:
+    type: options_select
+    weight: 9
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_use_half_image:
+    type: boolean_checkbox
+    weight: 7
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_use_two_columns:
+    type: boolean_checkbox
+    weight: 7
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  paragraphs_type_help__default:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -7,7 +7,10 @@
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
@@ -209,7 +212,7 @@ function mass_microsites_field_widget_single_element_entity_reference_hierarchy_
   if ($field_name !== 'field_primary_parent') {
     return;
   }
-  if (is_null($element['weight']['#default_value'])) {
+  if (!isset($element['weight']['#default_value'])) {
     $element['weight']['#default_value'] = 0;
   }
   $element['#after_build'][] = '_mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build';
@@ -367,4 +370,26 @@ function _mass_microsites_get_node() {
     $node = $route_name === 'entity.node.preview' ? $params->get('node_preview') : $params->get('node');
     return $node;
   }
+}
+
+/**
+ * Implements hook_entity_type_view().
+ */
+function mass_microsites_node_view(array &$build, NodeInterface $node, EntityViewDisplayInterface $display, $view_mode) {
+  /**  @var Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup */
+  $microsites_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
+  /** @var  MicrositeInterface[] $microsites */
+  $microsites = $microsites_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
+  if (empty($microsites)) {
+    return;
+  }
+
+  $existing_cache_metadata = CacheableMetadata::createFromRenderArray($build);
+
+  foreach ($microsites as $microsite) {
+    $cache_metadata = CacheableMetadata::createFromObject($microsite);
+    $merged_metadata = $existing_cache_metadata->merge($cache_metadata);
+  }
+
+  $merged_metadata->applyTo($build);
 }

@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.service_page.field_data_search_content
     - field.field.node.service_page.field_data_topic
     - field.field.node.service_page.field_english_version
+    - field.field.node.service_page.field_glossaries
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_list_data_type
@@ -86,6 +87,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Banner
       region: content
       parent_name: group_service_edit_form
@@ -305,6 +307,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 89
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 73
@@ -432,7 +444,7 @@ content:
     third_party_settings: {  }
   field_ref_contact_info:
     type: entity_reference_autocomplete
-    weight: 49
+    weight: 48
     region: content
     settings:
       match_operator: CONTAINS
@@ -470,7 +482,7 @@ content:
     third_party_settings: {  }
   field_service_eligibility_info:
     type: entity_reference_autocomplete
-    weight: 48
+    weight: 47
     region: content
     settings:
       match_operator: CONTAINS
@@ -497,7 +509,7 @@ content:
     third_party_settings: {  }
   field_service_ref_guide_page_1:
     type: entity_reference_autocomplete
-    weight: 47
+    weight: 46
     region: content
     settings:
       match_operator: CONTAINS
@@ -530,7 +542,7 @@ content:
     third_party_settings: {  }
   field_service_video:
     type: inline_entity_form_complex
-    weight: 45
+    weight: 43
     region: content
     settings:
       form_mode: default
@@ -551,7 +563,7 @@ content:
         entity_browser_id: video_browser
   field_services_social_links:
     type: link_default
-    weight: 46
+    weight: 44
     region: content
     settings:
       placeholder_url: ''

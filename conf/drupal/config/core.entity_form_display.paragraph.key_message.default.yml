@@ -12,6 +12,7 @@ dependencies:
     - field.field.paragraph.key_message.field_sub_heading
     - field.field.paragraph.key_message.field_text_overlay_color
     - field.field.paragraph.key_message.field_use_half_image
+    - field.field.paragraph.key_message.field_use_two_columns
     - image.style.embedded_half_width
     - paragraphs.paragraphs_type.key_message
   module:
@@ -61,7 +62,7 @@ content:
     third_party_settings: {  }
   field_button:
     type: link_default
-    weight: 4
+    weight: 3
     region: content
     settings:
       placeholder_url: ''
@@ -93,7 +94,7 @@ content:
     third_party_settings: {  }
   field_rich_text_description:
     type: text_textarea
-    weight: 3
+    weight: 2
     region: content
     settings:
       rows: 5
@@ -127,6 +128,13 @@ content:
   field_use_half_image:
     type: boolean_checkbox
     weight: 7
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_use_two_columns:
+    type: boolean_checkbox
+    weight: 4
     region: content
     settings:
       display_label: true

@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.curated_list.field_data_search_content
     - field.field.node.curated_list.field_data_topic
     - field.field.node.curated_list.field_english_version
+    - field.field.node.curated_list.field_glossaries
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
@@ -78,6 +79,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_curated_list_edit_form
@@ -388,6 +390,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 23
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: 20

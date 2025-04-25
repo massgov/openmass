@@ -5,6 +5,7 @@ use Drupal\node\Entity\Node;
 use Drupal\mass_utility\DebugCachability;
 
 $databases = array();
+
 $databases['default']['default'] = array(
   'driver' => 'mysql',
   'database' => getenv('MYSQL_DATABASE') ?: 'drupal',
@@ -123,6 +124,11 @@ if (file_exists($secrets_file)) {
 if (getenv('TUGBOAT_ROOT')) {
   require __DIR__ . '/settings.tugboat.php';
 }
+
+
+$databases['default']['default']['init_commands'] = [
+  'isolation_level' => "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
+];
 
 // Disable ClamAV integration in local environment
 $config['clamav.settings']['enabled'] = FALSE;

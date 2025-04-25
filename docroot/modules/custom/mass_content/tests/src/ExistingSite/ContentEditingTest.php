@@ -32,6 +32,8 @@ class ContentEditingTest extends MassExistingSiteBase {
     "/trial-court-rules/qag-rulesofcourt",
     "/qag-service1",
     "/topics/qag-topicpage1",
+    // @todo make the QAG glossary page
+    // "/glossary/qag-glossary",
   ];
 
   /**
@@ -68,6 +70,7 @@ class ContentEditingTest extends MassExistingSiteBase {
       $this->assertEquals(200, $session->getStatusCode(), 'Failed to retrieve ' . $path . '/edit');
       $page = $session->getPage();
       $page->findButton('Save')->press();
+      // Ensure the save was successful, redirected back to the view route, and does not encounter errors.
       $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
     }
   }
