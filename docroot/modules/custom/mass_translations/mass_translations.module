@@ -172,15 +172,6 @@ function mass_translations_preprocess_node(&$variables) {
 function mass_translations_page_attachments(array &$attachments) {
   $cache = CacheableMetadata::createFromRenderArray($attachments);
   $route_match = Drupal::routeMatch();
-  $entity = $route_match->getParameter('node');
-
-  if (!$entity instanceof ContentEntityInterface) {
-    return;
-  }
-
-  if ($entity->bundle() === 'api_service_card') {
-    return;
-  }
 
   // If the current route has no parameters, return.
   if (!($route = $route_match->getRouteObject()) || !($parameters = $route->getOption('parameters'))) {
@@ -197,8 +188,15 @@ function mass_translations_page_attachments(array &$attachments) {
     $translations_controller = new TranslationsController($node_storage);
 
     $entity = $route_match->getParameter($name);
+
     if ($entity instanceof NodeInterface && $entity->hasLinkTemplate('canonical')) {
-      // Current route represents a content entity. Build hreflang links.
+
+      // Api Service Card use Core Translations, so not need continue.
+      if ($entity->bundle() === 'api_service_card') {
+        return;
+      }
+
+      // The current route represents a content entity. Build hreflang links.
       foreach ($translations_controller->getTranslationLanguages($entity, $node_storage, 'field_english_version') as $language_id => $translation) {
         // Skip any translation that cannot be viewed.
         $access = $translation->access('view', NULL, TRUE);
