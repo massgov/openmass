@@ -1,0 +1,20 @@
+uuid: 66e88c73-bf97-4633-b3ae-4a8ff3881e11
+langcode: sq
+status: true
+dependencies:
+  config:
+    - node.type.curated_list
+id: node.curated_list.uid
+field_name: uid
+entity_type: node
+bundle: curated_list
+label: 'Authored by'
+description: 'The username of the content author.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: 'Drupal\node\Entity\Node::getDefaultEntityOwner'
+settings:
+  handler: default
+  handler_settings: {  }
+field_type: entity_reference

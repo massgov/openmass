@@ -1,0 +1,20 @@
+uuid: 88e9651a-c382-4dc9-be5a-27ef624484cd
+langcode: sq
+status: true
+dependencies:
+  config:
+    - node.type.campaign_landing
+id: node.campaign_landing.uid
+field_name: uid
+entity_type: node
+bundle: campaign_landing
+label: 'Authored by'
+description: 'The username of the content author.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: 'Drupal\node\Entity\Node::getDefaultEntityOwner'
+settings:
+  handler: default
+  handler_settings: {  }
+field_type: entity_reference

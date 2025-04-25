@@ -1,0 +1,20 @@
+uuid: 775726e1-68e6-4916-8b13-c20c50aa6a17
+langcode: sq
+status: true
+dependencies:
+  config:
+    - node.type.decision_tree_conclusion
+id: node.decision_tree_conclusion.uid
+field_name: uid
+entity_type: node
+bundle: decision_tree_conclusion
+label: 'Authored by'
+description: 'The username of the content author.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: 'Drupal\node\Entity\Node::getDefaultEntityOwner'
+settings:
+  handler: default
+  handler_settings: {  }
+field_type: entity_reference
