@@ -7,6 +7,7 @@
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageDefault;
@@ -172,12 +173,15 @@ function mass_translations_page_attachments(array &$attachments) {
   $cache = CacheableMetadata::createFromRenderArray($attachments);
   $route_match = Drupal::routeMatch();
   $entity = $route_match->getParameter('node');
-  if (!$entity) {
+
+  if (!$entity instanceof ContentEntityInterface) {
     return;
   }
+
   if ($entity->bundle() === 'api_service_card') {
     return;
   }
+
   // If the current route has no parameters, return.
   if (!($route = $route_match->getRouteObject()) || !($parameters = $route->getOption('parameters'))) {
     return;
