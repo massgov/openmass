@@ -1,0 +1,20 @@
+uuid: 3b492daa-1906-4c29-a435-7fbb9b91ca7c
+langcode: sq
+status: true
+dependencies:
+  config:
+    - node.type.api_service_card
+id: node.api_service_card.uid
+field_name: uid
+entity_type: node
+bundle: api_service_card
+label: 'Authored by'
+description: 'The username of the content author.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: 'Drupal\node\Entity\Node::getDefaultEntityOwner'
+settings:
+  handler: default
+  handler_settings: {  }
+field_type: entity_reference
