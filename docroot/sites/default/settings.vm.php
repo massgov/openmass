@@ -123,3 +123,6 @@ if (file_exists($secrets_file)) {
 if (getenv('TUGBOAT_ROOT')) {
   require __DIR__ . '/settings.tugboat.php';
 }
+
+// Disable ClamAV integration in local environment
+$config['clamav.settings']['enabled'] = FALSE;
