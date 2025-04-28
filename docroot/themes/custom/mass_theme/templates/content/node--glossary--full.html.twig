@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Theme override to display the Full view mode of the Action content type.
+ *
+ * Uses 'extend' methods from http://www.stevector.com/2013/10/make-your-drupal-8-theme-easier-to-maintain-with-this-one-weird-trick-twigs-extends-concept/
+ */
+ #}
+
+{#
+  Hiding breadcrumb since we will want these breadcrumbs back in the future
+  refs https://jira.state.ma.us/browse/MGRP-242
+#}
+{%
+set pageHeader = {
+  'title': label|field_value,
+}
+%}
+
+{% extends 'node.html.twig' %}
+
+{% block preContent %}
+  {% include "@organisms/page-header/page-header.twig" %}
+{% endblock %}
+{% block pageContent %}
+  <div class="main-content--two">
+    {{ content }}
+  </div>
+{% endblock %}
+{% block postContent %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}
