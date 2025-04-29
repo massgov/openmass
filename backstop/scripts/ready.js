@@ -276,8 +276,21 @@ module.exports = async (page, scenario, viewport) => {
     case 'micrositehome':
     case 'micrositeLev1':
     case 'micrositeLev2':
-      await page.waitForSelector('.ma__header__hamburger__menu-home-link');
 
+      await page.addStyleTag({
+        content: `
+          @media (max-width: 940px) {
+            .ma__header__hamburger__menu-home-link {
+              display: none;
+            }
+          }
+          @media (min-width: 941px) {
+            .ma__header__hamburger__menu-button {
+              display: none;
+            }
+          }
+    `,
+      });
       await waitForFlexDisplay(page, '.ma__header__hamburger__button-container');
       await waitForFlexDisplay(page, '.ma__header__hamburger__menu-home-link')
       // Wait for display:flex to apply to containers
