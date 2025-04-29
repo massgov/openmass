@@ -46,7 +46,17 @@
     const searches = new Map();
 
     // Create one replacement function instead of creating it in the loop
-    const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapeRegex = str => {
+      let replaced = str;
+
+      // Replace regex special characters with escaped versions.
+      replaced = replaced.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      // Replace any non-escaped, non alphanumeric characters with wildcards
+      replaced = replaced.replace(/[^\w\s]/g, '.?');
+
+      return replaced;
+    };
 
     searchStrings.forEach(string => {
       const regex = new RegExp(`\\b${escapeRegex(string)}(?:es|s)?\\b`, 'i');
