@@ -277,9 +277,10 @@ module.exports = async (page, scenario, viewport) => {
     case 'micrositeLev1':
     case 'micrositeLev2':
       await page.waitForSelector('.ma__header__hamburger__menu-home-link');
-      // Wait for display:flex to apply to containers
+
       await waitForFlexDisplay(page, '.ma__header__hamburger__button-container');
       await waitForFlexDisplay(page, '.ma__header__hamburger__menu-home-link')
+      // Wait for display:flex to apply to containers
       await page.waitForTimeout(2000);
       break;
     case 'CampaignLandingHeaderSolidColor':
