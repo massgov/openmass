@@ -104,6 +104,39 @@ module.exports = async (page, scenario, viewport) => {
     console.log(`✅ [waitForFlexImageLayout] Layout is stable.`);
   }
 
+  async function waitForFlexDisplay(page, containerSelector) {
+    console.log(`⏳ [waitForFlexDisplay] Waiting for flex layout in: ${containerSelector}`);
+
+    await page.evaluate(async (selector) => {
+      const containers = Array.from(document.querySelectorAll(selector));
+      console.log(`[waitForFlexDisplay] Checking ${containers.length} containers for display:flex...`);
+
+      await Promise.all(
+        containers.map(el =>
+          new Promise(resolve => {
+            const start = Date.now();
+
+            const checkFlex = () => {
+              const display = getComputedStyle(el).display;
+              if (display === 'flex') {
+                resolve();
+              } else if (Date.now() - start > 10000) {
+                console.warn('[waitForFlexDisplay] Flex check timed out.');
+                resolve();
+              } else {
+                setTimeout(checkFlex, 1000);
+              }
+            };
+
+            checkFlex();
+          })
+        )
+      );
+    }, containerSelector);
+
+    console.log(`✅ [waitForFlexDisplay] display:flex confirmed or timeout passed for: ${containerSelector}`);
+  }
+
   await page.addStyleTag({
     content: `
       /* Disable animations. */
@@ -244,6 +277,9 @@ module.exports = async (page, scenario, viewport) => {
     case 'micrositeLev1':
     case 'micrositeLev2':
       await page.waitForSelector('.ma__header__hamburger__menu-home-link');
+      // Wait for display:flex to apply to containers
+      await waitForFlexDisplay(page, '.ma__header__hamburger__button-container');
+      await waitForFlexDisplay(page, '.ma__header__hamburger__menu-home-link')
       await page.waitForTimeout(2000);
       break;
     case 'CampaignLandingHeaderSolidColor':
