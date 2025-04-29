@@ -240,6 +240,12 @@ module.exports = async (page, scenario, viewport) => {
     case 'ServiceDetails':
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
+    case 'micrositehome':
+    case 'micrositeLev1':
+    case 'micrositeLev2':
+      await page.waitForSelector('.ma__header__hamburger__menu-home-link');
+      await page.waitForTimeout(2000);
+      break;
     case 'CampaignLandingHeaderSolidColor':
     case 'CampaignLandingHeaderVideo':
     case 'CampaignLandingHeaderBg':
