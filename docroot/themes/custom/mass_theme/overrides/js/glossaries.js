@@ -193,7 +193,7 @@
    */
   function createTooltip(text, definition) {
     const tooltipId = generateTooltipId();
-    const element = template.content.cloneNode(true);
+    const element = template.content.firstElementChild.cloneNode(true);
 
     const trigger = element.querySelector('.popover__trigger');
     const dialog = element.querySelector('.popover__dialog');
