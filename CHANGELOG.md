@@ -1,5 +1,27 @@
 
 
+## [0.435.0] - April 29, 2025
+
+### Fixed
+  - DP-36970: Inconsistent indentation for translated text.
+  - DP-38710: Microsite Menu Caching.
+  - DP-38748: Disabled ClamAV integration on local and Tugboat environments to resolve file upload issues.
+  - DP-38788: Removes the temporary styling override for Key Message, now that the changes from Mayflower are merged in and approved.
+  - DP-38880: Fixes an issue where glossary terms in the same text node were erroring and the 2nd was not getting the popover.
+  
+### Added
+  - DP-37429: Improve Layout paragraphs UX for rich text.
+  - DP-38793: Adds test coverage to glossary functionality.
+  
+### Changed
+  - DP-38375: Use responsive images in paragraph--featured-item.html.twig and paragraph--featured-item--tall.html.twig.
+  - DP-38805: Improved authoring experience for glossary nodes.
+  
+### Security
+  - DP-38869: Update stage file proxy module.
+  
+
+
 ## [0.434.0] - April 15, 2025
 
 ### Changed
