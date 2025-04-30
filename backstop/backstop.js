@@ -166,6 +166,6 @@ module.exports = {
           "--hide-scrollbars"
         ]
     },
-    "debug": false,
+    "debug": true,
     "debugWindow": false
 }

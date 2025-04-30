@@ -222,50 +222,50 @@ module.exports = async (page, scenario, viewport) => {
     await page.waitForSelector('.ma__sticky-nav');
   }
 
-  switch (scenario.label) {
-    case 'InfoDetails1':
-    case 'InfoDetailsImageWrapLeft':
-    case 'InfoDetailsImageWrapRight':
-    case 'InfoDetailsImageNoWrapLeft':
-    case 'InfoDetailsImageNoWrapRight':
-    case 'InfoDetailsImageLeftAlign':
-    case 'InfoDetailsImageRightAlign':
-      await page.waitForSelector('.ma__fixed-feedback-button');
-      break;
-    case 'OrgElectedOfficial':
-    case 'ExpansionOfAccordions1':
-      await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
-      await page.waitForSelector('.ma__sticky-nav');
-      break;
-    case 'ServiceDetails':
-      await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
-      break;
-    case 'CampaignLandingHeaderSolidColor':
-    case 'CampaignLandingHeaderVideo':
-    case 'CampaignLandingHeaderBg':
-      await page.addStyleTag({
-        content: `
-          @media (min-width: 768px) {
-          .ma__card {
-              max-inline-size: none !important;
-              flex-flow: unset !important; /* Optional if flex-direction: row causes layout jitter */
-              max-width: 100% !important;
-              flex-direction: row !important;
-              flex-wrap: wrap !important;
-            }
-          }
-    `,
-      });
-      await waitForFlexImageLayout(page, '.ma__card__wrapper');
-      await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__wrapper');
-      await waitForFlexImageLayout(page, '.ma__card__details ma__card__details--secondary');
-
-      await page.waitForTimeout(6 * 1000);
-
-      break;
-  }
-
-  await page.waitForTimeout(2 * 1000);
+  // switch (scenario.label) {
+  //   case 'InfoDetails1':
+  //   case 'InfoDetailsImageWrapLeft':
+  //   case 'InfoDetailsImageWrapRight':
+  //   case 'InfoDetailsImageNoWrapLeft':
+  //   case 'InfoDetailsImageNoWrapRight':
+  //   case 'InfoDetailsImageLeftAlign':
+  //   case 'InfoDetailsImageRightAlign':
+  //     await page.waitForSelector('.ma__fixed-feedback-button');
+  //     break;
+  //   case 'OrgElectedOfficial':
+  //   case 'ExpansionOfAccordions1':
+  //     await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
+  //     await page.waitForSelector('.ma__sticky-nav');
+  //     break;
+  //   case 'ServiceDetails':
+  //     await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
+  //     break;
+  //   case 'CampaignLandingHeaderSolidColor':
+  //   case 'CampaignLandingHeaderVideo':
+  //   case 'CampaignLandingHeaderBg':
+  //     await page.addStyleTag({
+  //       content: `
+  //         @media (min-width: 768px) {
+  //         .ma__card {
+  //             max-inline-size: none !important;
+  //             flex-flow: unset !important; /* Optional if flex-direction: row causes layout jitter */
+  //             max-width: 100% !important;
+  //             flex-direction: row !important;
+  //             flex-wrap: wrap !important;
+  //           }
+  //         }
+  //   `,
+  //     });
+  //     await waitForFlexImageLayout(page, '.ma__card__wrapper');
+  //     await waitForFlexImageLayout(page, '.ma__campaign-feature-2up__wrapper');
+  //     await waitForFlexImageLayout(page, '.ma__card__details ma__card__details--secondary');
+  //
+  //     await page.waitForTimeout(6 * 1000);
+  //
+  //     break;
+  // }
+  //
+  // await page.waitForTimeout(2 * 1000);
 
   // Wait for any layout shift that nudges the footer.
   if (scenario.label !== '404') {
