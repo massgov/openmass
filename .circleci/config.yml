@@ -633,7 +633,7 @@ jobs:
             - run:
                 name: Verify Artifacts
                 command: |
-                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
