@@ -147,7 +147,7 @@ module.exports = {
     "onBeforeScript": "before.js",
     "onReadyScript": "ready.js",
     "readyTimeout": "90000",
-    "asyncCaptureLimit": 1,
+    "asyncCaptureLimit": 3,
     "report": ["browser", "CI"],
     "engine": "playwright",
     "engineFlags": [],
