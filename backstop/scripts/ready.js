@@ -126,7 +126,6 @@ module.exports = async (page, scenario, viewport) => {
     await page.locator('.ma__footer-new__copyright');
     await page.locator('.ma__footer-new__logo');
     await page.locator('.ma__footer-new__container').waitFor();
-    await page.locator('.ma__fixed-feedback-button').waitFor();
     await page.locator('.ma__footer-new__copyright--bold').hover();
   }
 
