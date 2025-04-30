@@ -50,6 +50,28 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
 
   await browserContext.addCookies(cookies);
 
+  async function warmupWithRetries(context, url, maxAttempts = 3, baseDelay = 1000) {
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await context.request.get(url);
+        if (response.ok()) {
+          console.log(`[Cache Warmup] ✅ Success on attempt ${attempt}: ${url}`);
+          return;
+        } else {
+          console.warn(`[Cache Warmup] ⚠️ Attempt ${attempt} failed with status ${response.status()} for: ${url}`);
+        }
+      } catch (err) {
+        console.warn(`[Cache Warmup] ❌ Attempt ${attempt} threw error: ${err.message}`);
+      }
+      const delay = baseDelay * Math.pow(2, attempt - 1); // 1s, 2s, 4s...
+      console.log(`[Cache Warmup] ⏳ Retrying in ${delay}ms...`);
+      await new Promise(res => setTimeout(res, delay));
+    }
+    console.error(`[Cache Warmup] 🚫 Failed after ${maxAttempts} attempts: ${url}`);
+  }
+
+  await warmupWithRetries(browserContext, url.href);
+
   const ignoredMessages = [
     'New Relic',
     'BackstopTools have been installed'
