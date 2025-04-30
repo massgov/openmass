@@ -74,6 +74,7 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
 
   const ignoredMessages = [
     'New Relic',
+    'Loading chunk 111 failed',
     'BackstopTools have been installed'
   ];
   console.log = (message) => {
