@@ -1,5 +1,10 @@
 
 
+## [0.435.1] - April 30, 2025
+
+### Security:
+- DP-39192: HOTFIX Review and fix entity usage queue processing.
+
 ## [0.435.0] - April 29, 2025
 
 ### Fixed
