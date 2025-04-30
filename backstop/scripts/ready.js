@@ -9,10 +9,6 @@ module.exports = async (page, scenario, viewport) => {
         transition-duration: 0s !important;
       }
 
-      .ma__fixed-feedback-button {
-        position: absolute !important;
-      }
-
       /* Mask random homepage image. */
       body.is-front .ma__search-banner {
         background: none !important;
