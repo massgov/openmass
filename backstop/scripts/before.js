@@ -61,7 +61,7 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
           console.warn(`[Cache Warmup] ⚠️ Attempt ${attempt} failed with status ${response.status()} for: ${url}`);
         }
       } catch (err) {
-        console.warn(`[Cache Warmup] ❌ Attempt ${attempt} threw error: ${err.message}`);
+        console.warn(`[Cache Warmup] ❌ Attempt ${attempt} failed with an internal error.`);
       }
       const delay = baseDelay * Math.pow(2, attempt - 1); // 1s, 2s, 4s...
       console.log(`[Cache Warmup] ⏳ Retrying in ${delay}ms...`);
