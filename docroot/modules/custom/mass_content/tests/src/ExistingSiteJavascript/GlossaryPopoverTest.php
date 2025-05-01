@@ -164,4 +164,39 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertSession()->elementTextContains('css', '.popover__dialog', $this->definition);
   }
 
+  /**
+   * Test that popovers do not add extra space.
+   */
+  public function testGlossaryPopoverInjection() {
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Test Service Page',
+      'field_service_body' => "Test definition popover \"" . $this->term . "\"",
+      'moderation_state' => 'published',
+    ]);
+
+    $node->set('field_glossaries', $this->glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+
+    // The page should load with a <template id="glossary-popup-template"> and drupal settings JSON.
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    // Ensure the popup has been injected.
+    $page->waitFor(10, function () use ($page) {
+      $hasTemplate = $page->find('css', '#glossary-popup-template');
+      return $hasTemplate !== NULL;
+    });
+    $trigger = $page->find('css', '.popover__trigger');
+    $dialog = $page->find('css', '.popover__dialog');
+
+    // Ensure text contains "Lorem".
+    $this->assertSession()->elementTextContains('css', '.popover__trigger', "\"" . $this->term . "\"");
+    $this->assertSession()->elementTextNotContains('css', '.popover__trigger', "\" " . $this->term . " \"");
+  }
+
 }
