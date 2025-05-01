@@ -1,5 +1,19 @@
 
 
+## [0.435.1] - May 1, 2025
+
+### Fixed:
+- DP-39192: HOTFIX Trigger new tag with empty PR.
+
+
+
+## [0.435.1] - April 30, 2025
+
+### Fixed:
+  - DP-39192: HOTFIX Review and fix entity usage queue processing.
+
+
+
 ## [0.435.0] - April 29, 2025
 
 ### Fixed
