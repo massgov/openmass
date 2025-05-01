@@ -108,12 +108,7 @@ class ContentTranslationController extends ContentTranslationControllerBase {
    *   null if not set.
    */
   private function getLanguageNegotiatorParameter() {
-    $negotiator = \Drupal::service('language_negotiator');
-    $current_user = \Drupal::currentUser();
-    $negotiator->setCurrentUser($current_user);
-    return \Drupal::service('config.factory')
-      ->get('language.negotiation')
-      ->get('session.parameter');
+    return 'language_content_entity';
   }
 
 
