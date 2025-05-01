@@ -1876,7 +1876,7 @@ class Helper {
     }
 
     // Not a node, return null to match declared return type
-    return null;
+    return NULL;
   }
 
   /**
