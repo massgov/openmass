@@ -1,5 +1,12 @@
 
 
+## [0.435.1] - May 1, 2025
+
+### Fixed:
+- DP-39192: HOTFIX Trigger new tag with empty PR.
+
+
+
 ## [0.435.1] - April 30, 2025
 
 ### Fixed:
