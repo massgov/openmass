@@ -191,12 +191,13 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
       $hasTemplate = $page->find('css', '#glossary-popup-template');
       return $hasTemplate !== NULL;
     });
-    $trigger = $page->find('css', '.popover__trigger');
-    $dialog = $page->find('css', '.popover__dialog');
 
     // Ensure text contains "Lorem".
-    $this->assertSession()->elementTextContains('css', '.popover__trigger', "\"" . $this->term . "\"");
-    $this->assertSession()->elementTextNotContains('css', '.popover__trigger', "\" " . $this->term . " \"");
+    $popover = $page->find('css', '.popover');
+    $popover_parent = $popover->getParent();
+    $popover_markup = $popover->getOuterHtml();
+    $parent_markup = $popover_parent->getOuterHtml();
+    $this->assertStringContainsString("\"" . $popover_markup . "\"", $parent_markup);
   }
 
   /**
