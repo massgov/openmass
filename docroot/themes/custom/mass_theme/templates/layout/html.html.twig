@@ -116,8 +116,7 @@
     {{ page_bottom }}
 
     {% if _context['#attached'].drupalSettings.glossaries %}
-      <template id="glossary-popup-template">
-        {% include '@molecules/popover.twig' with {
+      {% set popoverContext = {
           "tooltip": {
             "controlId": "uniqueID",
             "openText": "Term",
@@ -127,8 +126,8 @@
             "message": "definition here."
           }
         }
-        %}
-      </template>
+      %}
+      <template id="glossary-popup-template">{% include '@molecules/popover.twig' with popoverContext %}</template>
     {% endif %}
 
     {# Google Translate JS #}
