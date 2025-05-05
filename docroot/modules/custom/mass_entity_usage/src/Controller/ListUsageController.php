@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_entity_usage\Controller;
 
+use AllowDynamicProperties;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
@@ -14,6 +15,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\block_content\BlockContentInterface;
 use Drupal\content_moderation\Entity\ContentModerationState;
+use Drupal\entity_usage\EntityUsageInterface;
 use Drupal\mass_entity_usage\MassEntityUsageInterface;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
@@ -22,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Controller for our pages.
  */
-class ListUsageController extends ControllerBase {
+#[AllowDynamicProperties] class ListUsageController extends ControllerBase {
 
   /**
    * Number of items per page to use when nothing was configured.
@@ -41,7 +43,14 @@ class ListUsageController extends ControllerBase {
    *
    * @var \Drupal\mass_entity_usage\MassEntityUsageInterface
    */
-  protected $entityUsage;
+  protected $mass_entity_usage;
+
+  /**
+   * The EntityUsage service.
+   *
+   * @var \Drupal\mass_entity_usage\MassEntityUsageInterface
+   */
+  protected $entity_usage;
 
   /**
    * The entity.
@@ -85,16 +94,17 @@ class ListUsageController extends ControllerBase {
    *   The entity type manager.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
    *   The entity field manager.
-   * @param \Drupal\mass_entity_usage\MassEntityUsageInterface $entity_usage
+   * @param \Drupal\mass_entity_usage\MassEntityUsageInterface $mass_entity_usage
    *   The EntityUsage service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
    * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
    *   The pager manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, MassEntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory, PagerManagerInterface $pager_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, MassEntityUsageInterface $mass_entity_usage, EntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory, PagerManagerInterface $pager_manager) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
+    $this->massEntityUsage = $mass_entity_usage;
     $this->entityUsage = $entity_usage;
     $this->entityUsageConfig = $config_factory->get('entity_usage.settings');
     $this->itemsPerPage = $this->entityUsageConfig->get('usage_controller_items_per_page') ?: self::ITEMS_PER_PAGE_DEFAULT;
@@ -109,6 +119,7 @@ class ListUsageController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('entity_field.manager'),
       $container->get('mass_entity_usage.usage'),
+      $container->get('entity_usage.usage'),
       $container->get('config.factory'),
       $container->get('pager.manager')
     );
@@ -139,7 +150,7 @@ class ListUsageController extends ControllerBase {
 
     $this->loadEntity($entity_type, $entity_id);
 
-    $total = $this->entityUsage->listUniqueSourcesCount($this->entity);
+    $total = $this->massEntityUsage->listUniqueSourcesCount($this->entity);
     if (!$total) {
       return $build;
     }
@@ -259,7 +270,7 @@ class ListUsageController extends ControllerBase {
    */
   protected function getSubQueryRows($page, $num_per_page) {
     $offset = $page * $num_per_page;
-    $all_usages = $this->entityUsage->listSourcesPage($this->entity, $offset);
+    $all_usages = $this->massEntityUsage->listSourcesPage($this->entity, $offset);
     return $this->prepareRows($all_usages);
   }
 

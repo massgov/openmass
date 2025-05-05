@@ -9,5 +9,5 @@ services:
     arguments: [ '@entity_type.manager', '@string_translation', '@config.factory' ]
   mass_entity_usage.usage:
     class: Drupal\mass_entity_usage\MassEntityUsage
-    arguments: [ '@database', '@event_dispatcher', '@config.factory', '@module_handler' ]
+    arguments: [ '@database', '@config.factory' ]
   Drupal\mass_entity_usage\EntityUsageQueueBatchManager: '@mass_entity_usage.queue_batch_manager'

@@ -8,7 +8,7 @@ use Drupal\entity_usage\EntityUsageInterface;
 /**
  * Entity usage interface.
  */
-interface MassEntityUsageInterface extends EntityUsageInterface {
+interface MassEntityUsageInterface {
 
   /**
    * Provide a list of all referencing source entities for a target entity.

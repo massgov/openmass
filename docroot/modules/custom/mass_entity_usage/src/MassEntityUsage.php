@@ -2,14 +2,21 @@
 
 namespace Drupal\mass_entity_usage;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\entity_usage\EntityUsage;
 use Drupal\mass_entity_usage\Controller\LocalTaskUsageController;
 
 /**
  * Extends the entity usage base class.
  */
-class MassEntityUsage extends EntityUsage implements MassEntityUsageInterface {
+class MassEntityUsage implements MassEntityUsageInterface {
+
+  public function __construct(
+    protected Connection $connection,
+    protected ConfigFactoryInterface $config,
+    protected string $tableName = 'entity_usage',
+  ) {}
 
   /**
    * {@inheritdoc}
@@ -46,7 +53,9 @@ class MassEntityUsage extends EntityUsage implements MassEntityUsageInterface {
     ]);
 
     // Set a range and restrict usage records to unique sources.
-    $items_per_page = $this->config->get('usage_controller_items_per_page') ?: LocalTaskUsageController::ITEMS_PER_PAGE_DEFAULT;
+    $items_per_page = (int) ($this->config
+      ->get('entity_usage.settings')
+      ->get('usage_controller_items_per_page') ?? LocalTaskUsageController::ITEMS_PER_PAGE_DEFAULT);
     $sub_query->range($offset, $items_per_page);
     $sub_query_results = $sub_query->execute()->fetchAllAssoc('type_id_key');
     $sub_query_keys = array_keys($sub_query_results);
@@ -117,6 +126,27 @@ class MassEntityUsage extends EntityUsage implements MassEntityUsageInterface {
 
     // Return the unique number of sources.
     return (int) $query->countQuery()->execute()->fetchField();
+  }
+
+  /**
+   * Check if a value is an integer, or an integer string.
+   *
+   * Core doesn't support big integers (bigint) for entity reference fields.
+   * Therefore we consider integers with more than 10 digits (big integer) to be
+   * strings.
+   *
+   * @param int|string $value
+   *   The value to check.
+   *
+   * @return bool
+   *   TRUE if the value is a numeric integer or a string containing an integer,
+   *   FALSE otherwise.
+   *
+   * @todo Fix bigint support once fixed in core. More info on #2680571 and
+   *   #2989033.
+   */
+  protected function isInt($value) {
+    return ((string) (int) $value === (string) $value) && strlen($value) < 11;
   }
 
 }
