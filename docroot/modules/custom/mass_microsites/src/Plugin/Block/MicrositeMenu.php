@@ -106,6 +106,9 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
 
     /** @var MicrositeInterface $microsite */
     $microsite = $this->nearestMicrositeLookup->selectNearestMicrosite($microsites, $node);
+    if (!$microsite) {
+      return [];
+    }
     $cache->addCacheableDependency($node);
     $cache->addCacheableDependency($microsite);
     if ($home = $microsite->getHome()) {
