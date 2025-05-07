@@ -50,8 +50,55 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
 
   await browserContext.addCookies(cookies);
 
+  async function warmupWithRetries(context, url, maxAttempts = 3, baseDelay = 1000) {
+    const headers = {
+      'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT,
+    };
+
+    // Extract cookies from browser context
+    const allCookies = await context.cookies();
+    const cookieHeader = allCookies
+      .map(cookie => `${cookie.name}=${cookie.value}`)
+      .join('; ');
+
+    if (cookieHeader) {
+      headers['cookie'] = cookieHeader;
+    }
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        const response = await context.request.get(url, { headers });
+        const status = response.status();
+
+        if (status === 200) {
+          console.log(`[Cache Warmup] ✅ Success on attempt ${attempt}: ${url}`);
+          return;
+        }
+
+        if (status === 404) {
+          console.log(`[Cache Warmup] 🚫 Skipping warmup retries for 404: ${url}`);
+          return;
+        }
+
+        console.warn(`[Cache Warmup] ⚠️ Attempt ${attempt} failed with status ${status} for: ${url}`);
+      } catch (err) {
+        console.warn(`[Cache Warmup] ❌ Attempt ${attempt} failed.`);
+      }
+
+      const delay = baseDelay * Math.pow(2, attempt - 1);
+      console.log(`[Cache Warmup] ⏳ Retrying in ${delay}ms...`);
+      await new Promise(res => setTimeout(res, delay));
+    }
+
+    console.error(`[Cache Warmup] 🚫 Failed after ${maxAttempts} attempts: ${url}`);
+  }
+
+  await warmupWithRetries(browserContext, url.href);
+
   const ignoredMessages = [
     'New Relic',
+    'Loading chunk',
+    'JQMIGRATE',
     'BackstopTools have been installed'
   ];
   console.log = (message) => {
