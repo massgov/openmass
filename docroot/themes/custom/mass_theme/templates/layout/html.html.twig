@@ -33,9 +33,9 @@
     {% include directory ~ "/templates/alerts/polyfills.html.twig" %}
     {% include directory ~ "/templates/alerts/fetch.html.twig" %}
 
+    {# New Relic loader setup #}
     {% verbatim %}
       <!-- DEPLOYMENT IDENTIFIER: {{ deployment_identifier }} -->
-      {# New Relic loader setup #}
       <script type="text/javascript">
         ;window.NREUM||(NREUM={});
         NREUM.init = {
