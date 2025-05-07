@@ -1,3 +1,16 @@
+## [0.436.0] - May 6, 2025
+
+### Changed
+  - DP-38621: Updates mayflower search-header molecule and modifies corresponding data structure.
+  - DP-39258: Adjusted help text for form url on Form content type, added help text for glossaries field on multiple types.
+  
+### Fixed
+  - DP-39143: Backstop false positives.
+  - DP-39184: Fixes popover template whitespace.
+  
+### Removed
+  - DP-39150: Remove indentation filter.
+  
 
 
 ## [0.435.1] - May 1, 2025
