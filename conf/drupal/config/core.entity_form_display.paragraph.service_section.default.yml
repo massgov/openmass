@@ -15,16 +15,15 @@ dependencies:
     - conditional_fields
     - field_group
     - link
-    - paragraphs
 third_party_settings:
   field_group:
     group_section_cont:
       children:
         - field_service_section_content
       label: 'Section content'
-      region: content
+      region: hidden
       parent_name: ''
-      weight: 6
+      weight: 9
       format_type: details
       format_settings:
         classes: ''
@@ -40,32 +39,20 @@ mode: default
 content:
   field_hide_heading:
     type: boolean_checkbox
-    weight: 1
+    weight: 2
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_section_style:
     type: options_buttons
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_service_section_content:
-    type: entity_reference_paragraphs
-    weight: 1
-    region: content
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: closed
-      add_mode: button
-      form_display_mode: media_caption_and_display
-      default_paragraph_type: _none
-    third_party_settings: {  }
   field_service_section_heading:
     type: string_textfield
-    weight: 0
+    weight: 1
     region: content
     settings:
       size: 60
@@ -89,13 +76,13 @@ content:
       placeholder: ''
     third_party_settings:
       conditional_fields: {  }
-  field_two_column:
-    type: boolean_checkbox
-    weight: 3
+  layout_paragraphs_fields:
+    weight: 0
     region: content
-    settings:
-      display_label: true
+    settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_service_section_content: true
+  field_two_column: true
   status: true
