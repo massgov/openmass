@@ -44,7 +44,15 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $this->visit($media->toUrl()->toString() . '/download');
+    $this->getSession()->getDriver()->getClient()->followRedirects(FALSE);
+    $this->getSession()->getDriver()->getClient()->followMetaRefresh(FALSE);
+    $this->getSession()->getDriver()->visit($media->toUrl()->toString() . '/download');
+    $this->assertSession()->statusCodeEquals(301);
+    $this->assertSession()->responseHeaderContains('Cache-control', 'max-age=1800, public, stale-if-error=604800, stale-while-revalidate=604800');
+
+    $this->getSession()->getDriver()->getClient()->followRedirects(TRUE);
+    $this->getSession()->getDriver()->getClient()->followMetaRefresh(TRUE);
+    $this->drupalGet($media->toUrl()->toString() . '/download');
     $this->assertEquals(\Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri()), $this->getSession()->getCurrentUrl());
     $this->assertEquals('text/plain', $this->getSession()->getResponseHeader('Content-Type'), 'url.site cache context is added to the response.');
   }
