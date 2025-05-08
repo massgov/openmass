@@ -15,6 +15,7 @@ use Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle;
 use Drupal\mass_content\Entity\Bundle\node\ActionBundle;
 use Drupal\mass_content\Entity\Bundle\node\AdvisoryBundle;
 use Drupal\mass_content\Entity\Bundle\node\AlertBundle;
+use Drupal\mass_content\Entity\Bundle\node\ApiServiceCardBundle;
 use Drupal\mass_content\Entity\Bundle\node\BinderBundle;
 use Drupal\mass_content\Entity\Bundle\node\CampaignLandingBundle;
 use Drupal\mass_content\Entity\Bundle\node\ContactInformationBundle;
@@ -1312,6 +1313,9 @@ function mass_content_views_data() {
  * Implements hook_entity_bundle_info_alter().
  */
 function mass_content_entity_bundle_info_alter(array &$bundles): void {
+  if (isset($bundles['node']['api_service_card'])) {
+    $bundles['node']['api_service_card']['class'] = ApiServiceCardBundle::class;
+  }
   if (isset($bundles['node']['action'])) {
     $bundles['node']['action']['class'] = ActionBundle::class;
   }
