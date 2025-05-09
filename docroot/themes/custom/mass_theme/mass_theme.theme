@@ -7372,60 +7372,6 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
 }
 
 /**
- * Preprocess paragraph sections from services and organizations.
- */
-function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
-  // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
-  $contained = ['rich_text'];
-
-  $components = [];
-  /** @var \Drupal\paragraphs\Entity\Paragraph */
-  $container = $variables['paragraph'];
-  /** @var \Drupal\paragraphs\Entity\Paragraph[] */
-  $paragraphs = Helper::getReferencedEntitiesFromField($container, $field);
-
-  for ($i = 0; $i < count($paragraphs); $i++) {
-    $component = [];
-    // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
-    if (mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
-      $items = [];
-      do {
-        if (isset($paragraphs[$i])) {
-          $items[] = $paragraphs[$i];
-        }
-
-        $i++;
-        // Keep grouping together while the next element has the check.
-      } while (isset($paragraphs[$i]) && mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields));
-
-      // Once done, also group the following one.
-      if (isset($paragraphs[$i])) {
-        $items[] = $paragraphs[$i];
-      }
-
-      $component = ['group' => 'default', 'items' => $items];
-    }
-    // There are some special paragraphs that should have a right margin.
-    elseif (in_array($paragraphs[$i]->getType(), $contained) !== FALSE) {
-      $component = ['group' => 'contained', 'items' => $paragraphs[$i]];
-    }
-    // Otherwise, if it's one of the following paragraphs, wrap it as well.
-    elseif (in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== FALSE) {
-      $component = ['group' => 'self', 'items' => $paragraphs[$i]];
-    }
-
-    else {
-      // Otherwise, just return it as it is.
-      $component[] = $paragraphs[$i];
-    }
-    $components[] = $component;
-  }
-  return $components;
-}
-
-/**
  * Implements hook_preprocess_HOOK().
  *
  * Groups different components together when necessary.
