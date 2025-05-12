@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.curated_list.field_data_search_content
     - field.field.node.curated_list.field_data_topic
     - field.field.node.curated_list.field_english_version
+    - field.field.node.curated_list.field_glossaries
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
@@ -78,6 +79,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_curated_list_edit_form
@@ -133,12 +135,12 @@ content:
       placeholder_title: ''
     third_party_settings:
       conditional_fields:
-        040aa824-b3ad-447a-9411-72ae048f2471:
+        2bbdf9f9-3590-4fd1-9b8f-ed5a86ecf4e1:
           entity_type: node
-          bundle: org_page
+          bundle: curated_list
           dependee: field_login_links_options
           settings:
-            state: visible
+            state: required
             reset: false
             condition: value
             grouping: AND
@@ -151,25 +153,7 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-        db35bfe1-ab04-470e-a6c0-9727589a74b7:
-          entity_type: node
-          bundle: binder
-          dependee: field_login_links_options
-          settings:
-            state: visible
-            reset: false
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: define_new_login_options
-            effect: show
-            effect_options: {  }
-            selector: ''
-        ba34321f-b21b-48a0-8a59-672c47cd4444:
+        31fbdce8-5489-472c-8aa4-ee998dd6a54e:
           entity_type: node
           bundle: curated_list
           dependee: field_login_links_options
@@ -406,6 +390,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 23
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: 20
@@ -497,7 +491,7 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-      hide_weight: true
+      hide_weight: false
     third_party_settings: {  }
   field_related_links:
     type: link_default

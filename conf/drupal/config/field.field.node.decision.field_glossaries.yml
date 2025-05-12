@@ -1,0 +1,29 @@
+uuid: a8dd83c7-b46a-4562-ac83-be786f96f287
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_glossaries
+    - node.type.decision
+    - node.type.glossary
+id: node.decision.field_glossaries
+field_name: field_glossaries
+entity_type: node
+bundle: decision
+label: Glossaries
+description: 'Optional. Glossaries can be used to highlight word definitions directly on the page and are available on all page content types. <a href="https://massgov.sharepoint.com/sites/TSS-MassGov-Knowledge-Base/SitePages/Glossary.aspx">Learn more about how to use Glossaries</a>. '
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      glossary: glossary
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

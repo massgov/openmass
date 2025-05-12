@@ -528,7 +528,7 @@ jobs:
     resource_class: xlarge
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
-      - image: backstopjs/backstopjs:6.3.3
+      - image: backstopjs/backstopjs:6.3.25
     steps:
       - checkout
       - run:
@@ -601,7 +601,7 @@ jobs:
     docker:
       # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
       # Update this after https://github.com/garris/BackstopJS/issues/1468
-      - image: backstopjs/backstopjs:6.1.4
+      - image: backstopjs/backstopjs:6.3.25
     steps:
       - checkout
       - run:
@@ -633,7 +633,7 @@ jobs:
             - run:
                 name: Verify Artifacts
                 command: |
-                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"

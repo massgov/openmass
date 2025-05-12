@@ -1866,10 +1866,17 @@ class Helper {
    */
   public static function getParentNode(Paragraph $paragraph): ?NodeInterface {
     $parent_entity = $paragraph->getParentEntity();
-    if ($parent_entity && $parent_entity->getEntityTypeId() === 'paragraph') {
-      $parent_entity = self::getParentNode($parent_entity);
+
+    if ($parent_entity instanceof Paragraph) {
+      return self::getParentNode($parent_entity);
     }
-    return $parent_entity;
+
+    if ($parent_entity instanceof NodeInterface) {
+      return $parent_entity;
+    }
+
+    // Not a node, return null to match declared return type
+    return NULL;
   }
 
   /**

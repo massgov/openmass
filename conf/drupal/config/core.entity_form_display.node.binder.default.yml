@@ -27,6 +27,7 @@ dependencies:
     - field.field.node.binder.field_data_topic
     - field.field.node.binder.field_date_published
     - field.field.node.binder.field_downloads
+    - field.field.node.binder.field_glossaries
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_login_links_options
     - field.field.node.binder.field_organizations
@@ -94,6 +95,7 @@ third_party_settings:
         - field_reusable_label
         - field_intended_audience
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_binder_node_edit_form
@@ -150,12 +152,12 @@ content:
       placeholder_title: ''
     third_party_settings:
       conditional_fields:
-        040aa824-b3ad-447a-9411-72ae048f2471:
+        43d0a562-53f6-4961-bb97-5b727befd124:
           entity_type: node
-          bundle: org_page
+          bundle: binder
           dependee: field_login_links_options
           settings:
-            state: visible
+            state: required
             reset: false
             condition: value
             grouping: AND
@@ -168,7 +170,7 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-        db35bfe1-ab04-470e-a6c0-9727589a74b7:
+        490044b6-f95a-4811-b000-c74943e03590:
           entity_type: node
           bundle: binder
           dependee: field_login_links_options
@@ -520,6 +522,16 @@ content:
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 34
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: 32
@@ -551,7 +563,7 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-      hide_weight: true
+      hide_weight: false
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete

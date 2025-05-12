@@ -5,7 +5,6 @@ namespace Drupal\mass_microsites;
 use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
 use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
 use Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup;
-use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
 use Drupal\node\NodeInterface;
 
 /**
@@ -67,14 +66,15 @@ class NearestMicrositeLookup {
       // Array of ancestors in hierarchy, starting with field_primary_parent and climbing upward.
       /** @var \PNX\NestedSet\Node[] */
       $ancestors = array_reverse($nestedSetStorage->findAncestors($key));
-
-      foreach ($ancestors as $ancestor) {
-        $ancestor_id = $ancestor->getNodeKey()->getId();
-        if (
-          !$nearest_microsite &&
-          isset($microsites_by_home_id[$ancestor_id])
-        ) {
-          $nearest_microsite = $microsites_by_home_id[$ancestor_id];
+      if ($ancestors) {
+        foreach ($ancestors as $ancestor) {
+          $ancestor_id = $ancestor->getNodeKey()->getId();
+          if (
+            !$nearest_microsite &&
+            isset($microsites_by_home_id[$ancestor_id])
+          ) {
+            $nearest_microsite = $microsites_by_home_id[$ancestor_id];
+          }
         }
       }
     }

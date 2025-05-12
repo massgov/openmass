@@ -20,6 +20,7 @@ use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mass_content\EventsRendererOrgPages;
+use Drupal\mass_content\Entity\Bundle\node\GlossaryBundle;
 use Drupal\mass_utility\RelatedToHelper;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
@@ -71,6 +72,8 @@ function mass_theme_theme_suggestions_paragraph_alter(array &$suggestions, array
  * Implements hook_theme_suggestions_alter().
  */
 function mass_theme_theme_suggestions_node_alter(array &$suggestions, array $variables) {
+  $node = $variables['elements']['#node'];
+
   // Force the template for specific view modes.
   if (in_array($variables['elements']['#view_mode'], ['link_only', 'link_and_description'])) {
     $suggestions = [];
@@ -3915,20 +3918,6 @@ function mass_theme_preprocess_menu(&$variables) {
             }
             $panel['links'] = $links;
           }
-          $panel['description'] = [
-            'richText' => [
-              'rteElements' => [
-                [
-                  'path' => '@atoms/11-text/paragraph.twig',
-                  'data' => [
-                    'paragraph' => [
-                      'text' => 'We have moved any relevant application login links below the page title where they are easier to find.',
-                    ],
-                  ],
-                ],
-              ],
-            ],
-          ];
           $panels[] = $panel;
 
           $items[] = [
@@ -4101,6 +4090,27 @@ function mass_theme_preprocess_node(&$variables) {
       else {
         $variables['data_listing_icon'] = $icon_map[$term->label()] ?? NULL;
         $variables['data_listing_icon_label'] = $term->label();
+      }
+    }
+  }
+
+  // Get microsite information
+  if ($microsite = _mass_microsites_get_microsite()) {
+    // Check if the current node is the homepage of the microsite
+    if ($microsite->getHome()->id() == $node->id()) {
+      // Add the microsite entity to the template variables
+      $variables['microsite'] = $microsite;
+
+      // Render the microsite key message field only for the homepage
+      if ($microsite->hasField('field_microsites_key_message') && !$microsite->get('field_microsites_key_message')->isEmpty()) {
+        $rendered_paragraphs = [];
+        $paragraph_view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
+        foreach ($microsite->get('field_microsites_key_message') as $item) {
+          if ($item->entity) {
+            $rendered_paragraphs[] = $paragraph_view_builder->view($item->entity);
+          }
+        }
+        $variables['microsite_key_message'] = $rendered_paragraphs;
       }
     }
   }
@@ -4467,6 +4477,23 @@ function mass_theme_preprocess_html(&$variables) {
   // Add a variable for the emergency alerts banner view for front template.
   $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
 
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+  if (in_array($route_name, ['entity.node.preview', 'entity.node.latest_version', 'entity.node.revision'])) {
+    $node = $route_match->getParameter('node_preview') ?? $route_match->getParameter('node');
+
+    if ($node instanceof NodeInterface) {
+      $front_path = \Drupal::config('system.site')
+        ->get('page.front'); // e.g., 'node/123'
+      if (preg_match('/node\/(\d+)/', $front_path, $matches)) {
+        $front_nid = $matches[1];
+        if ((int) $node->id() === (int) $front_nid) {
+          $is_front_page = TRUE;
+        }
+      }
+    }
+  }
+
   if ($is_front_page) {
     $variables['alerts_banner_view'] = views_embed_view('emergency_alert', 'block_banner');
     // Add a body class if this is the front.
@@ -4510,6 +4537,26 @@ function mass_theme_preprocess_html(&$variables) {
   // Get Theme settings languages if available.
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
+  }
+
+  // Add glossary functionality if the page references glossaries.
+  $params = \Drupal::routeMatch()->getParameters();
+  if ($params->has('node')) {
+    $node = $params->get('node');
+    if ($node->hasField('field_glossaries') && !$node->get('field_glossaries')->isEmpty()) {
+      /** @var GlossaryBundle[] $glossaries */
+      $glossaries = $node->get('field_glossaries')->referencedEntities();
+      $terms = GlossaryBundle::mergeGlossaries($glossaries);
+      $formatted_glossaries = [];
+      foreach ($glossaries as $glossary) {
+        $formatted_glossaries[$glossary->uuid()] = $glossary->getInfo();
+      }
+      $variables['#attached']['drupalSettings']['glossaries'] = [
+        'glossaries' => $formatted_glossaries,
+        'terms' => $terms,
+      ];
+      $variables['#attached']['library'][] = 'mass_theme/glossaries';
+    }
   }
 }
 
@@ -5027,10 +5074,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
   if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
     // First image with an image style.
     if ($highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight) {
-      $style = ImageStyle::load('featured_item_highlight');
       if ($highlight->entity) {
-        $new_image = $style->buildUrl($highlight->entity->getFileUri());
-        $highlight->entity->setFileUri($new_image);
         $variables['items'][0]['content']['#view_mode'] = 'tall';
       }
     }
@@ -7238,8 +7282,21 @@ function mass_theme_featured_content_cards(&$variables) {
       'link' => '#',
       'thumbnail' => '',
     ];
+
     if (is_object($paragraph->field_image->entity)) {
-      $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      // Try to get the image style from the first rendered item
+      $style_name = NULL;
+      if (!empty($variables['field_image'][0]['#image_style'])) {
+        $style_name = $variables['field_image'][0]['#image_style'];
+      }
+      if ($style_name && ($style = ImageStyle::load($style_name))) {
+        $return_array['thumbnail'] = $style->buildUrl($paragraph->field_image->entity->getFileUri());
+      }
+      else {
+        // Fallback to raw file URL
+        $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
+      }
+
     }
     if (!$paragraph->field_url->isEmpty()) {
       $return_array['link'] = $paragraph->field_url->first()->getUrl()->toString();

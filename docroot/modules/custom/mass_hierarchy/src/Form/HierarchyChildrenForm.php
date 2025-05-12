@@ -8,11 +8,29 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_hierarchy\Form\HierarchyChildrenForm as EntityHierachyHierarchyChildrenForm;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines a form for re-ordering children.
  */
 class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
+
+  /**
+   * NearestMicrositeLookup service.
+   *
+   * @var \Drupal\mass_microsites\NearestMicrositeLookup
+   */
+  protected $micrositeLookup;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    /** @var self $instance */
+    $instance = parent::create($container);
+    $instance->micrositeLookup = $container->get('mass_microsites.nearest_microsite_lookup');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -284,13 +302,14 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       'operations' => [],
       'finished' => [static::class, 'finished'],
     ];
+    $microsite = $this->micrositeLookup->getNearestMicrosite($this->entity);
     foreach ($children as $child) {
       $entity = \Drupal::entityTypeManager()
         ->getStorage($this->entity->getEntityTypeId())
         ->load($child['id']);
       $batch['operations'][] = [
         [static::class, 'rebuildTree'],
-        [$fieldName, $entity, $child['parent'], $child['weight']],
+        [$fieldName, $entity, $child['parent'], $child['weight'], $microsite],
       ];
     }
     batch_set($batch);
@@ -299,9 +318,19 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
   /**
    * Batch callback to rebuild the tree.
    */
-  public static function rebuildTree($fieldName, ContentEntityInterface $entity, $parent, $weight) {
-    if ($entity->{$fieldName}->target_id == $parent) {
-      return;
+  public static function rebuildTree($fieldName, ContentEntityInterface $entity, $parent, $weight, $microsite = NULL) {
+    $is_same_weight = $entity->{$fieldName}->weight == $weight;
+    $is_same_parent = $entity->{$fieldName}->target_id == $parent;
+
+    if ($microsite) {
+      if ($is_same_weight && $is_same_parent) {
+        return;
+      }
+    }
+    else {
+      if ($is_same_parent) {
+        return;
+      }
     }
 
     /** @var \Drupal\Node\NodeStorage */
@@ -327,7 +356,8 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       $node_latest->setRevisionUserId(\Drupal::currentUser()->id());
       $node_latest->setRevisionLogMessage('Revision created with "Hierarchy" feature.');
       $node_latest->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-      $node_latest->{$fieldName} = $parent;
+      $node_latest->{$fieldName}->target_id = $parent;
+      $node_latest->{$fieldName}->weight = $weight;
       $node_latest->save();
     }
   }

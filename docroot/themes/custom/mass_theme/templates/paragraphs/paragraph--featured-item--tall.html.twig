@@ -40,17 +40,12 @@
  * @ingroup themeable
  */
 #}
+
 {% include "@molecules/featured-item.twig" with {
   "featuredItem": {
     "variation": "tall",
-    "image": {
-      "alt": pararaph.field_featured_item_image.alt,
-      "src": file_url(paragraph.field_featured_item_image.entity.fileuri ?? '')
-    },
-    "featuredImage": {
-      "alt": paragraph.field_featured_item_highlight.alt,
-      "src": file_url(paragraph.field_featured_item_highlight.entity.fileuri ?? '')
-    },
+    "content": content.field_featured_item_image,
+    "featuredContent": content.field_featured_item_highlight,
     "href": content.field_featured_item_link[0]['#url_title'],
     "text": content.field_featured_item_link[0]['#title']
   }

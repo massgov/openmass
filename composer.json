@@ -194,6 +194,10 @@
         "drupal/http_response_headers": "^2",
         "drupal/hux": "^1.1",
         "drupal/iframe_resizer": "^2.0",
+        "drupal/imageapi_optimize": "^4.0",
+        "drupal/imageapi_optimize_binaries": "^1.1@beta",
+        "drupal/imageapi_optimize_resmushit": "^2.1@beta",
+        "drupal/imagemagick": "^4.0",
         "drupal/imagick": "^1",
         "drupal/inline_entity_form": "^1",
         "drupal/jquery_ui_autocomplete": "^2.0",
@@ -271,6 +275,7 @@
         "behat/mink-goutte-driver": "^2.0",
         "drupal/core-dev": "^10",
         "drupal/drupal-extension": "^5",
+        "drupal/responsive_image_debugger": "^1.1",
         "drupaltest/queue-runner-trait": "dev-master",
         "friends-of-behat/mink-debug-extension": "^2",
         "imbo/behat-api-extension": "^2.0",
@@ -369,10 +374,11 @@
             },
             "drupal/entity_embed": {
                 "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "https://git.drupalcode.org/project/entity_embed/-/merge_requests/39.diff",
-                "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch"
+                "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
+                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch"
             },
             "drupal/entity_usage": {
-                "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "https://git.drupalcode.org/project/entity_usage/-/merge_requests/55.diff"
+                "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "patches/entity_usage/drupal-issue-3378832-InvalidArgumentException-the-internal-path-component-is-invalid.patch"
             },
             "drupal/flag": {
                 "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
@@ -427,7 +433,8 @@
                 "Nested paragraphs title gets cut off (https://www.drupal.org/project/paragraphs/issues/3246140)": "https://www.drupal.org/files/issues/2024-03-11/paragraphs-3246140-19-fix_paragraph_title_cutoff.patch"
             },
             "drupal/layout_paragraphs": {
-                "Replace dragula with SortableJS (Scroll to Top After Adding a New Component in Layout Paragraphs Builder when Field Groups enabled https://www.drupal.org/project/layout_paragraphs/issues/3392717)": "patches/layout_paragraphs/Replace-dragula-with-SortableJS-3392717-11.patch"
+                "Replace dragula with SortableJS (Scroll to Top After Adding a New Component in Layout Paragraphs Builder when Field Groups enabled https://www.drupal.org/project/layout_paragraphs/issues/3392717)": "patches/layout_paragraphs/Replace-dragula-with-SortableJS-3392717-11.patch",
+                "Improve text paragraphs UX (https://www.drupal.org/project/layout_paragraphs/issues/3512377)": "patches/layout_paragraphs/DP-37429_improvove_text_paragraph_ux.patch"
             },
             "drupal/linkit": {
                 "Link shown after the autocomplete selection is the bare node/xxx link, not the alias (https://www.drupal.org/project/linkit/issues/2877535)": "https://www.drupal.org/files/issues/2023-10-05/linkit-2877535-64.patch"
@@ -468,6 +475,12 @@
             "drupal/views_bulk_edit": {
                 "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2024-01-10/views_bulk_edit-3024419-fix_required_fields-57.patch",
                 "Hide revision checkbox from the form": "patches/DP-25205_hide_revision_checkbox_from_views_bulk_edit_form.patch"
+            },
+            "drupal/imageapi_optimize_binaries": {
+                "Add support for optimizing GIF + Animations": "https://www.drupal.org/files/issues/2018-09-28/imageapi_optimize_binaries-add_support_for_optimizing_gif-2602398-12.patch"
+            },
+            "drupal/imageapi_optimize": {
+                "Skip animated gifs": "patches/imageapi_optimize/skip_animated_gifs.patch"
             }
         },
         "composer-exit-on-patch-failure": true,

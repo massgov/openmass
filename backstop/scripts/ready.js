@@ -137,9 +137,25 @@ module.exports = async (page, scenario, viewport) => {
     case 'ServiceDetails':
       await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
       break;
-  }
+    case 'CampaignLandingHeaderSolidColor':
+    case 'CampaignLandingHeaderVideo':
+    case 'CampaignLandingHeaderBg':
+      await page.addStyleTag({
+        content: `
+          @media (min-width: 768px) {
+          .ma__card {
+              max-inline-size: none !important;
+              flex-flow: unset !important; /* Optional if flex-direction: row causes layout jitter */
+              max-width: 100% !important;
+              flex-direction: row !important;
+              flex-wrap: wrap !important;
+            }
+          }
+    `,
+      });
 
-  await page.waitForTimeout(2 * 1000);
+      break;
+  }
 
   // Wait for any layout shift that nudges the footer.
   if (scenario.label !== '404') {
@@ -151,5 +167,5 @@ module.exports = async (page, scenario, viewport) => {
     await page.locator('.ma__footer-new__copyright--bold').hover();
   }
 
-  await page.waitForTimeout(4 * 1000);
+  await page.waitForTimeout(10 * 1000);
 }

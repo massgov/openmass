@@ -47,6 +47,8 @@ services:
     commands:
       # Commands that set up the basic preview infrastructure
       init:
+        - apt-get update
+        - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
         - sudo apt update
         # Install Node.js 16.x
         - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -

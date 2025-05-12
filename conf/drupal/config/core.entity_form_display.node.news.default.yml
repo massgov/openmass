@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.news.field_author
     - field.field.node.news.field_collections
+    - field.field.node.news.field_glossaries
     - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
@@ -59,6 +60,7 @@ third_party_settings:
         - field_reusable_label
         - field_intended_audience
         - field_collections
+        - field_glossaries
       label: Overview
       region: content
       parent_name: group_node_edit_form
@@ -182,7 +184,7 @@ content:
             selector: ''
   field_collections:
     type: entity_reference_tree
-    weight: 19
+    weight: 14
     region: content
     settings:
       theme: default
@@ -232,6 +234,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_glossaries:
+    type: entity_reference_autocomplete
+    weight: 15
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 34
@@ -425,7 +437,7 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-      hide_weight: true
+      hide_weight: false
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
