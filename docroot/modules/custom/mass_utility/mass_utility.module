@@ -504,7 +504,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       );
     }
     elseif ($field_name == 'field_form_url') {
-      $element['uri']['#description'] = t('FOR INTERNAL TESTING ONLY. Paste the embed URL from the Gravity Forms product provided by Mass Digital. It is not possible to embed forms from other sources.');
+      $element['uri']['#description'] = t('Paste the embed URL from the Mass.gov Forms (Gravity Forms) product provided by Mass Digital. It is not possible to embed forms from other sources.');
     }
     elseif ($field_name == 'field_url' || $field_name == 'field_org_more_news_link') {
       if (isset($context['form']['#parents'][0]) && $context['form']['#parents'][0] == 'field_service_detail_sections' || $field_name == 'field_org_more_news_link') {
