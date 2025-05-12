@@ -12,14 +12,16 @@ dependencies:
     - field.field.node.api_service_card.field_api_srv_card_ret_locale
     - field.field.node.api_service_card.field_api_srv_card_status
     - field.field.node.api_service_card.field_api_srv_card_tenant
+    - field.field.node.api_service_card.field_english_version
     - field.field.node.api_service_card.field_environment
     - node.type.api_service_card
     - workflows.workflow.api_cards
   module:
+    - allowed_formats
     - content_moderation
     - field_group
-    - key_value_field
     - link
+    - mass_fields
     - maxlength
     - text
 third_party_settings:
@@ -153,7 +155,14 @@ content:
     settings:
       rows: 5
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      allowed_formats:
+        hide_help: '1'
+        hide_guidelines: '1'
+      maxlength:
+        maxlength_js: null
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: false
   field_api_serv_card_link:
     type: link_default
     weight: 2
@@ -171,7 +180,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_api_srv_card_idv_ret_urls:
-    type: key_value_textarea
+    type: mass_glossary_key_value_textarea
     weight: 11
     region: content
     settings:
@@ -200,7 +209,7 @@ content:
       display_label: true
     third_party_settings: {  }
   field_api_srv_card_logout_urls:
-    type: key_value_textarea
+    type: mass_glossary_key_value_textarea
     weight: 9
     region: content
     settings:
@@ -241,6 +250,34 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_english_version:
+    type: entity_reference_autocomplete
+    weight: 6
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        0b90cc3c-979b-491e-b627-79a7affbd52a:
+          entity_type: node
+          bundle: alert
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_environment:
     type: options_select
     weight: 4
@@ -256,7 +293,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 6
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }

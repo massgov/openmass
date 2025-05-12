@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.api_service_card.field_api_srv_card_ret_locale
     - field.field.node.api_service_card.field_api_srv_card_status
     - field.field.node.api_service_card.field_api_srv_card_tenant
+    - field.field.node.api_service_card.field_english_version
     - field.field.node.api_service_card.field_environment
     - node.type.api_service_card
   module:
@@ -25,6 +26,11 @@ targetEntityType: node
 bundle: api_service_card
 mode: default
 content:
+  content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
+    weight: -20
+    region: content
   field_api_serv_card_description:
     type: text_default
     label: above
@@ -104,6 +110,14 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 106
+    region: content
+  field_english_version:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 11
     region: content
   field_environment:
     type: list_default
