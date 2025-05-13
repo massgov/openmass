@@ -4484,7 +4484,7 @@ function mass_theme_preprocess_html(&$variables) {
 
     if ($node instanceof NodeInterface) {
       $front_path = \Drupal::config('system.site')
-        ->get('page.front'); // e.g., 'node/123'
+        ->get('page.front');
       if (preg_match('/node\/(\d+)/', $front_path, $matches)) {
         $front_nid = $matches[1];
         if ((int) $node->id() === (int) $front_nid) {
