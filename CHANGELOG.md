@@ -1,3 +1,20 @@
+
+
+## [0.437.0] - May 13, 2025
+
+### Fixed
+  - DP-36246: Javascript errors.
+  - DP-37482: Style issue in preview and latest revision with home pages.
+  - DP-39227: Microsite home page getting 500 error.
+  
+### Changed
+  - DP-38159: Hide feedback and chatbot in print.
+  - DP-38160: Hide links for TOC and contact info in print.
+  - DP-38158: Simplify and eliminate header and footer in print.
+  
+### Added
+  - DP-38378: Image optmization with local binaries and imageapi optimize modules.
+  
 ## [0.436.0] - May 6, 2025
 
 ### Changed
