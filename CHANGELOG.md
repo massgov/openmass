@@ -1,6 +1,6 @@
 
 
-## [0.437.0] - May 14, 2025
+## [0.437.1] - May 14, 2025
 
 ### Fixed
   - DP-39436: Fix single action image card text accessibility by screen readers.
