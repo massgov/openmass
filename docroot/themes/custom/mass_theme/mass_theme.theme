@@ -4477,6 +4477,23 @@ function mass_theme_preprocess_html(&$variables) {
   // Add a variable for the emergency alerts banner view for front template.
   $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
 
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+  if (in_array($route_name, ['entity.node.preview', 'entity.node.latest_version', 'entity.node.revision'])) {
+    $node = $route_match->getParameter('node_preview') ?? $route_match->getParameter('node');
+
+    if ($node instanceof NodeInterface) {
+      $front_path = \Drupal::config('system.site')
+        ->get('page.front');
+      if (preg_match('/node\/(\d+)/', $front_path, $matches)) {
+        $front_nid = $matches[1];
+        if ((int) $node->id() === (int) $front_nid) {
+          $is_front_page = TRUE;
+        }
+      }
+    }
+  }
+
   if ($is_front_page) {
     $variables['alerts_banner_view'] = views_embed_view('emergency_alert', 'block_banner');
     // Add a body class if this is the front.

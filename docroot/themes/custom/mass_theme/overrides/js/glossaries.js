@@ -46,7 +46,17 @@
     const searches = new Map();
 
     // Create one replacement function instead of creating it in the loop
-    const escapeRegex = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escapeRegex = str => {
+      let replaced = str;
+
+      // Replace regex special characters with escaped versions.
+      replaced = replaced.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      // Replace any non-escaped, non alphanumeric characters with wildcards
+      replaced = replaced.replace(/[^\w\s]/g, '.?');
+
+      return replaced;
+    };
 
     searchStrings.forEach(string => {
       const regex = new RegExp(`\\b${escapeRegex(string)}(?:es|s)?\\b`, 'i');
@@ -183,7 +193,7 @@
    */
   function createTooltip(text, definition) {
     const tooltipId = generateTooltipId();
-    const element = template.content.cloneNode(true);
+    const element = template.content.firstElementChild.cloneNode(true);
 
     const trigger = element.querySelector('.popover__trigger');
     const dialog = element.querySelector('.popover__dialog');
@@ -207,34 +217,77 @@
    * @return {void}
    */
   function highlightMatches(matches) {
-    matches.forEach(({node, searchRegex, searchString}) => {
+    // Group matches by their parent node to process them together
+    const matchesByNode = new Map();
 
-      let text = node.textContent;
+    matches.forEach(match => {
+      if (!matchesByNode.has(match.node)) {
+        matchesByNode.set(match.node, []);
+      }
+      matchesByNode.get(match.node).push(match);
+    });
 
-      // Find the match position and content
-      const match = searchRegex.exec(text);
-      if (!match) {
+    matchesByNode.forEach((nodeMatches, node) => {
+      const parent = node.parentElement;
+      if (!parent) {
         return;
       }
 
-      const matchStart = match.index;
-      const matchEnd = matchStart + match[0].length;
+      let text = node.textContent;
+      let currentNode = node;
 
-      // Create text nodes for before and after the match
-      const beforeText = document.createTextNode(text.substring(0, matchStart));
-      const afterText = document.createTextNode(text.substring(matchEnd));
+      // Create a set to track processed search strings for THIS node only
+      const processedSearchStrings = new Set();
 
-      // Create the tooltip.
-      const definition = createTooltipContent(terms[searchString]);
-      const tooltip = createTooltip(match[0], definition);
+      // Find all matches and their positions first
+      const matchPositions = [];
 
-      // Replace the original text node.
-      const parent = node.parentElement;
+      nodeMatches.forEach(({searchRegex, searchString}) => {
+        // Skip if this search string has already been processed for this node
+        if (processedSearchStrings.has(searchString)) {
+          return;
+        }
 
-      parent.insertBefore(beforeText, node);
-      parent.insertBefore(tooltip, node);
-      parent.insertBefore(afterText, node);
-      parent.removeChild(node);
+        // Reset regex lastIndex
+        searchRegex.lastIndex = 0;
+
+        const match = searchRegex.exec(text);
+        if (match) {
+          matchPositions.push({
+            start: match.index,
+            end: match.index + match[0].length,
+            matchText: match[0],
+            searchString: searchString
+          });
+
+          // Mark this search string as processed for this node only
+          processedSearchStrings.add(searchString);
+        }
+      });
+
+      // Sort match positions by their start index (descending)
+      matchPositions.sort((a, b) => b.start - a.start);
+
+      // Process matches from right to left to avoid position shifts
+      matchPositions.forEach(({start, end, matchText, searchString}) => {
+        // Create text nodes for before and after the match
+        const beforeText = document.createTextNode(text.substring(0, start));
+        const afterText = document.createTextNode(text.substring(end));
+
+        // Create the tooltip
+        const definition = createTooltipContent(terms[searchString]);
+        const tooltip = createTooltip(matchText, definition);
+
+        // Replace the original text node
+        parent.insertBefore(beforeText, currentNode);
+        parent.insertBefore(tooltip, currentNode);
+        parent.insertBefore(afterText, currentNode);
+        parent.removeChild(currentNode);
+
+        // Update the text for the next iteration
+        text = text.substring(0, start);
+        currentNode = beforeText;
+      });
     });
   }
 })(Drupal, drupalSettings);

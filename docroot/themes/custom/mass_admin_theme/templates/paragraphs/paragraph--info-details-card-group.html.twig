@@ -70,6 +70,7 @@
                         {%
                           set card = {
                             'card': {
+                              'id': 'image-card--'|clean_unique_id,
                               'link': card_link,
                               'thumbnail': card_image,
                               'title': card_title,
@@ -85,7 +86,7 @@
                 {% else %}
                   {% block sectionLinks %}
                     {% for sectionLinks in sectionThreeUp.sections %}
-                      {% set sectionLinks = sectionLinks|merge({'level': linkHeading}) %}
+                       {% set sectionLinks = sectionLinks|merge({'level': linkHeading, 'id': 'section-link--'|clean_unique_id}) %}
                       {% include "@molecules/section-links.twig" with sectionLinks %}
                     {% endfor %}
                   {% endblock %}
