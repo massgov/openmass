@@ -171,7 +171,7 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->htmlOutput();
 
     // Check done message.
-    $this->assertSession()->pageTextContains('Action processing results');
+    $this->assertSession()->pageTextContains('Performing Change parent on selected entities.');
 
     // Reload and ensure it has no children.
     $this->getSession()->reload();
