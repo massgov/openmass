@@ -83,16 +83,20 @@ display:
           batch: true
           batch_size: 10
           form_step: true
+          ajax_loader: false
           buttons: false
           action_title: Action
           clear_on_exposed: true
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
             -
               action_id: 'moderation_state_change:node'
               preconfiguration:
                 add_confirmation: false
+                confirm_help_text: ''
                 label_override: 'Change state'
+                message_override: ''
         nid:
           id: nid
           table: node_field_data

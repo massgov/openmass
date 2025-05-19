@@ -13,6 +13,7 @@ dependencies:
     - user
     - views_autocomplete_filters
     - views_bulk_operations
+    - views_porter_stemmer
 id: export_yaml_content
 label: 'Export YAML Content'
 module: views
@@ -81,18 +82,19 @@ display:
           batch: true
           batch_size: 10
           form_step: true
+          ajax_loader: false
           buttons: false
           action_title: Action
           clear_on_exposed: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
-            -
-              action_id: export_view_content_yaml
-              preconfiguration:
-                label_override: ''
             -
               action_id: views_bulk_operations_delete_entity
               preconfiguration:
-                label_override: ''
+                add_confirmation: false
+                confirm_help_text: ''
+                message_override: ''
         title:
           id: title
           table: node_field_data
