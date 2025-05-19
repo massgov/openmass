@@ -5104,9 +5104,12 @@ function mass_theme_preprocess_field(&$variables, $hook) {
         if (strpos($url, $service)) {
           $item['icon'] = Helper::getIconPath($service);
         }
-        elseif (strpos($url, 'bsky')) {
-          $item['icon'] = Helper::getIconPath('bluesky');
-        }
+      }
+      if (strpos($url, 'bsky')) {
+        $item['icon'] = Helper::getIconPath('bluesky');
+      }
+      elseif (strpos($url, 'x.com')) {
+        $item['icon'] = Helper::getIconPath('twitter');
       }
     }
   }
@@ -7033,9 +7036,12 @@ function mass_theme_preprocess_field__node__field_social_links(&$variables) {
       if (strpos($url, $service)) {
         $item['icon'] = Helper::getIconPath($service);
       }
-      elseif (strpos($url, 'bsky')) {
-        $item['icon'] = Helper::getIconPath('bluesky');
-      }
+    }
+    if (strpos($url, 'bsky')) {
+      $item['icon'] = Helper::getIconPath('bluesky');
+    }
+    elseif (strpos($url, 'x.com')) {
+      $item['icon'] = Helper::getIconPath('twitter');
     }
   }
 }
