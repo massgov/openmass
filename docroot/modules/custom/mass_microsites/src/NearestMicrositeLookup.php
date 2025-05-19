@@ -66,14 +66,15 @@ class NearestMicrositeLookup {
       // Array of ancestors in hierarchy, starting with field_primary_parent and climbing upward.
       /** @var \PNX\NestedSet\Node[] */
       $ancestors = array_reverse($nestedSetStorage->findAncestors($key));
-
-      foreach ($ancestors as $ancestor) {
-        $ancestor_id = $ancestor->getNodeKey()->getId();
-        if (
-          !$nearest_microsite &&
-          isset($microsites_by_home_id[$ancestor_id])
-        ) {
-          $nearest_microsite = $microsites_by_home_id[$ancestor_id];
+      if ($ancestors) {
+        foreach ($ancestors as $ancestor) {
+          $ancestor_id = $ancestor->getNodeKey()->getId();
+          if (
+            !$nearest_microsite &&
+            isset($microsites_by_home_id[$ancestor_id])
+          ) {
+            $nearest_microsite = $microsites_by_home_id[$ancestor_id];
+          }
         }
       }
     }

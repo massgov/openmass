@@ -9,8 +9,7 @@ dependencies:
     - workflows.workflow.editorial
   module:
     - content_moderation
-    - key_value_field
-    - maxlength
+    - mass_fields
     - path
 id: node.glossary.default
 targetEntityType: node
@@ -34,27 +33,21 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_terms:
-    type: key_value_textarea
+    type: mass_glossary_key_value_textarea
     weight: 2
     region: content
     settings:
-      rows: 5
-      placeholder: ''
-      key_size: 60
-      key_label: Key
+      key_label: Term
+      key_size: '60'
       key_placeholder: ''
-      value_label: Value
-      description_enabled: false
+      value_label: Definition
+      rows: '3'
+      placeholder: ''
       description_label: Description
-      description_rows: 5
       description_placeholder: ''
-    third_party_settings:
-      maxlength:
-        maxlength_js: null
-        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_summary: null
-        maxlength_js_label_summary: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce: false
+      description_rows: '5'
+      description_enabled: 0
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 3

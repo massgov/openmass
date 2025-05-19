@@ -33,7 +33,7 @@ class MayflowerLoader extends FilesystemLoader {
       }
       // Throw a more friendly error message.
       catch (LoaderError $e) {
-        throw new LoaderError(sprintf('It looks like a Mayflower directory is not properly configured: %s', $e->getMessage()), -1, $e);
+        throw new LoaderError(sprintf('It looks like a Mayflower directory is not properly configured: %s', $e->getMessage()), $e->getCode(), $e->getSourceContext(), $e);
       }
     }
   }
