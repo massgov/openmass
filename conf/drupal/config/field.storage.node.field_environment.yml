@@ -1,0 +1,27 @@
+uuid: 58f76f6b-5870-4548-ba92-99badeee1b9f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_environment
+field_name: field_environment
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: production
+      label: Production
+    -
+      value: non_production
+      label: Non-Production
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
