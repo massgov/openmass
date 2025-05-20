@@ -4,11 +4,14 @@ namespace Drupal\Tests\mass_hierarchy\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
  * Tests move children action in the change_parents views.
  */
 class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
+
+  use ScreenShotTrait;
 
   /**
    * Loads the admin and logs in.
@@ -150,7 +153,9 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Select all of them to change their parent.
     $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
-    $this->getCurrentPage()->pressButton('Change parent');
+    $button = $this->getCurrentPage()->findButton('Change parent');
+    $this->assertNotNull($button, 'The "Change parent" button was not found.');
+    $button->click();
 
     // Select a wrong parent (incompatible bundle).
     $this->getCurrentPage()->fillField('New parent', $parent3Node->label());
@@ -166,12 +171,14 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->getCurrentPage()->fillField('New parent', $parent2Node->label());
 
     // Wait for the bulk operations to happen.
-    $this->getCurrentPage()->pressButton('Change parent');
+    $button = $this->getCurrentPage()->findButton('Change parent');
+    $this->assertNotNull($button, 'The "Change parent" button was not found.');
+    $button->click();
     $this->getSession()->wait(3000);
     $this->htmlOutput();
-
     // Check done message.
-    $this->assertSession()->pageTextContains('Performing Change parent on selected entities.');
+    $this->assertSession()->pageTextContains("Updated parent for {$child1['title']}");
+    $this->assertSession()->pageTextContains("Updated parent for {$child2['title']}");
 
     // Reload and ensure it has no children.
     $this->getSession()->reload();
