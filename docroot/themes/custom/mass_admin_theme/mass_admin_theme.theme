@@ -25,8 +25,11 @@ function mass_admin_theme_preprocess_paragraph__callout_link(&$variables) {
  * Implements hook_library_info_alter().
  */
 function mass_admin_theme_library_info_alter(&$libraries, $extension) {
+  // Unset styles shipped with claro them, we will use our own
+  // styles defined in the mass_admin_toolbar module.
   if ($extension === 'toolbar') {
     unset($libraries['toolbar']['css']);
+    unset($libraries['toolbar.menu']['css']);
   }
 }
 
