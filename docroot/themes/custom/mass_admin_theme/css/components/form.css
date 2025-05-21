@@ -138,16 +138,6 @@ select::-ms-expand {
   padding: 0.5rem 0.5rem 0.5rem 1.5625rem;
   background-position: 1% 63%, 0 0;
 }
-select:focus,
-select:hover {
-  background: url(../../icons/333333/caret-down.svg) no-repeat 99% 63%, #fff; /* LTR */
-  -moz-appearance: none;
-}
-select:focus {
-  border-color: #43956f;
-  outline: 0;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 0 8px #43956f;
-}
 
 .form--inline {
   background-color: #fff;
@@ -390,17 +380,6 @@ div.js-form-item .ief-entity-table tr.ief-row-entity td {
   line-height: 1.5rem;
 }
 
-/*
- * Overrides styles for layout and other misc. node add/edit page styles.
- * TODO move this to a better location.
- */
-
-.layout-region-node-footer__content {
-  border-top: 1px solid #14558f;
-  padding-top: 0.5em;
-  margin-top: 1.5em;
-}
-
 .field--name-title .counter.warning.error mark,
 .field--name-field-regulation-title .counter.warning.error mark,
 .field--name-field-executive-title .counter.warning.error mark {
@@ -432,4 +411,35 @@ div.js-form-item .ief-entity-table tr.ief-row-entity td {
 .field--name-field-regulation-title .form-type-textfield .description,
 .field--name-field-executive-title .form-type-textfield .description {
   margin-bottom: 1rem;
+}
+
+.label.form-required::after {
+  display: inline-block;
+  margin-inline: 0.15em;
+  content: "*";
+  color: var(--color-maximumred);
+  font-size: 0.875rem;
+}
+
+#breadcrumb-preview-wrapper ol.breadcrumb__list li.breadcrumb__item:first-child:before,
+#block-mass-admin-theme-breadcrumbs ol.breadcrumb__list li.breadcrumb__item:first-child:before {
+  display: none;
+}
+
+#breadcrumb-preview-wrapper .breadcrumb__item + .breadcrumb__item::before,
+#block-mass-admin-theme-breadcrumbs .breadcrumb__item + .breadcrumb__item::before {
+  font-family: fontello;
+  content: '\e808';
+  color: #a0a0a0;
+  font-size: 0.6em;
+  padding: 0 3px;
+}
+
+.no-file-chosen {
+  margin-left: 5px;
+}
+
+.form-actions .action-link.action-link--danger {
+  background: transparent;
+  margin: 0;
 }
