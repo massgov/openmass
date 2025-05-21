@@ -42,7 +42,6 @@
         var $target = $(this).parent();
         if ($target.hasClass('text-full')) {
           var $massDesc = $target.find('.mass-description', context);
-          console.log($massDesc);
           if ($massDesc.length) {
             $(this).addClass('description');
             $target.find('label').first().after($(this));
