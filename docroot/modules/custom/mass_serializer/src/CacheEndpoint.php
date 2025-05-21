@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_serializer;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\views\Views;
 use Drush\Drush;
@@ -248,7 +249,7 @@ class CacheEndpoint {
 
     $preview = $view->preview($display, $args);
 
-    $file = \Drupal::service('file.repository')->writeData(strval($preview['#markup']), $filename, FileSystemInterface::EXISTS_REPLACE);
+    $file = \Drupal::service('file.repository')->writeData(strval($preview['#markup']), $filename, FileExists::Replace);
     $this->logger->success('Saving partial ' . $filename);
   }
 
@@ -270,7 +271,7 @@ class CacheEndpoint {
     }
     $result->dataset = $data;
 
-    \Drupal::service('file.repository')->writeData(json_encode($result), $cachename, FileSystemInterface::EXISTS_REPLACE);
+    \Drupal::service('file.repository')->writeData(json_encode($result), $cachename, FileExists::Replace);
     $this->logger->info('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
   }
 

@@ -756,7 +756,7 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
             'tags' => $links_data['cache_tags'] ?? [],
           ],
         ];
-        $links_rendered = \Drupal::service('renderer')->renderPlain($links_render_array);
+        $links_rendered = \Drupal::service('renderer')->renderInIsolation($links_render_array);
         $element['#description'] .= $links_rendered;
       }
       else {
