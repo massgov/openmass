@@ -17,6 +17,12 @@
       $table.each(function () {
         var $next = $(this).next();
         if ($next.hasClass('description')) {
+          // Only insert <caption> if not already present
+          if ($(this).children('caption').length === 0) {
+            console.log($(this))
+            const $caption = $('<caption class="visually-hidden"></caption>').html($next.html());
+            $(this).children('thead').first().before($caption);
+          }
           var $row = $(this).find('.mass-description');
           var $nextrow = $row.parent().next();
           if ($nextrow) {
@@ -24,6 +30,7 @@
           }
           $row.parent().removeClass('visually-hidden');
           $row.html($next.html());
+          $row.attr('aria-hidden', 'true');
           $next.hide();
         }
       });
@@ -45,6 +52,28 @@
           if ($massDesc.length) {
             $(this).addClass('description');
             $target.find('label').first().after($(this));
+          }
+        }
+      });
+    }
+  };
+
+  /**
+   * Set correct aria-describedby value.
+   */
+  Drupal.behaviors.fixAriaDescribedByMismatch = {
+    attach: function (context, settings) {
+      $('form.node-form [aria-describedby], form.media-form [aria-describedby]', context).each(function () {
+        var $input = $(this);
+        var describedBy = $input.attr('aria-describedby');
+
+        // If the described ID does not exist in the DOM...
+        if (describedBy && !document.getElementById(describedBy)) {
+          // Try replacing it with --wrapper--description (Claro-style)
+          var fallbackId = describedBy.replace('--description', '--wrapper--description');
+
+          if (document.getElementById(fallbackId)) {
+            $input.attr('aria-describedby', fallbackId);
           }
         }
       });

@@ -68,9 +68,13 @@
               cell.active_table_sort ? 'is-active',
             ]
           %}
-          <{{ cell.tag }}{{ cell.attributes.addClass(cell_classes) }}>
-            {{- cell.content -}}
-          </{{ cell.tag }}>
+          {% if cell.content is empty %}
+            <{{ cell.tag }}{{ cell.attributes.addClass(cell_classes).addClass('visually-hidden') }} aria-hidden="true">Hidden placeholder</{{ cell.tag }}>
+          {% else %}
+            <{{ cell.tag }}{{ cell.attributes.addClass(cell_classes) }}>
+              {{- cell.content -}}
+            </{{ cell.tag }}>
+          {% endif %}
         {% endfor %}
       </tr>
     </thead>
