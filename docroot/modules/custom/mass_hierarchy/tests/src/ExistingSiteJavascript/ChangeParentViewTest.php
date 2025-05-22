@@ -153,6 +153,7 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Select all of them to change their parent.
     $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
+    $this->getSession()->wait(3000);
     $button = $this->getCurrentPage()->findButton('Change parent');
     $this->assertNotNull($button, 'The "Change parent" button was not found.');
     $button->click();
