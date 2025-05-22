@@ -19,7 +19,6 @@
         if ($next.hasClass('description')) {
           // Only insert <caption> if not already present
           if ($(this).children('caption').length === 0) {
-            console.log($(this))
             const $caption = $('<caption class="visually-hidden"></caption>').html($next.html());
             $(this).children('thead').first().before($caption);
           }
