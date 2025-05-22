@@ -373,15 +373,22 @@ class EntityUsageTest extends MassExistingSiteBase {
     $this->assertStringContainsString('Test Curated List', $page, 'Test Curated List not found on usage page.');
     $table_caption = '<caption>The list below shows pages that include a link to this page in structured and rich text fields. <a href="https://www.mass.gov/kb/pages-linking-here">Learn how to use Linking Pages.</a></caption>';
     $this->assertStringContainsString($table_caption, $page, 'Table caption not found on usage page.');
-    $table_headers = '<thead>
-      <tr>
-                            <th>Entity</th>
-                            <th>Content Type</th>
-                            <th>Field name</th>
-                            <th>Status</th>
-              </tr>
-    </thead>';
-    $this->assertStringContainsString($table_headers, $page, 'Usage page table headers are not found.');
+    $table = $this->getSession()->getPage()->find('css', '#block-mass-admin-theme-mainpagecontent table');
+    $this->assertNotNull($table, 'Usage table not found on the page.');
+    $header_cells = $table->findAll('css', 'thead th');
+    $headers = array_map(fn($th) => trim($th->getText()), $header_cells);
+
+    // Adjust these as needed if the labels change.
+    $expected_headers = [
+      'Entity',
+      'Content Type',
+      'Field name',
+      'Status',
+    ];
+
+    foreach ($expected_headers as $expected) {
+      $this->assertContains($expected, $headers, "Missing expected header: $expected");
+    }
   }
 
 }
