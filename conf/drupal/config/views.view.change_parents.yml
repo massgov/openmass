@@ -79,15 +79,19 @@ display:
           batch: true
           batch_size: 10
           form_step: true
+          ajax_loader: false
           buttons: true
           action_title: Action
           clear_on_exposed: false
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
-            2:
+            -
               action_id: mass_hierarchy_change_parent
               preconfiguration:
                 add_confirmation: false
+                confirm_help_text: ''
+                message_override: ''
         title:
           id: title
           table: node_field_data
