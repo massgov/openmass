@@ -1,12 +1,13 @@
 table.dataTable {
   /* override mayflower richtext table min-width: */
   min-width: unset;
+  font-size: 1rem;
+  border: 2px solid #dcdcdc;
 }
 
 table.dataTable thead,
 table.dataTable thead tr>.dtfc-fixed-start {
-  color: #fff;
-  background-color: #535353;
+  background-color: #f2f2f2;
 }
 
 table.dataTable tr.parent {
@@ -105,4 +106,12 @@ table.dataTable.display.collapsed tbody tr:not(.child) td {
 .dataTables_wrapper .dataTables_length,
 .dataTables_wrapper .dataTables_filter {
   margin: 0.5rem 0;
+}
+
+
+
+/* sort icons */
+table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:after {
+  line-height: 12px;
+  opacity: 0.25;
 }
