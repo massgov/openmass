@@ -10,7 +10,6 @@ use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
@@ -23,21 +22,14 @@ use Drupal\Core\Url;
  * Implements hook_ENTITY_TYPE_update().
  */
 function mass_microsites_node_update(NodeInterface $node) {
-  $original = $node->original;
 
-  // Update microsite menu on short title change, if needed.
-  if (
-    $node->hasField('field_short_title') &&
-    $node->get('field_short_title')->value !== $original->get('field_short_title')->value
-  ) {
-    /** @var ChildOfMicrositeLookup */
-    $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
+  /** @var ChildOfMicrositeLookup */
+  $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
 
-    if ($microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
-      /** @var MenuRebuildProcessor */
-      $menu_rebuild_processor = \Drupal::service('entity_hierarchy_microsite.menu_rebuild_processor');
-      $menu_rebuild_processor->markRebuildNeeded();
-    }
+  if ($microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
+    /** @var MenuRebuildProcessor */
+    $menu_rebuild_processor = \Drupal::service('entity_hierarchy_microsite.menu_rebuild_processor');
+    $menu_rebuild_processor->markRebuildNeeded();
   }
 }
 

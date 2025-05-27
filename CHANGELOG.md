@@ -1,5 +1,16 @@
 
 
+## [0.438.0] - May 20, 2025
+
+### Fixed
+  - DP-37275,DP-39383: Fix layout issue related to image float. (#2977)
+  - DP-39444: Backstop verify artifact CI step fixed.
+  
+### Added
+  - DP-39442: Allow iframe component in service page sections.
+  
+
+
 ## [0.437.1] - May 14, 2025
 
 ### Fixed
