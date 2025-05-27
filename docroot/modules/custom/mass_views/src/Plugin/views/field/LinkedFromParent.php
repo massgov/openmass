@@ -24,7 +24,7 @@ class LinkedFromParent extends FieldPluginBase {
    *
    * @var \Drupal\entity_usage\EntityUsageInterface
    */
-  protected $entity_usage;
+  protected $entityUsage;
 
   /**
    * The EntityTypeManager service.
@@ -49,7 +49,7 @@ class LinkedFromParent extends FieldPluginBase {
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsageInterface $entity_usage, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->entity_usage = $entity_usage;
+    $this->entityUsage = $entity_usage;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -79,7 +79,7 @@ class LinkedFromParent extends FieldPluginBase {
   public function render(ResultRow $values) {
     $parent_id = $values->node_field_data_node__field_primary_parent_nid;
     $child = $values->_entity;
-    $usages = $this->entity_usage->listSources($child);
+    $usages = $this->entityUsage->listSources($child);
     foreach ($usages as $source_type => $ids) {
       $type_storage = $this->entityTypeManager->getStorage($source_type);
       foreach ($ids as $source_id => $records) {
