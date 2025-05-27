@@ -150,6 +150,17 @@ select::-ms-expand {
   padding-right: 0;
 }
 
+.views-exposed-form fieldset {
+  margin-block: var(--space-s) 0;
+  margin-inline: 0 var(--space-xs);
+}
+
+.views-exposed-form fieldset .fieldset-wrapper {
+  display: flex;
+  flex-direction: row;
+  column-gap: 8px;
+}
+
 .views-exposed-form .form--inline {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -234,27 +245,16 @@ fieldset {
 fieldset:not(.fieldgroup) {
   background-color: #fff;
   border-radius: 0;
-  margin: 0;
   padding: 0;
   min-width: 0;
   position: relative;
 }
-
-/*.views-exposed-form fieldset {*/
-/*  margin: 0;*/
-/*  margin-top: 15px;*/
-/*}*/
-
-/*fieldset:not(.fieldgroup) > legend {*/
-/*  font-weight: bold;;*/
-/*}*/
 
 fieldset:not(.fieldgroup) > legend {
   font-weight: bold;
   letter-spacing: normal;
   position: relative;
   text-transform: none;
-  margin: 1.5rem 0;
   top: 1.5rem;
 }
 
@@ -501,4 +501,29 @@ form.node-form .claro-details .claro-details__description {
 .select2-selection__choice__remove {
   float: right;
   margin-left: 5px;
+}
+
+.views-exposed-form__item--preceding-actions.views-exposed-form__item--preceding-actions,
+.views-exposed-form__item.views-exposed-form__item,
+.views-exposed-form__item.views-exposed-form__item.views-exposed-form__item--actions {
+  align-self: flex-end;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 0.25rem;
+  overflow: visible; /* allow growth */
+  box-sizing: border-box;
+}
+
+.select2-container--default .select2-selection--multiple {
+  min-height: auto;
+  height: auto;
+}
+
+.select2-container--default .select2-selection--multiple .select2-search--inline {
+  flex: 1 1 auto;
+  min-width: 100px;
 }

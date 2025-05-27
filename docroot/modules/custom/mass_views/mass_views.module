@@ -17,6 +17,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Apply select2 recursively.
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    _mass_views_apply_select2_to_multiselects($form);
+  }
+
   $view = $form_state->getStorage('view');
 
   if (($view['view']->id() == 'crawler_pages' && $view['view']->getDisplay()->display['id'] == 'page_1') || ($view['view']->id() == 'crawler_documents' && $view['view']->getDisplay()->display['id'] == 'media_page_list')) {
@@ -140,6 +145,31 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
           }
         }
       }
+    }
+  }
+}
+
+/**
+ * Recursively applies select2 to all multiselects in the form structure.
+ */
+function _mass_views_apply_select2_to_multiselects(array &$elements) {
+  foreach ($elements as &$element) {
+    if (is_array($element)) {
+      // Check for a multiselect.
+      if (
+        isset($element['#type']) &&
+        $element['#type'] === 'select' &&
+        !empty($element['#multiple'])
+      ) {
+        // Change to Select2 element type.
+        $element['#type'] = 'select2';
+
+        // Add a placeholder.
+        $element['#attributes']['placeholder'] = t('Start typing...');
+      }
+
+      // Recurse for nested children (like fieldsets).
+      _mass_views_apply_select2_to_multiselects($element);
     }
   }
 }
