@@ -145,6 +145,14 @@ select::-ms-expand {
   padding: 0 0.75rem;
   margin-bottom: 3rem;
 }
+.views-exposed-form .form--inline .form-actions{
+  float:left;
+}
+
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] .dropbutton-multiple {
+  padding-right: 0;
+}
+
 .views-exposed-form .form--inline {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -235,9 +243,16 @@ fieldset:not(.fieldgroup) {
   position: relative;
 }
 
+/*.views-exposed-form fieldset {*/
+/*  margin: 0;*/
+/*  margin-top: 15px;*/
+/*}*/
+
+/*fieldset:not(.fieldgroup) > legend {*/
+/*  font-weight: bold;;*/
+/*}*/
+
 fieldset:not(.fieldgroup) > legend {
-  font-size: 1.3125rem;
-  line-height: 1.5625rem;
   font-weight: bold;
   letter-spacing: normal;
   position: relative;
@@ -460,4 +475,8 @@ div.js-form-item .ief-entity-table tr.ief-row-entity td {
   grid-template-rows: auto 1fr;
   grid-template-columns: minmax(0, 3fr) minmax(22.5rem, 1fr);
   gap: var(--space-l);
+}
+
+form.node-form .claro-details .claro-details__description {
+  font-size: var(--font-size-base);
 }
