@@ -1,5 +1,16 @@
 
 
+## [0.439.0] - May 27, 2025
+
+### Fixed
+  - DP-39371: Print style fixes.
+  - DP-39495: Eliminate page horizontal scroll.
+  
+### Changed
+  - DP-39460: Upgraded Editoria11y module and made minor changes.
+  
+
+
 ## [0.438.0] - May 20, 2025
 
 ### Fixed
