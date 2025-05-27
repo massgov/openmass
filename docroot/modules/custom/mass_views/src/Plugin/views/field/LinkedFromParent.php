@@ -24,7 +24,7 @@ class LinkedFromParent extends FieldPluginBase {
    *
    * @var \Drupal\entity_usage\EntityUsageInterface
    */
-  protected $entityUsage;
+  protected $entity_usage;
 
   /**
    * The EntityTypeManager service.
