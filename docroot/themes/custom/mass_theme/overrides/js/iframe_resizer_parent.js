@@ -38,17 +38,6 @@ function gotResizeMessage(event) {
   var i = 0;
   for (; i < matches.length; i++) {
 
-    console.log('test test')
-    // Handle scroll message
-    if (event.data && event.data.type === 'scrollToFocus') {
-      console.log(event.data.offset)
-      window.scrollTo({
-        top: event.data.offset,
-        behavior: 'smooth'
-      });
-      return 1;
-    }
-
     // found the iFrame that sent us a message
     if (matches[i].contentWindow === event.source) {
       // matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now

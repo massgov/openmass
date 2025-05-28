@@ -80,14 +80,6 @@ window.addEventListener('load', function () {
   console.log('loaded iframe JS: ' + document.URL);
   sendDimensionsToParent();
 
-  // Send custom scrollToIframe message on first input focus
-  const firstInput = document.querySelector('input, textarea, select');
-  if (firstInput) {
-    firstInput.addEventListener('focus', function () {
-      window.parent.postMessage({ type: 'scrollToIframe' }, '*');
-    });
-  }
-
   // if mutationobserver is supported by this browser
   if (window.MutationObserver) {
     // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
