@@ -10,9 +10,10 @@ iFrameResize({
 
       // message.offset is the offset inside the iframe
       const scrollTarget = iframeTop + message.offset;
+      const adjustment = -250;
 
       window.scrollTo({
-        top: scrollTarget,
+        top: scrollTarget + adjustment,
         behavior: 'smooth'
       });
     }
