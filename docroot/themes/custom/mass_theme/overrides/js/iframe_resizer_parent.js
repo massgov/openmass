@@ -37,6 +37,18 @@ function gotResizeMessage(event) {
   var matches = document.querySelectorAll('.js-ma-responsive-iframe iframe'); // iterate through all iFrames on page
   var i = 0;
   for (; i < matches.length; i++) {
+
+    // Handle scroll message
+    if (event.data && event.data.type === 'scrollToIframe') {
+      const iframeEl = matches[i];
+      const iframeTop = iframeEl.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({
+        top: iframeTop,
+        behavior: 'smooth'
+      });
+      return 1;
+    }
+
     // found the iFrame that sent us a message
     if (matches[i].contentWindow === event.source) {
       // matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now
