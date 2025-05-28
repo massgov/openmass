@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (window.MutationObserver) {
 
     // Crea una instancia de observer
-    var observer = new MutationObserver(function (mutations) {
+    var observer = new MutationObserver(function () {
       var matches = document.querySelectorAll('.js-ma-responsive-iframe iframe');
       var i = 0;
       if (matches.length) {
