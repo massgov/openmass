@@ -8,6 +8,8 @@
 use Composer\InstalledVersions as ComposerInstalledVersions;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Render\Element;
+use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Molecules;
 use Drupal\mayflower\Twig\MayflowerLoader;
 
@@ -85,6 +87,112 @@ function mayflower_library_info_build() {
   ];
   return $libraries;
 }
+
+function _mayflower_preprocess_paragraph_sections(&$variables, $field) {
+  // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
+  $contained = ['rich_text'];
+
+  $components = [];
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $container = $variables['paragraph'];
+  /** @var \Drupal\paragraphs\Entity\Paragraph[] */
+  $paragraphs = Helper::getReferencedEntitiesFromField($container, $field);
+
+  for ($i = 0; $i < count($paragraphs); $i++) {
+    $component = [];
+    // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
+    if (mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
+      $items = [];
+      do {
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
+        $i++;
+        // Keep grouping together while the next element has the check.
+      } while (isset($paragraphs[$i]) && mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
+      // Once done, also group the following one.
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
+
+      $component = ['group' => 'default', 'items' => $items];
+    }
+    // There are some special paragraphs that should have a right margin.
+    elseif (in_array($paragraphs[$i]->getType(), $contained) !== FALSE) {
+      $component = ['group' => 'contained', 'items' => $paragraphs[$i]];
+    }
+    // Otherwise, if it's one of the following paragraphs, wrap it as well.
+    elseif (in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== FALSE) {
+      $component = ['group' => 'self', 'items' => $paragraphs[$i]];
+    }
+
+    else {
+      // Otherwise, just return it as it is.
+      $component[] = $paragraphs[$i];
+    }
+    $components[] = $component;
+  }
+  return $components;
+}
+
+/**
+ * Implements hook_preprocess_layout().
+ */
+//function mayflower_preprocess_layout(array &$variables) {
+//  $layout_id = $variables['layout']->id();
+//
+//  $components = Element::children($variables['content']['content']);
+//
+//  foreach ($components as $key) {
+//    if (!empty($variables['content']['content'][$key]['#paragraph'])) {
+//      $paragraph = $variables['content']['content'][$key]['#paragraph'];
+//      break;
+//    }
+//  }
+//  // Match your layout machine names (adjust if different).
+//  if (in_array($layout_id, ['mayflower__service_section_onecol', 'mayflower__service_section_twocol'])) {
+//    $element = $variables['elements'];
+//
+//
+//    // Replicate the logic from paragraph__service_section.
+//    $variables["service_components"] =
+//      _mayflower_preprocess_paragraph_sections($element, 'field_service_section_content');
+//
+//    /** @var \Drupal\paragraphs\Entity\Paragraph $container */
+//    $container = $element['#paragraph'];
+//    $variables['section_style'] = $container->field_section_style->value;
+//    $variables['hide_heading'] = $container->field_hide_heading->value;
+//
+//    $links_group = [];
+//    foreach ($variables['service_components'] as $key => &$service_component) {
+//      $service_component_paragraph = &$service_component[0];
+//      if (
+//        is_object($service_component_paragraph) &&
+//        $service_component_paragraph->getType() == 'flexible_link_group' &&
+//        $service_component_paragraph->field_display_type->value == 'links'
+//      ) {
+//        $links_group[$key] = $service_component;
+//      }
+//      else {
+//        _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
+//        $links_group = [];
+//      }
+//    }
+//
+//    _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
+//
+//    // Clean up invalid items.
+//    foreach ($variables['service_components'] as $key => &$service_component) {
+//      if ($service_component === FALSE) {
+//        unset($variables['service_components'][$key]);
+//      }
+//    }
+//  }
+//}
 
 /**
  * Implements hook_js_settings_build().
