@@ -38,12 +38,12 @@ function gotResizeMessage(event) {
   var i = 0;
   for (; i < matches.length; i++) {
 
+    console.log('test test')
     // Handle scroll message
-    if (event.data && event.data.type === 'scrollToIframe') {
-      const iframeEl = matches[i];
-      const iframeTop = iframeEl.getBoundingClientRect().top + window.scrollY;
+    if (event.data && event.data.type === 'scrollToFocus') {
+      console.log(event.data.offset)
       window.scrollTo({
-        top: iframeTop,
+        top: event.data.offset,
         behavior: 'smooth'
       });
       return 1;
