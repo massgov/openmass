@@ -94,51 +94,6 @@ function mass_admin_pages_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implements hook_form_form_ID_alter().
- */
-function mass_admin_pages_form_node_type_edit_form_alter(&$form, FormStateInterface $form_state) {
-  /** @var \Drupal\node\NodeTypeForm $node_type_form */
-  $node_type_form = $form_state->getFormObject();
-  /** @var \Drupal\node\Entity\NodeType $node_type */
-  $node_type = $node_type_form->getEntity();
-
-  $form['node_type_long_description'] = [
-    '#type' => 'textarea',
-    '#title' => t('Use this content type for...'),
-    '#weight' => 0,
-    '#default_value' => $node_type->getThirdPartySetting('mass_admin_pages', 'node_type_long_description', NULL),
-  ];
-
-  $form['node_type_url'] = [
-    '#type' => 'url',
-    '#title' => t('Link to live example'),
-    '#default_value' => $node_type->getThirdPartySetting('mass_admin_pages', 'node_type_url', NULL),
-    '#maxlength' => 255,
-    '#weight' => 0,
-    '#size' => 30,
-  ];
-
-  $form['node_type_category'] = [
-    '#type' => 'select',
-    '#required' => TRUE,
-    '#options' => MASS_CT_CATEGORIES,
-    '#title' => t('Category'),
-    '#weight' => 0,
-    '#default_value' => $node_type->getThirdPartySetting('mass_admin_pages', 'node_type_category', NULL),
-  ];
-
-  $form['node_type_thumbnail_path'] = [
-    '#type' => 'textfield',
-    '#title' => t('Enter the path to the thumbnail image, for example: /modules/custom/mass_admin_pages/images/thumbnail.png'),
-    '#weight' => 0,
-    '#default_value' => $node_type->getThirdPartySetting('mass_admin_pages', 'node_type_thumbnail_path', NULL),
-    '#element_validate' => ['_mass_admin_pages_node_type_thumbnail_path_validate'],
-  ];
-
-  $form['#entity_builders'][] = '_mass_admin_pages_form_node_type_edit_form_builder';
-}
-
-/**
  * Custom '#element_validate' callback for 'node_type_thumbnail_path' textfield.
  *
  * @param array $element
@@ -154,55 +109,6 @@ function _mass_admin_pages_node_type_thumbnail_path_validate(array &$element, Fo
   if (!empty($element['#value']) && !preg_match($pattern, $element['#value'])) {
     $form_state->setError($element, t('The path %path is invalid. Please see the field description for a valid example.', ['%path' => $element['#value']]));
   }
-}
-
-/**
- * Entity form builder for the node type edit form.
- */
-function _mass_admin_pages_form_node_type_edit_form_builder($entity_type, NodeType $node_type, &$form, FormStateInterface $form_state) {
-  $node_type->setThirdPartySetting('mass_admin_pages', 'node_type_long_description', $form_state->getValue('node_type_long_description'));
-  $node_type->setThirdPartySetting('mass_admin_pages', 'node_type_url', $form_state->getValue('node_type_url'));
-  $node_type->setThirdPartySetting('mass_admin_pages', 'node_type_category', $form_state->getValue('node_type_category'));
-  $node_type->setThirdPartySetting('mass_admin_pages', 'node_type_thumbnail_path', $form_state->getValue('node_type_thumbnail_path'));
-}
-
-/**
- * Helper function to find non-empty content type categories.
- *
- * @return array
- *   Content type categories with sub-items.
- */
-function _mass_admin_pages_get_used_categories() {
-  $content_types = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
-  $categories_in_use = [];
-  $user = \Drupal::currentUser();
-  foreach ($content_types as $content_type) {
-    $content_type_name = $content_type->id();
-    if ($user->hasPermission('create ' . $content_type_name . ' content')) {
-      $cat_id = $content_type->getThirdPartySetting('mass_admin_pages', 'node_type_category');
-      if (isset($cat_id)) {
-        $categories_in_use[$cat_id] = MASS_CT_CATEGORIES[$cat_id];
-      }
-    }
-  }
-  $categories_in_use = array_intersect(MASS_CT_CATEGORIES, $categories_in_use);
-  return $categories_in_use;
-}
-
-/**
- * Prepares variables for list of available node type templates.
- */
-function mass_admin_pages_preprocess_node_add_list(&$variables) {
-  if (!empty($variables['content'])) {
-    foreach ($variables['content'] as $type) {
-      $cat_id = $type->getThirdPartySetting('mass_admin_pages', 'node_type_category');
-      $variables['types'][$type->id()]['node_type_category'] = (!empty($cat_id)) ? MASS_CT_CATEGORIES[$cat_id] : '';
-      $variables['types'][$type->id()]['node_type_url'] = UrlHelper::filterBadProtocol($type->getThirdPartySetting('mass_admin_pages', 'node_type_url'));
-      $variables['types'][$type->id()]['node_type_long_description'] = Xss::filterAdmin($type->getThirdPartySetting('mass_admin_pages', 'node_type_long_description'));
-      $variables['types'][$type->id()]['node_type_thumbnail_path'] = UrlHelper::filterBadProtocol($type->getThirdPartySetting('mass_admin_pages', 'node_type_thumbnail_path'));
-    }
-  }
-  $variables['categories'] = _mass_admin_pages_get_used_categories();
 }
 
 /**
