@@ -14,10 +14,8 @@ dependencies:
     - field.field.node.api_service_card.field_api_srv_card_tenant
     - field.field.node.api_service_card.field_environment
     - node.type.api_service_card
-    - workflows.workflow.api_cards
   module:
     - allowed_formats
-    - content_moderation
     - field_group
     - key_value_field
     - link
@@ -262,12 +260,6 @@ content:
     settings:
       include_locked: true
     third_party_settings: {  }
-  moderation_state:
-    type: moderation_state_default
-    weight: 6
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   title:
     type: string_textfield
     weight: 0
@@ -277,7 +269,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   translation:
-    weight: 10
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -292,6 +284,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
 hidden:
+  moderation_state: true
   path: true
   promote: true
   search: true
