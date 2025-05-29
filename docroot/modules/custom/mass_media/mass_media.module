@@ -18,6 +18,7 @@ use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
 use Drupal\media\MediaInterface;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Immediately delete any old file entity on this media entity.
@@ -280,28 +281,51 @@ function mass_media_media_presave(MediaInterface $entity) {
   }
 }
 
-function mass_media_entity_presave(EntityInterface $entity) {
-  if ($entity instanceof Paragraph && $entity->bundle() === 'list_item_document') {
-    if (!$entity->get('field_reusable_label')->isEmpty()) {
-      $new_label_ids = array_column($entity->get('field_reusable_label')->getValue(), 'target_id');
+/**
+ * Implements hook_ENTITY_TYPE_presave() for paragraph entities.
+ *
+ * When saving a 'list_item_document' paragraph, propagates reusable labels
+ * to all referenced media entities in 'field_liststaticdoc_item'.
+ *
+ * @param \Drupal\paragraphs\ParagraphInterface $paragraph
+ *   The paragraph entity being saved.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function mass_media_paragraph_presave(ParagraphInterface $paragraph) {
+  // Guard clause: only act on 'list_item_document' bundle.
+  if ($paragraph->bundle() !== 'list_item_document') {
+    return;
+  }
 
-      foreach ($entity->get('field_liststaticdoc_item')->referencedEntities() as $media) {
-        if ($media instanceof MediaInterface) {
-          // Get current term IDs.
-          $existing_label_ids = array_column($media->get('field_document_label')->getValue(), 'target_id');
+  // Guard clause: skip if no reusable labels to propagate.
+  if ($paragraph->get('field_reusable_label')->isEmpty()) {
+    return;
+  }
 
-          // Merge and deduplicate.
-          $merged_ids = array_unique(array_merge($existing_label_ids, $new_label_ids));
+  $new_label_ids = array_column(
+    $paragraph->get('field_reusable_label')->getValue(),
+    'target_id'
+  );
 
-          // Set merged values back.
-          $media->set('field_document_label', array_map(function ($tid) {
-            return ['target_id' => $tid];
-          }, $merged_ids));
-
-          $media->save();
-        }
-      }
+  foreach ($paragraph->get('field_liststaticdoc_item')->referencedEntities() as $media) {
+    if (!$media instanceof MediaInterface) {
+      continue;
     }
+
+    // Merge new and existing term IDs on the media.
+    $existing_label_ids = array_column(
+      $media->get('field_document_label')->getValue(),
+      'target_id'
+    );
+    $merged_ids = array_unique(array_merge($existing_label_ids, $new_label_ids));
+
+    // Apply merged term IDs back to the media field.
+    $media->set('field_document_label', array_map(function ($tid) {
+      return ['target_id' => $tid];
+    }, $merged_ids));
+
+    $media->save();
   }
 }
 
