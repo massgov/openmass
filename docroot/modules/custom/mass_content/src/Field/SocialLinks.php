@@ -35,10 +35,13 @@ class SocialLinks extends InjectParentField {
           $item->set('icon', Helper::getIconPath($service));
           break;
         }
-        elseif (strpos($item->uri, 'bsky')) {
-          $item->set('icon', Helper::getIconPath('bluesky'));
-          break;
-        }
+      }
+      if (strpos($item->uri, 'bsky')) {
+        $item->set('icon', Helper::getIconPath('bluesky'));
+        break;
+      }
+      elseif (strpos($item->uri, 'x.com')) {
+        $item['icon'] = Helper::getIconPath('twitter');
       }
     }
   }
