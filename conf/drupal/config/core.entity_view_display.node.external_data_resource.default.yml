@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.external_data_resource.field_external_organization
     - field.field.node.external_data_resource.field_externaldata_description
     - field.field.node.external_data_resource.field_externaldata_url
+    - field.field.node.external_data_resource.field_hide_org_in_collection
     - field.field.node.external_data_resource.field_organizations
     - node.type.external_data_resource
   module:
@@ -101,6 +102,16 @@ content:
       target: ''
     third_party_settings: {  }
     weight: 2
+    region: content
+  field_hide_org_in_collection:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 12
     region: content
   field_organizations:
     type: entity_reference_label
