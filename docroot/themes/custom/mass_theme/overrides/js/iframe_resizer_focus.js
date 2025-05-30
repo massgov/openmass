@@ -1,4 +1,4 @@
-(function ($, Drupal) {
+(function (Drupal) {
   Drupal.behaviors.customIframeMessageCallback = {
     attach: function (context, settings) {
       // Only once per iframe
@@ -36,4 +36,4 @@
       });
     }
   };
-})(jQuery, Drupal);
+})(Drupal);
