@@ -1,5 +1,6 @@
-(function ($, Drupal) {
-  Drupal.behaviors.initializeIframeResizer = {
+(function (Drupal, once) {
+  'use strict';
+  Drupal.behaviors.initializeIframeResizerFocus = {
     attach: function () {
       iFrameResize({
         log: false,
@@ -24,4 +25,4 @@
       }, '.js-ma-responsive-iframe iframe');
     }
   };
-})(jQuery, Drupal);
+})(Drupal, once);
