@@ -1,0 +1,29 @@
+uuid: e8f4d352-4e30-4d3b-980f-3039ffb1ea98
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_collections
+    - node.type.org_page
+    - taxonomy.vocabulary.collections
+id: node.org_page.field_collections
+field_name: field_collections
+entity_type: node
+bundle: org_page
+label: Collections
+description: 'Optional. Most content will not be in a collection. Only add content to a collection if the collection creator has approved it. <a href="https://mass.gov/kb/collections" target="_blank">Learn more about collections.</a><br/><br/>If this field is empty, then this page is not in a collection. Use the "Browse collections and topics" button to select any collections, topics, and sub topics for this content'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      collections: collections
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
