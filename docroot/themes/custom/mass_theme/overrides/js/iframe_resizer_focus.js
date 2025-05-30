@@ -2,7 +2,7 @@
   Drupal.behaviors.customIframeMessageCallback = {
     attach: function (context, settings) {
       // Only once per iframe
-      $('iframe.js-ma-responsive-iframe', context).once('once-iframe-message-callback').each(function () {
+      once('once-iframe-message-callback', '.js-ma-responsive-iframe', context).forEach(function (element) {
         const iframe = this;
 
         // Wait until the iframeResizer instance is attached
