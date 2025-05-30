@@ -93,14 +93,22 @@ table.dataTable.display.collapsed tbody tr.even>.sorting_1 {
 /* pagination button style */
 .dt-paging {
   display: flex;
+  flex-wrap: wrap;
 }
 
-.dt-paging > button {
+@media screen and (min-width: 768px) {
+  .dt-paging {
+     justify-content: right;
+  }
+}
+
+div.dt-container .dt-paging .dt-paging-button {
   height: 40px;
+  color: #14558f !important;
 }
 
-.dt-paging > button:hover {
-  background-color: #14558f;
+div.dt-container .dt-paging .dt-paging-button:hover {
+  background: #14558f;
 }
 
 button.dt-paging-button.first,
