@@ -1,53 +1,39 @@
-(function ($, Drupal, iframeResizerSettings) {
-  'use strict';
-
-  // Set up the iFrame Resizer library's options.
-  var options = {};
-  if (iframeResizerSettings.advanced.override_defaults) {
-    if (iframeResizerSettings.advanced.options.maxHeight === -1) {
-      iframeResizerSettings.advanced.options.maxHeight = Infinity;
-    }
-
-    if (iframeResizerSettings.advanced.options.maxWidth === -1) {
-      iframeResizerSettings.advanced.options.maxWidth = Infinity;
-    }
-
-    options = iframeResizerSettings.advanced.options;
-  }
-
-  const focusOptions = {
-    log: false,
-    checkOrigin: false,
-    messageCallback: function (messageData) {
-      const { message, iframe } = messageData;
-
-      if (message.type === 'scrollToFocus') {
-        // iframe position in the parent page
-        const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
-
-        // message.offset is the offset inside the iframe
-        const scrollTarget = iframeTop + message.offset;
-        const adjustment = -250;
-
-        window.scrollTo({
-          top: scrollTarget + adjustment,
-          behavior: 'smooth'
-        });
-      }
-    }
-  }
-
-  const newOptions = {...options, ...focusOptions};
-
-  Drupal.behaviors.initIframeResizer = {
+(function ($, Drupal) {
+  Drupal.behaviors.customIframeMessageCallback = {
     attach: function (context, settings) {
-      alert('test')
-      var selector = 'iframe';
-      if (typeof settings.iframeResizer.advanced.targetSelectors !== 'undefined') {
-        selector = settings.iframeResizer.advanced.targetSelectors;
-      }
+      // Only once per iframe
+      $('iframe.js-ma-responsive-iframe', context).once('once-iframe-message-callback').each(function () {
+        const iframe = this;
 
-      $(selector, context).iFrameResize(newOptions);
+        // Wait until the iframeResizer instance is attached
+        if (iframe.iFrameResizer) {
+          const originalCallback = iframe.iFrameResizer.options.messageCallback;
+
+          // Create a new callback that wraps the original
+          iframe.iFrameResizer.options.messageCallback = function (messageData) {
+            const { message } = messageData;
+
+            if (message.type === 'scrollToFocus') {
+              const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
+              const scrollTarget = iframeTop + message.offset;
+              const adjustment = -250;
+
+              window.scrollTo({
+                top: scrollTarget + adjustment,
+                behavior: 'smooth'
+              });
+            }
+
+            // Call the original callback if it exists
+            if (typeof originalCallback === 'function') {
+              originalCallback(messageData);
+            }
+          };
+        } else {
+          // Optional: retry if iframeResizer hasn't initialized yet
+          console.warn('iframeResizer not yet available on this iframe:', iframe);
+        }
+      });
     }
   };
-})(jQuery, Drupal, drupalSettings.iframeResizer);
+})(jQuery, Drupal);
