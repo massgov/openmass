@@ -150,16 +150,7 @@ select::-ms-expand {
   padding-right: 0;
 }
 
-.views-exposed-form fieldset {
-  margin-block: var(--space-s) 0;
-  margin-inline: 0 var(--space-xs);
-}
 
-.views-exposed-form fieldset .fieldset-wrapper {
-  display: flex;
-  flex-direction: row;
-  column-gap: 8px;
-}
 
 .views-exposed-form .form--inline {
   padding-left: 1.5rem;
@@ -238,11 +229,13 @@ select::-ms-expand {
 }
 
 /* FIELDSETS */
-fieldset {
+.views-exposed-form fieldset,
+form.node-form fieldset {
   border: none;
 }
 
-fieldset:not(.fieldgroup) {
+.views-exposed-form fieldset:not(.fieldgroup),
+form.node-form fieldset:not(.fieldgroup) {
   background-color: #fff;
   border-radius: 0;
   padding: 0;
@@ -250,12 +243,11 @@ fieldset:not(.fieldgroup) {
   position: relative;
 }
 
-fieldset:not(.fieldgroup) > legend {
+.views-exposed-form fieldset:not(.fieldgroup) > legend,
+form.node-form fieldset:not(.fieldgroup) > legend {
   font-weight: bold;
   letter-spacing: normal;
-  position: relative;
   text-transform: none;
-  top: 1.5rem;
 }
 
 .form-composite > .fieldset-wrapper > .description,
@@ -344,13 +336,13 @@ form .field-add-more-submit:first-child {
 }
 
 /* DRAGGABLE TABLE ROWS INSIDE OF FIELDSETS */
-fieldset tr.draggable .field--type-entity-reference,
-fieldset tr.draggable .field--type-string {
+form.node-form fieldset tr.draggable .field--type-entity-reference,
+form.node-form fieldset tr.draggable .field--type-string {
   border-bottom: none;
   padding-bottom: 0;
 }
 
-fieldset.js-form-item tr.draggable td + td,
+form.node-form fieldset.js-form-item tr.draggable td + td,
 div.js-form-item tr.draggable td + td {
   padding: 0;
   width: 100%;
@@ -361,7 +353,7 @@ div.js-form-item tr.draggable td + td {
  */
 
 /* Above rule on td's in draggable tr's needs to be refactored. In the meantime we need an override for ief's. */
-fieldset.js-form-item .ief-entity-table tr.ief-row-entity td,
+form.node-form fieldset.js-form-item .ief-entity-table tr.ief-row-entity td,
 div.js-form-item .ief-entity-table tr.ief-row-entity td {
   width: auto;
 }
@@ -500,7 +492,7 @@ form.node-form .claro-details .claro-details__description {
 
 .views-exposed-form__item.views-exposed-form__item,
 .views-exposed-form__item.views-exposed-form__item.views-exposed-form__item--actions {
-  align-self: flex-end;
+  align-self: flex-start;
 }
 
 .views-exposed-form__item.views-exposed-form__item--actions {
@@ -510,4 +502,39 @@ form.node-form .claro-details .claro-details__description {
 
 .visually-hidden {
   font-size: 1.25rem;
+}
+
+.views-exposed-form fieldset > legend {
+  position: initial;
+}
+
+.views-exposed-form fieldset .fieldset-wrapper .form-boolean-group > .form-item.form-type-radio {
+  display: inline-block;
+  margin-block: var(--space-xs) 0;
+  margin-inline: 0 var(--space-xs);
+}
+
+.views-exposed-form fieldset .fieldset-wrapper > .form-item {
+  margin-block: calc(var(--space-xs) / 2) 0;
+  margin-inline: 0 var(--space-xs);
+}
+
+.views-exposed-form fieldset .fieldset-wrapper > .form-item .description {
+  margin: calc(var(--space-xs) / 2);
+  font-size: 1rem;
+}
+
+.views-exposed-form input:not([type="radio"]) {
+  width: auto;
+}
+
+.views-exposed-form fieldset {
+  margin-block: var(--space-s) 0;
+  margin-inline: 0 var(--space-xs);
+}
+
+.views-exposed-form fieldset .fieldset-wrapper {
+  display: flex;
+  flex-direction: row;
+  column-gap: 8px;
 }
