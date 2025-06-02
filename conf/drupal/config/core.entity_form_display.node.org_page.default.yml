@@ -8,6 +8,8 @@ dependencies:
     - field.field.node.org_page.field_bg_wide
     - field.field.node.org_page.field_billing_organization
     - field.field.node.org_page.field_career_opportunities
+    - field.field.node.org_page.field_collection_description
+    - field.field.node.org_page.field_collections
     - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
@@ -34,6 +36,7 @@ dependencies:
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_title
+    - field.field.node.org_page.field_show_custom_collection_des
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_sub_brand
     - field.field.node.org_page.field_sub_title
@@ -49,6 +52,7 @@ dependencies:
     - content_moderation
     - dynamic_entity_reference
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - focal_point
     - image
@@ -56,6 +60,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - text
 third_party_settings:
   field_group:
     group_node_edit_form:
@@ -127,6 +132,9 @@ third_party_settings:
         - field_organization_type
         - field_parent
         - group_test_fieldset_group
+        - field_collections
+        - field_show_custom_collection_des
+        - field_collection_description
         - field_billing_organization
         - field_intended_audience
       label: Overview
@@ -215,7 +223,7 @@ third_party_settings:
       label: 'Mass.gov Organization search filter'
       region: content
       parent_name: group_overview
-      weight: 145
+      weight: 143
       format_type: fieldset
       format_settings:
         classes: ''
@@ -228,7 +236,7 @@ third_party_settings:
       label: 'Organization parent Mass.gov search filter'
       region: content
       parent_name: group_overview
-      weight: 142
+      weight: 140
       format_type: fieldset
       format_settings:
         classes: ''
@@ -263,7 +271,7 @@ content:
       conditional_fields: {  }
   field_billing_organization:
     type: dynamic_entity_reference_options_select
-    weight: 146
+    weight: 147
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -286,6 +294,50 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings: {  }
+  field_collection_description:
+    type: text_textarea
+    weight: 146
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        d9b58c9e-c896-46dd-8e65-7285bb6692c7:
+          entity_type: node
+          bundle: org_page
+          dependee: field_show_custom_collection_des
+          settings:
+            state: visible
+            reset: false
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: true
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_collections:
+    type: entity_reference_tree
+    weight: 144
+    region: content
+    settings:
+      theme: default
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse collections and topics'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse collections and topics'
     third_party_settings: {  }
   field_feedback_com_link:
     type: link_default
@@ -357,7 +409,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 147
+    weight: 148
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -379,7 +431,7 @@ content:
     third_party_settings: {  }
   field_more_about_leadership:
     type: entity_reference_autocomplete
-    weight: 10
+    weight: 9
     region: content
     settings:
       match_operator: CONTAINS
@@ -396,7 +448,7 @@ content:
     third_party_settings: {  }
   field_org_directory_page:
     type: link_default
-    weight: 11
+    weight: 10
     region: content
     settings:
       placeholder_url: ''
@@ -431,7 +483,7 @@ content:
     third_party_settings: {  }
   field_organization_type:
     type: options_buttons
-    weight: 143
+    weight: 141
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -447,7 +499,7 @@ content:
     third_party_settings: {  }
   field_parent:
     type: entity_reference_autocomplete
-    weight: 144
+    weight: 142
     region: content
     settings:
       match_operator: CONTAINS
@@ -595,9 +647,34 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_show_custom_collection_des:
+    type: boolean_checkbox
+    weight: 145
+    region: content
+    settings:
+      display_label: true
+    third_party_settings:
+      conditional_fields:
+        efc519ef-f962-4961-b18d-b20e362695cc:
+          entity_type: node
+          bundle: org_page
+          dependee: field_collections
+          settings:
+            state: visible
+            reset: false
+            condition: '!empty'
+            grouping: AND
+            values_set: 6
+            value: ''
+            values: {  }
+            value_form:
+              target_id: null
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_social_links:
     type: link_default
-    weight: 141
+    weight: 139
     region: content
     settings:
       placeholder_url: ''
