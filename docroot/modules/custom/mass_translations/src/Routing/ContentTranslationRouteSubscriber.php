@@ -24,7 +24,7 @@ class ContentTranslationRouteSubscriber extends ContentTranslationRouteSubscribe
       $primary_negotiation_method = $negotiator->getPrimaryNegotiationMethod(LanguageInterface::TYPE_CONTENT);
       if ($primary_negotiation_method === 'language-content-entity-no-outbound') {
         $route->setDefault('_controller', ContentTranslationController::class . '::overview');
-        $collection->add('entity.node.content_translation_overview', $route);;
+        $collection->add('entity.node.content_translation_overview', $route);
       }
     }
   }

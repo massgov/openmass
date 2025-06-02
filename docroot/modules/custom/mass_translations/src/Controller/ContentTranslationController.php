@@ -82,7 +82,8 @@ class ContentTranslationController extends ContentTranslationControllerBase {
     if (!empty($matches)) {
       $href = $matches[1];
       $hreflang = $matches[2];
-    } else {
+    }
+    else {
       $href = $matches2[2];
       $hreflang = $matches2[1];
     }
@@ -110,6 +111,5 @@ class ContentTranslationController extends ContentTranslationControllerBase {
   private function getLanguageNegotiatorParameter() {
     return 'language_content_entity';
   }
-
 
 }
