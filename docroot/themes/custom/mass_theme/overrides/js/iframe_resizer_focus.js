@@ -6,15 +6,10 @@
       // Only once per iframe
       once('once-iframe-message-callback', '.js-ma-responsive-iframe', context).forEach(function (element) {
         const iframe = element;
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        console.log('test')
-        console.log(navigator.userAgent)
-        console.log(isIOS)
 
         // Wait until the iframeResizer instance is attached
         if (iframe.iFrameResizer) {
           const originalCallback = iframe.iFrameResizer.options.messageCallback;
-
 
           // Create a new callback that wraps the original
           iframe.iFrameResizer.options.messageCallback = function (messageData) {
@@ -25,10 +20,10 @@
               const scrollTarget = iframeTop + message.offset;
               const adjustment = -250;
 
-              setTimeout(() => {
-                window.scrollTo(0, scrollTarget + adjustment);
-                console.log('Scroll fired');
-              }, 50);
+              window.scrollTo({
+                top: scrollTarget + adjustment,
+                behavior: 'smooth'
+              });
             }
 
             // Call the original callback if it exists
