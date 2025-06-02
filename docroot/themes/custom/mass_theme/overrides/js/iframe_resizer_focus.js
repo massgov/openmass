@@ -11,7 +11,7 @@
 
           // Create a new callback that wraps the original
           iframe.iFrameResizer.options.messageCallback = function (messageData) {
-            const { message } = messageData;
+            const {message} = messageData;
 
             if (message.type === 'scrollToFocus') {
               const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
@@ -29,7 +29,8 @@
               originalCallback(messageData);
             }
           };
-        } else {
+        }
+        else {
           // Optional: retry if iframeResizer hasn't initialized yet
           console.warn('iframeResizer not yet available on this iframe:', iframe);
         }
