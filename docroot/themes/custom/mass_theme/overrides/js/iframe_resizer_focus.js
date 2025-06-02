@@ -6,14 +6,15 @@
       // Only once per iframe
       once('once-iframe-message-callback', '.js-ma-responsive-iframe', context).forEach(function (element) {
         const iframe = element;
-
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        console.log('test')
+        console.log(navigator.userAgent)
+        console.log(isIOS)
 
         // Wait until the iframeResizer instance is attached
         if (iframe.iFrameResizer) {
           const originalCallback = iframe.iFrameResizer.options.messageCallback;
-          const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-          console.log(navigator.userAgent)
-          console.log(isIOS)
+
 
           // Create a new callback that wraps the original
           iframe.iFrameResizer.options.messageCallback = function (messageData) {
