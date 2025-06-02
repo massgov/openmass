@@ -5,7 +5,7 @@
     attach: function (context, settings) {
       // Only once per iframe
       once('once-iframe-message-callback', '.js-ma-responsive-iframe', context).forEach(function (element) {
-        const iframe = this;
+        const iframe = element;
 
         // Wait until the iframeResizer instance is attached
         if (iframe.iFrameResizer) {
