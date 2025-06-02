@@ -25,7 +25,10 @@
               const scrollTarget = iframeTop + message.offset;
               const adjustment = -250;
 
-              window.scrollTo(0, scrollTarget + adjustment);
+              setTimeout(() => {
+                window.scrollTo(0, scrollTarget + adjustment);
+                console.log('Scroll fired');
+              }, 50);
             }
 
             // Call the original callback if it exists
