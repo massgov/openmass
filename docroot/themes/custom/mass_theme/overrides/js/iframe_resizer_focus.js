@@ -22,7 +22,7 @@
 
               window.scrollTo({
                 top: scrollTarget + adjustment,
-                behavior: 'smooth'
+                behavior: 'auto'
               });
             }
 
