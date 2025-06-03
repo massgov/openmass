@@ -7,16 +7,17 @@
   - DP-39371: Print style fixes.
   - DP-39495: Eliminate page horizontal scroll.
   - DP-39519: Issue with microsite menu rebuild.
-  
+  - DP-39638: Re-add mayflowere artrifacts after 0.439.0 release revert.
+
 ### Changed
   - DP-39198: H2 section headers are missing ID attributes when no table of contents appears.
   - DP-39460: Upgraded Editoria11y module and made minor changes.
   - DP-39499: Added fields to org and external link content types to support state agencies collection
   - DP-39626: Moving to Editoria11y 2.1.22
-  
+
 ### Added
   - DP-39472: Add iframe_resizer_focus.js to handle scrolling page into view to focused elements in iframes.
-  
+
 
 
 ## [0.438.0] - May 20, 2025
@@ -24,10 +25,10 @@
 ### Fixed
   - DP-37275,DP-39383: Fix layout issue related to image float. (#2977)
   - DP-39444: Backstop verify artifact CI step fixed.
-  
+
 ### Added
   - DP-39442: Allow iframe component in service page sections.
-  
+
 
 
 ## [0.437.1] - May 14, 2025
@@ -41,28 +42,28 @@
   - DP-36246: Javascript errors.
   - DP-37482: Style issue in preview and latest revision with home pages.
   - DP-39227: Microsite home page getting 500 error.
-  
+
 ### Changed
   - DP-38159: Hide feedback and chatbot in print.
   - DP-38160: Hide links for TOC and contact info in print.
   - DP-38158: Simplify and eliminate header and footer in print.
-  
+
 ### Added
   - DP-38378: Image optmization with local binaries and imageapi optimize modules.
-  
+
 ## [0.436.0] - May 6, 2025
 
 ### Changed
   - DP-38621: Updates mayflower search-header molecule and modifies corresponding data structure.
   - DP-39258: Adjusted help text for form url on Form content type, added help text for glossaries field on multiple types.
-  
+
 ### Fixed
   - DP-39143: Backstop false positives.
   - DP-39184: Fixes popover template whitespace.
-  
+
 ### Removed
   - DP-39150: Remove indentation filter.
-  
+
 
 
 ## [0.435.1] - May 1, 2025
