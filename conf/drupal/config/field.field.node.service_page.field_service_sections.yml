@@ -6,7 +6,7 @@ dependencies:
     - field.storage.node.field_service_sections
     - node.type.service_page
     - paragraphs.paragraphs_type.caspio_embed
-    - paragraphs.paragraphs_type.contact
+    - paragraphs.paragraphs_type.contact_placeholder
     - paragraphs.paragraphs_type.featured_item_mosaic
     - paragraphs.paragraphs_type.featured_message
     - paragraphs.paragraphs_type.flexible_link_group
@@ -40,7 +40,7 @@ settings:
   handler_settings:
     target_bundles:
       caspio_embed: caspio_embed
-      contact: contact
+      contact_placeholder: contact_placeholder
       featured_item_mosaic: featured_item_mosaic
       featured_message: featured_message
       flexible_link_group: flexible_link_group
@@ -145,7 +145,7 @@ settings:
         enabled: false
       contact:
         weight: 153
-        enabled: true
+        enabled: false
       contact_group:
         weight: 154
         enabled: false
@@ -154,7 +154,7 @@ settings:
         enabled: false
       contact_placeholder:
         weight: 161
-        enabled: false
+        enabled: true
       content_card_group:
         weight: 156
         enabled: false

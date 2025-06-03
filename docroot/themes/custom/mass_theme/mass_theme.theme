@@ -5207,19 +5207,6 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
 /**
  * Implements hook_preprocess_HOOK().
  *
- * Preprocess logic for the org_events paragraph.
- */
-function mass_theme_preprocess_paragraph__org_events(&$variables) {
-  $paragraph = $variables['paragraph'];
-  // Gather events associated with this node.
-  $eventManager = \Drupal::service('mass_content.event_manager');
-  $eventsRender = (new EventsRendererOrgPages($eventManager, $paragraph))->render();
-  $variables = array_merge($variables, $eventsRender);
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
  * Preprocess logic for the org_news paragraph.
  */
 function mass_theme_preprocess_paragraph__org_news(&$variables) {
@@ -7354,46 +7341,6 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
   $variables['current_node_url'] = $node->toUrl()->toString();
   $variables['contactNode'] = $node->get('field_ref_contact_info_1')->referencedEntities()[0] ?? NULL;
   $variables['org_logo'] = $node->get('field_sub_brand')->view('logo_link');
-}
-
-/**
- * Fetch contact info from parent service node.
- */
-function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
-  $cache_tags = [];
-  $paragraph = $variables['paragraph'];
-  $node = Helper::getParentNode($paragraph);
-
-  // Prepare the Contact Us field, if it's populated.
-  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
-    // Set up options for contact list.
-    $contact_list_options = [
-      'heading' => [
-        'title' => '',
-      ],
-      'groups' => [
-        'accordion' => TRUE,
-        'isExpanded' => FALSE,
-      ],
-    ];
-
-    // Prepare the contactList data object.
-    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
-    if ($paragraph->parent_field_name->value == 'field_service_section_content' && $paragraph->parent_type->value == 'paragraph') {
-      if ($paragraph->parent_id->value) {
-        if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
-          if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
-            $variables['contactList']['level'] = 3;
-          }
-        }
-      }
-    }
-    // Bubble cache tag to the current render. Based on template_preprocess_pager()
-    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    CacheableMetadata::createFromRenderArray($variables)
-      ->addCacheTags($cache_tags)
-      ->applyTo($variables);
-  }
 }
 
 /**
