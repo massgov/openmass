@@ -43,10 +43,10 @@ dependencies:
     - field_group
     - focal_point
     - inline_entity_form
+    - layout_paragraphs
     - link
     - maxlength
     - metatag
-    - paragraphs
     - term_reference_tree
 third_party_settings:
   field_group:
@@ -529,16 +529,16 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_service_sections:
-    type: entity_reference_paragraphs
+    type: layout_paragraphs
     weight: 13
     region: content
     settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: closed
-      add_mode: button
+      view_mode: default
+      preview_view_mode: default
       form_display_mode: default
-      default_paragraph_type: _none
+      nesting_depth: 0
+      require_layouts: 1
+      empty_message: ''
     third_party_settings: {  }
   field_service_video:
     type: inline_entity_form_complex

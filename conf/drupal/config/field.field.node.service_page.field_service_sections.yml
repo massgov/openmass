@@ -5,8 +5,24 @@ dependencies:
   config:
     - field.storage.node.field_service_sections
     - node.type.service_page
+    - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.contact
+    - paragraphs.paragraphs_type.featured_item_mosaic
+    - paragraphs.paragraphs_type.featured_message
+    - paragraphs.paragraphs_type.flexible_link_group
+    - paragraphs.paragraphs_type.iframe
+    - paragraphs.paragraphs_type.info_details_card_group
     - paragraphs.paragraphs_type.key_message_section
+    - paragraphs.paragraphs_type.org_events
+    - paragraphs.paragraphs_type.org_locations
+    - paragraphs.paragraphs_type.pull_quote
+    - paragraphs.paragraphs_type.rich_text
+    - paragraphs.paragraphs_type.service_rich_text
     - paragraphs.paragraphs_type.service_section
+    - paragraphs.paragraphs_type.social_media
+    - paragraphs.paragraphs_type.stat
+    - paragraphs.paragraphs_type.tableau_embed
+    - paragraphs.paragraphs_type.video
   module:
     - entity_reference_revisions
 id: node.service_page.field_service_sections
@@ -23,8 +39,24 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
+      caspio_embed: caspio_embed
+      contact: contact
+      featured_item_mosaic: featured_item_mosaic
+      featured_message: featured_message
+      flexible_link_group: flexible_link_group
+      iframe: iframe
+      info_details_card_group: info_details_card_group
       key_message_section: key_message_section
+      org_events: org_events
+      org_locations: org_locations
+      pull_quote: pull_quote
+      rich_text: rich_text
       service_section: service_section
+      social_media: social_media
+      stat: stat
+      service_rich_text: service_rich_text
+      tableau_embed: tableau_embed
+      video: video
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -104,7 +136,7 @@ settings:
         enabled: false
       caspio_embed:
         weight: 151
-        enabled: false
+        enabled: true
       collection_search:
         weight: 156
         enabled: false
@@ -113,7 +145,7 @@ settings:
         enabled: false
       contact:
         weight: 153
-        enabled: false
+        enabled: true
       contact_group:
         weight: 154
         enabled: false
@@ -164,10 +196,10 @@ settings:
         enabled: false
       featured_item_mosaic:
         weight: 169
-        enabled: false
+        enabled: true
       featured_message:
         weight: 170
-        enabled: false
+        enabled: true
       featured_topics:
         weight: 171
         enabled: false
@@ -179,7 +211,7 @@ settings:
         enabled: false
       flexible_link_group:
         weight: 180
-        enabled: false
+        enabled: true
       footnotes:
         weight: 174
         enabled: false
@@ -212,22 +244,16 @@ settings:
         enabled: false
       iframe:
         weight: 183
-        enabled: false
+        enabled: true
       image:
         weight: 184
-        enabled: false
-      image_card:
-        weight: 201
-        enabled: false
-      image_card_group:
-        weight: 202
         enabled: false
       image_credit:
         weight: 185
         enabled: false
       info_details_card_group:
         weight: 186
-        enabled: false
+        enabled: true
       issuer:
         weight: 187
         enabled: false
@@ -311,10 +337,10 @@ settings:
         enabled: false
       org_events:
         weight: 216
-        enabled: false
+        enabled: true
       org_locations:
         weight: 217
-        enabled: false
+        enabled: true
       org_news:
         weight: 218
         enabled: false
@@ -341,7 +367,7 @@ settings:
         enabled: false
       pull_quote:
         weight: 224
-        enabled: false
+        enabled: true
       quick_action:
         weight: 225
         enabled: false
@@ -359,7 +385,7 @@ settings:
         enabled: false
       rich_text:
         weight: 230
-        enabled: false
+        enabled: true
       rules_section:
         weight: 231
         enabled: false
@@ -392,7 +418,7 @@ settings:
         enabled: false
       service_rich_text:
         weight: 246
-        enabled: false
+        enabled: true
       service_section:
         weight: 241
         enabled: true
@@ -404,7 +430,7 @@ settings:
         enabled: false
       social_media:
         weight: 242
-        enabled: false
+        enabled: true
       stacked_band:
         weight: 243
         enabled: false
@@ -413,7 +439,7 @@ settings:
         enabled: false
       stat:
         weight: 245
-        enabled: false
+        enabled: true
       state_organization:
         weight: 246
         enabled: false
@@ -422,13 +448,13 @@ settings:
         enabled: false
       tableau_embed:
         weight: 248
-        enabled: false
+        enabled: true
       time_callout:
         weight: 270
         enabled: false
       video:
         weight: 249
-        enabled: false
+        enabled: true
       video_with_header:
         weight: 250
         enabled: false

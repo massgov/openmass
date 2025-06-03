@@ -1619,3 +1619,13 @@ function mass_content_iframe_resizer_host_settings_alter(&$settings): void {
   $settings['options']['checkOrigin'] = FALSE;
   $settings['options']['inPageLinks'] = TRUE;
 }
+
+/**
+ * Implements hook_form_layout_paragraphs_component_form_alter().
+ */
+//function mass_content_form_layout_paragraphs_component_form_alter(array &$form, FormStateInterface &$form_state) {
+//  // Hide the choose layout on the form, since we only use 1 column layout.
+//  if (isset($form['layout_paragraphs'])) {
+//    $form['layout_paragraphs']['#access'] = FALSE;
+//  }
+//}

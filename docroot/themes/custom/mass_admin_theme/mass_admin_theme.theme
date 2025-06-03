@@ -287,8 +287,10 @@ function mass_admin_theme_form_layout_paragraphs_component_form_alter(array &$fo
  */
 function mass_admin_theme_form_alter(&$form, &$form_state, $form_id) {
 
-  if ($form_id == 'node_info_details_form' || $form_id == 'node_info_details_edit_form' || $form_id == 'node_info_details_quick_node_clone_form') {
-    $form['#attached']['library'][] = 'mass_theme/global-styling-lp';
+  foreach (['info_details', 'service_page'] as $content_type) {
+    if ($form_id == "node_{$content_type}_form" || $form_id == "node_{$content_type}_edit_form" || $form_id == "node_{$content_type}_quick_node_clone_form") {
+      $form['#attached']['library'][] = 'mass_theme/global-styling-lp';
+    }
   }
 
   if (!empty($form['last_updated'])) {

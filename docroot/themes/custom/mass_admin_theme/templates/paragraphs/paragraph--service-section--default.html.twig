@@ -1,0 +1,156 @@
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% set heading = {} %}
+      {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 0 %}
+        {% set heading = {
+          "title": (content.field_service_section_heading|field_value),
+          "id": "",
+          "borderless": true
+        } %}
+      {% endif %}
+
+      {# // @TODO hide the title, overflow hidden to service section #}
+
+      {% set get_section_style = content.field_section_style.0['#markup']|replace({'_': '-'}) %}
+      {% set two_column_check = content.field_two_column['#items'].value %}
+      {% if two_column_check %}
+        {% set two_column_class = "-two-column" %}
+      {% else %}
+        {% set two_column_class = "" %}
+      {% endif %}
+      {% set section_style_class = 'service-section--' ~ get_section_style ~ two_column_class %}
+      {% set hide_title_class = hide_heading ? 'service-section--hidden-title' : '' %}
+
+      {% set section_style_link = content.field_service_section_link.0 %}
+      {% set section_style_subtitle = content.field_subtitle.0 %}
+
+      <div class="service-section {{ section_style_class }} {{ hide_title_class }}">
+
+        {% embed "@organisms/by-author/stacked-row-section.twig" with {
+          "stackedRowSection": heading,
+          "stackedRow": {
+            "borderless": true,
+            "modifier": "no-sidebar"
+          },
+          "externalSidebar": true
+        } %}
+
+          {% block stackRowTitle %}
+            {% if heading %}
+              {% if section_style == 'enhanced' and two_column_class != '-two-column' %}
+                {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
+                  "coloredHeadingFromLeft": {
+                    "bgColor": "blue",
+                    "title": (content.field_service_section_heading|field_value)
+                  }}
+                %}
+                {# Subtitle and CTA Link #}
+                {% if section_style_link or section_style_subtitle %}
+                  <div class="ma__service-heading-content">
+                    {# Subtitle #}
+                    {% if section_style_subtitle %}
+                      <div class="ma__service-subtitle">
+                        {{ section_style_subtitle }}
+                      </div>
+                    {% endif %}
+
+                    {# Link #}
+                    {% if section_style_link %}
+                      <div class="ma__service-link">
+                    <span class="ma__decorative-link">
+                      <a href="{{ content.field_service_section_link[0]['#url'] }}" class="js-clickable-link">
+                        {{ content.field_service_section_link[0]['#title'] }}
+                        {{ icon('arrow') }}
+                      </a>
+                    </span>
+                      </div>
+                    {% endif %}
+                  </div>
+                {% endif %}
+              {% else %}
+                <div class="ma__stacked-row__container">
+                  <div class="ma__stacked-row__title">
+                    {% set compHeading = {
+                      "title": stackedRowSection.title,
+                      "sub": "",
+                      "color": "",
+                      "id": stackedRowSection.id
+                    }
+                    %}
+                    {% include "@atoms/04-headings/comp-heading.twig" %}
+                  </div>
+
+                  {# Reprinted to avoid the Enhanced wrapper #}
+                  {% if section_style_link or section_style_subtitle %}
+                    <div class="ma__service-heading-content">
+                      {# Subtitle #}
+                      {% if section_style_subtitle %}
+                        <div class="ma__service-subtitle">
+                          {{ section_style_subtitle }}
+                        </div>
+                      {% endif %}
+
+                      {# Link #}
+                      {% if section_style_link %}
+                        <div class="ma__service-link">
+                      <span class="ma__decorative-link">
+                        <a href="{{ content.field_service_section_link[0]['#url'] }}" class="js-clickable-link">
+                          {{ content.field_service_section_link[0]['#title'] }}
+                          {{ icon('arrow') }}
+                        </a>
+                      </span>
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+            {% endif %}
+          {% endblock %}
+
+          {% block stackedRowContentOverride %}
+            {% for service_component in service_components %}
+              {% if service_component.group == 'default' %}
+                {% embed "@organisms/by-author/rich-text.twig" %}
+                  {% block rteElements %}
+                    {% for c in service_component.items %}
+                      {{ c|view }}
+                    {% endfor %}
+                  {% endblock %}
+                {% endembed %}
+              {% elseif service_component.group == 'self' %}
+                {% embed "@organisms/by-author/rich-text.twig" %}
+                  {% block rteElements %}
+                    {{ service_component.items|view }}
+                  {% endblock %}
+                {% endembed %}
+              {% elseif service_component.group == 'contained' %}
+                {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}
+                  {% block rteElements %}
+                    {{ service_component.items|view }}
+                  {% endblock %}
+                {% endembed %}
+              {% else %}
+                {{ service_component[0]|view }}
+              {% endif %}
+            {% endfor %}
+          {% endblock %}
+
+        {% endembed %}
+
+      </div>
+      {% if content.regions %}
+        {{ content.regions }}
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

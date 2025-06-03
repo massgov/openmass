@@ -1,10 +1,16 @@
 uuid: f8049c47-ae63-49db-93b8-8e692112807a
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - layout_paragraphs
 id: service_section
 label: 'Service Section'
 icon_uuid: null
 icon_default: null
 description: ''
-behavior_plugins: {  }
+behavior_plugins:
+  layout_paragraphs:
+    enabled: true
+    available_layouts:
+      onecol_mass: 'One column (Mass custom, service sections)'
