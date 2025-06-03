@@ -70,6 +70,7 @@ function mass_admin_theme_preprocess_paragraph__iframe(&$variables) {
     }
     if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
       $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+      $variables['#attached']['library'][] = 'mass_theme/iframe_resizer_focus';
       $variables['iframe_height'] = 'auto';
     }
   }
