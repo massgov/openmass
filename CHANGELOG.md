@@ -1,5 +1,24 @@
 
 
+## [0.439.0] - June 3, 2025
+
+### Fixed
+  - DP-38596: Enable Social Media Icon Display for x.
+  - DP-39371: Print style fixes.
+  - DP-39495: Eliminate page horizontal scroll.
+  - DP-39519: Issue with microsite menu rebuild.
+  
+### Changed
+  - DP-39198: H2 section headers are missing ID attributes when no table of contents appears.
+  - DP-39460: Upgraded Editoria11y module and made minor changes.
+  - DP-39499: Added fields to org and external link content types to support state agencies collection
+  - DP-39626: Moving to Editoria11y 2.1.22
+  
+### Added
+  - DP-39472: Add iframe_resizer_focus.js to handle scrolling page into view to focused elements in iframes.
+  
+
+
 ## [0.438.0] - May 20, 2025
 
 ### Fixed
