@@ -10,6 +10,13 @@ use MassGov\Dtt\MassExistingSiteBase;
  */
 class UnpublishedEntitiesCanBeReferencedTest extends MassExistingSiteBase {
 
+  protected static array $uncacheableDynamicPagePatterns = [
+    'admin/.*',
+    '/*edit.*',
+    'user/logout.*',
+    'user/reset/*',
+  ];
+
   /**
    * The user to log in and test the functionality.
    *
