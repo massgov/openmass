@@ -9,6 +9,9 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\layout_paragraphs\LayoutParagraphsComponent;
+use Drupal\layout_paragraphs\LayoutParagraphsLayout;
+use Drupal\layout_paragraphs\LayoutParagraphsSection;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -899,6 +902,316 @@ class MassContentCommands extends DrushCommands {
       \Drupal::state()->delete($state_key);
     }
   }
+
+  /**
+   * Migrate section_long_form paragraphs to the new layout structure in info_details nodes.
+   *
+   * @command mass-content:migrate-layout-paragraphs
+   * @option batch-size The number of nodes to process per batch.
+   * @option limit The maximum number of nodes to process in this execution. If not set, process all nodes.
+   * @option max-runtime The maximum runtime (in minutes) for this command. If not set, process indefinitely.
+   * @option unpublished-only Process only unpublished nodes.
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --max-runtime=55
+   * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --limit=1000
+   * @aliases mcsplp
+   */
+  public function migrateServiceSectionLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'unpublished-only' => FALSE, 'detailed-verbalization' => FALSE]) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Disable entity hierarchy writes for better performance during processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    $batch_size = (int) $options['batch-size'];
+    $limit = isset($options['limit']) ? (int) $options['limit'] : NULL;
+    // Default to 55 minutes.
+    $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
+    $unpublished_only = (bool) $options['unpublished-only'];
+    // Set the default status condition based on the presence of the --unpublished-only option.
+    $status_condition = $unpublished_only ? 0 : 1;
+    // Use a unique state key based on the published/unpublished condition.
+    $state_key = $unpublished_only
+      ? 'mass_content_deploy.service_page_migration_last_processed_nid_unpublished'
+      : 'mass_content_deploy.service_page_migration_last_processed_nid_published';
+
+    // Get the last processed nid for the selected state key.
+    $last_processed_nid = \Drupal::state()->get($state_key, 0);
+
+    $total_nodes = count($this->entityTypeManager->getStorage('node')->getQuery()
+      ->condition('type', 'service_page')
+      ->condition('nid', $last_processed_nid, '>')
+      ->condition('status', $status_condition)
+      ->accessCheck(FALSE)->execute());
+
+    // Record the start time.
+    $start_time = time();
+    $batch_step = 0;
+    $processed_nodes = 0;
+    do {
+
+      // Check if max runtime has been exceeded (if set).
+      if ($max_runtime !== NULL && (time() - $start_time) >= $max_runtime * 60) {
+        $this->output()->writeln("Max runtime of {$max_runtime} minutes reached. Stopping execution.");
+        break;
+      }
+
+      // Get the last processed nid from state.
+      $last_processed_nid = \Drupal::state()->get($state_key, 0);
+
+      // Query all nodes of type 'info_details' starting from the last processed nid.
+      $query = $this->entityTypeManager->getStorage('node')->getQuery()
+        ->condition('type', 'service_page')
+        ->condition('nid', $last_processed_nid, '>')
+        ->condition('status', $status_condition)
+        ->accessCheck(FALSE)
+        ->sort('nid')
+        ->range(0, $batch_size);
+
+      $nids = $query->execute();
+      if (empty($nids)) {
+        $this->output()->writeln('No more nodes to process.');
+        break;
+      }
+
+      $node_storage = $this->entityTypeManager->getStorage('node');
+
+      $this->output()->writeln("Processing batch of " . $batch_size * $batch_step . "-" . $batch_size * $batch_step + $batch_size . " nodes from $total_nodes");
+
+      foreach ($nids as $nid) {
+        $node = $node_storage->load($nid);
+        if (!$node) {
+          continue;
+        }
+
+        if ($options['detailed-verbalization']) {
+          $this->output()->writeln("Processing node {$nid}...");
+        }
+
+        if ($node->hasField('field_service_sections')) {
+          /** @var \Drupal\paragraphs\ParagraphInterface[] $sections */
+          $paragraph_field = $node->get('field_service_sections');
+          $layout = new LayoutParagraphsLayout($paragraph_field);
+
+          // 3) Loop through every “root” paragraph in field_service_sections.
+          //    We only care about those with bundle = 'service_section'.
+          foreach ($layout->getRootComponents() as $root_component) {
+            $section_paragraph = $root_component->getEntity();
+            if ($section_paragraph->bundle() !== 'service_section') {
+              // skip anything that isn’t our service_section bundle
+              continue;
+            }
+
+            // 4) Mark this paragraph as “layout = onecol_mass” so it becomes a single-column container:
+            $root_component->setSettings([
+              'layout'      => 'onecol_mass',
+              'parent_uuid' => NULL,          // it’s a top-level section
+              'region'      => NULL,          // top-level container has no region
+            ]);
+
+            // 5) Gather all of its old children from field_service_section_content:
+            $old_children = $section_paragraph
+              ->get('field_service_section_content')
+              ->referencedEntities();
+            if (empty($old_children)) {
+              // nothing to re-parent
+              continue;
+            }
+
+            // 6) For each old child, we want to “insert it under” our $section_paragraph
+            //    in the region called “content”. We do that via LayoutParagraphsLayout::insertAfterComponent().
+            $section_uuid = $section_paragraph->uuid();
+            foreach ($old_children as $child_paragraph) {
+              // Wrap the child in a LayoutParagraphsComponent so we can copy sibling settings later:
+              $component = new LayoutParagraphsComponent($child_paragraph);
+              // Insert “after” the service_section container. That effectively nests it under that container’s content region.
+              $layout->insertAfterComponent($section_uuid, $child_paragraph);
+              // Now explicitly set its region to “content” so it shows up in that region:
+              $component->setSettings([
+                'parent_uuid' => $section_uuid,
+                'region'      => 'content',
+              ]);
+            }
+
+            // 7) Once all old children are re-parented, clear out the old reference so we don’t double-reference:
+            $section_paragraph->set('field_service_section_content', []);
+            $section_paragraph->save();
+          }
+
+          // 8) Finally, save the host node itself so that our entire new paragraph ordering (and layout settings) is committed.
+          $node->save();
+
+//            if ($section->bundle() === 'service_section') {
+//
+//              // 1) Pull its current behavior settings, if any.
+//              $settings = $section->getAllBehaviorSettings();
+//
+//              // 2) If there’s no layout_paragraphs section yet, add it.
+//              if (empty($settings['layout_paragraphs'])) {
+//                $settings['layout_paragraphs'] = [];
+//              }
+//
+//              // 3) Populate the keys that Layout Paragraphs expects.
+//              $settings['layout_paragraphs']['layout'] = 'onecol_mass';   // your machine name
+//              $settings['layout_paragraphs']['parent_uuid'] = '';       // top‐level container
+//              $settings['layout_paragraphs']['region'] = '';            // no child region needed here
+//
+//              // 4) Write the merged array back onto the paragraph.
+//              $section->setBehaviorSettings('layout_paragraphs', $settings['layout_paragraphs']);
+
+//              $section->save();
+
+              // Check if heading is not hidden.
+//              if (!$section->get('field_hide_heading')->value) {
+//                // Create a new 'section_header' paragraph for the heading.
+//                $section_header_paragraph = $paragraph_storage->create([
+//                  'type' => 'section_header',
+//                  'field_section_long_form_heading' => $section->get('field_section_long_form_heading')->value,
+//                ]);
+//                $section_header_paragraph->save();
+//                $new_sections[] = [
+//                  'target_id' => $section_header_paragraph->id(),
+//                  'target_revision_id' => $section_header_paragraph->getRevisionId(),
+//                ];
+//              }
+
+              // Migrate each content paragraph in field_section_long_form_content to the node field_info_details_sections itself.
+
+//              $section_items[$section->id()] = [
+//                'target_id' => $section->id(),
+//                'target_revision_id' => $section->getRevisionId(),
+//              ];
+//              /** @var \Drupal\paragraphs\ParagraphInterface[] $content_paragraphs */
+//              $content_paragraphs = $section->get('field_service_section_content')->referencedEntities();
+//              foreach ($content_paragraphs as $content_paragraph) {
+//                // 1) Pull its current behavior settings, if any.
+//                $settings = $content_paragraph->getAllBehaviorSettings();
+//
+//                // 2) If there’s no layout_paragraphs section yet, add it.
+//                if (empty($settings['layout_paragraphs'])) {
+//                  $settings['layout_paragraphs'] = [];
+//                }
+//
+//                // 3) Populate the keys that Layout Paragraphs expects.
+//                $settings['layout_paragraphs']['parent_uuid'] = $section->uuid();       // top‐level container
+//                $settings['layout_paragraphs']['region'] = 'content';            // no child region needed here
+//
+//                // 4) Write the merged array back onto the paragraph.
+//                $content_paragraph->setBehaviorSettings('layout_paragraphs', $settings['layout_paragraphs']);
+//
+//                // $content_paragraph->save();
+//                $section_items[$content_paragraph->id()] = [
+//                  'target_id' => $content_paragraph->id(),
+//                  'target_revision_id' => $content_paragraph->getRevisionId(),
+//                ];
+//              }
+//              dump($section_items);
+//
+//              $new_sections = array_merge($new_sections, $section_items);
+//              $additional_resources = $section->get('field_section_long_form_addition')->referencedEntities();
+//              if (!empty($additional_resources)) {
+//                foreach ($additional_resources as $additional_resource) {
+//                  $link_group_links = [];
+//                  if (!$additional_resource->get('field_links_downloads_link')->isEmpty()) {
+//                    $field_links_downloads_link = $additional_resource->get('field_links_downloads_link')->getValue();
+//
+//                    foreach ($field_links_downloads_link as $link) {
+//                      // Create a new link_group_link paragraph.
+//                      $link_group_link = Paragraph::create([
+//                        'type' => 'link_group_link',
+//                      ]);
+//
+//                      $link_group_link->set('field_link_group_link', $link);
+//                      $link_group_link->save();
+//                      $link_group_links[] = [
+//                        'target_id' => $link_group_link->id(),
+//                        'target_revision_id' => $link_group_link->getRevisionId(),
+//                      ];
+//                    }
+//                  }
+//                  if (!$additional_resource->get('field_links_downloads_down')->isEmpty()) {
+//                    // Get the field value.
+//                    $field_links_downloads_down = $additional_resource->get('field_links_downloads_down')->getValue();
+//
+//                    foreach ($field_links_downloads_down as $file) {
+//                      // Create a new link_group_document paragraph.
+//                      $link_group_document = Paragraph::create([
+//                        'type' => 'link_group_document',
+//                      ]);
+//
+//                      $link_group_document->set('field_file_download_single', $file);
+//                      $link_group_document->save();
+//                      $link_group_links[] = [
+//                        'target_id' => $link_group_document->id(),
+//                        'target_revision_id' => $link_group_document->getRevisionId(),
+//                      ];
+//                    }
+//
+//                  }
+//                }
+//                if (!empty($link_group_links)) {
+//                  // Create a new flexible_link_group paragraph.
+//                  $flexible_link_group = Paragraph::create([
+//                    'type' => 'links_downloads_flexible',
+//                  ]);
+//
+//                  $flexible_link_group->set('field_links_downloads_header', 'Additional Resources');
+//                  $flexible_link_group->set('field_link_group', $link_group_links);
+//                  $flexible_link_group->save();
+//                  $new_sections[] = [
+//                    'target_id' => $flexible_link_group->id(),
+//                    'target_revision_id' => $flexible_link_group->getRevisionId(),
+//                  ];
+//                }
+//              }
+//            }
+//          }
+//          dump($new_sections);
+//
+//          if ($new_sections) {
+//            dump('here');
+//            dump($new_sections);
+//            // Update the node with the newly structured paragraphs.
+//            $node->set('field_service_sections', $new_sections);
+//
+//            if (method_exists($node, 'setRevisionLogMessage')) {
+//              $node->setNewRevision();
+//              $node->setRevisionLogMessage('Revision created for layout paragraphs.');
+//              $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+//            }
+//
+//            $node->save();
+//          }
+          $processed_nodes++;
+          // Update the state with the last processed nid for the current context.
+          \Drupal::state()->set($state_key, $nid);
+
+          if ($options['detailed-verbalization']) {
+            $this->output()->writeln("Node {$nid} processed successfully.");
+          }
+        }
+
+        // Stop processing if the total processed nodes exceed the limit (if set).
+        if ($limit !== NULL && $processed_nodes >= $limit) {
+          $this->output()->writeln("Reached the defined limit of {$limit} nodes. Stopping execution.");
+          // Exit both foreach and do-while loop.
+          break 2;
+        }
+      }
+
+      $batch_step++;
+
+    } while (!empty($nids));
+
+    // Re-enable entity hierarchy writes after processing.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
+    $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
+
+    // Clean up state key if all nodes are processed.
+    if (empty($nids)) {
+      \Drupal::state()->delete($state_key);
+    }
+  }
+
 
   /**
    * Set default values for field_login_links_options in batches.
