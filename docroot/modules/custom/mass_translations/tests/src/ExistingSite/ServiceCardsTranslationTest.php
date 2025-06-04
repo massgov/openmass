@@ -20,7 +20,6 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
     'user/logout.*',
     'node/.*/translations',
     'user/reset/.*',
-//    'jsonapi/node/api_service_card.*',
   ];
 
   private function getUser(string $role): UserInterface {
@@ -107,8 +106,6 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
 
   /**
    * Tests that the API correctly returns data for both the original node and its translations.
-   *
-   * @return void
    */
   public function testApiHasData(): void {
 
@@ -128,7 +125,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
     $decode_data = Json::decode($payload);
     $this->assertIsArray($decode_data, 'Incorrect response format');
 
-    $this->assertEquals($decode_data['data'][0]['attributes']['title'], $entity->label(), 'API does not return correct title for the original node');;
+    $this->assertEquals($decode_data['data'][0]['attributes']['title'], $entity->label(), 'API does not return correct title for the original node');
 
     $translation = $this->getTranslation($entity);
     $options['query']['language_content_entity'] = $translation->language()->getId();
@@ -139,7 +136,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
     $decode_data = Json::decode($payload);
     $this->assertIsArray($decode_data, 'Incorrect response format');
 
-    $this->assertEquals($decode_data['data'][0]['attributes']['title'], $translation->label(), 'API does not return correct title for the translation');;
+    $this->assertEquals($decode_data['data'][0]['attributes']['title'], $translation->label(), 'API does not return correct title for the translation');
   }
 
   /**
@@ -168,8 +165,6 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
    *   The content type bundle to test.
    * @param array $roles
    *   An array of user roles to test translation permissions against.
-   *
-   * @return void
    *
    * @dataProvider canTranslateContentDataProvider
    */

@@ -108,7 +108,6 @@ class NodeTranslationTest extends MassExistingSiteBase {
    *
    * @return array
    *   An array of roles and bundles to test.
-   *
    */
   public function canTranslateContentDataProvider(): array {
     return [
@@ -133,8 +132,6 @@ class NodeTranslationTest extends MassExistingSiteBase {
    *   The content type bundle to test.
    * @param array $roles
    *   An array of user roles to test translation permissions against.
-   *
-   * @return void
    *
    * @dataProvider canTranslateContentDataProvider
    */
