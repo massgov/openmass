@@ -52,7 +52,7 @@ class EntitySorter {
   protected function formatDateValue(string $date, bool $convert_to_time = TRUE) {
     /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
     $date_formatter = \Drupal::service('date.formatter');
-    return $date_formatter->format($convert_to_time ? strtotime($date) : $date, 'custom', \DATE_ISO8601);
+    return $date_formatter->format($convert_to_time ? strtotime($date) : $date, 'custom', \DATE_ATOM);
   }
 
   /**
