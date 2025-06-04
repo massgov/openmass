@@ -1,7 +1,8 @@
 <?php
 
-namespace Drupal\Tests\mass_translations\ExistingSite;
+namespace src\ExistingSite;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
@@ -19,30 +20,8 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
     'user/logout.*',
     'node/.*/translations',
     'user/reset/.*',
+//    'jsonapi/node/api_service_card.*',
   ];
-
-//  private $editor;
-//  private $orgNode;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp(): void {
-    parent::setUp();
-
-//    $user = $this->createUser();
-//    $user->addRole('editor');
-//    $user->activate();
-//    $user->save();
-//    $this->editor = $user;
-
-//    $this->orgNode = $this->createNode([
-//      'type' => 'org_page',
-//      'title' => $this->randomMachineName(),
-//      'status' => 1,
-//      'moderation_state' => 'published',
-//    ]);
-  }
 
   private function getUser(string $role): UserInterface {
     $user = $this->createUser();
@@ -55,7 +34,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function getContent($bundle = 'api_service_card'): ContentEntityInterface {
+  private function getContent($bundle = 'api_service_card'): ContentEntityInterface {
     $node = $this->createNode([
       'type' => $bundle,
       'title' => 'Test ' . $bundle,
@@ -72,38 +51,33 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Retrieves and creates a translation for the given content entity.
+   *
+   * This method adds a new translation to the provided content entity
+   * in a randomly selected language (excluding English) with updated
+   * title and description fields. The created translation is then saved
+   * and returned.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $node
+   *   The content entity for which a translation will be created.
+   *
+   * @return \Drupal\Core\Entity\ContentEntityInterface
+   *   The newly created translation of the given content entity.
    */
-  public function createTranslation(ContentEntityInterface $node): ContentEntityInterface {
+  private function getTranslation(ContentEntityInterface $node): ContentEntityInterface {
     $langcodes = \Drupal::languageManager()->getLanguages();
     unset($langcodes['en']);
     $langcode = array_rand($langcodes);
-//    dump($node);
     $translation = $node->addTranslation($langcode, [
         'title' => $node->label() . ' Translation ' . $langcode,
         'field_api_serv_card_description' => $node->field_api_serv_card_description->value . ' Translation ' . $langcode
       ],
     );
 
+    $translation->save();
 
     return $translation;
   }
-
-  /**
-   * Check for the default link value and tab on translated content.
-   */
-//  public function testHasDefaultTranslationLink() {
-//    $this->drupalLogin($this->editor);
-//    $entity = $this->getContent();
-//    $translation = $this->createTranslation($entity);
-//    $this->drupalGet($translation->toUrl());
-//    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
-//    $page = $this->getSession()->getPage();
-//    $element = $page->find('css', 'link[hreflang="x-default"]')->getAttribute('href');
-//    $this->assertEquals($element, $entity->toUrl()->setOption('language', $entity->language())->setAbsolute()->toString());
-//    $tabs = $page->find('css', '.primary-tabs')->getText();
-//    $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
-//  }
 
   /**
    * Check for the translated hreflang value and tab on non-translated content.
@@ -123,7 +97,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
       $tabs = $page->find('css', '.primary-tabs')->getText();
       $this->assertStringContainsString('Translate', $tabs, 'No "Translate" tab was found');
 
-      $translation = $this->createTranslation($entity);
+      $translation = $this->getTranslation($entity);
       $this->drupalGet($translation->toUrl());
 
       $tabs = $page->find('css', '.primary-tabs')->getText();
@@ -132,10 +106,47 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests that the API correctly returns data for both the original node and its translations.
+   *
+   * @return void
+   */
+  public function testApiHasData(): void {
+
+    $entity = $this->getContent();
+
+    $options = [
+      'query' => [
+        'language_content_entity' => $entity->language()->getId(),
+        'filter[id]' => $entity->uuid(),
+      ],
+    ];
+
+    $api_url = Url::fromUserInput('/jsonapi/node/api_service_card');
+
+    $payload = $this->drupalGet($api_url->toString(), $options);
+
+    $decode_data = Json::decode($payload);
+    $this->assertIsArray($decode_data, 'Incorrect response format');
+
+    $this->assertEquals($decode_data['data'][0]['attributes']['title'], $entity->label(), 'API does not return correct title for the original node');;
+
+    $translation = $this->getTranslation($entity);
+    $options['query']['language_content_entity'] = $translation->language()->getId();
+    $options['query']['filter[langcode]'] = $translation->language()->getId();
+
+    $payload = $this->drupalGet($api_url->toString(), $options);
+
+    $decode_data = Json::decode($payload);
+    $this->assertIsArray($decode_data, 'Incorrect response format');
+
+    $this->assertEquals($decode_data['data'][0]['attributes']['title'], $translation->label(), 'API does not return correct title for the translation');;
+  }
+
+  /**
    * Data provider for testCanTranslateContent test.
    *
    * Return an array of roles and bundles to test.
-   * Only content types which support translations are tested.
+   * Only content types which support core translations are tested.
    *
    * @return array
    *   An array of roles and bundles to test.
@@ -148,7 +159,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
   }
 
   /**
-   * Test access to mass_translations.controller_translations router.
+   * Test access to drupal:content-translation-overview router.
    *
    * Tests whether translation tab of a specific translatable bundle can
    * be accessed by users with specified roles.
@@ -181,13 +192,5 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
       $this->assertNotNull($element, 'Could not find the link to related translation node.');
     }
   }
-
-  /**
-   * {@inheritdoc}
-   */
-//  protected function tearDown(): void {
-//    parent::tearDown();
-//    $this->editor = NULL;
-//  }
 
 }
