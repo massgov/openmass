@@ -5,13 +5,13 @@ namespace Drupal\Tests\mass_translations\ExistingSite;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\user\UserInterface;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Service Details translation tests.
  */
 class ServiceCardsTranslationTest extends MassExistingSiteBase {
-
 
   protected static array $uncacheableDynamicPagePatterns = [
     'admin/.*',
@@ -21,7 +21,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
     'user/reset/.*',
   ];
 
-  private $editor;
+//  private $editor;
 //  private $orgNode;
 
   /**
@@ -30,11 +30,11 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $user = $this->createUser();
-    $user->addRole('editor');
-    $user->activate();
-    $user->save();
-    $this->editor = $user;
+//    $user = $this->createUser();
+//    $user->addRole('editor');
+//    $user->activate();
+//    $user->save();
+//    $this->editor = $user;
 
 //    $this->orgNode = $this->createNode([
 //      'type' => 'org_page',
@@ -44,6 +44,14 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
 //    ]);
   }
 
+  private function getUser(string $role): UserInterface {
+    $user = $this->createUser();
+    $user->addRole($role);
+    $user->activate();
+    $user->save();
+    return $user;
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -51,7 +59,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
     $node = $this->createNode([
       'type' => $bundle,
       'title' => 'Test ' . $bundle,
-      'body' => $this->getRandomGenerator()->string(30),
+      'field_api_serv_card_description' => $this->getRandomGenerator()->string(30),
       'field_api_serv_card_machine_name' => $this->getRandomGenerator()->string(5),
       'field_api_srv_card_tenant' => 'personal',
       'field_environment' => 'production',
@@ -66,18 +74,17 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function createTranslation($node): ContentEntityInterface {
+  public function createTranslation(ContentEntityInterface $node): ContentEntityInterface {
     $langcodes = \Drupal::languageManager()->getLanguages();
     unset($langcodes['en']);
     $langcode = array_rand($langcodes);
-    $translation = $this->createNode([
-      'type' => 'info_details',
-      'title' => 'Test Service Details Translation',
-      'langcode' => $langcode,
-      'field_english_version' => [$node],
-      'field_organizations' => [$this->orgNode],
-      'moderation_state' => MassModeration::PUBLISHED,
-    ]);
+//    dump($node);
+    $translation = $node->addTranslation($langcode, [
+        'title' => $node->label() . ' Translation ' . $langcode,
+        'field_api_serv_card_description' => $node->field_api_serv_card_description->value . ' Translation ' . $langcode
+      ],
+    );
+
 
     return $translation;
   }
@@ -100,19 +107,29 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
 
   /**
    * Check for the translated hreflang value and tab on non-translated content.
+   *
+   * @dataProvider canTranslateContentDataProvider
    */
-//  public function testHasTranslationLink() {
-//    $this->drupalLogin($this->editor);
-//    $entity = $this->getContent();
-//    $translation = $this->createTranslation($entity);
-//    $this->drupalGet($entity->toUrl());
-//    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
-//    $page = $this->getSession()->getPage();
-//    $element = $page->find('css', 'link[hreflang="' . $translation->language()->getId() . '"]');
-//    $this->assertNotEmpty($element, 'No hreflang value found for translation on the English page');
-//    $tabs = $page->find('css', '.primary-tabs')->getText();
-//    $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
-//  }
+  public function testHasTranslationLink(string $bundle, array $roles): void {
+    foreach ($roles as $role) {
+      $this->drupalLogin($this->getUser($role));
+      $entity = $this->getContent();
+
+      $this->drupalGet($entity->toUrl());
+
+      $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Service Card Translation page was not loadable');
+      $page = $this->getSession()->getPage();
+
+      $tabs = $page->find('css', '.primary-tabs')->getText();
+      $this->assertStringContainsString('Translate', $tabs, 'No "Translate" tab was found');
+
+      $translation = $this->createTranslation($entity);
+      $this->drupalGet($translation->toUrl());
+
+      $tabs = $page->find('css', '.primary-tabs')->getText();
+      $this->assertStringContainsString('Translate', $tabs, 'No "Translate" tab was found');
+    }
+  }
 
   /**
    * Data provider for testCanTranslateContent test.
@@ -168,9 +185,9 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  protected function tearDown(): void {
-    parent::tearDown();
-    $this->editor = NULL;
-  }
+//  protected function tearDown(): void {
+//    parent::tearDown();
+//    $this->editor = NULL;
+//  }
 
 }
