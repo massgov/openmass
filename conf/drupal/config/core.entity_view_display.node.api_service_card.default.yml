@@ -1,0 +1,121 @@
+uuid: c09c7ac3-73e9-4b04-94d3-7b3525417dd8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.api_service_card.field_api_serv_card_description
+    - field.field.node.api_service_card.field_api_serv_card_link
+    - field.field.node.api_service_card.field_api_serv_card_machine_name
+    - field.field.node.api_service_card.field_api_srv_card_idv_ret_urls
+    - field.field.node.api_service_card.field_api_srv_card_logout_locale
+    - field.field.node.api_service_card.field_api_srv_card_logout_urls
+    - field.field.node.api_service_card.field_api_srv_card_ret_locale
+    - field.field.node.api_service_card.field_api_srv_card_status
+    - field.field.node.api_service_card.field_api_srv_card_tenant
+    - field.field.node.api_service_card.field_environment
+    - node.type.api_service_card
+  module:
+    - key_value_field
+    - link
+    - options
+    - text
+    - user
+id: node.api_service_card.default
+targetEntityType: node
+bundle: api_service_card
+mode: default
+content:
+  field_api_serv_card_description:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 102
+    region: content
+  field_api_serv_card_link:
+    type: link
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 104
+    region: content
+  field_api_serv_card_machine_name:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 103
+    region: content
+  field_api_srv_card_idv_ret_urls:
+    type: key_value
+    label: above
+    settings:
+      value_only: false
+    third_party_settings: {  }
+    weight: 107
+    region: content
+  field_api_srv_card_logout_locale:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 110
+    region: content
+  field_api_srv_card_logout_urls:
+    type: key_value
+    label: above
+    settings:
+      value_only: false
+    third_party_settings: {  }
+    weight: 109
+    region: content
+  field_api_srv_card_ret_locale:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 108
+    region: content
+  field_api_srv_card_status:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 105
+    region: content
+  field_api_srv_card_tenant:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 106
+    region: content
+  field_environment:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 111
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

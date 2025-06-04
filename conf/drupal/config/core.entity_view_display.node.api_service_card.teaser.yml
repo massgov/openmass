@@ -1,0 +1,41 @@
+uuid: dee2dee2-e137-4633-94af-dcc63f5b7820
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.api_service_card.field_api_serv_card_description
+    - field.field.node.api_service_card.field_api_serv_card_link
+    - field.field.node.api_service_card.field_api_serv_card_machine_name
+    - field.field.node.api_service_card.field_api_srv_card_idv_ret_urls
+    - field.field.node.api_service_card.field_api_srv_card_logout_locale
+    - field.field.node.api_service_card.field_api_srv_card_logout_urls
+    - field.field.node.api_service_card.field_api_srv_card_ret_locale
+    - field.field.node.api_service_card.field_api_srv_card_status
+    - field.field.node.api_service_card.field_api_srv_card_tenant
+    - field.field.node.api_service_card.field_environment
+    - node.type.api_service_card
+  module:
+    - user
+id: node.api_service_card.teaser
+targetEntityType: node
+bundle: api_service_card
+mode: teaser
+content:
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  field_api_serv_card_description: true
+  field_api_serv_card_link: true
+  field_api_serv_card_machine_name: true
+  field_api_srv_card_idv_ret_urls: true
+  field_api_srv_card_logout_locale: true
+  field_api_srv_card_logout_urls: true
+  field_api_srv_card_ret_locale: true
+  field_api_srv_card_status: true
+  field_api_srv_card_tenant: true
+  field_environment: true
+  langcode: true

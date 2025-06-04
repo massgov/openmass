@@ -15,7 +15,7 @@ class StaleCachingTest extends MassExistingSiteBase {
     'admin/.*',
     '/*edit.*',
     'user/logout.*',
-    'user/reset/*',
+    'user/reset/.*',
   ];
 
   /**

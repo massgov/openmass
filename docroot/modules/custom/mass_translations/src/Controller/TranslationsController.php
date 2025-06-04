@@ -55,6 +55,10 @@ class TranslationsController extends ControllerBase {
   public function getTranslationLanguages(EntityInterface $entity, EntityStorageInterface $storage, string $english_field_name): array {
     $languages = [];
 
+    if ($entity->bundle() === 'api_service_card') {
+      return [];
+    }
+
     $english_id = $entity->id();
 
     $language = $entity->language()->getId();
