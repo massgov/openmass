@@ -8,8 +8,13 @@
 use Composer\InstalledVersions as ComposerInstalledVersions;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\mass_content\EventsRendererOrgPages;
+use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Molecules;
+use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Twig\MayflowerLoader;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_theme().
@@ -84,6 +89,59 @@ function mayflower_library_info_build() {
     ],
   ];
   return $libraries;
+}
+
+/**
+ * Fetch contact info from parent service node.
+ */
+function mayflower_preprocess_paragraph__contact_placeholder(&$variables) {
+  $cache_tags = [];
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  // Prepare the Contact Us field, if it's populated.
+  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
+    // Set up options for contact list.
+    $contact_list_options = [
+      'heading' => [
+        'title' => '',
+      ],
+      'groups' => [
+        'accordion' => TRUE,
+        'isExpanded' => FALSE,
+      ],
+    ];
+
+    // Prepare the contactList data object.
+    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
+    if ($paragraph->parent_field_name->value == 'field_service_section_content' && $paragraph->parent_type->value == 'paragraph') {
+      if ($paragraph->parent_id->value) {
+        if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
+          if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
+            $variables['contactList']['level'] = 3;
+          }
+        }
+      }
+    }
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    CacheableMetadata::createFromRenderArray($variables)
+      ->addCacheTags($cache_tags)
+      ->applyTo($variables);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess logic for the org_events paragraph.
+ */
+function mayflower_preprocess_paragraph__org_events(&$variables) {
+  $paragraph = $variables['paragraph'];
+  // Gather events associated with this node.
+  $eventManager = \Drupal::service('mass_content.event_manager');
+  $eventsRender = (new EventsRendererOrgPages($eventManager, $paragraph))->render();
+  $variables = array_merge($variables, $eventsRender);
 }
 
 /**
