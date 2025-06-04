@@ -33,7 +33,8 @@ class MassViewsController extends ControllerBase {
    * Generates filtered URLs for pages.
    */
   public function pageLinks(Request $request) {
-    return $this->generateView('crawler_pages', $request);
+    $view_name = $request->get('view_name', 'crawler_pages');
+    return $this->generateView($view_name, $request);
   }
 
   /**
