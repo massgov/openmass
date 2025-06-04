@@ -37,6 +37,7 @@ function gotResizeMessage(event) {
   var matches = document.querySelectorAll('.js-ma-responsive-iframe iframe'); // iterate through all iFrames on page
   var i = 0;
   for (; i < matches.length; i++) {
+
     // found the iFrame that sent us a message
     if (matches[i].contentWindow === event.source) {
       // matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now
