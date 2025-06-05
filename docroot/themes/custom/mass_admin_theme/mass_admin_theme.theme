@@ -387,10 +387,30 @@ function mass_admin_theme_preprocess_input__submit(array &$variables) {
  * Implements hook_preprocess_page().
  */
 function mass_admin_theme_preprocess_views_view__crawler_pages_3__page_1(&$variables) {
+  $request = \Drupal::request();
+  $current_host = $request->getHost();
+
+  $domain_mapping = [
+    'dev.edit.mass.gov' => 'dev.mass.gov',
+    'edit.stage.mass.gov' => 'stage.mass.gov',
+    'edit.mass.gov' => 'www.mass.gov',
+  ];
+
+  $mapped_domain = $domain_mapping[$current_host] ?? $current_host;
+
   /** @var \Drupal\views\ViewExecutable $view */
   $view = $variables['view'];
   $exposed_input = $view->getExposedInput();
   $exposed_input['view_name'] = $view->id();
-  $url = Url::fromUserInput('/crawler-links/pages', ['query' => $exposed_input]);
-  $variables['crawler_link'] = $url->setAbsolute()->toString();
+  $url = Url::fromUserInput('/crawler-links/pages', [
+    'query' => $exposed_input,
+    'absolute' => TRUE,
+    'https' => TRUE,
+  ]);
+
+  $variables['crawler_link'] = str_replace(
+    $current_host,
+    $mapped_domain,
+    $url->toString()
+  );
 }
