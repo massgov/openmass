@@ -391,6 +391,6 @@ function mass_admin_theme_preprocess_views_view__crawler_pages_3__page_1(&$varia
   $view = $variables['view'];
   $exposed_input = $view->getExposedInput();
   $exposed_input['view_name'] = $view->id();
-  $url = Url::fromUri('https://www.mass.gov/crawler-links/pages', ['query' => $exposed_input]);
+  $url = Url::fromUserInput('/crawler-links/pages', ['query' => $exposed_input]);
   $variables['crawler_link'] = $url->setAbsolute()->toString();
 }
