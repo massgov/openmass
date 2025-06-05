@@ -1,0 +1,26 @@
+uuid: 725f76f8-c903-4f1c-809e-6eacd5b6220e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_english_version
+    - node.type.api_service_card
+id: node.api_service_card.field_english_version
+field_name: field_english_version
+entity_type: node
+bundle: api_service_card
+label: 'English version'
+description: 'Choose the English version of this page. A link to the English version will appear on the "Translations" tab.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: views
+  handler_settings:
+    view:
+      view_name: english_versions
+      display_name: entity_reference_1
+      arguments:
+        - api_service_card
+field_type: entity_reference
