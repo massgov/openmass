@@ -1,8 +1,11 @@
-uuid: e5443273-2b2d-4e62-8a6a-1a3f4e13f838
+uuid: ca3aad98-5934-4250-89e0-bf32c757080c
 langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.node.field_collections
+    - field.storage.node.field_organizations
+    - field.storage.node.field_reusable_label
     - node.type.action
     - node.type.advisory
     - node.type.alert
@@ -39,11 +42,7 @@ dependencies:
     - node.type.utility_drawer
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
-    - workflows.workflow.campaign_landing_page
-    - workflows.workflow.editorial
-    - workflows.workflow.topic_page
   module:
-    - content_moderation
     - mass_views
     - node
     - taxonomy
@@ -53,22 +52,22 @@ label: 'Crawler Pages'
 module: views
 description: ''
 tag: ''
-base_table: node_field_revision
-base_field: vid
+base_table: node_field_data
+base_field: nid
 display:
   default:
     id: default
-    display_title: Master
+    display_title: Default
     display_plugin: default
     position: 0
     display_options:
-      title: 'Build crawler URL for pages'
+      title: 'Crawler Pages'
       fields:
         title:
           id: title
           table: node_field_data
           field: title
-          relationship: nid
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -94,8 +93,8 @@ display:
             target: ''
             nl2br: false
             max_length: 0
-            word_boundary: true
-            ellipsis: true
+            word_boundary: false
+            ellipsis: false
             more_link: false
             more_link_text: ''
             more_link_path: ''
@@ -129,6 +128,195 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        field_organizations:
+          id: field_organizations
+          table: node__field_organizations
+          field: field_organizations
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Organization(s)
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_reusable_label:
+          id: field_reusable_label
+          table: node__field_reusable_label
+          field: field_reusable_label
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Label(s)
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_collections:
+          id: field_collections
+          table: node__field_collections
+          field: field_collections
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Collections
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       pager:
         type: full
         options:
@@ -138,8 +326,8 @@ display:
           total_pages: null
           id: 0
           tags:
-            next: Next
-            previous: Previous
+            next: ››
+            previous: ‹‹
             first: '« First'
             last: 'Last »'
           expose:
@@ -166,7 +354,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'access content overview'
       cache:
         type: tag
         options: {  }
@@ -174,141 +362,22 @@ display:
       sorts: {  }
       arguments: {  }
       filters:
-        latest_revision:
-          id: latest_revision
-          table: node_revision
-          field: latest_revision
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          plugin_id: latest_revision
-          operator: '='
-          value: ''
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        moderation_state:
-          id: moderation_state
-          table: node_field_revision
-          field: moderation_state
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          plugin_id: moderation_state_filter
-          operator: in
-          value:
-            campaign_landing_page-published: campaign_landing_page-published
-            editorial-published: editorial-published
-            topic_page-published: topic_page-published
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         status:
           id: status
-          table: node_field_revision
+          table: node_field_data
           field: status
-          relationship: vid
-          group_type: group
-          admin_label: ''
           entity_type: node
           entity_field: status
           plugin_id: boolean
-          operator: '='
           value: '1'
           group: 1
-          exposed: false
           expose:
-            operator_id: ''
-            label: Published
-            description: null
-            use_operator: false
-            operator: status_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: status
-            required: true
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-          is_grouped: true
-          group_info:
-            label: 'Publication status'
-            description: ''
-            identifier: status
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: Published
-                operator: '='
-                value: '1'
-              2:
-                title: Unpublished
-                operator: '='
-                value: '0'
+            operator: ''
         node_org_filter:
           id: node_org_filter
           table: node_field_data
           field: node_org_filter
-          relationship: vid
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -318,7 +387,7 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: ''
+            operator_id: node_org_filter_op
             label: 'Organization Filter'
             description: ''
             use_operator: false
@@ -345,336 +414,7 @@ display:
               d2d_redirect_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        type_1:
-          id: type_1
-          table: node_field_data
-          field: type
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
-          operator: in
-          value:
-            advisory: advisory
-            binder: binder
-            curated_list: curated_list
-            decision: decision
-            decision_tree: decision_tree
-            event: event
-            executive_order: executive_order
-            form_page: form_page
-            guide_page: guide_page
-            how_to_page: how_to_page
-            info_details: info_details
-            location: location
-            location_details: location_details
-            news: news
-            org_page: org_page
-            campaign_landing: campaign_landing
-            regulation: regulation
-            rules: rules
-            service_page: service_page
-            topic_page: topic_page
-          group: 1
-          exposed: true
-          expose:
-            operator_id: type_1_op
-            label: 'Content type'
-            description: ''
-            use_operator: true
-            operator: type_1_op
-            operator_limit_selection: true
-            operator_list:
-              in: in
-              'not in': 'not in'
-            identifier: type_1
-            required: false
-            remember: false
-            multiple: true
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: true
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        langcode:
-          id: langcode
-          table: node_field_data
-          field: langcode
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: langcode
-          plugin_id: language
-          operator: in
-          value:
-            en: en
-            af: af
-            sq: sq
-            am: am
-            ar: ar
-            hy: hy
-            my: my
-            cv: cv
-            zh-hans: zh-hans
-            zh-hant: zh-hant
-            prs: prs
-            nl: nl
-            fr: fr
-            de: de
-            el: el
-            ht: ht
-            he: he
-            hi: hi
-            hmn: hmn
-            it: it
-            ja: ja
-            rw: rw
-            km: km
-            ko: ko
-            lo: lo
-            ne: ne
-            pst: pst
-            fa: fa
-            pl: pl
-            pt-br: pt-br
-            pt-pt: pt-pt
-            ro: ro
-            ru: ru
-            so: so
-            es: es
-            sw: sw
-            tw: tw
-            uk: uk
-            ur: ur
-            vi: vi
-          group: 1
-          exposed: true
-          expose:
-            operator_id: langcode_op
-            label: Language
-            description: ''
-            use_operator: false
-            operator: langcode_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: langcode
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: true
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        field_reusable_label_target_id:
-          id: field_reusable_label_target_id
-          table: node__field_reusable_label
-          field: field_reusable_label_target_id
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: taxonomy_index_tid
-          operator: or
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_reusable_label_target_id_op
-            label: Label(s)
-            description: ''
-            use_operator: false
-            operator: field_reusable_label_target_id_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: labels
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: label
-          type: textfield
-          hierarchy: false
-          limit: true
-          error_message: true
-        field_collections_target_id:
-          id: field_collections_target_id
-          table: node__field_collections
-          field: field_collections_target_id
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: taxonomy_index_tid
-          operator: or
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_collections_target_id_op
-            label: Collections
-            description: ''
-            use_operator: false
-            operator: field_collections_target_id_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: collection
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: collections
-          type: textfield
-          hierarchy: false
-          limit: true
-          error_message: true
-        status_1:
-          id: status_1
-          table: node_field_data
-          field: status
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: status
-          plugin_id: boolean
-          operator: '='
-          value: '1'
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
+              prototype_design_access: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -691,7 +431,7 @@ display:
           id: type
           table: node_field_data
           field: type
-          relationship: nid
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -742,102 +482,222 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
-      style:
-        type: table
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          columns:
-            title: title
-          default: '-1'
-          info:
-            title:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          override: true
-          sticky: false
-          summary: ''
-          empty_table: false
-          caption: ''
-          description: ''
-      row:
-        type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: false
-      query:
-        type: views_query
-        options:
-          query_comment: ''
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_tags: {  }
-      relationships:
-        nid:
-          id: nid
-          table: node_field_revision
-          field: nid
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
           relationship: none
           group_type: group
-          admin_label: 'Get the actual content from a content revision.'
+          admin_label: ''
           entity_type: node
-          entity_field: nid
-          plugin_id: standard
-          required: false
-        vid:
-          id: vid
-          table: node_field_revision
-          field: vid
-          relationship: nid
-          group_type: group
-          admin_label: Content
-          entity_type: node
-          entity_field: vid
-          plugin_id: standard
-          required: true
-        revision_uid:
-          id: revision_uid
-          table: node_revision
-          field: revision_uid
-          relationship: none
-          group_type: group
-          entity_type: node
-          entity_field: revision_uid
-          plugin_id: standard
-          required: false
-          operator: 'not in'
+          entity_field: langcode
+          plugin_id: language
+          operator: in
           value:
-            campaign_landing_page-trash: campaign_landing_page-trash
-            editorial-trash: editorial-trash
-            topic_page-trash: topic_page-trash
+            en: en
+            af: af
+            sq: sq
+            am: am
+            ar: ar
+            hy: hy
+            my: my
+            cv: cv
+            zh-hans: zh-hans
+            zh-hant: zh-hant
+            prs: prs
+            nl: nl
+            fil: fil
+            fr: fr
+            de: de
+            el: el
+            ht: ht
+            he: he
+            hi: hi
+            hmn: hmn
+            it: it
+            ja: ja
+            rw: rw
+            km: km
+            ko: ko
+            lo: lo
+            ne: ne
+            pst: pst
+            fa: fa
+            pl: pl
+            pt-br: pt-br
+            pt-pt: pt-pt
+            ro: ro
+            ru: ru
+            so: so
+            es: es
+            sw: sw
+            ti: ti
+            tr: tr
+            tw: tw
+            uk: uk
+            ur: ur
+            vi: vi
           group: 1
-          exposed: false
+          exposed: true
           expose:
-            operator_id: ''
-            label: ''
+            operator_id: langcode_op
+            label: Language
             description: ''
             use_operator: false
-            operator: ''
+            operator: langcode_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: ''
+            identifier: langcode
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+            reduce: true
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        type_1:
+          id: type_1
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: in
+          value:
+            advisory: advisory
+            binder: binder
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            event: event
+            executive_order: executive_order
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            location: location
+            location_details: location_details
+            news: news
+            org_page: org_page
+            campaign_landing: campaign_landing
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+            topic_page: topic_page
+          group: 1
+          exposed: true
+          expose:
+            operator_id: type_1_op
+            label: 'Content type'
+            description: ''
+            use_operator: true
+            operator: type_1_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: type_1
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+            reduce: true
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        field_reusable_label_target_id:
+          id: field_reusable_label_target_id
+          table: node__field_reusable_label
+          field: field_reusable_label_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_reusable_label_target_id_op
+            label: Label(s)
+            description: ''
+            use_operator: false
+            operator: field_reusable_label_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: labels
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -851,6 +711,90 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+          reduce_duplicates: true
+          vid: label
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+        field_collections_target_id:
+          id: field_collections_target_id
+          table: node__field_collections
+          field: field_collections_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_collections_target_id_op
+            label: Collections
+            description: ''
+            use_operator: false
+            operator: field_collections_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: collection
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: true
+          vid: collections
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      style:
+        type: table
+      row:
+        type: fields
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          disable_automatic_base_fields: false
+          replica: false
+          query_tags: {  }
+      relationships: {  }
       header:
         area:
           id: area
@@ -862,7 +806,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: "<p>Search for the pages you want the crawler to include. Then copy the URL and replace this portion of the URL \"edit.mass.gov/admin/crawler/pages\" with \"www.mass.gov/crawler-links/pages\". Add this new URL to your crawler and have it go only one level deep.</p><p>This page will show a limit of 500 pages. If you think you might need to include more than 500 pages, you will need to scroll to the bottom of the link page on the www.mass.gov domain to get the link to the \"next\" page and include that URL in your crawl as well. You will need to crawl one URL for each batch of 500 links - each will have a different \"page\"= value in the query string. </p>\r\n<p><strong>Important</strong>: Make a ServiceNow request prior to using this feature and we will provide you with a crawl-auth key to input in the field below.</p>\r\n"
+            value: "<p>Search for the pages you want the crawler to include. Then copy the URL from the input field below. Add this new URL to your crawler and have it go only one level deep.</p><p>This page will show a limit of 500 pages. If you think you might need to include more than 500 pages, you will need to scroll to the bottom of the link page on the www.mass.gov domain to get the link to the \"next\" page and include that URL in your crawl as well. You will need to crawl one URL for each batch of 500 links - each will have a different \"page\"= value in the query string. </p>\r\n<p><strong>Important</strong>: Make a ServiceNow request prior to using this feature and we will provide you with a crawl-auth key to input in the field below.</p>\r\n"
             format: basic_html
           tokenize: false
         result:
@@ -890,24 +834,20 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
-        - 'config:workflow_list'
+        - 'config:field.storage.node.field_collections'
+        - 'config:field.storage.node.field_organizations'
+        - 'config:field.storage.node.field_reusable_label'
   page_1:
     id: page_1
     display_title: Page
     display_plugin: page
     position: 1
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'access content overview'
-      defaults:
-        access: false
       display_extenders:
         metatag_display_extender:
           metatags: {  }
           tokenize: false
-      path: admin/crawler/pages-revisions-based
+      path: admin/crawler/pages
     cache_metadata:
       max-age: -1
       contexts:
@@ -918,4 +858,6 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
-        - 'config:workflow_list'
+        - 'config:field.storage.node.field_collections'
+        - 'config:field.storage.node.field_organizations'
+        - 'config:field.storage.node.field_reusable_label'
