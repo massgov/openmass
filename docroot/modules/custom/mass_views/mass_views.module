@@ -19,7 +19,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\views\ViewExecutable $view */
   $view = $form_state->getStorage('view');
-  if (in_array($view['view']->id(), ['crawler_pages', 'crawler_documents', 'crawler_pages_3'])) {
+  if (in_array($view['view']->id(), ['crawler_pages', 'crawler_documents'])) {
     if (in_array($view['view']->getDisplay()->display['id'], ['page_1', 'media_page_list'])) {
       $form['crawl-auth'] = [
         '#type' => 'textfield',
