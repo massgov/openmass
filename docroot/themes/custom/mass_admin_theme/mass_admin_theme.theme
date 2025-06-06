@@ -401,7 +401,6 @@ function mass_admin_theme_preprocess_views_view__crawler_pages__page_1(&$variabl
   /** @var \Drupal\views\ViewExecutable $view */
   $view = $variables['view'];
   $exposed_input = $view->getExposedInput();
-  $exposed_input['view_name'] = $view->id();
   $url = Url::fromUserInput('/crawler-links/pages', [
     'query' => $exposed_input,
     'absolute' => TRUE,
