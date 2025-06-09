@@ -1016,7 +1016,7 @@ class MassContentCommands extends DrushCommands {
               // 6) For each old child, we want to “insert it under” our $section_paragraph
               //    in the region called “content”. We do that via LayoutParagraphsLayout::insertAfterComponent().
               $section_uuid = $section_paragraph->uuid();
-              foreach ($old_children as $child_paragraph) {
+              foreach (array_reverse($old_children) as $child_paragraph) {
                 // Wrap the child in a LayoutParagraphsComponent so we can copy sibling settings later:
                 $component = new LayoutParagraphsComponent($child_paragraph);
                 // Insert “after” the service_section container. That effectively nests it under that container’s content region.
@@ -1027,7 +1027,7 @@ class MassContentCommands extends DrushCommands {
                   'region' => 'content',
                 ]);
               }
-              
+
               if ($section_paragraph->get('field_hide_heading')->value != 1 && $section_paragraph->get('field_section_style')->value == 'simple') {
                 // Create a new 'section_header' paragraph for the heading.
                 /** @var \Drupal\paragraphs\ParagraphInterface $section_header_paragraph */

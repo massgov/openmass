@@ -299,6 +299,7 @@ function mayflower_preprocess_page(array &$variables) {
  * Groups different components together when necessary.
  */
 function mayflower_preprocess_paragraph__service_section(&$variables) {
+  dump($variables['content']['regions']['content']);
   $variables["service_components"] =
     _mayflower_preprocess_paragraph_sections($variables, 'field_service_section_content');
 
