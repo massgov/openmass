@@ -1480,6 +1480,24 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
     case 'iframe':
       $form['#validate'][] = '_mass_validation_validate_custom_iframe_layout_paragraphs';
       break;
+    case 'service_section':
+      if (isset($form['field_section_style'], $form['field_service_section_heading'], $form['field_subtitle'])) {
+        // Add states to hide the URL token field when embed type is "Default".
+        $form['field_service_section_heading']['#states'] = [
+          'visible' => [
+            ':input[name="field_section_style"]' => ['value' => 'enhanced'],
+          ],
+          'required' => [
+            ':input[name="field_section_style"]' => ['value' => 'enhanced'],
+          ],
+        ];
+        $form['field_subtitle']['#states'] = [
+          'visible' => [
+            ':input[name="field_section_style"]' => ['value' => 'enhanced'],
+          ],
+        ];
+      }
+      break;
     case 'tableau_embed':
       // Check if the embed type field exists.
       if (isset($form['field_tableau_embed_type'], $form['field_tableau_url_token'])) {

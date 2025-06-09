@@ -290,3 +290,203 @@ function mayflower_preprocess_page(array &$variables) {
     $variables['header_version_mixed'] = FALSE;
   }
 }
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Groups different components together when necessary.
+ */
+function mayflower_preprocess_paragraph__service_section(&$variables) {
+  $variables["service_components"] =
+    _mayflower_preprocess_paragraph_sections($variables, 'field_service_section_content');
+
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $container = $variables['paragraph'];
+  $variables['section_style'] = $container->field_section_style->value;
+  $variables['hide_heading'] = $container->field_hide_heading->value;
+
+  $links_group = [];
+  foreach ($variables['service_components'] as $key => &$service_component) {
+    /** @var Drupal\paragraphs\Entity\Paragraph */
+    $service_component_paragraph = &$service_component[0];
+    if (
+      is_object($service_component_paragraph) &&
+      $service_component_paragraph->getType() == 'flexible_link_group' &&
+      $service_component_paragraph->field_display_type->value == 'links'
+    ) {
+      $links_group[$key] = $service_component;
+    }
+    else {
+      _mayflower_join_contiguous_flexible_link_group_type_links($links_group, $variables);
+      $links_group = [];
+    }
+  }
+
+  _mayflower_join_contiguous_flexible_link_group_type_links($links_group, $variables);
+
+  // Removing elements included previously.
+  foreach ($variables['service_components'] as $key => &$service_component) {
+    if ($service_component === FALSE) {
+      unset($variables['service_components'][$key]);
+    }
+  }
+}
+
+
+/**
+ * Preprocess paragraph sections from services and organizations.
+ */
+function _mayflower_preprocess_paragraph_sections(&$variables, $field) {
+  // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
+  $contained = ['rich_text'];
+
+  $components = [];
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $container = $variables['paragraph'];
+  /** @var \Drupal\paragraphs\Entity\Paragraph[] */
+  $paragraphs = Helper::getReferencedEntitiesFromField($container, $field);
+
+  for ($i = 0; $i < count($paragraphs); $i++) {
+    $component = [];
+    // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
+    if (mayflower_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
+      $items = [];
+      do {
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
+        $i++;
+        // Keep grouping together while the next element has the check.
+      } while (isset($paragraphs[$i]) && mayflower_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
+      // Once done, also group the following one.
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
+
+      $component = ['group' => 'default', 'items' => $items];
+    }
+    // There are some special paragraphs that should have a right margin.
+    elseif (in_array($paragraphs[$i]->getType(), $contained) !== FALSE) {
+      $component = ['group' => 'contained', 'items' => $paragraphs[$i]];
+    }
+    // Otherwise, if it's one of the following paragraphs, wrap it as well.
+    elseif (in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== FALSE) {
+      $component = ['group' => 'self', 'items' => $paragraphs[$i]];
+    }
+
+    else {
+      // Otherwise, just return it as it is.
+      $component[] = $paragraphs[$i];
+    }
+    $components[] = $component;
+  }
+  return $components;
+}
+
+/**
+ * Join contiguous flexible link groups, type links, into the same element.
+ */
+function _mayflower_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables, $destination = 'service') {
+  $component_name = $destination . '_components';
+  if (count($links_group) < 2) {
+    return;
+  }
+  $first = array_keys($links_group)[0];
+  foreach ($links_group as $key => $link_group) {
+    if ($key == $first) {
+      continue;
+    }
+
+    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
+
+    // Empty elements included previously.
+    $variables[$component_name][$key] = FALSE;
+  }
+  $links_group = [];
+}
+
+/**
+ * Checks if the paragraph has one of the fields and has a value for it.
+ */
+function mayflower_paragraphs_sections_check_wrapping_field($paragraph, $fields) {
+  foreach ($fields as $field) {
+    if (isset($paragraph) && $paragraph->hasField($field) && $paragraph->get($field)->getValue()) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_preprocess_paragraph__key_message(array &$variables) {
+  mayflower_build_key_message_component($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_preprocess_paragraph__key_message_section(array &$variables) {
+  mayflower_build_key_message_component($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_build_key_message_component(array &$variables) {
+  mayflower_campaign_landing_paragraph_set_header_level($variables);
+  $paragraph = $variables['paragraph'];
+  $variables['button'] = [];
+  // Color mapping to their appropriate styles.
+  $colors = [
+    'dark_blue' => 'c-primary',
+    'light_blue' => 'c-primary-lightest',
+    'dark_green' => 'c-primary-alt',
+    'light_green' => 'c-primary-alt-lightest',
+    'white' => 'c-white',
+    'light_grey' => 'c-gray-lightest',
+  ];
+  // @todo Setup the button style to pass through once the designs are ready.
+  if (!empty($paragraph->field_button->title)) {
+    $button = $variables['elements']['field_button'][0];
+    $variables['button']['text'] = $button['#title'];
+    $variables['button']['href'] = $button['#url']->toString();
+  }
+
+  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
+
+  if (!empty($paragraph->field_text_overlay_color->value)) {
+    $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
+  }
+  if (!empty($paragraph->field_section_text_overlay_color->value)) {
+    $variables['textOverlaySection'] = isset($colors[$paragraph->field_section_text_overlay_color->value]) ? $colors[$paragraph->field_section_text_overlay_color->value] : '';
+  }
+  $variables['backgroundColor'] = '';
+  if (!empty($paragraph->field_background_type->value)) {
+    if (!empty($paragraph->field_background_color->value)) {
+      $variables['backgroundColor'] = isset($colors[$paragraph->field_background_color->value]) ? $colors[$paragraph->field_background_color->value] : '';
+    }
+    if (!empty($paragraph->field_section_background_color->value)) {
+      $variables['backgroundColor'] = isset($colors[$paragraph->field_section_background_color->value]) ? $colors[$paragraph->field_section_background_color->value] : '';
+    }
+
+    $variables['componentId'] = 'ID' . $paragraph->id();
+  }
+}
+
+/**
+ * Determines if a paragraph's parent field is field_header.
+ */
+function mayflower_campaign_landing_paragraph_set_header_level(array &$variables) {
+  $variables['level'] = 2;
+  $parent_field = $variables['paragraph']->parent_field_name->value;
+  if ($parent_field === 'field_header') {
+    $variables['level'] = 1;
+  }
+}

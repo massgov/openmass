@@ -38,13 +38,6 @@ targetEntityType: paragraph
 bundle: service_section
 mode: default
 content:
-  field_hide_heading:
-    type: boolean_checkbox
-    weight: 1
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   field_section_style:
     type: options_buttons
     weight: 2
@@ -65,7 +58,7 @@ content:
     third_party_settings: {  }
   field_service_section_heading:
     type: string_textfield
-    weight: 0
+    weight: 1
     region: content
     settings:
       size: 60
@@ -96,6 +89,12 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  layout_paragraphs_fields:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
 hidden:
   created: true
+  field_hide_heading: true
   status: true

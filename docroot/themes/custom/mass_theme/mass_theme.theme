@@ -7108,64 +7108,6 @@ function mass_theme_campaign_landing_paragraph_set_header_level(array &$variable
 /**
  * Implements hook_preprocess_HOOK().
  */
-function mass_theme_preprocess_paragraph__key_message(array &$variables) {
-  mass_theme_build_key_message_component($variables);
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function mass_theme_preprocess_paragraph__key_message_section(array &$variables) {
-  mass_theme_build_key_message_component($variables);
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function mass_theme_build_key_message_component(array &$variables) {
-  mass_theme_campaign_landing_paragraph_set_header_level($variables);
-  $paragraph = $variables['paragraph'];
-  $variables['button'] = [];
-  // Color mapping to their appropriate styles.
-  $colors = [
-    'dark_blue' => 'c-primary',
-    'light_blue' => 'c-primary-lightest',
-    'dark_green' => 'c-primary-alt',
-    'light_green' => 'c-primary-alt-lightest',
-    'white' => 'c-white',
-    'light_grey' => 'c-gray-lightest',
-  ];
-  // @todo Setup the button style to pass through once the designs are ready.
-  if (!empty($paragraph->field_button->title)) {
-    $button = $variables['elements']['field_button'][0];
-    $variables['button']['text'] = $button['#title'];
-    $variables['button']['href'] = $button['#url']->toString();
-  }
-
-  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
-
-  if (!empty($paragraph->field_text_overlay_color->value)) {
-    $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
-  }
-  if (!empty($paragraph->field_section_text_overlay_color->value)) {
-    $variables['textOverlaySection'] = isset($colors[$paragraph->field_section_text_overlay_color->value]) ? $colors[$paragraph->field_section_text_overlay_color->value] : '';
-  }
-  $variables['backgroundColor'] = '';
-  if (!empty($paragraph->field_background_type->value)) {
-    if (!empty($paragraph->field_background_color->value)) {
-      $variables['backgroundColor'] = isset($colors[$paragraph->field_background_color->value]) ? $colors[$paragraph->field_background_color->value] : '';
-    }
-    if (!empty($paragraph->field_section_background_color->value)) {
-      $variables['backgroundColor'] = isset($colors[$paragraph->field_section_background_color->value]) ? $colors[$paragraph->field_section_background_color->value] : '';
-    }
-
-    $variables['componentId'] = 'ID' . $paragraph->id();
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
 function mass_theme_preprocess_paragraph__video_with_header(array &$variables) {
   mass_theme_campaign_landing_paragraph_set_header_level($variables);
   $paragraph = $variables['paragraph'];
@@ -7442,69 +7384,6 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   foreach ($variables['org_components'] as $key => &$org_component) {
     if ($org_component === FALSE) {
       unset($variables['org_components'][$key]);
-    }
-  }
-}
-
-/**
- * Join contiguous flexible link groups, type links, into the same element.
- */
-function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables, $destination = 'service') {
-  $component_name = $destination . '_components';
-  if (count($links_group) < 2) {
-    return;
-  }
-  $first = array_keys($links_group)[0];
-  foreach ($links_group as $key => $link_group) {
-    if ($key == $first) {
-      continue;
-    }
-
-    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
-
-    // Empty elements included previously.
-    $variables[$component_name][$key] = FALSE;
-  }
-  $links_group = [];
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Groups different components together when necessary.
- */
-function mass_theme_preprocess_paragraph__service_section(&$variables) {
-  $variables["service_components"] =
-    _mass_theme_preprocess_paragraph_sections($variables, 'field_service_section_content');
-
-  /** @var \Drupal\paragraphs\Entity\Paragraph */
-  $container = $variables['paragraph'];
-  $variables['section_style'] = $container->field_section_style->value;
-  $variables['hide_heading'] = $container->field_hide_heading->value;
-
-  $links_group = [];
-  foreach ($variables['service_components'] as $key => &$service_component) {
-    /** @var Drupal\paragraphs\Entity\Paragraph */
-    $service_component_paragraph = &$service_component[0];
-    if (
-      is_object($service_component_paragraph) &&
-      $service_component_paragraph->getType() == 'flexible_link_group' &&
-      $service_component_paragraph->field_display_type->value == 'links'
-    ) {
-      $links_group[$key] = $service_component;
-    }
-    else {
-      _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
-      $links_group = [];
-    }
-  }
-
-  _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
-
-  // Removing elements included previously.
-  foreach ($variables['service_components'] as $key => &$service_component) {
-    if ($service_component === FALSE) {
-      unset($variables['service_components'][$key]);
     }
   }
 }
