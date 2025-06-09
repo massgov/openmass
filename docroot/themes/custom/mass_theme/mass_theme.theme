@@ -5247,47 +5247,6 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
 /**
  * Implements hook_preprocess_HOOK().
  *
- * Preprocess for org_locations paragraphs.
- */
-function mass_theme_preprocess_paragraph__org_locations(&$variables) {
-  $paragraph = $variables['paragraph'];
-  $node = Helper::getParentNode($paragraph);
-
-  if (Helper::isFieldPopulated($paragraph, 'field_org_ref_locations')) {
-    $mappedLocations_options = [
-      'locationDetailsLink' => [
-        'display' => TRUE,
-        'nid' => $node ? $node->id() : '',
-        'path' => $node ? \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) : '',
-      ],
-    ];
-
-    // Use aside for the text that displays next to the map with the button.
-    $mappedLocations_options['aside'] = [
-      'button' => $paragraph->field_location_button_label->value,
-      'paragraph' => [
-        'text' => Helper::fieldFullView($paragraph, 'field_location_button_short_desc'),
-      ],
-    ];
-
-    $sections[] = [
-      'pageContent' => [
-        [
-          'path' => '@organisms/by-author/mapped-locations.twig',
-          'data' => [
-            'mappedLocations' => Organisms::prepareMappedLocations($paragraph->field_org_ref_locations->referencedEntities(), $mappedLocations_options),
-          ],
-        ],
-      ],
-    ];
-
-    $variables['stackedRowSections'] = $sections;
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
  * Break out url pieces for callout link paragraphs.
  */
 function mass_theme_preprocess_paragraph__related_content(&$variables) {

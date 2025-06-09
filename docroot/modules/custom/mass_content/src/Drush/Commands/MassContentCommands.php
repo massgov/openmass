@@ -979,6 +979,7 @@ class MassContentCommands extends DrushCommands {
 
       foreach ($nids as $nid) {
         $node = $node_storage->load($nid);
+        if ($nid == "24191"){exit(); }
         if (!$node) {
           continue;
         }
@@ -1016,30 +1017,6 @@ class MassContentCommands extends DrushCommands {
               //    in the region called “content”. We do that via LayoutParagraphsLayout::insertAfterComponent().
               $section_uuid = $section_paragraph->uuid();
               foreach ($old_children as $child_paragraph) {
-                if ($child_paragraph->bundle() == 'caspio_embed') {
-                  dump($child_paragraph->bundle());
-                  exit();
-                }
-                if ($child_paragraph->bundle() == 'contact_placeholder') {
-                  dump($child_paragraph->bundle());
-                  exit();
-                }
-                if ($child_paragraph->bundle() == 'featured_item_mosaic') {
-                  dump($child_paragraph->bundle());
-                  exit();
-                }
-                if ($child_paragraph->bundle() == 'featured_message') {
-                  dump($child_paragraph->bundle());
-                  exit();
-                }
-                if ($child_paragraph->bundle() == 'org_events') {
-                  dump($child_paragraph->bundle());
-                  exit();
-                }
-//                if ($child_paragraph->bundle() == 'social_media') {
-//                  dump($child_paragraph->bundle());
-//                  exit();
-//                }
                 // Wrap the child in a LayoutParagraphsComponent so we can copy sibling settings later:
                 $component = new LayoutParagraphsComponent($child_paragraph);
                 // Insert “after” the service_section container. That effectively nests it under that container’s content region.
