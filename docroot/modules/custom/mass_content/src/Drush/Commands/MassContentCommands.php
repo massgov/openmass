@@ -979,7 +979,7 @@ class MassContentCommands extends DrushCommands {
 
       foreach ($nids as $nid) {
         $node = $node_storage->load($nid);
-        if ($nid == "24191"){exit(); }
+
         if (!$node) {
           continue;
         }
@@ -1027,8 +1027,8 @@ class MassContentCommands extends DrushCommands {
                   'region' => 'content',
                 ]);
               }
-
-              if ($section_paragraph->get('field_hide_heading')->value && $section_paragraph->get('field_section_style')->value == 'simple') {
+              
+              if ($section_paragraph->get('field_hide_heading')->value != 1 && $section_paragraph->get('field_section_style')->value == 'simple') {
                 // Create a new 'section_header' paragraph for the heading.
                 /** @var \Drupal\paragraphs\ParagraphInterface $section_header_paragraph */
                 $section_header_paragraph = $paragraph_storage->create([
@@ -1047,14 +1047,22 @@ class MassContentCommands extends DrushCommands {
                 ]);
                 $section_paragraph->set('field_service_section_heading', '');
               }
+              elseif ($section_paragraph->get('field_hide_heading')->value == 1 && $section_paragraph->get('field_section_style')->value == 'simple') {
+                $section_paragraph->set('field_service_section_heading', '');
+              }
 
               // 7) Once all old children are re-parented, clear out the old reference so we don’t double-reference:
               $section_paragraph->set('field_service_section_content', []);
               $section_paragraph->save();
             }
             elseif ($section_paragraph->bundle() == 'key_message_section') {
-              dump($node);
-              exit();
+              $root_component->setSettings([
+                'layout' => 'onecol_mass',
+                'parent_uuid' => NULL,          // it’s a top-level section
+                'region' => NULL,          // top-level container has no region
+              ]);
+              $key_message_section = $root_component->getEntity();
+              $key_message_section->save();
             }
           }
 
