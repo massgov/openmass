@@ -7255,26 +7255,6 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
 }
 
 /**
- * Fetch social links from parent org node.
- */
-function mass_theme_preprocess_paragraph__social_media(&$variables) {
-  $level = "2";
-  $paragraph = $variables['paragraph'];
-  if ($paragraph->parent_field_name->value == 'field_service_section_content') {
-    if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
-      if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
-        $level = "3";
-      }
-    }
-  }
-  $node = Helper::getParentNode($paragraph);
-  $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
-  $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
-    $node->$social_field_name->view() : [];
-  $variables['level'] = $level;
-}
-
-/**
  * Fetch contact info and logo from parent org node.
  */
 function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables) {

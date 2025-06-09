@@ -996,19 +996,13 @@ class MassContentCommands extends DrushCommands {
           //    We only care about those with bundle = 'service_section'.
           foreach ($layout->getRootComponents() as $root_component) {
             $section_paragraph = $root_component->getEntity();
-            if ($section_paragraph->bundle() !== 'service_section' || $section_paragraph->bundle() !== 'key_message_section') {
-              // Skip anything that isn’t our target bundles.
-              continue;
-            }
-
-            // 4) Mark this paragraph as “layout = onecol_mass” so it becomes a single-column container:
-            $root_component->setSettings([
-              'layout' => 'onecol_mass',
-              'parent_uuid' => NULL,          // it’s a top-level section
-              'region' => NULL,          // top-level container has no region
-            ]);
             if ($section_paragraph->bundle() == 'service_section') {
-
+              // 4) Mark this paragraph as “layout = onecol_mass” so it becomes a single-column container:
+              $root_component->setSettings([
+                'layout' => 'onecol_mass',
+                'parent_uuid' => NULL,          // it’s a top-level section
+                'region' => NULL,          // top-level container has no region
+              ]);
               // 5) Gather all of its old children from field_service_section_content:
               $old_children = $section_paragraph
                 ->get('field_service_section_content')
@@ -1022,6 +1016,30 @@ class MassContentCommands extends DrushCommands {
               //    in the region called “content”. We do that via LayoutParagraphsLayout::insertAfterComponent().
               $section_uuid = $section_paragraph->uuid();
               foreach ($old_children as $child_paragraph) {
+                if ($child_paragraph->bundle() == 'caspio_embed') {
+                  dump($child_paragraph->bundle());
+                  exit();
+                }
+                if ($child_paragraph->bundle() == 'contact_placeholder') {
+                  dump($child_paragraph->bundle());
+                  exit();
+                }
+                if ($child_paragraph->bundle() == 'featured_item_mosaic') {
+                  dump($child_paragraph->bundle());
+                  exit();
+                }
+                if ($child_paragraph->bundle() == 'featured_message') {
+                  dump($child_paragraph->bundle());
+                  exit();
+                }
+                if ($child_paragraph->bundle() == 'org_events') {
+                  dump($child_paragraph->bundle());
+                  exit();
+                }
+//                if ($child_paragraph->bundle() == 'social_media') {
+//                  dump($child_paragraph->bundle());
+//                  exit();
+//                }
                 // Wrap the child in a LayoutParagraphsComponent so we can copy sibling settings later:
                 $component = new LayoutParagraphsComponent($child_paragraph);
                 // Insert “after” the service_section container. That effectively nests it under that container’s content region.
@@ -1050,15 +1068,15 @@ class MassContentCommands extends DrushCommands {
                   'parent_uuid' => $section_uuid,
                   'region' => 'content',
                 ]);
+                $section_paragraph->set('field_service_section_heading', '');
               }
-
 
               // 7) Once all old children are re-parented, clear out the old reference so we don’t double-reference:
               $section_paragraph->set('field_service_section_content', []);
               $section_paragraph->save();
             }
-            else {
-              dump($node->id());
+            elseif ($section_paragraph->bundle() == 'key_message_section') {
+              dump($node);
               exit();
             }
           }
