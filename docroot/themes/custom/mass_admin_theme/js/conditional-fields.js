@@ -4,7 +4,7 @@
  *
  * Supplement Conditional Fields module for changes the module doesn't cover.
  */
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -179,4 +179,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);
