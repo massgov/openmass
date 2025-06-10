@@ -8,7 +8,8 @@
 %}
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
-    {% block content %}
+    <div class="ma__services">
+      {% block content %}
       {% set heading = {} %}
       {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 0 %}
         {% set heading = {
@@ -154,5 +155,6 @@
 
       </div>
     {% endblock %}
+    </div>
   </div>
 {% endblock paragraph %}
