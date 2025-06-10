@@ -67,17 +67,18 @@
             {% endif %}
           {% else %}
             <div class="ma__stacked-row__container">
-              <div class="ma__stacked-row__title">
-                {% set compHeading = {
-                    "title": stackedRowSection.title,
-                    "sub": "",
-                    "color": "",
-                    "id": stackedRowSection.id
-                  }
-                %}
-                {% include "@atoms/04-headings/comp-heading.twig" %}
-              </div>
-
+              {% if stackedRowSection.title %}
+                <div class="ma__stacked-row__title">
+                  {% set compHeading = {
+                      "title": stackedRowSection.title,
+                      "sub": "",
+                      "color": "",
+                      "id": stackedRowSection.id
+                    }
+                  %}
+                  {% include "@atoms/04-headings/comp-heading.twig" %}
+                </div>
+              {% endif %}
               {# Reprinted to avoid the Enhanced wrapper #}
               {% if section_style_link or section_style_subtitle %}
                 <div class="ma__service-heading-content">

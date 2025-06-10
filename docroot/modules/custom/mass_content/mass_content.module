@@ -876,6 +876,9 @@ function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables
  */
 function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
 
+  if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'section_header' && $entity->parent_field_name->value == 'field_service_sections') {
+    $view_mode = 'stacked_row_section';
+  }
   // Display cards or compact cards depending on the settings.
   if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
     if ($entity->hasField('field_topic_name_only') && $entity->field_topic_name_only->value == 1) {
