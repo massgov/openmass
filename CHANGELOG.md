@@ -1,5 +1,10 @@
 
 
+## [0.440.1] - June 10, 2025
+
+### Added:
+- DP-39646: Service Card API: Enable core Drupal Translations.
+
 ## [0.439.0] - June 3, 2025
 
 ### Fixed
