@@ -1,5 +1,22 @@
 
 
+## [0.441.0] - June 10, 2025
+
+### Changed
+  - DP-38638: Add 'Phone' as a contact method option for how-to pages
+  - DP-39726: Modified help text for iframe paragraph.
+  
+### Added
+  - DP-38918: Make service card content type
+  - DP-39093: Enable translations for Service Card API content type
+  - DP-39646: Enable content_translation module.
+  
+### Fixed
+  - DP-39638: Re-add mayflowere artrifacts after 0.439.0 release revert.
+  - DP-39656: Fix crawler view which doesn't show published pages when there is an unpublished draft.
+  
+
+
 ## [0.439.0] - June 3, 2025
 
 ### Fixed
