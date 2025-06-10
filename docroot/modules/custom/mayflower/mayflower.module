@@ -693,3 +693,20 @@ function mayflower_preprocess_paragraph__org_locations(&$variables) {
     $variables['stackedRowSections'] = $sections;
   }
 }
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function mayflower_preprocess_field(&$variables, $hook) {
+  $element = $variables['element'];
+
+  // The first element of the featured items mosaic needs a slightly different template.
+  if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
+    // First image with an image style.
+    if ($highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight) {
+      if ($highlight->entity) {
+        $variables['items'][0]['content']['#view_mode'] = 'tall';
+      }
+    }
+  }
+}
