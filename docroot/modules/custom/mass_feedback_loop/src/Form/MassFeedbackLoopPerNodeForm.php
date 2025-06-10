@@ -54,20 +54,16 @@ class MassFeedbackLoopPerNodeForm extends FormBase {
    * {@inheritdoc}
    */
   public function getTitle() {
-    return $this->t('Feedback submitted by constituents for this content');
-  }
-
-  public function build() {
     $negative_feedback_url = Url::fromRoute('view.pages_with_high_negative_feedback.page_2')->toString();
     $feedback_manager_url = Url::fromRoute('mass_feedback_loop.mass_feedback_loop_author_interface_form')->toString();
-
-    $markup = $this->t('Also see: <a href="@negative_feedback_url">Pages with high negative feedback</a> and <a href="@feedback_manager_url">Feedback Manager</a> where you can view, filter and sort feedback submissions.', [
+    $message = 'Feedback submitted by constituents for this content<p>Also see: <a href="@negative_feedback_url">Pages with high negative feedback</a> and <a href="@feedback_manager_url">Feedback Manager</a> where you can view, filter and sort feedback submissions.</p>';
+    $markup = Markup::create($this->t($message, [
       '@negative_feedback_url' => $negative_feedback_url,
       '@feedback_manager_url' => $feedback_manager_url,
-    ]);
+    ]));
 
     return [
-      '#markup' => '<p>' . $markup . '</p>',
+      '#markup' => $markup,
     ];
   }
 
