@@ -129,31 +129,6 @@
               {% if content.regions %}
                 {{ content.regions }}
               {% endif %}
-  {#            {% for service_component in service_components %}#}
-  {#              {% if service_component.group == 'default' %}#}
-  {#                {% embed "@organisms/by-author/rich-text.twig" %}#}
-  {#                  {% block rteElements %}#}
-  {#                    {% for c in service_component.items %}#}
-  {#                      {{ c|view }}#}
-  {#                    {% endfor %}#}
-  {#                  {% endblock %}#}
-  {#                {% endembed %}#}
-  {#              {% elseif service_component.group == 'self' %}#}
-  {#                {% embed "@organisms/by-author/rich-text.twig" %}#}
-  {#                  {% block rteElements %}#}
-  {#                    {{ service_component.items|view }}#}
-  {#                  {% endblock %}#}
-  {#                {% endembed %}#}
-  {#              {% elseif service_component.group == 'contained' %}#}
-  {#                {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}#}
-  {#                  {% block rteElements %}#}
-  {#                    {{ service_component.items|view }}#}
-  {#                  {% endblock %}#}
-  {#                {% endembed %}#}
-  {#              {% else %}#}
-  {#                {{ service_component[0]|view }}#}
-  {#              {% endif %}#}
-  {#            {% endfor %}#}
             {% endblock %}
 
           {% endembed %}
