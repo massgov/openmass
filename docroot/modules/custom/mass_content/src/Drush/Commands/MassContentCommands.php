@@ -1028,7 +1028,7 @@ class MassContentCommands extends DrushCommands {
                 ]);
               }
 
-              if ($section_paragraph->get('field_hide_heading')->value != 1 && $section_paragraph->get('field_section_style')->value == 'simple') {
+              if ($section_paragraph->get('field_hide_heading')->value != 1 && $section_paragraph->get('field_two_column')->value != 1 && $section_paragraph->get('field_section_style')->value == 'simple') {
                 // Create a new 'section_header' paragraph for the heading.
                 /** @var \Drupal\paragraphs\ParagraphInterface $section_header_paragraph */
                 $section_header_paragraph = $paragraph_storage->create([
