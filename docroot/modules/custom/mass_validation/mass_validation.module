@@ -1481,32 +1481,17 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
       $form['#validate'][] = '_mass_validation_validate_custom_iframe_layout_paragraphs';
       break;
     case 'service_section':
-      if (isset($form['field_section_style'], $form['field_service_section_heading'], $form['field_two_column'])) {
-        // Add states to hide the URL token field when embed type is "Default".
-//        $form['field_service_section_heading']['#states'] = [
-//          'AND' => [
-//            'invisible' => [
-//              ':input[name="field_section_style"]' => ['value' => 'simple'],
-//              ':input[name="field_two_column"]' => ['value' => '0'],
-//            ],
-//          ],
-//          'required' => [
-//            ':input[name="field_section_style"]' => ['value' => 'enhanced'],
-//          ],
-//        ];
-//        $form['field_service_section_heading']['#states'] = [
-//          'invisible' => [
-//            'AND' => [
-//              [':input[name="field_section_style"]' => ['value' => 'simple']],
-//              [':input[name="field_two_column"]' => ['value' => '0']],
-//            ],
-//          ],
-//        ];
-//        $form['field_subtitle']['#states'] = [
-//          'visible' => [
-//            ':input[name="field_section_style"]' => ['value' => 'enhanced'],
-//          ],
-//        ];
+      if (isset($form['field_service_section_link'], $form['field_subtitle'], $form['field_two_column'])) {
+        $form['field_subtitle']['#states'] = [
+          'visible' => [
+            ':input[name="field_two_column[value]"]' => ['checked' => TRUE],
+          ],
+        ];
+        $form['field_service_section_link']['#states'] = [
+          'visible' => [
+            ':input[name="field_two_column[value]"]' => ['checked' => TRUE],
+          ],
+        ];
       }
       break;
     case 'tableau_embed':
