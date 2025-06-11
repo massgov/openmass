@@ -16,6 +16,10 @@
   - DP-39656: Fix crawler view which doesn't show published pages when there is an unpublished draft.
   
 
+## [0.440.1] - June 10, 2025
+
+### Added:
+- DP-39646: Service Card API: Enable core Drupal Translations.
 
 ## [0.439.0] - June 3, 2025
 
