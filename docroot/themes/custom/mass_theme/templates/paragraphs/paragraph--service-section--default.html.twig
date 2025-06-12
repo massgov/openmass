@@ -137,7 +137,7 @@
                             {% set p = item['#paragraph'] %}
 
                             {% if p.bundle == 'section_header' %}
-                              {% set item = item|merge({ '#context': { 'level': child_heading_level } }) %}
+                              {% set item = item|merge({'#context': {'level': child_heading_level}}) %}
                             {% endif %}
                           {% endif %}
                           {{ item }}
