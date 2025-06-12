@@ -1129,7 +1129,7 @@ class MassContentCommands extends DrushCommands {
           $layout = new LayoutParagraphsLayout($paragraph_field);
 
           // 3) Loop through every “root” paragraph in field_service_sections.
-          //    We only care about those with bundle = 'service_section'.
+          // We only care about those with bundle = 'service_section'.
           foreach ($layout->getRootComponents() as $root_component) {
             // Duplicate the section paragraph before modifying it, to avoid shared tree issues.
             $orig_entity = $root_component->getEntity();
@@ -1152,7 +1152,7 @@ class MassContentCommands extends DrushCommands {
               }
 
               // 6) For each old child, we want to “insert it under” our $section_paragraph
-              //    in the region called “content”. We do that via LayoutParagraphsLayout::insertAfterComponent().
+              // in the region called “content”. We do that via LayoutParagraphsLayout::insertAfterComponent().
               $section_uuid = $section_paragraph->uuid();
               foreach (array_reverse($old_children) as $child_paragraph) {
                 // Wrap the child in a LayoutParagraphsComponent so we can copy sibling settings later:
