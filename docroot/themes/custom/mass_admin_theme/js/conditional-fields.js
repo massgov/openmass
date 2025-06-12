@@ -92,7 +92,7 @@
   Drupal.behaviors.sectionHeadingFieldLogic = {
     attach: function (context, settings) {
 
-      var layoutSelector = $("div#layout-paragraphs-element");
+      var layoutSelector = $('div#layout-paragraphs-element');
       layoutSelector.addClass('visually-hidden');
       layoutSelector.prop('aria-hidden', 'true');
 
@@ -101,7 +101,6 @@
         const $twoColumn = $('input[name="field_two_column[value]"]', context); // checkbox
         const $headingFieldWrapper = $('.field--name-field-service-section-heading', context);
         const $headingInput = $('[name="field_service_section_heading[0][value]"]', context);
-        console.log($headingInput);
 
         const style = $style.filter(':checked').val(); // 'Simple' or 'Enhanced'
         const isTwoColumns = $twoColumn.prop('checked');
@@ -112,7 +111,8 @@
 
         if (shouldShow) {
           $headingFieldWrapper.show();
-        } else {
+        }
+        else {
           $headingFieldWrapper.hide();
         }
 
@@ -120,7 +120,8 @@
         if (isRequired) {
           $headingInput.prop('required', true);
           $headingFieldWrapper.find('label').addClass('js-form-required form-required');
-        } else {
+        }
+        else {
           $headingInput.prop('required', false);
           $headingFieldWrapper.find('label').removeClass('js-form-required form-required');
         }
