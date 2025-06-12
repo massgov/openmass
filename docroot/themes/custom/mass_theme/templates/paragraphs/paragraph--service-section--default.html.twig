@@ -126,94 +126,22 @@
             {% endblock %}
 
             {% block stackedRowContentOverride %}
-
               {% if content.regions %}
                 {% set child_heading_level = show_heading ? 3 : 2 %}
                 {% for region, items in content.regions %}
                   {% if not (region starts with '#') %}
-
                     <div class="layout layout--onecol-mass-service-section">
                       <div class="layout__region layout__region--content">
-                        {% set grouped_items = [] %}
-                        {% set last_group_type = '' %}
-
-                        {% for key, item in items %}
-                          {% if item['#paragraph'] is defined %}
+                        {% for item in items %}
+                          {% if item is iterable and item['#paragraph'] is defined %}
                             {% set p = item['#paragraph'] %}
 
-                            {# Determine group type #}
-                            {% set is_wrapping = p.hasField('field_iframe_wrapping') and not p.field_iframe_wrapping.isEmpty()
-                              or p.hasField('field_image_wrapping') and not p.field_image_wrapping.isEmpty()
-                              or p.hasField('field_tabl_wrapping') and not p.field_tabl_wrapping.isEmpty()
-                              or p.hasField('field_stat_wrapping') and not p.field_stat_wrapping.isEmpty() %}
-
-                            {% set group_type = '' %}
-                            {% if is_wrapping %}
-                              {% set group_type = 'default' %}
-                            {% elseif p.bundle == 'service_rich_text' %}
-                              {% set group_type = 'contained' %}
-                            {% elseif p.bundle == 'section_header' %}
-                              {% set group_type = 'section_header' %}
-                            {% elseif p.bundle in ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'] %}
-                              {% set group_type = 'self' %}
+                            {% if p.bundle == 'section_header' %}
+                              {% set item = item|merge({ '#context': { 'level': child_heading_level } }) %}
                             {% endif %}
-
-                            {# Default group: collect for batch embed #}
-                            {% if group_type == 'default' %}
-                              {% set grouped_items = grouped_items|merge([item]) %}
-
-                            {% else %}
-                              {# Flush previous default group #}
-                              {% if grouped_items and last_group_type == 'default' %}
-                                {% embed '@organisms/by-author/rich-text.twig' %}
-                                  {% block rteElements %}
-                                    {% for gitem in grouped_items %}
-                                      {{ gitem }}
-                                    {% endfor %}
-                                  {% endblock %}
-                                {% endembed %}
-                                {% set grouped_items = [] %}
-                              {% endif %}
-
-                              {# Self or contained embeds #}
-                              {% if group_type == 'self' %}
-                                {% embed '@organisms/by-author/rich-text.twig' %}
-                                  {% block rteElements %}
-                                    {{ item|merge({ '#context': { 'level': child_heading_level } }) }}
-                                  {% endblock %}
-                                {% endembed %}
-                              {% elseif group_type == 'contained' %}
-                                {% embed '@organisms/by-author/rich-text.twig' with {'headerIndent': 'om__contained-component'} %}
-                                  {% block rteElements %}
-                                    {{ item }}
-                                  {% endblock %}
-                                {% endembed %}
-                              {% elseif group_type == 'section_header' %}
-                                {% embed '@organisms/by-author/rich-text.twig' %}
-                                  {% block rteElements %}
-                                    {% set item_with_context = item|merge({ '#context': { 'level': child_heading_level } }) %}
-                                    {{ item_with_context }}
-                                  {% endblock %}
-                                {% endembed %}
-                              {% else %}
-                                {{ item }}
-                              {% endif %}
-                            {% endif %}
-
-                            {% set last_group_type = group_type %}
                           {% endif %}
+                          {{ item }}
                         {% endfor %}
-
-                        {# Final flush of any remaining grouped items #}
-                        {% if grouped_items and last_group_type == 'default' %}
-                          {% embed '@organisms/by-author/rich-text.twig' %}
-                            {% block rteElements %}
-                              {% for gitem in grouped_items %}
-                                {{ gitem }}
-                              {% endfor %}
-                            {% endblock %}
-                          {% endembed %}
-                        {% endif %}
                       </div>
                     </div>
                   {% endif %}
