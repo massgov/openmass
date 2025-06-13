@@ -294,7 +294,16 @@
     },
     "scripts": {
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
-        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom"
+        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom",
+        "remove-git": [
+            "bash scripts/remove_vendor_git_folders.sh || :"
+        ],
+        "post-install-cmd": [
+            "@remove-git"
+        ],
+        "post-update-cmd": [
+            "@remove-git"
+        ]
     },
     "conflict": {
         "drupal/core": "<=10.2"
