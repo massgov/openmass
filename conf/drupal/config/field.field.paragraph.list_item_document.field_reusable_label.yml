@@ -1,0 +1,29 @@
+uuid: 4b7aedb4-3a75-402c-beca-4790d6d9a49b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_reusable_label
+    - paragraphs.paragraphs_type.list_item_document
+    - taxonomy.vocabulary.label
+id: paragraph.list_item_document.field_reusable_label
+field_name: field_reusable_label
+entity_type: paragraph
+bundle: list_item_document
+label: 'Add labels to start transitioning this page to a collection'
+description: "<p>Use this field if you want to retire this curated list (or this section of a curated list) and create a collection instead. Don’t use this field to manage labels. When you’ve moved your documents to a collection, remove this section (or page). </p>\r\n\r\n<p>To use: Start typing to choose an existing <a href=\"https://www.mass.gov/kb/labels\">label</a> or add a new one by entering it directly in the field. It will automatically be added to all of the documents in this section. Then, you can <a href=\"https://edit.mass.gov/admin/ma-dash/reports/add-collections-documents\">bulk add them to a collection</a>.</p>\r\n\r\n<p><strong>IMPORTANT</strong>: Be sure to create labels specific to the purpose. The label field is shared across the whole site. Your label should be unique and identifiable to prevent overlap with others. For example, use \"DOR directives\" or \"MassHealth enrollment forms\" rather than \"Directives\" or \"Enrollment forms.\"</p>"
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      label: label
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference
