@@ -7309,6 +7309,28 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 }
 
 /**
+ * Join contiguous flexible link groups, type links, into the same element.
+ */
+function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables, $destination = 'service') {
+  $component_name = $destination . '_components';
+  if (count($links_group) < 2) {
+    return;
+  }
+  $first = array_keys($links_group)[0];
+  foreach ($links_group as $key => $link_group) {
+    if ($key == $first) {
+      continue;
+    }
+
+    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
+
+    // Empty elements included previously.
+    $variables[$component_name][$key] = FALSE;
+  }
+  $links_group = [];
+}
+
+/**
  * Checks if the paragraph has one of the fields and has a value for it.
  */
 function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields) {
