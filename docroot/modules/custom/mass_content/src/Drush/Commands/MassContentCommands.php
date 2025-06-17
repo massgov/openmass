@@ -1033,21 +1033,17 @@ class MassContentCommands extends DrushCommands {
 
           $revision_to_restore->setNewRevision(TRUE);
           $revision_to_restore->isDefaultRevision(TRUE);
-          $revision_to_restore->setRevisionLogMessage('Restored from migration');
+          $revision_to_restore->setRevisionLogMessage('Restored revision after layout paragraphs migration');
           $revision_to_restore->setRevisionCreationTime(\Drupal::time()->getRequestTime());
           $revision_to_restore->setChangedTime(\Drupal::time()->getRequestTime());
 
           // Make sure at least one field has changed.
-          $revision_to_restore->setTitle($revision_to_restore->getTitle() . ' qaq');
+          $revision_to_restore->setTitle($revision_to_restore->getTitle() . " ");
 
           $revision_to_restore->save();
-          dump($revision_to_restore->toUrl()->toString());
-
 
           if ($options['detailed-verbalization']) {
-            dump($nid);
             $this->output()->writeln("Restored and set new default revision for node {$nid}.");
-            exit();
           }
         }
 
@@ -1070,6 +1066,31 @@ class MassContentCommands extends DrushCommands {
     $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
   }
 
+  /**
+   * Transforms service section layout paragraphs into Layout Paragraphs format.
+   *
+   * This function modifies the layout structure of a given entity's
+   * `field_service_sections` by:
+   * - Converting `service_section` and `key_message_section` paragraphs into
+   *   Layout Paragraphs containers with `onecol_mass` layout.
+   * - Duplicating and reparenting each referenced child paragraph from
+   *   `field_service_section_content` into the Layout Paragraphs structure under
+   *   their section parent in the `content` region.
+   * - Migrating section headings into new `section_header` paragraphs based on
+   *   a style/visibility/column configuration matrix.
+   * - Clearing out old heading values to avoid duplication where necessary.
+   * - Ensuring all updated paragraphs are registered as layout components.
+   *
+   * This function assumes that the entity being passed has a
+   * `field_service_sections` field and its referenced paragraphs follow the
+   * legacy structure.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The node or parent entity containing the `field_service_sections` field.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The updated entity with its service sections restructured for Layout Paragraphs.
+   */
   public function serviceSectionLayoutParagraphHelper ($entity) {
     $paragraph_storage = $this->entityTypeManager->getStorage('paragraph');
     $paragraph_field = $entity->get('field_service_sections');
