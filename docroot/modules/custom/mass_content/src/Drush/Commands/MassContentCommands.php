@@ -1091,13 +1091,12 @@ class MassContentCommands extends DrushCommands {
    * @return \Drupal\Core\Entity\EntityInterface
    *   The updated entity with its service sections restructured for Layout Paragraphs.
    */
-  public function serviceSectionLayoutParagraphHelper ($entity) {
+  public function serviceSectionLayoutParagraphHelper($entity) {
     $paragraph_storage = $this->entityTypeManager->getStorage('paragraph');
     $paragraph_field = $entity->get('field_service_sections');
     $layout = new LayoutParagraphsLayout($paragraph_field);
 
-
-    // 3) Loop through every “root” paragraph in field_service_sections.
+    // Loop through every “root” paragraph in field_service_sections.
     // We only care about those with bundle = 'service_section'.
     foreach ($paragraph_field->referencedEntities() as $section_paragraph) {
 
