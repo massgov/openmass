@@ -1,5 +1,24 @@
 
 
+## [0.442.0] - June 17, 2025
+
+### Fixed
+  - DP-31079: Fixed GTM tracking of search form submissions for global and scoped searches on mass.gov.
+  
+### Changed
+  - DP-37775: CSV table module has accessibility issues whenever rows are expanded.
+  - DP-38252: SPIKE investigate possible ways to label or add collection data to documents in bulk.
+  - DP-39568: Changed paragraphs on news and lists to use stable paragraphs view rather than legacy.
+  
+### Added
+  - DP-39751: Expand combine operator for the collections search.
+  - DP-39881: Add viewer role to the system.
+  
+### Removed
+  - DP-39770: Removed the Contrast Settings feature and reverted the changes introduced in the original PR that added the UserWay accessibility tools.
+  
+
+
 ## [0.441.0] - June 10, 2025
 
 ### Changed
