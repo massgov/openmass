@@ -13,7 +13,9 @@
 
           // Create a new callback that wraps the original
           iframe.iFrameResizer.options.messageCallback = function (messageData) {
+
             const {message} = messageData;
+            console.log(message)
 
             if (message.type === 'scrollToFocus') {
               const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
