@@ -6,6 +6,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mass_content\Entity\Bundle\node\LocationBundle;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
@@ -119,10 +120,39 @@ class Organisms {
       ],
     ];
 
+    // In case this is a location bundle we include Primary contact as well.
+    if ($entity instanceof LocationBundle) {
+      $map['contact_info'] = ['field_ref_contact_info_1'];
+    }
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
 
     $ref_items = Helper::getReferencedEntitiesFromField($entity, $fields['items']);
+
+    // Include Primary contact if this is a location bundle.
+    if (!empty($fields['contact_info'])) {
+      $ref_primary_contact_info = Helper::getReferencedEntitiesFromField($entity, $fields['contact_info']);
+
+      if (!empty($ref_primary_contact_info)) {
+        // Map of reference fields.
+        $reference_map = [
+          'address' => 'field_ref_address',
+          'phone'   => 'field_ref_phone_number',
+          'online'  => 'field_ref_links',
+          'fax'     => 'field_ref_fax_number',
+        ];
+
+        foreach ($ref_primary_contact_info as $contact_info) {
+          // Filter out populated fields for the current contact info.
+          $available_fields = array_filter($reference_map, fn($field) => Helper::isFieldPopulated($contact_info, $field));
+
+          // Merge references if more than one field is available.
+          if (count($available_fields) > 1) {
+            $ref_items = array_merge([$contact_info], $ref_items);
+          }
+        }
+      }
+    }
 
     foreach ($ref_items as $item) {
       // Get entity cache tags.
