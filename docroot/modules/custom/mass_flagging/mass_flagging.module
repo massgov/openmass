@@ -98,17 +98,60 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
       // Checks whether moderation state has been changed between revisions.
       $entity_type_manager = \Drupal::entityTypeManager();
       $node_storage = $entity_type_manager->getStorage('node');
-      $previous_revision = $node_storage->loadRevision($node->getLoadedRevisionId());
-      $current_revision = $node_storage->loadRevision($node->getRevisionId());
+      try {
+        $previous_revision = $node_storage->loadRevision($node->getLoadedRevisionId());
+        $current_revision = $node_storage->loadRevision($node->getRevisionId());
+      }
+      catch (\Throwable $e) {
+        \Drupal::logger('mass_flagging')->error('Failed to load revisions for node @nid. Loaded revision ID: @loaded_vid, Current revision ID: @current_vid. Error: @error', [
+          '@nid' => $node->id(),
+          '@loaded_vid' => $node->getLoadedRevisionId(),
+          '@current_vid' => $node->getRevisionId(),
+          '@error' => $e->getMessage(),
+        ]);
+        return;
+      }
       $has_new_moderation_state = FALSE;
       $previous_moderation_state = '';
       $current_moderation_state = '';
-      if ($previous_revision->get('moderation_state')->getString() != $current_revision->get('moderation_state')->getString()) {
-        $has_new_moderation_state = TRUE;
+      if ($previous_revision && $current_revision &&
+          $previous_revision->hasField('moderation_state') && $current_revision->hasField('moderation_state') &&
+          !$previous_revision->get('moderation_state')->isEmpty() && !$current_revision->get('moderation_state')->isEmpty()) {
+
         $previous_moderation_state = $previous_revision->get('moderation_state')->getString();
         $current_moderation_state = $current_revision->get('moderation_state')->getString();
+
+        if ($previous_moderation_state !== $current_moderation_state) {
+          $has_new_moderation_state = TRUE;
+          \Drupal::logger('mass_flagging')->info('Moderation state changed for node @nid: @from → @to', [
+            '@nid' => $node->id(),
+            '@from' => $previous_moderation_state,
+            '@to' => $current_moderation_state,
+          ]);
+        }
       }
-      $is_published_has_new_draft = $previous_revision->get('moderation_state')->getString() == MassModeration::PUBLISHED && $node->get('moderation_state')->getString() == MassModeration::DRAFT;
+      else {
+        \Drupal::logger('mass_flagging')->warning('Missing or invalid moderation_state for node @nid. Previous revision present: @prev, Current revision present: @curr, Previous has field: @prev_has_field, Current has field: @curr_has_field, Previous empty: @prev_empty, Current empty: @curr_empty', [
+          '@nid' => $node->id(),
+          '@prev' => $previous_revision ? 'yes' : 'no',
+          '@curr' => $current_revision ? 'yes' : 'no',
+          '@prev_has_field' => ($previous_revision && $previous_revision->hasField('moderation_state')) ? 'yes' : 'no',
+          '@curr_has_field' => ($current_revision && $current_revision->hasField('moderation_state')) ? 'yes' : 'no',
+          '@prev_empty' => ($previous_revision && $previous_revision->hasField('moderation_state') && $previous_revision->get('moderation_state')->isEmpty()) ? 'yes' : 'no',
+          '@curr_empty' => ($current_revision && $current_revision->hasField('moderation_state') && $current_revision->get('moderation_state')->isEmpty()) ? 'yes' : 'no',
+        ]);
+      }
+      $is_published_has_new_draft = $previous_revision && $previous_revision->hasField('moderation_state') &&
+          !$previous_revision->get('moderation_state')->isEmpty() &&
+          $previous_revision->get('moderation_state')->getString() == MassModeration::PUBLISHED &&
+          $node->hasField('moderation_state') && !$node->get('moderation_state')->isEmpty() &&
+          $node->get('moderation_state')->getString() == MassModeration::DRAFT;
+
+      if ($is_published_has_new_draft) {
+        \Drupal::logger('mass_flagging')->info('Published node @nid now has a new draft revision.', [
+          '@nid' => $node->id(),
+        ]);
+      }
 
       // Checks for Image paragraph change.
       $image_change = \Drupal::service('mass_flagging.entity_comparison')->checkRevisionforImageSectionChanges($current_revision, $previous_revision);
