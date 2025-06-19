@@ -1,9 +1,10 @@
 
 
-## [0.442.1] - June 18, 2025
+## [0.442.1] - June 19, 2025
 
 ### Fixed:
   - DP-39934: Fix 500 errors. Disable HUX module.
+  - DP-39974: Fix critical CSV table bug.
 
 ## [0.442.0] - June 17, 2025
 
