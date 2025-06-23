@@ -22,14 +22,17 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
     _mass_views_apply_select2_to_multiselects($form);
   }
 
+  /** @var \Drupal\views\ViewExecutable $view */
   $view = $form_state->getStorage('view');
-
-  if (($view['view']->id() == 'crawler_pages' && $view['view']->getDisplay()->display['id'] == 'page_1') || ($view['view']->id() == 'crawler_documents' && $view['view']->getDisplay()->display['id'] == 'media_page_list')) {
-    $form['crawl-auth'] = [
-      '#type' => 'textfield',
-      '#title' => t('Crawl auth key'),
-    ];
+  if (in_array($view['view']->id(), ['crawler_pages', 'crawler_documents'])) {
+    if (in_array($view['view']->getDisplay()->display['id'], ['page_1', 'media_page_list'])) {
+      $form['crawl-auth'] = [
+        '#type' => 'textfield',
+        '#title' => t('Crawl auth key'),
+      ];
+    }
   }
+
   if ($view['view']->id() === "non_english_documents" && $view['view']->getDisplay()->display['id'] === "page_1") {
     if ($form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']) {
       $form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']['#type'] = 'radios';
@@ -190,7 +193,7 @@ function mass_views_preprocess_views_view_field(&$variables) {
         'field' => 'title',
         'route_parameter' => 'node',
         'route' => 'entity.node.canonical',
-        'id_field' => 'node_field_data_node_field_revision_nid',
+        'id_field' => 'nid',
         'cache_tag' => 'node_list',
       ],
     ],
