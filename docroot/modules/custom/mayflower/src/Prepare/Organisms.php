@@ -1369,7 +1369,7 @@ class Organisms {
     }
     else {
       $description = [];
-    };
+    }
 
     $table = [];
     if (!empty($items)) {
@@ -1594,6 +1594,7 @@ class Organisms {
       'fax' => 'fax-icon',
       'in person' => 'profile',
       'text' => 'message',
+      'by_email' => 'mail',
     ];
 
     // Roll up our action steps.
