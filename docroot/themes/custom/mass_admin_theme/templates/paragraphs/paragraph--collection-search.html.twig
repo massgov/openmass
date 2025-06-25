@@ -1,0 +1,16 @@
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% include "@organisms/by-template/search-box-with-links.twig" with searchBoxWithLinks %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}
+

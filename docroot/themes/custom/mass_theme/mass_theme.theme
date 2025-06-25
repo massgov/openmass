@@ -19,7 +19,6 @@ use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
-use Drupal\mass_content\EventsRendererOrgPages;
 use Drupal\mass_content\Entity\Bundle\node\GlossaryBundle;
 use Drupal\mass_utility\RelatedToHelper;
 use Drupal\mayflower\Helper;
@@ -29,7 +28,6 @@ use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Prepare\Schemas;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
-use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\schema_metatag\SchemaMetatagManager;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DomCrawler\Crawler;
@@ -6844,64 +6842,6 @@ function mass_theme_preprocess_media_document(array &$variables) {
       }
     }
     $variables['curated_rows'] = $list_table_rows;
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Prepare collection_search values for template.
- */
-function mass_theme_preprocess_paragraph__collection_search(&$variables) {
-  $variables['searchBoxWithLinks'] = [];
-  $variables['searchBoxWithLinks']['form'] = [];
-
-  $p = $variables['paragraph'];
-  $variables['searchBoxWithLinks']['form']['headingText'] = $p->field_search_heading->value;
-  $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
-
-  switch ($p->field_search_type->value) {
-    case 'external':
-      if ($param_name = $p->field_search_query_param_name->value) {
-        $parsed_url = UrlHelper::parse($p->field_search_site_url->value);
-        if (array_key_exists($param_name, $parsed_url['query'])) {
-          unset($parsed_url['query'][$param_name]);
-        }
-        $action_url = Url::fromUri($parsed_url['path'], [
-          'query' => $parsed_url['query'],
-          'absolute' => TRUE,
-          'https' => TRUE,
-        ]);
-        $variables['searchBoxWithLinks']['form']['actionUrl'] = $action_url->toString();
-        $variables['searchBoxWithLinks']['form']['inputName'] = $param_name;
-      }
-      break;
-
-    case 'collection':
-      // In some rare cases field_url_name might be missing, so we set
-      // default value to avoid warnings.
-      $collection_url = '/';
-      if ($p->field_collection->referencedEntities()[0]->field_url_name) {
-        $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
-      }
-      $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
-      $variables['searchBoxWithLinks']['form']['inputName'] = t('title');
-
-      break;
-  }
-
-  $variables['searchBoxWithLinks']['form']['footerText'] = [
-    'rteElements' => [
-      Atoms::prepareTextField($p, 'field_search_footer'),
-    ],
-  ];
-
-  if (!$p->field_search_related_info->isEmpty()) {
-    $variables['searchBoxWithLinks']['secondary']['relatedInfo'] = [
-      'rteElements' => [
-        Atoms::prepareTextField($p, 'field_search_related_info'),
-      ],
-    ];
   }
 }
 
