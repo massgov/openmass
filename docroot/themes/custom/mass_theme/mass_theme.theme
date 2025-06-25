@@ -5071,39 +5071,6 @@ function mass_theme_preprocess_field(&$variables, $hook) {
     $variables['helpfulLinks'] = $helpful_links;
   }
 
-  // Setup social link icons.
-  if (in_array($element['#field_name'], ['field_services_social_links', 'field_social_links'])) {
-    // Get icons for social links.
-    $services = [
-      'twitter',
-      'facebook',
-      'threads',
-      'flickr',
-      'blog',
-      'linkedin',
-      'google',
-      'instagram',
-      'medium',
-      'youtube',
-      'vimeo',
-      'bluesky'
-    ];
-
-    foreach ($variables['items'] as $index => &$item) {
-      $url = $item['content']['#url']->toString();
-      foreach ($services as $service) {
-        if (strpos($url, $service)) {
-          $item['icon'] = Helper::getIconPath($service);
-        }
-      }
-      if (strpos($url, 'bsky')) {
-        $item['icon'] = Helper::getIconPath('bluesky');
-      }
-      elseif (strpos($url, 'x.com')) {
-        $item['icon'] = Helper::getIconPath('twitter');
-      }
-    }
-  }
 }
 
 /**
@@ -6935,43 +6902,6 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
         Atoms::prepareTextField($p, 'field_search_related_info'),
       ],
     ];
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Prepares icon value for each social link item.
- */
-function mass_theme_preprocess_field__node__field_social_links(&$variables) {
-  // Get icons for social links.
-  $services = [
-    'twitter',
-    'facebook',
-    'threads',
-    'flickr',
-    'blog',
-    'linkedin',
-    'google',
-    'instagram',
-    'medium',
-    'youtube',
-    'bluesky',
-  ];
-
-  foreach ($variables['items'] as $index => &$item) {
-    $url = $item['content']['#url']->toString();
-    foreach ($services as $service) {
-      if (strpos($url, $service)) {
-        $item['icon'] = Helper::getIconPath($service);
-      }
-    }
-    if (strpos($url, 'bsky')) {
-      $item['icon'] = Helper::getIconPath('bluesky');
-    }
-    elseif (strpos($url, 'x.com')) {
-      $item['icon'] = Helper::getIconPath('twitter');
-    }
   }
 }
 
