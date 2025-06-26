@@ -72,38 +72,41 @@
   
   Drupal.behaviors.initIframeResizer = {
     attach: function (context, settings) {
-      // First, override the jQuery iFrameResize function
-      if ($ && $.fn.iFrameResize) {
-        const originalIFrameResize = $.fn.iFrameResize;
-        
-        $.fn.iFrameResize = function(options) {
-          // Merge our onMessage handler with existing options
-          const enhancedOptions = $.extend({}, options || {});
-          const originalOnMessage = enhancedOptions.onMessage;
+      // Only run once per page to avoid duplicate overrides
+      once('once-iframe-behavior-override', 'body', context).forEach(function () {
+        // First, override the jQuery iFrameResize function
+        if ($ && $.fn.iFrameResize) {
+          const originalIFrameResize = $.fn.iFrameResize;
           
-          enhancedOptions.onMessage = function(messageData) {
-            console.log('onMessage called with:', messageData);
+          $.fn.iFrameResize = function(options) {
+            // Merge our onMessage handler with existing options
+            const enhancedOptions = $.extend({}, options || {});
+            const originalOnMessage = enhancedOptions.onMessage;
             
-            // Handle our custom focus messages
-            handleFocusMessage(messageData);
+            enhancedOptions.onMessage = function(messageData) {
+              console.log('onMessage called with:', messageData);
+              
+              // Handle our custom focus messages
+              handleFocusMessage(messageData);
+              
+              // Call original onMessage if it exists
+              if (typeof originalOnMessage === 'function') {
+                originalOnMessage(messageData);
+              }
+            };
             
-            // Call original onMessage if it exists
-            if (typeof originalOnMessage === 'function') {
-              originalOnMessage(messageData);
-            }
+            console.log('Initializing iframe with enhanced options:', enhancedOptions);
+            
+            // Call the original iFrameResize with enhanced options
+            return originalIFrameResize.call(this, enhancedOptions);
           };
-          
-          console.log('Initializing iframe with enhanced options:', enhancedOptions);
-          
-          // Call the original iFrameResize with enhanced options
-          return originalIFrameResize.call(this, enhancedOptions);
-        };
-      }
-      
-      // Then call the original initIframeResizer behavior
-      if (originalInitIframeResizer && originalInitIframeResizer.attach) {
-        originalInitIframeResizer.attach(context, settings);
-      }
+        }
+        
+        // Then call the original initIframeResizer behavior
+        if (originalInitIframeResizer && originalInitIframeResizer.attach) {
+          originalInitIframeResizer.attach(context, settings);
+        }
+      });
     }
   };
 
