@@ -29,11 +29,11 @@ index 7ad5c72..17c7a56 100644
    };
 +
 +  // Generic handler: open other components on background click (no scroll).
-+  $(document).on('click.lp-builder', '.js-lpb-component', function (e) {
++  $('.js-lpb-component').not('.lpb-layout').on('click', function (e) {
 +    e.preventDefault();
 +
 +    const $component = $(this);
-+    const $editButton = $component.find('.lpb-edit.use-ajax');
++    const $editButton = $component.find('.lpb-edit.use-ajax').first();
 +
 +    if ($editButton.length) {
 +      // Trigger modal open.
