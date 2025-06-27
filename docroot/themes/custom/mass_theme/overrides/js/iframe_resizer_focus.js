@@ -3,7 +3,6 @@
 
   // Function to handle focus messages from iframes
   function handleFocusMessage(messageData) {
-    console.log('Received focus message:', messageData);
     
     // Check if this is our custom focus message - handle both message structures
     const message = messageData.message || messageData;
