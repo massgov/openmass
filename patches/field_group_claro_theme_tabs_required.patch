@@ -1,0 +1,97 @@
+diff --git a/field_group.libraries.yml b/field_group.libraries.yml
+index 21f85842b720a0cbea031da3bd7cc43e82d6b9cf..482ca648777f6b37786f67213acafcb32c45562e 100644
+--- a/field_group.libraries.yml
++++ b/field_group.libraries.yml
+@@ -42,6 +42,9 @@ formatter.details:
+ formatter.tabs:
+   js:
+     formatters/tabs/tabs.js: {}
++  css:
++    component:
++      formatters/tabs/tabs.css: {}
+   dependencies:
+     - core/jquery
+     - core/once
+diff --git a/formatters/details/details.js b/formatters/details/details.js
+index 43f82e56c5cdd372a07ecc95fa2a7a4bedc070ab..14a29a3fe6e0c4742770f5ed9a4982a8a626b12c 100644
+--- a/formatters/details/details.js
++++ b/formatters/details/details.js
+@@ -12,7 +12,11 @@
+    */
+   Drupal.behaviors.fieldGroupDetails = {
+     attach(context) {
+-      $(once('field-group-details', '.field-group-details', context)).each(
++      // Find all field group <detail> elements.
++      // "details.field-group-tab" accounts for the fact that there
++      // is no form validation that prevents a user from nesting a Tab inside a Detail.
++      // We want to ensure the Tab (which is technically a <detail>) also gets the required class if relevant.
++      $(once('field-group-details', '.field-group-details, .field-group-details-sidebar, details.field-group-tab', context)).each(
+         (index, element) => {
+           const $this = $(element);
+ 
+@@ -22,6 +26,28 @@
+               $this.find('.form-required').length > 0)
+           ) {
+             $('summary', $this).first().addClass('form-required');
++
++            // Fix missing required asterisks in Claro theme.
++            // See: https://www.drupal.org/project/field_group/issues/3160987
++            // Claro has no styling the .form-required class on <details>
++            // (like it does for field labels), but instead needs
++            // a span.required-mark inserted if it was not already inserted
++            // via the details.html.twig template provided by Claro.
++            if ($this.hasClass('claro-details')) {
++              // Only add asterisk if it wasn't already added via the Claro details.html.twig template.
++              if ($('summary', $this).first().find('.required-mark').length === 0) {
++                // Check for additional summary <span> added via JS in Claro details.js.
++                // If it doesn't exist we can prepend the asterisk to <summary>.
++                if ($('summary', $this).first().find('.claro-details__summary-summary').length === 0) {
++                  $('summary', $this).first().append('<span class="required-mark"></span>');
++                }
++                else {
++                  // If additional summary <span> exists, we need to insert the asterisk
++                  // between the summary title text (which is not wrapped in a <span>) and the additional summary <span>.
++                  $('summary', $this).first().find('.claro-details__summary-summary').before('<span class="required-mark"></span>');
++                }
++              }
++            }
+           }
+         },
+       );
+diff --git a/formatters/fieldset/fieldset.js b/formatters/fieldset/fieldset.js
+index f81a725b9a9f4699eaac72c45c7b34afb9888fc7..2b6cd8baf975defe524d00cc9c0d04755e27378f 100644
+--- a/formatters/fieldset/fieldset.js
++++ b/formatters/fieldset/fieldset.js
+@@ -22,6 +22,12 @@
+               $this.find('.form-required').length > 0)
+           ) {
+             $('legend', $this).first().addClass('form-required');
++
++            // Fix missing required asterisks in Claro theme.
++            // See: https://www.drupal.org/project/field_group/issues/3160987
++            // Claro styling expects the .form-required class on the <span> inside <legend>
++            // not on the <legend> itself.
++            $('legend', $this).first().find('span.fieldset__label').addClass('form-required');
+           }
+         },
+       );
+diff --git a/formatters/tabs/tabs.css b/formatters/tabs/tabs.css
+new file mode 100644
+index 0000000000000000000000000000000000000000..71e218a6ec6a1b4f8aa3392af67042292228fe4b
+--- /dev/null
++++ b/formatters/tabs/tabs.css
+@@ -0,0 +1,14 @@
++/**
++ * Fix missing required asterisks in Claro theme.
++ * See: https://www.drupal.org/project/field_group/issues/3160987
++ * Claro has no styling for the .form-required class on tabs, so we replicate
++ * the styling Claro uses for required field labels.
++ **/
++html[data-once~="claroDetails"] .horizontal-tabs-list .form-required::after,
++html[data-once~="claroDetails"] .vertical-tabs__menu .form-required::after {
++  display: inline-block;
++  margin-inline: 0.15em;
++  content: "*";
++  color: var(--color-maximumred, #dc2323);
++  font-size: 0.875rem;
++}
