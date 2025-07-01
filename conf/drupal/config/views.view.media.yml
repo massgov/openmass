@@ -16,6 +16,7 @@ dependencies:
     - file
     - image
     - media
+    - media_entity_download
     - rest
     - serialization
     - user
@@ -1292,8 +1293,14 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: target_id
-          type: file_default
-          settings: {  }
+          type: media_entity_download_download_link
+          settings:
+            trim_length: 80
+            url_only: false
+            url_plain: false
+            rel: '0'
+            target: _blank
+            disposition: attachment
           group_column: ''
           group_columns: {  }
           group_rows: true
