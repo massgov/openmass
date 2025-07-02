@@ -191,21 +191,39 @@ input[type="radio"]{
   float: right;
 }
 
-.js-lpb-component.paragraph--type--stat .ma__callout-stats--right {
+.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--left) {
+  width: 45%;
+  min-width: 230px;
+  float: left;
+}
+
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--right,
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--left {
   float: none;
   width: 100%;
 }
 
-.js-lpb-component.paragraph--type--stat .ma__callout-stats--right:before {
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--right:before,
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--left:before {
   z-index: 0;
 }
 
-.js-lpb-component.paragraph--type--stat .ma__callout-stats--right span {
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--right span,
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--left span {
   position: relative;
 }
 
-.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--right) + .js-lpb-component {
+.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--right) + .js-lpb-component:not(.paragraph--type--stat):not(.paragraph--type--pull-quote),
+.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--left) + .js-lpb-component:not(.paragraph--type--stat):not(.paragraph--type--pull-quote) {
   width: 55%;
+}
+
+.js-lpb-component.paragraph--type--pull-quote {
+  clear: both;
+}
+
+.js-lpb-component.paragraph--type--pull-quote .ma__callout__author {
+  white-space: nowrap;
 }
 
 .js-lpb-component p,
@@ -289,13 +307,15 @@ html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-dropdown__panel.ck-dropdo
 }
 
 
-.js-lpb-component-list .ma__callout-links-three-up__container {
+.js-lpb-component-list .ma__callout-links-three-up__container,
+.js-lpb-component-list .ma__sections-3up__container {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-.js-lpb-component-list .ma__callout-links-three-up__container > * {
+.js-lpb-component-list .ma__callout-links-three-up__container > *,
+.js-lpb-component-list .ma__sections-3up__container > * {
   flex: 0 0 calc(33.333% - 1rem);
   margin: 0;
   box-sizing: border-box;
@@ -318,4 +338,3 @@ html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-dropdown__panel.ck-dropdo
 .js-lpb-component-list .ma__collapsible-header__button {
   width: auto !important;
 }
-
