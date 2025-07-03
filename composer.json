@@ -163,7 +163,7 @@
         "drupal/core-composer-scaffold": "^10",
         "drupal/core-project-message": "^10",
         "drupal/core-recommended": "^10",
-        "drupal/csv_field": "^1.0",
+        "drupal/csv_field": "^2.0",
         "drupal/csv_serialization": "^2.0 || ^3.0",
         "drupal/datalayer": "^2",
         "drupal/devel": "^5",
@@ -387,6 +387,9 @@
             "drupal/conditional_fields": {
                 "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch"
             },
+            "drupal/csv_field": {
+                "Add resize observer to parent class": "patches/csv-field-wrapper-class-ma__csvtable.patch"
+            },
             "drupal/entity_embed": {
                 "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "patches/entity_embed/Trying-to-edit-embedded-entities-causes-uncaught-exception.patch",
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
@@ -468,9 +471,6 @@
             },
             "drupal/seven": {
                 "Add ckeditor5-stylesheets config (https://www.drupal.org/project/seven/issues/3267440)": "https://www.drupal.org/files/issues/2023-04-27/seven_add_ckeditor5-stylesheets-3267440-7.patch"
-            },
-            "drupal/csv_field": {
-                "Review accessiblility issue with CSV table feature - DP-32499": "patches/DP-32499_csv_field_a11y_fix.patch"
             },
             "drupal/video_embed_field": {
                 "Support youtube shorts (https://www.drupal.org/project/video_embed_field/issues/3279789)": "patches/video_embed_field/Support-youtube-shorts.patch"
