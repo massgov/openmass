@@ -191,21 +191,39 @@ input[type="radio"]{
   float: right;
 }
 
-.js-lpb-component.paragraph--type--stat .ma__callout-stats--right {
+.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--left) {
+  width: 45%;
+  min-width: 230px;
+  float: left;
+}
+
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--right,
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--left {
   float: none;
   width: 100%;
 }
 
-.js-lpb-component.paragraph--type--stat .ma__callout-stats--right:before {
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--right:before,
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--left:before {
   z-index: 0;
 }
 
-.js-lpb-component.paragraph--type--stat .ma__callout-stats--right span {
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--right span,
+.js-lpb-component.paragraph--type--stat .ma__callout-stats--left span {
   position: relative;
 }
 
-.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--right) + .js-lpb-component {
+.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--right) + .js-lpb-component:not(.paragraph--type--stat):not(.paragraph--type--pull-quote),
+.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--left) + .js-lpb-component:not(.paragraph--type--stat):not(.paragraph--type--pull-quote) {
   width: 55%;
+}
+
+.js-lpb-component.paragraph--type--pull-quote {
+  clear: both;
+}
+
+.js-lpb-component.paragraph--type--pull-quote .ma__callout__author {
+  white-space: nowrap;
 }
 
 .js-lpb-component p,
@@ -226,7 +244,7 @@ input[type="radio"]{
   margin-left: 0;
 }
 
-.js-lpb-component-list {
+.field--name-field-info-details-sections .js-lpb-component-list {
   max-width: 820px;
 }
 
@@ -281,4 +299,42 @@ html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-dropdown__panel.ck-dropdo
 .ck-body-wrapper .ck.ck-button[data-cke-tooltip-text="You do not have the permissions needed to edit this file."],
 .ck-body-wrapper .ck.ck-button[data-cke-tooltip-text="Edit the embedded entity (opens in new tab)"] {
   display: none;
+}
+
+.js-lpb-component-list .ma__featured-item-mosaic__container,
+.js-lpb-component-list .ma__mapped-locations {
+  flex-wrap: nowrap;
+}
+
+
+.js-lpb-component-list .ma__callout-links-three-up__container,
+.js-lpb-component-list .ma__sections-3up__container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.js-lpb-component-list .ma__callout-links-three-up__container > *,
+.js-lpb-component-list .ma__sections-3up__container > * {
+  flex: 0 0 calc(33.333% - 1rem);
+  margin: 0;
+  box-sizing: border-box;
+}
+
+
+.page-node-type-service-page .layout-node-form .layout-region-node-main,
+.page-node-type-service-page .layout-node-form .layout-region-node-secondary {
+  width: 100%;
+  float: none;
+  padding-right: 0;
+}
+
+.js-lpb-component-list .service-section--enhanced-two-column .layout--onecol-mass-service-section > .layout__region--content .paragraph--type--featured-message .ma__callout-message__container .ma__callout-message,
+.js-lpb-component-list .service-section--simple-two-column .layout--onecol-mass-service-section > .layout__region--content .paragraph--type--featured-message .ma__callout-message__container .ma__callout-message {
+  width: auto;
+  margin-right: 0;
+}
+
+.js-lpb-component-list .ma__collapsible-header__button {
+  width: auto !important;
 }

@@ -4,7 +4,7 @@
  *
  * Supplement Conditional Fields module for changes the module doesn't cover.
  */
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   'use strict';
 
@@ -88,6 +88,53 @@
 
     setTimeout(overrideNews, 1);
   })();
+
+  Drupal.behaviors.sectionHeadingFieldLogic = {
+    attach: function (context, settings) {
+
+      var layoutSelector = $('div#layout-paragraphs-element');
+      layoutSelector.addClass('visually-hidden');
+      layoutSelector.prop('aria-hidden', 'true');
+
+      function evaluateHeaderFieldState() {
+        const $style = $('input[name="field_section_style"]', context);
+        const $twoColumn = $('input[name="field_two_column[value]"]', context); // checkbox
+        const $headingFieldWrapper = $('.field--name-field-service-section-heading', context);
+        const $headingInput = $('[name="field_service_section_heading[0][value]"]', context);
+
+        const style = $style.filter(':checked').val(); // 'Simple' or 'Enhanced'
+        const isTwoColumns = $twoColumn.prop('checked');
+
+        // Conditions
+        const shouldShow = (style === 'enhanced') || (style === 'simple' && isTwoColumns);
+        const isRequired = isTwoColumns;
+
+        if (shouldShow) {
+          $headingFieldWrapper.show();
+        }
+        else {
+          $headingFieldWrapper.hide();
+        }
+
+        // Add or remove required attribute
+        if (isRequired) {
+          $headingInput.prop('required', true);
+          $headingFieldWrapper.find('label').addClass('js-form-required form-required');
+        }
+        else {
+          $headingInput.prop('required', false);
+          $headingFieldWrapper.find('label').removeClass('js-form-required form-required');
+        }
+      }
+
+      // Run once on load
+      evaluateHeaderFieldState();
+
+      // Re-evaluate on change
+      $('input[name="field_section_style"]', context).on('change', evaluateHeaderFieldState);
+      $('input[name="field_two_column[value]"]', context).on('change', evaluateHeaderFieldState);
+    }
+  };
 
   Drupal.behaviors.alertsConditional = {
     attach: function (context) {
@@ -179,4 +226,4 @@
     }
   };
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);
