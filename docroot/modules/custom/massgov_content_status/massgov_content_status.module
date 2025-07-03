@@ -1,0 +1,56 @@
+<?php
+/**
+ * @file
+ * Custom module to show delayed publish success message on updated published content.
+ */
+
+
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_node_update().
+ */
+function massgov_content_status_node_update(NodeInterface $node) {
+  $storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  try {
+    if (!$node->hasField('moderation_state') || $node->get('moderation_state')->isEmpty()) {
+      return;
+    }
+
+    $current_state = $node->get('moderation_state')->getString();
+
+    if ($current_state !== 'published') {
+      return;
+    }
+
+    $revision_ids = $storage->revisionIds($node);
+    $published_exists = FALSE;
+
+    foreach ($revision_ids as $rid) {
+      if ($rid == $node->getRevisionId()) {
+        continue;
+      }
+
+      $revision = $storage->loadRevision($rid);
+      if ($revision && $revision->hasField('moderation_state') && !$revision->get('moderation_state')->isEmpty()) {
+        if ($revision->get('moderation_state')->getString() === 'published') {
+          $published_exists = TRUE;
+          break;
+        }
+      }
+    }
+
+    // Show message only if a previously published revision exists.
+    if ($published_exists) {
+      \Drupal::messenger()->addStatus(t('Changes may take up to 35 minutes to appear on www.mass.gov due to caching.'));
+    }
+
+  }
+  catch (\Throwable $e) {
+    \Drupal::logger('massgov_content_status')->error('Error checking publish history for node @nid: @error', [
+      '@nid' => $node->id(),
+      '@error' => $e->getMessage(),
+    ]);
+  }
+}
