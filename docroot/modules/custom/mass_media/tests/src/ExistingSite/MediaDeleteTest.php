@@ -60,6 +60,7 @@ class MediaDeleteTest extends MassExistingSiteBase {
         'target_id' => $file->id(),
       ],
       'status' => 1,
+      'moderation_state' => 'published'
     ]);
 
     $this->visit($file->createFileUrl());
