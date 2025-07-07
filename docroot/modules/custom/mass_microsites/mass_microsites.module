@@ -229,6 +229,9 @@ function mass_microsites_field_widget_single_element_entity_reference_hierarchy_
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function _mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build(array $element, FormStateInterface $form_state) {
+  if (!method_exists($form_state->getFormObject(), 'getEntity')) {
+    return $element;
+  }
   $entity = $form_state->getFormObject()->getEntity();
 
   // Hide the relationship weight by default.
