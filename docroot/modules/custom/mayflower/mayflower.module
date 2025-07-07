@@ -8,6 +8,8 @@
 use Composer\InstalledVersions as ComposerInstalledVersions;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\mayflower\Prepare\Molecules;
 use Drupal\mayflower\Twig\MayflowerLoader;
 
@@ -36,6 +38,15 @@ function mayflower_theme() {
       'variables' => ['imagePromos' => NULL],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mayflower_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'revision_overview_form') {
+    $form['node_revisions_table']['#caption'] = new TranslatableMarkup('Use the radio buttons in the table below to select two revisions to compare. "Source" refers to the revision being compared from, while "target" refers to the revision being compared to. Then click the "Compare selected revisions" button to generate the comparison.');
+  }
 }
 
 /**
