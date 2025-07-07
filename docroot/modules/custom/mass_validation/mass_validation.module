@@ -765,7 +765,7 @@ function _mass_validation_form_node_executive_order_form_validate(array &$form, 
               }
               else {
                 // If the link has no title and is external throw an error.
-                $form_state->setErrorByName('field_executive_order_adjustment' . '][' . $key . '][subform][' . 'field_adjustment_type_link' . '][' . $field_key, t('External links require a title.'));
+                $form_state->setErrorByName('field_executive_order_adjustment][' . $key . '][subform][field_adjustment_type_link][' . $field_key, t('External links require a title.'));
               }
             }
           }

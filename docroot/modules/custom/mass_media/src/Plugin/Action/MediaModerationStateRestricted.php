@@ -36,7 +36,7 @@ class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
       // Move file to private storage.
       $file = File::load($entity->field_upload_file->target_id);
       // Path to save files to.
-      $directory = "documents" . "/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
+      $directory = "documents/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
 
       \Drupal::service('file.repository')->move($file, 'private://' . $directory, FileExists::Replace);
     }
