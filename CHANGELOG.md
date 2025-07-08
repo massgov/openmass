@@ -1,5 +1,12 @@
 
 
+## [0.444.0] - July 8, 2025
+
+### Changed
+  - DP-38868: Move patches to the local file system, remove .git folders from composer dependencies.
+  
+
+
 ## [0.443.0] - July 2, 2025
 
 ### Fixed
