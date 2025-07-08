@@ -237,6 +237,7 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
     $this->assertSession()->pageTextContains($child1['title']);
     $this->getCurrentPage()->find('css', '.vbo-table .select-all input')->check();
+    $this->getSession()->wait(2000);
     $this->getCurrentPage()->pressButton('Change parent');
 
     // Bulk updating to the new parent (second parent).
