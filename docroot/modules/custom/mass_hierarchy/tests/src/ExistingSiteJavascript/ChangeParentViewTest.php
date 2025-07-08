@@ -152,7 +152,7 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertSession()->pageTextContains($child2['title']);
 
     // Select all of them to change their parent.
-    $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
+    $this->getCurrentPage()->find('css', '.vbo-table .select-all input')->check();
     $this->getSession()->wait(3000);
     $button = $this->getCurrentPage()->findButton('Change parent');
     $this->assertNotNull($button, 'The "Change parent" button was not found.');
@@ -236,7 +236,7 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     // Selecting the node to change the parent.
     $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
     $this->assertSession()->pageTextContains($child1['title']);
-    $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
+    $this->getCurrentPage()->find('css', '.vbo-table .select-all input')->check();
     $this->getCurrentPage()->pressButton('Change parent');
 
     // Bulk updating to the new parent (second parent).
