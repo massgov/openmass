@@ -1,5 +1,22 @@
 
 
+## [0.443.0] - July 2, 2025
+
+### Fixed
+  - DP-39642: Inject modal focus onMessage handler before iframe initialization to fix the inconsistency in focus behavior.
+  - DP-39925: Rich text table with scrollbar is not keyboard accessible.
+  - DP-40034: Fix JS console error after utility nav item removal.
+  - DP-40116: Fix missing scrollbar on all pages.
+  - DP-40188: Table Headers Display Incorrectly While Scrolling.
+  
+### Added
+  - DP-39824: Added mail icon to the email how-to method.
+  
+### Changed
+  - DP-40033: Suppress CSV table editorially warning on empty table footer.
+  
+
+
 ## [0.442.1] - June 19, 2025
 
 ### Fixed:
