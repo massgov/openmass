@@ -120,7 +120,7 @@ function mass_entityaccess_userreference_node_form_alter(&$form, FormStateInterf
 
     if (isset($form['enable_restricted_content']['mass_entity_access_enabled']['#title'])) {
       $restrict_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/restricted-access');
-      $form['enable_restricted_content']['mass_entity_access_enabled']['#title'] = new FormattableMarkup('Hide the content of this page from all users except the author while it’s unpublished.' . ' @restrict', [
+      $form['enable_restricted_content']['mass_entity_access_enabled']['#title'] = new FormattableMarkup('Hide the content of this page from all users except the author while it’s unpublished. @restrict', [
         '@restrict' => Link::fromTextAndUrl('Learn how to restrict access to sensitive content until you’re ready to publish it.', $restrict_url)->toString(),
       ]);
     }
