@@ -20,15 +20,107 @@ index e01d327..14adad2 100644
 +  background-color: rgba(0, 0, 255, 0.05);
 +}
 diff --git a/js/builder.js b/js/builder.js
-index 7ad5c72..17c7a56 100644
+index 2d385cb..58f6666 100644
 --- a/js/builder.js
 +++ b/js/builder.js
-@@ -704,6 +704,20 @@
+@@ -1,6 +1,45 @@
+ (($, Drupal, debounce, dragula, once) => {
+   const idAttr = 'data-lpb-id';
+ 
++  let triggerElement = null; // To track the element that triggered the AJAX request.
++  let scrollPosition = 0; // To store the scroll position.
++
++  /**
++   * Hook into Drupal.ajax and capture the triggering element.
++   */
++  Drupal.behaviors.captureAjaxTrigger = {
++    attach: function (context, settings) {
++      // Iterate over all AJAX objects to bind a `beforeSend` hook.
++      if (Drupal.ajax) {
++        Object.values(Drupal.ajax.instances || {}).forEach((ajaxInstance) => {
++          if (!ajaxInstance || ajaxInstance.captureTriggerHook) {
++            // Skip already hooked instances.
++            return;
++          }
++          // Add a custom beforeSend handler.
++          ajaxInstance.options.beforeSend = function (xhr, ajaxSettings) {
++            const element = $(ajaxInstance.element);
++
++            // Check if the triggering element is the Edit button.
++            if (element.is('.lpb-edit.use-ajax')) {
++              // Capture the triggering element and save the scroll position.
++              triggerElement = element;
++              scrollPosition = $(window).scrollTop();
++            }
++
++            // Call the original beforeSend if it exists.
++            if (ajaxInstance.originalBeforeSend) {
++              return ajaxInstance.originalBeforeSend(xhr, ajaxSettings);
++            }
++          };
++
++          // Mark this instance as hooked.
++          ajaxInstance.captureTriggerHook = true;
++        });
++      }
++    }
++  };
++
+   /**
+    * Attaches UI elements to $container.
+    * @param {jQuery} $container
+@@ -559,10 +598,27 @@
+ 
+       // Listen to relevant events and update UI.
+       once('lpb-events', '[data-lpb-id]').forEach((el) => {
+-        $(el).on('lpb-builder:init.lpb lpb-component:insert.lpb lpb-component:update.lpb lpb-component:move.lpb lpb-component:drop.lpb lpb-component:delete.lpb', (e) => {
+-          const $element = $(e.currentTarget);
+-          updateUi($element);
+-        });
++        $(el).on(
++          'lpb-builder:init.lpb lpb-component:insert.lpb lpb-component:update.lpb lpb-component:move.lpb lpb-component:drop.lpb lpb-component:delete.lpb',
++          (e) => {
++            const $element = $(e.currentTarget);
++            // Trigger scroll restoration for  'update' event.
++            if (e.type === 'lpb-component:update') {
++              if (triggerElement) {
++                window.scrollTo({
++                    top: scrollPosition,
++                    behavior: 'auto',
++                });
++              }
++            }
++            updateUi($element);
++            // Remove focus from all `+` buttons after a new component is inserted.
++            const $addButton = $element.find('.lpb-btn--add:focus');
++            if ($addButton.length) {
++              $addButton.blur();
++            }
++          }
++        );
+       });
+ 
+       // Initialize the editor drag and drop ui.
+@@ -611,6 +667,13 @@
+     const $element = $dialog || jQuery(event.target);
+     if ($element.attr('id').startsWith('lpb-dialog-')) {
+       updateDialogButtons($element);
++      if (triggerElement) {
++        window.scrollTo({
++            top: scrollPosition,
++            behavior: 'auto',
++        });
++        triggerElement.focus();
++      }
+       clearInterval(lpDialogInterval);
+       lpDialogInterval = setInterval(
+         repositionDialog.bind(null, lpDialogInterval),
+@@ -618,6 +681,20 @@
        );
      }
    };
 +
-+  // Generic handler: open other components on background click (no scroll).
++  // Generic handler: open other components on background click.
 +  $('.js-lpb-component').not('.lpb-layout').on('click', function (e) {
 +    e.preventDefault();
 +
