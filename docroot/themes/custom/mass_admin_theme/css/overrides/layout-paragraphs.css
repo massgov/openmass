@@ -335,6 +335,27 @@ html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-dropdown__panel.ck-dropdo
   margin-right: 0;
 }
 
-.js-lpb-component-list .ma__collapsible-header__button {
-  width: auto !important;
+.js-lpb-component-list .ma__collapsible-header__button,
+.js-lpb-component-list .ma__contact-us--accordion .ma__contact-us__header {
+  box-sizing: border-box;
+}
+
+.js-lpb-component-list {
+  line-height: 1.6;
+}
+
+.js-lpb-component-list .ma__callout-link__container {
+  font-size: 1.375rem;
+}
+
+.js-lpb-component-list .ma__callout-message .ma__rich-text ul:last-child {
+  margin-bottom: revert;
+}
+
+@media(min-width: 1321px) {
+  .js-lpb-component-list .ma__video--new {
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 500px;
+  }
 }
