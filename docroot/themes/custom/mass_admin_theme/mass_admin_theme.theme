@@ -10,6 +10,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Molecules;
+use Drupal\node\NodeInterface;
 use Drupal\views\Views;
 
 /**
@@ -139,6 +140,36 @@ function mass_admin_theme_preprocess_menu_local_action(&$variables) {
     return $item != 'button--small';
   });
   $variables['link']['#options']['attributes']['class'] = $classes;
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for layout_paragraphs_builder templates.
+ *
+ * Adds the current node type (bundle) to the template variables when on
+ * a node edit or add form.
+ */
+function mass_admin_theme_preprocess_layout_paragraphs_builder(&$variables) {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  // Default to NULL
+  $variables['node_type'] = NULL;
+
+  // Case 1: Edit form
+  if ($route_name === 'entity.node.edit_form') {
+    $node = $route_match->getParameter('node');
+    if ($node instanceof NodeInterface) {
+      $variables['node_type'] = $node->bundle();
+    }
+  }
+
+  // Case 2: Add form
+  elseif (str_starts_with($route_name, 'node.add')) {
+    $node_type = $route_match->getParameter('node_type');
+    if (!empty($node_type)) {
+      $variables['node_type'] = $node_type->id();
+    }
+  }
 }
 
 /**
