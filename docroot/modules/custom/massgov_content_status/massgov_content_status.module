@@ -57,7 +57,7 @@ function massgov_content_status_entity_update(EntityInterface $entity) {
       ->allRevisions()
       ->condition('mid', $entity->id())
       ->sort('revision_id', 'DESC')
-      ->accessCheck(FALSE)    // Disable access check for this query
+      ->accessCheck(FALSE)
       ->execute();
 
     foreach (array_keys($revision_ids) as $rid) {
