@@ -170,6 +170,9 @@ function mass_translations_preprocess_node(&$variables) {
  * Adapted from content_translation.module.
  */
 function mass_translations_page_attachments(array &$attachments) {
+  // Attach the translate-communication library to all pages
+  $attachments['#attached']['library'][] = 'mass_translations/translate-communication';
+
   $cache = CacheableMetadata::createFromRenderArray($attachments);
   $route_match = Drupal::routeMatch();
 
