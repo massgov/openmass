@@ -5,33 +5,41 @@
  * Custom module to show delayed publish success message on updated published content.
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\node\NodeInterface;
+use Drupal\media\MediaInterface;
+use Drupal\Core\Render\Markup;
 
 /**
- * Implements hook_node_update().
+ * Implements hook_entity_update().
  */
-function massgov_content_status_node_update(NodeInterface $node) {
-  $storage = \Drupal::entityTypeManager()->getStorage('node');
+function massgov_content_status_entity_update(EntityInterface $entity) {
+  if (!($entity instanceof NodeInterface || $entity instanceof MediaInterface)) {
+    return;
+  }
 
-  try {
-    if (!$node->hasField('moderation_state') || $node->get('moderation_state')->isEmpty()) {
-      return;
-    }
+  if (!$entity->hasField('moderation_state') || $entity->get('moderation_state')->isEmpty()) {
+    return;
+  }
 
-    $current_state = $node->get('moderation_state')->getString();
+  $current_state = $entity->get('moderation_state')->getString();
 
-    if ($current_state !== 'published') {
-      return;
-    }
+  // Only continue if the current moderation state is 'published'.
+  if ($current_state !== 'published') {
+    return;
+  }
 
-    $revision_ids = $storage->revisionIds($node);
-    $published_exists = FALSE;
+  $published_exists = FALSE;
+
+  // For pages, check revision history for previous published revisions.
+  if ($entity instanceof NodeInterface) {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $revision_ids = $storage->revisionIds($entity);
 
     foreach ($revision_ids as $rid) {
-      if ($rid == $node->getRevisionId()) {
+      if ($rid == $entity->getRevisionId()) {
         continue;
       }
-
       $revision = $storage->loadRevision($rid);
       if ($revision && $revision->hasField('moderation_state') && !$revision->get('moderation_state')->isEmpty()) {
         if ($revision->get('moderation_state')->getString() === 'published') {
@@ -40,17 +48,33 @@ function massgov_content_status_node_update(NodeInterface $node) {
         }
       }
     }
-
-    // Show message only if a previously published revision exists.
-    if ($published_exists) {
-      \Drupal::messenger()->addStatus(t('Changes may take up to 35 minutes to appear on www.mass.gov due to caching.'));
-    }
-
   }
-  catch (\Throwable $e) {
-    \Drupal::logger('massgov_content_status')->error('Error checking publish history for node @nid: @error', [
-      '@nid' => $node->id(),
-      '@error' => $e->getMessage(),
-    ]);
+
+  // For documents, check media revision history via revision query.
+  elseif ($entity instanceof MediaInterface) {
+    $storage = \Drupal::entityTypeManager()->getStorage('media');
+    $revision_ids = $storage->getQuery()
+      ->allRevisions()
+      ->condition('mid', $entity->id())
+      ->sort('revision_id', 'DESC')
+      ->accessCheck(FALSE)    // Disable access check for this query
+      ->execute();
+
+    foreach (array_keys($revision_ids) as $rid) {
+      if ($rid == $entity->getRevisionId()) {
+        continue;
+      }
+      $revision = $storage->loadRevision($rid);
+      if ($revision && $revision->hasField('moderation_state') && !$revision->get('moderation_state')->isEmpty()) {
+        if ($revision->get('moderation_state')->getString() === 'published') {
+          $published_exists = TRUE;
+          break;
+        }
+      }
+    }
+  }
+
+  if ($published_exists) {
+    \Drupal::messenger()->addStatus(Markup::create(t('Changes may take up to 35 minutes to appear on <a href="https://www.mass.gov" target="_blank">www.mass.gov</a> due to caching.')));
   }
 }
