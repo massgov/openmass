@@ -52,13 +52,22 @@
           try {
             // Only send to iframes that are loaded and have a contentWindow
             if (iframe.contentWindow) {
+              const message = {
+                action: 'translate',
+                language: to
+              };
 
-              iframe.contentWindow.postMessage({
-                type: 'languageChange',
-                from: from,
-                to: to
-              }, 'https://forms.mass.local'); // In production, specify the exact target origin for security
-              console.log(`Sent language change notification to iframe: ${from} -> ${to}`);
+              // Add log entry
+              // addLogEntry(`Sending translation request: ${language}`);
+
+              // Send the message to the iframe
+              iframe.contentWindow.postMessage(message, '*');
+              // iframe.contentWindow.postMessage({
+              //   type: 'translate',
+              //   from: from,
+              //   to: to
+              // }, 'https://forms.mass.local'); // In production, specify the exact target origin for security
+              // console.log(`Sent language change notification to iframe: ${from} -> ${to}`);
             }
           }
           catch (error) {
@@ -66,6 +75,23 @@
           }
         });
       }
+
+      // Function to send translation commands to the iframe
+      // function translateIframe(language) {
+      //   const iframe = document.getElementById('formFrame');
+      //   const message = {
+      //     action: 'translate',
+      //     language: language
+      //   };
+      //
+      //   // Add log entry
+      //   // addLogEntry(`Sending translation request: ${language}`);
+      //
+      //   // Send the message to the iframe
+      //   iframe.contentWindow.postMessage(message, '*');
+      // }
+
+
 
       /**
        * Method 1: Detect language changes by observing HTML lang attribute changes
