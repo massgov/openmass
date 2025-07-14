@@ -7,23 +7,25 @@
 
 (function ($, Drupal) {
   'use strict';
-
+  // alert('dima 2')
+  // Translate on page load if previously selected.
+  // Not sure iw we need this.
   window.addEventListener('message', function(event) {
     // Verify origin - adjust as needed
-    alert(event.origin);
-    if (event.origin !== 'https://forms.mass.gov') return;
+    // alert(event.origin);
+    // if (event.origin !== 'https://forms.mass.gov') return;
 
     if (event.data.type === 'getCookie') {
-      const cookieName = event.data.cookieName;
-      const cookieValue = getCookie(cookieName); // Use your existing getCookie function
-      alert(cookieValue);
+
+      // const cookieName = event.data.cookieName;
+      // const cookieValue = getCookie(cookieName); // Use your existing getCookie function
+      alert(get_current_lang());
 
       // Send cookie value back to iframe
       event.source.postMessage({
-        type: 'cookieResponse',
-        cookieName: cookieName,
-        cookieValue: cookieValue
-      }, event.origin);
+        action: 'cookieResponse',
+        lang: get_current_lang(),
+      }, '*');
     }
   });
 
@@ -31,6 +33,15 @@
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? match[2] : null;
   }
+
+  // window.addEventListener('message', function(event) {
+  //   if (event.data.action === 'setCookie') {
+  //     alert(event.data.domain)
+  //
+  //     document.cookie = `${event.data.cookieName}=${event.data.cookieValue}; path=/; SameSite=Lax`;
+  //   }
+  // });
+
 
 
   Drupal.behaviors.translateCommunication = {
@@ -90,7 +101,6 @@
       //   // Send the message to the iframe
       //   iframe.contentWindow.postMessage(message, '*');
       // }
-
 
 
       /**
