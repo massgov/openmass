@@ -7,7 +7,6 @@
 
 (function ($, Drupal) {
   'use strict';
-  // alert('dima 2')
   // Translate on page load if previously selected.
   // Not sure iw we need this.
   window.addEventListener('message', function(event) {
@@ -16,11 +15,6 @@
     // if (event.origin !== 'https://forms.mass.gov') return;
 
     if (event.data.type === 'getCookie') {
-
-      // const cookieName = event.data.cookieName;
-      // const cookieValue = getCookie(cookieName); // Use your existing getCookie function
-      alert(get_current_lang());
-
       // Send cookie value back to iframe
       event.source.postMessage({
         action: 'cookieResponse',
@@ -33,16 +27,6 @@
     const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
     return match ? match[2] : null;
   }
-
-  // window.addEventListener('message', function(event) {
-  //   if (event.data.action === 'setCookie') {
-  //     alert(event.data.domain)
-  //
-  //     document.cookie = `${event.data.cookieName}=${event.data.cookieValue}; path=/; SameSite=Lax`;
-  //   }
-  // });
-
-
 
   Drupal.behaviors.translateCommunication = {
     attach: function (context, settings) {
@@ -68,17 +52,8 @@
                 language: to
               };
 
-              // Add log entry
-              // addLogEntry(`Sending translation request: ${language}`);
-
               // Send the message to the iframe
               iframe.contentWindow.postMessage(message, '*');
-              // iframe.contentWindow.postMessage({
-              //   type: 'translate',
-              //   from: from,
-              //   to: to
-              // }, 'https://forms.mass.local'); // In production, specify the exact target origin for security
-              // console.log(`Sent language change notification to iframe: ${from} -> ${to}`);
             }
           }
           catch (error) {
@@ -86,22 +61,6 @@
           }
         });
       }
-
-      // Function to send translation commands to the iframe
-      // function translateIframe(language) {
-      //   const iframe = document.getElementById('formFrame');
-      //   const message = {
-      //     action: 'translate',
-      //     language: language
-      //   };
-      //
-      //   // Add log entry
-      //   // addLogEntry(`Sending translation request: ${language}`);
-      //
-      //   // Send the message to the iframe
-      //   iframe.contentWindow.postMessage(message, '*');
-      // }
-
 
       /**
        * Method 1: Detect language changes by observing HTML lang attribute changes
