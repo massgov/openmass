@@ -5,9 +5,9 @@ dependencies:
   config:
     - field.field.node.news.field_author
     - field.field.node.news.field_collections
-    - field.field.node.news.field_glossaries
     - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
+    - field.field.node.news.field_glossaries
     - field.field.node.news.field_image_credit
     - field.field.node.news.field_intended_audience
     - field.field.node.news.field_news_body
@@ -82,6 +82,7 @@ third_party_settings:
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: closed
         description: 'Please select at least one state organization signing this release. Your selection will populate the related tag at the top of the page, which links back to the organization’s page. You may add additional State or External organizations. If you’d like include a state leader by name, you may edit the name and description after selecting the organization.'
@@ -310,16 +311,24 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_news_media_contac:
-    type: entity_reference_paragraphs
+    type: paragraphs
     weight: 106
     region: content
     settings:
       title: 'Media contact'
       title_plural: 'Media contacts'
       edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
       add_mode: dropdown
       form_display_mode: default
       default_paragraph_type: _none
+      features:
+        add_above: '0'
+        collapse_edit_all: collapse_edit_all
+        convert: '0'
+        duplicate: duplicate
     third_party_settings:
       conditional_fields:
         6b04449c-2d2a-4f88-814d-dac9a190aa78:
@@ -381,16 +390,22 @@ content:
               -
                 value: press_release
   field_news_signees:
-    type: entity_reference_paragraphs
+    type: paragraphs
     weight: 36
     region: content
     settings:
       title: Signee
       title_plural: Signees
       edit_mode: closed
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
       add_mode: button
       form_display_mode: default
       default_paragraph_type: _none
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
     third_party_settings: {  }
   field_news_summary:
     type: string_textfield

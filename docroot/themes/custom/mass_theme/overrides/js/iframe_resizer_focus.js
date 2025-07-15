@@ -1,42 +1,93 @@
-(function (Drupal) {
+(function ($, Drupal) {
   'use strict';
 
-  Drupal.behaviors.customIframeMessageCallback = {
-    attach: function (context, settings) {
-      // Only once per iframe
-      once('once-iframe-message-callback', '.js-ma-responsive-iframe', context).forEach(function (element) {
-        const iframe = element;
+  // Function to handle focus messages from iframes
+  function handleFocusMessage(messageData) {
+    // Check if this is our custom focus message - handle both message structures
+    const message = messageData.message || messageData;
+    const iframe = messageData.iframe;
 
-        // Wait until the iframeResizer instance is attached
-        if (iframe.iFrameResizer) {
-          const originalCallback = iframe.iFrameResizer.options.messageCallback;
+    if (message && message.type === 'scrollToFocus') {
 
-          // Create a new callback that wraps the original
-          iframe.iFrameResizer.options.messageCallback = function (messageData) {
-            const {message} = messageData;
+      if (iframe) {
+        // Check if the iframe is within a modal
+        const modal = iframe.closest('.tingle-modal-box__content');
 
-            if (message.type === 'scrollToFocus') {
-              const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
-              const scrollTarget = iframeTop + message.offset;
-              const adjustment = -250;
+        if (modal) {
+          // Handle focus within modal - scroll the modal content
+          const modalRect = modal.getBoundingClientRect();
+          const iframeRect = iframe.getBoundingClientRect();
+          const relativeIframeTop = iframeRect.top - modalRect.top;
+          const scrollTarget = modal.scrollTop + relativeIframeTop + (message.offset || 0);
+          const adjustment = -250; // Less adjustment needed within modal
 
-              window.scrollTo({
-                top: scrollTarget + adjustment,
-                behavior: 'smooth'
-              });
-            }
+          const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
 
-            // Call the original callback if it exists
-            if (typeof originalCallback === 'function') {
-              originalCallback(messageData);
-            }
-          };
+          modal.scrollTo({
+            top: finalScrollPosition,
+            behavior: 'smooth'
+          });
         }
         else {
-          // Optional: retry if iframeResizer hasn't initialized yet
-          console.warn('iframeResizer not yet available on this iframe:', iframe);
+          // Handle focus in regular page iframe
+          const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
+          const scrollTarget = iframeTop + (message.offset || 0);
+          const adjustment = -250;
+          const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
+
+          window.scrollTo({
+            top: finalScrollPosition,
+            behavior: 'smooth'
+          });
+        }
+      }
+      else {
+        console.warn('No iframe found in message data');
+      }
+    }
+    else {
+      console.warn('Message is not a scrollToFocus type:', message);
+    }
+  }
+
+  // Override the initIframeResizer behavior to inject our onMessage handler
+  const originalInitIframeResizer = Drupal.behaviors.initIframeResizer;
+
+  Drupal.behaviors.initIframeResizer = {
+    attach: function (context, settings) {
+      // Only run once per page to avoid duplicate overrides
+      once('once-iframe-behavior-override', 'body', context).forEach(function () {
+        // First, override the jQuery iFrameResize function
+        if ($ && $.fn.iFrameResize) {
+          const originalIFrameResize = $.fn.iFrameResize;
+
+          $.fn.iFrameResize = function (options) {
+            // Merge our onMessage handler with existing options
+            const enhancedOptions = $.extend({}, options || {});
+            const originalOnMessage = enhancedOptions.onMessage;
+
+            enhancedOptions.onMessage = function (messageData) {
+              // Handle our custom focus messages
+              handleFocusMessage(messageData);
+
+              // Call original onMessage if it exists
+              if (typeof originalOnMessage === 'function') {
+                originalOnMessage(messageData);
+              }
+            };
+
+            // Call the original iFrameResize with enhanced options
+            return originalIFrameResize.call(this, enhancedOptions);
+          };
+        }
+
+        // Then call the original initIframeResizer behavior
+        if (originalInitIframeResizer && originalInitIframeResizer.attach) {
+          originalInitIframeResizer.attach(context, settings);
         }
       });
     }
   };
-})(Drupal);
+
+})(jQuery, Drupal);
+
