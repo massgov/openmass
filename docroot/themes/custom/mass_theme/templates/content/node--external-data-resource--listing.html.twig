@@ -98,6 +98,10 @@
 {% if node.field_external_organization.value|render|trim is not empty %}
   {% set organizations = [node.field_external_organization.value] %}
 {% endif %}
+{# If field_hide_org_in_collection is checked (value == 1), suppress organizations #}
+{% if node.field_hide_org_in_collection.value == '1' %}
+  {% set organizations = [] %}
+{% endif %}
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser": {
     "eyebrow": eyebrow,

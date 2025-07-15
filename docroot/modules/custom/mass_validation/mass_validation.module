@@ -485,6 +485,22 @@ function _mass_validation_form_node_service_page_form_validate(array &$form, For
   _mass_validation_service_page_sections_validate($form, $form_state);
   _mass_validation_mass_link_validate($form_state, 'field_log_in_links');
 
+  if ($form_state->hasValue('field_service_sections')) {
+    $sections = $form_state->getValue('field_service_sections');
+    foreach ($sections as $section_key => $section) {
+      if (!is_array($section)) {
+        continue;
+      }
+      if (isset($section['subform']['field_service_section_content'])) {
+        $paragraphs = $section['subform']['field_service_section_content'];
+        foreach ($paragraphs as $paragraph_key => $paragraph) {
+          $paragraph_error_string = 'field_service_sections][' . $section_key . '][subform][field_service_section_content][' . $paragraph_key . '][subform]';
+          _mass_validation_validate_custom_iframe($form_state, $paragraph, $paragraph_error_string);
+        }
+      }
+    }
+  }
+
   // Check that the KPIs have values if the box is checked.
   // Map the KPI fields with the Key performance indicators options in the form.
   $kpi_fields_mapping = [
