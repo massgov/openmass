@@ -238,7 +238,7 @@
         "drupal/seckit": "^2.0",
         "drupal/security_review": "^2",
         "drupal/seven": "^1",
-        "drupal/simple_sitemap": "^4.1",
+        "drupal/simple_sitemap": "^4.2",
         "drupal/stage_file_proxy": "^3",
         "drupal/subpathauto": "^1",
         "drupal/term_reference_tree": "^2",
@@ -294,7 +294,16 @@
     },
     "scripts": {
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
-        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom"
+        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom",
+        "remove-git": [
+            "bash scripts/remove_vendor_git_folders.sh || :"
+        ],
+        "post-install-cmd": [
+            "@remove-git"
+        ],
+        "post-update-cmd": [
+            "@remove-git"
+        ]
     },
     "conflict": {
         "drupal/core": "<=10.2"
@@ -382,7 +391,7 @@
                 "Add resize observer to parent class": "patches/csv-field-wrapper-class-ma__csvtable.patch"
             },
             "drupal/entity_embed": {
-                "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "https://git.drupalcode.org/project/entity_embed/-/merge_requests/39.diff",
+                "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "patches/entity_embed/Trying-to-edit-embedded-entities-causes-uncaught-exception.patch",
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
                 "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch"
             },
@@ -430,7 +439,7 @@
             },
             "drupal/inline_entity_form": {
                 "Add a setting to enable/disable inline editing of existing entities (https://www.drupal.org/project/inline_entity_form/issues/2913571#comment-12811088)": "https://www.drupal.org/files/issues/2018-10-11/ief_edit_existing_2913571_7.patch",
-                "Undefined array key delete (https://www.drupal.org/project/inline_entity_form/issues/3416328)": "https://git.drupalcode.org/project/inline_entity_form/-/merge_requests/106.diff"
+                "Undefined array key delete (https://www.drupal.org/project/inline_entity_form/issues/3416328)": "patches/inline_entity_form/undefined-array-key-delete.patch"
             },
             "drupal/memcache": {
                 "Transaction support for cache (tags) invalidation (https://www.drupal.org/project/memcache/issues/2996615)": "https://www.drupal.org/files/issues/2024-01-26/memcache-transaction-aware-2996615-45.patch"
@@ -464,7 +473,7 @@
                 "Add ckeditor5-stylesheets config (https://www.drupal.org/project/seven/issues/3267440)": "https://www.drupal.org/files/issues/2023-04-27/seven_add_ckeditor5-stylesheets-3267440-7.patch"
             },
             "drupal/video_embed_field": {
-                "Support youtube shorts (https://www.drupal.org/project/video_embed_field/issues/3279789)": "https://git.drupalcode.org/project/video_embed_field/-/merge_requests/4.diff"
+                "Support youtube shorts (https://www.drupal.org/project/video_embed_field/issues/3279789)": "patches/video_embed_field/Support-youtube-shorts.patch"
             },
             "drupal/views_bulk_operations": {
                 "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch"
