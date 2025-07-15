@@ -1,0 +1,25 @@
+uuid: 22790669-3adc-4c2c-9818-200ba657ac50
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_feedback_loop
+    - system
+  theme:
+    - mass_admin_theme
+id: mass_admin_theme_feedbackdescriptionblock
+theme: mass_admin_theme
+region: header
+weight: -6
+provider: null
+plugin: feedback_description_block
+settings:
+  id: feedback_description_block
+  label: 'Feedback Description Block'
+  label_display: '0'
+  provider: mass_feedback_loop
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/*/feedback\r\n\r\n"
