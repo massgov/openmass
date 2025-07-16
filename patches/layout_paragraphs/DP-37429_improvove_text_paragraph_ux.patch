@@ -26,7 +26,7 @@ index 2d385cb..58f6666 100644
 @@ -1,6 +1,45 @@
  (($, Drupal, debounce, dragula, once) => {
    const idAttr = 'data-lpb-id';
- 
+
 +  let triggerElement = null; // To track the element that triggered the AJAX request.
 +  let scrollPosition = 0; // To store the scroll position.
 +
@@ -70,7 +70,7 @@ index 2d385cb..58f6666 100644
     * Attaches UI elements to $container.
     * @param {jQuery} $container
 @@ -559,10 +598,27 @@
- 
+
        // Listen to relevant events and update UI.
        once('lpb-events', '[data-lpb-id]').forEach((el) => {
 -        $(el).on('lpb-builder:init.lpb lpb-component:insert.lpb lpb-component:update.lpb lpb-component:move.lpb lpb-component:drop.lpb lpb-component:delete.lpb', (e) => {
@@ -99,7 +99,7 @@ index 2d385cb..58f6666 100644
 +          }
 +        );
        });
- 
+
        // Initialize the editor drag and drop ui.
 @@ -611,6 +667,13 @@
      const $element = $dialog || jQuery(event.target);
@@ -115,13 +115,17 @@ index 2d385cb..58f6666 100644
        clearInterval(lpDialogInterval);
        lpDialogInterval = setInterval(
          repositionDialog.bind(null, lpDialogInterval),
-@@ -618,6 +681,20 @@
+@@ -618,6 +681,24 @@
        );
      }
    };
 +
 +  // Generic handler: open other components on background click.
 +  $('.js-lpb-component').not('.lpb-layout').on('click', function (e) {
++    // Ignore clicks inside the control bar
++    if ($(e.target).closest('.lpb-controls').length) {
++      return;
++    }
 +    e.preventDefault();
 +
 +    const $component = $(this);
