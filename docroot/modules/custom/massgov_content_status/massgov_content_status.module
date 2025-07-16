@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\media\MediaInterface;
 use Drupal\Core\Render\Markup;
@@ -27,7 +28,7 @@ function massgov_content_status_entity_update(EntityInterface $entity) {
   $current_state = $entity->get('moderation_state')->getString();
 
   // Only continue if the current moderation state is 'published'
-  if ($current_state !== 'published') {
+  if ($current_state !== MassModeration::PUBLISHED) {
     return;
   }
 
@@ -51,7 +52,7 @@ function massgov_content_status_entity_update(EntityInterface $entity) {
         if ($revision &&
           $revision->hasField('moderation_state') &&
           !$revision->get('moderation_state')->isEmpty() &&
-          $revision->get('moderation_state')->getString() === 'published') {
+          $revision->get('moderation_state')->getString() === MassModeration::PUBLISHED) {
           $had_previous_published_revision = TRUE;
           break;
         }
@@ -81,7 +82,7 @@ function massgov_content_status_entity_update(EntityInterface $entity) {
         if ($revision &&
           $revision->hasField('moderation_state') &&
           !$revision->get('moderation_state')->isEmpty() &&
-          $revision->get('moderation_state')->getString() === 'published') {
+          $revision->get('moderation_state')->getString() === MassModeration::PUBLISHED) {
           $had_previous_published_revision = TRUE;
           break;
         }
