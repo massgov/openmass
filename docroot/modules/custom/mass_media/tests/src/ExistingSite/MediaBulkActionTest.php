@@ -14,9 +14,9 @@ use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
  */
 class MediaBulkActionTest extends MassExistingSiteBase {
   const PUBLISH_ACTION = '3';
-  const RESTRICT_ACTION = '4';
-  const TRASH_ACTION = '5';
-  const UNPUBLISH_ACTION = '6';
+  const RESTRICT_ACTION = '1';
+  const TRASH_ACTION = '2';
+  const UNPUBLISH_ACTION = '0';
 
   use MediaCreationTrait;
   use StringTranslationTrait;
