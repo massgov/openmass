@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @file
+ * Custom module to show delayed publish success message on updated published content.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\NodeInterface;
+use Drupal\media\MediaInterface;
+use Drupal\Core\Render\Markup;
+
+/**
+ * Implements hook_entity_update().
+ */
+function massgov_content_status_entity_update(EntityInterface $entity) {
+  // Only process nodes and media entities
+  if (!($entity instanceof NodeInterface || $entity instanceof MediaInterface)) {
+    return;
+  }
+
+  // Check if entity has moderation state and it's published
+  if (!$entity->hasField('moderation_state') || $entity->get('moderation_state')->isEmpty()) {
+    return;
+  }
+
+  $current_state = $entity->get('moderation_state')->getString();
+
+  // Only continue if the current moderation state is 'published'
+  if ($current_state !== MassModeration::PUBLISHED) {
+    return;
+  }
+
+  // Check if this is a re-publish of already published content
+  $had_previous_published_revision = FALSE;
+
+  if ($entity instanceof NodeInterface) {
+    // For nodes, we can use revisionIds()
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $revision_ids = $storage->revisionIds($entity);
+
+    // Skip checking if this is the first revision (can't have been published before)
+    if (count($revision_ids) > 1) {
+      foreach ($revision_ids as $rid) {
+        if ($rid == $entity->getRevisionId()) {
+          continue;
+        }
+
+        $revision = $storage->loadRevision($rid);
+
+        if ($revision &&
+          $revision->hasField('moderation_state') &&
+          !$revision->get('moderation_state')->isEmpty() &&
+          $revision->get('moderation_state')->getString() === MassModeration::PUBLISHED) {
+          $had_previous_published_revision = TRUE;
+          break;
+        }
+      }
+    }
+  }
+  elseif ($entity instanceof MediaInterface) {
+    $storage = \Drupal::entityTypeManager()->getStorage('media');
+
+    // Get all revisions using entity query
+    $query = \Drupal::entityTypeManager()->getStorage('media')->getQuery('AND')
+      ->accessCheck(FALSE)
+      ->condition('mid', $entity->id())
+      ->allRevisions();
+
+    $revision_ids = $query->execute();
+
+    // Skip checking if this is the first revision (can't have been published before)
+    if (count($revision_ids) > 1) {
+      foreach ($revision_ids as $vid => $mid) {
+        if ($vid == $entity->getRevisionId()) {
+          continue;
+        }
+
+        $revision = $storage->loadRevision($vid);
+
+        if ($revision &&
+          $revision->hasField('moderation_state') &&
+          !$revision->get('moderation_state')->isEmpty() &&
+          $revision->get('moderation_state')->getString() === MassModeration::PUBLISHED) {
+          $had_previous_published_revision = TRUE;
+          break;
+        }
+      }
+    }
+  }
+
+  if ($had_previous_published_revision) {
+    \Drupal::messenger()->addStatus(Markup::create(t('Changes may take up to 35 minutes to appear on <a href="https://www.mass.gov" target="_blank">www.mass.gov</a> due to caching.')));
+  }
+}
