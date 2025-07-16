@@ -51,19 +51,37 @@
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
-      {% include "@atoms/09-media/figure--dataviz.twig" with {
-        "figure": {
-          "align": content.field_tabl_alignment["#items"][0].value,
-          "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-          "size": content.field_tabl_display_size["#items"][0].value,
-          "content": content.field_url,
-          "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
-          "title": {
-            "text": content.field_tabl_administrative_title["#items"][0].value
+      {% if is_service_page_bundle %}
+        {% embed "@organisms/by-author/rich-text.twig" %}
+          {% block rteElements %}
+            {% include "@atoms/09-media/figure--dataviz.twig" with {
+              "figure": {
+                "align": content.field_tabl_alignment["#items"][0].value,
+                "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
+                "size": content.field_tabl_display_size["#items"][0].value,
+                "content": content.field_url,
+                "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
+                "title": {
+                  "text": content.field_tabl_administrative_title["#items"][0].value
+                }
+              }
+            } %}
+          {% endblock %}
+        {% endembed %}
+      {% else %}
+        {% include "@atoms/09-media/figure--dataviz.twig" with {
+          "figure": {
+            "align": content.field_tabl_alignment["#items"][0].value,
+            "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
+            "size": content.field_tabl_display_size["#items"][0].value,
+            "content": content.field_url,
+            "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
+            "title": {
+              "text": content.field_tabl_administrative_title["#items"][0].value
+            }
           }
-        }
-      } %}
-
+        } %}
+      {% endif %}
     {% endblock %}
   </div>
 {% endblock paragraph %}

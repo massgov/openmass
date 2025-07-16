@@ -13,6 +13,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
+use Drupal\mass_content\Entity\Bundle\node\ServicePageBundle;
 use Drupal\mass_content\EventsRendererOrgPages;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
@@ -101,6 +102,17 @@ function mayflower_library_info_build() {
     ],
   ];
   return $libraries;
+}
+
+/**
+ * Adds is_service_page_bundle flag based on parent node type.
+ */
+function mayflower_preprocess_paragraph__tableau_embed(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+  if ($node instanceof ServicePageBundle) {
+    $variables['is_service_page_bundle'] = TRUE;
+  }
 }
 
 /**
