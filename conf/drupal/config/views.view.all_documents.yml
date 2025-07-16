@@ -1608,7 +1608,17 @@ display:
               <p>To share a permanent link to an item, right-click the title and click "copy link address."</p>
             format: full_html
           tokenize: false
-      footer: {  }
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders: {  }
     cache_metadata:
       max-age: -1
