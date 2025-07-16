@@ -1,5 +1,23 @@
 
 
+## [0.444.0] - July 15, 2025
+
+### Changed
+  - DP-38868: Move patches to the local file system, remove .git folders from composer dependencies.
+  - DP-39691: Created a block plugin (`FeedbackHeaderBlock`) in the `mass_feedback_loop` module to render contextual links on feedback pages.
+  - DP-39980: Don't show authors the files URL for documents when inserting a doc.
+  - DP-40037: Allow Drupal to accept documents with the .rpt extension.
+  - DP-40308: API Service Cards: Remove RTE from IDV * fields.
+  
+### Fixed
+  - DP-40113: Pagination Links Not Functional on Upcoming and Past Events Page.
+  - DP-40329: Update iframe resizer configuration to clarify usage for dynamic height iframes.
+  
+### Security
+  - DP-40186: Update simple sitemap module.
+  
+
+
 ## [0.443.0] - July 2, 2025
 
 ### Fixed
