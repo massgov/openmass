@@ -868,32 +868,32 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        result_name:
-          id: result_name
-          table: editoria11y_results
-          field: result_name
-          relationship: none
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: entity_id
           group_type: group
           admin_label: ''
-          plugin_id: in_operator
+          entity_type: node
+          entity_field: uid
+          plugin_id: user_name
           operator: in
           value: {  }
           group: 1
           exposed: true
           expose:
-            operator_id: result_name_op
-            label: 'Issue type'
+            operator_id: uid_op
+            label: 'Authored by'
             description: ''
-            use_operator: true
-            operator: result_name_op
-            operator_limit_selection: true
-            operator_list:
-              in: in
-              'not in': 'not in'
-            identifier: result_name
+            use_operator: false
+            operator: uid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid
             required: false
-            remember: true
-            multiple: true
+            remember: false
+            multiple: false
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
@@ -910,6 +910,9 @@ display:
               d2d_redirect_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -982,6 +985,61 @@ display:
           hierarchy: false
           limit: true
           error_message: true
+        result_name:
+          id: result_name
+          table: editoria11y_results
+          field: result_name
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: in_operator
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: result_name_op
+            label: 'Issue type'
+            description: ''
+            use_operator: true
+            operator: result_name_op
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
+            identifier: result_name
+            required: false
+            remember: true
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
         changed:
           id: changed
           table: node_field_data
@@ -1002,8 +1060,8 @@ display:
           exposed: true
           expose:
             operator_id: changed_op
-            label: Changed
-            description: ''
+            label: 'Last modified'
+            description: 'Use mm/dd/yyyy format.'
             use_operator: true
             operator: changed_op
             operator_limit_selection: true
@@ -1050,64 +1108,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        uid:
-          id: uid
-          table: node_field_data
-          field: uid
-          relationship: entity_id
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: uid
-          plugin_id: user_name
-          operator: in
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: uid_op
-            label: 'Authored by'
-            description: ''
-            use_operator: false
-            operator: uid_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: uid
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         created:
           id: created
           table: node_field_data
@@ -1118,7 +1118,7 @@ display:
           entity_type: node
           entity_field: created
           plugin_id: date
-          operator: '<='
+          operator: '>='
           value:
             min: ''
             max: ''
@@ -1129,7 +1129,7 @@ display:
           expose:
             operator_id: created_op
             label: 'Authored on'
-            description: ''
+            description: 'Use mm/dd/yyyy format.'
             use_operator: true
             operator: created_op
             operator_limit_selection: true
