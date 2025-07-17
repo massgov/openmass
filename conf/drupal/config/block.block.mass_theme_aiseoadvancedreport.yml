@@ -1,0 +1,27 @@
+uuid: 0b99b163-ad33-46f2-bff5-dc25a4693c3b
+langcode: en
+status: true
+dependencies:
+  module:
+    - ai_seo
+    - system
+  theme:
+    - mass_theme
+id: mass_theme_aiseoadvancedreport
+theme: mass_theme
+region: content
+weight: 0
+provider: null
+plugin: ai_seo_advanced_report_block
+settings:
+  id: ai_seo_advanced_report_block
+  label: 'AI SEO Advanced Report'
+  label_display: visible
+  provider: ai_seo
+  context_mapping:
+    node: '@node.node_route_context:node'
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: '/node/*'
