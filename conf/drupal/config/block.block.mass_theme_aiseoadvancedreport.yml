@@ -5,6 +5,7 @@ dependencies:
   module:
     - ai_seo
     - system
+    - user
   theme:
     - mass_theme
 id: mass_theme_aiseoadvancedreport
@@ -16,7 +17,7 @@ plugin: ai_seo_advanced_report_block
 settings:
   id: ai_seo_advanced_report_block
   label: 'AI SEO Advanced Report'
-  label_display: visible
+  label_display: '0'
   provider: ai_seo
   context_mapping:
     node: '@node.node_route_context:node'
@@ -25,3 +26,10 @@ visibility:
     id: request_path
     negate: false
     pages: '/node/*'
+  user_role:
+    id: user_role
+    negate: false
+    context_mapping:
+      user: '@user.current_user_context:current_user'
+    roles:
+      authenticated: authenticated
