@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\mass_media\Plugin\Action;
 
 use Drupal\Core\Action\Attribute\Action;
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -35,9 +36,9 @@ class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
       // Move file to private storage.
       $file = File::load($entity->field_upload_file->target_id);
       // Path to save files to.
-      $directory = "documents" . "/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
+      $directory = "documents/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
 
-      \Drupal::service('file.repository')->move($file, 'private://' . $directory, FileSystemInterface::EXISTS_REPLACE);
+      \Drupal::service('file.repository')->move($file, 'private://' . $directory, FileExists::Replace);
     }
   }
 
