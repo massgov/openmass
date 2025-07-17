@@ -238,6 +238,10 @@ form.node-form fieldset {
   border: none;
 }
 
+.views-exposed-form fieldset:not(.fieldgroup) {
+  box-shadow: none;
+}
+
 .views-exposed-form fieldset:not(.fieldgroup),
 form.node-form fieldset:not(.fieldgroup) {
   background-color: #fff;
@@ -513,18 +517,24 @@ form.node-form .claro-details .claro-details__description {
   position: initial;
 }
 
-.views-exposed-form fieldset .fieldset-wrapper .form-boolean-group > .form-item.form-type-radio {
+.views-exposed-form fieldset > legend .fieldset__label {
+  padding: 0;
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+.views-exposed-form fieldset .fieldset__wrapper .form-boolean-group > .form-item.form-type-radio {
   display: inline-block;
   margin-block: var(--space-xs) 0;
   margin-inline: 0 var(--space-xs);
 }
 
-.views-exposed-form fieldset .fieldset-wrapper > .form-item {
+.views-exposed-form fieldset .fieldset__wrapper > .form-item {
   margin-block: calc(var(--space-xs) / 2) 0;
   margin-inline: 0 var(--space-xs);
 }
 
-.views-exposed-form fieldset .fieldset-wrapper > .form-item .description {
+.views-exposed-form fieldset .fieldset__wrapper > .form-item .description {
   margin: calc(var(--space-xs) / 2);
   font-size: 1rem;
 }
@@ -538,10 +548,10 @@ form.node-form .claro-details .claro-details__description {
   margin-inline: 0 var(--space-xs);
 }
 
-.views-exposed-form fieldset .fieldset-wrapper {
+.views-exposed-form fieldset .fieldset__wrapper {
   display: flex;
   flex-direction: row;
-  column-gap: 8px;
+  margin: 0;
 }
 
 .views-bulk-actions__item .button--primary:not(:disabled,.is-disabled) {
