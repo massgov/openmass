@@ -575,7 +575,7 @@ class AnalyzeNodeForm extends FormBase {
    * @return string
    *   The processed response with HTML properly escaped and only the allowed tags preserved.
    */
-  function formatAiResponseWithCode(string $response, array $allowedTags = ['p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'strong', 'em', 'br', 'h1', 'h2', 'h3', ]) {
+  function formatAiResponseWithCode(string $response, array $allowedTags = ['p', 'ul', 'ol', 'li', 'blockquote', 'pre', 'code', 'strong', 'em', 'br', 'h1', 'h2', 'h3', 'h4']) {
     $tokens = [];
     $tokenId = 0;
 
