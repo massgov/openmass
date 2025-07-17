@@ -32,7 +32,8 @@ class EntityUsageTargetCountField extends FieldPluginBase {
 
     // Check if the dynamically generated ID field exists in the $values object.
     if (isset($values->{$id_field_key})) {
-      $entity_id = $values->{$id_field_key}; // Fetch the entity ID.
+      // Fetch the entity ID.
+      $entity_id = $values->{$id_field_key};
 
       // Query the entity_usage table to count target_id values for this source_id.
       $query = Database::getConnection()->select('entity_usage', 'eu')
