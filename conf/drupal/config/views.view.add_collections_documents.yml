@@ -16,7 +16,6 @@ dependencies:
     - media
     - taxonomy
     - user
-    - views_autocomplete_filters
     - views_bulk_operations
     - views_porter_stemmer
 _core:
@@ -89,15 +88,19 @@ display:
           batch: true
           batch_size: 10
           form_step: true
+          ajax_loader: false
           buttons: true
           action_title: Action
           clear_on_exposed: false
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
-            6:
+            -
               action_id: mass_views_add_documents_collections
               preconfiguration:
                 add_confirmation: true
+                confirm_help_text: ''
+                message_override: ''
         mid:
           id: mid
           table: media_field_data
