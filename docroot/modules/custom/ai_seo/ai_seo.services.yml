@@ -1,0 +1,7 @@
+services:
+  ai_seo.service:
+    class: Drupal\ai_seo\AiSeoAnalyzer
+    arguments: ['@ai.provider', '@database', '@config.factory', '@entity_type.manager', '@http_client', '@ai_seo.render_entity_html', '@logger.factory', '@messenger']
+  ai_seo.render_entity_html:
+    class: Drupal\ai_seo\RenderEntityHtmlService
+    arguments: ['@entity_type.manager', '@request_stack', '@main_content_renderer.html', '@router.route_provider', '@html_response.attachments_processor', '@kernel', '@logger.factory', '@messenger', '@account_switcher', '@current_user']
