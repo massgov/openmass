@@ -39,35 +39,42 @@
  *
  * @ingroup themeable
  */
+
+  /*
+  * social_links is a special variable added on preprocessing that
+  * fetchs the social links from the containing node social field.
+  */
 #}
-{% if is_service_page_bundle %}
-  {% embed "@organisms/by-author/rich-text.twig" %}
-    {% block rteElements %}
-      {% include "@atoms/09-media/figure--dataviz.twig" with {
-        "figure": {
-          "align": content.field_tabl_alignment["#items"][0].value,
-          "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-          "size": content.field_tabl_display_size["#items"][0].value,
-          "content": content.field_url,
-          "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
-          "title": {
-            "text": content.field_tabl_administrative_title["#items"][0].value
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% if social_links|render is not empty %}
+        {% embed "@organisms/by-author/social-links-bar.twig" with {
+          "socialLinksBar": {
+            "level": level
           }
-        }
-      } %}
+        } %}
+          {% block sectionContent %}
+            {{ social_links }}
+          {% endblock %}
+        {% endembed %}
+
+        {% if content.field_component_add_separator|field_value|render == "True" %}
+          {% include "@atoms/divider.twig" with {
+            "divider": {
+              "thin": true
+            }
+          } %}
+        {% endif %}
+      {% endif %}
     {% endblock %}
-  {% endembed %}
-{% else %}
-  {% include "@atoms/09-media/figure--dataviz.twig" with {
-    "figure": {
-      "align": content.field_tabl_alignment["#items"][0].value,
-      "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-      "size": content.field_tabl_display_size["#items"][0].value,
-      "content": content.field_url,
-      "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
-      "title": {
-        "text": content.field_tabl_administrative_title["#items"][0].value
-      }
-    }
-  } %}
-{% endif %}
+  </div>
+{% endblock paragraph %}

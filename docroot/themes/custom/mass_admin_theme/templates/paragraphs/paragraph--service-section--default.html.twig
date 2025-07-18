@@ -127,32 +127,13 @@
 
             {% block stackedRowContentOverride %}
               {% if content.regions %}
-                {% set child_heading_level = show_heading ? 3 : 2 %}
-                {% for region, items in content.regions %}
-                  {% if not (region starts with '#') %}
-                    <div class="layout layout--onecol-mass-service-section">
-                      <div class="layout__region layout__region--content">
-                        {% for item in items %}
-                          {% if item is iterable and item['#paragraph'] is defined %}
-                            {% set p = item['#paragraph'] %}
-
-                            {% if p.bundle == 'section_header' %}
-                              {% set item = item|merge({'#context': {'level': child_heading_level}}) %}
-                            {% endif %}
-                          {% endif %}
-                          {{ item }}
-                        {% endfor %}
-                      </div>
-                    </div>
-                  {% endif %}
-                {% endfor %}
+                {{ content.regions }}
               {% endif %}
             {% endblock %}
 
           {% endembed %}
 
         </div>
-
       {% endblock %}
     </div>
   </div>

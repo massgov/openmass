@@ -3,8 +3,6 @@
  * @file
  * Default theme implementation to display a paragraph.
  *
- * If we are using the default paragraph, we only want it to print the content.
- *
  * Available variables:
  * - paragraph: Full paragraph entity.
  *   Only method names starting with "get", "has", or "is" and a few common
@@ -40,34 +38,22 @@
  * @ingroup themeable
  */
 #}
-{% if is_service_page_bundle %}
-  {% embed "@organisms/by-author/rich-text.twig" %}
-    {% block rteElements %}
-      {% include "@atoms/09-media/figure--dataviz.twig" with {
-        "figure": {
-          "align": content.field_tabl_alignment["#items"][0].value,
-          "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-          "size": content.field_tabl_display_size["#items"][0].value,
-          "content": content.field_url,
-          "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
-          "title": {
-            "text": content.field_tabl_administrative_title["#items"][0].value
-          }
-        }
-      } %}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% embed "@organisms/by-author/featured-item-mosaic.twig" %}
+        {% block featuredItemMosaicColumns %}
+          {{ content }}
+        {% endblock %}
+      {% endembed %}
     {% endblock %}
-  {% endembed %}
-{% else %}
-  {% include "@atoms/09-media/figure--dataviz.twig" with {
-    "figure": {
-      "align": content.field_tabl_alignment["#items"][0].value,
-      "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-      "size": content.field_tabl_display_size["#items"][0].value,
-      "content": content.field_url,
-      "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
-      "title": {
-        "text": content.field_tabl_administrative_title["#items"][0].value
-      }
-    }
-  } %}
-{% endif %}
+  </div>
+{% endblock paragraph %}

@@ -1,9 +1,9 @@
 {#
 /**
  * @file
- * Default theme implementation to display a paragraph.
+ * Theme implementation for a tall featured item.
  *
- * If we are using the default paragraph, we only want it to print the content.
+ * Note that this view mode is set in the preprocess field function of mass_theme.theme.
  *
  * Available variables:
  * - paragraph: Full paragraph entity.
@@ -40,34 +40,13 @@
  * @ingroup themeable
  */
 #}
-{% if is_service_page_bundle %}
-  {% embed "@organisms/by-author/rich-text.twig" %}
-    {% block rteElements %}
-      {% include "@atoms/09-media/figure--dataviz.twig" with {
-        "figure": {
-          "align": content.field_tabl_alignment["#items"][0].value,
-          "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-          "size": content.field_tabl_display_size["#items"][0].value,
-          "content": content.field_url,
-          "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
-          "title": {
-            "text": content.field_tabl_administrative_title["#items"][0].value
-          }
-        }
-      } %}
-    {% endblock %}
-  {% endembed %}
-{% else %}
-  {% include "@atoms/09-media/figure--dataviz.twig" with {
-    "figure": {
-      "align": content.field_tabl_alignment["#items"][0].value,
-      "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-      "size": content.field_tabl_display_size["#items"][0].value,
-      "content": content.field_url,
-      "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : null,
-      "title": {
-        "text": content.field_tabl_administrative_title["#items"][0].value
-      }
-    }
-  } %}
-{% endif %}
+
+{% include "@molecules/featured-item.twig" with {
+  "featuredItem": {
+    "variation": "tall",
+    "content": content.field_featured_item_image,
+    "featuredContent": content.field_featured_item_highlight,
+    "href": content.field_featured_item_link[0]['#url_title'],
+    "text": content.field_featured_item_link[0]['#title']
+  }
+} %}
