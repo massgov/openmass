@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "889f406e56cfbc31d5f1e5f64ee89e39",
+    "content-hash": "650517209dd8ec22e17118ae5e3d5f5b",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -9321,30 +9321,37 @@
         },
         {
             "name": "drupal/scheduled_transitions",
-            "version": "2.3.0",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/scheduled_transitions.git",
-                "reference": "2.3.0"
+                "reference": "2.7.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/scheduled_transitions-2.3.0.zip",
-                "reference": "2.3.0",
-                "shasum": "240e389d549141e24ec9d7d7c2223cca7b4357ca"
+                "url": "https://ftp.drupal.org/files/projects/scheduled_transitions-2.7.0.zip",
+                "reference": "2.7.0",
+                "shasum": "5cef6625b8f6778c59e02fde40b0c320c0fdaf9f"
             },
             "require": {
-                "drupal/core": "^9.2 || ^10",
-                "drupal/dynamic_entity_reference": "^1.0 || ^2.0 || ^3.0 || ^4.0",
-                "php": ">=8.0"
+                "drupal/core": "^10.3 || ^11",
+                "drupal/dynamic_entity_reference": "^3.0 || ^4.0",
+                "php": ">=8.3"
             },
             "require-dev": {
-                "dealerdirect/phpcodesniffer-composer-installer": "dev-master",
-                "drupal/coder": "^8.3",
-                "drush/drush": "^10 || ^11",
-                "mglaman/phpstan-drupal": "^1",
-                "phpstan/phpstan": "^1",
-                "phpstan/phpstan-deprecation-rules": "*"
+                "composer/installers": "2.x-dev",
+                "dealerdirect/phpcodesniffer-composer-installer": "^1",
+                "drupal/core-composer-scaffold": "^10.3",
+                "drupal/core-dev": ">=10.3",
+                "drush/drush": ">=11",
+                "micheh/phpcs-gitlab": "^1.1",
+                "mockery/mockery": "^1.5",
+                "phpstan/extension-installer": "^1.3",
+                "phpstan/phpstan": "^1.11",
+                "phpstan/phpstan-deprecation-rules": "*",
+                "phpstan/phpstan-mockery": "^1.1",
+                "phpstan/phpstan-strict-rules": "^1@stable",
+                "previousnext/coding-standard": "^1"
             },
             "suggest": {
                 "drupal/token": "Shows Token UI on Add Scheduled Transitions form."
@@ -9352,17 +9359,20 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.3.0",
-                    "datestamp": "1670235101",
+                    "version": "2.7.0",
+                    "datestamp": "1730723757",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
                     }
                 },
-                "drush": {
-                    "services": {
-                        "drush.services.yml": "^9"
-                    }
+                "installer-paths": {
+                    "web/core": [
+                        "type:drupal-core"
+                    ],
+                    "web/modules/contrib/{$name}": [
+                        "type:drupal-module"
+                    ]
                 }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
