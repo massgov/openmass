@@ -56,6 +56,8 @@ function mass_media_media_update(EntityInterface $entity) {
   /** @var \Drupal\Core\File\FileSystem $file_system */
   $file_system = \Drupal::service('file_system');
   $file_scheme = StreamWrapperManager::getScheme($file_uri);
+
+  $is_public = $entity->isPublished();
   if ($file_scheme == 'private') {
     return;
   }
