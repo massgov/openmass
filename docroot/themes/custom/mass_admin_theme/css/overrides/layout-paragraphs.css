@@ -185,13 +185,13 @@ input[type="radio"]{
   display: none;
 }
 
-.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--right) {
+.js-lpb-component.paragraph--type--stat:has(> .ma__callout-stats--right) {
   width: 45%;
   min-width: 230px;
   float: right;
 }
 
-.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--left) {
+.js-lpb-component.paragraph--type--stat:has(> .ma__callout-stats--left) {
   width: 45%;
   min-width: 230px;
   float: left;
@@ -199,7 +199,6 @@ input[type="radio"]{
 
 .js-lpb-component.paragraph--type--stat .ma__callout-stats--right,
 .js-lpb-component.paragraph--type--stat .ma__callout-stats--left {
-  float: none;
   width: 100%;
 }
 
@@ -211,11 +210,6 @@ input[type="radio"]{
 .js-lpb-component.paragraph--type--stat .ma__callout-stats--right span,
 .js-lpb-component.paragraph--type--stat .ma__callout-stats--left span {
   position: relative;
-}
-
-.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--right) + .js-lpb-component:not(.paragraph--type--stat):not(.paragraph--type--pull-quote),
-.js-lpb-component.paragraph--type--stat:has(.ma__callout-stats--left) + .js-lpb-component:not(.paragraph--type--stat):not(.paragraph--type--pull-quote) {
-  width: 55%;
 }
 
 .js-lpb-component.paragraph--type--pull-quote {
@@ -391,5 +385,9 @@ html:has([data-fullscreen="fullscreenoverlay"]) .ck.ck-dropdown__panel.ck-dropdo
 }
 
 .js-lpb-component-list .ma__event-listing--grid .ma__event-listing__container {
+  box-sizing: border-box;
+}
+
+.js-lpb-component {
   box-sizing: border-box;
 }
