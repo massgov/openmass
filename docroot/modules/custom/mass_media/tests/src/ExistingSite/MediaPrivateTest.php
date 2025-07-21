@@ -96,6 +96,8 @@ class MediaPrivateTest extends MassExistingSiteBase {
   }
 
   /**
+   * Test: saving draft keeps file public if default is still published.
+   *
    * Saving a draft while keeping the published version published
    * does not move the file to private.
    */
@@ -126,6 +128,8 @@ class MediaPrivateTest extends MassExistingSiteBase {
   }
 
   /**
+   * Test: draft file moved to private, original file stays public.
+   *
    * Replacing the file in a draft revision moves the new file to private,
    * while the original file remains public since the published revision still uses it.
    */
