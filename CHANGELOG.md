@@ -1,5 +1,20 @@
 
 
+## [0.445.0] - July 22, 2025
+
+### Changed
+  - DP-39365: Form a11y - Iframe tag must have a title.
+  - DP-39427: Drupal 10 core and views related module upgrades.
+  - DP-39577: Added new filters and fields to accessibility report.
+  - DP-40027: Added custom status message on save when an existing published node is updated, informing authors about caching delays on www.mass.gov.
+  - DP-40255: Updated display to show document file count in the footer of all document view.
+  - DP-40681: Allow authors to view 25, 50 or 100 docs at a time in "All Documents"
+  
+### Fixed
+  - DP-40347: Keyword Search Not Returning Expected Results on Collections Page.
+  
+
+
 ## [0.444.0] - July 15, 2025
 
 ### Changed
