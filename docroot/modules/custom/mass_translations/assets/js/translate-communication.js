@@ -5,7 +5,7 @@
  * and sends messages to embedded iframes (forms.mass.gov) to synchronize translations.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
   'use strict';
 
   /**
@@ -70,7 +70,7 @@
    *
    * @return {string|null} The code of the current language (e.g., "en", "fr"), or null if not set.
    */
-  function getCurrentLanguage () {
+  function getCurrentLanguage() {
     // alert(getLangFromFragment());
     const keyValue = document.cookie.match('(^|;) ?googtrans=([^;]*)(;|$)');
     return keyValue ? keyValue[2].split('/')[2] : null;
@@ -98,26 +98,29 @@
    */
   Drupal.behaviors.translateCommunication = {
     attach: function (context, settings) {
-      // Store the current language to detect changes
-      let currentLanguage = document.documentElement.lang || 'en';
+      // Use once to ensure this only runs once per page load
+      once('translate-communication', 'html', context).forEach(function (element) {
+        // Store the current language to detect changes
+        let currentLanguage = document.documentElement.lang || 'en';
 
-      /**
-       * Method 1: Detect language changes by observing HTML lang attribute changes
-       */
-      const htmlObserver = new MutationObserver(mutations => {
-        mutations.forEach(mutation => {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
-            const newLanguage = document.documentElement.lang;
-            if (newLanguage && newLanguage !== currentLanguage) {
-              notifyIframesOfLanguageChange(currentLanguage, newLanguage);
-              currentLanguage = newLanguage;
+        /**
+         * Detect language changes by observing HTML lang attribute changes.
+         */
+        const htmlObserver = new MutationObserver(mutations => {
+          mutations.forEach(mutation => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
+              const newLanguage = document.documentElement.lang;
+              if (newLanguage && newLanguage !== currentLanguage) {
+                notifyIframesOfLanguageChange(currentLanguage, newLanguage);
+                currentLanguage = newLanguage;
+              }
             }
-          }
+          });
         });
-      });
 
-      // Start observing the HTML element for lang attribute changes
-      htmlObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+        // Start observing the HTML element for lang attribute changes
+        htmlObserver.observe(document.documentElement, {attributes: true, attributeFilter: ['lang']});
+      });
     }
   };
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);
