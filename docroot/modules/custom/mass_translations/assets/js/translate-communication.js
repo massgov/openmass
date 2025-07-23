@@ -8,13 +8,17 @@
 (function ($, Drupal) {
   'use strict';
 
+  /**
+   * Listen for gform_post_render hook, specifically to translate the form after the errors.
+   *
+   */
   window.addEventListener('message', function(event) {
     // Verify origin - adjust as needed
 
     // if (event.origin !== 'https://forms.mass.gov') return;
 
-    if (event.data.action === 'getCookie') {
-      notifyIframesOfLanguageChange('auto', getCurrentLanguage () );
+    if (event.data.action === 'gform_post_render') {
+      notifyIframesOfLanguageChange('auto', getCurrentLanguage());
     }
   });
 
@@ -47,6 +51,11 @@
     });
   }
 
+  /**
+   * Retrieves the current language from the browser's cookies, if available.
+   *
+   * @return {string|null} The code of the current language (e.g., "en", "fr"), or null if not set.
+   */
   function getCurrentLanguage () {
     // alert(getLangFromFragment());
     const keyValue = document.cookie.match('(^|;) ?googtrans=([^;]*)(;|$)');
@@ -54,6 +63,25 @@
 
   }
 
+
+  /**
+   * Drupal behavior for managing the Translate Communication functionality.
+   *
+   * This behavior is triggered when the page is ready or content is loaded via
+   * AJAX. It handles the initialization and functionality related to translation
+   * communication within a Drupal site.
+   *
+   * @namespace
+   * @property {Object} attach - Function that initializes or applies the behavior
+   *                             to a specific context. It is triggered whenever
+   *                             new content is added to the page.
+   * @param {Object} context - The context of the current DOM to apply the behavior.
+   *                           Typically provided by Drupal, it represents the area
+   *                           where the behavior needs to be activated. If no specific
+   *                           context is provided, the behavior is applied to the entire page.
+   * @param {Object} settings - An object containing Drupal's dynamic settings that may be
+   *                            used to further customize or configure the behavior.
+   */
   Drupal.behaviors.translateCommunication = {
     attach: function (context, settings) {
       // Store the current language to detect changes
