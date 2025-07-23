@@ -379,6 +379,49 @@ function mayflower_preprocess_paragraph__service_section(&$variables) {
   $container = $variables['paragraph'];
   $variables['section_style'] = $container->field_section_style->value;
   $variables['hide_heading'] = $container->field_hide_heading->value;
+
+  // Only apply grouping for front-end theme; skip admin UI routes.
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    return;
+  }
+  // Group contiguous flexible_link_group:links into subsequent_links.
+  if (!empty($variables['content']['regions']['content'])) {
+    // Shortcut reference to the render-array for this region.
+    $items =& $variables['content']['regions']['content'];
+
+    $group = [];
+    // Walk through each render item.
+    foreach (array_keys($items) as $key) {
+      $render = $items[$key];
+      $p = $render['#paragraph'] ?? NULL;
+      $is_link_group = (
+        $p instanceof \Drupal\paragraphs\Entity\Paragraph &&
+        $p->bundle() === 'flexible_link_group' &&
+        $p->get('field_display_type')->value === 'links'
+      );
+      if ($is_link_group) {
+        $group[] = $key;
+        continue;
+      }
+      // Non-link or end of group: process any accumulated group of 2+.
+      if (count($group) > 1) {
+        $first = array_shift($group);
+        foreach ($group as $sub_key) {
+          $items[$first]['#paragraph']->subsequent_links[] = $items[$sub_key]['#paragraph'];
+          unset($items[$sub_key]);
+        }
+      }
+      $group = [];
+    }
+    // Process trailing group if any.
+    if (count($group) > 1) {
+      $first = array_shift($group);
+      foreach ($group as $sub_key) {
+        $items[$first]['#paragraph']->subsequent_links[] = $items[$sub_key]['#paragraph'];
+        unset($items[$sub_key]);
+      }
+    }
+  }
 }
 
 /**
