@@ -13,10 +13,6 @@
    *
    */
   window.addEventListener('message', function(event) {
-    // Verify origin - adjust as needed
-
-    // if (event.origin !== 'https://forms.mass.gov') return;
-
     if (event.data.action === 'gform_post_render') {
       notifyIframesOfLanguageChange('auto', getCurrentLanguage());
     }
@@ -95,7 +91,6 @@
           if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
             const newLanguage = document.documentElement.lang;
             if (newLanguage && newLanguage !== currentLanguage) {
-              console.log(`Language changed from ${currentLanguage} to ${newLanguage}`);
               notifyIframesOfLanguageChange(currentLanguage, newLanguage);
               currentLanguage = newLanguage;
             }
