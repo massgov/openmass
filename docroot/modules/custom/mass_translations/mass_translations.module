@@ -15,6 +15,7 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mass_translations\ClassResolverAttachIframeTranslationLibrary;
 use Drupal\mass_translations\Controller\TranslationsController;
 use Drupal\mayflower\Prepare\Organisms;
 use Drupal\media\MediaInterface;
@@ -162,6 +163,8 @@ function mass_translations_preprocess_node(&$variables) {
       ->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
+
+  \Drupal::classResolver(ClassResolverAttachIframeTranslationLibrary::class)->attach($variables);
 }
 
 /**
@@ -170,9 +173,6 @@ function mass_translations_preprocess_node(&$variables) {
  * Adapted from content_translation.module.
  */
 function mass_translations_page_attachments(array &$attachments) {
-  // Attach the translate-communication library to all pages
-  $attachments['#attached']['library'][] = 'mass_translations/translate-communication';
-
   $cache = CacheableMetadata::createFromRenderArray($attachments);
   $route_match = Drupal::routeMatch();
 
