@@ -11,6 +11,9 @@ use Drupal\node\NodeInterface;
 use Drupal\media\MediaInterface;
 use Drupal\Core\Render\Markup;
 
+// Define a constant for the status message text.
+define('MASSGOV_CONTENT_STATUS_MESSAGE', 'Changes may take up to 35 minutes to appear on <a href="https://www.mass.gov" target="_blank">www.mass.gov</a> due to caching.');
+
 /**
  * Implements hook_entity_update().
  */
@@ -91,6 +94,25 @@ function massgov_content_status_entity_update(EntityInterface $entity) {
   }
 
   if ($had_previous_published_revision) {
-    \Drupal::messenger()->addStatus(Markup::create(t('Changes may take up to 35 minutes to appear on <a href="https://www.mass.gov" target="_blank">www.mass.gov</a> due to caching.')));
+    \Drupal::messenger()->addStatus(Markup::create(t(MASSGOV_CONTENT_STATUS_MESSAGE)));
+  }
+}
+
+/**
+ * Moves the Mass.gov cache message to the end of the status messages list.
+ */
+function massgov_content_status_preprocess_status_messages(array &$variables) {
+  if (!isset($variables['message_list']['status'])) {
+    return;
+  }
+
+  $status_messages = &$variables['message_list']['status'];
+
+  foreach ($status_messages as $i => $message) {
+    if ((string) $message === MASSGOV_CONTENT_STATUS_MESSAGE) {
+      unset($status_messages[$i]);
+      $status_messages[] = $message;
+      break;
+    }
   }
 }
