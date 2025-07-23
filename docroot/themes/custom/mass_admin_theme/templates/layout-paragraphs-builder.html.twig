@@ -13,10 +13,16 @@
         {{ translation_warning }}
       </div>
     {% endif %}
-  <div class="ma__rich-text" dir="auto">
-    <div class="js-lpb-component-list {{ node_type }}">
-        {{ root_components }}
-    </div>
-  </div>
+    {% if node_type != 'service_page' %}
+      <div class="ma__rich-text" dir="auto">
+        <div class="js-lpb-component-list {{ node_type }}">
+            {{ root_components }}
+        </div>
+      </div>
+      {% else %}
+        <div class="js-lpb-component-list {{ node_type }}">
+          {{ root_components }}
+        </div>
+      {% endif %}
   {% endif %}
 </div>
