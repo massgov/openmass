@@ -16,7 +16,7 @@ class ClassResolverAttachIframeTranslationLibrary {
    * @return void
    *   This method does not return any value.
    */
-  public function attach (array &$variables): void {
+  public function attach(array &$variables): void {
     /** @var \Drupal\node\NodeInterface $node */
     $node = $variables['node'];
     if ($variables["view_mode"] !== "full") {
