@@ -51,10 +51,10 @@
         {# We set expanded to true here to show editors the content #}
         {% set expanded = [] %}
         {% for c in contactList.contacts %}
-          {% set expanded = expanded|merge([ c|merge({ isExpanded: true }) ]) %}
+          {% set expanded = expanded|merge([c|merge({isExpanded: true})]) %}
         {% endfor %}
-        {% set contactList = contactList|merge({ contacts: expanded }) %}
-        {% include "@organisms/contact/contact-list.twig" with { contactList: contactList } %}
+        {% set contactList = contactList|merge({contacts: expanded}) %}
+        {% include "@organisms/contact/contact-list.twig" with {contactList: contactList} %}
       {% else %}
         {% embed "@organisms/by-author/rich-text.twig" %}
           {% block rteElements %}
