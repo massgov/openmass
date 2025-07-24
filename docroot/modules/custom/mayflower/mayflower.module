@@ -386,7 +386,7 @@ function mayflower_preprocess_paragraph__service_section(&$variables) {
       $render = $items[$key];
       $p = $render['#paragraph'] ?? NULL;
       $is_link_group = (
-        $p instanceof \Drupal\paragraphs\Entity\Paragraph &&
+        $p instanceof Paragraph &&
         $p->bundle() === 'flexible_link_group' &&
         $p->get('field_display_type')->value === 'links'
       );
