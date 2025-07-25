@@ -12,24 +12,10 @@
    * Listen for gform_post_render hook, specifically to translate the form after the errors.
    *
    */
-  window.addEventListener('message', function (event) {
-    const iframes = document.querySelectorAll('iframe.js-iframe-resizer');
-
-    // Send postMessage to each iframe
-    iframes.forEach(iframe => {
-      const srcUrl = iframe.getAttribute('src');
-      const urlObject = new URL(srcUrl);
-      // Extract the domain (protocol + hostname)
-      const domain = urlObject.origin;
-      // Ensure the message is from the trusted origin.
-      if (event.origin === domain) {
-        if (event.data.action === 'gform_post_render') {
-          notifyIframesOfLanguageChange('auto', getCurrentLanguage());
-        }
-      }
-    });
-
-
+  window.addEventListener('message', function(event) {
+    if (event.data.action === 'gform_post_render') {
+      notifyIframesOfLanguageChange('auto', getCurrentLanguage());
+    }
   });
 
   /**
@@ -44,10 +30,6 @@
     // Send postMessage to each iframe
     iframes.forEach(iframe => {
       try {
-        var srcUrl = iframe.getAttribute('src');
-        var urlObject = new URL(srcUrl);
-        // Extract the domain (protocol + hostname)
-        var domain = urlObject.origin;
         // Only send to iframes that are loaded and have a contentWindow
         if (iframe.contentWindow) {
           const message = {
@@ -56,7 +38,7 @@
           };
 
           // Send the message to the iframe
-          iframe.contentWindow.postMessage(message, domain);
+          iframe.contentWindow.postMessage(message, '*');
         }
       }
       catch (error) {
