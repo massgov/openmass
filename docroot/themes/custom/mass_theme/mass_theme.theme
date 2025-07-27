@@ -7359,18 +7359,6 @@ function _mass_theme_paragraphs_sections_check_wrapping_field($paragraph, array 
 }
 
 /**
- * Group a flat list of paragraph render arrays into components:
- * - 'default' for field-flagged groups
- * - 'contained' for rich_text bundles
- * - 'self' for wrap_paragraph bundles
- * - NULL otherwise
- *
- * @param array $items
- *   Numeric array of render arrays, each with ['#paragraph'] set.
- * @return array
- *   Array of ['group'=>string|null, 'items'=>array] components.
- */
-/**
  * Preprocess paragraph sections from services and organizations.
  */
 function _mass_theme_group_render_items(array $paragraphs) {
@@ -7434,7 +7422,7 @@ function _mass_theme_group_render_items(array $paragraphs) {
 function mass_theme_preprocess_paragraph__service_section(array &$variables) {
   $paragraph = $variables['paragraph'];
   $variables['section_style'] = $paragraph->field_section_style->value;
-  $variables['hide_heading']   = $paragraph->field_hide_heading->value;
+  $variables['hide_heading'] = $paragraph->field_hide_heading->value;
 
   // 1) First, merge contiguous flexible_link_group:links into subsequent_links.
   if (!empty($variables['content']['regions']['content'])) {

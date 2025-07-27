@@ -354,9 +354,8 @@ function mayflower_preprocess_paragraph__section_header(&$variables) {
 function mayflower_preprocess_paragraph__service_section(array &$variables) {
   $paragraph = $variables['paragraph'];
   $variables['section_style'] = $paragraph->field_section_style->value;
-  $variables['hide_heading']   = $paragraph->field_hide_heading->value;
+  $variables['hide_heading'] = $paragraph->field_hide_heading->value;
 }
-
 
 /**
  * Implements hook_preprocess_HOOK().
