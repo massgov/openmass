@@ -164,31 +164,52 @@
 {#            {% endblock %}#}
 
             {% block stackedRowContentOverride %}
+              {% set child_heading_level = show_heading ? 3 : 2 %}
+          <div class="layout layout--onecol-mass-service-section">
+            <div class="layout__region layout__region--content">
               {% for service_component in service_components %}
                 {% if service_component.group == 'default' %}
                   {% embed "@organisms/by-author/rich-text.twig" %}
                     {% block rteElements %}
                       {% for c in service_component.items %}
-                        {{ c|view }}
+                        {% set c_item = c|view %}
+                        {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                          {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
+                        {% endif %}
+                        {{ c_item }}
                       {% endfor %}
                     {% endblock %}
                   {% endembed %}
                 {% elseif service_component.group == 'self' %}
                   {% embed "@organisms/by-author/rich-text.twig" %}
                     {% block rteElements %}
-                      {{ service_component.items|view }}
+                      {% set c_item = service_component.items|view %}
+                      {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                        {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
+                      {% endif %}
+                      {{ c_item }}
                     {% endblock %}
                   {% endembed %}
                 {% elseif service_component.group == 'contained' %}
                   {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}
                     {% block rteElements %}
-                      {{ service_component.items|view }}
+                      {% set c_item = service_component.items|view %}
+                      {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                        {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
+                      {% endif %}
+                      {{ c_item }}
                     {% endblock %}
                   {% endembed %}
                 {% else %}
-                  {{ service_component[0]|view }}
+                  {% set c_item = service_component[0]|view %}
+                  {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                    {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
+                  {% endif %}
+                  {{ c_item }}
                 {% endif %}
               {% endfor %}
+            </div>
+          </div>
             {% endblock %}
 
           {% endembed %}

@@ -28,6 +28,7 @@ use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Prepare\Schemas;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\schema_metatag\SchemaMetatagManager;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DomCrawler\Crawler;
@@ -7340,4 +7341,138 @@ function mass_theme_preprocess_pager__collection_all(&$variables) {
   $param = \Drupal::request()->query->get('sort_bef_combine');
   $default_sort = $param ?? $collection->field_default_sort->value ?? 'title_ASC';
   _mass_theme_override_sort_bef_combine($variables['items'], $default_sort);
+}
+
+/**
+ * Check whether a paragraph has any of the given wrapping flags set.
+ */
+function _mass_theme_paragraphs_sections_check_wrapping_field($paragraph, array $fields): bool {
+  if (!($paragraph instanceof Paragraph)) {
+    return FALSE;
+  }
+  foreach ($fields as $field_name) {
+    if ($paragraph->hasField($field_name) && !$paragraph->get($field_name)->isEmpty()) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Group a flat list of paragraph render arrays into components:
+ * - 'default' for field-flagged groups
+ * - 'contained' for rich_text bundles
+ * - 'self' for wrap_paragraph bundles
+ * - NULL otherwise
+ *
+ * @param array $items
+ *   Numeric array of render arrays, each with ['#paragraph'] set.
+ * @return array
+ *   Array of ['group'=>string|null, 'items'=>array] components.
+ */
+/**
+ * Preprocess paragraph sections from services and organizations.
+ */
+function _mass_theme_group_render_items(array $paragraphs) {
+  // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
+  $contained = ['rich_text'];
+
+  $components = [];
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+
+  for ($i = 0; $i < count($paragraphs); $i++) {
+    $component = [];
+    // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
+    if (_mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i]['#paragraph'], $wrap_fields)) {
+      $items = [];
+      do {
+        if (isset($paragraphs[$i]['#paragraph'])) {
+          $items[] = $paragraphs[$i]['#paragraph'];
+        }
+
+        $i++;
+        // Keep grouping together while the next element has the check.
+      } while (isset($paragraphs[$i]['#paragraph']) && _mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i]['#paragraph'], $wrap_fields));
+
+      // Once done, also group the following one.
+      if (isset($paragraphs[$i]['#paragraph'])) {
+        $items[] = $paragraphs[$i]['#paragraph'];
+      }
+
+      $component = ['group' => 'default', 'items' => $items];
+    }
+    // There are some special paragraphs that should have a right margin.
+    elseif (in_array($paragraphs[$i]['#paragraph']->getType(), $contained) !== FALSE) {
+      $component = [
+        'group' => 'contained',
+        'items' => $paragraphs[$i]['#paragraph']
+      ];
+    }
+    // Otherwise, if it's one of the following paragraphs, wrap it as well.
+    elseif (in_array($paragraphs[$i]['#paragraph']->getType(), $wrap_paragraphs) !== FALSE) {
+      $component = [
+        'group' => 'self',
+        'items' => $paragraphs[$i]['#paragraph']
+      ];
+    }
+
+    else {
+      // Otherwise, just return it as it is.
+      $component[] = $paragraphs[$i]['#paragraph'];
+    }
+
+    $components[] = $component;
+  }
+  return $components;
+}
+
+/**
+ * Implements hook_preprocess_paragraph__service_section().
+ */
+function mass_theme_preprocess_paragraph__service_section(array &$variables) {
+  $paragraph = $variables['paragraph'];
+  $variables['section_style'] = $paragraph->field_section_style->value;
+  $variables['hide_heading']   = $paragraph->field_hide_heading->value;
+
+  // 1) First, merge contiguous flexible_link_group:links into subsequent_links.
+  if (!empty($variables['content']['regions']['content'])) {
+    $items =& $variables['content']['regions']['content'];
+    $group = [];
+    foreach (array_keys($items) as $key) {
+      $render = $items[$key];
+      $p = $render['#paragraph'] ?? NULL;
+      $is_link = (
+        $p instanceof Paragraph &&
+        $p->bundle() === 'flexible_link_group' &&
+        $p->get('field_display_type')->value === 'links'
+      );
+      if ($is_link) {
+        $group[] = $key;
+        continue;
+      }
+      if (count($group) > 1) {
+        $first = array_shift($group);
+        foreach ($group as $sub) {
+          $items[$first]['#paragraph']->subsequent_links[] = $items[$sub]['#paragraph'];
+          unset($items[$sub]);
+        }
+      }
+      $group = [];
+    }
+    if (count($group) > 1) {
+      $first = array_shift($group);
+      foreach ($group as $sub) {
+        $items[$first]['#paragraph']->subsequent_links[] = $items[$sub]['#paragraph'];
+        unset($items[$sub]);
+      }
+    }
+
+    // 2) Now build service_components from the cleaned list.
+    $items = array_values($items);
+    $variables['service_components'] = _mass_theme_group_render_items($items);
+    // 3) Prevent Drupal from auto-rendering the old regions.
+    unset($variables['content']['regions']['content']);
+  }
 }

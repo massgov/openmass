@@ -43,12 +43,4 @@
   content: content.field_description|field_value|render.__toString()
 }
 %}
-{% if paragraph.field_stat_wrapping.value %}
-  {% include "@molecules/callout-stats.twig" with statsCallout %}
-{% else %}
-  {% embed "@organisms/by-author/rich-text.twig" %}
-    {% block rteElements %}
-      {% include "@molecules/callout-stats.twig" with statsCallout %}
-    {% endblock %}
-  {% endembed %}
-{% endif %}
+{% include "@molecules/callout-stats.twig" with statsCallout %}
