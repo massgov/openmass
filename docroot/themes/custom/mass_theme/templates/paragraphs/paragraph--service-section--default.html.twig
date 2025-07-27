@@ -125,44 +125,6 @@
               {% endif %}
             {% endblock %}
 
-{#            {% block stackedRowContentOverride %}#}
-{#              {% set child_heading_level = show_heading ? 3 : 2 %}#}
-{#              {% for comp in service_components %}#}
-{#                <div class="layout layout--onecol-mass-service-section">#}
-{#                  <div class="layout__region layout__region--content">#}
-{#                    {% if comp.group in ['default', 'self'] %}#}
-{#                      {% embed "@organisms/by-author/rich-text.twig" %}#}
-{#                        {% block rteElements %}#}
-{#                          {% for p in comp.items %}#}
-{#                            {% if p['#paragraph'] is defined and p['#paragraph'].bundle == 'section_header' %}#}
-{#                              {% set p = p|merge({'#context': {'level': child_heading_level}}) %}#}
-{#                            {% endif %}#}
-{#                            {{ p|view }}#}
-{#                          {% endfor %}#}
-{#                        {% endblock %}#}
-{#                      {% endembed %}#}
-{#                    {% elseif comp.group == 'contained' %}#}
-{#                      {% embed "@organisms/by-author/rich-text.twig" with { headerIndent: 'om__contained-component' } %}#}
-{#                        {% block rteElements %}#}
-{#                          {% set p = comp.items[0] %}#}
-{#                          {% if p['#paragraph'] is defined and p['#paragraph'].bundle == 'section_header' %}#}
-{#                            {% set p = p|merge({'#context': {'level': child_heading_level}}) %}#}
-{#                          {% endif %}#}
-{#                          {{ p|view }}#}
-{#                        {% endblock %}#}
-{#                      {% endembed %}#}
-{#                    {% else %}#}
-{#                      {% set p = comp.items[0] %}#}
-{#                      {% if p['#paragraph'] is defined and p['#paragraph'].bundle == 'section_header' %}#}
-{#                        {% set p = p|merge({'#context': {'level': child_heading_level}}) %}#}
-{#                      {% endif %}#}
-{#                      {{ p|view }}#}
-{#                    {% endif %}#}
-{#                  </div>#}
-{#                </div>#}
-{#              {% endfor %}#}
-{#            {% endblock %}#}
-
             {% block stackedRowContentOverride %}
               {% set child_heading_level = show_heading ? 3 : 2 %}
           <div class="layout layout--onecol-mass-service-section">
