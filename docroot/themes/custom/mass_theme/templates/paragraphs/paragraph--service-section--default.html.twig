@@ -125,28 +125,70 @@
               {% endif %}
             {% endblock %}
 
-            {% block stackedRowContentOverride %}
-              {% if content.regions %}
-                {% set child_heading_level = show_heading ? 3 : 2 %}
-                {% for region, items in content.regions %}
-                  {% if not (region starts with '#') %}
-                    <div class="layout layout--onecol-mass-service-section">
-                      <div class="layout__region layout__region--content">
-                        {% for item in items %}
-                          {% if item is iterable and item['#paragraph'] is defined %}
-                            {% set p = item['#paragraph'] %}
+{#            {% block stackedRowContentOverride %}#}
+{#              {% set child_heading_level = show_heading ? 3 : 2 %}#}
+{#              {% for comp in service_components %}#}
+{#                <div class="layout layout--onecol-mass-service-section">#}
+{#                  <div class="layout__region layout__region--content">#}
+{#                    {% if comp.group in ['default', 'self'] %}#}
+{#                      {% embed "@organisms/by-author/rich-text.twig" %}#}
+{#                        {% block rteElements %}#}
+{#                          {% for p in comp.items %}#}
+{#                            {% if p['#paragraph'] is defined and p['#paragraph'].bundle == 'section_header' %}#}
+{#                              {% set p = p|merge({'#context': {'level': child_heading_level}}) %}#}
+{#                            {% endif %}#}
+{#                            {{ p|view }}#}
+{#                          {% endfor %}#}
+{#                        {% endblock %}#}
+{#                      {% endembed %}#}
+{#                    {% elseif comp.group == 'contained' %}#}
+{#                      {% embed "@organisms/by-author/rich-text.twig" with { headerIndent: 'om__contained-component' } %}#}
+{#                        {% block rteElements %}#}
+{#                          {% set p = comp.items[0] %}#}
+{#                          {% if p['#paragraph'] is defined and p['#paragraph'].bundle == 'section_header' %}#}
+{#                            {% set p = p|merge({'#context': {'level': child_heading_level}}) %}#}
+{#                          {% endif %}#}
+{#                          {{ p|view }}#}
+{#                        {% endblock %}#}
+{#                      {% endembed %}#}
+{#                    {% else %}#}
+{#                      {% set p = comp.items[0] %}#}
+{#                      {% if p['#paragraph'] is defined and p['#paragraph'].bundle == 'section_header' %}#}
+{#                        {% set p = p|merge({'#context': {'level': child_heading_level}}) %}#}
+{#                      {% endif %}#}
+{#                      {{ p|view }}#}
+{#                    {% endif %}#}
+{#                  </div>#}
+{#                </div>#}
+{#              {% endfor %}#}
+{#            {% endblock %}#}
 
-                            {% if p.bundle == 'section_header' %}
-                              {% set item = item|merge({'#context': {'level': child_heading_level}}) %}
-                            {% endif %}
-                          {% endif %}
-                          {{ item }}
-                        {% endfor %}
-                      </div>
-                    </div>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
+            {% block stackedRowContentOverride %}
+              {% for service_component in service_components %}
+                {% if service_component.group == 'default' %}
+                  {% embed "@organisms/by-author/rich-text.twig" %}
+                    {% block rteElements %}
+                      {% for c in service_component.items %}
+                        {{ c|view }}
+                      {% endfor %}
+                    {% endblock %}
+                  {% endembed %}
+                {% elseif service_component.group == 'self' %}
+                  {% embed "@organisms/by-author/rich-text.twig" %}
+                    {% block rteElements %}
+                      {{ service_component.items|view }}
+                    {% endblock %}
+                  {% endembed %}
+                {% elseif service_component.group == 'contained' %}
+                  {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}
+                    {% block rteElements %}
+                      {{ service_component.items|view }}
+                    {% endblock %}
+                  {% endembed %}
+                {% else %}
+                  {{ service_component[0]|view }}
+                {% endif %}
+              {% endfor %}
             {% endblock %}
 
           {% endembed %}
