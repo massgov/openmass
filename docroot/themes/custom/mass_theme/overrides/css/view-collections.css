@@ -11,15 +11,17 @@
   padding-left: 0;
 }
 
-.js-form-item {
+.js-form-item.js-form-type-radio,
+.js-form-item.js-form-type-checkbox
+ {
   position: relative;
   display: flex;
   align-items: flex-start;
   margin-block-start: 0.5em;
 }
 
-.js-form-item > input[type="radio"],
-.js-form-item > input[type="checkbox"] {
+.js-form-item.js-form-type-radio > input[type="radio"],
+.js-form-item.js-form-type-checkbox > input[type="checkbox"] {
   position: absolute;
   top: 2px;
   margin: 0;
@@ -30,7 +32,8 @@
 
 }
 
-.js-form-item > label.option {
+.js-form-item.js-form-type-radio > label.option,
+.js-form-item.js-form-type-checkbox > label.option {
   margin-bottom: 0;
   padding-left: calc(24px + 0.5rem);
 }
