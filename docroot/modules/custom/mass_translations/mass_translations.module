@@ -46,6 +46,9 @@ function _mass_translations_media_helper(array &$variables) {
     ->toString();
   $lang_codes = $languageManager->getLanguages();
 
+  // Generate unique document ID for accessibility
+  $document_id = 'doc-' . $media->id();
+
   // Get all the translations for this media.
   $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
   // Replace "x-default" with the default language id.
@@ -83,14 +86,23 @@ function _mass_translations_media_helper(array &$variables) {
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
+          // Add unique IDs and aria-labelledby for accessibility
+          "translation_id" => $document_id . '-' . $language_id,
+          "document_id" => $document_id . '-title',
         ];
       }
     }
   }
   if (count($languages) >= 1) {
-    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
+    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
+      "ariaLabel" => "Available Translations",
+      "document_id" => $document_id . '-title'  // Pass document ID to prepare function
+    ]);
     $variables += ["translationLinks" => $inlineLinks];
   }
+  // Add the document ID to variables for the main document link
+  $variables["document_id"] = $document_id . '-title';
+
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
   // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
   CacheableMetadata::createFromRenderArray($variables)
