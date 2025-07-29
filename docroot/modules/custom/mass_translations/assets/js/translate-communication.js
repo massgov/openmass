@@ -12,7 +12,7 @@
    * Listen for gform_post_render hook, specifically to translate the form after the errors.
    *
    */
-  window.addEventListener('message', function(event) {
+  window.addEventListener('message', function (event) {
     if (event.data.action === 'gform_post_render') {
       notifyIframesOfLanguageChange('auto', getCurrentLanguage());
     }
