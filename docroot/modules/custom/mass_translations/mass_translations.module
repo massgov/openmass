@@ -97,7 +97,7 @@ function _mass_translations_media_helper(array &$variables) {
   if (count($languages) >= 1) {
     $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
       "ariaLabel" => "Available Translations",
-      "document_id" => $document_id . '-title'  
+      "document_id" => $document_id . '-title'
     ]);
     $variables += ["translationLinks" => $inlineLinks];
   }
