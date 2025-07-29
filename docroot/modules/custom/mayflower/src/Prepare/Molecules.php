@@ -1510,7 +1510,7 @@ class Molecules {
       $file = $entity->field_upload_file->entity;
       if ($file instanceof File) {
         $itsAFile = TRUE;
-        if ($entity->isDefaultRevision()) {
+        if ($entity->isDefaultRevision() || $entity->isLatestRevision()) {
           // Create media entity download link rather than linking directly to file.
           $href = Url::fromRoute(
             'media_entity_download.download',

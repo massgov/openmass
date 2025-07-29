@@ -11,20 +11,31 @@
   padding-left: 0;
 }
 
-[class*="form-item-topicid"] {
+.js-form-item.js-form-type-radio,
+.js-form-item.js-form-type-checkbox
+ {
+  position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  margin-block-start: 0.5em;
 }
 
-[class*="form-item-topicid"] > input[type="radio"],
-input[type="checkbox"] {
-  margin-right: 5px;
-  height: 18px;
-  width: 18px;
+.js-form-item.js-form-type-radio > input[type="radio"],
+.js-form-item.js-form-type-checkbox > input[type="checkbox"] {
+  position: absolute;
+  top: 2px;
+  margin: 0;
+  flex-shrink: 0;
+  height: 24px;
+  width: 24px;
+  accent-color: #14558F;
+
 }
 
-[class*="form-item-topicid"] > label.option {
+.js-form-item.js-form-type-radio > label.option,
+.js-form-item.js-form-type-checkbox > label.option {
   margin-bottom: 0;
+  padding-left: calc(24px + 0.5rem);
 }
 
 form.views-exposed-form ul {

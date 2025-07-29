@@ -56,7 +56,7 @@ function mass_media_media_update(EntityInterface $entity) {
   /** @var \Drupal\Core\File\FileSystem $file_system */
   $file_system = \Drupal::service('file_system');
   $file_scheme = StreamWrapperManager::getScheme($file_uri);
-  if ($file_scheme == 'private') {
+  if (!$entity->isPublished() || $file_scheme == 'private') {
     return;
   }
 
@@ -257,20 +257,34 @@ function mass_media_media_presave(MediaInterface $entity) {
       $file_scheme = StreamWrapperManager::getScheme($file_uri);
       $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
 
-      // Checks for unpublished Documents to ensure file is private.
-      // Checks for published Documents to ensure file is public.
-      if ($entity->isPublished() && $file_scheme == 'private') {
-        // Moves file from private to public.
+      $file_destination = NULL;
+
+      // Load the current default revision.
+      $default_revision = NULL;
+      if (!$entity->isNew()) {
+        $default_revision = \Drupal::entityTypeManager()->getStorage('media')->loadUnchanged($entity->id());
+      }
+
+      $same_file_as_default = $default_revision
+        && $default_revision->hasField('field_upload_file')
+        && !$default_revision->get('field_upload_file')->isEmpty()
+        && $default_revision->get('field_upload_file')->target_id === $entity->get('field_upload_file')->target_id;
+
+      if ($default_revision && $default_revision->isPublished() && $same_file_as_default) {
+        // File is still in use by published revision; do not move.
+        return;
+      }
+
+      if ($entity->isPublished() && $file_scheme === 'private') {
         $file_destination = 'public://' . $file_uri_target;
       }
-      elseif (!$entity->isPublished() && $file_scheme == 'public') {
+      elseif (!$entity->isPublished() && $file_scheme === 'public') {
         $file_destination = 'private://' . $file_uri_target;
       }
 
-      // Moves file as needed.
       if (!empty($file_destination)) {
         $dirname = $file_system->dirname($file_destination);
-        if (!\Drupal::service('file_system')->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+        if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
           throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
         }
         if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
