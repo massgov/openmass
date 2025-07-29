@@ -14,7 +14,6 @@
    */
   window.addEventListener('message', function(event) {
     if (event.data.action === 'gform_post_render') {
-      alert('gform_post_render__hook');
       notifyIframesOfLanguageChange('auto', getCurrentLanguage());
     }
   });

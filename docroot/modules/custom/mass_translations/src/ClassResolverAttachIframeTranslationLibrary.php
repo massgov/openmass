@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_translations;
 
+use Drupal\mass_content\Entity\Bundle\node\FormPageBundle;
+
 /**
  * Provides functionality for attaching specific libraries to renderable variables.
  */
@@ -23,20 +25,14 @@ class ClassResolverAttachIframeTranslationLibrary {
       return;
     }
 
-    if (!$node->hasField('field_form_platform')) {
+    if (!($node instanceof FormPageBundle)) {
       return;
     }
 
-    if ($node->get('field_form_platform')->isEmpty()) {
-      return;
+    if ($node->isGravityForms()) {
+      // Attach the translate-communication library to all pages
+      $variables['#attached']['library'][] = 'mass_translations/translate-communication';
     }
-
-    if ($node->get('field_form_platform')->value !== 'gravity_forms') {
-      return;
-    }
-
-    // Attach the translate-communication library to all pages
-    $variables['#attached']['library'][] = 'mass_translations/translate-communication';
   }
 
 }
