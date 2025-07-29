@@ -21,9 +21,7 @@ dependencies:
     - node
     - taxonomy
     - user
-    - views_autocomplete_filters
     - views_bulk_operations
-    - views_porter_stemmer
 id: report_bulk_label_editor
 label: 'Bulk label editor report'
 module: views
@@ -2181,7 +2179,8 @@ display:
           buttons: false
           action_title: Action
           clear_on_exposed: true
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
             12:
               action_id: views_bulk_edit

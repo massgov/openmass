@@ -16,9 +16,7 @@ dependencies:
     - options
     - taxonomy
     - user
-    - views_autocomplete_filters
     - views_bulk_operations
-    - views_porter_stemmer
 id: content_login_links
 label: 'Report of pages with inherited "log-in to" links'
 module: views
@@ -91,13 +89,16 @@ display:
           buttons: false
           action_title: Action
           clear_on_exposed: true
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
-            12:
+            -
               action_id: views_bulk_edit
               preconfiguration:
                 add_confirmation: false
+                confirm_help_text: ''
                 label_override: Edit
+                message_override: ''
                 get_bundles_from_results: true
         title:
           id: title
@@ -535,7 +536,6 @@ display:
             autocomplete_raw_suggestion: 1
             autocomplete_raw_dropdown: 1
             autocomplete_dependent: 0
-            stem_query: 0
           is_grouped: false
           group_info:
             label: ''

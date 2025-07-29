@@ -1,11 +1,18 @@
 table.dataTable {
   /* override mayflower richtext table min-width: */
   min-width: unset;
+  font-size: 1rem;
+  margin: 0 auto;
+  border: 2px solid #dcdcdc;
 }
 
-table.dataTable thead {
-  color: #fff;
-  background-color: #535353;
+table.dataTable tbody {
+  vertical-align: top;
+}
+
+table.dataTable thead,
+table.dataTable thead tr>.dtfc-fixed-start {
+  background-color: #f2f2f2;
 }
 
 table.dataTable tr.parent {
@@ -62,11 +69,6 @@ table.dataTable.display.collapsed tbody tr.even>.sorting_1 {
   background-color: #f2f2f2;
 }
 
-table.dataTable.display.collapsed tbody tr:not(.child) td {
-  border-top: 1px solid #707070;
-}
-
-
 .dataTables_wrapper .dataTables_paginate .paginate_button {
   color: #14558f !important;
   border: none;
@@ -93,6 +95,47 @@ table.dataTable.display.collapsed tbody tr:not(.child) td {
   border-bottom: 3px solid rgba(20,85,143,.5);
 }
 
+/* pagination button style */
+.dt-paging {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+@media screen and (min-width: 768px) {
+  .dt-paging {
+     justify-content: right;
+  }
+}
+
+div.dt-container .dt-paging .dt-paging-button {
+  height: 40px;
+  color: #14558f !important;
+}
+
+div.dt-container .dt-paging .dt-paging-button.current {
+  background: #fff;
+}
+
+div.dt-container .dt-paging .dt-paging-button:hover {
+  background: #14558f;
+}
+
+button.dt-paging-button.first,
+button.dt-paging-button.last {
+  font-size: 1.5rem;
+  padding: 2px 16px 6px 16px !important;
+}
+
+button.dt-paging-button.previous,
+button.dt-paging-button.next {
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0px 4px 8px 4px !important;
+}
+
+
+
+
 @media screen and (max-width: 640px) {
   /* table controls */
   .dataTables_wrapper .dataTables_length,
@@ -104,4 +147,17 @@ table.dataTable.display.collapsed tbody tr:not(.child) td {
 .dataTables_wrapper .dataTables_length,
 .dataTables_wrapper .dataTables_filter {
   margin: 0.5rem 0;
+}
+
+
+
+/* sort icons */
+table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:after {
+  line-height: 12px;
+  opacity: 0.25;
+}
+
+table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before,
+table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after {
+  opacity: 1;
 }

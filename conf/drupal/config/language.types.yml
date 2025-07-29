@@ -6,10 +6,21 @@ all:
   - language_url
 configurable:
   - language_interface
+  - language_content
 negotiation:
   language_content:
     enabled:
-      language-interface: 0
+      language-content-entity-no-outbound: -19
+      language-selected: -13
+    method_weights:
+      language-content-entity: -20
+      language-session: -18
+      language-user: -17
+      language-browser: -16
+      language-url: -15
+      language-interface: -14
+      language-selected: -13
+      language-content-entity-no-outbound: -19
   language_url:
     enabled:
       language-url: 0

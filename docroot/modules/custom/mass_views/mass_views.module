@@ -17,14 +17,22 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $view = $form_state->getStorage('view');
-
-  if (($view['view']->id() == 'crawler_pages' && $view['view']->getDisplay()->display['id'] == 'page_1') || ($view['view']->id() == 'crawler_documents' && $view['view']->getDisplay()->display['id'] == 'media_page_list')) {
-    $form['crawl-auth'] = [
-      '#type' => 'textfield',
-      '#title' => t('Crawl auth key'),
-    ];
+  // Apply select2 recursively.
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    _mass_views_apply_select2_to_multiselects($form);
   }
+
+  /** @var \Drupal\views\ViewExecutable $view */
+  $view = $form_state->getStorage('view');
+  if (in_array($view['view']->id(), ['crawler_pages', 'crawler_documents'])) {
+    if (in_array($view['view']->getDisplay()->display['id'], ['page_1', 'media_page_list'])) {
+      $form['crawl-auth'] = [
+        '#type' => 'textfield',
+        '#title' => t('Crawl auth key'),
+      ];
+    }
+  }
+
   if ($view['view']->id() === "non_english_documents" && $view['view']->getDisplay()->display['id'] === "page_1") {
     if ($form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']) {
       $form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']['#type'] = 'radios';
@@ -145,6 +153,31 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
 }
 
 /**
+ * Recursively applies select2 to all multiselects in the form structure.
+ */
+function _mass_views_apply_select2_to_multiselects(array &$elements) {
+  foreach ($elements as &$element) {
+    if (is_array($element)) {
+      // Check for a multiselect.
+      if (
+        isset($element['#type']) &&
+        $element['#type'] === 'select' &&
+        !empty($element['#multiple'])
+      ) {
+        // Change to Select2 element type.
+        $element['#type'] = 'select2';
+
+        // Add a placeholder.
+        $element['#attributes']['placeholder'] = t('Start typing...');
+      }
+
+      // Recurse for nested children (like fieldsets).
+      _mass_views_apply_select2_to_multiselects($element);
+    }
+  }
+}
+
+/**
  * Implements hook_preprocess_views_view_field().
  */
 function mass_views_preprocess_views_view_field(&$variables) {
@@ -160,7 +193,7 @@ function mass_views_preprocess_views_view_field(&$variables) {
         'field' => 'title',
         'route_parameter' => 'node',
         'route' => 'entity.node.canonical',
-        'id_field' => 'node_field_data_node_field_revision_nid',
+        'id_field' => 'nid',
         'cache_tag' => 'node_list',
       ],
     ],

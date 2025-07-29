@@ -16,12 +16,11 @@ dependencies:
     - file
     - image
     - media
+    - media_entity_download
     - rest
     - serialization
     - user
-    - views_autocomplete_filters
     - views_bulk_operations
-    - views_porter_stemmer
 _core:
   default_config_hash: '-fJpPBLfGRPa6VPFiBweHcjlSOTqltsw5cbz8VVqXAI'
 id: media
@@ -1292,8 +1291,14 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: target_id
-          type: file_default
-          settings: {  }
+          type: media_entity_download_download_link
+          settings:
+            trim_length: 80
+            url_only: false
+            url_plain: false
+            rel: '0'
+            target: _blank
+            disposition: attachment
           group_column: ''
           group_columns: {  }
           group_rows: true
@@ -2045,7 +2050,8 @@ display:
           buttons: false
           action_title: Action
           clear_on_exposed: true
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
             2:
               action_id: mass_media_publish

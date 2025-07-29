@@ -1,5 +1,102 @@
 
 
+## [0.445.0] - July 22, 2025
+
+### Changed
+  - DP-39365: Form a11y - Iframe tag must have a title.
+  - DP-39427: Drupal 10 core and views related module upgrades.
+  - DP-39577: Added new filters and fields to accessibility report.
+  - DP-40027: Added custom status message on save when an existing published node is updated, informing authors about caching delays on www.mass.gov.
+  - DP-40255: Updated display to show document file count in the footer of all document view.
+  - DP-40681: Allow authors to view 25, 50 or 100 docs at a time in "All Documents"
+  - DP-40792: Update Unsupported modules with Drupal 10.5
+
+### Fixed
+  - DP-40347: Keyword Search Not Returning Expected Results on Collections Page.
+
+
+
+## [0.444.0] - July 15, 2025
+
+### Changed
+  - DP-38868: Move patches to the local file system, remove .git folders from composer dependencies.
+  - DP-39691: Created a block plugin (`FeedbackHeaderBlock`) in the `mass_feedback_loop` module to render contextual links on feedback pages.
+  - DP-39980: Don't show authors the files URL for documents when inserting a doc.
+  - DP-40037: Allow Drupal to accept documents with the .rpt extension.
+  - DP-40308: API Service Cards: Remove RTE from IDV * fields.
+
+### Fixed
+  - DP-40113: Pagination Links Not Functional on Upcoming and Past Events Page.
+  - DP-40329: Update iframe resizer configuration to clarify usage for dynamic height iframes.
+
+### Security
+  - DP-40186: Update simple sitemap module.
+
+
+
+## [0.443.0] - July 2, 2025
+
+### Fixed
+  - DP-39642: Inject modal focus onMessage handler before iframe initialization to fix the inconsistency in focus behavior.
+  - DP-39925: Rich text table with scrollbar is not keyboard accessible.
+  - DP-40034: Fix JS console error after utility nav item removal.
+  - DP-40116: Fix missing scrollbar on all pages.
+  - DP-40188: Table Headers Display Incorrectly While Scrolling.
+
+### Added
+  - DP-39824: Added mail icon to the email how-to method.
+
+### Changed
+  - DP-40033: Suppress CSV table editorially warning on empty table footer.
+
+
+
+## [0.442.1] - June 19, 2025
+
+### Fixed:
+  - DP-39934: Fix 500 errors. Disable HUX module.
+  - DP-39974: Fix critical CSV table bug.
+
+## [0.442.0] - June 17, 2025
+
+### Fixed
+  - DP-31079: Fixed GTM tracking of search form submissions for global and scoped searches on mass.gov.
+
+### Changed
+  - DP-37775: CSV table module has accessibility issues whenever rows are expanded.
+  - DP-38252: SPIKE investigate possible ways to label or add collection data to documents in bulk.
+  - DP-39568: Changed paragraphs on news and lists to use stable paragraphs view rather than legacy.
+
+### Added
+  - DP-39751: Expand combine operator for the collections search.
+  - DP-39881: Add viewer role to the system.
+
+### Removed
+  - DP-39770: Removed the Contrast Settings feature and reverted the changes introduced in the original PR that added the UserWay accessibility tools.
+
+
+
+## [0.441.0] - June 10, 2025
+
+### Changed
+  - DP-38638: Add 'Phone' as a contact method option for how-to pages
+  - DP-39726: Modified help text for iframe paragraph.
+
+### Added
+  - DP-38918: Make service card content type
+  - DP-39093: Enable translations for Service Card API content type
+  - DP-39646: Enable content_translation module.
+
+### Fixed
+  - DP-39638: Re-add mayflowere artrifacts after 0.439.0 release revert.
+  - DP-39656: Fix crawler view which doesn't show published pages when there is an unpublished draft.
+
+
+## [0.440.1] - June 10, 2025
+
+### Added:
+- DP-39646: Service Card API: Enable core Drupal Translations.
+
 ## [0.439.0] - June 3, 2025
 
 ### Fixed

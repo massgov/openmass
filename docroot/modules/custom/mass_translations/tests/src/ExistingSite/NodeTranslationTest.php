@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_translations\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
 
@@ -37,10 +38,10 @@ class NodeTranslationTest extends MassExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function getContent(): ContentEntityInterface {
+  public function getContent($bundle = 'info_details'): ContentEntityInterface {
     $node = $this->createNode([
-      'type' => 'info_details',
-      'title' => 'Test Info Details',
+      'type' => $bundle,
+      'title' => 'Test ' . $bundle,
       'field_organizations' => [$this->orgNode],
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
@@ -97,6 +98,62 @@ class NodeTranslationTest extends MassExistingSiteBase {
     $this->assertNotEmpty($element, 'No hreflang value found for translation on the English page');
     $tabs = $page->find('css', '.primary-tabs')->getText();
     $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
+  }
+
+  /**
+   * Data provider for testCanTranslateContent test.
+   *
+   * Return an array of roles and bundles to test.
+   * Only content types which support translations are tested.
+   *
+   * @return array
+   *   An array of roles and bundles to test.
+   */
+  public function canTranslateContentDataProvider(): array {
+    return [
+      ['news', ['administrator', 'editor']],
+      ['info_details', ['administrator', 'editor']],
+      ['form_page', ['administrator', 'editor']],
+      ['curated_list', ['administrator', 'editor']],
+      ['campaign_landing', ['administrator', 'editor']],
+      ['alert', ['administrator', 'editor']],
+      ['how_to_page', ['administrator', 'editor']],
+      ['service_page', ['administrator', 'editor']],
+    ];
+  }
+
+  /**
+   * Test access to mass_translations.controller_translations router.
+   *
+   * Tests whether translation tab of a specific translatable bundle can
+   * be accessed by users with specified roles.
+   *
+   * @param string $bundle
+   *   The content type bundle to test.
+   * @param array $roles
+   *   An array of user roles to test translation permissions against.
+   *
+   * @dataProvider canTranslateContentDataProvider
+   */
+  public function testCanAccessTranslationsTab(string $bundle, array $roles): void {
+    foreach ($roles as $role) {
+      $user = $this->createUser();
+      $user->addRole($role);
+      $user->activate();
+      $user->save();
+      $this->drupalLogin($user);
+
+      $entity = $this->getContent($bundle);
+      $translation = $this->getTranslation($entity);
+      $url = Url::fromRoute('mass_translations.controller_translations', ['node' => $entity->id()]);
+      $this->drupalGet($url->toString());
+      $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Translations page was not loadable.');
+      $page = $this->getSession()->getPage();
+      $element = $page->findLink($translation->label());
+      $this->assertNotNull($element, 'Could not find the link to the original node on the translations page');
+      $element = $page->findLink($entity->label());
+      $this->assertNotNull($element, 'Could not find the link to related translation node.');
+    }
   }
 
   /**

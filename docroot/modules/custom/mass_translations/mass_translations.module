@@ -7,6 +7,7 @@
 
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageDefault;
@@ -14,6 +15,7 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mass_translations\ClassResolverAttachIframeTranslationLibrary;
 use Drupal\mass_translations\Controller\TranslationsController;
 use Drupal\mayflower\Prepare\Organisms;
 use Drupal\media\MediaInterface;
@@ -161,6 +163,8 @@ function mass_translations_preprocess_node(&$variables) {
       ->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
+
+  \Drupal::classResolver(ClassResolverAttachIframeTranslationLibrary::class)->attach($variables);
 }
 
 /**
@@ -187,8 +191,15 @@ function mass_translations_page_attachments(array &$attachments) {
     $translations_controller = new TranslationsController($node_storage);
 
     $entity = $route_match->getParameter($name);
+
     if ($entity instanceof NodeInterface && $entity->hasLinkTemplate('canonical')) {
-      // Current route represents a content entity. Build hreflang links.
+
+      // Api Service Card use Core Translations, so not need continue.
+      if ($entity->bundle() === 'api_service_card') {
+        return;
+      }
+
+      // The current route represents a content entity. Build hreflang links.
       foreach ($translations_controller->getTranslationLanguages($entity, $node_storage, 'field_english_version') as $language_id => $translation) {
         // Skip any translation that cannot be viewed.
         $access = $translation->access('view', NULL, TRUE);

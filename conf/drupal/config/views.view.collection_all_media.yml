@@ -13,8 +13,6 @@ dependencies:
     - taxonomy
     - text
     - user
-    - views_autocomplete_filters
-    - views_porter_stemmer
 id: collection_all_media
 label: 'Collection All - Media'
 module: views
@@ -530,16 +528,16 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: views_autocomplete_filters_combine
-          operator: word
+          operator: allwords
           value: ''
           group: 1
           exposed: true
           expose:
-            operator_id: combine_op
+            operator_id: collection_combine_op
             label: 'Combine fields filter'
             description: ''
             use_operator: false
-            operator: combine_op
+            operator: collection_combine_op
             operator_limit_selection: false
             operator_list: {  }
             identifier: title
@@ -562,6 +560,8 @@ display:
               d2d_redirect_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -569,7 +569,6 @@ display:
             autocomplete_raw_suggestion: 1
             autocomplete_raw_dropdown: 1
             autocomplete_dependent: 0
-            stem_query: 1
           is_grouped: false
           group_info:
             label: ''
@@ -700,11 +699,5 @@ display:
         - 'url.query_args:sort_order'
         - user.permissions
       tags:
-        - 'config:core.entity_view_display.media.document.default'
-        - 'config:core.entity_view_display.media.document.linked_desc'
-        - 'config:core.entity_view_display.media.document.listing'
-        - 'config:core.entity_view_display.media.document.manual_desc'
-        - 'config:core.entity_view_display.media.document.media_download_link'
-        - 'config:core.entity_view_display.media.media_video.default'
         - 'config:field.storage.media.field_description'
         - 'config:field.storage.media.field_title'
