@@ -11,6 +11,7 @@ dependencies:
     - field.storage.paragraph.field_two_column
     - node.type.service_page
   module:
+    - csv_serialization
     - link
     - node
     - options
@@ -1209,6 +1210,20 @@ display:
     display_plugin: data_export
     position: 2
     display_options:
+      style:
+        type: data_export
+        options:
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+            use_serializer_encode_only: false
       display_extenders:
         metatag_display_extender:
           metatags: {  }
