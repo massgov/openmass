@@ -49,8 +49,8 @@ function _mass_translations_media_helper(array &$variables) {
 
   // Generate unique IDs for accessibility
   $document_id = 'doc-' . $media->id();
-  $main_link_id = $document_id . '-main-link';  // ID for the main anchor link
-  $clean_title_id = $document_id . '-title';    // ID for the clean hidden title span
+  $main_link_id = $document_id . '-main-link';
+  $clean_title_id = $document_id . '-title';
 
   $document_title = !empty($media->field_title->value)
     ? $media->field_title->value
@@ -105,7 +105,7 @@ function _mass_translations_media_helper(array &$variables) {
           "url" => $url,
           // Accessibility IDs for aria-labelledby
           "translation_id" => $document_id . '-' . $language_id,
-          "document_id" => $clean_title_id, // reference the clean hidden title span only
+          "document_id" => $clean_title_id,
           "aria_labelledby" => $document_id . '-' . $language_id . ' ' . $clean_title_id,
           "document_title" => $document_title,
         ];
@@ -132,7 +132,6 @@ function _mass_translations_media_helper(array &$variables) {
     ->addCacheTags($cache_tags)
     ->applyTo($variables);
 }
-
 
 /**
  * Implements hook_preprocess_HOOK().
