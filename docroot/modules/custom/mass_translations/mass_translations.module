@@ -47,15 +47,12 @@ function _mass_translations_media_helper(array &$variables) {
     ->toString();
   $lang_codes = $languageManager->getLanguages();
 
-  // Get the main document title for accessibility (clean, no file info)
+  // Generate unique document ID for accessibility
+  $document_id = 'doc-' . $media->id();
+
   $document_title = !empty($media->field_title->value) ? $media->field_title->value : $media->field_upload_file->entity->getFilename();
 
-  $doc_id = $media->id();
-
-  // Create a clean, semantic ID from the document title
-  $document_title_clean = preg_replace('/[^a-zA-Z0-9]+/', '-', strtolower($document_title));
-  $document_id = $doc_id . '-' . $document_title_clean;
-
+  // Get all the translations for this media.
   $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
   // Replace "x-default" with the default language id.
   $all_translations[$lang_default->getId()] = $all_translations["x-default"];
@@ -81,10 +78,6 @@ function _mass_translations_media_helper(array &$variables) {
       else {
         $name = $name_en = $lang_codes[$language_id]->getName();
       }
-
-      // Create semantic IDs using full language names
-      $language_id_clean = preg_replace('/[^a-zA-Z0-9]+/', '-', strtolower($name_en));
-
       // Build the translation link.
       $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
         ->setOption('language', $lang_default)
@@ -96,12 +89,11 @@ function _mass_translations_media_helper(array &$variables) {
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
-          // Semantic IDs for the translation link
-          "translation_id" => $language_id_clean . '-' . $document_id,
-          // ID for the visually-hidden document title label
-          "document_label_id" => $document_id . '-label',
-          // aria-labelledby references the translation itself + the clean document title
-          "aria_labelledby" => $language_id_clean . '-' . $document_id . ' ' . $document_id . '-label',
+          // Add unique IDs and aria-labelledby for accessibility
+          "translation_id" => $document_id . '-' . $language_id,
+          "document_id" => $document_id . '-title',
+          // Include both the language name and document title for complete accessibility
+          "aria_labelledby" => $document_id . '-' . $language_id . ' ' . $document_id . '-title',
           "document_title" => $document_title,
         ];
       }
@@ -110,15 +102,14 @@ function _mass_translations_media_helper(array &$variables) {
   if (count($languages) >= 1) {
     $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
       "ariaLabel" => "Available Translations",
-      "document_id" => $document_id,
+      "document_id" => $document_id . '-title',
       "document_title" => $document_title
     ]);
     $variables += ["translationLinks" => $inlineLinks];
   }
-  // Add the document ID and title to variables for the main document link
-  $variables["document_id"] = $document_id;
+  // Add the document ID to variables for the main document link
+  $variables["document_id"] = $document_id . '-title';
   $variables["document_title"] = $document_title;
-  $variables["document_label_id"] = $document_id . '-label';
 
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
   // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976

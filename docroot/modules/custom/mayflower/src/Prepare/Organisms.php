@@ -716,16 +716,8 @@ class Organisms {
         $link_data['translation_id'] = $item['translation_id'];
       }
 
-      if (isset($item['document_label_id'])) {
-        $link_data['document_label_id'] = $item['document_label_id'];
-      }
-
-      if (isset($item['aria_labelledby'])) {
-        $link_data['aria_labelledby'] = $item['aria_labelledby'];
-      }
-
-      if (isset($item['document_title'])) {
-        $link_data['document_title'] = $item['document_title'];
+      if (isset($item['document_id'])) {
+        $link_data['document_id'] = $item['document_id'];
       }
 
       $links[] = $link_data;
@@ -737,12 +729,9 @@ class Organisms {
         'links' => $links,
       ];
 
-      // Pass through document info from options if provided
+      // Pass through document_id from options if provided
       if (isset($options['document_id'])) {
         $result['document_id'] = $options['document_id'];
-      }
-      if (isset($options['document_title'])) {
-        $result['document_title'] = $options['document_title'];
       }
 
       return $result;
