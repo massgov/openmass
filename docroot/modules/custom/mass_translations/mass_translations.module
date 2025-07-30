@@ -47,18 +47,27 @@ function _mass_translations_media_helper(array &$variables) {
     ->toString();
   $lang_codes = $languageManager->getLanguages();
 
-  // Generate unique document ID for accessibility
+  // Generate unique IDs for accessibility
   $document_id = 'doc-' . $media->id();
+  $main_link_id = $document_id . '-main-link';  // ID for the main anchor link
+  $clean_title_id = $document_id . '-title';    // ID for the clean hidden title span
 
-  $document_title = !empty($media->field_title->value) ? $media->field_title->value : $media->field_upload_file->entity->getFilename();
+  $document_title = !empty($media->field_title->value)
+    ? $media->field_title->value
+    : $media->field_upload_file->entity->getFilename();
 
   // Get all the translations for this media.
   $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
+
   // Replace "x-default" with the default language id.
-  $all_translations[$lang_default->getId()] = $all_translations["x-default"];
-  unset($all_translations["x-default"]);
+  if (isset($all_translations["x-default"])) {
+    $all_translations[$lang_default->getId()] = $all_translations["x-default"];
+    unset($all_translations["x-default"]);
+  }
+
   // Sort translations in the same order as languages in the UI.
   $sorted_translations = array_replace($lang_codes, array_flip(array_keys($lang_codes)), $all_translations);
+
   // Build links for translations.
   foreach ($sorted_translations as $language_id => $translation) {
     if ($translation instanceof MediaInterface) {
@@ -70,6 +79,7 @@ function _mass_translations_media_helper(array &$variables) {
 
       $name = NULL;
       $predefined = $languageManager->getStandardLanguageList();
+
       // Get the native name for each language.
       if (isset($predefined[$language_id])) {
         $name = $predefined[$language_id][1];
@@ -78,45 +88,51 @@ function _mass_translations_media_helper(array &$variables) {
       else {
         $name = $name_en = $lang_codes[$language_id]->getName();
       }
-      // Build the translation link.
+
+      // Build the translation link URL.
       $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
         ->setOption('language', $lang_default)
         ->setAbsolute()
         ->toString();
+
       $cache_tags = array_merge($cache_tags, $translation->getCacheTags(), $access->getCacheTags());
+
+      // Skip current URL (main document)
       if ($url != $current_url) {
         $languages[] = [
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
-          // Add unique IDs and aria-labelledby for accessibility
+          // Accessibility IDs for aria-labelledby
           "translation_id" => $document_id . '-' . $language_id,
-          "document_id" => $document_id . '-title',
-          // Include both the language name and document title for complete accessibility
-          "aria_labelledby" => $document_id . '-' . $language_id . ' ' . $document_id . '-title',
+          "document_id" => $clean_title_id, // reference the clean hidden title span only
+          "aria_labelledby" => $document_id . '-' . $language_id . ' ' . $clean_title_id,
           "document_title" => $document_title,
         ];
       }
     }
   }
+
   if (count($languages) >= 1) {
     $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
       "ariaLabel" => "Available Translations",
-      "document_id" => $document_id . '-title',
-      "document_title" => $document_title
+      "document_id" => $clean_title_id,
+      "document_title" => $document_title,
     ]);
     $variables += ["translationLinks" => $inlineLinks];
   }
-  // Add the document ID to variables for the main document link
-  $variables["document_id"] = $document_id . '-title';
+
+  // Pass IDs and title for the main link and hidden title span to Twig
+  $variables["main_link_id"] = $main_link_id;
+  $variables["document_id"] = $clean_title_id;
   $variables["document_title"] = $document_title;
 
-  // Bubble cache tag to the current render. Based on template_preprocess_pager()
-  // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+  // Add cache tags to the render array for proper cache invalidation
   CacheableMetadata::createFromRenderArray($variables)
     ->addCacheTags($cache_tags)
     ->applyTo($variables);
 }
+
 
 /**
  * Implements hook_preprocess_HOOK().
