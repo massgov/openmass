@@ -19,7 +19,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class ReplaceConfirmForm extends FormBase {
 
-  /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
+  /**
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
   protected $tempStoreFactory;
 
   public function __construct(PrivateTempStoreFactory $tempStoreFactory) {

@@ -15,7 +15,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class ReplaceUploadForm extends FormBase {
 
-  /** @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
+  /**
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
   protected $tempStoreFactory;
 
   public function __construct(PrivateTempStoreFactory $tempStoreFactory) {
@@ -46,12 +47,15 @@ class ReplaceUploadForm extends FormBase {
       '#multiple' => TRUE,
       '#dropzone_description' => $this->t('Drag files here or click to upload.'),
       '#upload_validators' => [
-        'file_validate_size' => [128 * 1024 * 1024], // 128MB size per file
+    // 128MB size per file
+        'file_validate_size' => [128 * 1024 * 1024],
       ],
       '#upload_location' => 'temporary://mass_bulk_file_replace',
       '#dropzonejs_settings' => [
-        'parallelUploads' => 1, // One file per request
-        'maxFilesize' => 128,   // MB, client-side validation
+      // One file per request
+        'parallelUploads' => 1,
+      // MB, client-side validation
+        'maxFilesize' => 128,
       ],
     ];
 
@@ -118,4 +122,5 @@ class ReplaceUploadForm extends FormBase {
       return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.upload')->setAbsolute()->toString());
     }
   }
+
 }
