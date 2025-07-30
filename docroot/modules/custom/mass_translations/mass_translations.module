@@ -47,6 +47,9 @@ function _mass_translations_media_helper(array &$variables) {
     ->toString();
   $lang_codes = $languageManager->getLanguages();
 
+  // Generate document_id for the current media
+  $document_id = 'doc-' . $media->id() . '-title';
+
   // Get all the translations for this media.
   $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
   // Replace "x-default" with the default language id.
@@ -84,12 +87,16 @@ function _mass_translations_media_helper(array &$variables) {
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
+          "lang_code" => $language_id,
         ];
       }
     }
   }
   if (count($languages) >= 1) {
-    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
+    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
+      "ariaLabel" => "Available Translations",
+      "document_id" => $document_id
+    ]);
     $variables += ["translationLinks" => $inlineLinks];
   }
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
