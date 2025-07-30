@@ -240,7 +240,7 @@ class ReplaceConfirmForm extends FormBase {
         $store->set($key, $fids);
 
         // Clean up filename to remove DO_NOT_CHANGE_THIS_MEDIA_ID_ pattern.
-        $cleaned_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
+        $cleaned_filename = preg_replace('/_?do_not_change_this_media_id_\d+/i', '', $filename);
         if ($cleaned_filename && $cleaned_filename !== $filename) {
           $file->setFilename($cleaned_filename);
           $file->save();
