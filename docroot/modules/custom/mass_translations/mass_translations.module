@@ -113,7 +113,7 @@ function _mass_translations_media_helper(array &$variables) {
       "document_id" => $document_id,
       "document_title" => $document_title
     ]);
-    $variables['downloadLink']['inlineLinks'] = $inlineLinks;
+    $variables += ["translationLinks" => $inlineLinks];
   }
   // Add the document ID and title to variables for the main document link
   $variables["document_id"] = $document_id;
