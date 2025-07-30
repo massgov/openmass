@@ -4,9 +4,11 @@ namespace Drupal\mass_bulk_file_replace\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Step 1: Upload form using DropzoneJS.
@@ -40,13 +42,16 @@ class ReplaceUploadForm extends FormBase {
     $form['upload'] = [
       '#type' => 'dropzonejs',
       '#title' => $this->t('Upload replacement files'),
-      '#description' => $this->t('Upload one or more replacement files. Filenames must exactly match the originals.'),
-      '#dropzone_description' => $this->t('Drag files here or click to upload.'),
       '#multiple' => TRUE,
+      '#dropzone_description' => $this->t('Drag files here or click to upload.'),
       '#upload_validators' => [
-        'file_validate_extensions' => ['pdf'],
+        'file_validate_size' => [128 * 1024 * 1024], // 128MB size per file
       ],
       '#upload_location' => 'temporary://mass_bulk_file_replace',
+      '#dropzonejs_settings' => [
+        'parallelUploads' => 1, // One file per request
+        'maxFilesize' => 128,   // MB, client-side validation
+      ],
     ];
 
     $form['actions']['#type'] = 'actions';
@@ -67,31 +72,45 @@ class ReplaceUploadForm extends FormBase {
     $store = $this->tempStoreFactory->get('mass_bulk_file_replace');
     $uploaded = $form_state->getValue('upload');
 
-    $files = [];
-
+    $operations = [];
     foreach ($uploaded['uploaded_files'] as $item) {
       if (!empty($item['path']) && file_exists($item['path'])) {
-        // Create a File entity manually.
-        $file = File::create([
-          'uri' => $item['path'],
-          'filename' => $item['filename'],
-          'status' => 0, // Temporary
-        ]);
-        $file->save();
-
-        $files[] = $file->id();
+        $operations[] = [
+          [get_class($this), 'processFileBatch'],
+          [$item, $user->id()],
+        ];
       }
     }
 
-    // ✅ Check if any files were created.
-    if (empty($files)) {
-      $this->messenger()->addError($this->t('No valid files were uploaded. Please upload at least one valid file.'));
-      return;
-    }
+    $batch = [
+      'title' => $this->t('Processing uploaded files...'),
+      'operations' => $operations,
+      'finished' => [get_class($this), 'batchFinished'],
+    ];
+    batch_set($batch);
+  }
 
-    // Store file IDs in tempstore for step 2.
-    $store->set('uploaded_files_' . $user->id(), $files);
-    // Proceed to confirmation step.
-    $form_state->setRedirect('mass_bulk_file_replace.confirm');
+  public static function processFileBatch($item, $uid, &$context) {
+    $file = File::create([
+      'uri' => $item['path'],
+      'filename' => $item['filename'],
+      'status' => 0,
+    ]);
+    $file->save();
+
+    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
+    $existing = $store->get('uploaded_files_' . $uid) ?? [];
+    $existing[] = $file->id();
+    $store->set('uploaded_files_' . $uid, $existing);
+  }
+
+  public static function batchFinished($success, $results, $operations) {
+    if ($success) {
+      return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.confirm')->setAbsolute()->toString());
+    }
+    else {
+      \Drupal::messenger()->addError('Something went wrong while processing the files.');
+      return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.upload')->setAbsolute()->toString());
+    }
   }
 }

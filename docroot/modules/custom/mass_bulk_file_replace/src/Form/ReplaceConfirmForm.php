@@ -5,6 +5,8 @@ namespace Drupal\mass_bulk_file_replace\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Element\Tableselect;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
@@ -45,12 +47,17 @@ class ReplaceConfirmForm extends FormBase {
     $fids = $store->get('uploaded_files_' . $user->id()) ?? [];
 
     $header = [
-      'old' => $this->t('Existing Media File'),
+      'fid' => $this->t('New File ID'),
       'new' => $this->t('Uploaded File'),
+      'old' => $this->t('Existing Media File'),
+      'mid' => $this->t('Matched Media ID'),
       'media' => $this->t('Media Title'),
+      'operations' => $this->t('Operations'),
     ];
 
     $options = [];
+    $default_keys = [];
+    $seen_media_ids = [];
     foreach ($fids as $fid) {
       $new_file = File::load($fid);
       if (!$new_file) {
@@ -58,24 +65,54 @@ class ReplaceConfirmForm extends FormBase {
       }
       $filename = $new_file->getFilename();
 
-      $media_storage = \Drupal::entityTypeManager()->getStorage('media');
-      $query = $media_storage->getQuery()->accessCheck('FALSE')
-        ->condition('bundle', 'document')
-        ->condition('field_upload_file.entity.filename', '%' . $filename . '%', 'LIKE');
-      $ids = $query->execute();
-
-      if (!empty($ids)) {
-        $mid = reset($ids);
+      // Extract media ID from filename using pattern.
+      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $filename, $matches)) {
+        $mid = (int) $matches[1];
+        if (isset($seen_media_ids[$mid])) {
+          continue;
+        }
         $media = Media::load($mid);
-        $old_file = $media->field_upload_file->entity;
-
+        if ($media && $media->bundle() === 'document' && !$media->get('field_upload_file')->isEmpty()) {
+          $old_file = $media->field_upload_file->entity;
+          $result = [
+            'fid' => $fid,
+            'new' => $filename,
+            'old' => $old_file ? $old_file->getFilename() : $this->t('Unknown'),
+            'mid' => $mid,
+            'media' => Link::fromTextAndUrl(
+              $media->label(),
+              Url::fromRoute('entity.media.canonical', ['media' => $media->id()])
+            )->toString(),
+            'operations' => [
+              'data' => [
+                '#type' => 'operations',
+                '#links' => [
+                  'view' => [
+                    'title' => $this->t('View'),
+                    'url' => Url::fromRoute('entity.media.canonical', ['media' => $media->id()]),
+                  ],
+                  'edit' => [
+                    'title' => $this->t('Edit'),
+                    'url' => Url::fromRoute('entity.media.edit_form', ['media' => $media->id()]),
+                  ],
+                ],
+              ],
+            ],
+          ];
+          $options[$fid] = $result;
+          $default_keys[$fid] = $result;
+          $seen_media_ids[$mid] = TRUE;
+        }
+      }
+      else {
         $options[$fid] = [
-          'old' => $old_file ? $old_file->getFilename() : $this->t('Unknown'),
-          'new' => $filename,
-          'media' => Link::fromTextAndUrl(
-            $media->label(),
-            Url::fromRoute('entity.media.canonical', ['media' => $media->id()])
-          )->toString(),
+          'fid' => $fid,
+          'new' => $new_file->getFilename(),
+          'old' => $this->t('No match'),
+          'mid' => $this->t('N/A'),
+          'media' => $this->t('No matching media'),
+          'operations' => $this->t('N/A'),
+          '#disabled' => TRUE,
         ];
       }
     }
@@ -84,8 +121,16 @@ class ReplaceConfirmForm extends FormBase {
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $options,
+      '#default_value' => $default_keys,
       '#empty' => $this->t('No matching media entities found for the uploaded files.'),
+      '#js_select' => TRUE,
+      '#process' => [
+        [Tableselect::class, 'processTableselect'],
+        [static::class, 'processDisabledRows'],
+      ],
     ];
+
+    $form['#attached']['library'][] = 'core/drupal.tabledrag';
 
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
@@ -109,25 +154,36 @@ class ReplaceConfirmForm extends FormBase {
         continue;
       }
       $filename = $new_file->getFilename();
-      $query = \Drupal::entityTypeManager()->getStorage('media')->getQuery()->accessCheck('FALSE')
-        ->condition('bundle', 'document')
-        ->condition('field_upload_file.entity.filename', '%' . $filename . '%', 'LIKE');
-      $ids = $query->execute();
-
-      if (!empty($ids)) {
-        $mid = reset($ids);
+      // Extract media ID from filename.
+      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $filename, $matches)) {
+        $mid = (int) $matches[1];
         $media = Media::load($mid);
-        $media->setNewRevision();
-        $media->setRevisionLogMessage('File has been replaced using bulk replace tool by ' . $this->currentUser()->getDisplayName());
-        $media->set('field_upload_file', $new_file);
-        $media->save();
+        if ($media && $media->bundle() === 'document') {
+          $media->setNewRevision();
+          $media->setRevisionLogMessage('File has been replaced using bulk replace tool by ' . $this->currentUser()->getDisplayName());
+          $media->set('field_upload_file', $new_file);
+          $media->save();
 
-        $new_file->setPermanent();
-        $new_file->save();
+          $new_file->setPermanent();
+          $new_file->save();
+        }
       }
     }
 
     $this->messenger()->addStatus($this->t('Approved files have been replaced and saved as new revisions.'));
     $form_state->setRedirect('<front>');
   }
+
+  /**
+   * Custom process to apply #disabled to individual tableselect rows.
+   */
+  public static function processDisabledRows(array $element): array {
+    foreach (Element::children($element) as $key) {
+      if (!empty($element['#options'][$key]['#disabled'])) {
+        $element[$key]['#disabled'] = TRUE;
+      }
+    }
+    return $element;
+  }
+
 }
