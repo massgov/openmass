@@ -250,7 +250,8 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
         // Validate the paths.
         if ($media_real_file_path) {
           if ($this->validateMediaFilePath($media_file_uri)) {
-            $file_paths[] = $media_real_file_path;
+            // Use the media ID as the key.
+            $file_paths[$entity->id()] = $media_real_file_path;
           }
           else {
             $failed_file_paths[$entity->id()] = $media_real_file_path;
@@ -285,7 +286,7 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
       $cid = $this->getCid($i);
       $chunk = $this->tempStore->get($cid);
       if ($chunk) {
-        $all_files = array_merge($all_files, $chunk);
+        $all_files += $chunk;
         $this->tempStore->delete($cid);
       }
     }
@@ -385,9 +386,11 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
       return;
     }
 
-    foreach ($file_paths as $file_path) {
+    foreach ($file_paths as $media_id => $file_path) {
       if (file_exists($file_path) && is_readable($file_path)) {
-        $zip->addFile($file_path, basename($file_path));
+        $path_parts = pathinfo($file_path);
+        $custom_filename = $path_parts['filename'] . '_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $media_id . '.' . $path_parts['extension'];
+        $zip->addFile($file_path, $custom_filename);
       }
     }
     $zip->close();
