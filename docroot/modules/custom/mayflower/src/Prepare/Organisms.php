@@ -1473,8 +1473,8 @@ class Organisms {
     }
 
     return [
-        'steps' => $steps,
-      ] + $heading;
+      'steps' => $steps,
+    ] + $heading;
   }
 
   /**
@@ -1623,8 +1623,8 @@ class Organisms {
     }
 
     return [
-        'steps' => $steps,
-      ] + $heading;
+      'steps' => $steps,
+    ] + $heading;
   }
 
   /**
