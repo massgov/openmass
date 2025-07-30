@@ -49,8 +49,8 @@ function _mass_translations_media_helper(array &$variables) {
 
   // Generate unique IDs for accessibility
   $document_id = 'doc-' . $media->id();
-  $main_link_id = $document_id . '-main-link';
-  $clean_title_id = $document_id . '-title';
+  $main_link_id = $document_id . '-main-link';  // For the main <a> link
+  $clean_title_id = $document_id . '-title';    // For the clean hidden title span
 
   $document_title = !empty($media->field_title->value)
     ? $media->field_title->value
@@ -103,7 +103,7 @@ function _mass_translations_media_helper(array &$variables) {
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
-          // Accessibility IDs for aria-labelledby
+          // Accessibility IDs for aria-labelledby: translation link ID + clean title ID
           "translation_id" => $document_id . '-' . $language_id,
           "document_id" => $clean_title_id,
           "aria_labelledby" => $document_id . '-' . $language_id . ' ' . $clean_title_id,
