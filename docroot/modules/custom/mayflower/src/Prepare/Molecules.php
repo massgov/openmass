@@ -1585,22 +1585,6 @@ class Molecules {
       return [];
     }
 
-    // Generate unique document_id for this download link
-    $document_id = null;
-    $document_title = $title;
-
-    if ($entity instanceof File) {
-      $document_id = 'doc-' . $entity->id() . '-title';
-    } elseif ($entity instanceof MediaInterface) {
-      $document_id = 'doc-' . $entity->id() . '-title';
-    } elseif ($entity instanceof Node) {
-      $document_id = 'doc-' . $entity->id() . '-title';
-    } elseif ($entity instanceof LinkItem) {
-      if ($link_entity = Helper::entityFromUri($entity->getValue()['uri'])) {
-        $document_id = 'doc-' . $link_entity->id() . '-title';
-      }
-    }
-
     return [
       'downloadLink' => [
         'iconSize' => '',
@@ -1614,8 +1598,6 @@ class Molecules {
         'description' => (!empty($description)) ? $description : '',
         'size' => ($itsAFile) ? strtoupper($readable_size) : '',
         'format' => ($itsAFile) ? strtoupper($file_extension) : '',
-        'document_id' => $document_id,
-        'document_title' => $document_title,
       ],
     ];
   }
