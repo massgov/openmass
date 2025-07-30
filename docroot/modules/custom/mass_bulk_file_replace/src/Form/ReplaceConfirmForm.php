@@ -12,6 +12,7 @@ use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Step 2: Confirm replacement mapping.
@@ -147,31 +148,75 @@ class ReplaceConfirmForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = array_filter($form_state->getValue('replacements'));
-    foreach ($values as $fid => $selected) {
-      /** @var \Drupal\file\Entity\File $new_file */
-      $new_file = File::load($fid);
-      if (!$new_file) {
-        continue;
-      }
-      $filename = $new_file->getFilename();
-      // Extract media ID from filename.
-      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $filename, $matches)) {
-        $mid = (int) $matches[1];
-        $media = Media::load($mid);
-        if ($media && $media->bundle() === 'document') {
-          $media->setNewRevision();
-          $media->setRevisionLogMessage('File has been replaced using bulk replace tool by ' . $this->currentUser()->getDisplayName());
-          $media->set('field_upload_file', $new_file);
-          $media->save();
 
-          $new_file->setPermanent();
-          $new_file->save();
-        }
-      }
+    if (empty($values)) {
+      $this->messenger()->addWarning($this->t('No files were selected for replacement.'));
+      return;
     }
 
-    $this->messenger()->addStatus($this->t('Approved files have been replaced and saved as new revisions.'));
-    $form_state->setRedirect('<front>');
+    $operations = [];
+    foreach ($values as $fid => $selected) {
+      $operations[] = [
+        [static::class, 'processBatch'],
+        [$fid, $this->currentUser()->getDisplayName()],
+      ];
+    }
+
+    $batch = [
+      'title' => $this->t('Replacing approved media files...'),
+      'operations' => $operations,
+      'finished' => [static::class, 'batchFinished'],
+    ];
+
+    batch_set($batch);
+  }
+
+  public static function processBatch($fid, $username, array &$context) {
+    $file = File::load($fid);
+    if (!$file) {
+      \Drupal::logger('mass_bulk_file_replace')->error('File with fid @fid could not be loaded.', ['@fid' => $fid]);
+      return;
+    }
+
+    $filename = $file->getFilename();
+    if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $filename, $matches)) {
+      $mid = (int) $matches[1];
+      $media = Media::load($mid);
+      if ($media && $media->bundle() === 'document') {
+        $media->setNewRevision();
+        $media->setRevisionLogMessage("File has been replaced using bulk replace tool by $username.");
+        $media->set('field_upload_file', $file);
+        $media->save();
+
+        $file->setPermanent();
+        $file->save();
+
+        // Clean up filename to remove DO_NOT_CHANGE_THIS_MEDIA_ID_ pattern.
+        $cleaned_filename = preg_replace('/_DO_NOT_CHANGE_THIS_MEDIA_ID(_\d+)?(_\d+)?/i', '', $filename);
+        if ($cleaned_filename && $cleaned_filename !== $filename) {
+          $file->setFilename($cleaned_filename);
+          $file->save();
+        }
+      }
+      else {
+        \Drupal::logger('mass_bulk_file_replace')->error('Media with ID @mid not found or not a document.', ['@mid' => $mid]);
+      }
+    }
+    else {
+      \Drupal::logger('mass_bulk_file_replace')->error('Filename "@filename" does not contain a valid media ID.', ['@filename' => $filename]);
+    }
+  }
+
+  public static function batchFinished($success, array $results, array $operations) {
+    if ($success) {
+      \Drupal::messenger()->addStatus(t('All approved files have been replaced.'));
+    }
+    else {
+      \Drupal::messenger()->addError(t('Some replacements failed.'));
+    }
+    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
+    $store->delete('uploaded_files_' . \Drupal::currentUser()->id());
+    return new RedirectResponse(Url::fromRoute('<front>')->setAbsolute()->toString());
   }
 
   /**
