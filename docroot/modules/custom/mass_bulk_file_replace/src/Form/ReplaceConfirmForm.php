@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_bulk_file_replace\Form;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -66,9 +67,10 @@ class ReplaceConfirmForm extends FormBase {
         continue;
       }
       $filename = $new_file->getFilename();
+      $normalized_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
 
       // Extract media ID from filename using pattern.
-      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $filename, $matches)) {
+      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized_filename, $matches)) {
         $mid = (int) $matches[1];
         if (isset($seen_media_ids[$mid])) {
           continue;
@@ -180,20 +182,65 @@ class ReplaceConfirmForm extends FormBase {
     }
 
     $filename = $file->getFilename();
-    if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $filename, $matches)) {
+    $normalized_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
+    if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized_filename, $matches)) {
       $mid = (int) $matches[1];
       $media = Media::load($mid);
       if ($media && $media->bundle() === 'document') {
-        $media->setNewRevision();
-        $media->setRevisionLogMessage("File has been replaced using bulk replace tool by $username.");
-        $media->set('field_upload_file', $file);
-        $media->save();
-
         $file->setPermanent();
         $file->save();
 
+        $field_definition = $media->getFieldDefinition('field_upload_file');
+        $settings = $field_definition->getSettings();
+        $file_directory = $settings['file_directory'] ?? '';
+        if (!empty($file_directory)) {
+          $token_service = \Drupal::token();
+          $data = ['media' => $media];
+          $file_directory = $token_service->replace($file_directory, $data);
+          $destination = 'public://' . $file_directory;
+          /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+          $file_system = \Drupal::service('file_system');
+          if (!$file_system->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+            \Drupal::logger('mass_bulk_file_replace')->error('Failed to prepare directory: @dest', ['@dest' => $destination]);
+            return;
+          }
+          $moved_file = \Drupal::service('file.repository')->move($file, $destination);
+          if ($moved_file) {
+            $file = $moved_file;
+          } else {
+            \Drupal::logger('mass_bulk_file_replace')->error('Failed to move file to destination: @dest', ['@dest' => $destination]);
+            return;
+          }
+        }
+
+        $old_file = $media->get('field_upload_file')->entity;
+        $uri = $old_file->getFileUri();
+
+        // Ensure file exists locally via Stage File Proxy.
+        if (!file_exists(\Drupal::service('file_system')->realpath($uri))) {
+          $server = \Drupal::config('stage_file_proxy.settings')->get('origin');
+          $origin_dir = trim(\Drupal::config('stage_file_proxy.settings')->get('origin_dir') ?? 'sites/default/files');
+          $relative_path = str_replace('public://', '', $uri);
+          $options = ['verify' => \Drupal::config('stage_file_proxy.settings')->get('verify')];
+
+          \Drupal::service('stage_file_proxy.download_manager')->fetch($server, $origin_dir, $relative_path, $options);
+        }
+
+        $media->setNewRevision();
+        $media->setRevisionLogMessage("File has been replaced using bulk replace tool by $username.");
+        $media->set('field_upload_file', $file);
+
+        $media->save();
+
+        // Remove file from tempstore to avoid reprocessing.
+        $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
+        $key = 'uploaded_files_' . \Drupal::currentUser()->id();
+        $fids = $store->get($key) ?? [];
+        $fids = array_diff($fids, [$fid]);
+        $store->set($key, $fids);
+
         // Clean up filename to remove DO_NOT_CHANGE_THIS_MEDIA_ID_ pattern.
-        $cleaned_filename = preg_replace('/_DO_NOT_CHANGE_THIS_MEDIA_ID(_\d+)?(_\d+)?/i', '', $filename);
+        $cleaned_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
         if ($cleaned_filename && $cleaned_filename !== $filename) {
           $file->setFilename($cleaned_filename);
           $file->save();
@@ -215,8 +262,6 @@ class ReplaceConfirmForm extends FormBase {
     else {
       \Drupal::messenger()->addError(t('Some replacements failed.'));
     }
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $store->delete('uploaded_files_' . \Drupal::currentUser()->id());
     return new RedirectResponse(Url::fromRoute('<front>')->setAbsolute()->toString());
   }
 

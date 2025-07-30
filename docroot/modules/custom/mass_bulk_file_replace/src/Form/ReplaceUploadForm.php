@@ -78,7 +78,6 @@ class ReplaceUploadForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $user = $this->currentUser();
-    $store = $this->tempStoreFactory->get('mass_bulk_file_replace');
     $uploaded = $form_state->getValue('upload');
 
     $operations = [];
