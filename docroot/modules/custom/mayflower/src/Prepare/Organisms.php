@@ -700,17 +700,16 @@ class Organisms {
    * @return array
    *   Returns a structured array of inline links with language info.
    */
-
   public static function prepareInlineLinksForLanguages(array $items, array $options) {
     $links = [];
 
     // Extract document_id from options if provided
-    $document_id = isset($options['document_id']) ? $options['document_id'] : null;
+    $document_id = isset($options['document_id']) ? $options['document_id'] : NULL;
 
     // Create the links data structure.
     foreach ($items as $item) {
       // Generate unique translation_id for each link
-      $translation_id = $document_id ? str_replace('-title', '-' . $item['lang_code'], $document_id) : null;
+      $translation_id = $document_id ? str_replace('-title', '-' . $item['lang_code'], $document_id) : NULL;
 
       $links[] = [
         'text' => $item['title'],
