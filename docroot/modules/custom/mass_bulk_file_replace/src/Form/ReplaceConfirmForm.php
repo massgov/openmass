@@ -207,7 +207,8 @@ class ReplaceConfirmForm extends FormBase {
           $moved_file = \Drupal::service('file.repository')->move($file, $destination);
           if ($moved_file) {
             $file = $moved_file;
-          } else {
+          }
+          else {
             \Drupal::logger('mass_bulk_file_replace')->error('Failed to move file to destination: @dest', ['@dest' => $destination]);
             return;
           }
