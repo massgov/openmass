@@ -710,6 +710,8 @@ class Organisms {
         'text' => $item['title'],
         'href' => $item['url'],
         'lang_label' => $item['lang_label'],
+        'translation_id' => $item['translation_id'],
+        'document_id' => $item['document_id'],
       ];
     }
 

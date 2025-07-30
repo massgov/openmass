@@ -80,10 +80,15 @@ function _mass_translations_media_helper(array &$variables) {
         ->toString();
       $cache_tags = array_merge($cache_tags, $translation->getCacheTags(), $access->getCacheTags());
       if ($url != $current_url) {
+        $document_id = 'doc-' . $media->id() . '-title';
+        $translation_id = 'doc-' . $media->id() . '-' . $language_id;
+
         $languages[] = [
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
+          "translation_id" => $translation_id,
+          "document_id" => $document_id,
         ];
       }
     }
