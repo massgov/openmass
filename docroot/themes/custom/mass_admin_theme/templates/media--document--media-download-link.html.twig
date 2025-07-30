@@ -6,9 +6,6 @@
  * Available variables:
  * - name: Name of the media.
  * - content: Media content.
- * - main_link_id: ID for the main download link
- * - document_id: Unique ID for the document title span
- * - document_title: Document title for accessibility
  *
  * @see template_preprocess_media()
  *
@@ -28,10 +25,7 @@
     "language": content.langcode[0]['#plain_text'] ?? 'English',
     "size": content.calculated_file_size,
     "format": content.extra_file_extension,
-    "inlineLinks": translationLinks,
-    "main_link_id": main_link_id,
-    "document_id": document_id,
-    "document_title": document_title
+    "inlineLinks": translationLinks
   }
 } %}
 {{ content|without('field_title', 'calculated_file_size', 'extra_file_extension', 'extra_file_icon', 'langcode') }}
