@@ -705,38 +705,19 @@ class Organisms {
 
     // Create the links data structure.
     foreach ($items as $item) {
-      $link = [
+
+      $links[] = [
         'text' => $item['title'],
         'href' => $item['url'],
         'lang_label' => $item['lang_label'],
       ];
-
-      // Add accessibility attributes if they exist
-      if (isset($item['id'])) {
-        $link['id'] = $item['id'];
-      }
-      if (isset($item['aria_labelledby'])) {
-        $link['aria_labelledby'] = $item['aria_labelledby'];
-      }
-      if (isset($item['lang'])) {
-        $link['lang'] = $item['lang'];
-      }
-
-      $links[] = $link;
     }
 
     if ($links) {
-      $result = [
+      return [
         'ariaLabel' => $options['ariaLabel'],
         'links' => $links,
       ];
-
-      // Pass document ID if provided
-      if (isset($options['docId'])) {
-        $result['docId'] = $options['docId'];
-      }
-
-      return $result;
     }
     else {
       return [];
