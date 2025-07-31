@@ -1,5 +1,17 @@
 
 
+## [0.446.0] - July 29, 2025
+
+### Fixed
+  - DP-39203: Saving a draft of a published document moves published version to private file system.
+  - DP-39360: Fix high contrast mode, increase border contrast..
+  - DP-41001: Fix collection filter input spacing and layout styles.
+  
+### Added
+  - DP-40086: Add iframe translation synchronization and language change handling.
+  
+
+
 ## [0.445.0] - July 22, 2025
 
 ### Changed
