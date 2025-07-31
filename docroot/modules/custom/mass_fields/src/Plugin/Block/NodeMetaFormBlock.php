@@ -52,10 +52,6 @@ class NodeMetaFormBlock extends BlockBase implements ContainerFactoryPluginInter
       return [];
     }
 
-    $author = $node->getOwner();
-    $author_display_name = $author->getDisplayName();
-    $author_link = Link::fromTextAndUrl($this->t('Contact the author'), Url::fromRoute('entity.user.canonical', ['user' => $author->id()]))->toString();
-
     $form['meta'] = [
       '#type' => 'container',
       '#open' => TRUE,
@@ -115,7 +111,6 @@ class NodeMetaFormBlock extends BlockBase implements ContainerFactoryPluginInter
         '@contact' => Link::fromTextAndUrl(t('Contact the author'), $contact_url)->toString(),
       ]);
     }
-
 
     // Add Node ID to meta details.
     $form['meta']['node_id'] = [
