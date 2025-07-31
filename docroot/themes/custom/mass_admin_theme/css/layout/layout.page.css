@@ -54,3 +54,36 @@
 .main-layout-region-container header.content-header {
   margin-bottom: 0;
 }
+
+
+/* Only apply styles if both blocks are present */
+.region-header:has(.block-page-title-block):has(.block-node-meta-form-block) {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: self-end;
+}
+
+/* Only apply left/right layout when both blocks exist */
+.region-header:has(.block-page-title-block):has(.block-node-meta-form-block) .block-page-title-block {
+  flex: 1 1 76%;
+  max-width: 76%;
+}
+
+.region-header:has(.block-page-title-block):has(.block-node-meta-form-block) .block-node-meta-form-block {
+  flex: 1 1 24%;
+  max-width: calc(24% - 1rem);
+}
+
+form.node-form .layout-region--secondary:not(:has(.layout-region__content .entity-meta)) {
+  display: none;
+}
+
+form.node-form .layout-form.clearfix:not(:has(.layout-region--secondary .layout-region__content .entity-meta)) {
+  display: block;
+}
+
+header.content-header:has(+ .layout-container form.node-form .layout-form.clearfix .layout-region--secondary .layout-region__content .entity-meta) .region-header .block-node-meta-form-block {
+  display: none;
+}

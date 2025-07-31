@@ -60,6 +60,7 @@ third_party_settings:
         - group_binder_overview
         - group_content
         - group_binder_related
+        - group_page_info
       label: 'Node Edit Form'
       region: content
       parent_name: ''
@@ -130,11 +131,31 @@ third_party_settings:
       label: Related
       region: content
       parent_name: group_binder_node_edit_form
-      weight: 4
+      weight: 3
       format_type: tab
       format_settings:
         classes: ''
         id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - field_binder_metatags
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: content
+      parent_name: group_binder_node_edit_form
+      weight: 4
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -247,10 +268,10 @@ content:
     third_party_settings: {  }
   field_binder_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 3
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_binder_overview:
@@ -585,7 +606,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -608,20 +629,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
