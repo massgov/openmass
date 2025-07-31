@@ -47,6 +47,9 @@ function _mass_translations_media_helper(array &$variables) {
     ->toString();
   $lang_codes = $languageManager->getLanguages();
 
+  // Generate unique document ID for accessibility
+  $doc_id = $media->id();
+
   // Get all the translations for this media.
   $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
   // Replace "x-default" with the default language id.
@@ -84,13 +87,22 @@ function _mass_translations_media_helper(array &$variables) {
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
+          "id" => "doc-{$doc_id}-{$language_id}",
+          "aria_labelledby" => "doc-{$doc_id}-{$language_id} doc-{$doc_id}-title",
+          "lang" => $language_id,
         ];
       }
     }
   }
   if (count($languages) >= 1) {
-    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
-    $variables += ["translationLinks" => $inlineLinks];
+    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
+      "ariaLabel" => "Available Translations",
+      "docId" => $doc_id,
+    ]);
+    $variables += [
+      "translationLinks" => $inlineLinks,
+      "docId" => $doc_id,
+    ];
   }
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
   // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
@@ -115,6 +127,9 @@ function mass_translations_preprocess_node(&$variables) {
     $translations_controller = new TranslationsController($node_storage);
     $current_url = Drupal::request()->getUri();
     $lang_codes = $languageManager->getLanguages();
+
+    // Generate unique document ID for accessibility
+    $doc_id = $node->id();
 
     // Get all the translations for this node.
     $all_translations = $translations_controller->getTranslationLanguages($node, $node_storage, 'field_english_version');
@@ -149,13 +164,28 @@ function mass_translations_preprocess_node(&$variables) {
           ->setAbsolute()
           ->toString();
         $cache_tags = array_merge($cache_tags, $translation->getCacheTags(), $access->getCacheTags());
-        $languages[] = ["title" => $name, "lang_label" => $name_en, "url" => ($url != $current_url) ? $url : NULL];
+        if ($url != $current_url) {
+          $languages[] = [
+            "title" => $name,
+            "lang_label" => $name_en,
+            "url" => $url,
+            "id" => "doc-{$doc_id}-{$language_id}",
+            "aria_labelledby" => "doc-{$doc_id}-{$language_id} doc-{$doc_id}-title",
+            "lang" => $language_id,
+          ];
+        }
       }
     }
 
-    if (count($languages) > 1) {
-      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
-      $variables += ["translationLinks" => $inlineLinks];
+    if (count($languages) >= 1) {
+      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
+        "ariaLabel" => "Available Translations",
+        "docId" => $doc_id,
+      ]);
+      $variables += [
+        "translationLinks" => $inlineLinks,
+        "docId" => $doc_id,
+      ];
     }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
     // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
