@@ -68,10 +68,11 @@ third_party_settings:
         - group_event_agenda
         - group_event_meeting_minutes
         - group_related
+        - group_page_info
       label: 'Event Page Edit Form'
       region: content
       parent_name: ''
-      weight: 2
+      weight: 0
       format_type: tabs
       format_settings:
         classes: ''
@@ -90,7 +91,7 @@ third_party_settings:
       label: Details
       region: content
       parent_name: group_event_edit_form
-      weight: 22
+      weight: 21
       format_type: tab
       format_settings:
         classes: ''
@@ -134,7 +135,7 @@ third_party_settings:
       label: Contacts
       region: content
       parent_name: group_event_edit_form
-      weight: 24
+      weight: 23
       format_type: tab
       format_settings:
         classes: ''
@@ -148,7 +149,7 @@ third_party_settings:
       label: Related
       region: content
       parent_name: group_event_edit_form
-      weight: 27
+      weight: 26
       format_type: tab
       format_settings:
         classes: ''
@@ -178,7 +179,7 @@ third_party_settings:
       label: Address
       region: content
       parent_name: group_event_edit_form
-      weight: 23
+      weight: 22
       format_type: tab
       format_settings:
         classes: ''
@@ -193,7 +194,7 @@ third_party_settings:
       label: Minutes
       region: content
       parent_name: group_event_edit_form
-      weight: 26
+      weight: 25
       format_type: tab
       format_settings:
         classes: ''
@@ -208,11 +209,31 @@ third_party_settings:
       label: Agenda
       region: content
       parent_name: group_event_edit_form
-      weight: 25
+      weight: 24
       format_type: tab
       format_settings:
         classes: ''
         id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - field_event_metatags
+        - simple_sitemap
+        - url_redirects
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_event_edit_form
+      weight: 27
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -223,7 +244,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 134
+    weight: 135
     region: content
     settings:
       theme: default
@@ -262,6 +283,7 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -286,7 +308,7 @@ content:
     third_party_settings: {  }
   field_event_date:
     type: daterange_default
-    weight: 124
+    weight: 125
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -344,7 +366,7 @@ content:
           - fee
   field_event_logo:
     type: image_image
-    weight: 122
+    weight: 123
     region: content
     settings:
       progress_indicator: throbber
@@ -378,10 +400,11 @@ content:
       conditional_fields: {  }
   field_event_metatags:
     type: metatag_firehose
-    weight: 1
+    weight: 2
     region: content
     settings:
-      sidebar: true
+      sidebar: false
+      use_details: true
     third_party_settings: {  }
   field_event_minutes_download:
     type: inline_entity_form_complex
@@ -400,13 +423,14 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
       conditional_fields: {  }
   field_event_participating_orgs:
     type: link_default
-    weight: 129
+    weight: 130
     region: content
     settings:
       placeholder_url: ''
@@ -415,7 +439,7 @@ content:
       conditional_fields: {  }
   field_event_posted_date:
     type: datetime_datelist
-    weight: 125
+    weight: 126
     region: content
     settings:
       increment: 1
@@ -442,7 +466,7 @@ content:
             selector: ''
   field_event_public_testimony:
     type: string_textfield
-    weight: 127
+    weight: 128
     region: content
     settings:
       size: 60
@@ -519,6 +543,7 @@ content:
       collapsible: false
       collapsed: false
       revision: false
+      removed_reference: optional
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -534,7 +559,7 @@ content:
     third_party_settings: {  }
   field_event_ref_parents:
     type: entity_reference_autocomplete
-    weight: 131
+    weight: 132
     region: content
     settings:
       match_operator: CONTAINS
@@ -592,7 +617,7 @@ content:
             selector: ''
   field_event_time:
     type: string_textfield
-    weight: 123
+    weight: 124
     region: content
     settings:
       size: 60
@@ -614,13 +639,13 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 132
+    weight: 133
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 130
+    weight: 131
     region: content
     settings:
       match_operator: CONTAINS
@@ -630,7 +655,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 128
+    weight: 129
     region: content
     settings:
       match_operator: CONTAINS
@@ -641,7 +666,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 133
+    weight: 134
     region: content
     settings:
       match_operator: CONTAINS
@@ -659,7 +684,7 @@ content:
     third_party_settings: {  }
   field_updated_date:
     type: datetime_datelist
-    weight: 126
+    weight: 127
     region: content
     settings:
       increment: 1
@@ -686,7 +711,7 @@ content:
             selector: ''
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -709,20 +734,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -740,7 +765,7 @@ content:
         maxlength_js_enforce: false
   uid:
     type: entity_reference_autocomplete
-    weight: 0
+    weight: 8
     region: content
     settings:
       match_operator: CONTAINS
@@ -761,7 +786,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
