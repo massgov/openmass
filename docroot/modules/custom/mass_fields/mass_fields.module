@@ -762,6 +762,44 @@ function mass_fields_theme() {
 }
 
 /**
+ * Implements hook_field_group_form_process_build_alter().
+ */
+function mass_fields_field_group_form_process_build_alter(array &$element, FormStateInterface $form_state, &$complete_form) {
+  // Only apply to node edit forms.
+  if (isset($form_state->getBuildInfo()['form_id']) && str_contains($form_state->getBuildInfo()['form_id'], 'node_')) {
+    // Your target group machine name from Field Group UI.
+    $target_group = 'group_page_info';
+    if (isset($complete_form['group_page_info'])) {
+      if (isset($complete_form['revision'])) {
+        $complete_form['revision']['#group'] = $target_group;
+        $complete_form['revision']['#weight'] = '-100';
+      }
+      if (isset($complete_form['revision_log'])) {
+        $complete_form['revision_log']['#group'] = $target_group;
+        $complete_form['revision_log']['#weight'] = '-99';
+      }
+      if (isset($complete_form['search_status'])) {
+        $complete_form['search_status']['#group'] = $target_group;
+      }
+      if (isset($complete_form['advanced'])) {
+        $complete_form['advanced']['#group'] = $target_group;
+        $complete_form['advanced']['#weight'] = '99';
+      }
+      if (isset($complete_form['meta'])) {
+        $complete_form['meta']['#group'] = $target_group;
+        $complete_form['meta']['#weight'] = '99';
+      }
+      // DO NOT ADD created or uid, handled in core.
+      if (isset($complete_form['author'])) {
+        $complete_form['author']['#group'] = $target_group;
+        $complete_form['author']['#weight'] = '100';
+      }
+      $complete_form['meta']['#access'] = FALSE;
+    }
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_fields_form_node_form_alter(&$form, FormStateInterface $form_state) {
