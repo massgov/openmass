@@ -25,7 +25,7 @@
     "language": content.langcode[0]['#plain_text'] ?? 'English',
     "size": content.calculated_file_size,
     "format": content.extra_file_extension,
-    "inlineLinks": translationLinks,
+    "inlineLinks": translationLinks|merge({"docId": docId is defined ? docId : null}),
     "description": {
       "rteElements": [{
         "path": "@atoms/11-text/paragraph.twig",
