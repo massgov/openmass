@@ -20,13 +20,13 @@ index e01d327..14adad2 100644
 +  background-color: rgba(0, 0, 255, 0.05);
 +}
 diff --git a/js/builder.js b/js/builder.js
-index 2d385cb..58f6666 100644
+index 2d385cb..04a27ea 100644
 --- a/js/builder.js
 +++ b/js/builder.js
 @@ -1,6 +1,45 @@
  (($, Drupal, debounce, dragula, once) => {
    const idAttr = 'data-lpb-id';
-
+ 
 +  let triggerElement = null; // To track the element that triggered the AJAX request.
 +  let scrollPosition = 0; // To store the scroll position.
 +
@@ -70,7 +70,7 @@ index 2d385cb..58f6666 100644
     * Attaches UI elements to $container.
     * @param {jQuery} $container
 @@ -559,10 +598,27 @@
-
+ 
        // Listen to relevant events and update UI.
        once('lpb-events', '[data-lpb-id]').forEach((el) => {
 -        $(el).on('lpb-builder:init.lpb lpb-component:insert.lpb lpb-component:update.lpb lpb-component:move.lpb lpb-component:drop.lpb lpb-component:delete.lpb', (e) => {
@@ -99,7 +99,7 @@ index 2d385cb..58f6666 100644
 +          }
 +        );
        });
-
+ 
        // Initialize the editor drag and drop ui.
 @@ -611,6 +667,13 @@
      const $element = $dialog || jQuery(event.target);
@@ -115,24 +115,37 @@ index 2d385cb..58f6666 100644
        clearInterval(lpDialogInterval);
        lpDialogInterval = setInterval(
          repositionDialog.bind(null, lpDialogInterval),
-@@ -618,6 +681,24 @@
+@@ -618,10 +681,53 @@
        );
      }
    };
 +
 +  // Generic handler: open other components on background click.
-+  $('.js-lpb-component').not('.lpb-layout').on('click', function (e) {
-+    // Ignore clicks inside the control bar
-+    if ($(e.target).closest('.lpb-controls').length) {
-+      return;
++  $('body').on('click', '.js-lpb-component', function (e) {
++    const $component = $(this);
++
++    // Ensure this is the *nearest* component to the click
++    if ($(e.target).closest('.js-lpb-component')[0] !== this) {
++      return; // Nested component will handle its own click
 +    }
++
++    // Only proceed if not clicking inside the controls bar
++    if ($component.hasClass('lpb-layout')) {
++      // Layouts are allowed, but skip if controls were clicked
++      if ($(e.target).closest('.lpb-controls').length) {
++        return;
++      }
++    } else {
++      // For non-layouts, skip if controls were clicked
++      if ($(e.target).closest('.lpb-controls').length) {
++        return;
++      }
++    }
++
 +    e.preventDefault();
 +
-+    const $component = $(this);
 +    const $editButton = $component.find('.lpb-edit.use-ajax').first();
-+
 +    if ($editButton.length) {
-+      // Trigger modal open.
 +      $editButton.trigger('click');
 +    }
 +  });
@@ -140,3 +153,19 @@ index 2d385cb..58f6666 100644
    if (typeof DrupalDialogEvent === 'undefined') {
      $(window).on('dialog:aftercreate', handleAfterDialogCreate);
    } else {
+     window.addEventListener('dialog:aftercreate', handleAfterDialogCreate);
+   }
+ 
++  // Listen to dialog *close* directly on the dialog content
++  $(document).on('dialogclose', '.ui-dialog-content', function (event) {
++    const $element = $(this);
++    if ($element.attr('id')?.startsWith('lpb-dialog-') && triggerElement) {
++      window.scrollTo({
++        top: scrollPosition,
++        behavior: 'auto',
++      });
++      triggerElement.focus();
++    }
++  });
++
+ })(jQuery, Drupal, Drupal.debounce, dragula, once);
