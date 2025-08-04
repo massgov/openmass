@@ -20,10 +20,10 @@ index e01d327..14adad2 100644
 +  background-color: rgba(0, 0, 255, 0.05);
 +}
 diff --git a/js/builder.js b/js/builder.js
-index 2d385cb..04a27ea 100644
+index 2d385cb..5ee32b7 100644
 --- a/js/builder.js
 +++ b/js/builder.js
-@@ -1,6 +1,45 @@
+@@ -1,6 +1,51 @@
  (($, Drupal, debounce, dragula, once) => {
    const idAttr = 'data-lpb-id';
  
@@ -47,7 +47,13 @@ index 2d385cb..04a27ea 100644
 +            const element = $(ajaxInstance.element);
 +
 +            // Check if the triggering element is the Edit button.
-+            if (element.is('.lpb-edit.use-ajax')) {
++            if (
++              element.hasClass('use-ajax') &&
++              (element.hasClass('lpb-edit') ||
++                element.hasClass('lpb-btn--add') ||
++                (element.hasClass('lpb-btn') && element.hasClass('after')) ||
++                (element.hasClass('lpb-btn') && element.hasClass('before')))
++            ) {
 +              // Capture the triggering element and save the scroll position.
 +              triggerElement = element;
 +              scrollPosition = $(window).scrollTop();
@@ -69,7 +75,7 @@ index 2d385cb..04a27ea 100644
    /**
     * Attaches UI elements to $container.
     * @param {jQuery} $container
-@@ -559,10 +598,27 @@
+@@ -559,10 +604,27 @@
  
        // Listen to relevant events and update UI.
        once('lpb-events', '[data-lpb-id]').forEach((el) => {
@@ -101,7 +107,7 @@ index 2d385cb..04a27ea 100644
        });
  
        // Initialize the editor drag and drop ui.
-@@ -611,6 +667,13 @@
+@@ -611,6 +673,13 @@
      const $element = $dialog || jQuery(event.target);
      if ($element.attr('id').startsWith('lpb-dialog-')) {
        updateDialogButtons($element);
@@ -115,7 +121,7 @@ index 2d385cb..04a27ea 100644
        clearInterval(lpDialogInterval);
        lpDialogInterval = setInterval(
          repositionDialog.bind(null, lpDialogInterval),
-@@ -618,10 +681,53 @@
+@@ -618,10 +687,53 @@
        );
      }
    };
