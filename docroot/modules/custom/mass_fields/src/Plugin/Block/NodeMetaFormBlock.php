@@ -75,9 +75,11 @@ class NodeMetaFormBlock extends BlockBase implements ContainerFactoryPluginInter
       '#wrapper_attributes' => ['class' => ['entity-meta__last-saved']],
     ];
 
+    $author = $node->getOwner();
     $form['meta']['author'] = [
       '#type' => 'item',
       '#title' => $this->t('Author'),
+      '#markup' => $author->getDisplayName(),
       '#attributes' => ['class' => ['entity-meta__author']],
     ];
 
@@ -93,7 +95,6 @@ class NodeMetaFormBlock extends BlockBase implements ContainerFactoryPluginInter
     $title_nid = $title_prefix .
       ((strlen($title) > $title_max_length) ? substr($title, 0, $title_max_length - 1) . '…' : $title) .
       $title_suffix;
-    $author = $node->getOwner();
     $contact_url = new Url('entity.user.contact_form', ['user' => $author->id()], [
       // Set 'query' option for use by Prepopulate contrib module.
       // Will be used to pre-fill subject in contact form.
