@@ -11,7 +11,7 @@
     <div class="ma__services">
       {% block content %}
         {% set heading = {} %}
-        {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 0 %}
+        {% if (content.field_service_section_heading|field_value) is not empty %}
           {% set heading = {
             "title": (content.field_service_section_heading|field_value),
             "id": "",
@@ -34,7 +34,7 @@
           {% set two_column_class = "" %}
         {% endif %}
         {% set section_style_class = 'service-section--' ~ get_section_style ~ two_column_class %}
-        {% set hide_title_class = hide_heading ? 'service-section--hidden-title' : '' %}
+        {% set hide_title_class = (content.field_service_section_heading|field_value) is empty ? 'service-section--hidden-title' : '' %}
 
         {% set section_style_link = content.field_service_section_link.0 %}
         {% set section_style_subtitle = content.field_subtitle.0 %}
@@ -53,12 +53,14 @@
             {% block stackRowTitle %}
               {% if heading %}
                 {% if section_style == 'enhanced' and two_column_class != '-two-column' %}
-                  {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
-                    "coloredHeadingFromLeft": {
-                      "bgColor": "blue",
-                      "title": (content.field_service_section_heading|field_value)
-                    }}
-                  %}
+                  {% if (content.field_service_section_heading|field_value) is not empty %}
+                    {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
+                      "coloredHeadingFromLeft": {
+                        "bgColor": "blue",
+                        "title": (content.field_service_section_heading|field_value)
+                      }}
+                    %}
+                  {% endif %}
                   {# Subtitle and CTA Link #}
                   {% if (section_style_link or section_style_subtitle) and is_two_column %}
                     <div class="ma__service-heading-content">
@@ -126,7 +128,7 @@
             {% endblock %}
 
             {% block stackedRowContentOverride %}
-              {% set child_heading_level = show_heading ? 3 : 2 %}
+              {% set child_heading_level = show_heading and heading ? 3 : 2 %}
           <div class="layout layout--onecol-mass-service-section">
             <div class="layout__region layout__region--content">
               {% for service_component in service_components %}
@@ -135,7 +137,7 @@
                     {% block rteElements %}
                       {% for c in service_component.items %}
                         {% set c_item = c|view %}
-                        {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                        {% if c_item['#paragraph'] is defined and (c_item['#paragraph'].bundle == 'section_header' or c_item['#paragraph'].bundle == 'flexible_link_group') %}
                           {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
                         {% endif %}
                         {{ c_item }}
@@ -146,7 +148,7 @@
                   {% embed "@organisms/by-author/rich-text.twig" %}
                     {% block rteElements %}
                       {% set c_item = service_component.items|view %}
-                      {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                      {% if c_item['#paragraph'] is defined and (c_item['#paragraph'].bundle == 'section_header' or c_item['#paragraph'].bundle == 'flexible_link_group') %}
                         {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
                       {% endif %}
                       {{ c_item }}
@@ -156,7 +158,7 @@
                   {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}
                     {% block rteElements %}
                       {% set c_item = service_component.items|view %}
-                      {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                      {% if c_item['#paragraph'] is defined and (c_item['#paragraph'].bundle == 'section_header' or c_item['#paragraph'].bundle == 'flexible_link_group') %}
                         {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
                       {% endif %}
                       {{ c_item }}
@@ -164,7 +166,7 @@
                   {% endembed %}
                 {% else %}
                   {% set c_item = service_component[0]|view %}
-                  {% if c_item['#paragraph'] is defined and c_item['#paragraph'].bundle == 'section_header' %}
+                  {% if c_item['#paragraph'] is defined and (c_item['#paragraph'].bundle == 'section_header' or c_item['#paragraph'].bundle == 'flexible_link_group') %}
                     {% set c_item = c_item|merge({'#context': {'level': child_heading_level}}) %}
                   {% endif %}
                   {{ c_item }}

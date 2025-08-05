@@ -354,7 +354,6 @@ function mayflower_preprocess_paragraph__section_header(&$variables) {
 function mayflower_preprocess_paragraph__service_section(array &$variables) {
   $paragraph = $variables['paragraph'];
   $variables['section_style'] = $paragraph->field_section_style->value;
-  $variables['hide_heading'] = $paragraph->field_hide_heading->value;
 }
 
 /**
@@ -432,6 +431,9 @@ function mayflower_campaign_landing_paragraph_set_header_level(array &$variables
 function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
   /** @var \Drupal\paragraphs\Entity\Paragraph */
   $flexible_lg = $variables['paragraph'];
+  if (isset($variables['elements']['#context']['level'])) {
+    $variables['level'] = $variables['elements']['#context']['level'];
+  }
 
   $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
 
