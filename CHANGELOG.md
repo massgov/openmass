@@ -1,5 +1,17 @@
 
 
+## [0.447.0] - August 5, 2025
+
+### Changed
+  - DP-39936: Hide sections on news content type for blog posts.
+  - DP-40909: Update help text in media entity listing description field.
+  - DP-41011: Change role permissions for viewer to see and mark for self in editoria11y.
+  
+### Fixed
+  - DP-41056: Bug adding a link with a querystring that has no = sign.
+  
+
+
 ## [0.446.0] - July 29, 2025
 
 ### Fixed
