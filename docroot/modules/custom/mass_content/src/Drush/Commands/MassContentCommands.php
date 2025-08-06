@@ -1047,6 +1047,23 @@ class MassContentCommands extends DrushCommands {
           }
         }
 
+        // Delete paragraphs that were marked for deletion in tempstore.
+        $tempstore = \Drupal::service('tempstore.private')->get('mass_content');
+        $paragraphs_to_delete = $tempstore->get('paragraphs_to_delete') ?? [];
+        foreach (array_unique($paragraphs_to_delete) as $original_id) {
+          if (!$original_id) {
+            continue;
+          }
+          $paragraph = \Drupal::entityTypeManager()->getStorage('paragraph')->load($original_id);
+          if ($paragraph) {
+            $paragraph->delete();
+            if ($options['detailed-verbalization']) {
+              $this->output()->writeln("Paragraph has been deleted {$original_id}.");
+            }
+          }
+        }
+        $tempstore->delete('paragraphs_to_delete');
+
         // Stop processing if the total processed nodes exceed the limit (if set).
         if ($limit !== NULL && $processed_nodes >= $limit) {
           $this->output()->writeln("Reached the defined limit of {$limit} nodes. Stopping execution.");
@@ -1100,8 +1117,12 @@ class MassContentCommands extends DrushCommands {
     // We only care about those with bundle = 'service_section'.
     foreach ($paragraph_field->referencedEntities() as $section_paragraph) {
 
-      // Duplicate the section paragraph before modifying it, to avoid shared tree issues.
       if ($section_paragraph->bundle() == 'service_section') {
+        // Duplicate the section paragraph before modifying it, to avoid shared tree issues.
+        $original_id = $section_paragraph->id();
+        $section_paragraph = $this->recursivelyDuplicateParagraph($section_paragraph);
+        $section_paragraph->save();
+
         // 4) Mark this paragraph as “layout = onecol_mass” so it becomes a single-column container:
         $section_component = new LayoutParagraphsComponent($section_paragraph);
         $layout->setComponent($section_paragraph);
@@ -1131,7 +1152,7 @@ class MassContentCommands extends DrushCommands {
         // in the region called “content”. We do that via LayoutParagraphsLayout::insertAfterComponent().
         $section_uuid = $section_paragraph->uuid();
         foreach (array_reverse($old_children) as $child_paragraph) {
-          $duplicated_child = $child_paragraph->createDuplicate();
+          $duplicated_child = $this->recursivelyDuplicateParagraph($child_paragraph);
           $duplicated_child->save();
           $component = new LayoutParagraphsComponent($duplicated_child);
           $layout->insertAfterComponent($section_uuid, $duplicated_child);
@@ -1205,6 +1226,36 @@ class MassContentCommands extends DrushCommands {
       }
     }
     return $entity;
+  }
+
+  protected function recursivelyDuplicateParagraph(Paragraph $paragraph): Paragraph {
+    $original_id = $paragraph->id();
+    if ($original_id) {
+      $tempstore = \Drupal::service('tempstore.private')->get('mass_content');
+      $existing = $tempstore->get('paragraphs_to_delete') ?? [];
+      $existing[] = $original_id;
+      $tempstore->set('paragraphs_to_delete', $existing);
+    }
+    $paragraph = $paragraph->createDuplicate();
+
+    foreach ($paragraph->getFields() as $field) {
+      if ($field->getFieldDefinition()->getType() === 'entity_reference_revisions' &&
+        $field->getFieldDefinition()->getSetting('target_type') === 'paragraph') {
+
+        $new_items = [];
+        foreach ($field->referencedEntities() as $child_paragraph) {
+          $duplicate_child = $this->recursivelyDuplicateParagraph($child_paragraph);
+          $duplicate_child->save();
+          $new_items[] = [
+            'target_id' => $duplicate_child->id(),
+            'target_revision_id' => $duplicate_child->getRevisionId(),
+          ];
+        }
+        $paragraph->set($field->getName(), $new_items);
+      }
+    }
+
+    return $paragraph;
   }
 
   /**
