@@ -557,23 +557,6 @@ class MassContentCommands extends DrushCommands {
           }
         }
 
-        // Delete paragraphs that were marked for deletion in tempstore.
-        $tempstore = \Drupal::service('tempstore.private')->get('mass_content');
-        $paragraphs_to_delete = $tempstore->get('paragraphs_to_delete') ?? [];
-        foreach (array_unique($paragraphs_to_delete) as $original_id) {
-          if (!$original_id) {
-            continue;
-          }
-          $paragraph = \Drupal::entityTypeManager()->getStorage('paragraph')->load($original_id);
-          if ($paragraph) {
-            $paragraph->delete();
-            if ($options['detailed-verbalization']) {
-              $this->output()->writeln("Paragraph has been deleted {$original_id}.");
-            }
-          }
-        }
-        $tempstore->delete('paragraphs_to_delete');
-
         // Stop processing if the total processed nodes exceed the limit (if set).
         if ($limit !== NULL && $processed_nodes >= $limit) {
           $this->output()->writeln("Reached the defined limit of {$limit} nodes. Stopping execution.");
@@ -588,6 +571,32 @@ class MassContentCommands extends DrushCommands {
 
     // Re-enable entity hierarchy writes after processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
+    // Delete paragraphs that were marked for deletion in tempstore.
+    $tempstore = \Drupal::service('tempstore.private')->get('mass_content');
+    $paragraphs_to_delete = $tempstore->get('paragraphs_to_delete') ?? [];
+    foreach (array_unique($paragraphs_to_delete) as $original_id) {
+      if (!$original_id) {
+        continue;
+      }
+      $paragraph = \Drupal::entityTypeManager()->getStorage('paragraph')->load($original_id);
+      if ($paragraph) {
+        $paragraph->delete();
+        if ($options['detailed-verbalization']) {
+          $this->output()->writeln("Paragraph has been deleted {$original_id}.");
+        }
+      }
+    }
+    $paragraph_ids = array_unique($tempstore->get('paragraphs_to_delete') ?? []);
+
+    $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+    $remaining = array_filter($paragraph_ids, function ($id) use ($paragraph_storage) {
+      return (bool) $paragraph_storage->load($id);
+    });
+
+    if (empty($remaining)) {
+      $tempstore->delete('paragraphs_to_delete');
+    }
 
     $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
     $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
