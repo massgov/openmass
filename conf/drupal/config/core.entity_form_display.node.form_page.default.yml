@@ -38,6 +38,7 @@ third_party_settings:
     group_form_page_edit_form:
       children:
         - group_form_page
+        - group_page_info
       label: 'Form page edit form'
       region: content
       parent_name: ''
@@ -78,6 +79,26 @@ third_party_settings:
         id: ''
         formatter: open
         description: "<p>See our <a href=\"https://www.mass.gov/kb/forms\">Forms page in the knowledge base</a> for more information.</p>\r\n\r\n<p>There are important <a href=\"https://www.mass.gov/kb/form-use-policy\">acceptable use guidelines</a> that MUST be followed for all forms. <strong>Do not collect, transmit, or store any personal information unless your legal and IT leadership review and approve</strong>.</p>"
+        required_fields: true
+    group_page_info:
+      children:
+        - field_metatags
+        - simple_sitemap
+        - url_redirects
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_form_page_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
         required_fields: true
 id: node.form_page.default
 targetEntityType: node
@@ -286,7 +307,7 @@ content:
     weight: 2
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_organizations:
@@ -360,14 +381,14 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 7
+    weight: 6
     region: content
     settings:
       display_label: true
@@ -412,7 +433,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
