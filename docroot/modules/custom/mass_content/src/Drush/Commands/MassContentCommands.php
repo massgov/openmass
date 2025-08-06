@@ -399,13 +399,12 @@ class MassContentCommands extends DrushCommands {
    * @command mass-content:migrate-layout-paragraphs
    * @option batch-size The number of nodes to process per batch.
    * @option limit The maximum number of nodes to process in this execution. If not set, process all nodes.
-   * @option max-runtime The maximum runtime (in minutes) for this command. If not set, process indefinitely.
-   * @option nid The specific node ID to process. If set, other batching and limits will be ignored.
+   * @option max-runtime The maximum runtime (in minutes) for this command. If not set, process indefinitely
    * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --max-runtime=55
    * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --limit=1000
    * @aliases mcsplp
    */
-  public function migrateServiceSectionLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'detailed-verbalization' => FALSE, 'nid' => NULL]) {
+  public function migrateServiceSectionLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     // Disable entity hierarchy writes for better performance during processing.
@@ -415,7 +414,6 @@ class MassContentCommands extends DrushCommands {
     $limit = isset($options['limit']) ? (int) $options['limit'] : NULL;
     // Default to 55 minutes.
     $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
-    $nid = $options['nid'];
     // Use a unique state key based on the published/unpublished condition.
     $state_key = 'mass_content_deploy.service_page_migration_last_processed_nid';
 
@@ -426,19 +424,6 @@ class MassContentCommands extends DrushCommands {
       ->condition('type', 'service_page')
       ->condition('nid', $last_processed_nid, '>')
       ->accessCheck(FALSE)->execute());
-
-    // If a specific nid is given, handle it specially.
-    if (!empty($nid)) {
-      $node_storage = $this->entityTypeManager->getStorage('node');
-      $node = $node_storage->load($nid);
-      if (!$node) {
-        $this->output()->writeln("Node with nid {$nid} not found.");
-        return;
-      }
-
-      $nodes_to_process = [$nid];
-      $total_nodes = 1;
-    }
 
     // Record the start time.
     $start_time = time();
@@ -454,23 +439,21 @@ class MassContentCommands extends DrushCommands {
       }
 
       // If not processing a specific nid, get the batch as usual.
-      if (empty($nid)) {
-        // Get the last processed nid from state.
-        $last_processed_nid = \Drupal::state()->get($state_key, 0);
+      // Get the last processed nid from state.
+      $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
-        // Query all nodes of type 'service_page' starting from the last processed nid.
-        $query = $this->entityTypeManager->getStorage('node')->getQuery()
-          ->condition('type', 'service_page')
-          ->condition('nid', $last_processed_nid, '>')
-          ->accessCheck(FALSE)
-          ->sort('nid')
-          ->range(0, $batch_size);
+      // Query all nodes of type 'service_page' starting from the last processed nid.
+      $query = $this->entityTypeManager->getStorage('node')->getQuery()
+        ->condition('type', 'service_page')
+        ->condition('nid', $last_processed_nid, '>')
+        ->accessCheck(FALSE)
+        ->sort('nid')
+        ->range(0, $batch_size);
 
-        $nids = $query->execute();
-        if (empty($nids)) {
-          $this->output()->writeln('No more nodes to process.');
-          break;
-        }
+      $nids = $query->execute();
+      if (empty($nids)) {
+        $this->output()->writeln('No more nodes to process.');
+        break;
       }
 
       $node_storage = $this->entityTypeManager->getStorage('node');
@@ -478,8 +461,7 @@ class MassContentCommands extends DrushCommands {
       $this->output()->writeln("Processing batch of " . $batch_size * $batch_step . "-" . ($batch_size * $batch_step + $batch_size) . " nodes from $total_nodes");
 
       // Choose the nodes to process for this batch.
-      $nodes_to_process = $nids ?? $nodes_to_process;
-      foreach ($nodes_to_process as $nid) {
+      foreach ($nids as $nid) {
         $revision_to_restore = NULL;
 
         $query = $node_storage->getQuery()->accessCheck(FALSE);
@@ -602,7 +584,7 @@ class MassContentCommands extends DrushCommands {
 
       $batch_step++;
 
-    } while (empty($nid) && !empty($nids));
+    } while (!empty($nids));
 
     // Re-enable entity hierarchy writes after processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
