@@ -395,8 +395,12 @@ Conclude your formal SEO audit report with:
    *
    * @return string
    *   The default prompt.
+   *
+   * @deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.
+   * @see \Drupal\ai_seo\Entity\AiSeoReportType
    */
   public function getDefaultPromptText(): string {
+    @trigger_error('getDefaultPromptText() is deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.', E_USER_DEPRECATED);
     $default_prompt = $this->getDefaultPrompt();
 
     $custom_prompt = $this->config->get('custom_prompt');
@@ -408,8 +412,12 @@ Conclude your formal SEO audit report with:
 
   /**
    * Prompt for Topic Authority and Depth.
+   *
+   * @deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.
+   * @see \Drupal\ai_seo\Entity\AiSeoReportType
    */
   public function getTopicAuthorityPrompt() {
+    @trigger_error('getTopicAuthorityPrompt() is deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.', E_USER_DEPRECATED);
     return $this->t("
 **Objective:**  Assume the persona of a Senior SEO Content Strategist. Your mission is to rigorously audit the provided HTML page content specifically for **Topic Authority and Depth**.  The goal is to determine the current state of topical authority demonstrated by the content and to deliver a set of actionable recommendations to significantly enhance it.
 
@@ -467,8 +475,12 @@ Conclude your analysis with a concise report that includes:
 
   /**
    * Prompt for Natural Language Use.
+   *
+   * @deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.
+   * @see \Drupal\ai_seo\Entity\AiSeoReportType
    */
   public function getNaturalLanguagePrompt() {
+    @trigger_error('getNaturalLanguagePrompt() is deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.', E_USER_DEPRECATED);
     return $this->t('
 **Objective:** Assume the role of a Content Readability and Natural Language SEO Specialist. Your task is to conduct a focused "Detailed Content Analysis" of the provided HTML page content, specifically evaluating its **Natural Language Use**.  The primary goal is to assess the content\'s readability, conversational tone, and seamless integration of keywords, and to recommend actionable improvements that enhance user engagement and usability in search, particularly in generative search results.
 
@@ -536,8 +548,12 @@ Conclude your analysis with a concise report that includes:
 
   /**
    * Prompt for Link Analysis.
+   *
+   * @deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.
+   * @see \Drupal\ai_seo\Entity\AiSeoReportType
    */
   public function getLinkAnalysisPrompt() {
+    @trigger_error('getLinkAnalysisPrompt() is deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.', E_USER_DEPRECATED);
     return $this->t('**Objective:** Step into the role of a seasoned Link Building and Technical SEO Specialist. Your mission is to perform a comprehensive "Link Analysis SEO Audit" of the provided HTML page content, focusing on both **Internal and External Links**. The primary goal is to evaluate the current linking practices, identify areas for improvement, and deliver actionable recommendations to enhance site navigation, authority distribution, and overall SEO performance through strategic linking.
 
 **Context:** You are examining the HTML code of a webpage (provided separately).  Your analysis should be strictly limited to the **link elements** within this HTML – both internal links (linking to other pages within the same domain) and external links (linking to pages on different domains).  Disregard other aspects of the HTML content for this focused audit.
@@ -616,8 +632,12 @@ Conclude your analysis with a concise report that includes:
 
   /**
    * Prompt for Headings and Structure.
+   *
+   * @deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.
+   * @see \Drupal\ai_seo\Entity\AiSeoReportType
    */
   public function getHeadingsAndStructurePrompt() {
+    @trigger_error('getHeadingsAndStructurePrompt() is deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.', E_USER_DEPRECATED);
     return $this->t('**Objective:** Assume the role of an On-Page SEO and Content Structure Specialist. Your task is to conduct a comprehensive "Keywords and Structure SEO Audit" of the provided HTML page content.  The primary goal is to evaluate the effectiveness of keyword usage within the content\'s structure (headings) and body text, and to assess the overall hierarchical organization, delivering actionable recommendations to optimize both for improved search engine ranking and user experience.
 
 **Context:** You are analyzing the textual content and HTML heading tags of a webpage (provided separately). Your focus is strictly limited to **keyword integration within the content structure and the hierarchical organization of the content** itself.  Disregard other SEO elements for this focused analysis.
