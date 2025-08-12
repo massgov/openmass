@@ -108,3 +108,74 @@ function ai_seo_update_10301() {
     $database->schema()->addField('ai_seo', 'report_type', $spec_report_type);
   }
 }
+
+/**
+ * Install AI SEO Report Type entity type.
+ */
+function ai_seo_update_10302() {
+  // Install the new entity type.
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+  
+  // Install the ai_seo_report_type entity type.
+  $entity_type = \Drupal::entityTypeManager()->getDefinition('ai_seo_report_type');
+  $entity_definition_update_manager->installEntityType($entity_type);
+}
+
+/**
+ * Create default AI SEO report types.
+ */
+function ai_seo_update_10303() {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $config_factory = \Drupal::configFactory();
+  
+  // Get the existing hardcoded prompts from the analyzer service.
+  $analyzer = \Drupal::service('ai_seo.service');
+  
+  $default_report_types = [
+    [
+      'id' => 'full',
+      'label' => 'Full',
+      'description' => 'Comprehensive SEO analysis covering all aspects.',
+      'prompt' => $analyzer->getDefaultPromptText(),
+      'status' => TRUE,
+    ],
+    [
+      'id' => 'topic_authority',
+      'label' => 'Topic Authority',
+      'description' => 'Analysis focused on topic authority and expertise.',
+      'prompt' => $analyzer->getTopicAuthorityPrompt(),
+      'status' => TRUE,
+    ],
+    [
+      'id' => 'natural_language',
+      'label' => 'Natural Language Use',
+      'description' => 'Analysis of natural language usage and readability.',
+      'prompt' => $analyzer->getNaturalLanguagePrompt(),
+      'status' => TRUE,
+    ],
+    [
+      'id' => 'link_analysis',
+      'label' => 'Link Analysis',
+      'description' => 'Analysis of internal and external linking structure.',
+      'prompt' => $analyzer->getLinkAnalysisPrompt(),
+      'status' => TRUE,
+    ],
+    [
+      'id' => 'headings_and_structure',
+      'label' => 'Headings and Structure',
+      'description' => 'Analysis of content structure and heading hierarchy.',
+      'prompt' => $analyzer->getHeadingsAndStructurePrompt(),
+      'status' => TRUE,
+    ],
+  ];
+
+  $storage = $entity_type_manager->getStorage('ai_seo_report_type');
+  
+  foreach ($default_report_types as $report_type_data) {
+    // Only create if it doesn't already exist.
+    if (!$storage->load($report_type_data['id'])) {
+      $report_type = $storage->create($report_type_data);
+      $report_type->save();
+    }
+  }
+}
