@@ -150,15 +150,9 @@ class AnalyzeNodeForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, $hash = NULL) {
 
-    // Store the report types.
-    $report_types = [
-      'full' => $this->t('Full'),
-      'topic_authority' => $this->t('Topic Authority'),
-      'natural_language' => $this->t('Natural Language Use'),
-      'link_analysis' => $this->t('Link Analysis'),
-      'headings_and_structure' => $this->t('Headings and Structure'),
-    ];
-    $report_type_default_value = 'full';
+    // Get report types from entities.
+    $report_types = $this->getReportTypes();
+    $report_type_default_value = !empty($report_types) ? array_key_first($report_types) : 'full';
 
     $form['#id'] = 'analyze-url-form';
 
@@ -255,7 +249,7 @@ class AnalyzeNodeForm extends FormBase {
 
       $report_type_id = $previous_reports[0]['report_type'] ?? 'full';
       $report_type_default_value = $report_type_id;
-      $report_type = $report_types[$report_type_id] ?? $report_types['full'];
+      $report_type = $report_types[$report_type_id] ?? (!empty($report_types) ? reset($report_types) : 'Unknown');
       $html_report = $this->formatAiResponseWithCode($previous_reports[0]['report']);
       $form['container']['reports']['latest'] = [
         '#type' => 'markup',
@@ -295,7 +289,7 @@ class AnalyzeNodeForm extends FormBase {
         $report_number = $report_count - $i;
 
         $report_type_id = $previous_reports[$i]['report_type'] ?? 'full';
-        $report_type = $report_types[$report_type_id] ?? $report_types['full'];
+        $report_type = $report_types[$report_type_id] ?? (!empty($report_types) ? reset($report_types) : 'Unknown');
 
         $form['container']['older_reports']['report_' . $i] = [
           '#type' => 'details',
@@ -517,6 +511,38 @@ class AnalyzeNodeForm extends FormBase {
   }
 
   /**
+   * Get available report types from entities.
+   *
+   * @return array
+   *   Array of report type options keyed by machine name.
+   */
+  private function getReportTypes() {
+    $options = [];
+    
+    try {
+      /** @var \Drupal\ai_seo\Entity\AiSeoReportType[] $report_types */
+      $report_types = $this->entityTypeManager
+        ->getStorage('ai_seo_report_type')
+        ->loadByProperties(['status' => TRUE]);
+        
+      foreach ($report_types as $report_type) {
+        $options[$report_type->id()] = $report_type->label();
+      }
+    } catch (\Exception $e) {
+      // Fallback to hardcoded options if entity storage not available yet.
+      $options = [
+        'full' => $this->t('Full'),
+        'topic_authority' => $this->t('Topic Authority'),
+        'natural_language' => $this->t('Natural Language Use'),
+        'link_analysis' => $this->t('Link Analysis'),
+        'headings_and_structure' => $this->t('Headings and Structure'),
+      ];
+    }
+    
+    return $options;
+  }
+
+  /**
    * Helper function to get the prompt based on the report type.
    */
   private function getPromptForReportType($report_type) {
@@ -524,6 +550,20 @@ class AnalyzeNodeForm extends FormBase {
       $report_type = 'full';
     }
 
+    try {
+      /** @var \Drupal\ai_seo\Entity\AiSeoReportType $report_type_entity */
+      $report_type_entity = $this->entityTypeManager
+        ->getStorage('ai_seo_report_type')
+        ->load($report_type);
+        
+      if ($report_type_entity && $report_type_entity->status()) {
+        return $report_type_entity->getPrompt();
+      }
+    } catch (\Exception $e) {
+      // Fallback to old hardcoded methods if entity not available.
+    }
+
+    // Fallback to old hardcoded prompts.
     switch ($report_type) {
       case 'topic_authority':
         return $this->analyzer->getTopicAuthorityPrompt();
