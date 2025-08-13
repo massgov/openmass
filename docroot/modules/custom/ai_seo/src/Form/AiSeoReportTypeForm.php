@@ -69,7 +69,7 @@ class AiSeoReportTypeForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function save(array $form, FormStateInterface $form_state) {
+  public function save(array $form, FormStateInterface $form_state): void {
     /** @var \Drupal\ai_seo\Entity\AiSeoReportType $ai_seo_report_type */
     $ai_seo_report_type = $this->entity;
 
