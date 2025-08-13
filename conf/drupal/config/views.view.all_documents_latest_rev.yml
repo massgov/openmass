@@ -868,16 +868,18 @@ display:
           exposed: true
           expose:
             operator_id: moderation_state_op
-            label: 'Moderation state'
+            label: 'Latest revision moderation state'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: moderation_state_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
             identifier: moderation_state
             required: false
             remember: false
-            multiple: false
+            multiple: true
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
@@ -981,12 +983,26 @@ display:
           exposed: true
           expose:
             operator_id: field_title_value_op
-            label: 'Title (contains)'
+            label: Title
             description: ''
-            use_operator: false
+            use_operator: true
             operator: field_title_value_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              '=': '='
+              '!=': '!='
+              contains: contains
+              word: word
+              allwords: allwords
+              starts: starts
+              not_starts: not_starts
+              ends: ends
+              not_ends: not_ends
+              not: not
+              shorterthan: shorterthan
+              longerthan: longerthan
+              regular_expression: regular_expression
+              not_regular_expression: not_regular_expression
             identifier: field_title_value
             required: false
             remember: false
@@ -1048,12 +1064,26 @@ display:
           exposed: true
           expose:
             operator_id: name_op
-            label: 'Filename (contains)'
+            label: Filename
             description: ''
-            use_operator: false
+            use_operator: true
             operator: name_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              '=': '='
+              '!=': '!='
+              contains: contains
+              word: word
+              allwords: allwords
+              starts: starts
+              not_starts: not_starts
+              ends: ends
+              not_ends: not_ends
+              not: not
+              shorterthan: shorterthan
+              longerthan: longerthan
+              regular_expression: regular_expression
+              not_regular_expression: not_regular_expression
             identifier: name
             required: false
             remember: false
