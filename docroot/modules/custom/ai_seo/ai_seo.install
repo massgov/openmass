@@ -115,7 +115,7 @@ function ai_seo_update_10301() {
 function ai_seo_update_10302() {
   // Install the new entity type.
   $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
-  
+
   // Install the ai_seo_report_type entity type.
   $entity_type = \Drupal::entityTypeManager()->getDefinition('ai_seo_report_type');
   $entity_definition_update_manager->installEntityType($entity_type);
@@ -123,107 +123,23 @@ function ai_seo_update_10302() {
 
 /**
  * Create default AI SEO report types.
+ *
+ * Note: Default report types are now provided via config/install files
+ * and will be automatically installed when the module is enabled.
+ * This update hook is maintained for existing installations.
  */
 function ai_seo_update_10303() {
-  $entity_type_manager = \Drupal::entityTypeManager();
-  
-  // Define default report types with their prompts inline.
-  // These contain the original hardcoded prompts that were removed from the analyzer.
-  $default_report_types = [
-    [
-      'id' => 'full',
-      'label' => 'Full',
-      'description' => 'Comprehensive SEO analysis covering all aspects.',
-      'prompt' => 'You are an expert SEO analyst conducting a comprehensive technical and content SEO audit. Analyze the provided HTML content and deliver actionable recommendations for improvement.
+  // TODO: if we decide to keep this module as is, do not rename it - we need
+  // to implement this hook to re-import default report types as well as
+  // convert custom prompt to config entity fro Full Prompt.
 
-Focus on these key areas:
-- Technical SEO (page structure, meta tags, schema markup)
-- Content quality and keyword optimization
-- User experience factors
-- Performance optimization opportunities
-- Accessibility compliance
-- Search engine visibility enhancements
+  // Default report types are now handled via config/install/*.yml files
+  // This ensures they're available immediately when the module is installed
+  // and can be easily customized by site administrators.
 
-Provide specific, actionable recommendations with clear priority levels and implementation guidance.',
-      'status' => TRUE,
-    ],
-    [
-      'id' => 'topic_authority',
-      'label' => 'Topic Authority',
-      'description' => 'Analysis focused on topic authority and expertise.',
-      'prompt' => 'Assume the persona of a Senior SEO Content Strategist. Audit the provided HTML page content specifically for **Topic Authority and Depth**. Determine the current state of topical authority and deliver actionable recommendations to enhance it.
-
-**Assessment Areas:**
-1. **Current State - Demonstrable Topical Expertise**
-2. **Actionable Improvement Recommendations - Enhancing Topic Authority & Depth** 
-3. **Justification - SEO and User Benefit of Topic Authority**
-
-Focus on content expansion strategies, data integration, format diversification, and credibility enhancement. Provide a rating and prioritized recommendations.',
-      'status' => TRUE,
-    ],
-    [
-      'id' => 'natural_language',
-      'label' => 'Natural Language Use',
-      'description' => 'Analysis of natural language usage and readability.',
-      'prompt' => 'Assume the role of a Content Readability and Natural Language SEO Specialist. Conduct a focused analysis of the provided HTML page content, specifically evaluating **Natural Language Use**. Assess readability, conversational tone, and seamless keyword integration.
-
-**Focus Areas:**
-- Content readability and accessibility
-- Natural keyword integration
-- Conversational tone and user engagement
-- Language clarity and comprehension
-- Sentence structure and flow
-- Technical jargon vs. plain language balance
-
-Provide actionable recommendations to enhance natural language use and user engagement.',
-      'status' => TRUE,
-    ],
-    [
-      'id' => 'link_analysis',
-      'label' => 'Link Analysis',
-      'description' => 'Analysis of internal and external linking structure.',
-      'prompt' => 'Step into the role of a Link Building and Technical SEO Specialist. Perform a comprehensive **Link Analysis SEO Audit** of the provided HTML page content, focusing on both **Internal and External Links**.
-
-**Analysis Focus:**
-- Internal link structure and distribution
-- External link quality and relevance
-- Anchor text optimization
-- Link accessibility and user experience
-- Navigation flow and site architecture
-- Authority distribution through linking
-- Broken or problematic links
-
-Deliver actionable recommendations to enhance site navigation, authority distribution, and overall SEO performance through strategic linking.',
-      'status' => TRUE,
-    ],
-    [
-      'id' => 'headings_and_structure',
-      'label' => 'Headings and Structure',
-      'description' => 'Analysis of content structure and heading hierarchy.',
-      'prompt' => 'Assume the role of an On-Page SEO and Content Structure Specialist. Conduct a comprehensive **Keywords and Structure SEO Audit** of the provided HTML page content. Evaluate keyword usage within content structure and assess hierarchical organization.
-
-**Audit Focus:**
-- Heading hierarchy (H1-H6) structure and optimization
-- Keyword placement in headings and structure
-- Content organization and logical flow
-- Schema markup for structured data
-- Semantic HTML usage
-- Content accessibility through proper structure
-
-Deliver actionable recommendations to optimize both search engine ranking and user experience through improved content structure.',
-      'status' => TRUE,
-    ],
-  ];
-
-  $storage = $entity_type_manager->getStorage('ai_seo_report_type');
-  
-  foreach ($default_report_types as $report_type_data) {
-    // Only create if it doesn't already exist.
-    if (!$storage->load($report_type_data['id'])) {
-      $report_type = $storage->create($report_type_data);
-      $report_type->save();
-    }
-  }
+  // For existing installations that don't have the config files,
+  // we can trigger a config sync or let the admin install them manually
+  // through the UI at /admin/config/ai-seo/report-types
 }
 
 /**
@@ -231,7 +147,7 @@ Deliver actionable recommendations to optimize both search engine ranking and us
  */
 function ai_seo_update_10304() {
   $config = \Drupal::configFactory()->getEditable('ai_seo.configuration');
-  
+
   // Remove the deprecated custom_prompt setting.
   if ($config->get('custom_prompt') !== NULL) {
     $config->clear('custom_prompt');
