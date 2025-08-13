@@ -225,3 +225,16 @@ Deliver actionable recommendations to optimize both search engine ranking and us
     }
   }
 }
+
+/**
+ * Remove deprecated custom_prompt configuration.
+ */
+function ai_seo_update_10304() {
+  $config = \Drupal::configFactory()->getEditable('ai_seo.configuration');
+  
+  // Remove the deprecated custom_prompt setting.
+  if ($config->get('custom_prompt') !== NULL) {
+    $config->clear('custom_prompt');
+    $config->save();
+  }
+}
