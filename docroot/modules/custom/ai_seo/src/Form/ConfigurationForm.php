@@ -111,21 +111,6 @@ class ConfigurationForm extends ConfigFormBase {
       '#default_value' => $config->get('custom_system_prompt') ?? '',
     ];
 
-    $form['prompt']['default_prompt'] = [
-      '#type' => 'textarea',
-      '#readonly' => TRUE,
-      '#disabled' => TRUE,
-      '#title' => $this->t('Default prompt'),
-      '#description' => $this->t('The default prompt comes with the module and it is the one that is used unless a custom prompt is provided below.'),
-      '#value' => $this->analyzer->getDefaultPrompt(),
-    ];
-
-    $form['prompt']['custom_prompt'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Custom prompt'),
-      '#default_value' => $config->get('custom_prompt') ?? '',
-    ];
-
     return parent::buildForm($form, $form_state);
   }
 
@@ -135,10 +120,8 @@ class ConfigurationForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state, string $preferences_token = NULL) {
     $config = $this->config('ai_seo.configuration');
     $custom_system_prompt = $form_state->getValue('custom_system_prompt') ?? '';
-    $custom_prompt = $form_state->getValue('custom_prompt') ?? '';
     $config
       ->set('custom_system_prompt', trim($custom_system_prompt))
-      ->set('custom_prompt', trim($custom_prompt))
       ->set('provider_and_model', $form_state->getValue('provider_and_model'))
       ->save();
 

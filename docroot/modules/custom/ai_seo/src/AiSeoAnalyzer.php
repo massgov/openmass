@@ -266,37 +266,10 @@ class AiSeoAnalyzer {
 
     // Use that or the default one.
     $prompt = (!empty($custom_system_prompt)) ? $custom_system_prompt : $this->getDefaultSystemPrompt();
-//    dump($prompt);
     // Otherwise return the default one.
     return $prompt;
   }
 
-
-
-
-
-
-
-  /**
-   * Return either default or custom prompt.
-   *
-   * @return string
-   *   Prompt text.
-   *   
-   * @deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.
-   * @see \Drupal\ai_seo\Entity\AiSeoReportType
-   */
-  public function getPromptText() {
-    @trigger_error('getPromptText() is deprecated in ai_seo:10302 and is removed from ai_seo:11000. Use AiSeoReportType entities instead.', E_USER_DEPRECATED);
-    // Get the custom prompt if one is set.
-    $custom_prompt = $this->config->get('custom_prompt');
-
-    // Use that or return an empty string as fallback.
-    $prompt = (!empty($custom_prompt)) ? $custom_prompt : '';
-
-    // Otherwise return the default one.
-    return $prompt;
-  }
 
   /**
    * Saves a new SEO analysis report to the database.
