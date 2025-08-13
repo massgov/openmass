@@ -560,23 +560,12 @@ class AnalyzeNodeForm extends FormBase {
         return $report_type_entity->getPrompt();
       }
     } catch (\Exception $e) {
-      // Fallback to old hardcoded methods if entity not available.
+      // Log error if entity storage is not available.
+      \Drupal::logger('ai_seo')->error('Could not load AI SEO report type entity: @message', ['@message' => $e->getMessage()]);
     }
 
-    // Fallback to old hardcoded prompts.
-    switch ($report_type) {
-      case 'topic_authority':
-        return $this->analyzer->getTopicAuthorityPrompt();
-      case 'natural_language':
-        return $this->analyzer->getNaturalLanguagePrompt();
-      case 'link_analysis':
-        return $this->analyzer->getLinkAnalysisPrompt();
-      case 'headings_and_structure':
-        return $this->analyzer->getHeadingsAndStructurePrompt();
-      case 'full':
-      default:
-        return $this->analyzer->getDefaultPromptText();
-    }
+    // Return empty prompt if no entity found.
+    return '';
   }
 
   /**
@@ -586,7 +575,7 @@ class AnalyzeNodeForm extends FormBase {
     $entity_id = $form_state->getValue('entity_id');
     $langcode = !empty($form_state->getValue('langcode')) ? $form_state->getValue('langcode') : NULL;
     $revision_id = !empty($form_state->getValue('revision_id')) ? $form_state->getValue('revision_id') : NULL;
-    $prompt = $form_state->getValue('prompt_to_use') ?? $this->analyzer->getDefaultPrompt();
+    $prompt = $form_state->getValue('prompt_to_use') ?? '';
 
     // Set options.
     $options = [

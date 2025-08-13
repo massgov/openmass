@@ -126,45 +126,91 @@ function ai_seo_update_10302() {
  */
 function ai_seo_update_10303() {
   $entity_type_manager = \Drupal::entityTypeManager();
-  $config_factory = \Drupal::configFactory();
   
-  // Get the existing hardcoded prompts from the analyzer service.
-  $analyzer = \Drupal::service('ai_seo.service');
-  
+  // Define default report types with their prompts inline.
+  // These contain the original hardcoded prompts that were removed from the analyzer.
   $default_report_types = [
     [
       'id' => 'full',
       'label' => 'Full',
       'description' => 'Comprehensive SEO analysis covering all aspects.',
-      'prompt' => $analyzer->getDefaultPromptText(),
+      'prompt' => 'You are an expert SEO analyst conducting a comprehensive technical and content SEO audit. Analyze the provided HTML content and deliver actionable recommendations for improvement.
+
+Focus on these key areas:
+- Technical SEO (page structure, meta tags, schema markup)
+- Content quality and keyword optimization
+- User experience factors
+- Performance optimization opportunities
+- Accessibility compliance
+- Search engine visibility enhancements
+
+Provide specific, actionable recommendations with clear priority levels and implementation guidance.',
       'status' => TRUE,
     ],
     [
       'id' => 'topic_authority',
       'label' => 'Topic Authority',
       'description' => 'Analysis focused on topic authority and expertise.',
-      'prompt' => $analyzer->getTopicAuthorityPrompt(),
+      'prompt' => 'Assume the persona of a Senior SEO Content Strategist. Audit the provided HTML page content specifically for **Topic Authority and Depth**. Determine the current state of topical authority and deliver actionable recommendations to enhance it.
+
+**Assessment Areas:**
+1. **Current State - Demonstrable Topical Expertise**
+2. **Actionable Improvement Recommendations - Enhancing Topic Authority & Depth** 
+3. **Justification - SEO and User Benefit of Topic Authority**
+
+Focus on content expansion strategies, data integration, format diversification, and credibility enhancement. Provide a rating and prioritized recommendations.',
       'status' => TRUE,
     ],
     [
       'id' => 'natural_language',
       'label' => 'Natural Language Use',
       'description' => 'Analysis of natural language usage and readability.',
-      'prompt' => $analyzer->getNaturalLanguagePrompt(),
+      'prompt' => 'Assume the role of a Content Readability and Natural Language SEO Specialist. Conduct a focused analysis of the provided HTML page content, specifically evaluating **Natural Language Use**. Assess readability, conversational tone, and seamless keyword integration.
+
+**Focus Areas:**
+- Content readability and accessibility
+- Natural keyword integration
+- Conversational tone and user engagement
+- Language clarity and comprehension
+- Sentence structure and flow
+- Technical jargon vs. plain language balance
+
+Provide actionable recommendations to enhance natural language use and user engagement.',
       'status' => TRUE,
     ],
     [
       'id' => 'link_analysis',
       'label' => 'Link Analysis',
       'description' => 'Analysis of internal and external linking structure.',
-      'prompt' => $analyzer->getLinkAnalysisPrompt(),
+      'prompt' => 'Step into the role of a Link Building and Technical SEO Specialist. Perform a comprehensive **Link Analysis SEO Audit** of the provided HTML page content, focusing on both **Internal and External Links**.
+
+**Analysis Focus:**
+- Internal link structure and distribution
+- External link quality and relevance
+- Anchor text optimization
+- Link accessibility and user experience
+- Navigation flow and site architecture
+- Authority distribution through linking
+- Broken or problematic links
+
+Deliver actionable recommendations to enhance site navigation, authority distribution, and overall SEO performance through strategic linking.',
       'status' => TRUE,
     ],
     [
       'id' => 'headings_and_structure',
       'label' => 'Headings and Structure',
       'description' => 'Analysis of content structure and heading hierarchy.',
-      'prompt' => $analyzer->getHeadingsAndStructurePrompt(),
+      'prompt' => 'Assume the role of an On-Page SEO and Content Structure Specialist. Conduct a comprehensive **Keywords and Structure SEO Audit** of the provided HTML page content. Evaluate keyword usage within content structure and assess hierarchical organization.
+
+**Audit Focus:**
+- Heading hierarchy (H1-H6) structure and optimization
+- Keyword placement in headings and structure
+- Content organization and logical flow
+- Schema markup for structured data
+- Semantic HTML usage
+- Content accessibility through proper structure
+
+Deliver actionable recommendations to optimize both search engine ranking and user experience through improved content structure.',
       'status' => TRUE,
     ],
   ];
