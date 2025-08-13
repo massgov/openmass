@@ -51,7 +51,7 @@ class AiSeoReportTypeForm extends EntityForm {
       '#type' => 'textarea',
       '#title' => $this->t('AI Prompt'),
       '#default_value' => $ai_seo_report_type->getPrompt(),
-      '#description' => $this->t('The prompt that will be used for AI analysis. Use placeholders like %content_html for dynamic content insertion.'),
+      '#description' => $this->t('The prompt that will be used for AI analysis.'),
       '#required' => TRUE,
       '#rows' => 10,
     ];
