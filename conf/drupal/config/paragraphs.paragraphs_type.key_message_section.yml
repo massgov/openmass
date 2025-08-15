@@ -1,9 +1,16 @@
 uuid: 95d87be3-e119-474f-8a41-aefe7a8e63b4
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - layout_paragraphs
 id: key_message_section
 label: 'Key Message Section'
 icon_uuid: null
+icon_default: null
 description: ''
-behavior_plugins: {  }
+behavior_plugins:
+  layout_paragraphs:
+    enabled: true
+    available_layouts:
+      onecol_mass: 'One column (Mass custom, service sections)'

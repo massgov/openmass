@@ -29,6 +29,7 @@ third_party_settings:
     group_externaldata_edit_form:
       children:
         - group_external_data_resource
+        - group_page_info
       label: 'External link for collections form'
       region: content
       parent_name: ''
@@ -65,6 +66,24 @@ third_party_settings:
         show_empty_fields: false
         id: ''
         formatter: open
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - search
+        - search_nosnippet
+        - simple_sitemap
+      label: 'Page Info'
+      region: content
+      parent_name: group_externaldata_edit_form
+      weight: 1
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
         description: ''
         required_fields: true
 id: node.external_data_resource.default
@@ -271,14 +290,14 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 3
+    weight: 1
     region: content
     settings:
       include_locked: true
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -314,7 +333,7 @@ content:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -328,7 +347,7 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 1
+    weight: 2
     region: content
     settings:
       match_operator: CONTAINS
