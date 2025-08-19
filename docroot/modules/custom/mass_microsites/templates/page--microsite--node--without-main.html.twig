@@ -52,8 +52,7 @@
   "brandBanner": {
     "bgTheme": "dark",
     "bgColor": "c-primary-alt",
-    "hasSeal": true,
-    "hasToggle": true
+    "hasSeal": true
   }
 } %}
 {{ page.emergency_alert }}
@@ -62,34 +61,34 @@
 
 {% set header_class = "" %}
 {% if hide_main_nav %}
-  {% set header_class = ' ma__header--hidden' %}
+	{% set header_class = ' ma__header--hidden' %}
 {% endif %}
-  <header class="ma__header__hamburger{{ header_class }}" id="header">
-    <div class="menu-overlay"></div>
-    <a class="ma__header__hamburger__skip-nav" href="#main-content">
-      {{ 'Skip to main content'|t }}
-    </a>
+<header class="ma__header__hamburger{{ header_class }}" id="header">
+	<div class="menu-overlay"></div>
+	<a class="ma__header__hamburger__skip-nav" href="#main-content">
+		{{ 'Skip to main content'|t }}
+	</a>
 
-    {{ page.header.mass_theme_nearestmicrositemenu_2 }}
+	{{ page.header.mass_theme_nearestmicrositemenu_2 }}
 
-    <div class="ma__header__hamburger__container">
-      <div class="ma__header__hamburger__logo" tabindex="-1">
-        {% include "@atoms/09-media/site-logo.twig" with {
+	<div class="ma__header__hamburger__container">
+		<div class="ma__header__hamburger__logo" tabindex="-1">
+			{% include "@atoms/09-media/site-logo.twig" with {
           title: microsite_info.title,
           url: microsite_info.url,
           altTitle: microsite_info.altTitle,
           hideImage: microsite_info.hideImage,
           sealImage,
         } only %}
-      </div>
-      {% if not search_header_suppression_flag %}
-        <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
-          {% include "@molecules/header-search.twig" %}
-        </div>
-      {% endif %}
-    </div>
+		</div>
+		{% if not search_header_suppression_flag %}
+			<div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
+				{% include "@molecules/header-search.twig" %}
+			</div>
+		{% endif %}
+	</div>
 
-    {{ page.header|without(
+	{{ page.header|without(
       'mainnavigation',
       'mainnavigation_2',
       'mainnavigation_3',
@@ -97,14 +96,14 @@
       'mass_theme_nearestmicrositemenu_2',
     ) }}
 
-    {{ page.header.mass_theme_nearestmicrositemenu }}
-  </header>
+	{{ page.header.mass_theme_nearestmicrositemenu }}
+</header>
 {% block breadcrumb %}
-  {% if page.breadcrumb %}
-    {{ page.breadcrumb }}
-  {% endif %}
+	{% if page.breadcrumb %}
+		{{ page.breadcrumb }}
+	{% endif %}
 {% endblock %}
 {{ page.content }}
 {% if page.footer or page.footer_navigation %}
-  {% include directory ~ "/templates/includes/organisms-footer.html.twig" %}
+	{% include directory ~ "/templates/includes/organisms-footer.html.twig" %}
 {% endif %}
