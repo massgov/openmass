@@ -1570,24 +1570,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         ],
       ];
 
-      if ($mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags)) {
-
-        // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-        $sidebarContacts_options = [
-          'groups' => [
-            'accordion' => FALSE,
-            'isExpanded' => FALSE,
-            'order' => ['online', 'phone', 'fax', 'address', 'more_info'],
-          ],
-        ];
-        // Prepare the sidebarContact data object.
-        $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options, $cache_tags);
-        unset($sideContent['contactList']['compHeading']);
-        $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
-        $sideContent['contactList']['viewSpecific'] = TRUE;
-      }
-
-      $variables['sideContent'] = $sideContent;
+      $mainContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
       $variables['mainContent'] = $mainContent;
     }
 
