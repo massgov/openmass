@@ -8,9 +8,6 @@ dependencies:
     - field.storage.node.field_primary_parent
     - field.storage.node.field_reusable_label
     - taxonomy.vocabulary.label
-    - workflows.workflow.campaign_landing_page
-    - workflows.workflow.editorial
-    - workflows.workflow.topic_page
   module:
     - content_moderation
     - csv_serialization
@@ -24,7 +21,7 @@ dependencies:
     - user
     - views_data_export
 id: advancedsearch
-label: 'Advanced Search'
+label: 'Advanced Search - pages'
 module: views
 description: 'Used for complex filtering'
 tag: ''
@@ -37,7 +34,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Advanced Search - Content'
+      title: 'Advanced Search - Pages'
       fields:
         title:
           id: title
@@ -917,49 +914,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        moderation_state:
-          id: moderation_state
-          table: node_field_revision
-          field: moderation_state
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          plugin_id: moderation_state_filter
-          operator: 'not in'
-          value:
-            campaign_landing_page-trash: campaign_landing_page-trash
-            editorial-trash: editorial-trash
-            topic_page-trash: topic_page-trash
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -1997,9 +1951,25 @@ display:
           entity_field: revision_uid
           plugin_id: standard
           required: false
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: '<p>Includes all content states including "trash".</p>'
+            format: basic_html
+          tokenize: false
       footer: {  }
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
     cache_metadata:
       max-age: -1
       contexts:
