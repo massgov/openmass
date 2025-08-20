@@ -406,6 +406,8 @@ class MassContentCommands extends DrushCommands {
    */
   public function migrateServiceSectionLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+    $log_marker_node = '[LP-MIGRATED-NODE]';
+    $log_marker_rev = '[LP-MIGRATED-REV]';
 
     // Disable entity hierarchy writes for better performance during processing.
     \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
@@ -473,20 +475,23 @@ class MassContentCommands extends DrushCommands {
           $latest_revision = $node_storage->loadRevision($rid);
           if ($latest_revision) {
             if (!$latest_revision->isPublished() && !$latest_revision->isDefaultRevision()) {
-              if ($options['detailed-verbalization']) {
-                $this->output()->writeln("Processing revision {$rid} of node {$nid}.");
-              }
-              // Store a clone for later restoration after node save.
-              $revision_to_restore = clone $latest_revision;
-              // Track orphan paragraphs for cleanup.
-              if ($revision_to_restore->hasField('field_service_sections')) {
-
-                $revision_to_restore = $this->serviceSectionLayoutParagraphHelper($revision_to_restore);
-
-                // At this point, modifications to $latest_revision are in memory.
-                $processed_revisions++;
+              $existing_rev_log = method_exists($latest_revision, 'getRevisionLogMessage') ? (string) $latest_revision->getRevisionLogMessage() : '';
+              if (str_contains($existing_rev_log, $log_marker_rev)) {
                 if ($options['detailed-verbalization']) {
-                  $this->output()->writeln("Processed revision: {$rid} of node: {$nid}");
+                  $this->output()->writeln("⏭️  Skipping unpublished non-default revision {$rid} of node {$nid} (already migrated).");
+                }
+              }
+              else {
+                if ($options['detailed-verbalization']) {
+                  $this->output()->writeln("Processing revision {$rid} of node {$nid}.");
+                }
+                $revision_to_restore = clone $latest_revision;
+                if ($revision_to_restore->hasField('field_service_sections')) {
+                  $revision_to_restore = $this->serviceSectionLayoutParagraphHelper($revision_to_restore);
+                  $processed_revisions++;
+                  if ($options['detailed-verbalization']) {
+                    $this->output()->writeln("Processed revision: {$rid} of node: {$nid}");
+                  }
                 }
               }
             }
@@ -495,6 +500,16 @@ class MassContentCommands extends DrushCommands {
 
         $node = $node_storage->load($nid);
         if (!$node) {
+          continue;
+        }
+
+        // Skip already-processed default revision by checking the unique log marker.
+        $existing_node_log = method_exists($node, 'getRevisionLogMessage') ? (string) $node->getRevisionLogMessage() : '';
+        if (str_contains($existing_node_log, $log_marker_node)) {
+          if ($options['detailed-verbalization']) {
+            $this->output()->writeln("⏭️  Skipping node {$nid} (already migrated).");
+          }
+          \Drupal::state()->set($state_key, $nid);
           continue;
         }
 
@@ -523,7 +538,7 @@ class MassContentCommands extends DrushCommands {
 
           // Explicitly set a new revision and add a revision log message.
           $entity->setNewRevision(TRUE);
-          $entity->setRevisionLogMessage('Migrated layout paragraphs');
+          $entity->setRevisionLogMessage('Migrated layout paragraphs ' . $log_marker_node);
           $entity->save();
 
           $processed_nodes++;
@@ -546,7 +561,7 @@ class MassContentCommands extends DrushCommands {
           }
           $revision_to_restore->setNewRevision(TRUE);
           $revision_to_restore->isDefaultRevision(TRUE);
-          $revision_to_restore->setRevisionLogMessage('Migrated layout paragraphs (restored revision)');
+          $revision_to_restore->setRevisionLogMessage('Migrated layout paragraphs (restored revision) ' . $log_marker_rev);
           $revision_to_restore->setRevisionCreationTime(\Drupal::time()->getRequestTime());
           $revision_to_restore->setChangedTime(\Drupal::time()->getRequestTime());
           // Make sure at least one field has changed.
@@ -683,7 +698,6 @@ class MassContentCommands extends DrushCommands {
             $child_component = new LayoutParagraphsComponent($duplicated_child);
             $child_component->setSettings([
               'parent_uuid' => $section_paragraph->uuid(),
-              'layout' => 'onecol_mass',
               'region' => 'content',
             ]);
             $used_child_ids[$duplicated_child_id] = TRUE;
