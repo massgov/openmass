@@ -406,6 +406,12 @@ class MassContentCommands extends DrushCommands {
    */
   public function migrateServiceSectionLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'detailed-verbalization' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+    $lock = \Drupal::lock();
+    if (!$lock->acquire('mass_content_lp_migration', 3600)) {
+      $this->output()->writeln('Another migration run is active. Exiting.');
+      return;
+    }
+    try {
     $log_marker_node = '[LP-MIGRATED-NODE]';
     $log_marker_rev = '[LP-MIGRATED-REV]';
 
@@ -460,7 +466,9 @@ class MassContentCommands extends DrushCommands {
 
       $node_storage = $this->entityTypeManager->getStorage('node');
 
-      $this->output()->writeln("Processing batch of " . $batch_size * $batch_step . "-" . ($batch_size * $batch_step + $batch_size) . " nodes from $total_nodes");
+      $start_nid = reset($nids);
+      $end_nid = end($nids);
+      $this->output()->writeln("Processing nids {$start_nid}-{$end_nid} (batch size " . count($nids) . ") of {$total_nodes} total after nid {$last_processed_nid}");
 
       // Choose the nodes to process for this batch.
       foreach ($nids as $nid) {
@@ -507,8 +515,48 @@ class MassContentCommands extends DrushCommands {
         $existing_node_log = method_exists($node, 'getRevisionLogMessage') ? (string) $node->getRevisionLogMessage() : '';
         if (str_contains($existing_node_log, $log_marker_node)) {
           if ($options['detailed-verbalization']) {
-            $this->output()->writeln("⏭️  Skipping node {$nid} (already migrated).");
+            $this->output()->writeln("⏭️  Skipping node {$nid} (already migrated). Checking for missing revision restore...");
           }
+
+          // If the latest unpublished, non-default revision lacks the revision marker, restore it now.
+          $probe_rids = $node_storage->getQuery()->accessCheck(FALSE)->condition('nid', $nid)->latestRevision()->execute();
+          if ($probe_rids) {
+            $probe_rid = array_key_first($probe_rids);
+            $probe_rev = $node_storage->loadRevision($probe_rid);
+            if ($probe_rev && !$probe_rev->isPublished() && !$probe_rev->isDefaultRevision()) {
+              $probe_log = method_exists($probe_rev, 'getRevisionLogMessage') ? (string) $probe_rev->getRevisionLogMessage() : '';
+              if (!str_contains($probe_log, $log_marker_rev)) {
+                if ($options['detailed-verbalization']) {
+                  $this->output()->writeln("↪️  Restoring unpublished non-default revision {$probe_rid} for node {$nid} (was missing [LP-MIGRATED-REV]).");
+                }
+                // Transform revision structure and restore it as default.
+                if ($probe_rev->hasField('field_service_sections')) {
+                  $probe_rev = $this->serviceSectionLayoutParagraphHelper($probe_rev);
+                }
+                $layout = new LayoutParagraphsLayout($probe_rev->get('field_service_sections'));
+                foreach ($layout->getComponents() ?? [] as $component) {
+                  $paragraphEntity = $component->getEntity();
+                  $this->logger()->info("✅ Layout component - Paragraph ID: {$paragraphEntity->id()}, Revision ID: {$paragraphEntity->getRevisionId()}, Parent UUID: {$component->getSetting('parent_uuid')}");
+                }
+                $probe_rev->setNewRevision(TRUE);
+                $probe_rev->isDefaultRevision(TRUE);
+                $probe_rev->setRevisionLogMessage('Migrated layout paragraphs (restored revision) ' . $log_marker_rev);
+                $probe_rev->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+                $probe_rev->setChangedTime(\Drupal::time()->getRequestTime());
+                // Ensure a field change.
+                if (method_exists($probe_rev, 'setTitle')) {
+                  $probe_rev->setTitle($probe_rev->getTitle() . ' ');
+                }
+                $probe_rev->save();
+                if ($options['detailed-verbalization']) {
+                  $this->output()->writeln("Restored and set new default revision for node {$nid} (skip repair path).");
+                }
+                // Avoid double-restore later.
+                $revision_to_restore = NULL;
+              }
+            }
+          }
+
           \Drupal::state()->set($state_key, $nid);
           continue;
         }
@@ -615,6 +663,9 @@ class MassContentCommands extends DrushCommands {
 
     $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
     $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
+    } finally {
+      try { \Drupal::lock()->release('mass_content_lp_migration'); } catch (\Throwable $e) {}
+    }
   }
 
   /**
