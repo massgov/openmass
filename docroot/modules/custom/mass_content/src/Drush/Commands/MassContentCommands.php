@@ -412,259 +412,263 @@ class MassContentCommands extends DrushCommands {
       return;
     }
     try {
-    $log_marker_node = '[LP-MIGRATED-NODE]';
-    $log_marker_rev = '[LP-MIGRATED-REV]';
+      $log_marker_node = '[LP-MIGRATED-NODE]';
+      $log_marker_rev = '[LP-MIGRATED-REV]';
 
-    // Disable entity hierarchy writes for better performance during processing.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+      // Disable entity hierarchy writes for better performance during processing.
+      \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
-    $batch_size = (int) $options['batch-size'];
-    $limit = isset($options['limit']) ? (int) $options['limit'] : NULL;
-    // Default to 55 minutes.
-    $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
-    // Use a unique state key based on the published/unpublished condition.
-    $state_key = 'mass_content_deploy.service_page_migration_last_processed_nid';
+      $batch_size = (int) $options['batch-size'];
+      $limit = isset($options['limit']) ? (int) $options['limit'] : NULL;
+      // Default to 55 minutes.
+      $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
+      // Use a unique state key based on the published/unpublished condition.
+      $state_key = 'mass_content_deploy.service_page_migration_last_processed_nid';
 
-    // Get the last processed nid for the selected state key.
-    $last_processed_nid = \Drupal::state()->get($state_key, 0);
-
-    $total_nodes = count($this->entityTypeManager->getStorage('node')->getQuery()
-      ->condition('type', 'service_page')
-      ->condition('nid', $last_processed_nid, '>')
-      ->accessCheck(FALSE)->execute());
-
-    // Record the start time.
-    $start_time = time();
-    $batch_step = 0;
-    $processed_nodes = 0;
-    $processed_revisions = 0;
-    do {
-
-      // Check if max runtime has been exceeded (if set).
-      if ($max_runtime !== NULL && (time() - $start_time) >= $max_runtime * 60) {
-        $this->output()->writeln("Max runtime of {$max_runtime} minutes reached. Stopping execution.");
-        break;
-      }
-
-      // If not processing a specific nid, get the batch as usual.
-      // Get the last processed nid from state.
+      // Get the last processed nid for the selected state key.
       $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
-      // Query all nodes of type 'service_page' starting from the last processed nid.
-      $query = $this->entityTypeManager->getStorage('node')->getQuery()
+      $total_nodes = count($this->entityTypeManager->getStorage('node')->getQuery()
         ->condition('type', 'service_page')
         ->condition('nid', $last_processed_nid, '>')
-        ->accessCheck(FALSE)
-        ->sort('nid')
-        ->range(0, $batch_size);
+        ->accessCheck(FALSE)->execute());
 
-      $nids = $query->execute();
-      if (empty($nids)) {
-        $this->output()->writeln('No more nodes to process.');
-        break;
-      }
+      // Record the start time.
+      $start_time = time();
+      $batch_step = 0;
+      $processed_nodes = 0;
+      $processed_revisions = 0;
+      do {
 
-      $node_storage = $this->entityTypeManager->getStorage('node');
+        // Check if max runtime has been exceeded (if set).
+        if ($max_runtime !== NULL && (time() - $start_time) >= $max_runtime * 60) {
+          $this->output()->writeln("Max runtime of {$max_runtime} minutes reached. Stopping execution.");
+          break;
+        }
 
-      $start_nid = reset($nids);
-      $end_nid = end($nids);
-      $this->output()->writeln("Processing nids {$start_nid}-{$end_nid} (batch size " . count($nids) . ") of {$total_nodes} total after nid {$last_processed_nid}");
+        // If not processing a specific nid, get the batch as usual.
+        // Get the last processed nid from state.
+        $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
-      // Choose the nodes to process for this batch.
-      foreach ($nids as $nid) {
-        $revision_to_restore = NULL;
+        // Query all nodes of type 'service_page' starting from the last processed nid.
+        $query = $this->entityTypeManager->getStorage('node')->getQuery()
+          ->condition('type', 'service_page')
+          ->condition('nid', $last_processed_nid, '>')
+          ->accessCheck(FALSE)
+          ->sort('nid')
+          ->range(0, $batch_size);
 
-        $query = $node_storage->getQuery()->accessCheck(FALSE);
-        $query->condition('nid', $nid);
-        $query->latestRevision();
-        $rids = $query->execute();
-        if ($rids) {
-          $rid = array_key_first($rids);
-          $latest_revision = $node_storage->loadRevision($rid);
-          if ($latest_revision) {
-            if (!$latest_revision->isPublished() && !$latest_revision->isDefaultRevision()) {
-              $existing_rev_log = method_exists($latest_revision, 'getRevisionLogMessage') ? (string) $latest_revision->getRevisionLogMessage() : '';
-              if (str_contains($existing_rev_log, $log_marker_rev)) {
-                if ($options['detailed-verbalization']) {
-                  $this->output()->writeln("⏭️  Skipping unpublished non-default revision {$rid} of node {$nid} (already migrated).");
-                }
-              }
-              else {
-                if ($options['detailed-verbalization']) {
-                  $this->output()->writeln("Processing revision {$rid} of node {$nid}.");
-                }
-                $revision_to_restore = clone $latest_revision;
-                if ($revision_to_restore->hasField('field_service_sections')) {
-                  $revision_to_restore = $this->serviceSectionLayoutParagraphHelper($revision_to_restore);
-                  $processed_revisions++;
+        $nids = $query->execute();
+        if (empty($nids)) {
+          $this->output()->writeln('No more nodes to process.');
+          break;
+        }
+
+        $node_storage = $this->entityTypeManager->getStorage('node');
+
+        $start_nid = reset($nids);
+        $end_nid = end($nids);
+        $this->output()->writeln("Processing nids {$start_nid}-{$end_nid} (batch size " . count($nids) . ") of {$total_nodes} total after nid {$last_processed_nid}");
+
+        // Choose the nodes to process for this batch.
+        foreach ($nids as $nid) {
+          $revision_to_restore = NULL;
+
+          $query = $node_storage->getQuery()->accessCheck(FALSE);
+          $query->condition('nid', $nid);
+          $query->latestRevision();
+          $rids = $query->execute();
+          if ($rids) {
+            $rid = array_key_first($rids);
+            $latest_revision = $node_storage->loadRevision($rid);
+            if ($latest_revision) {
+              if (!$latest_revision->isPublished() && !$latest_revision->isDefaultRevision()) {
+                $existing_rev_log = method_exists($latest_revision, 'getRevisionLogMessage') ? (string) $latest_revision->getRevisionLogMessage() : '';
+                if (str_contains($existing_rev_log, $log_marker_rev)) {
                   if ($options['detailed-verbalization']) {
-                    $this->output()->writeln("Processed revision: {$rid} of node: {$nid}");
+                    $this->output()->writeln("⏭️  Skipping unpublished non-default revision {$rid} of node {$nid} (already migrated).");
+                  }
+                }
+                else {
+                  if ($options['detailed-verbalization']) {
+                    $this->output()->writeln("Processing revision {$rid} of node {$nid}.");
+                  }
+                  $revision_to_restore = clone $latest_revision;
+                  if ($revision_to_restore->hasField('field_service_sections')) {
+                    $revision_to_restore = $this->serviceSectionLayoutParagraphHelper($revision_to_restore);
+                    $processed_revisions++;
+                    if ($options['detailed-verbalization']) {
+                      $this->output()->writeln("Processed revision: {$rid} of node: {$nid}");
+                    }
                   }
                 }
               }
             }
           }
-        }
 
-        $node = $node_storage->load($nid);
-        if (!$node) {
-          continue;
-        }
-
-        // Skip already-processed default revision by checking the unique log marker.
-        $existing_node_log = method_exists($node, 'getRevisionLogMessage') ? (string) $node->getRevisionLogMessage() : '';
-        if (str_contains($existing_node_log, $log_marker_node)) {
-          if ($options['detailed-verbalization']) {
-            $this->output()->writeln("⏭️  Skipping node {$nid} (already migrated). Checking for missing revision restore...");
+          $node = $node_storage->load($nid);
+          if (!$node) {
+            continue;
           }
 
-          // If the latest unpublished, non-default revision lacks the revision marker, restore it now.
-          $probe_rids = $node_storage->getQuery()->accessCheck(FALSE)->condition('nid', $nid)->latestRevision()->execute();
-          if ($probe_rids) {
-            $probe_rid = array_key_first($probe_rids);
-            $probe_rev = $node_storage->loadRevision($probe_rid);
-            if ($probe_rev && !$probe_rev->isPublished() && !$probe_rev->isDefaultRevision()) {
-              $probe_log = method_exists($probe_rev, 'getRevisionLogMessage') ? (string) $probe_rev->getRevisionLogMessage() : '';
-              if (!str_contains($probe_log, $log_marker_rev)) {
-                if ($options['detailed-verbalization']) {
-                  $this->output()->writeln("↪️  Restoring unpublished non-default revision {$probe_rid} for node {$nid} (was missing [LP-MIGRATED-REV]).");
+          // Skip already-processed default revision by checking the unique log marker.
+          $existing_node_log = method_exists($node, 'getRevisionLogMessage') ? (string) $node->getRevisionLogMessage() : '';
+          if (str_contains($existing_node_log, $log_marker_node)) {
+            if ($options['detailed-verbalization']) {
+              $this->output()->writeln("⏭️  Skipping node {$nid} (already migrated). Checking for missing revision restore...");
+            }
+
+            // If the latest unpublished, non-default revision lacks the revision marker, restore it now.
+            $probe_rids = $node_storage->getQuery()->accessCheck(FALSE)->condition('nid', $nid)->latestRevision()->execute();
+            if ($probe_rids) {
+              $probe_rid = array_key_first($probe_rids);
+              $probe_rev = $node_storage->loadRevision($probe_rid);
+              if ($probe_rev && !$probe_rev->isPublished() && !$probe_rev->isDefaultRevision()) {
+                $probe_log = method_exists($probe_rev, 'getRevisionLogMessage') ? (string) $probe_rev->getRevisionLogMessage() : '';
+                if (!str_contains($probe_log, $log_marker_rev)) {
+                  if ($options['detailed-verbalization']) {
+                    $this->output()->writeln("↪️  Restoring unpublished non-default revision {$probe_rid} for node {$nid} (was missing [LP-MIGRATED-REV]).");
+                  }
+                  // Transform revision structure and restore it as default.
+                  if ($probe_rev->hasField('field_service_sections')) {
+                    $probe_rev = $this->serviceSectionLayoutParagraphHelper($probe_rev);
+                  }
+                  $layout = new LayoutParagraphsLayout($probe_rev->get('field_service_sections'));
+                  foreach ($layout->getComponents() ?? [] as $component) {
+                    $paragraphEntity = $component->getEntity();
+                    $this->logger()->info("✅ Layout component - Paragraph ID: {$paragraphEntity->id()}, Revision ID: {$paragraphEntity->getRevisionId()}, Parent UUID: {$component->getSetting('parent_uuid')}");
+                  }
+                  $probe_rev->setNewRevision(TRUE);
+                  $probe_rev->isDefaultRevision(TRUE);
+                  $probe_rev->setRevisionLogMessage('Migrated layout paragraphs (restored revision) ' . $log_marker_rev);
+                  $probe_rev->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+                  $probe_rev->setChangedTime(\Drupal::time()->getRequestTime());
+                  // Ensure a field change.
+                  if (method_exists($probe_rev, 'setTitle')) {
+                    $probe_rev->setTitle($probe_rev->getTitle() . ' ');
+                  }
+                  $probe_rev->save();
+                  if ($options['detailed-verbalization']) {
+                    $this->output()->writeln("Restored and set new default revision for node {$nid} (skip repair path).");
+                  }
+                  // Avoid double-restore later.
+                  $revision_to_restore = NULL;
                 }
-                // Transform revision structure and restore it as default.
-                if ($probe_rev->hasField('field_service_sections')) {
-                  $probe_rev = $this->serviceSectionLayoutParagraphHelper($probe_rev);
-                }
-                $layout = new LayoutParagraphsLayout($probe_rev->get('field_service_sections'));
-                foreach ($layout->getComponents() ?? [] as $component) {
-                  $paragraphEntity = $component->getEntity();
-                  $this->logger()->info("✅ Layout component - Paragraph ID: {$paragraphEntity->id()}, Revision ID: {$paragraphEntity->getRevisionId()}, Parent UUID: {$component->getSetting('parent_uuid')}");
-                }
-                $probe_rev->setNewRevision(TRUE);
-                $probe_rev->isDefaultRevision(TRUE);
-                $probe_rev->setRevisionLogMessage('Migrated layout paragraphs (restored revision) ' . $log_marker_rev);
-                $probe_rev->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-                $probe_rev->setChangedTime(\Drupal::time()->getRequestTime());
-                // Ensure a field change.
-                if (method_exists($probe_rev, 'setTitle')) {
-                  $probe_rev->setTitle($probe_rev->getTitle() . ' ');
-                }
-                $probe_rev->save();
-                if ($options['detailed-verbalization']) {
-                  $this->output()->writeln("Restored and set new default revision for node {$nid} (skip repair path).");
-                }
-                // Avoid double-restore later.
-                $revision_to_restore = NULL;
               }
             }
+
+            \Drupal::state()->set($state_key, $nid);
+            continue;
           }
 
-          \Drupal::state()->set($state_key, $nid);
-          continue;
-        }
+          if ($options['detailed-verbalization']) {
+            $this->output()->writeln("Processing node {$nid}...");
+          }
 
-        if ($options['detailed-verbalization']) {
-          $this->output()->writeln("Processing node {$nid}...");
-        }
+          if ($node->hasField('field_service_sections')) {
 
-        if ($node->hasField('field_service_sections')) {
+            $entity = $this->serviceSectionLayoutParagraphHelper($node);
 
-          $entity = $this->serviceSectionLayoutParagraphHelper($node);
+            // Validate field_service_sections references before save.
+            foreach ($entity->get('field_service_sections') as $delta => $item) {
+              $paragraph = $item->entity;
+              if (!$paragraph || !$paragraph->getRevisionId()) {
+                $this->output()->writeln("❌ Invalid or missing paragraph reference at delta {$delta} (target_id: {$item->target_id}, target_revision_id: {$item->target_revision_id})");
+              }
+            }
 
-          // Validate field_service_sections references before save.
-          foreach ($entity->get('field_service_sections') as $delta => $item) {
-            $paragraph = $item->entity;
-            if (!$paragraph || !$paragraph->getRevisionId()) {
-              $this->output()->writeln("❌ Invalid or missing paragraph reference at delta {$delta} (target_id: {$item->target_id}, target_revision_id: {$item->target_revision_id})");
+            // Rebuild LayoutParagraphsLayout to flush stale component metadata.
+            $layout = new LayoutParagraphsLayout($entity->get('field_service_sections'));
+            foreach ($layout->getComponents() ?? [] as $component) {
+              $paragraphEntity = $component->getEntity();
+              $this->logger()->info("✅ Layout component - Paragraph ID: {$paragraphEntity->id()}, Revision ID: {$paragraphEntity->getRevisionId()}, Parent UUID: {$component->getSetting('parent_uuid')}");
+            }
+
+            // Explicitly set a new revision and add a revision log message.
+            $entity->setNewRevision(TRUE);
+            $entity->setRevisionLogMessage('Migrated layout paragraphs ' . $log_marker_node);
+            $entity->save();
+
+            $processed_nodes++;
+            // Update the state with the last processed nid for the current context.
+            \Drupal::state()->set($state_key, $nid);
+
+            if ($options['detailed-verbalization']) {
+              $this->output()->writeln("Node {$nid} processed successfully.");
             }
           }
 
-          // Rebuild LayoutParagraphsLayout to flush stale component metadata.
-          $layout = new LayoutParagraphsLayout($entity->get('field_service_sections'));
-          foreach ($layout->getComponents() ?? [] as $component) {
-            $paragraphEntity = $component->getEntity();
-            $this->logger()->info("✅ Layout component - Paragraph ID: {$paragraphEntity->id()}, Revision ID: {$paragraphEntity->getRevisionId()}, Parent UUID: {$component->getSetting('parent_uuid')}");
+          // After saving the published node, if there was an unpublished, non-default revision previously processed,
+          // restore it as the default revision.
+          if (isset($revision_to_restore)) {
+            // Rebuild LayoutParagraphsLayout to flush stale component metadata for the revision.
+            $layout = new LayoutParagraphsLayout($revision_to_restore->get('field_service_sections'));
+            foreach ($layout->getComponents() ?? [] as $component) {
+              $paragraphEntity = $component->getEntity();
+              $this->logger()->info("✅ Layout component - Paragraph ID: {$paragraphEntity->id()}, Revision ID: {$paragraphEntity->getRevisionId()}, Parent UUID: {$component->getSetting('parent_uuid')}");
+            }
+            $revision_to_restore->setNewRevision(TRUE);
+            $revision_to_restore->isDefaultRevision(TRUE);
+            $revision_to_restore->setRevisionLogMessage('Migrated layout paragraphs (restored revision) ' . $log_marker_rev);
+            $revision_to_restore->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+            $revision_to_restore->setChangedTime(\Drupal::time()->getRequestTime());
+            // Make sure at least one field has changed.
+            $revision_to_restore->setTitle($revision_to_restore->getTitle() . " ");
+            $revision_to_restore->save();
+            if ($options['detailed-verbalization']) {
+              $this->output()->writeln("Restored and set new default revision for node {$nid}.");
+            }
           }
 
-          // Explicitly set a new revision and add a revision log message.
-          $entity->setNewRevision(TRUE);
-          $entity->setRevisionLogMessage('Migrated layout paragraphs ' . $log_marker_node);
-          $entity->save();
+          // Stop processing if the total processed nodes exceed the limit (if set).
+          if ($limit !== NULL && $processed_nodes >= $limit) {
+            $this->output()->writeln("Reached the defined limit of {$limit} nodes. Stopping execution.");
+            // Exit both foreach and do-while loop.
+            break 2;
+          }
+        }
 
-          $processed_nodes++;
-          // Update the state with the last processed nid for the current context.
-          \Drupal::state()->set($state_key, $nid);
+        $batch_step++;
 
+      } while (!empty($nids));
+
+      // Re-enable entity hierarchy writes after processing.
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
+      // Delete paragraphs that were marked for deletion in tempstore.
+      $tempstore = \Drupal::service('tempstore.private')->get('mass_content');
+      $paragraphs_to_delete = $tempstore->get('paragraphs_to_delete') ?? [];
+      foreach (array_unique($paragraphs_to_delete) as $original_id) {
+        if (!$original_id) {
+          continue;
+        }
+        $paragraph = \Drupal::entityTypeManager()->getStorage('paragraph')->load($original_id);
+        if ($paragraph) {
+          $paragraph->delete();
           if ($options['detailed-verbalization']) {
-            $this->output()->writeln("Node {$nid} processed successfully.");
+            $this->output()->writeln("Paragraph has been deleted {$original_id}.");
           }
         }
+      }
+      $paragraph_ids = array_unique($tempstore->get('paragraphs_to_delete') ?? []);
 
-        // After saving the published node, if there was an unpublished, non-default revision previously processed,
-        // restore it as the default revision.
-        if (isset($revision_to_restore)) {
-          // Rebuild LayoutParagraphsLayout to flush stale component metadata for the revision.
-          $layout = new LayoutParagraphsLayout($revision_to_restore->get('field_service_sections'));
-          foreach ($layout->getComponents() ?? [] as $component) {
-            $paragraphEntity = $component->getEntity();
-            $this->logger()->info("✅ Layout component - Paragraph ID: {$paragraphEntity->id()}, Revision ID: {$paragraphEntity->getRevisionId()}, Parent UUID: {$component->getSetting('parent_uuid')}");
-          }
-          $revision_to_restore->setNewRevision(TRUE);
-          $revision_to_restore->isDefaultRevision(TRUE);
-          $revision_to_restore->setRevisionLogMessage('Migrated layout paragraphs (restored revision) ' . $log_marker_rev);
-          $revision_to_restore->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-          $revision_to_restore->setChangedTime(\Drupal::time()->getRequestTime());
-          // Make sure at least one field has changed.
-          $revision_to_restore->setTitle($revision_to_restore->getTitle() . " ");
-          $revision_to_restore->save();
-          if ($options['detailed-verbalization']) {
-            $this->output()->writeln("Restored and set new default revision for node {$nid}.");
-          }
-        }
+      $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+      $remaining = array_filter($paragraph_ids, function ($id) use ($paragraph_storage) {
+        return (bool) $paragraph_storage->load($id);
+      });
 
-        // Stop processing if the total processed nodes exceed the limit (if set).
-        if ($limit !== NULL && $processed_nodes >= $limit) {
-          $this->output()->writeln("Reached the defined limit of {$limit} nodes. Stopping execution.");
-          // Exit both foreach and do-while loop.
-          break 2;
-        }
+      if (empty($remaining)) {
+        $tempstore->delete('paragraphs_to_delete');
       }
 
-      $batch_step++;
-
-    } while (!empty($nids));
-
-    // Re-enable entity hierarchy writes after processing.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-
-    // Delete paragraphs that were marked for deletion in tempstore.
-    $tempstore = \Drupal::service('tempstore.private')->get('mass_content');
-    $paragraphs_to_delete = $tempstore->get('paragraphs_to_delete') ?? [];
-    foreach (array_unique($paragraphs_to_delete) as $original_id) {
-      if (!$original_id) {
-        continue;
-      }
-      $paragraph = \Drupal::entityTypeManager()->getStorage('paragraph')->load($original_id);
-      if ($paragraph) {
-        $paragraph->delete();
-        if ($options['detailed-verbalization']) {
-          $this->output()->writeln("Paragraph has been deleted {$original_id}.");
-        }
-      }
-    }
-    $paragraph_ids = array_unique($tempstore->get('paragraphs_to_delete') ?? []);
-
-    $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
-    $remaining = array_filter($paragraph_ids, function ($id) use ($paragraph_storage) {
-      return (bool) $paragraph_storage->load($id);
-    });
-
-    if (empty($remaining)) {
-      $tempstore->delete('paragraphs_to_delete');
-    }
-
-    $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
-    $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
+      $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
+      $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
     } finally {
-      try { \Drupal::lock()->release('mass_content_lp_migration'); } catch (\Throwable $e) {}
+      try {
+        \Drupal::lock()->release('mass_content_lp_migration');
+      }
+      catch (\Throwable $e) {
+      }
     }
   }
 
