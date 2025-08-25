@@ -54,7 +54,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
    * dialog’s message list (Claro theme markup).
    */
   public function testServicePageCollectionSearchValidation() {
-    $org_node = $this->createNode([
+    $service_page = $this->createNode([
       'type' => 'service_page',
       'title' => 'Test Service Page ',
       'uid' => $this->user->id(),
@@ -63,7 +63,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
 
     $this->drupalLogin($this->user);
 
-    $this->visit($org_node->toUrl()->toString() . '/edit');
+    $this->visit($service_page->toUrl()->toString() . '/edit');
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
 
@@ -83,14 +83,12 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     // Wait until the component chooser modal is attached to the DOM.
     $this->getSession()->wait(3000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') !== null");
 
-
     $keyMsg = $page->find('css', '.ui-dialog .ui-dialog-content a:contains("Key Message Section")');
     $serviceSection = $page->find('css', '.ui-dialog .ui-dialog-content a:contains("Service Section")');
     $this->assertNotNull($keyMsg, 'Key Message Section option present.');
     $this->assertTrue($keyMsg->isVisible(), 'Key Message Section link is visible.');
     $this->assertNotNull($serviceSection, 'Service Section option present.');
     $this->assertTrue($serviceSection->isVisible(), 'Service Section link is visible.');
-
 
     // Scroll into view and click via JS to avoid toolbar/overlay interception.
     $serviceLink = $page->find('css', '.ui-dialog .ui-dialog-content a.use-ajax[href*="/insert/service_section"]');
@@ -221,7 +219,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertNotNull($errorBox, 'Validation error box is present in the Custom Search modal.');
 
     // Claro renders comma‑separated links to invalid fields; verify expected anchors are present.
-    $linkCollection    = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error a[href^="#edit-field-collection"]');
+    $linkCollection = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error a[href^="#edit-field-collection"]');
     $this->assertNull($linkCollection, 'Validation link for "Collection" present.');
   }
 

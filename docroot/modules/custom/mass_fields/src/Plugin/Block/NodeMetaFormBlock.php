@@ -20,7 +20,7 @@ use Drupal\content_moderation\ModerationInformation;
  *   - Publication state (from Content Moderation)
  *   - Last saved timestamp
  *   - Author with a quick "Contact the author" link (if allowed)
- *   - Node ID
+ *   - Node ID.
  *
  * The block expects a node context and is only visible to users with the
  * 'administer nodes' permission.
