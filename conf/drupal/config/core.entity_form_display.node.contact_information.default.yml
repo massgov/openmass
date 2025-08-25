@@ -27,8 +27,8 @@ third_party_settings:
         - field_ref_address
       label: Address
       region: content
-      parent_name: group_contact
-      weight: 1
+      parent_name: group_contact_titles
+      weight: 7
       format_type: fieldset
       format_settings:
         classes: ''
@@ -37,17 +37,19 @@ third_party_settings:
         required_fields: true
     group_phone_fax_online_email:
       children:
-        - field_ref_phone_number
         - field_ref_links
+        - field_ref_phone_number
         - field_ref_fax_number
-      label: 'Phone / Online Link / Email / Fax'
+      label: 'Online Link (s) / Email / Phone / Fax'
       region: content
-      parent_name: group_contact
-      weight: 2
+      parent_name: group_contact_titles
+      weight: 6
       format_type: fieldset
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
+        label_as_html: false
         description: ''
         required_fields: true
     group_hours_of_operation:
@@ -68,6 +70,8 @@ third_party_settings:
         - field_display_title
         - title
         - field_plain_description
+        - group_phone_fax_online_email
+        - group_contact_address
       label: 'Contact titles'
       region: content
       parent_name: group_contact
@@ -94,8 +98,6 @@ third_party_settings:
     group_contact:
       children:
         - group_contact_titles
-        - group_contact_address
-        - group_phone_fax_online_email
         - group_hours_of_operation
         - field_organizations
         - field_contact_more_info_link
@@ -184,7 +186,7 @@ content:
     third_party_settings: {  }
   field_ref_fax_number:
     type: entity_reference_paragraphs
-    weight: 11
+    weight: 12
     region: content
     settings:
       title: 'Fax Number'
@@ -220,7 +222,7 @@ content:
     third_party_settings: {  }
   field_ref_phone_number:
     type: entity_reference_paragraphs
-    weight: 9
+    weight: 11
     region: content
     settings:
       title: 'Phone Number'
