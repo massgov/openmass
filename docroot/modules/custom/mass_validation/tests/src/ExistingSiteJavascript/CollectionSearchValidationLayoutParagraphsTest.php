@@ -3,17 +3,28 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\node\Entity\Node;
-use Exception;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
- * Tests "All Content" view at admin/content.
+ * End‑to‑end UI test for the Layout Paragraphs workflow on service pages.
+ *
+ * Flow covered:
+ *  1) Open the “Content” tab on the node edit form.
+ *  2) Click the root “Add section” and choose **Service Section**.
+ *  3) Save the “Create new Service Section” modal.
+ *  4) Inside the Service Section region, click **Add section** and choose **Custom Search**.
+ *  5) In the Custom Search modal, submit with missing values and assert validation:
+ *     • For **External search destination (using query string)** – expect errors for
+ *       “Search heading”, “Search site URL”, and “Name for query parameter”.
+ *     • Switch to **Collection** – expect errors for “Search heading” and “Collection”.
+ *
+ * Notes:
+ *  - Uses JS clicks after scrollIntoView to avoid admin toolbar overlays.
+ *  - Scopes all assertions to the active jQuery UI dialog (.ui-dialog...)
+ *    to avoid matching messages elsewhere on the page.
  */
 class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestBase {
 
-  use ScreenShotTrait;
   /**
    * The user to log in and test the functionality.
    *
@@ -36,7 +47,11 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
   }
 
   /**
-   * Assert that the Custom Search paragraph validation works properly on service page nodes.
+   * Validates Custom Search paragraph validation messages within modals.
+   *
+   * The test intentionally submits empty required fields to trigger server‑side
+   * errors and then asserts that the expected error links appear inside the
+   * dialog’s message list (Claro theme markup).
    */
   public function testServicePageCollectionSearchValidation() {
     $org_node = $this->createNode([
@@ -57,8 +72,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
 ");
     $page->find('css', '.horizontal-tab-button a[href="#edit-group-content"]')->click();
 
-    // Assert that the LPB "Add section" anchor exists and is visible (CSS selector).
-    // We key off the LPB builder container and the choose-component href.
+    // Ensure the root LPB “Add section” action exists and is visible.
     $this->getSession()->wait(1500);
     $addSection = $page->find('css', '[data-drupal-selector="edit-field-service-sections-layout-paragraphs-builder"] a.lpb-btn.use-ajax.center.js-lpb-ui[href*="/choose-component"]');
     $this->assertNotNull($addSection, '"Add section" anchor is present after opening Content tab.');
@@ -66,7 +80,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
 
     $addSection->click();
 
-    // Give the modal some time to open fully.
+    // Wait until the component chooser modal is attached to the DOM.
     $this->getSession()->wait(3000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') !== null");
 
 
@@ -78,11 +92,11 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertTrue($serviceSection->isVisible(), 'Service Section link is visible.');
 
 
-    // Click the "Service Section" link inside the chooser modal (CSS only).
+    // Scroll into view and click via JS to avoid toolbar/overlay interception.
     $serviceLink = $page->find('css', '.ui-dialog .ui-dialog-content a.use-ajax[href*="/insert/service_section"]');
     $this->assertNotNull($serviceLink, 'Service Section link found (chooser modal).');
 
-    // Ensure it is in view and click (JS fallback avoids toolbar/overlay interception).
+    // Scroll into view and click via JS to avoid toolbar/overlay interception.
     $this->getSession()->executeScript(
       "(function(){var el=document.querySelector('.ui-dialog .ui-dialog-content a.use-ajax[href*=\"/insert/service_section\"]');if(el){try{el.scrollIntoView({block:\"center\"});}catch(e){} el.click();}})();"
     );
@@ -103,27 +117,25 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertNotNull($newTitle, 'Create Service Section modal title element present.');
     $this->assertStringContainsString('Create new Service Section', $newTitle->getText());
 
-    // Click the Save button in the "Create new Service Section" modal.
-    // Use CSS-only selector based on LPB class names.
+    // In the “Create new Service Section” modal, click Save to create the section container.
     $this->getSession()->wait(2000, "document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save') !== null");
     $saveBtn = $page->find('css', '.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
     $this->assertNotNull($saveBtn, 'Save button present in Create Service Section modal.');
     $this->assertTrue($saveBtn->isVisible(), 'Save button is visible.');
 
-    // Ensure button is in view and click with JS to avoid overlay interceptions.
+    // Scroll into view and click via JS to avoid toolbar/overlay interception.
     $this->getSession()->executeScript(
       "(function(){var el=document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
     );
 
-    // Wait for the modal to close after saving (AJAX request completes).
+    // Wait for the modal to close after the AJAX save completes.
     $this->getSession()->wait(8000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') === null");
 
     // Sanity check: modal should be gone.
     $stillOpen = $page->find('css', 'div.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front');
     $this->assertNull($stillOpen, 'Create Service Section modal closed after Save.');
 
-    // === Open the region-level Add section and choose "Custom Search" ===
-    // Wait for the region Add section button inside the content region.
+    // Inside the new Service Section: open “Add section” and choose “Custom Search”
     $this->getSession()->wait(4000, "document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*=\"choose-component?parent_uuid\"]') !== null");
 
     $regionAddBtn = $page->find('css', '.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*="choose-component?parent_uuid"]');
@@ -135,7 +147,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
       "(function(){var el=document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*=\"choose-component?parent_uuid\"]'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
     );
 
-    // Wait for the component chooser to be visible again.
+    // Wait for the region component chooser modal to render.
     $this->getSession()->wait(5000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front .lpb-component-list') !== null");
 
     // Assert the "Custom Search" option exists.
@@ -148,7 +160,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
       "(function(){var el=document.querySelector('.ui-dialog .lpb-component-list__item.type-collection_search a.use-ajax'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
     );
 
-    // Wait for the Custom Search configuration modal to appear (title usually contains the paragraph label).
+    // Wait for the Custom Search configuration modal (title contains “Custom Search”).
     $this->getSession()->wait(6000, "document.querySelector('.ui-dialog .ui-dialog-title') && document.querySelector('.ui-dialog .ui-dialog-title').textContent.toLowerCase().indexOf('custom search') !== -1");
 
     $csModalTitle = $page->find('css', '.ui-dialog .ui-dialog-title');
@@ -160,21 +172,21 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertNotNull($saveBtn, 'Save button present in Create Service Section modal.');
     $this->assertTrue($saveBtn->isVisible(), 'Save button is visible.');
 
-    // Ensure button is in view and click with JS to avoid overlay interceptions.
+    // Scroll into view and click via JS to avoid toolbar/overlay interception.
     $this->getSession()->executeScript(
       "(function(){var el=document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
     );
-    // Wait for server-side validation and the error message list to render.
+    // Wait for server‑side validation and the error message list to render inside the dialog.
     $this->getSession()->wait(
       6000,
       "document.querySelector('.ui-dialog .messages-list__item.messages.messages--error') !== null"
     );
 
-    // Assert the error container exists in the dialog.
+    // Confirm the dialog’s error message container exists.
     $errorBox = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error');
     $this->assertNotNull($errorBox, 'Validation error box is present in the Custom Search modal.');
 
-    // For External search type, expect links for: Search heading, Search site URL, Name for query parameter.
+    // External type: expect error links for Search heading, Search site URL, and Name for query parameter.
     $linkSearchHeading = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error a[href^="#edit-field-search-heading"]');
     // Be tolerant to minor id variations; match by fragment contains.
     $linkSearchSiteUrl = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error a[href*="search-site-url"]');
@@ -194,25 +206,23 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertNotNull($saveBtn, 'Save button present in Create Service Section modal.');
     $this->assertTrue($saveBtn->isVisible(), 'Save button is visible.');
 
-    // Ensure button is in view and click with JS to avoid overlay interceptions.
+    // Scroll into view and click via JS to avoid toolbar/overlay interception.
     $this->getSession()->executeScript(
       "(function(){var el=document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
     );
-    // Wait for server-side validation and the error message list to render.
+    // Wait for server‑side validation and the error message list to render inside the dialog.
     $this->getSession()->wait(
       6000,
       "document.querySelector('.ui-dialog .messages-list__item.messages.messages--error') !== null"
     );
 
-    // Assert the error container exists in the dialog.
+    // Confirm the dialog’s error message container exists.
     $errorBox = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error');
     $this->assertNotNull($errorBox, 'Validation error box is present in the Custom Search modal.');
 
-    // The Claro theme renders comma-separated links to invalid fields.
-    // Assert both anchors exist: Search heading + Collection.
+    // Claro renders comma‑separated links to invalid fields; verify expected anchors are present.
     $linkCollection    = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error a[href^="#edit-field-collection"]');
     $this->assertNull($linkCollection, 'Validation link for "Collection" present.');
-    $this->captureScreenshot();
   }
 
 }
