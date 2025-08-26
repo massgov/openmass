@@ -1,5 +1,12 @@
 
 
+## [0.448.0] - August 26, 2025
+
+### Changed
+  - DP-40756: Change order of fields on contact content type.
+  
+
+
 ## [0.447.0] - August 19, 2025
 
 ### Changed
