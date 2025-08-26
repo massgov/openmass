@@ -3,13 +3,15 @@ langcode: en
 status: true
 dependencies:
   module:
+    - ai_content_advisor
     - ai_logging
-    - ai_seo
 id: tester
 label: Tester
 weight: 0
 is_admin: null
 permissions:
-  - 'create seo reports'
+  - 'administer ai content advisor'
+  - 'administer ai content advisor report types'
+  - 'create ai content advisor reports'
+  - 'view ai content advisor reports'
   - 'view ai log'
-  - 'view seo reports'
