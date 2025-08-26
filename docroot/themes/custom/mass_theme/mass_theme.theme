@@ -21,6 +21,7 @@ use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mass_content\Entity\Bundle\node\GlossaryBundle;
 use Drupal\mass_utility\RelatedToHelper;
+use Drupal\mass_utility\RenderItemsGrouper;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
@@ -7458,7 +7459,8 @@ function mass_theme_preprocess_paragraph__service_section(array &$variables) {
 
     // 2) Now build service_components from the cleaned list.
     $items = array_values($items);
-    $variables['service_components'] = _mass_theme_group_render_items($items);
+    $grouper = \Drupal::classResolver(RenderItemsGrouper::class);
+    $variables['service_components'] = $grouper->groupRenderItems($items);
     // 3) Prevent Drupal from auto-rendering the old regions.
     unset($variables['content']['regions']['content']);
   }
