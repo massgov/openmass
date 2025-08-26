@@ -400,11 +400,12 @@ class MassContentCommands extends DrushCommands {
    * @option batch-size The number of nodes to process per batch.
    * @option limit The maximum number of nodes to process in this execution. If not set, process all nodes.
    * @option max-runtime The maximum runtime (in minutes) for this command. If not set, process indefinitely
+   * @option unpublished If set, process only nodes whose default revision is unpublished; by default only published nodes are processed.
    * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --max-runtime=55
    * @usage mass-content:migrate-layout-paragraphs --batch-size=50 --limit=1000
    * @aliases mcsplp
    */
-  public function migrateServiceSectionLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'detailed-verbalization' => FALSE]) {
+  public function migrateServiceSectionLayoutParagraphs($options = ['batch-size' => 50, 'limit' => NULL, 'max-runtime' => NULL, 'detailed-verbalization' => FALSE, 'unpublished' => FALSE]) {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
     $lock = \Drupal::lock();
     if (!$lock->acquire('mass_content_lp_migration', 3600)) {
@@ -415,6 +416,12 @@ class MassContentCommands extends DrushCommands {
       $log_marker_node = '[LP-MIGRATED-NODE]';
       $log_marker_rev = '[LP-MIGRATED-REV]';
 
+      // Determine whether to process published or unpublished nodes.
+      $process_unpublished = !empty($options['unpublished']);
+      $this->output()->writeln($process_unpublished
+        ? 'Mode: processing ONLY UNPUBLISHED nodes.'
+        : 'Mode: processing ONLY PUBLISHED nodes.');
+
       // Disable entity hierarchy writes for better performance during processing.
       \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
@@ -423,15 +430,22 @@ class MassContentCommands extends DrushCommands {
       // Default to 55 minutes.
       $max_runtime = isset($options['max-runtime']) ? (int) $options['max-runtime'] : NULL;
       // Use a unique state key based on the published/unpublished condition.
-      $state_key = 'mass_content_deploy.service_page_migration_last_processed_nid';
+      $state_key = $process_unpublished
+        ? 'mass_content_deploy.service_page_migration_last_processed_nid.unpublished'
+        : 'mass_content_deploy.service_page_migration_last_processed_nid.published';
 
       // Get the last processed nid for the selected state key.
       $last_processed_nid = \Drupal::state()->get($state_key, 0);
 
       $total_nodes = count($this->entityTypeManager->getStorage('node')->getQuery()
         ->condition('type', 'service_page')
+        ->condition('status', $process_unpublished ? 0 : 1)
         ->condition('nid', $last_processed_nid, '>')
-        ->accessCheck(FALSE)->execute());
+        ->accessCheck(FALSE)
+        ->execute());
+
+      // High-resolution timer for progress and summary stats.
+      $run_started_at = microtime(TRUE);
 
       // Record the start time.
       $start_time = time();
@@ -453,6 +467,7 @@ class MassContentCommands extends DrushCommands {
         // Query all nodes of type 'service_page' starting from the last processed nid.
         $query = $this->entityTypeManager->getStorage('node')->getQuery()
           ->condition('type', 'service_page')
+          ->condition('status', $process_unpublished ? 0 : 1)
           ->condition('nid', $last_processed_nid, '>')
           ->accessCheck(FALSE)
           ->sort('nid')
@@ -468,7 +483,29 @@ class MassContentCommands extends DrushCommands {
 
         $start_nid = reset($nids);
         $end_nid = end($nids);
-        $this->output()->writeln("Processing nids {$start_nid}-{$end_nid} (batch size " . count($nids) . ") of {$total_nodes} total after nid {$last_processed_nid}");
+        // Enhanced batch progress logging with ETA and throughput.
+        $done = $processed_nodes; // nodes completed so far in this run
+        $pct = $total_nodes ? round(($done / $total_nodes) * 100, 1) : 0.0;
+        $elapsed = microtime(TRUE) - $run_started_at;
+        $rate_per_sec = $elapsed > 0 ? $done / $elapsed : 0.0;
+        $eta_secs = $rate_per_sec > 0 ? max(0, ($total_nodes - $done) / $rate_per_sec) : 0;
+        $elapsed_str = gmdate('H:i:s', (int) $elapsed);
+        $eta_str = $rate_per_sec > 0 ? gmdate('H:i:s', (int) $eta_secs) : 'N/A';
+        $rate_per_min = $rate_per_sec * 60;
+        $this->output()->writeln(sprintf(
+          'Batch #%d | NIDs %d-%d (size %d) | %d/%d (%.1f%%) | elapsed %s | ETA %s | rate %.2f nodes/min | mode: %s',
+          $batch_step + 1,
+          $start_nid,
+          $end_nid,
+          count($nids),
+          $done,
+          $total_nodes,
+          $pct,
+          $elapsed_str,
+          $eta_str,
+          $rate_per_min,
+          $process_unpublished ? 'unpublished' : 'published'
+        ));
 
         // Choose the nodes to process for this batch.
         foreach ($nids as $nid) {
@@ -628,6 +665,9 @@ class MassContentCommands extends DrushCommands {
           }
         }
 
+        // Reset static caches and free memory between batches.
+        drupal_static_reset();
+        \Drupal::entityTypeManager()->clearCachedDefinitions();
         $batch_step++;
 
       } while (!empty($nids));
@@ -638,29 +678,54 @@ class MassContentCommands extends DrushCommands {
       // Delete paragraphs that were marked for deletion in tempstore.
       $tempstore = \Drupal::service('tempstore.private')->get('mass_content');
       $paragraphs_to_delete = $tempstore->get('paragraphs_to_delete') ?? [];
-      foreach (array_unique($paragraphs_to_delete) as $original_id) {
+      $unique_to_delete = array_unique($paragraphs_to_delete);
+      $total_to_delete = count($unique_to_delete);
+
+      if ($total_to_delete > 0) {
+        $this->output()->writeln(sprintf('Deleting %d paragraphs queued during migration…', $total_to_delete));
+      }
+
+      $deleted_count = 0;
+      $missing_count = 0;
+      foreach ($unique_to_delete as $original_id) {
         if (!$original_id) {
           continue;
         }
         $paragraph = \Drupal::entityTypeManager()->getStorage('paragraph')->load($original_id);
         if ($paragraph) {
           $paragraph->delete();
+          $deleted_count++;
           if ($options['detailed-verbalization']) {
-            $this->output()->writeln("Paragraph has been deleted {$original_id}.");
+            $this->output()->writeln("Deleted paragraph ID: {$original_id}");
+          } elseif ($deleted_count % 50 === 0) {
+            // Print a lightweight heartbeat every 50 deletions.
+            $this->output()->writeln(sprintf('… %d/%d old paragraphs deleted', $deleted_count, $total_to_delete));
           }
         }
+        else {
+          $missing_count++;
+        }
       }
-      $paragraph_ids = array_unique($tempstore->get('paragraphs_to_delete') ?? []);
 
+      // Recompute remaining (paranoid check) and clear the tempstore if all gone.
+      $paragraph_ids = array_unique($tempstore->get('paragraphs_to_delete') ?? []);
       $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
       $remaining = array_filter($paragraph_ids, function ($id) use ($paragraph_storage) {
         return (bool) $paragraph_storage->load($id);
       });
 
+      if ($total_to_delete > 0) {
+        $this->output()->writeln(sprintf('Paragraph deletion summary: %d deleted, %d missing, %d remaining.', $deleted_count, $missing_count, count($remaining)));
+      }
+
       if (empty($remaining)) {
         $tempstore->delete('paragraphs_to_delete');
       }
 
+      // Print overall duration and average rate before summary.
+      $duration = microtime(TRUE) - $run_started_at;
+      $avg_rate = ($duration > 0) ? ($processed_nodes / ($duration / 60)) : 0.0;
+      $this->output()->writeln(sprintf('Run time: %s | Avg rate: %.2f nodes/min', gmdate('H:i:s', (int) $duration), $avg_rate));
       $this->output()->writeln("Processed a total of {$processed_nodes} nodes. Last processed nid is: " . \Drupal::state()->get($state_key));
       $this->output()->writeln(t('Processed @count latest revisions.', ['@count' => $processed_revisions]));
     } finally {
