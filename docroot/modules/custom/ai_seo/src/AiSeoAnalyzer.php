@@ -225,7 +225,9 @@ class AiSeoAnalyzer {
 
       if (!empty($result)) {
         // Save results.
-        $this->saveReport($result, $prompt, $url, $entity_type_id, $entity_id, $revision_id, $langcode, $options);
+        $divider = str_repeat('=', 90);
+        $html_analyzed = "Full HTML:\n" . $divider . "\n" . $html . "\n" . "Cleaned HTML:\n" . $divider . "\n\n" . $cleaned_html;
+        $this->saveReport($result, $prompt, $html_analyzed, $url, $entity_type_id, $entity_id, $revision_id, $langcode, $options);
 
         $this->messenger->addStatus($this->t('Report generated successfully'));
         $this->logger->notice($this->t('SEO report generated for URL: %url', [
@@ -281,6 +283,8 @@ class AiSeoAnalyzer {
    *   The SEO analysis report to be saved.
    * @param string $prompt
    *   The prompt used.
+   * @param string $html_analyzed
+   *   The HTML content analyzed.
    * @param string $url
    *   The URL the report was generated from.
    * @param string $entity_type_id
@@ -297,7 +301,7 @@ class AiSeoAnalyzer {
    * @return int
    *   The unique identifier (ID) of the inserted report record.
    */
-  protected function saveReport(string $report, string $prompt, string $url = NULL, string $entity_type_id = NULL, int $entity_id = NULL, int $revision_id = NULL, string $langcode = NULL, array $options = []) {
+  protected function saveReport(string $report, string $prompt, string $html_analyzed, string $url = NULL, string $entity_type_id = NULL, int $entity_id = NULL, int $revision_id = NULL, string $langcode = NULL, array $options = []) {
     // Obtain the current time as a Unix timestamp.
     $timestamp = \Drupal::time()->getRequestTime();
 
@@ -319,6 +323,7 @@ class AiSeoAnalyzer {
         'report' => $report,
         'report_type' => $report_type,
         'prompt' => $prompt,
+        'html_analyzed' => $html_analyzed,
         'timestamp' => $timestamp,
       ])
       ->execute();
@@ -338,7 +343,7 @@ class AiSeoAnalyzer {
   public function getReports(int $entity_id) {
     // Query the 'ai_seo' table for reports with the given nid.
     $query = $this->connection->select('ai_seo', 'o')
-      ->fields('o', ['rid', 'entity_type_id', 'entity_id', 'revision_id', 'uid', 'report', 'report_type', 'prompt', 'timestamp'])
+      ->fields('o', ['rid', 'entity_type_id', 'entity_id', 'revision_id', 'uid', 'report', 'report_type', 'prompt', 'html_analyzed', 'timestamp'])
       ->condition('entity_id', $entity_id)
       ->orderBy('rid', 'DESC')
       ->execute();
@@ -364,6 +369,7 @@ class AiSeoAnalyzer {
         'report' => $report,
         'report_type' => $record->report_type,
         'prompt' => $record->prompt,
+        'html_analyzed' => $record->html_analyzed ?? '',
         'timestamp' => $record->timestamp,
       ];
     }

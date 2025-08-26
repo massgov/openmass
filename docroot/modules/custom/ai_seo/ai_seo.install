@@ -72,6 +72,12 @@ function ai_seo_schema() {
         'not null' => FALSE,
         'description' => "Prompt used to generate this report",
       ],
+      'html_analyzed' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+        'description' => "HTML content analyzed for this report",
+      ],
       'timestamp' => [
         'type' => 'int',
         'not null' => TRUE,
@@ -152,5 +158,24 @@ function ai_seo_update_10304() {
   if ($config->get('custom_prompt') !== NULL) {
     $config->clear('custom_prompt');
     $config->save();
+  }
+}
+
+/**
+ * Add html_analyzed column to ai_seo table.
+ */
+function ai_seo_update_10305() {
+  $database = \Drupal::database();
+
+  $spec_html_analyzed = [
+    'type' => 'text',
+    'size' => 'big',
+    'not null' => FALSE,
+    'description' => "HTML content analyzed for this report",
+  ];
+
+  // Add the new 'html_analyzed' column if it does not exist.
+  if (!$database->schema()->fieldExists('ai_seo', 'html_analyzed')) {
+    $database->schema()->addField('ai_seo', 'html_analyzed', $spec_html_analyzed);
   }
 }

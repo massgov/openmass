@@ -267,6 +267,16 @@ class AnalyzeNodeForm extends FormBase {
         '#readonly' => TRUE,
         '#value' => $previous_reports[0]['prompt'],
       ];
+
+      $form['container']['reports']['html_analyzed'] = [
+        '#type' => 'textarea',
+        '#title' => 'HTML Analyzed',
+        '#disabled' => TRUE,
+        '#readonly' => TRUE,
+        '#value' => $previous_reports[0]['html_analyzed'] ?? '',
+        '#description' => $this->t('HTML analyzed for this report. Contains 2 versions of HTML: "Full HTML" with tags as it was received by from Drupal, and "Cleaned HTML" after internal processing needed before sending to the selected Chat.'),
+        '#rows' => 10,
+      ];
     }
 
     $report_count = count($previous_reports);
@@ -331,6 +341,15 @@ class AnalyzeNodeForm extends FormBase {
           '#disabled' => TRUE,
           '#readonly' => TRUE,
           '#value' => $previous_reports[$i]['prompt'],
+        ];
+
+        $form['container']['older_reports']['report_' . $i]['html_analyzed'] = [
+          '#type' => 'textarea',
+          '#title' => 'HTML Analyzed',
+          '#disabled' => TRUE,
+          '#readonly' => TRUE,
+          '#value' => $previous_reports[$i]['html_analyzed'] ?? '',
+          '#rows' => 10,
         ];
       }
     }
@@ -518,13 +537,13 @@ class AnalyzeNodeForm extends FormBase {
    */
   private function getReportTypes() {
     $options = [];
-    
+
     try {
       /** @var \Drupal\ai_seo\Entity\AiSeoReportType[] $report_types */
       $report_types = $this->entityTypeManager
         ->getStorage('ai_seo_report_type')
         ->loadByProperties(['status' => TRUE]);
-        
+
       foreach ($report_types as $report_type) {
         $options[$report_type->id()] = $report_type->label();
       }
@@ -538,7 +557,7 @@ class AnalyzeNodeForm extends FormBase {
         'headings_and_structure' => $this->t('Headings and Structure'),
       ];
     }
-    
+
     return $options;
   }
 
@@ -555,7 +574,7 @@ class AnalyzeNodeForm extends FormBase {
       $report_type_entity = $this->entityTypeManager
         ->getStorage('ai_seo_report_type')
         ->load($report_type);
-        
+
       if ($report_type_entity && $report_type_entity->status()) {
         return $report_type_entity->getPrompt();
       }
