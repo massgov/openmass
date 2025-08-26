@@ -1,0 +1,7 @@
+services:
+  ai_content_advisor.service:
+    class: Drupal\ai_content_advisor\AiContentAdvisorAnalyzer
+    arguments: ['@ai.provider', '@database', '@config.factory', '@entity_type.manager', '@http_client', '@ai_content_advisor.render_entity_html', '@logger.factory', '@messenger']
+  ai_content_advisor.render_entity_html:
+    class: Drupal\ai_content_advisor\RenderEntityHtmlService
+    arguments: ['@entity_type.manager', '@request_stack', '@main_content_renderer.html', '@router.route_provider', '@html_response.attachments_processor', '@kernel', '@logger.factory', '@messenger', '@account_switcher', '@current_user']

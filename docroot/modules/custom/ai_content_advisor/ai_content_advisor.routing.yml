@@ -1,0 +1,62 @@
+ai_content_advisor.settings:
+  path: '/admin/config/ai/content-advisor'
+  defaults:
+    _form: '\Drupal\ai_content_advisor\Form\ConfigurationForm'
+    _title_callback: '\Drupal\ai_content_advisor\Form\ConfigurationForm::getTitle'
+  requirements:
+    _permission: 'administer ai content advisor'
+  options:
+    _admin_route: TRUE
+
+entity.ai_content_advisor_report_type.collection:
+  path: '/admin/config/ai-content-advisor/report-types'
+  defaults:
+    _entity_list: 'ai_content_advisor_report_type'
+    _title: 'AI Content Advisor Report Types'
+  requirements:
+    _permission: 'administer ai content advisor report types'
+  options:
+    _admin_route: TRUE
+
+entity.ai_content_advisor_report_type.add_form:
+  path: '/admin/config/ai-content-advisor/report-types/add'
+  defaults:
+    _entity_form: 'ai_content_advisor_report_type.add'
+    _title: 'Add AI Content Advisor Report Type'
+  requirements:
+    _permission: 'administer ai content advisor report types'
+  options:
+    _admin_route: TRUE
+
+entity.ai_content_advisor_report_type.edit_form:
+  path: '/admin/config/ai-content-advisor/report-types/{ai_content_advisor_report_type}/edit'
+  defaults:
+    _entity_form: 'ai_content_advisor_report_type.edit'
+    _title_callback: '\Drupal\Core\Entity\Controller\EntityController::editTitle'
+  requirements:
+    _permission: 'administer ai content advisor report types'
+  options:
+    _admin_route: TRUE
+
+entity.ai_content_advisor_report_type.delete_form:
+  path: '/admin/config/ai-content-advisor/report-types/{ai_content_advisor_report_type}/delete'
+  defaults:
+    _entity_form: 'ai_content_advisor_report_type.delete'
+    _title: 'Delete'
+  requirements:
+    _permission: 'administer ai content advisor report types'
+  options:
+    _admin_route: TRUE
+
+entity.node.content_analyzer:
+  path: '/node/{node}/content-advisor'
+  defaults:
+    _title_callback: '\Drupal\ai_content_advisor\Controller\AnalyzeContentController::getTitle'
+    _controller: '\Drupal\ai_content_advisor\Controller\AnalyzeContentController::printReport'
+  requirements:
+    _permission: 'view ai content advisor reports'
+  options:
+    _admin_route: TRUE
+    parameters:
+      node:
+        type: entity:node
