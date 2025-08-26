@@ -7360,64 +7360,6 @@ function _mass_theme_paragraphs_sections_check_wrapping_field($paragraph, array 
 }
 
 /**
- * Preprocess paragraph sections from services and organizations.
- */
-function _mass_theme_group_render_items(array $paragraphs) {
-  // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
-  $contained = ['rich_text'];
-
-  $components = [];
-  /** @var \Drupal\paragraphs\Entity\Paragraph */
-
-  for ($i = 0; $i < count($paragraphs); $i++) {
-    $component = [];
-    // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
-    if (_mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i]['#paragraph'], $wrap_fields)) {
-      $items = [];
-      do {
-        if (isset($paragraphs[$i]['#paragraph'])) {
-          $items[] = $paragraphs[$i]['#paragraph'];
-        }
-
-        $i++;
-        // Keep grouping together while the next element has the check.
-      } while (isset($paragraphs[$i]['#paragraph']) && _mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i]['#paragraph'], $wrap_fields));
-
-      // Once done, also group the following one.
-      if (isset($paragraphs[$i]['#paragraph'])) {
-        $items[] = $paragraphs[$i]['#paragraph'];
-      }
-
-      $component = ['group' => 'default', 'items' => $items];
-    }
-    // There are some special paragraphs that should have a right margin.
-    elseif (in_array($paragraphs[$i]['#paragraph']->getType(), $contained) !== FALSE) {
-      $component = [
-        'group' => 'contained',
-        'items' => $paragraphs[$i]['#paragraph']
-      ];
-    }
-    // Otherwise, if it's one of the following paragraphs, wrap it as well.
-    elseif (in_array($paragraphs[$i]['#paragraph']->getType(), $wrap_paragraphs) !== FALSE) {
-      $component = [
-        'group' => 'self',
-        'items' => $paragraphs[$i]['#paragraph']
-      ];
-    }
-
-    else {
-      // Otherwise, just return it as it is.
-      $component[] = $paragraphs[$i]['#paragraph'];
-    }
-
-    $components[] = $component;
-  }
-  return $components;
-}
-
-/**
  * Implements hook_preprocess_paragraph__service_section().
  */
 function mass_theme_preprocess_paragraph__service_section(array &$variables) {
