@@ -484,7 +484,8 @@ class MassContentCommands extends DrushCommands {
         $start_nid = reset($nids);
         $end_nid = end($nids);
         // Enhanced batch progress logging with ETA and throughput.
-        $done = $processed_nodes; // nodes completed so far in this run
+        // nodes completed so far in this run
+        $done = $processed_nodes;
         $pct = $total_nodes ? round(($done / $total_nodes) * 100, 1) : 0.0;
         $elapsed = microtime(TRUE) - $run_started_at;
         $rate_per_sec = $elapsed > 0 ? $done / $elapsed : 0.0;
@@ -697,7 +698,8 @@ class MassContentCommands extends DrushCommands {
           $deleted_count++;
           if ($options['detailed-verbalization']) {
             $this->output()->writeln("Deleted paragraph ID: {$original_id}");
-          } elseif ($deleted_count % 50 === 0) {
+          }
+          elseif ($deleted_count % 50 === 0) {
             // Print a lightweight heartbeat every 50 deletions.
             $this->output()->writeln(sprintf('… %d/%d old paragraphs deleted', $deleted_count, $total_to_delete));
           }
