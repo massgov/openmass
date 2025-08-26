@@ -6,10 +6,11 @@
     }
   }
 } %}
-
-  {% block binderSection %}
-    {% for item in items %}
-      {{ item.content }}
-    {% endfor %}
-  {% endblock %}
+	{% block binderSection %}
+		{% for item in items %}
+			{% set item_content = item.content|render %}
+			{% set modified_content = item_content|replace({'<li>': '<li class="ma__toc--hierarchy__link">'}, 1) %}
+			{{ modified_content|raw }}
+		{% endfor %}
+	{% endblock %}
 {% endembed %}
