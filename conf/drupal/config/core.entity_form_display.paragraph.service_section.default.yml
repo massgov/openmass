@@ -15,14 +15,13 @@ dependencies:
     - conditional_fields
     - field_group
     - link
-    - paragraphs
 third_party_settings:
   field_group:
     group_section_cont:
       children:
         - field_service_section_content
       label: 'Section content'
-      region: content
+      region: hidden
       parent_name: ''
       weight: 6
       format_type: details
@@ -38,39 +37,56 @@ targetEntityType: paragraph
 bundle: service_section
 mode: default
 content:
-  field_hide_heading:
-    type: boolean_checkbox
-    weight: 1
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   field_section_style:
     type: options_buttons
     weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_service_section_content:
-    type: entity_reference_paragraphs
-    weight: 1
-    region: content
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: closed
-      add_mode: button
-      form_display_mode: media_caption_and_display
-      default_paragraph_type: _none
-    third_party_settings: {  }
   field_service_section_heading:
     type: string_textfield
-    weight: 0
+    weight: 1
     region: content
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        aa137592-c807-411b-893c-69d8809b7a9f:
+          entity_type: paragraph
+          bundle: service_section
+          dependee: field_section_style
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: simple
+            effect: show
+            effect_options: {  }
+            selector: ''
+        e84d865b-d3bf-47b9-9b9a-ed0e9d8cd0c2:
+          entity_type: paragraph
+          bundle: service_section
+          dependee: field_two_column
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: 1
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_service_section_link:
     type: link_default
     weight: 5
@@ -96,6 +112,13 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
+  layout_paragraphs_fields:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
 hidden:
   created: true
+  field_hide_heading: true
+  field_service_section_content: true
   status: true
