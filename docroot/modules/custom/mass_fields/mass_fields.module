@@ -780,7 +780,7 @@ function mass_fields_field_group_form_process_build_alter(array &$element, FormS
           $complete_form['revision']['#weight'] = '-100';
         }
         if (isset($complete_form['revision_log'])) {
-          $complete_form['revision_log']['#group'] = $target_group;
+          $complete_form['revision_log']['#group'] = 'footer';
           $complete_form['revision_log']['#weight'] = '-99';
         }
         if (isset($complete_form['search_status'])) {
