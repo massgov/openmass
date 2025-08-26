@@ -188,16 +188,21 @@ class RenderEntityHtmlService {
       return NULL;
     }
 
-    $viewBuilder = $this->entityTypeManager->getViewBuilder($entity_type_id);
-    $build = $viewBuilder->view($entity, $view_mode);
-
     // Check whether to request as anonymous.
     $request_as_anonymous = $options['request_as_anonymous'] ?? TRUE;
 
-    // Switch to the anonymous user.
+    // Switch to the anonymous user BEFORE view building to ensure proper permissions and theme.
     if ($request_as_anonymous) {
       $this->accountSwitcher->switchTo(new AnonymousUserSession());
+
+      // Force default theme (not admin theme) for anonymous requests.
+      $default_theme = \Drupal::config('system.theme')->get('default');
+      $active_theme = \Drupal::service('theme.initialization')->getActiveThemeByName($default_theme);
+      \Drupal::theme()->setActiveTheme($active_theme);
     }
+
+    $viewBuilder = $this->entityTypeManager->getViewBuilder($entity_type_id);
+    $build = $viewBuilder->view($entity, $view_mode);
 
     try {
       // Get the URL to either revision or full node.
@@ -211,7 +216,14 @@ class RenderEntityHtmlService {
       $included_cookies = !$request_as_anonymous ? $current_request->cookies->all() : [];
 
       // Create the request manually so that we fetch the right.
-      $request = Request::create($url, 'GET', [], $included_cookies, [], $current_request->server->all());
+      $server_vars = $current_request->server->all();
+
+      // Remove authentication-related headers for anonymous requests.
+      if ($request_as_anonymous) {
+        unset($server_vars['HTTP_AUTHORIZATION'], $server_vars['PHP_AUTH_USER'], $server_vars['PHP_AUTH_PW']);
+      }
+
+      $request = Request::create($url, 'GET', [], $included_cookies, [], $server_vars);
 
       if (!$request_as_anonymous) {
         $request->setSession($current_request->getSession());
@@ -242,6 +254,10 @@ class RenderEntityHtmlService {
       if ($request_as_anonymous) {
         // Revert back to the original user.
         $this->accountSwitcher->switchBack();
+
+        $admin_theme = \Drupal::config('system.theme')->get('admin');
+        $active_theme = \Drupal::service('theme.initialization')->getActiveThemeByName($admin_theme);
+        \Drupal::theme()->setActiveTheme($active_theme);
       }
     }
 
