@@ -21,7 +21,7 @@ class AnalyzeContentController extends ControllerBase {
    * Page title.
    */
   public function getTitle() {
-    return $this->t('Analyze Content');
+    return $this->t('Analyze Content with AI');
   }
 
 }

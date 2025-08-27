@@ -37,7 +37,7 @@ function ai_content_advisor_contextual_links_view_alter(&$element, $items) {
       $url = Url::fromRoute('entity.node.content_analyzer', $url_params);
 
       $element['#links']['ai_content_advisor'] = [
-        'title' => t('Analyze Content'),
+        'title' => t('Analyze Content with AI'),
         'url'   => $url,
       ];
     }
@@ -67,7 +67,7 @@ function ai_content_advisor_entity_operation(EntityInterface $entity) {
     $url = Url::fromRoute('entity.node.content_analyzer', $url_params, $url_options);
 
     $operations['ai_content_advisor'] = [
-      'title'  => t('Analyze Content'),
+      'title'  => t('Analyze Content with AI'),
       'url'    => $url,
       'weight' => 100,
     ];
