@@ -625,6 +625,8 @@ class MassContentCommands extends DrushCommands {
             // Explicitly set a new revision and add a revision log message.
             $entity->setNewRevision(TRUE);
             $entity->setRevisionLogMessage('Migrated layout paragraphs ' . $log_marker_node);
+            $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+            $entity->setChangedTime(\Drupal::time()->getRequestTime());
             $entity->save();
 
             $processed_nodes++;
