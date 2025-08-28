@@ -2050,4 +2050,58 @@ class Molecules {
     return $headerTags;
   }
 
+  /**
+   * Returns the variables structure required to render an Inline Links.
+   *
+   * @param array $items
+   *   Items of the list.
+   * @param array $options
+   *   'ariaLabel' receives an optional aria-label to show.
+   *
+   * @see @molecules/inline-links-language.twig
+   *
+   * @return array
+   *   Returns a structured array of inline links with language info.
+   */
+  public static function prepareInlineLinksForLanguages(array $items, array $options) {
+    $links = [];
+
+    // Create the links data structure.
+    foreach ($items as $item) {
+      $link_data = [
+        'text' => $item['title'],
+        'href' => $item['url'],
+        'lang_label' => $item['lang_label'],
+      ];
+
+      // Add accessibility attributes if they exist
+      if (isset($item['translation_id'])) {
+        $link_data['translation_id'] = $item['translation_id'];
+      }
+
+      if (isset($item['document_id'])) {
+        $link_data['document_id'] = $item['document_id'];
+      }
+
+      $links[] = $link_data;
+    }
+
+    if ($links) {
+      $result = [
+        'ariaLabel' => $options['ariaLabel'],
+        'links' => $links,
+      ];
+
+      // Pass through document_id from options if provided
+      if (isset($options['document_id'])) {
+        $result['document_id'] = $options['document_id'];
+      }
+
+      return $result;
+    }
+    else {
+      return [];
+    }
+  }
+
 }
