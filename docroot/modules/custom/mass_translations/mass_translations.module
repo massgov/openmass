@@ -17,7 +17,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\mass_translations\ClassResolverAttachIframeTranslationLibrary;
 use Drupal\mass_translations\Controller\TranslationsController;
-use Drupal\mayflower\Prepare\Organisms;
+use Drupal\mayflower\Prepare\Molecules;
 use Drupal\media\MediaInterface;
 use Drupal\node\NodeInterface;
 
@@ -100,7 +100,7 @@ function _mass_translations_media_helper(array &$variables) {
     }
   }
   if (count($languages) >= 1) {
-    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, [
+    $inlineLinks = Molecules::prepareInlineLinksForLanguages($languages, [
       "ariaLabel" => "Available Translations",
       "document_id" => $document_id . '-title',
       "document_title" => $document_title
@@ -173,7 +173,7 @@ function mass_translations_preprocess_node(&$variables) {
     }
 
     if (count($languages) > 1) {
-      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
+      $inlineLinks = Molecules::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
       $variables += ["translationLinks" => $inlineLinks];
     }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
