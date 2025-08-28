@@ -687,8 +687,6 @@ class Organisms {
     }
   }
 
-
-
   /**
    * Returns the variables structure required to render an Inline Links.
    *
