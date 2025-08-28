@@ -141,28 +141,29 @@ function mayflower_library_info_build() {
 function mayflower_preprocess_paragraph__contact_placeholder(&$variables) {
   $cache_tags = [];
   $paragraph = $variables['paragraph'];
-  $node = Helper::getParentNode($paragraph);
+  if ($node = Helper::getParentNode($paragraph)) {
 
-  // Prepare the Contact Us field, if it's populated.
-  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
-    // Set up options for contact list.
-    $contact_list_options = [
-      'heading' => [
-        'title' => '',
-      ],
-      'groups' => [
-        'accordion' => TRUE,
-        'isExpanded' => FALSE,
-      ],
-    ];
+    // Prepare the Contact Us field, if it's populated.
+    if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
+      // Set up options for contact list.
+      $contact_list_options = [
+        'heading' => [
+          'title' => '',
+        ],
+        'groups' => [
+          'accordion' => TRUE,
+          'isExpanded' => FALSE,
+        ],
+      ];
 
-    // Prepare the contactList data object.
-    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
-    // Bubble cache tag to the current render. Based on template_preprocess_pager()
-    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    CacheableMetadata::createFromRenderArray($variables)
-      ->addCacheTags($cache_tags)
-      ->applyTo($variables);
+      // Prepare the contactList data object.
+      $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
+        ->applyTo($variables);
+    }
   }
 }
 
@@ -575,11 +576,12 @@ function mayflower_preprocess_paragraph__social_media(&$variables) {
       }
     }
   }
-  $node = Helper::getParentNode($paragraph);
-  $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
-  $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
-    $node->$social_field_name->view() : [];
-  $variables['level'] = $level;
+  if ($node = Helper::getParentNode($paragraph)) {
+    $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
+    $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
+      $node->$social_field_name->view() : [];
+    $variables['level'] = $level;
+  }
 }
 
 /**
