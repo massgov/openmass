@@ -1,107 +1,143 @@
-(function ($, Drupal, window) {
+(function ($, Drupal) {
   "use strict";
 
-  /**
-   * Check if browser zoom is above 150%
-   */
-  function isZoomAbove150() {
-    const zoomLevel = Math.round((window.outerWidth / window.innerWidth) * 100);
-    console.log(zoomLevel);
-    return zoomLevel >= 150;
-  }
+  console.log("Toolbar overlay script loaded");
 
   /**
-   * Force horizontal toolbar orientation
+   * Add overlay when toolbar tray is active
    */
-  function forceHorizontalToolbar() {
-    console.log("Forcing horizontal toolbar");
-
-    // Method 1: Direct CSS override
-    $("body").addClass("toolbar-zoom-override");
-
-    // Method 2: Try to set model if available
-    if (
-      Drupal.toolbar &&
-      Drupal.toolbar.models &&
-      Drupal.toolbar.models.toolbarModel
-    ) {
-      const toolbarModel = Drupal.toolbar.models.toolbarModel;
-      toolbarModel.set({
-        orientation: "horizontal",
-        locked: false,
-        isTrayToggleVisible: false,
-      });
-    }
-  }
-
-  /**
-   * Override the toolbar orientation behavior for high zoom levels
-   */
-  Drupal.behaviors.toolbarZoomOverride = {
+  Drupal.behaviors.toolbarTrayOverlay = {
     attach: function (context, settings) {
-      console.log("Toolbar zoom override behavior attached");
+      console.log("Toolbar overlay behavior attached");
 
-      // Add CSS class for high zoom
-      if (isZoomAbove150()) {
-        forceHorizontalToolbar();
+      // Only run once on document
+      if (context !== document) {
+        return;
       }
 
-      // Listen for zoom changes
-      let resizeTimer;
-      $(window).on("resize.toolbarZoom", function () {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function () {
-          if (isZoomAbove150()) {
-            forceHorizontalToolbar();
-          } else {
-            $("body").removeClass("toolbar-zoom-override");
-          }
-        }, 250);
+      // Create overlay element
+      const overlay = $('<div class="toolbar-tray-overlay"></div>');
+
+      // Add overlay to body (only once)
+      if (!$(".toolbar-tray-overlay").length) {
+        $("body").append(overlay);
+        console.log("Overlay element added to body");
+      }
+
+      // Function to show overlay and prevent scrolling
+      function showOverlay() {
+        console.log("showOverlay called");
+        $(".toolbar-tray-overlay").addClass("active");
+        $("body").addClass("toolbar-tray-overlay-active");
+        console.log("Overlay shown");
+      }
+
+      // Function to hide overlay and restore scrolling
+      function hideOverlay() {
+        console.log("hideOverlay called");
+        $(".toolbar-tray-overlay").removeClass("active");
+        $("body").removeClass("toolbar-tray-overlay-active");
+        console.log("Overlay hidden");
+      }
+
+      // Function to close the toolbar tray
+      function closeToolbarTray() {
+        console.log("closeToolbarTray called");
+        // Find the active tab and click it to close
+        const activeTab = $(
+          ".toolbar-bar .toolbar-tab.is-active .toolbar-item, .toolbar-bar .toolbar-tab.open .toolbar-item"
+        );
+        console.log("Active tabs found:", activeTab.length);
+        if (activeTab.length > 0) {
+          activeTab.trigger("click");
+        }
+        hideOverlay();
+      }
+
+      // Check toolbar state - improved detection
+      function checkToolbarState() {
+        // Multiple ways to detect if toolbar tray is open
+        const bodyHasTrayOpen = $("body").hasClass("toolbar-tray-open");
+        const activeTrays = $(".toolbar-tray.is-active, .toolbar-tray:visible");
+        const activeTabs = $(".toolbar-tab.is-active, .toolbar-tab.open");
+
+        console.log("=== Toolbar State Check ===");
+        console.log("Body has toolbar-tray-open:", bodyHasTrayOpen);
+        console.log("Active trays:", activeTrays.length);
+        console.log("Active tabs:", activeTabs.length);
+        console.log("Body classes:", $("body").attr("class"));
+
+        // If body has toolbar-tray-open class, tray is definitely open
+        if (
+          bodyHasTrayOpen ||
+          (activeTrays.length > 0 && activeTabs.length > 0)
+        ) {
+          console.log("Tray is open - showing overlay");
+          showOverlay();
+          return true;
+        } else {
+          console.log("Tray is closed - hiding overlay");
+          hideOverlay();
+          return false;
+        }
+      }
+
+      // Watch for toolbar tab clicks
+      $(document).on(
+        "click",
+        ".toolbar-bar .toolbar-tab .toolbar-item",
+        function (e) {
+          console.log("Toolbar tab clicked:", $(this).text());
+
+          // Small delay to let Drupal process the click
+          setTimeout(function () {
+            checkToolbarState();
+          }, 200);
+        }
+      );
+
+      // Handle overlay click to close tray
+      $(document).on("click", ".toolbar-tray-overlay.active", function (e) {
+        console.log("Overlay clicked");
+        e.preventDefault();
+        e.stopPropagation();
+        closeToolbarTray();
       });
 
-      // Override toolbar model behavior if it exists
-      $(document).ready(function () {
-        setTimeout(function () {
+      // Watch for body class changes using MutationObserver
+      const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
           if (
-            Drupal.toolbar &&
-            Drupal.toolbar.models &&
-            Drupal.toolbar.models.toolbarModel
+            mutation.type === "attributes" &&
+            mutation.attributeName === "class"
           ) {
-            const toolbarModel = Drupal.toolbar.models.toolbarModel;
+            const bodyClasses = $("body").attr("class");
+            console.log("Body class changed:", bodyClasses);
 
-            // Store original method
-            if (typeof toolbarModel.onMediaQueryChange === "function") {
-              toolbarModel.originalOnMediaQueryChange =
-                toolbarModel.onMediaQueryChange;
-            }
-
-            // Override the media query change method
-            toolbarModel.onMediaQueryChange = function () {
-              console.log("Media query change detected");
-
-              if (isZoomAbove150()) {
-                console.log("High zoom detected, forcing horizontal");
-                this.set({
-                  orientation: "horizontal",
-                  locked: false,
-                  isTrayToggleVisible: false,
-                });
-                return;
-              }
-
-              // Otherwise, use the original behavior
-              if (this.originalOnMediaQueryChange) {
-                this.originalOnMediaQueryChange.apply(this, arguments);
-              }
-            };
-
-            // Initial check
-            if (isZoomAbove150()) {
-              forceHorizontalToolbar();
+            // Check specifically for toolbar-tray-open class
+            if (bodyClasses.includes("toolbar-tray-open")) {
+              console.log("toolbar-tray-open detected - showing overlay");
+              showOverlay();
+            } else {
+              console.log("toolbar-tray-open not detected - hiding overlay");
+              hideOverlay();
             }
           }
-        }, 1000); // Give toolbar time to initialize
+        });
       });
+
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class"],
+      });
+
+      // Initial check
+      setTimeout(function () {
+        console.log("Initial toolbar state check...");
+        checkToolbarState();
+      }, 1000);
+
+      console.log("Toolbar tray overlay behavior setup complete");
     },
   };
-})(jQuery, Drupal, window);
+})(jQuery, Drupal);
