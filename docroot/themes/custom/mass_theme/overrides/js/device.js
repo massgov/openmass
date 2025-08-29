@@ -16,6 +16,17 @@
             }
           }
         }
+
+        // Fix Android keyboard dismissal caused by Mayflower hamburger menu focus
+        if (/Android/i.test(navigator.userAgent)) {
+          const originalFocus = HTMLElement.prototype.focus;
+          HTMLElement.prototype.focus = function(options) {
+            if (this.classList && this.classList.contains('js-header-menu-button')) {
+              return; // Block hamburger menu focus on Android
+            }
+            return originalFocus.call(this, options);
+          };
+        }
       });
     }
   };
