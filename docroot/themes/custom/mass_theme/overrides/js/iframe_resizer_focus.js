@@ -1,35 +1,6 @@
 (function ($, Drupal) {
   'use strict';
 
-  // Safe scrolling using requestAnimationFrame for all devices
-  function scrollToPositionSafely(targetPosition, container) {
-    let start = null;
-    const startPosition = container === window ? window.pageYOffset : container.scrollTop;
-    const distance = targetPosition - startPosition;
-    const duration = 400; // Smooth duration for all devices
-
-    function animateScroll(timestamp) {
-      if (!start) start = timestamp;
-      const progress = Math.min((timestamp - start) / duration, 1);
-      
-      // Use easeOutCubic for smooth animation
-      const easeProgress = 1 - Math.pow(1 - progress, 3);
-      const currentPosition = startPosition + (distance * easeProgress);
-
-      if (container === window) {
-        window.scrollTo(0, currentPosition);
-      } else {
-        container.scrollTop = currentPosition;
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(animateScroll);
-      }
-    }
-
-    requestAnimationFrame(animateScroll);
-  }
-
   // Function to handle focus messages from iframes
   function handleFocusMessage(messageData) {
     // Check if this is our custom focus message - handle both message structures
@@ -52,8 +23,10 @@
 
           const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
 
-          // Use Android-safe scrolling
-          scrollToPositionSafely(finalScrollPosition, modal);
+          modal.scrollTo({
+            top: finalScrollPosition,
+            behavior: 'smooth'
+          });
         }
         else {
           // Handle focus in regular page iframe
@@ -62,8 +35,10 @@
           const adjustment = -250;
           const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
 
-          // Use Android-safe scrolling
-          scrollToPositionSafely(finalScrollPosition, window);
+          window.scrollTo({
+            top: finalScrollPosition,
+            behavior: 'smooth'
+          });
         }
       }
       else {
@@ -115,4 +90,3 @@
   };
 
 })(jQuery, Drupal);
-
