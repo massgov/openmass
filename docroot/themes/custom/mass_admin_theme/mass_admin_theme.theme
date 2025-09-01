@@ -259,6 +259,17 @@ function mass_admin_theme_preprocess_html(&$variables) {
       $variables['page']['#attached']['html_head'][] = $item;
     }
   }
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  $allowed_routes = [
+    'entity.node.edit_form',
+    'node.add',
+  ];
+
+  if (in_array($route_name, $allowed_routes, TRUE)) {
+    $variables['is_node'] = TRUE;
+  }
 }
 
 /**
