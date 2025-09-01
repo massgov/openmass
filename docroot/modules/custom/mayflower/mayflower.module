@@ -331,15 +331,6 @@ function mayflower_preprocess_page(array &$variables) {
  * Implements hook_preprocess_HOOK().
  */
 function mayflower_preprocess_paragraph__section_header(&$variables) {
-
-  if (isset($variables['elements']['#context']['level'])) {
-    $variables['heading_level'] = $variables['elements']['#context']['level'];
-  }
-  else {
-    // Default to h2 if not set.
-    $variables['heading_level'] = 2;
-  }
-
   if (!empty($variables['paragraph']->field_section_long_form_heading->value)) {
     $title = $variables['paragraph']->field_section_long_form_heading->value;
     // Slugify.
@@ -347,6 +338,40 @@ function mayflower_preprocess_paragraph__section_header(&$variables) {
     $id = $utilities->slugify(trim($title));
     $variables['id'] = $id;
   }
+  $paragraph = $variables['paragraph'];
+  $variables['heading_level'] = 2;
+  if (isset($variables['elements']['#context']['level'])) {
+    $variables['heading_level'] = $variables['elements']['#context']['level'];
+  }
+  else {
+    $behavior_settings = $paragraph->getAllBehaviorSettings();
+    $parent_uuid = $behavior_settings['layout_paragraphs']['parent_uuid'] ?? NULL;
+    if (empty($parent_uuid)) {
+      return;
+    }
+
+    $host = $paragraph->getParentEntity();
+    if (empty($host)) {
+      return;
+    }
+    $parent_component = \Drupal::service('entity.repository')
+      ->loadEntityByUuid('paragraph', $parent_uuid);
+    if (empty($parent_component)) {
+      return;
+    }
+
+    if ($parent_component->bundle() === 'service_section') {
+      $has_heading = !$parent_component->get('field_service_section_heading')
+        ->isEmpty();
+      $section_style = (string) $parent_component->get('field_section_style')->value;
+      $is_two_column = (bool) $parent_component->get('field_two_column')->value;
+      $is_enhanced = ($section_style === 'enhanced');
+      $show_heading = $is_enhanced || ($section_style === 'simple' && $is_two_column);
+      $heading_level = ($show_heading && $has_heading) ? 3 : 2;
+      $variables['heading_level'] = $heading_level;
+    }
+  }
+
 }
 
 /**
@@ -432,9 +457,29 @@ function mayflower_campaign_landing_paragraph_set_header_level(array &$variables
 function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
   /** @var \Drupal\paragraphs\Entity\Paragraph */
   $flexible_lg = $variables['paragraph'];
-  if (isset($variables['elements']['#context'])) {
-    if (isset($variables['elements']['#context']['level'])) {
-      $variables['level'] = $variables['elements']['#context']['level'];
+  $variables['level'] = 2;
+  if (isset($variables['elements']['#context']['level'])) {
+    $variables['level'] = $variables['elements']['#context']['level'];
+  }
+  else {
+    $behavior_settings = $flexible_lg->getAllBehaviorSettings();
+    $parent_uuid = $behavior_settings['layout_paragraphs']['parent_uuid'] ?? NULL;
+    if (!empty($parent_uuid)) {
+      if ($flexible_lg->getParentEntity()) {
+        if ($parent_component = \Drupal::service('entity.repository')
+          ->loadEntityByUuid('paragraph', $parent_uuid)) {
+          if ($parent_component->bundle() === 'service_section') {
+            $has_heading = !$parent_component->get('field_service_section_heading')
+              ->isEmpty();
+            $section_style = (string) $parent_component->get('field_section_style')->value;
+            $is_two_column = (bool) $parent_component->get('field_two_column')->value;
+            $is_enhanced = ($section_style === 'enhanced');
+            $show_heading = $is_enhanced || ($section_style === 'simple' && $is_two_column);
+            $heading_level = ($show_heading && $has_heading) ? 3 : 2;
+            $variables['heading_level'] = $heading_level;
+          }
+        }
+      }
     }
   }
 
