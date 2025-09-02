@@ -1,5 +1,20 @@
 
 
+## [0.448.0] - September 2, 2025
+
+### Changed
+  - DP-40756: Change order of fields on contact content type.
+  - DP-40850: Added accessibility attributes to document translation links for improved screen reader support.
+  - DP-41507: Add more filters to the file view used by the CX team only.
+  
+### Fixed
+  - DP-41581: Fix authoring add block button accessibility issue.
+  
+### Added
+  - DP-41771: Parent organization report showing parent org structure.
+  
+
+
 ## [0.447.0] - August 19, 2025
 
 ### Changed
