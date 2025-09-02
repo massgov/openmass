@@ -1586,7 +1586,7 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
     case 'info_details_card_group':
       $form['field_use_image_cards']['widget']['value']['#attributes']['class'][] = _mass_validation_form_hierarchy_class_helper('field-use-image-cards-checkbox', $form['#field_parents'] ?? []);
       break;
-    case 'featured_item_mosaic';
+    case 'featured_item_mosaic':
       $form['#validate'][] = '_mass_validation_validate_layout_paragraphs_mosaic_items';
       break;
   }
@@ -1624,7 +1624,6 @@ function _mass_validation_validate_layout_paragraphs_mosaic_items(array &$form, 
       t('You must provide a value for the Highlight Image of the first Featured Item.'));
   }
 }
-
 
 /**
  * Validates the iframe paragraph in layout paragraphs.
