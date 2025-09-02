@@ -1601,7 +1601,7 @@ function _mass_validation_validate_layout_paragraphs_mosaic_items(array &$form, 
     return;
   }
   if (isset($values['field_featured_item_mosaic_items']['add_more'])) {
-    $form_state->setErrorByName('mosaic_items_add_more', t('You must provide 5 featured items.'));
+    $form_state->setErrorByName('field_featured_item_mosaic_items_featured_item_add_more', t('You must provide 5 featured items.'));
   }
   // Find the item with the lowest weight.
   foreach ($values['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
