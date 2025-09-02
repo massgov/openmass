@@ -317,6 +317,16 @@ function mass_admin_theme_form_alter(&$form, &$form_state, $form_id) {
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ */
+function mass_admin_theme_page_attachments_alter(array &$attachments) {
+  // Add toolbar zoom override for admin users
+  if (\Drupal::currentUser()->hasPermission('access toolbar')) {
+    $attachments['#attached']['library'][] = 'mass_admin_theme/toolbar-zoom-override';
+  }
+}
+
+/**
  * Implements template_preprocess_views_view().
  *
  * Add an CSV export link to the footer of the redirect view.
