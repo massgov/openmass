@@ -464,7 +464,6 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       }
       $paragraph_error_string = 'field_service_sections][' . $section_key . '][subform][field_service_section_content][' . $key . '][subform]';
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
-      _mass_validation_validate_mosaic_items($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
       _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
     }
@@ -1587,8 +1586,45 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
     case 'info_details_card_group':
       $form['field_use_image_cards']['widget']['value']['#attributes']['class'][] = _mass_validation_form_hierarchy_class_helper('field-use-image-cards-checkbox', $form['#field_parents'] ?? []);
       break;
+    case 'featured_item_mosaic';
+      $form['#validate'][] = '_mass_validation_validate_layout_paragraphs_mosaic_items';
+      break;
   }
 }
+
+/**
+ * Validates mosaic items to be 5 and Hightlight image for the first item.
+ */
+function _mass_validation_validate_layout_paragraphs_mosaic_items(array &$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  if (!isset($values['field_featured_item_mosaic_items'])) {
+    return;
+  }
+  if (isset($values['field_featured_item_mosaic_items']['add_more'])) {
+    $form_state->setErrorByName('mosaic_items_add_more', t('You must provide 5 featured items.'));
+  }
+  // Find the item with the lowest weight.
+  foreach ($values['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
+    if (!isset($mosaic_array['_weight'])) {
+      continue;
+    }
+    $weight = (int) $mosaic_array['_weight'];
+    if (!isset($lowest) || $weight < $lowest) {
+      $lowest = $weight;
+      $first = $mosaic_array;
+    }
+
+    if (str_contains($mosaic_array['subform']['field_featured_item_link'][0]['uri'], 'internal:')) {
+      $form_state->setErrorByName('field_featured_item_mosaic_items][' . $mosaic_key . '][subform][field_featured_item_link][0][uri',
+        t('The entered value must be either a selected existing page or a complete URL.'));
+    }
+  }
+  if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
+    $form_state->setErrorByName('mosaic_hightlight',
+      t('You must provide a value for the Highlight Image of the first Featured Item.'));
+  }
+}
+
 
 /**
  * Validates the iframe paragraph in layout paragraphs.
