@@ -58,7 +58,6 @@ class OrgTopParentFilter extends FilterPluginBase {
       $org_ids[] = (int) $top_id;
     }
 
-
     // 2) Create the INNER JOIN to the org reference field table.
     $nid_alias = $this->query->ensureTable('node_field_data', $this->relationship);
     $join = $this->query->getJoinData('node__field_organizations', 'node_field_data');
@@ -70,6 +69,7 @@ class OrgTopParentFilter extends FilterPluginBase {
     $this->query->addWhere($or_group, "$nid_alias.nid", $org_ids, 'IN');
     $this->query->addWhere($or_group, "$org_table_alias.field_organizations_target_id", $org_ids, 'IN');
   }
+
   /**
    * Retrieve a single usable int value from the input value.
    *
@@ -88,6 +88,7 @@ class OrgTopParentFilter extends FilterPluginBase {
 
   /**
    * Build the set of org_page node IDs in the subtree rooted at $top_id.
+   *
    * Includes $top_id itself. Uses iterative BFS to avoid deep recursion.
    *
    * @param int $top_id
