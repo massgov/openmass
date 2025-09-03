@@ -125,32 +125,6 @@ class MassMetatagUtilities {
   }
 
   /**
-   * Given a single TOP-LEVEL org NID, return ALL descendant org NIDs.
-   *
-   * Recursively searches for nodes where org_page.field_parent = $top_org_id,
-   * then repeats for each child until reaching the leaves. The returned set
-   * includes the top-level ID itself. Cycle-safe.
-   *
-   * @param int $top_org_id
-   *   The top-level org NID.
-   *
-   * @return int[]
-   *   Unique list of org NIDs (top + all descendants). Empty array if invalid.
-   */
-  public function getDescendantOrgIds(int $top_org_id): array {
-    $top_org_id = (int) $top_org_id;
-    if ($top_org_id <= 0) {
-      return [];
-    }
-
-    $seen = [];
-    $result = [];
-    $this->collectDescendants($top_org_id, $seen, $result);
-
-    return array_values($result);
-  }
-
-  /**
    * Depth-first recursive collector for descendant org IDs.
    *
    * @param int $parent_id
