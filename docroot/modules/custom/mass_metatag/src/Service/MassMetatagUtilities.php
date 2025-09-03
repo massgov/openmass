@@ -124,38 +124,4 @@ class MassMetatagUtilities {
     return $result;
   }
 
-  /**
-   * Depth-first recursive collector for descendant org IDs.
-   *
-   * @param int $parent_id
-   *   The current parent org ID.
-   * @param array $seen
-   *   Reference set of visited IDs to avoid cycles.
-   * @param array $result
-   *   Reference map of collected IDs (nid => nid).
-   */
-  private function collectDescendants(int $parent_id, array &$seen, array &$result): void {
-    if (isset($seen[$parent_id])) {
-      return;
-    }
-    $seen[$parent_id] = TRUE;
-    $result[$parent_id] = $parent_id; // include current node
-
-    $storage = \Drupal::entityTypeManager()->getStorage('node');
-
-    $children = $storage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('type', 'org_page')
-      ->condition('field_parent.target_id', $parent_id)
-      ->execute();
-
-    if (!$children) {
-      return;
-    }
-
-    foreach ($children as $child_id) {
-      $this->collectDescendants((int) $child_id, $seen, $result);
-    }
-  }
-
 }
