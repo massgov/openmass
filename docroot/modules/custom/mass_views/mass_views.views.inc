@@ -95,7 +95,7 @@ function mass_views_views_data_alter(array &$data) {
 
   // Adds parent page autocomplete filter for nodes.
   $data['node_field_data']['node_parent_filter'] = [
-    'title' => 'Parent Page Filter',
+    'title' => 'Organization Parent Filter',
     'filter' => [
       'title' => t('Parent Page Filter'),
       'help' => t('Filter nodes by their parent page.'),
