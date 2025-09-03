@@ -106,10 +106,9 @@ function mass_views_views_data_alter(array &$data) {
 
   // Adds an org parent filter for nodes.
   $data['node_field_data']['node_parent_org_filter'] = [
-    'title' => 'Organization Parent Filter',
+    'title' => 'Top Organization Filter',
     'filter' => [
-      'title' => t('Organization Parent Filter'),
-      'help' => t('Filter nodes by their organization parent reference'),
+      'title' => t('Top Organization Filter'),
       'field' => 'nid',
       'id' => 'mass_views_node_org_parent_filter',
     ],
