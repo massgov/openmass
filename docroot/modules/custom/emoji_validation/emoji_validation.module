@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Emoji validation module to prevent emoji characters in text fields.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function emoji_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add emoji validation to all forms
+  $form['#validate'][] = '_emoji_validation_validate_all_text_fields';
+}
+
+/**
+ * Universal validation function that checks ALL text fields for emojis.
+ */
+function _emoji_validation_validate_all_text_fields(array &$form, FormStateInterface $form_state) {
+  // Simple emoji pattern - covers the most common emoji ranges
+  $emoji_pattern = '/[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]|[\x{1F900}-\x{1F9FF}]|[\x{1FA70}-\x{1FAFF}]/u';
+  
+  // Get all form values
+  $values = $form_state->getValues();
+  
+  // Recursively check ALL form values for emojis
+  _emoji_validation_check_all_values($form_state, $values, $emoji_pattern, []);
+}
+
+/**
+ * Recursively checks ALL form values for emoji characters.
+ */
+function _emoji_validation_check_all_values(FormStateInterface $form_state, $values, $emoji_pattern, $field_path = []) {
+  if (is_array($values)) {
+    foreach ($values as $key => $value) {
+      $current_path = array_merge($field_path, [$key]);
+      
+      if (is_string($value)) {
+        // Check string values for emojis
+        if (!empty($value) && preg_match($emoji_pattern, $value)) {
+          $field_name = implode('][', $current_path);
+          $form_state->setErrorByName($field_name, t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
+        }
+      } elseif (is_array($value)) {
+        // Recursively check array values
+        _emoji_validation_check_all_values($form_state, $value, $emoji_pattern, $current_path);
+      }
+    }
+  } elseif (is_string($values)) {
+    // Check single string values
+    if (!empty($values) && preg_match($emoji_pattern, $values)) {
+      $field_name = implode('][', $field_path);
+      $form_state->setErrorByName($field_name, t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
+    }
+  }
+}
