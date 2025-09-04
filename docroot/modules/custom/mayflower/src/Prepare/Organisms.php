@@ -698,43 +698,6 @@ class Organisms {
    * @see @organisms/by-template/inline-links.twig
    *
    * @return array
-   *   Returns a structured array of inline links with language info.
-   */
-  public static function prepareInlineLinksForLanguages(array $items, array $options) {
-    $links = [];
-
-    // Create the links data structure.
-    foreach ($items as $item) {
-
-      $links[] = [
-        'text' => $item['title'],
-        'href' => $item['url'],
-        'lang_label' => $item['lang_label'],
-      ];
-    }
-
-    if ($links) {
-      return [
-        'ariaLabel' => $options['ariaLabel'],
-        'links' => $links,
-      ];
-    }
-    else {
-      return [];
-    }
-  }
-
-  /**
-   * Returns the variables structure required to render an Inline Links.
-   *
-   * @param array $items
-   *   Items of the list.
-   * @param array $options
-   *   'ariaLabel' receives an optional aria-label to show.
-   *
-   * @see @organisms/by-template/inline-links.twig
-   *
-   * @return array
    *   Returns a structured array of inline links.
    */
   public static function prepareInlineLinks(array $items, array $options) {
