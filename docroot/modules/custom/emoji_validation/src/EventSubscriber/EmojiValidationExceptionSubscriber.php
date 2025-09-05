@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Exception subscriber for emoji validation errors.
- * 
+ *
  * This handles both form validation errors and entity-level validation errors
  * to ensure user-friendly error messages instead of critical errors.
  */
@@ -50,11 +50,11 @@ class EmojiValidationExceptionSubscriber implements EventSubscriberInterface {
    */
   public function onException(ExceptionEvent $event) {
     $exception = $event->getThrowable();
-    
+
     // Check if this is our emoji validation exception
-    if ($exception instanceof EntityStorageException && 
+    if ($exception instanceof EntityStorageException &&
         strpos($exception->getMessage(), 'emoji icons') !== FALSE) {
-      
+
       // The error message is already set by the entity_presave hook
       // Just redirect back to the same page
       $request = $event->getRequest();
