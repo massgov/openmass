@@ -21,10 +21,10 @@ function emoji_validation_form_alter(&$form, FormStateInterface $form_state, $fo
 function _emoji_validation_validate_all_text_fields(array &$form, FormStateInterface $form_state) {
   // Simple emoji pattern - covers the most common emoji ranges
   $emoji_pattern = '/[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]|[\x{1F900}-\x{1F9FF}]|[\x{1FA70}-\x{1FAFF}]/u';
-  
+
   // Get all form values
   $values = $form_state->getValues();
-  
+
   // Recursively check ALL form values for emojis
   _emoji_validation_check_all_values($form_state, $values, $emoji_pattern, []);
 }
@@ -36,19 +36,21 @@ function _emoji_validation_check_all_values(FormStateInterface $form_state, $val
   if (is_array($values)) {
     foreach ($values as $key => $value) {
       $current_path = array_merge($field_path, [$key]);
-      
+
       if (is_string($value)) {
         // Check string values for emojis
         if (!empty($value) && preg_match($emoji_pattern, $value)) {
           $field_name = implode('][', $current_path);
           $form_state->setErrorByName($field_name, t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
         }
-      } elseif (is_array($value)) {
+      }
+      elseif (is_array($value)) {
         // Recursively check array values
         _emoji_validation_check_all_values($form_state, $value, $emoji_pattern, $current_path);
       }
     }
-  } elseif (is_string($values)) {
+  }
+  elseif (is_string($values)) {
     // Check single string values
     if (!empty($values) && preg_match($emoji_pattern, $values)) {
       $field_name = implode('][', $field_path);
@@ -59,7 +61,7 @@ function _emoji_validation_check_all_values(FormStateInterface $form_state, $val
 
 /**
  * Implements hook_entity_presave().
- * 
+ *
  * ENHANCEMENT: This provides a secondary validation layer that checks
  * the actual entity data (not just form data) to catch cases where
  * existing content already contains emojis and the user tries to save
@@ -70,19 +72,19 @@ function emoji_validation_entity_presave($entity) {
   if (!in_array($entity->getEntityTypeId(), ['node', 'paragraph'])) {
     return;
   }
-  
+
   // Simple emoji pattern - same as form validation
   $emoji_pattern = '/[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]|[\x{1F900}-\x{1F9FF}]|[\x{1FA70}-\x{1FAFF}]/u';
-  
+
   $emoji_found = FALSE;
   $emoji_fields = [];
-  
+
   // Check all text fields in the entity
   $field_definitions = $entity->getFieldDefinitions();
   foreach ($field_definitions as $field_name => $field_definition) {
     if (in_array($field_definition->getType(), ['text', 'text_long', 'text_with_summary', 'string', 'string_long'])) {
       $field_value = $entity->get($field_name)->getValue();
-      
+
       if (!empty($field_value)) {
         foreach ($field_value as $delta => $value) {
           if (isset($value['value']) && !empty($value['value']) && preg_match($emoji_pattern, $value['value'])) {
@@ -93,12 +95,12 @@ function emoji_validation_entity_presave($entity) {
       }
     }
   }
-  
+
   // If emojis found, prevent save and show error
   if ($emoji_found) {
     // Show user-friendly error message
     \Drupal::messenger()->addError('This page contains emoji icons that must be removed before saving. Please edit the content to remove all emojis.');
-    
+
     // Prevent the save by throwing a validation exception
     throw new \Drupal\Core\Entity\EntityStorageException('This page contains emoji icons that must be removed before saving.');
   }
