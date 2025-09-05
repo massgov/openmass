@@ -56,6 +56,7 @@ third_party_settings:
         - group_required_details
         - group_optional_details
         - group_sidebar
+        - group_page_info
       label: Primary
       region: content
       parent_name: ''
@@ -83,7 +84,6 @@ third_party_settings:
         - field_reusable_label
         - field_collections
         - field_glossaries
-        - field_bg_wide
       label: Header
       region: content
       parent_name: group_primary
@@ -138,13 +138,33 @@ third_party_settings:
       label: Related
       region: content
       parent_name: group_primary
-      weight: 6
+      weight: 5
       format_type: tab
       format_settings:
         classes: ''
         id: ''
         formatter: closed
         description: 'Provide up to 3 links where a user can perform an action online or download a helpful pdf related to the in-person experience.'
+        required_fields: true
+    group_page_info:
+      children:
+        - field_location_metatags
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_primary
+      weight: 6
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
         required_fields: true
 id: node.location.default
 targetEntityType: node
@@ -334,10 +354,10 @@ content:
             selector: ''
   field_location_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 2
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_location_more_information:
@@ -483,7 +503,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -506,20 +526,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -558,7 +578,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 6
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }

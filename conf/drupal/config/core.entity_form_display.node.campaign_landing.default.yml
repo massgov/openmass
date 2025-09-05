@@ -52,6 +52,7 @@ third_party_settings:
       children:
         - group_overview
         - group_content
+        - group_page_info
       label: 'Campaign Landing Edit Form'
       region: content
       parent_name: ''
@@ -76,6 +77,27 @@ third_party_settings:
         formatter: closed
         description: "Choose the Header that you want to appear at the top of your page and add up to 9 sections. The Header consists of a title and text that is either over an image or solid color (Key message), or a video.<br><br>\r\nWe recommend you keep the page as short and simple as possible with a single call to action. <a href=\"https://www.mass.gov/kb/promo-pages\" target=\"_blank\">Learn about adding content to Promotional pages.</a>"
         required_fields: true
+    group_page_info:
+      children:
+        - path
+        - field_campaign_landing_metatags
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_campaign_landing_edit_form
+      weight: 8
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.campaign_landing.default
 targetEntityType: node
 bundle: campaign_landing
@@ -86,7 +108,7 @@ content:
     weight: 2
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_collections:
@@ -262,20 +284,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -304,7 +326,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }

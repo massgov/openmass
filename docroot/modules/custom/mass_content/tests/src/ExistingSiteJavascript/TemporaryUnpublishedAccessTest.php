@@ -18,6 +18,7 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
    * To generate a unpublished access link.
    */
   private function generateLink(): void {
+    $this->getCurrentPage()->find('css', '.horizontal-tab-button.last > a')->click();
     $this->getCurrentPage()->find('css', '#edit-access-unpublished-settings summary')->click();
     $links_count_before = count($this->getCurrentPage()->findAll('css', '#edit-access-unpublished-settings table tbody tr li.copy a'));
     $table_row_count = count($this->getCurrentPage()->findAll('css', '#edit-access-unpublished-settings table tbody > tr'));

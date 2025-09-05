@@ -28,9 +28,6 @@ third_party_settings:
       children:
         - title
         - field_short_title
-        - field_bg_wide
-        - field_bg_narrow
-        - field_campaign_logo
         - field_description
         - field_start_button
         - field_disclaimer
@@ -52,6 +49,7 @@ third_party_settings:
     group_decision_tree_edit_form:
       children:
         - group_main
+        - group_page_info
       label: 'Decision Tree edit form'
       region: content
       parent_name: ''
@@ -61,6 +59,26 @@ third_party_settings:
         classes: ''
         id: ''
         direction: horizontal
+    group_page_info:
+      children:
+        - field_decision_tree_metatags
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: content
+      parent_name: group_decision_tree_edit_form
+      weight: 2
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.decision_tree.default
 targetEntityType: node
 bundle: decision_tree
@@ -68,14 +86,15 @@ mode: default
 content:
   field_decision_tree_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 3
     region: content
     settings:
-      sidebar: true
+      sidebar: false
+      use_details: true
     third_party_settings: {  }
   field_description:
     type: text_textarea
-    weight: 10
+    weight: 7
     region: content
     settings:
       rows: 5
@@ -83,7 +102,7 @@ content:
     third_party_settings: {  }
   field_disclaimer:
     type: string_textfield
-    weight: 12
+    weight: 9
     region: content
     settings:
       size: 60
@@ -91,7 +110,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 15
+    weight: 12
     region: content
     settings:
       match_operator: CONTAINS
@@ -101,7 +120,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 14
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -112,7 +131,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 16
+    weight: 13
     region: content
     settings:
       match_operator: CONTAINS
@@ -122,7 +141,7 @@ content:
     third_party_settings: {  }
   field_service_ref_services_6:
     type: entity_reference_autocomplete
-    weight: 13
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS
@@ -140,7 +159,7 @@ content:
     third_party_settings: {  }
   field_start_button:
     type: entity_reference_paragraphs
-    weight: 11
+    weight: 8
     region: content
     settings:
       title: 'Start button'
@@ -152,7 +171,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 11
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -175,20 +194,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -206,7 +225,7 @@ content:
         maxlength_js_enforce: false
   uid:
     type: entity_reference_autocomplete
-    weight: 1
+    weight: 2
     region: content
     settings:
       match_operator: CONTAINS
@@ -227,7 +246,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
