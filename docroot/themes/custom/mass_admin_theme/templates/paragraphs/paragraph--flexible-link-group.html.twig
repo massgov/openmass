@@ -1,0 +1,117 @@
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      {% if (display_type == 'links') %}
+        {% set items = [] %}
+        {% for flexible_link in flexible_links_group %}
+          {% set links = [] %}
+          {% for link in flexible_link.links %}
+            {% set content = link.download_link ?
+              {
+                "iconSize": "",
+                "icon": link.download_link.extra_file_icon['#markup'],
+                "decorativeLink": {
+                "text": link.download_link.file_title,
+                "href": url('media_entity_download.download', {'media': link.download_link.mid}),
+                "info": ""
+              },
+                "size": link.download_link.calculated_file_size,
+                "format": link.download_link.extra_file_extension,
+                "language": link.download_link.language,
+                "inlineLinks": link.download_link.translationLinks
+              }
+              :
+              {
+                "text": link.text,
+                "href": link.href
+              }
+            %}
+
+            {% set links = links|merge([content]) %}
+          {% endfor %}
+
+          {% set item = {
+            "collapsibleHeader": {
+              "title": flexible_link.title,
+              "description": flexible_link.description,
+              "headingLevel": 3
+            },
+            "expanded": flexible_link.expanded,
+            "includes": [{
+              "path": "@organisms/by-author/link-list.twig",
+              "data": {
+                "linkList": {
+                  "stacked": true,
+                  "hideBullets": false,
+                  "links": links
+                }
+              }
+            }]
+          } %}
+
+          {% set items = items|merge([item]) %}
+        {% endfor %}
+
+        {% include "@organisms/by-author/collapsible-content.twig" with {
+          "collapsibleContent": {
+            "extended": true,
+            "items": items
+          }
+        } %}
+      {% endif %}
+
+      {% if (display_type == 'buttons') %}
+
+        {% set items = flexible_links_group.0.links %}
+        {% set calloutLinks = [] %}
+
+        {% for item in items %}
+
+          {% set calloutLink = item.downloadable_file ?
+            {
+              "download": true,
+              "iconSize": "small",
+              "icon": item.file_icon,
+              "size": item.file_size,
+              "format": item.file_extension,
+              "text": item.file_title,
+              "href": url('media_entity_download.download', {'media': item.mid}),
+              "info": "",
+              "theme": flexible_links_group.0.theme
+            }
+            :
+            {
+              "text": item.text,
+              "href": item.href,
+              "theme": flexible_links_group.0.theme
+            }
+
+          %}
+          {% set calloutLinks = calloutLinks|merge([calloutLink]) %}
+        {% endfor %}
+
+        {% set calloutLinksThreeUp = {
+          'calloutLinksThreeUp': {
+            "headingText": flexible_links_group.0.title,
+            "headingDescription": flexible_links_group.0.description,
+            "headingLevel": "3",
+            'calloutLinks': calloutLinks
+          }
+        } %}
+
+        <div class="ma__stacked-row__container">
+          {% include "@organisms/by-author/callout-links-three-up.twig" with calloutLinksThreeUp %}
+        </div>
+
+      {% endif %}
+    {% endblock %}
+  </div>
+{% endblock paragraph %}
