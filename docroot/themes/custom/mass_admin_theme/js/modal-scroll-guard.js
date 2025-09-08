@@ -222,14 +222,24 @@
       if (dialogs) {
         dialogs.forEach(function (dc) {
           if (dc.__modalScrollGuardObserver) {
-            try { dc.__modalScrollGuardObserver.disconnect(); } catch (e) {}
+            try {
+              dc.__modalScrollGuardObserver.disconnect();
+            }
+            catch (e) {
+              // Swallow errors from disconnect to avoid breaking detach.
+            }
             dc.__modalScrollGuardObserver = null;
           }
         });
       }
       // Allow re-binding on future attaches.
       if (window[BOUND_FLAG]) {
-        try { delete window[BOUND_FLAG]; } catch (e) { window[BOUND_FLAG] = false; }
+        try {
+          delete window[BOUND_FLAG];
+        }
+        catch (e) {
+          window[BOUND_FLAG] = false;
+        }
       }
     }
   };
