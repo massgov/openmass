@@ -457,7 +457,6 @@ function mayflower_campaign_landing_paragraph_set_header_level(array &$variables
 function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
   /** @var \Drupal\paragraphs\Entity\Paragraph */
   $flexible_lg = $variables['paragraph'];
-  $variables['level'] = 2;
   if (isset($variables['elements']['#context']['level'])) {
     $variables['level'] = $variables['elements']['#context']['level'];
   }
