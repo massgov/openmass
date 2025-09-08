@@ -340,11 +340,7 @@ function mayflower_preprocess_paragraph__section_header(&$variables) {
   }
   $paragraph = $variables['paragraph'];
   $variables['heading_level'] = 2;
-  if (isset($variables['elements']['#context']['level'])) {
-    $variables['heading_level'] = $variables['elements']['#context']['level'];
-  }
-  else {
-    $behavior_settings = $paragraph->getAllBehaviorSettings();
+  if ($behavior_settings = $paragraph->getAllBehaviorSettings()) {
     $parent_uuid = $behavior_settings['layout_paragraphs']['parent_uuid'] ?? NULL;
     if (empty($parent_uuid)) {
       return;
@@ -457,11 +453,8 @@ function mayflower_campaign_landing_paragraph_set_header_level(array &$variables
 function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
   /** @var \Drupal\paragraphs\Entity\Paragraph */
   $flexible_lg = $variables['paragraph'];
-  if (isset($variables['elements']['#context']['level'])) {
-    $variables['level'] = $variables['elements']['#context']['level'];
-  }
-  else {
-    $behavior_settings = $flexible_lg->getAllBehaviorSettings();
+
+  if ($behavior_settings = $flexible_lg->getAllBehaviorSettings()) {
     $parent_uuid = $behavior_settings['layout_paragraphs']['parent_uuid'] ?? NULL;
     if (!empty($parent_uuid)) {
       if ($flexible_lg->getParentEntity()) {
