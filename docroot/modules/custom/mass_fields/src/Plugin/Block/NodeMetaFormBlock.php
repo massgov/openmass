@@ -3,6 +3,7 @@
 namespace Drupal\mass_fields\Plugin\Block;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -147,8 +148,10 @@ class NodeMetaFormBlock extends BlockBase implements ContainerFactoryPluginInter
 
     // Truncate the node title if needed to fit within the subject limit.
     $title_nid = $title_prefix .
-      ((strlen($title) > $title_max_length) ? substr($title, 0, $title_max_length - 1) . '…' : $title) .
-      $title_suffix;
+      ((mb_strlen($title) > $title_max_length)
+        ? Unicode::truncate($title, $title_max_length, TRUE, TRUE)
+        : $title)
+      . $title_suffix;
 
     $contact_url = new Url('entity.user.contact_form', ['user' => $author->id()], [
       // Used by Prepopulate module to pre-fill the contact form subject.

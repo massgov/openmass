@@ -1,5 +1,7 @@
-(function (Drupal, once) {
+(function (Drupal, once, $) {
   'use strict';
+
+  const BOUND_FLAG = '__modalScrollGuardBound';
 
   const MEMO_KEY = 'scrollMemo';
   const FOCUS_KEY = 'lastFocus';
@@ -11,12 +13,9 @@
 
   // Return the topmost visible dialog-like scroller (modal or off-canvas).
   function getTopDialogContent() {
-    if (window.jQuery) {
-      const $ = window.jQuery;
-      // Prefer currently visible jQuery UI dialogs.
-      const $dlg = $('.ui-dialog:visible .ui-dialog-content:visible').last();
-      if ($dlg.length) { return $dlg.get(0); }
-    }
+    // Prefer currently visible jQuery UI dialogs.
+    const $dlg = $('.ui-dialog:visible .ui-dialog-content:visible').last();
+    if ($dlg.length) { return $dlg.get(0); }
     // Fallbacks: off-canvas in Drupal and any open dialog content.
     const offCanvas = document.getElementById('drupal-off-canvas');
     if (offCanvas && offCanvas.offsetParent !== null) { return offCanvas; }
@@ -169,21 +168,23 @@
       patchAjaxInsertOnce._done = true;
     })();
 
-    if (window.jQuery) {
-      const $ = window.jQuery;
+    if (!window[BOUND_FLAG]) {
+      // Ensure no duplicate handlers if this behavior re-attaches.
+      $(document).off('.modalScrollGuard');
       $(document)
-        .on('ajaxSend.modalScrollGuard', function (evt, xhr, settings) {
-          // settings.extraData?._triggering_element_name is often present
-          // but we’ll look for the currently active/trigger element in the dialog.
+        .on('ajaxSend.modalScrollGuard', function () {
+          const dc = getTopDialogContent();
           const active = document.activeElement;
-          const trigger = (active && isInDialog(active)) ? active : dialogContent;
+          const trigger = (active && isInDialog(active)) ? active : (dc || document.body);
           beforeAjax(trigger);
         })
-        .on('ajaxComplete.modalScrollGuard', function (evt, xhr, settings) {
+        .on('ajaxComplete.modalScrollGuard', function () {
+          const dc = getTopDialogContent();
           const active = document.activeElement;
-          const trigger = (active && isInDialog(active)) ? active : dialogContent;
+          const trigger = (active && isInDialog(active)) ? active : (dc || document.body);
           afterAjax(trigger);
         });
+      window[BOUND_FLAG] = true;
     }
 
     // — Safety net: MutationObserver for non-Drupal AJAX reflows —
@@ -202,6 +203,7 @@
         });
       }
     });
+    dialogContent.__modalScrollGuardObserver = mo;
     mo.observe(dialogContent, {subtree: true, childList: true});
   }
 
@@ -214,11 +216,21 @@
       dialogs.forEach(wireDialog);
     },
     detach: function (context) {
-      // Optional: clean jQuery handlers on full detach.
-      if (window.jQuery) {
-        const $ = window.jQuery;
-        $(document).off('.modalScrollGuard');
+      $(document).off('.modalScrollGuard');
+      // Disconnect observers on any dialog content within this context.
+      const dialogs = context.querySelectorAll && context.querySelectorAll('.ui-dialog .ui-dialog-content, #drupal-off-canvas');
+      if (dialogs) {
+        dialogs.forEach(function (dc) {
+          if (dc.__modalScrollGuardObserver) {
+            try { dc.__modalScrollGuardObserver.disconnect(); } catch (e) {}
+            dc.__modalScrollGuardObserver = null;
+          }
+        });
+      }
+      // Allow re-binding on future attaches.
+      if (window[BOUND_FLAG]) {
+        try { delete window[BOUND_FLAG]; } catch (e) { window[BOUND_FLAG] = false; }
       }
     }
   };
-})(Drupal, once);
+})(Drupal, once, jQuery);
