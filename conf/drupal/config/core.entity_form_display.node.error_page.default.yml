@@ -20,6 +20,7 @@ third_party_settings:
     group_erro:
       children:
         - group_error_page
+        - group_page_info
       label: 'Error page edit form'
       region: content
       parent_name: ''
@@ -47,6 +48,26 @@ third_party_settings:
         classes: ''
         id: ''
         formatter: open
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - path
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_erro
+      weight: 1
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
         description: ''
         required_fields: true
 id: node.error_page.default
@@ -103,13 +124,13 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 8
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   path:
     type: path
-    weight: 2
+    weight: 1
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -127,6 +148,25 @@ content:
     third_party_settings: {  }
   scheduler_settings:
     weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 4
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 5
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  simple_sitemap:
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -151,7 +191,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 7
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }

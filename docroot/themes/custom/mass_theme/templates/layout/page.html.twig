@@ -52,12 +52,11 @@
   "brandBanner": {
     "bgTheme": "dark",
     "bgColor": "c-primary-alt",
-    "hasSeal": true,
-    "hasToggle": true
+    "hasSeal": true
   }
 } %}
 {{ page.emergency_alert }}
-  <div class="alert-overlay"></div>
+<div class="alert-overlay"></div>
 {{ page.flag_links }}
 {% set header_class = "" %}
 {% if hide_main_nav %}
@@ -128,12 +127,14 @@
     {{ page.breadcrumb }}
   {% endif %}
 {% endblock %}
-<main role="main" id="main-content" tabindex="-1"{% if main_class %} class="{{ main_class }}"{% endif %}>{# Keeping tabindex for accessibility purposes #}
+<main
+  role="main" id="main-content" tabindex="-1" {% if main_class %} class="{{ main_class }}" {% endif %}>
+  {# Keeping tabindex for accessibility purposes #}
   <div id="content-alerts"></div>
   {% block preContent %}
     {% if page.pre_content %}
       <div class="pre-content">
-      {{ page.pre_content }}
+        {{ page.pre_content }}
       </div>
     {% endif %}
   {% endblock %}
@@ -141,7 +142,7 @@
   {% block postContent %}
     {% if page.post_content %}
       <div class="post-content">
-      {{ page.post_content }}
+        {{ page.post_content }}
       </div>
     {% endif %}
   {% endblock %}

@@ -33,15 +33,15 @@ db_offline ? 'db-offline',
 ]
 %}
 <!DOCTYPE html>
-<html{{ html_attributes }}>
+<html{{ html_attributes.addClass(is_node ? 'node-form') }}>
 <head>
 
     <!-- DEPLOYMENT IDENTIFIER: {{ deployment_identifier }} -->
     <head-placeholder token="{{ placeholder_token }}">
-        <title>{{ head_title|safe_join(' | ') }}</title>
-        <css-placeholder token="{{ placeholder_token }}">
-            <js-placeholder token="{{ placeholder_token }}">
-                </head>
+    <title>{{ head_title|safe_join(' | ') }}</title>
+    <css-placeholder token="{{ placeholder_token }}">
+    <js-placeholder token="{{ placeholder_token }}">
+</head>
 <body{{ attributes.addClass(body_classes) }}>
 <svg-sprite-placeholder>
 {#
