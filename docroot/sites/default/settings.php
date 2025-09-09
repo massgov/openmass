@@ -139,6 +139,3 @@ if (PHP_SAPI === 'cli') {
 if (extension_loaded('newrelic')) { // Ensure PHP agent is available
   newrelic_disable_autorum();
 }
-
-// String overrides for language labels
-$settings['locale_custom_strings_en']['Kiche'] = 'K\'iche\'';
