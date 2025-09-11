@@ -1,0 +1,6 @@
+services:
+  emoji_validation.exception_subscriber:
+    class: Drupal\emoji_validation\EventSubscriber\EmojiValidationExceptionSubscriber
+    arguments: ['@messenger']
+    tags:
+      - { name: event_subscriber }
