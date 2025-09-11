@@ -19,6 +19,8 @@ services:
 
     # Wait until the mysql service is done building
     depends: mysql
+    environment:
+      - MYSQL_SSL_MODE=DISABLED
 
     # Conduct Lighthouse audits of the these URLs using the default options
     urls:
