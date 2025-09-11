@@ -49,7 +49,6 @@ services:
       init:
         - apt-get update
         - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
-        - apt update
         # Install Node.js 22.x
         - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
         - apt-get install -y nodejs
@@ -95,7 +94,7 @@ services:
         - yarn install
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
-        - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-import-backup /tmp/database.sql.gz
+        - MYSQL_SSL_MODE=DISABLED PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-import-backup /tmp/database.sql.gz
         - rm -f /tmp/database.sql.gz
         # Set release for env indicator module
         - drush sset environment_indicator.current_release ${TUGBOAT_GITHUB_HEAD} || true
@@ -115,7 +114,7 @@ services:
         - rm -rf vendor docroot/modules/contrib docroot/libraries
         - composer install --no-interaction --optimize-autoloader --no-cache
         - yarn install
-        - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
+        - MYSQL_SSL_MODE=DISABLED PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
 
   # This 'mysql' key acts as the hostname to access the service by from the php service.
   mysql:
