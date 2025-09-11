@@ -1295,7 +1295,7 @@ display:
           exposed: true
           expose:
             operator_id: ''
-            label: 'Organization (direct match)'
+            label: 'Organization Filter'
             description: ''
             use_operator: false
             operator: node_org_filter_op
@@ -1318,68 +1318,6 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        node_parent_org_top_filter:
-          id: node_parent_org_top_filter
-          table: node_field_data
-          field: node_parent_org_top_filter
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          plugin_id: mass_views_node_org_top_parent_filter
-          operator: '='
-          value: null
-          group: 1
-          exposed: true
-          expose:
-            operator_id: node_parent_org_top_filter_op
-            label: 'Organization (including all suborganizations)'
-            description: 'using the parent organization field for each organization'
-            use_operator: false
-            operator: node_parent_org_top_filter_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: node_parent_org_top_filter
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1781,8 +1719,7 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: true
-          disable_automatic_base_fields: false
+          distinct: false
           replica: false
           query_tags: {  }
       relationships:
@@ -1859,10 +1796,7 @@ display:
           field: area
           plugin_id: text
       footer: {  }
-      display_extenders:
-        metatag_display_extender:
-          metatags: {  }
-          tokenize: false
+      display_extenders: {  }
     cache_metadata:
       max-age: 0
       contexts:
