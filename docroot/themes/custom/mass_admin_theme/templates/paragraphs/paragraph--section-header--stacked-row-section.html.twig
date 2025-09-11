@@ -1,0 +1,28 @@
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+      <div class="ma__stacked-row__container">
+        <div class="ma__stacked-row__title">
+          {% set compHeading = {
+            "title": (content.field_section_long_form_heading|field_value),
+            "sub": "",
+            "color": "",
+            "id": id,
+            "level": heading_level
+          }
+          %}
+          {% include "@atoms/04-headings/comp-heading.twig" %}
+        </div>
+      </div>
+
+    {% endblock %}
+  </div>
+{% endblock paragraph %}

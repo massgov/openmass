@@ -58,7 +58,7 @@ third_party_settings:
       label: 'Hours of operation'
       region: content
       parent_name: group_contact
-      weight: 10
+      weight: 3
       format_type: fieldset
       format_settings:
         classes: ''
@@ -85,8 +85,7 @@ third_party_settings:
     group_contact_information_edit_f:
       children:
         - group_contact
-        - field_organizations
-        - field_contact_more_info_link
+        - group_page_info
       label: 'Contact information edit form'
       region: content
       parent_name: ''
@@ -100,6 +99,9 @@ third_party_settings:
       children:
         - group_contact_titles
         - group_hours_of_operation
+        - field_organizations
+        - field_contact_more_info_link
+        - field_reusable_label
       label: Contact
       region: content
       parent_name: group_contact_information_edit_f
@@ -112,6 +114,25 @@ third_party_settings:
         formatter: open
         description: '<p>Contact information entered here may be used on multiple pages. The "Pages linking here" tab will show where it is used.</p>'
         required_fields: true
+    group_page_info:
+      children:
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: content
+      parent_name: group_contact_information_edit_f
+      weight: 4
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.contact_information.default
 targetEntityType: node
 bundle: contact_information
@@ -119,7 +140,7 @@ mode: default
 content:
   field_contact_more_info_link:
     type: link_default
-    weight: 6
+    weight: 5
     region: content
     settings:
       placeholder_url: ''
@@ -135,7 +156,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 3
+    weight: 4
     region: content
     settings:
       match_operator: CONTAINS
@@ -223,7 +244,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -246,20 +267,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 8
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -294,7 +315,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 9
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

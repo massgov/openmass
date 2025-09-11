@@ -1,5 +1,36 @@
 
 
+## [0.449.0] - September 9, 2025
+
+### Added
+  - DP-39253: Configure layout paragraphs for service pages.
+  - DP-41910: More backstop test pages including some temporary ones.
+  - DP-41923: Add mimetype filter to document adv search report
+  
+### Fixed
+  - DP-40399: Brand Banner a11y fixes.
+  - DP-41011: Implement consistent focus styles for text input, selectbox, text areas and number inputs in default and high contrast modes.
+  - DP-40941: Fixed glossary terms breaking table styles, and overflow issues by table boundaries.
+  - DP-441557: Fix keyboard navigation skipping links in table of contents due to focus trapping logic.
+  - DP-41653: Fixed Android virtual keyboard dismissing immediately when focusing on any input by preventing Mayflower JavaScript from auto-focusing the hamburger menu button on Android devices.
+  
+
+
+## [0.448.0] - September 2, 2025
+
+### Changed
+  - DP-40756: Change order of fields on contact content type.
+  - DP-40850: Added accessibility attributes to document translation links for improved screen reader support.
+  - DP-41507: Add more filters to the file view used by the CX team only.
+  
+### Fixed
+  - DP-41581: Fix authoring add block button accessibility issue.
+  
+### Added
+  - DP-41771: Parent organization report showing parent org structure.
+  
+
+
 ## [0.447.0] - August 19, 2025
 
 ### Changed
