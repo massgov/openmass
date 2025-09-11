@@ -49,8 +49,8 @@ services:
       init:
         - apt-get update
         - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
-        - sudo apt update
-        # Install Node.js 16.x
+        - apt update
+        # Install Node.js 22.x
         - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
         - apt-get install -y nodejs
         # Install opcache
@@ -59,11 +59,9 @@ services:
         - a2enmod headers rewrite
         - apache2ctl graceful
 
-        - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-        # https://linuxize.com/post/how-to-install-yarn-on-ubuntu-20-04/
-        - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
-        - sudo apt update
-        - sudo apt install yarn
+        - corepack enable
+        - corepack prepare yarn@1 --activate
+
         # See .ddev/php/my-php.ini for local configuration.
         # We have a 256M limit set at Acquia via their UI / API.
         - echo "memory_limit=256M" >> /usr/local/etc/php/conf.d/my-php.ini
@@ -86,7 +84,7 @@ services:
         #Install Drush Launcher for a more comfortable terminal experience.
         - wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar
         - chmod +x drush.phar
-        - sudo mv drush.phar /usr/local/bin/drush
+        - mv drush.phar /usr/local/bin/drush
 
       # Commands that import files, databases, or other assets. When an
       # existing preview is refreshed, the build workflow starts here,
