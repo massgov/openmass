@@ -115,6 +115,26 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds an org top parent filter for nodes.
+  $data['node_field_data']['node_parent_org_top_filter'] = [
+    'title' => 'Organization Top Parent Filter',
+    'filter' => [
+      'title' => t('Organization Top Parent Filter'),
+      'field' => 'nid',
+      'id' => 'mass_views_node_org_top_parent_filter',
+    ],
+  ];
+
+  // Adds an org top parent filter for nodes.
+  $data['media_field_data']['media_parent_org_top_filter'] = [
+    'title' => 'Organization Top Parent Filter',
+    'filter' => [
+      'title' => t('Organization Top Parent Filter'),
+      'field' => 'nid',
+      'id' => 'mass_views_media_org_top_parent_filter',
+    ],
+  ];
+
   // Adds an org filter for nodes.
   $data['node_field_data']['node_billing_org_filter'] = [
     'title' => 'Billing Organization Filter',
