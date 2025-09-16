@@ -23,6 +23,7 @@ third_party_settings:
       children:
         - group_overview_alert_placement
         - group_alert_content
+        - group_page_info
       label: Alert
       region: content
       parent_name: ''
@@ -35,13 +36,9 @@ third_party_settings:
     group_overview_alert_placement:
       children:
         - title
-        - field_alert_hide_message
-        - field_alert_title_link
-        - field_alert_title_link_target
         - field_organizations
         - langcode
         - field_reusable_label
-        - field_english_version
       label: 'Overview & Alert placement'
       region: content
       parent_name: group_alert
@@ -55,7 +52,6 @@ third_party_settings:
         required_fields: true
     group_alert_content:
       children:
-        - field_alert_severity
         - field_sitewide_alert_severity
         - field_sitewide_alert
         - field_alert_ref_contact
@@ -68,6 +64,26 @@ third_party_settings:
       format_settings:
         classes: ''
         id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - path
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_alert
+      weight: 24
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -147,32 +163,32 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 7
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
   path:
     type: path
-    weight: 4
+    weight: 25
     region: content
     settings: {  }
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 28
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 29
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 27
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -195,7 +211,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   url_redirects:
-    weight: 6
+    weight: 26
     region: content
     settings: {  }
     third_party_settings: {  }
