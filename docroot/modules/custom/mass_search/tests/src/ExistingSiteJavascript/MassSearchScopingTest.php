@@ -130,7 +130,7 @@ class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
   private function getSearchSuggestions($query) {
     $searchField = $this->setSearchInput($query);
     $searchField->focus();
-    $suggestions = $this->getCurrentPage()->findAll('css', '#search-suggestions .ma__header-search-suggestion-option');
+    $suggestions = $this->getCurrentPage()->findAll('css', '.ma__header__hamburger__search-bar #search-suggestions .ma__header-search-suggestion-option');
     foreach ($suggestions as $key => $suggestion) {
       if (!$suggestion->isVisible()) {
         unset($suggestions[$key]);
