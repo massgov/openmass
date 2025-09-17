@@ -1,0 +1,61 @@
+From 1943ac407a5ca2f3b28f05d1555c07940e45f0b1 Mon Sep 17 00:00:00 2001
+From: Thomas Fleming <41806-thomas.fleming@users.noreply.drupalcode.org>
+Date: Wed, 17 Sep 2025 17:10:19 +0000
+Subject: [PATCH] Update file csv-field.js
+
+---
+ js/csv-field.js | 27 ++++++++++++---------------
+ 1 file changed, 12 insertions(+), 15 deletions(-)
+
+diff --git a/js/csv-field.js b/js/csv-field.js
+index c235d0f..4fae780 100644
+--- a/js/csv-field.js
++++ b/js/csv-field.js
+@@ -118,14 +118,15 @@
+                   language: {
+                     search: tableSettings.searchLabel ? tableSettings.searchLabel + ":" : "Search:",
+                   },
++                  layout: {
++                    topStart: ""
++                  }
+                 });
+
+                 dtable.search("").draw();
+-                dtable.rows().nodes().to$().hide();
+-                $(table).find("thead").hide();
+-                $(table).siblings(".dataTables_paginate").hide();
+-                $(table).siblings(".dataTables_info").hide();
+-                $(table).css("border-bottom", "unset");
++                dtable.tables().containers().to$().find('.dt-info').hide();
++                dtable.tables().containers().to$().find('.dt-paging').hide();
++                dtable.tables().containers().to$().find('.dt-layout-table').hide();
+
+                 var $search = $(table).parent().find('input[type="search"]');
+                 var $button = $('<button type="submit" class="dt-search-submit">Search</button>')
+@@ -134,17 +135,13 @@
+                 dtable.on("search.dt", function () {
+                   var searchTerm = dtable.search();
+                   if (searchTerm) {
+-                    dtable.rows().nodes().to$().show();
+-                    $(table).find("thead").show();
+-                    $(table).css("border-bottom", "1px solid rgba(0, 0, 0, 0.3)");
+-                    $(table).siblings(".dataTables_paginate").show();
+-                    $(table).siblings(".dataTables_info").show();
++                    dtable.tables().containers().to$().find('.dt-info').show();
++                    dtable.tables().containers().to$().find('.dt-paging').show();
++                    dtable.tables().containers().to$().find('.dt-layout-table').show();
+                   } else {
+-                    dtable.rows().nodes().to$().hide();
+-                    $(table).find("thead").hide();
+-                    $(table).css("border-bottom", "unset");
+-                    $(table).siblings(".dataTables_paginate").hide();
+-                    $(table).siblings(".dataTables_info").hide();
++                    dtable.tables().containers().to$().find('.dt-info').hide();
++                    dtable.tables().containers().to$().find('.dt-paging').hide();
++                    dtable.tables().containers().to$().find('.dt-layout-table').hide();
+                   }
+                 });
+
+--
+GitLab
+
