@@ -1338,7 +1338,7 @@ class Molecules {
     }
     if (!empty($suggested_scopes)) {
       $has_suggestions = TRUE;
-      $suggested_scopes = array_unique($suggested_scopes);
+      $suggested_scopes = array_unique($suggested_scopes, 0);
     }
 
     return [
