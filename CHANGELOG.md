@@ -1,5 +1,17 @@
 
 
+## [0.450.0] - September 16, 2025
+
+### Added
+  - DP-40519: Add top level org filter for all pages and all document views in CMS s.
+  - DP-41810: Add K'iche' language support to Drupal site with language code 'quc'.
+  - DP-42068: Added ancillary role to allow authors or editors to bulk edit temporarily. This is added on top of main role..
+  
+### Changed
+  - DP-42063: Removed temporary pages from backstop. Changed format types on some backstop pages to limit the number of screenshots.
+  
+
+
 ## [0.449.0] - September 9, 2025
 
 ### Added
