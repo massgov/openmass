@@ -7,8 +7,10 @@
 
 use Drupal\Core\Form\FormStateInterface;
 
-define('EMOJI_VALIDATION_MAX_FILE_SIZE', 10 * 1024 * 1024); // 10MB
-define('EMOJI_VALIDATION_CHUNK_SIZE', 8192); // 8KB
+// 10MB
+define('EMOJI_VALIDATION_MAX_FILE_SIZE', 10 * 1024 * 1024);
+// 8KB
+define('EMOJI_VALIDATION_CHUNK_SIZE', 8192);
 
 /**
  * Returns the compiled emoji regex pattern (cached for performance).
@@ -27,7 +29,7 @@ function _emoji_validation_get_pattern() {
 function emoji_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Add emoji validation to all forms for text fields
   $form['#validate'][] = '_emoji_validation_validate_all_text_fields';
-  
+
   // Only add file validation to forms that actually have file uploads
   // This prevents unnecessary validation on forms without files
   if (_emoji_validation_form_has_file_uploads($form)) {
@@ -105,6 +107,7 @@ function _emoji_validation_recursive_check_for_files($element) {
       return TRUE;
     }
     // Check if this element has fids (file IDs) indicating file upload
+    if (isset($value['#default_value']['fids']) || array_key_exists('fids', $value)) {
       return TRUE;
     }
     // Recursively check nested elements (only if they're arrays)
@@ -296,7 +299,8 @@ function emoji_validation_file_validate($file) {
           '@filename' => $file->getFilename(),
           '@size' => $file_size,
         ]);
-        return $errors; // Return no errors for large files
+        // Return no errors for large files
+        return $errors;
       }
       
       // For smaller files, validate in chunks to avoid memory issues
@@ -329,7 +333,8 @@ function emoji_validation_file_validate($file) {
     }
   }
   
-  return $errors; // Return errors for red field validation
+  // Return errors for red field validation
+  return $errors;
 }
 
 /**
