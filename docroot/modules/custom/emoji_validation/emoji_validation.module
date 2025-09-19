@@ -7,10 +7,6 @@
 
 use Drupal\Core\Form\FormStateInterface;
 
-// 10MB
-define('EMOJI_VALIDATION_MAX_FILE_SIZE', 10 * 1024 * 1024);
-// 8KB
-define('EMOJI_VALIDATION_CHUNK_SIZE', 8192);
 
 /**
  * Returns the compiled emoji regex pattern (cached for performance).
@@ -29,184 +25,8 @@ function _emoji_validation_get_pattern() {
 function emoji_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Add emoji validation to all forms for text fields
   $form['#validate'][] = '_emoji_validation_validate_all_text_fields';
-
-  // Only add file validation to forms that actually have file uploads
-  // This prevents unnecessary validation on forms without files
-  if (_emoji_validation_form_has_file_uploads($form)) {
-    $form['#validate'][] = '_emoji_validation_validate_file_uploads';
-  }
 }
 
-/**
- * Helper function to check if a form has file upload fields.
- */
-function _emoji_validation_form_has_file_uploads($form) {
-  // Check if form has any file upload fields
-  return _emoji_validation_recursive_check_for_files($form);
-}
-
-/**
- * Checks if a field path represents an actual file upload field.
- */
-function _emoji_validation_is_file_upload_field($field_path) {
-  $path_string = implode('][', $field_path);
-
-  // Look for actual file upload field patterns
-  $file_upload_patterns = [
-    'field_csv_file',
-    'field_file',
-    'field_upload',
-    'field_media',
-    'csv_file',
-    'upload_file',
-    'file_upload',
-  ];
-
-  foreach ($file_upload_patterns as $pattern) {
-    if (strpos($path_string, $pattern) !== FALSE) {
-      return TRUE;
-    }
-  }
-
-  // Exclude display configuration and settings fields
-  $exclude_patterns = [
-    'settings',
-    'config',
-    'display',
-    'options',
-    'behavior',
-    'format',
-  ];
-
-  foreach ($exclude_patterns as $pattern) {
-    if (strpos($path_string, $pattern) !== FALSE) {
-      return FALSE;
-    }
-  }
-
-  return TRUE;
-}
-
-/**
- * Recursively checks form elements for file upload fields.
- */
-function _emoji_validation_recursive_check_for_files($element) {
-  // Only process arrays, skip objects and other types
-  if (!is_array($element)) {
-    return FALSE;
-  }
-
-  foreach ($element as $key => $value) {
-    // Skip non-array values to avoid type errors
-    if (!is_array($value)) {
-      continue;
-    }
-
-    if (isset($value['#type']) && in_array($value['#type'], ['file', 'managed_file', 'plupload'])) {
-      return TRUE;
-    }
-    // Check if this element has fids (file IDs) indicating file upload
-    if (isset($value['#default_value']['fids']) || (is_array($value) && array_key_exists('fids', $value))) {
-      return TRUE;
-    }
-    // Recursively check nested elements (only if they're arrays)
-    if (_emoji_validation_recursive_check_for_files($value)) {
-      return TRUE;
-    }
-  }
-  return FALSE;
-}
-
-/**
- * Validation function that checks uploaded files for emojis.
- */
-function _emoji_validation_validate_file_uploads(array &$form, FormStateInterface $form_state) {
-  try {
-    // Use static variable to ensure validation only runs once per form submission
-    static $validation_run = FALSE;
-
-    if ($validation_run) {
-      return;
-    }
-    $validation_run = TRUE;
-
-    $values = $form_state->getValues();
-
-    // Check for file uploads in form values and show only one error
-    _emoji_validation_check_file_values($form_state, $values, []);
-  }
-  catch (\Exception $e) {
-    // Log the error but don't break the form submission
-    \Drupal::logger('emoji_validation')->error('Error during file upload validation: @message', [
-      '@message' => $e->getMessage(),
-    ]);
-  }
-}
-
-/**
- * Recursively checks form values for file uploads and validates them.
- */
-function _emoji_validation_check_file_values(FormStateInterface $form_state, $values, $field_path = []) {
-  static $validated_files = [];
-  static $error_shown = FALSE;
-
-  // If we've already shown an error, don't show more
-  if ($error_shown) {
-    return;
-  }
-
-  if (is_array($values)) {
-    foreach ($values as $key => $value) {
-      $current_path = array_merge($field_path, [$key]);
-
-      // Only check actual file upload fields, not display configuration fields
-      if (is_array($value) && isset($value['fids']) && !empty($value['fids'])) {
-        // This looks like a file field - check if it's actually a file upload field
-        if (_emoji_validation_is_file_upload_field($current_path)) {
-          foreach ($value['fids'] as $fid) {
-            if ($fid && !isset($validated_files[$fid])) {
-              try {
-                $file = \Drupal\file\Entity\File::load($fid);
-                if ($file) {
-                  // Mark this file as validated
-                  $validated_files[$fid] = TRUE;
-
-                  // Check if this file was flagged as having emojis
-                  $problem_files = drupal_static('emoji_validation_problem_files', []);
-                  if (in_array($file->id(), $problem_files)) {
-                    // Set error flag to prevent multiple error messages
-                    $error_shown = TRUE;
-
-                    // Set error on the file input element specifically to avoid child propagation
-                    $filename = $file->getFilename();
-                    $file_input_name = 'files][' . implode('][', $current_path);
-                    $form_state->setErrorByName($file_input_name, t('The uploaded file "@filename" contains emoji icons which are not allowed. Please remove all emojis from the file before uploading.', [
-                      '@filename' => $filename,
-                    ]));
-
-                    // Stop processing once we find an error
-                    return;
-                  }
-                }
-              }
-              catch (\Exception $e) {
-                // Log the error but don't break the form submission
-                \Drupal::logger('emoji_validation')->error('Error validating file @fid: @message', [
-                  '@fid' => $fid,
-                  '@message' => $e->getMessage(),
-                ]);
-              }
-            }
-          }
-        }
-      }
-      elseif (is_array($value)) {
-        // Recursively check nested arrays
-        _emoji_validation_check_file_values($form_state, $value, $current_path);
-      }
-    }
-  }
-}
 
 /**
  * Universal validation function that checks ALL text fields for emojis.
@@ -250,91 +70,13 @@ function _emoji_validation_check_all_values(FormStateInterface $form_state, $val
 }
 
 /**
- * Implements hook_entity_presave() for file entities.
- *
- * Validates files when they're saved to catch programmatic uploads.
+ * Implements hook_entity_presave().
  */
 function emoji_validation_entity_presave($entity) {
-  // Handle file entities
-  if ($entity->getEntityTypeId() === 'file') {
-    $errors = emoji_validation_file_validate($entity);
-    if (!empty($errors)) {
-      // Prevent the file from being saved
-      throw new \Drupal\Core\Entity\EntityStorageException(implode(' ', $errors));
-    }
-    return;
-  }
-
-  // Handle other entity types (existing logic)
+  // Handle entity types (existing logic)
   emoji_validation_entity_presave_other($entity);
 }
 
-/**
- * Implements hook_file_validate().
- *
- * Validates uploaded files for emoji content, particularly CSV files.
- * Returns empty errors array to prevent red field errors, but logs issues.
- */
-function emoji_validation_file_validate($file) {
-  $errors = [];
-
-  // Only check text-based files
-  $text_extensions = ['csv', 'txt', 'json', 'xml'];
-  $file_extension = strtolower(pathinfo($file->getFilename(), PATHINFO_EXTENSION));
-
-  if (in_array($file_extension, $text_extensions)) {
-    $file_path = $file->getFileUri();
-
-    // Check if file exists and is readable
-    if (file_exists($file_path) && is_readable($file_path)) {
-      $file_size = filesize($file_path);
-
-      // Skip validation for very large files to prevent memory issues
-      $max_size = EMOJI_VALIDATION_MAX_FILE_SIZE;
-
-      if ($file_size > $max_size) {
-        // Log that we skipped validation due to file size
-        \Drupal::logger('emoji_validation')->info('Skipped emoji validation for large file: @filename (@size bytes)', [
-          '@filename' => $file->getFilename(),
-          '@size' => $file_size,
-        ]);
-        // Return no errors for large files
-        return $errors;
-      }
-
-      // For smaller files, validate in chunks to avoid memory issues
-      $handle = fopen($file_path, 'r');
-      if ($handle !== FALSE) {
-        $emoji_pattern = _emoji_validation_get_pattern();
-        $emoji_found = FALSE;
-        $chunk_size = EMOJI_VALIDATION_CHUNK_SIZE;
-
-        while (!feof($handle) && !$emoji_found) {
-          $chunk = fread($handle, $chunk_size);
-          if ($chunk !== FALSE && preg_match($emoji_pattern, $chunk)) {
-            $emoji_found = TRUE;
-
-            // Don't return error here - handle it in form validation instead
-
-            // Log the detection
-            \Drupal::logger('emoji_validation')->warning('Emoji detected in uploaded file: @filename', [
-              '@filename' => $file->getFilename(),
-            ]);
-
-            // Store the file ID in a static variable for form validation to pick up
-            $problem_files = &drupal_static('emoji_validation_problem_files', []);
-            $problem_files[] = $file->id();
-          }
-        }
-
-        fclose($handle);
-      }
-    }
-  }
-
-  // Return errors for red field validation
-  return $errors;
-}
 
 /**
  * Handles entity presave validation for non-file entities.
