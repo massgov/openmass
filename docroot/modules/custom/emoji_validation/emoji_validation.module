@@ -106,7 +106,7 @@ function _emoji_validation_recursive_check_for_files($element) {
       return TRUE;
     }
     // Check if this element has fids (file IDs) indicating file upload
-    if (isset($value['#default_value']['fids']) || array_key_exists('fids', $value)) {
+    if (isset($value['#default_value']['fids']) || (is_array($value) && array_key_exists('fids', $value))) {
       return TRUE;
     }
     // Recursively check nested elements (only if they're arrays)
@@ -177,14 +177,12 @@ function _emoji_validation_check_file_values(FormStateInterface $form_state, $va
                     // Set error flag to prevent multiple error messages
                     $error_shown = TRUE;
 
-                    // Use messenger service to show error without field propagation issues
+                    // Set error on the file input element specifically to avoid child propagation
                     $filename = $file->getFilename();
-                    \Drupal::messenger()->addError(t('The uploaded file "@filename" contains emoji icons which are not allowed. Please remove all emojis from the file before uploading.', [
+                    $file_input_name = 'files][' . implode('][', $current_path);
+                    $form_state->setErrorByName($file_input_name, t('The uploaded file "@filename" contains emoji icons which are not allowed. Please remove all emojis from the file before uploading.', [
                       '@filename' => $filename,
                     ]));
-
-                    // Set a general form error to prevent submission
-                    $form_state->setErrorByName('emoji_validation', '');
 
                     // Stop processing once we find an error
                     return;
