@@ -43,10 +43,10 @@ dependencies:
     - field_group
     - focal_point
     - inline_entity_form
+    - layout_paragraphs
     - link
     - maxlength
     - metatag
-    - paragraphs
     - term_reference_tree
 third_party_settings:
   field_group:
@@ -56,6 +56,7 @@ third_party_settings:
         - group_overview
         - group_content
         - group_additional_info
+        - group_page_info
       label: 'Service Edit Form'
       region: content
       parent_name: ''
@@ -124,7 +125,7 @@ third_party_settings:
       label: 'Additional info'
       region: content
       parent_name: group_service_edit_form
-      weight: 24
+      weight: 23
       format_type: tab
       format_settings:
         classes: ''
@@ -144,6 +145,26 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - field_service_metatags
+        - url_redirects
+        - search
+        - search_nosnippet
+        - simple_sitemap
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_service_edit_form
+      weight: 24
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -501,10 +522,10 @@ content:
     third_party_settings: {  }
   field_service_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 3
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_service_ref_guide_page_1:
@@ -529,16 +550,16 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_service_sections:
-    type: entity_reference_paragraphs
+    type: layout_paragraphs
     weight: 13
     region: content
     settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: closed
-      add_mode: button
+      view_mode: default
+      preview_view_mode: default
       form_display_mode: default
-      default_paragraph_type: _none
+      nesting_depth: 0
+      require_layouts: 1
+      empty_message: ''
     third_party_settings: {  }
   field_service_video:
     type: inline_entity_form_complex
@@ -587,7 +608,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -623,7 +644,7 @@ content:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -662,7 +683,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

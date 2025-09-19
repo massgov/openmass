@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * Template for the Key Message paragraph type.
+ *
+ * @see template_preprocess_paragraph()
+ *
+ * @ingroup themeable
+ */
+#}
+{%
+  set classes = [
+  'paragraph',
+  'paragraph--type--' ~ paragraph.bundle|clean_class,
+  view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+  not paragraph.isPublished() ? 'paragraph--unpublished'
+]
+%}
+{% block paragraph %}
+  <div{{ attributes.addClass(classes) }}>
+    {% block content %}
+
+      {% set subtitle = '' %}
+      {% set eyebrow = '' %}
+      {% set description = {} %}
+      {% if paragraph.field_sub_heading is not empty %}
+        {% set subtitle = paragraph.field_sub_heading.value %}
+      {% endif %}
+      {% if paragraph.field_eyebrow is not empty %}
+        {% set eyebrow = paragraph.field_eyebrow.value %}
+      {% endif %}
+      {% if paragraph.field_rich_text_description is not empty %}
+        {% set description = {
+          "rteElements": [{
+            "path": "@atoms/11-text/raw-html.twig",
+            "data": {
+              "rawHtml": {
+                "content": content.field_rich_text_description
+              }
+            }
+          }]
+        }
+        %}
+      {% endif %}
+      {% if paragraph.field_background_type.value == 'color' %}
+        {% set textOverlaySection = backgroundColor ? backgroundColor : textOverlaySection %}
+      {% endif %}
+      {%
+        set keyMessage = {
+        "keyMessage": {
+          "id": componentId,
+          "positionTop": positionTop,
+          "compHeading": {
+            "title": paragraph.field_main_heading.value,
+            "level": level
+          },
+          "backgroundColor": textOverlaySection,
+          "bgImage": content.field_image,
+          "mobileBgImage": "",
+          "subtitle": subtitle,
+          "eyebrow": eyebrow,
+          "description": description,
+          "button": button
+        }
+      }
+      %}
+      {% include '@organisms/by-template/key-message.twig' with keyMessage %}
+
+    {% endblock %}
+  </div>
+{% endblock paragraph %}
