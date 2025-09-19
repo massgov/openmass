@@ -61,29 +61,13 @@ class OrgTopParentFilter extends FilterPluginBase {
     // 2) Create the INNER JOIN to the org reference field table.
     $nid_alias = $this->query->ensureTable('node_field_data', $this->relationship);
     $join = $this->query->getJoinData('node__field_organizations', 'node_field_data');
-    $join->type = 'INNER';
+    $join->type = 'LEFT';
     $org_table_alias = $this->query->ensureTable('node__field_organizations', $this->relationship, $join);
 
     // 3) Build an OR where-group: (nid IN org_ids) OR (field_organizations_target_id IN org_ids)
     $or_group = $this->query->setWhereGroup('OR');
     $this->query->addWhere($or_group, "$nid_alias.nid", $org_ids, 'IN');
     $this->query->addWhere($or_group, "$org_table_alias.field_organizations_target_id", $org_ids, 'IN');
-  }
-
-  /**
-   * Retrieve a single usable int value from the input value.
-   *
-   * @return int|null
-   *   The organization ID, or NULL.
-   */
-  private function getValue() {
-    if (!empty($this->value['value']['target_id'])) {
-      return (int) $this->value['value']['target_id'];
-    }
-    if (!empty($this->value[0]['target_id'])) {
-      return (int) $this->value[0]['target_id'];
-    }
-    return NULL;
   }
 
   /**
