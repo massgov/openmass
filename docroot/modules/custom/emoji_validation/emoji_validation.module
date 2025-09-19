@@ -7,7 +7,6 @@
 
 use Drupal\Core\Form\FormStateInterface;
 
-
 /**
  * Returns the compiled emoji regex pattern (cached for performance).
  */
@@ -26,7 +25,6 @@ function emoji_validation_form_alter(&$form, FormStateInterface $form_state, $fo
   // Add emoji validation to all forms for text fields
   $form['#validate'][] = '_emoji_validation_validate_all_text_fields';
 }
-
 
 /**
  * Universal validation function that checks ALL text fields for emojis.
@@ -76,7 +74,6 @@ function emoji_validation_entity_presave($entity) {
   // Handle entity types (existing logic)
   emoji_validation_entity_presave_other($entity);
 }
-
 
 /**
  * Handles entity presave validation for non-file entities.
