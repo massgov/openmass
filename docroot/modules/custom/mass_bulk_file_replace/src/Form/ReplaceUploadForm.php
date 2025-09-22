@@ -43,7 +43,7 @@ class ReplaceUploadForm extends FormBase {
     // Derive allowed extensions from the Media "document" bundle field settings.
     // We read the `file_extensions` setting from the file field `field_upload_file`.
     $fallback_exts = [
-      'csv','doc','docm','docx','dot','dotx','dwg','geojson','gif','json','jpg','kml','kmz','mp3','mp4','mpp','msg','odf','ods','odt','pdf','png','pps','ppsx','potx','ppt','pptm','pptx','ppsm','prx','pub','rdf','rfa','rte','rtf','tiff','tsv','txt','xls','xlsb','xlsm','xlsx','xml','zip','rpt'
+      'csv', 'doc', 'docm', 'docx', 'dot', 'dotx', 'dwg', 'geojson', 'gif', 'json', 'jpg', 'kml', 'kmz', 'mp3', 'mp4', 'mpp', 'msg', 'odf', 'ods', 'odt', 'pdf', 'png', 'pps', 'ppsx', 'potx', 'ppt', 'pptm', 'pptx', 'ppsm', 'prx', 'pub', 'rdf', 'rfa', 'rte', 'rtf', 'tiff', 'tsv', 'txt', 'xls', 'xlsb', 'xlsm', 'xlsx', 'xml', 'zip', 'rpt'
     ];
 
     $exts = $fallback_exts;
@@ -88,7 +88,8 @@ class ReplaceUploadForm extends FormBase {
       // Client-side Dropzone settings:
       '#dropzonejs_settings' => [
         'parallelUploads' => 1,
-        'maxFilesize' => 128, // MB
+      // MB
+        'maxFilesize' => 128,
         // Mirror the allowed types for client-side filtering:
         'acceptedFiles' => $accepted_files,
       ],

@@ -396,8 +396,10 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
     // Build file paths for the ZIP: a real path for ZipArchive and a scheme path for linking.
     $zip_filename = $this->getFilename();
-    $zip_realpath = $dir_real . '/' . $zip_filename;   // Actual file on disk
-    $zip_scheme   = 'public://' . $zip_filename;       // Used to generate the link
+    // Actual file on disk
+    $zip_realpath = $dir_real . '/' . $zip_filename;
+    // Used to generate the link
+    $zip_scheme = 'public://' . $zip_filename;
 
     $zip = new \ZipArchive();
     if ($zip->open($zip_realpath, \ZipArchive::CREATE) !== TRUE) {
