@@ -39,8 +39,8 @@ class CookieSubscriber implements EventSubscriberInterface {
     $route_name = (string) $request->attributes->get('_route');
 
     // Pin uploads to a single webhead on:
-    //  - any admin route, OR
-    //  - the DropzoneJS upload endpoint.
+    // - any admin route, OR
+    // - the DropzoneJS upload endpoint.
     $should_pin = $this->routerAdminContext->isAdminRoute()
       || $route_name === 'dropzonejs.upload';
 
