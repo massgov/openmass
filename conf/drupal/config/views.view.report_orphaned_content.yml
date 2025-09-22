@@ -1328,7 +1328,8 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
+          disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
       relationships:
@@ -1414,7 +1415,12 @@ display:
           table: views
           field: area
           plugin_id: text
-      footer: {  }
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          plugin_id: result
       display_extenders: {  }
     cache_metadata:
       max-age: 0
@@ -2796,6 +2802,62 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        node_parent_org_top_filter:
+          id: node_parent_org_top_filter
+          table: node_field_data
+          field: node_parent_org_top_filter
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_top_parent_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: node_parent_org_top_filter_op
+            label: 'Organization Top Parent Filter'
+            description: ''
+            use_operator: false
+            operator: node_parent_org_top_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: node_parent_org_top_filter
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -2869,7 +2931,9 @@ display:
         filter_groups: false
       display_description: ''
       display_extenders:
-        metatag_display_extender: {  }
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: admin/ma-dash/reports/orphaned-pages/export
       displays:
         page_1: page_1
@@ -3829,7 +3893,7 @@ display:
           exposed: true
           expose:
             operator_id: ''
-            label: Organization
+            label: 'Organization (direct match)'
             description: ''
             use_operator: false
             operator: node_org_filter_op
@@ -3852,15 +3916,72 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
             reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        node_parent_org_top_filter:
+          id: node_parent_org_top_filter
+          table: node_field_data
+          field: node_parent_org_top_filter
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_top_parent_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: node_parent_org_top_filter_op
+            label: 'Organization (including all suborganizations)'
+            description: 'using the parent organization field for each organization'
+            use_operator: false
+            operator: node_parent_org_top_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: node_parent_org_top_filter
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -3989,94 +4110,6 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        count:
-          id: count
-          table: entity_usage
-          field: count
-          relationship: node_to_usage_entity
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: empty
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        count_1:
-          id: count_1
-          table: entity_usage
-          field: count
-          relationship: node_to_usage_entity
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '<'
-          value:
-            min: ''
-            max: ''
-            value: '1'
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         latest_revision:
           id: latest_revision
           table: node_revision
@@ -4274,6 +4307,94 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        count:
+          id: count
+          table: entity_usage
+          field: count
+          relationship: node_to_usage_entity
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: empty
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 2
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        count_1:
+          id: count_1
+          table: entity_usage
+          field: count
+          relationship: node_to_usage_entity
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '<'
+          value:
+            min: ''
+            max: ''
+            value: '1'
+          group: 2
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -4285,6 +4406,7 @@ display:
         filters: false
         filter_groups: false
         header: false
+        footer: false
       header:
         area:
           id: area
@@ -4299,8 +4421,21 @@ display:
             value: "<p>This report shows published pages that aren't linked from other published pages. News, events, and items that are in collections aren’t included in the report. The report is sorted by page views (descending). </p>\r\n\r\n<p>If you see items in this report, you should either unpublish the page if it is not needed or add a link to the page from another published page. Look at the parent page to see if that is where the orphan page should be linked, or if another parent page is more appropriate. </p>\r\n\r\n<p>If a page is redirected, in some cases it may show up on this report as an orphan even if it is linked from another page. On the orphan page, go to the Analytics tab and check the Audience statistics. If most of the traffic is from Mass.gov, check the top previous page URL to see if the orphan is linked on that page. </p>\r\n\r\n<p>Pages that are not linked can still be found by the public through search because published pages are in a sitemap that is made available to search engines. </p>\r\n\r\n<p> <b>Note:</b> Orphan data can be inaccurate in rare cases. We regenerate this data approximately monthly to correct any data issues.</p>"
             format: basic_html
           tokenize: false
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders:
-        metatag_display_extender: {  }
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: admin/ma-dash/reports/orphaned-pages
       menu:
         type: none
