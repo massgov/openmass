@@ -15,6 +15,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\file\Entity\File;
 use Drupal\stage_file_proxy\DownloadManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
@@ -249,7 +250,7 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
         // Validate the paths.
         if ($media_real_file_path) {
-          if ($this->validateMediaFilePath($media_file_uri)) {
+          if ($this->validateMediaFilePath($media_real_file_path)) {
             // Use the media ID as the key.
             $file_paths[$entity->id()] = $media_real_file_path;
           }
@@ -377,41 +378,77 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
    *   success or warning messages using the messenger service.
    */
   protected function generateAndLinkZipFile(array $file_paths, array $failed_file_paths = []) {
-    $directory = $this->fileSystem->realpath("private://");
-    $zip_path = $directory . '/' . $this->getFilename();
+    // Ensure the private directory exists and is writable.
+    $private = 'public://';
+    if (!$this->fileSystem->prepareDirectory($private, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+      $this->messenger->addError($this->t('Private files directory is not writable or missing.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('Private dir not writable/missing.');
+      return;
+    }
+
+    // Resolve the real filesystem path for ZipArchive operations.
+    $dir_real = $this->fileSystem->realpath($private);
+    if ($dir_real === FALSE) {
+      $this->messenger->addError($this->t('Could not resolve the private files directory path.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('realpath("private://") returned FALSE.');
+      return;
+    }
+
+    // Build file paths for the ZIP: a real path for ZipArchive and a scheme path for linking.
+    $zip_filename = $this->getFilename();
+    $zip_realpath = $dir_real . '/' . $zip_filename;   // Actual file on disk
+    $zip_scheme   = 'public://' . $zip_filename;       // Used to generate the link
 
     $zip = new \ZipArchive();
-    if ($zip->open($zip_path, \ZipArchive::CREATE) !== TRUE) {
+    if ($zip->open($zip_realpath, \ZipArchive::CREATE) !== TRUE) {
       $this->messenger->addError($this->t('Could not create the ZIP file.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('ZipArchive->open() failed at @path', ['@path' => $zip_realpath]);
       return;
     }
 
     foreach ($file_paths as $media_id => $file_path) {
-      if (file_exists($file_path) && is_readable($file_path)) {
+      if (is_string($file_path) && file_exists($file_path) && is_readable($file_path)) {
         $path_parts = pathinfo($file_path);
-        $custom_filename = $path_parts['filename'] . '_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $media_id . '.' . $path_parts['extension'];
+        $ext = isset($path_parts['extension']) && $path_parts['extension'] !== '' ? ('.' . $path_parts['extension']) : '';
+        $custom_filename = $path_parts['filename'] . '_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $media_id . $ext;
         $zip->addFile($file_path, $custom_filename);
       }
     }
+
     $zip->close();
 
-    // Generate the download link for the ZIP file.
-    $download_url = $this->fileUrlGenerator->generateAbsoluteString('private://' . basename($zip_path));
+    // Confirm the ZIP exists on disk before linking.
+    if (!file_exists($zip_realpath)) {
+      $this->messenger->addError($this->t('ZIP file was not created on disk.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('ZIP missing after close: @path', ['@path' => $zip_realpath]);
+      return;
+    }
+
+    // Register the ZIP as a managed temporary file so cron can clean it up.
+    $file_entity = File::create([
+      'uri' => $zip_scheme,
+      'status' => 0,
+      'filename' => basename($zip_scheme),
+    ]);
+    $file_entity->setTemporary();
+    $file_entity->save();
+
+    // Generate the download link using the stream wrapper path.
+    $download_url = $this->fileUrlGenerator->generateAbsoluteString($zip_scheme);
     $this->messenger->addStatus($this->t('Your download is ready: <a href=":url">Download ZIP</a>', [':url' => $download_url]));
 
     // Prepare and display the warning message for failed files.
     if (!empty($failed_file_paths)) {
       $failed_links = [];
       foreach ($failed_file_paths as $entity_id => $file_path) {
-        $file_path_basename = basename($file_path);
+        $file_path_basename = basename((string) $file_path);
 
         // Generate the media entity edit URL.
         $current_language = $this->languageManager->getCurrentLanguage()->getId();
         $media_entity_url = Url::fromRoute('entity.media.edit_form', ['media' => $entity_id])
           ->setOption('language', $this->languageManager->getLanguage($current_language));
 
-        // Prepare the failed file message with a
-        // clickable link for the media entity.
+        // Prepare the failed file message with a clickable link for the media entity.
         $failed_links[] = $this->t('<a href=":url">media entity: @entity_id</a> file: @file', [
           ':url' => $media_entity_url->toString(),
           '@entity_id' => $entity_id,
@@ -419,12 +456,10 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
         ]);
       }
 
-      // Display the warning message with
-      // the failed links, each on a new line.
+      // Display the warning message with the failed links, each on a new line.
       $failed_links_output = implode('<br>', $failed_links);
 
-      // Use Markup::create to render the message as raw HTML,
-      // allowing links and line breaks.
+      // Use Markup::create to render the message as raw HTML, allowing links and line breaks.
       $this->messenger->addWarning($this->t('The following files could not be added to the ZIP: <br> @failed_links', [
         '@failed_links' => Markup::create($failed_links_output),
       ]));
