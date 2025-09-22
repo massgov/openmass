@@ -190,6 +190,25 @@ class ReplaceConfirmForm extends FormBase {
         $file->setPermanent();
         $file->save();
 
+        // Normalize filename early so any hooks that react on save see the final name.
+        $cleaned_filename = preg_replace('/_?do_not_change_this_media_id_\d+/i', '', $filename);
+        if ($cleaned_filename && $cleaned_filename !== $filename) {
+          $current_uri = $file->getFileUri();
+          /** @var \Drupal\Core\File\FileSystemInterface $fs */
+          $fs = \Drupal::service('file_system');
+          $directory = $fs->dirname($current_uri);
+          $new_uri_same_dir = $directory . '/' . $cleaned_filename;
+          // Rename within the same directory first.
+          $moved_same_dir = \Drupal::service('file.repository')->move($file, $new_uri_same_dir, FileSystemInterface::EXISTS_RENAME);
+          if ($moved_same_dir) {
+            $file = $moved_same_dir;
+            $filename = $cleaned_filename;
+          }
+          else {
+            \Drupal::logger('mass_bulk_file_replace')->warning('Failed to normalize filename in temp dir: @old => @new', ['@old' => $current_uri, '@new' => $new_uri_same_dir]);
+          }
+        }
+
         $field_definition = $media->getFieldDefinition('field_upload_file');
         $settings = $field_definition->getSettings();
         $file_directory = $settings['file_directory'] ?? '';
@@ -240,12 +259,6 @@ class ReplaceConfirmForm extends FormBase {
         $fids = array_diff($fids, [$fid]);
         $store->set($key, $fids);
 
-        // Clean up filename to remove DO_NOT_CHANGE_THIS_MEDIA_ID_ pattern.
-        $cleaned_filename = preg_replace('/_?do_not_change_this_media_id_\d+/i', '', $filename);
-        if ($cleaned_filename && $cleaned_filename !== $filename) {
-          $file->setFilename($cleaned_filename);
-          $file->save();
-        }
       }
       else {
         \Drupal::logger('mass_bulk_file_replace')->error('Media with ID @mid not found or not a document.', ['@mid' => $mid]);

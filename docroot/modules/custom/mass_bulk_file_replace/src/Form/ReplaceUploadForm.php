@@ -40,23 +40,59 @@ class ReplaceUploadForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // Derive allowed extensions from the Media "document" bundle field settings.
+    // We read the `file_extensions` setting from the file field `field_upload_file`.
+    $fallback_exts = [
+      'csv','doc','docm','docx','dot','dotx','dwg','geojson','gif','json','jpg','kml','kmz','mp3','mp4','mpp','msg','odf','ods','odt','pdf','png','pps','ppsx','potx','ppt','pptm','pptx','ppsm','prx','pub','rdf','rfa','rte','rtf','tiff','tsv','txt','xls','xlsb','xlsm','xlsx','xml','zip','rpt'
+    ];
+
+    $exts = $fallback_exts;
+    try {
+      $definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('media', 'document');
+      if (isset($definitions['field_upload_file'])) {
+        $exts_setting = (string) $definitions['field_upload_file']->getSetting('file_extensions');
+        if ($exts_setting !== '') {
+          $parsed = preg_split('/\s+/', trim(strtolower($exts_setting))) ?: [];
+          // Normalize, unique, and keep only non-empty values.
+          $parsed = array_values(array_filter(array_unique($parsed)));
+          if (!empty($parsed)) {
+            $exts = $parsed;
+          }
+        }
+      }
+    }
+    catch (\Throwable $e) {
+      // Fallback silently to the predefined list if the bundle/field is missing.
+    }
+
+    // Build values for server-side validator and client-side dropzone.
+    // Drupal's file_validate_extensions expects a SPACE-separated string.
+    $exts_space = implode(' ', $exts);
+    // Dropzone acceptedFiles wants a list of .ext tokens separated by commas.
+    $accepted_files = '.' . implode(',.', $exts);
+
     $form['upload'] = [
       '#type' => 'dropzonejs',
       '#title' => $this->t('Step 1: Upload replacement files'),
       '#description' => $this->t('Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which should include the media ID.'),
       '#multiple' => TRUE,
       '#dropzone_description' => $this->t('Drag files here or click to upload.'),
+      // Server-side validators:
       '#upload_validators' => [
-    // 128MB size per file
+        // 128MB per file
         'file_validate_size' => [128 * 1024 * 1024],
+        // Use derived extensions:
+        'file_validate_extensions' => [$exts_space],
       ],
       '#upload_location' => 'temporary://mass_bulk_file_replace',
+      // Client-side Dropzone settings:
       '#dropzonejs_settings' => [
-      // One file per request
         'parallelUploads' => 1,
-      // MB, client-side validation
-        'maxFilesize' => 128,
+        'maxFilesize' => 128, // MB
+        // Mirror the allowed types for client-side filtering:
+        'acceptedFiles' => $accepted_files,
       ],
+      '#extensions' => $exts_space,
     ];
 
     $form['instructions'] = [
