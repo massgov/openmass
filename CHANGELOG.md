@@ -11,6 +11,7 @@
   - DP-42079: Fix failing tests.
   - DP-42119: Fix image upload errors and restore image editing functionality in rich text field.
   - DP-42120: Bug parent org filter misses org pages in some cases.
+  - DP-42212: Cloning a service page does not keep the content in layout paragraphs.
   
 ### Removed
   - DP-42071: Improve TOC screen reader experience by removing menu role.
