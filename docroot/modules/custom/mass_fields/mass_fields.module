@@ -2,6 +2,7 @@
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -21,6 +22,7 @@ use Drupal\Core\Url;
 use Drupal\mass_fields\FormAlter\TopicPageFormAlter;
 use Drupal\mass_fields\Plugin\Field\FieldWidget\EntityReferenceEditLinkAutocompleteWidget;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
@@ -759,6 +761,48 @@ function mass_fields_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_field_group_form_process_build_alter().
+ */
+function mass_fields_field_group_form_process_build_alter(array &$element, FormStateInterface $form_state, &$complete_form) {
+  // Only apply to node forms.
+  $form_object = $form_state->getFormObject();
+  if ($form_object instanceof ContentEntityForm) {
+    $entity = $form_object->getEntity();
+    if ($entity instanceof NodeInterface) {
+      // Target Group name.
+      $target_group = 'group_page_info';
+      if (isset($complete_form['group_page_info'])) {
+        if (isset($complete_form['revision'])) {
+          $complete_form['revision']['#group'] = $target_group;
+          $complete_form['revision']['#weight'] = '-100';
+        }
+        if (isset($complete_form['revision_log'])) {
+          $complete_form['revision_log']['#group'] = 'footer';
+          $complete_form['revision_log']['#weight'] = '-99';
+        }
+        if (isset($complete_form['search_status'])) {
+          $complete_form['search_status']['#group'] = $target_group;
+        }
+        if (isset($complete_form['advanced'])) {
+          $complete_form['advanced']['#group'] = $target_group;
+          $complete_form['advanced']['#weight'] = '99';
+        }
+        if (isset($complete_form['meta'])) {
+          $complete_form['meta']['#group'] = $target_group;
+          $complete_form['meta']['#weight'] = '99';
+        }
+        // DO NOT ADD created or uid, handled in core.
+        if (isset($complete_form['author'])) {
+          $complete_form['author']['#group'] = $target_group;
+          $complete_form['author']['#weight'] = '100';
+        }
+        $complete_form['meta']['#access'] = FALSE;
+      }
+    }
+  }
 }
 
 /**

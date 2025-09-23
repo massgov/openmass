@@ -82,10 +82,10 @@
             "type": "package",
             "package": {
                 "name": "enyo/dropzone",
-                "version": "5.7.2",
+                "version": "5.9.3",
                 "type": "drupal-library",
                 "dist": {
-                    "url": "https://github.com/enyo/dropzone/archive/v5.7.2.zip",
+                    "url": "https://github.com/dropzone/dropzone/releases/download/v5.9.3/dist.zip",
                     "type": "zip"
                 }
             }
@@ -180,7 +180,7 @@
         "drupal/editoria11y": "2.1.22",
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
-        "drupal/entity_embed": "1.6",
+        "drupal/entity_embed": "^1.7",
         "drupal/entity_hierarchy": "^3.3",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "^2.3",
@@ -211,7 +211,7 @@
         "drupal/key_auth": "^2.1",
         "drupal/key_aws": "^1.0",
         "drupal/key_value_field": "^1",
-        "drupal/layout_paragraphs": "2.1.x@dev",
+        "drupal/layout_paragraphs": "^2.1",
         "drupal/linkit": "^7.0",
         "drupal/mailchimp_transactional": "^1",
         "drupal/maxlength": "^2",
@@ -244,7 +244,6 @@
         "drupal/seckit": "^2.0",
         "drupal/security_review": "^2",
         "drupal/select2": "^2.0",
-        "drupal/seven": "^1",
         "drupal/simple_sitemap": "^4.2",
         "drupal/stage_file_proxy": "^3",
         "drupal/subpathauto": "^1",
@@ -268,7 +267,7 @@
         "drupal/views_simple_math_field": "^3.0",
         "drupal/views_taxonomy_term_name_into_id": "^1.0@alpha",
         "drush/drush": "^13",
-        "enyo/dropzone": "5.7.2",
+        "enyo/dropzone": "5.9.3",
         "geocoder-php/open-cage-provider": "^4.6",
         "google/cloud-bigquery": "^1.25",
         "league/commonmark": "^2.7",
@@ -410,9 +409,9 @@
                 "Add resize observer to parent class": "patches/csv-field-wrapper-class-ma__csvtable.patch"
             },
             "drupal/entity_embed": {
-                "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "patches/entity_embed/Trying-to-edit-embedded-entities-causes-uncaught-exception.patch",
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
-                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch"
+                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch",
+                "Drupal 10.5/11.2 compatability (tooltip broken, cannot edit embedded entities) (https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch)": "https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch"
             },
             "drupal/entity_usage": {
                 "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "patches/entity_usage/drupal-issue-3378832-InvalidArgumentException-the-internal-path-component-is-invalid.patch"
@@ -467,8 +466,7 @@
                 "Nested paragraphs title gets cut off (https://www.drupal.org/project/paragraphs/issues/3246140)": "https://www.drupal.org/files/issues/2024-03-11/paragraphs-3246140-19-fix_paragraph_title_cutoff.patch"
             },
             "drupal/layout_paragraphs": {
-                "Replace dragula with SortableJS (Scroll to Top After Adding a New Component in Layout Paragraphs Builder when Field Groups enabled https://www.drupal.org/project/layout_paragraphs/issues/3392717)": "patches/layout_paragraphs/Replace-dragula-with-SortableJS-3392717-11.patch",
-                "Improve text paragraphs UX (https://www.drupal.org/project/layout_paragraphs/issues/3512377)": "patches/layout_paragraphs/DP-37429_improvove_text_paragraph_ux.patch"
+                "Improve text paragraphs UX (https://www.drupal.org/project/layout_paragraphs/issues/3512377)": "patches/layout_paragraphs/DP-37429_improve_text_paragraph_ux.patch"
             },
             "drupal/linkit": {
                 "Link shown after the autocomplete selection is the bare node/xxx link, not the alias (https://www.drupal.org/project/linkit/issues/2877535)": "https://www.drupal.org/files/issues/2023-10-05/linkit-2877535-64.patch"
@@ -487,9 +485,6 @@
                 "Add an intermediate redirect (https://www.drupal.org/project/redirect/issues/3162696#comment-15085388)": "https://www.drupal.org/files/issues/2023-05-31/tmp.diff",
                 "Filter by redirect destination does not work with URL alias (https://www.drupal.org/project/redirect/issues/2981544) (See DP-31078 before replacing)": "https://www.drupal.org/files/issues/2024-08-13/2981544-45.patch",
                 "Redirect loop wrong detection (service unavailable: RedirectLoopException) (https://www.drupal.org/project/redirect/issues/3401916)": "https://www.drupal.org/files/issues/2024-04-25/3401916-8.x-1.9.patch"
-            },
-            "drupal/seven": {
-                "Add ckeditor5-stylesheets config (https://www.drupal.org/project/seven/issues/3267440)": "https://www.drupal.org/files/issues/2023-04-27/seven_add_ckeditor5-stylesheets-3267440-7.patch"
             },
             "drupal/type_tray": {
                 "Fix css selectors to not apply list styles to the user input (https://www.drupal.org/project/type_tray/issues/3531986)": "https://www.drupal.org/files/issues/2025-06-24/3531986_type_tray.patch"
