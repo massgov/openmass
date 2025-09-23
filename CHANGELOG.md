@@ -1,5 +1,26 @@
 
 
+## [0.451.0] - September 23, 2025
+
+### Fixed
+  - DP-39524: Removed taxonomy access for authors and editors to prevent them from seeing or reordering taxonomies.
+  - DP-39790: Remove unnecessary tabindex="-1" from ma__header__hamburger__logo div to fix WCAG 2.1 accessibility issue.
+  - DP-39792: A11y - Responsive Menu button on mass.gov screen reader issues.
+  - DP-39793: A11y - The skip to main content link doesn't become visible on the screen when it receives focus.
+  - DP-41690: Fixed issues with CSV table not hiding elements when using "hide" feature.
+  - DP-42079: Fix failing tests.
+  - DP-42119: Fix image upload errors and restore image editing functionality in rich text field.
+  - DP-42120: Bug parent org filter misses org pages in some cases.
+  - DP-42212: Cloning a service page does not keep the content in layout paragraphs.
+  
+### Removed
+  - DP-42071: Improve TOC screen reader experience by removing menu role.
+  
+### Changed
+  - DP-42161: Modified permissions of a report view.
+  
+
+
 ## [0.450.0] - September 16, 2025
 
 ### Added
