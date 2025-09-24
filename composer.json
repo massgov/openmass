@@ -144,6 +144,7 @@
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
         "drupal/access_unpublished": "^1.4",
+        "drupal/ace_editor": "~2.0",
         "drupal/acquia_purge": "^1",
         "drupal/action": "^0.2",
         "drupal/address": "^1.9",
@@ -273,6 +274,7 @@
         "league/commonmark": "^2.7",
         "massgov/mayflower-artifacts": "dev-develop",
         "monolog/monolog": "^3",
+        "npm-asset/ace-builds": "~1.0",
         "npm-asset/select2": "^4.1.0-rc.0",
         "oomphinc/composer-installers-extender": "^2.0",
         "phlak/semver": "^2.0",
@@ -510,6 +512,9 @@
             },
             "drupal/imageapi_optimize": {
                 "Skip animated gifs": "patches/imageapi_optimize/skip_animated_gifs.patch"
+            },
+            "drupal/ace_editor": {
+                "Fix the plugin initialization https://www.drupal.org/project/ace_editor/issues/3326303": "patches/ace_editor_fix_plugin_initialization.patch"
             }
         },
         "composer-exit-on-patch-failure": true,
