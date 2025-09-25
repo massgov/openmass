@@ -34,15 +34,27 @@ class CookieSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public function onKernelResponse(ResponseEvent $event) {
+
+    $request = $event->getRequest();
+    $route_name = (string) $request->attributes->get('_route');
+
+    // Pin uploads to a single webhead on:
+    // - any admin route, OR
+    // - the DropzoneJS upload endpoint.
+    $should_pin = $this->routerAdminContext->isAdminRoute()
+      || $route_name === 'dropzonejs.upload';
+
+    if (!$should_pin) {
+      return;
+    }
+
     // Set cookie to stick file uploads to one server when on admin pages to
     // address issues with uploading files via the WYSIWYG.
     // See https://support.acquia.com/hc/en-us/articles/360004147834-Pinning-to-a-web-server-without-using-the-hosts-file#defineacookie
-    if ($this->routerAdminContext->isAdminRoute()) {
-      $response = $event->getResponse();
-      $server_name = explode('.', gethostname());
-      $cookie = Cookie::create('ah_app_server', rawurlencode($server_name[0]), $this->time->getRequestTime() + 86400, '/');
-      $response->headers->setCookie($cookie);
-    }
+    $response = $event->getResponse();
+    $server_name = explode('.', gethostname());
+    $cookie = Cookie::create('ah_app_server', rawurlencode($server_name[0]), $this->time->getRequestTime() + 86400, '/');
+    $response->headers->setCookie($cookie);
   }
 
   /**
