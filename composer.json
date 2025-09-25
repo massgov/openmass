@@ -6,10 +6,6 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "config": {
-        "preferred-install": {
-            "drupal/media_entity_download": "source",
-            "*": "dist"
-        },
         "process-timeout": 9600,
         "sort-packages": true,
         "platform": {
@@ -22,6 +18,7 @@
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
+            "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true,
             "tbachert/spi": true
@@ -85,10 +82,10 @@
             "type": "package",
             "package": {
                 "name": "enyo/dropzone",
-                "version": "5.7.2",
+                "version": "5.9.3",
                 "type": "drupal-library",
                 "dist": {
-                    "url": "https://github.com/enyo/dropzone/archive/v5.7.2.zip",
+                    "url": "https://github.com/dropzone/dropzone/releases/download/v5.9.3/dist.zip",
                     "type": "zip"
                 }
             }
@@ -129,6 +126,10 @@
                     "reference": "f3bea1425080c9137c052257d7f8f4e1813f8eb8"
                 }
             }
+        },
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org"
         }
     ],
     "require": {
@@ -144,12 +145,13 @@
         "desandro/masonry": "^4.1",
         "drupal/access_unpublished": "^1.4",
         "drupal/acquia_purge": "^1",
+        "drupal/action": "^0.2",
         "drupal/address": "^1.9",
         "drupal/admin_toolbar": "^3.0",
         "drupal/akamai": "^5",
         "drupal/allowed_formats": "^2",
         "drupal/asset_cache_bust": "^1.0",
-        "drupal/auto_entitylabel": "^3",
+        "drupal/auto_entitylabel": "3.0.0",
         "drupal/better_exposed_filters": "^6.0.3",
         "drupal/cache_metrics": "^2",
         "drupal/ckeditor5_fullscreen": "^1.0@beta",
@@ -167,23 +169,22 @@
         "drupal/csv_serialization": "^2.0 || ^3.0",
         "drupal/datalayer": "^2",
         "drupal/devel": "^5",
-        "drupal/devel_entity_updates": "4.2.0-rc1",
         "drupal/diff": "^1.7",
-        "drupal/draggableviews": "^2.0",
+        "drupal/draggableviews": "^2.1",
         "drupal/dropzonejs": "^2",
         "drupal/dynamic_entity_reference": "^3.1",
         "drupal/editoria11y": "2.1.22",
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
-        "drupal/entity_embed": "^1.5",
+        "drupal/entity_embed": "^1.7",
         "drupal/entity_hierarchy": "^3.3",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "^2.3",
         "drupal/entity_usage": "2.0.0-beta12",
         "drupal/entity_usage_queue_tracking": "^9.1",
-        "drupal/entityreference_filter": "^2",
+        "drupal/entityreference_filter": "^2.0@beta",
         "drupal/environment_indicator": "^4",
-        "drupal/field_group": "^3.1",
+        "drupal/field_group": "^4.0",
         "drupal/field_tokens": "dev-8.x-1.x",
         "drupal/file_browser": "^1",
         "drupal/flag": "^4.0",
@@ -205,11 +206,11 @@
         "drupal/key": "^1.10",
         "drupal/key_auth": "^2.1",
         "drupal/key_value_field": "^1",
-        "drupal/layout_paragraphs": "2.1.x@dev",
-        "drupal/linkit": "^6.0",
+        "drupal/layout_paragraphs": "^2.1",
+        "drupal/linkit": "^7.0",
         "drupal/mailchimp_transactional": "^1",
         "drupal/maxlength": "^2",
-        "drupal/media_entity_download": "^2.2",
+        "drupal/media_entity_download": "^2.4",
         "drupal/memcache": "^2",
         "drupal/metatag": "^1",
         "drupal/monolog": "^3",
@@ -233,37 +234,41 @@
         "drupal/rabbit_hole": "^1",
         "drupal/redirect": "^1",
         "drupal/require_on_publish": "^1.10",
-        "drupal/scheduled_transitions": "^2",
+        "drupal/scheduled_transitions": "^2.7",
         "drupal/schema_metatag": "^2.0",
         "drupal/seckit": "^2.0",
         "drupal/security_review": "^2",
-        "drupal/seven": "^1",
+        "drupal/select2": "^2.0",
         "drupal/simple_sitemap": "^4.2",
         "drupal/stage_file_proxy": "^3",
         "drupal/subpathauto": "^1",
         "drupal/term_reference_tree": "^2",
+        "drupal/token": "1.12.0",
         "drupal/twig_field_value": "^2",
         "drupal/twig_tweak": "^3",
+        "drupal/type_tray": "^1.3",
         "drupal/upgrade_status": "^4",
         "drupal/username_enumeration_prevention": "^1",
         "drupal/video_embed_field": "^2.0",
-        "drupal/view_mode_page": "^4.0",
-        "drupal/views_aggregator": "^2",
+        "drupal/view_mode_page": "4.0.2",
+        "drupal/views_aggregator": "^2.1",
         "drupal/views_ajax_history": "^1.6",
-        "drupal/views_autocomplete_filters": "^1.3",
-        "drupal/views_bulk_edit": "^2.6",
-        "drupal/views_bulk_operations": "^4.1",
-        "drupal/views_custom_cache_tag": "^1.0",
+        "drupal/views_autocomplete_filters": "^2.0",
+        "drupal/views_bulk_edit": "^3.0",
+        "drupal/views_bulk_operations": "*",
+        "drupal/views_custom_cache_tag": "^1.4",
         "drupal/views_data_export": "^1.0",
         "drupal/views_porter_stemmer": "^1.0",
         "drupal/views_simple_math_field": "^3.0",
         "drupal/views_taxonomy_term_name_into_id": "^1.0@alpha",
         "drush/drush": "^13",
-        "enyo/dropzone": "5.7.2",
+        "enyo/dropzone": "5.9.3",
         "geocoder-php/open-cage-provider": "^4.6",
         "google/cloud-bigquery": "^1.25",
         "massgov/mayflower-artifacts": "dev-develop",
         "monolog/monolog": "^3",
+        "npm-asset/select2": "^4.1.0-rc.0",
+        "oomphinc/composer-installers-extender": "^2.0",
         "phlak/semver": "^2.0",
         "previousnext/drupal-test-utils": "^0.0.1",
         "previousnext/phpunit-finder": "^2.0.2",
@@ -338,7 +343,9 @@
                 "type:drupal-core"
             ],
             "docroot/libraries/{$name}": [
-                "type:drupal-library"
+                "type:drupal-library",
+                "type:bower-asset",
+                "type:npm-asset"
             ],
             "docroot/modules/contrib/{$name}": [
                 "type:drupal-module"
@@ -353,11 +360,13 @@
                 "type:drupal-drush"
             ]
         },
+        "installer-types": ["bower-asset", "npm-asset"],
         "patches": {
             "drupal/access_unpublished": {
                 "Invalid argument supplied for foreach AddHttpHeaders->onResponse (https://www.drupal.org/project/access_unpublished/issues/3215907)": "https://www.drupal.org/files/issues/2021-05-26/3215907-warning-invalid-argument.patch",
                 "Invalid argument supplied for foreach SettingsForm->prepareHeadersDisplay (https://www.drupal.org/project/access_unpublished/issues/3252499)": "https://www.drupal.org/files/issues/2021-12-03/3252499-warning-invalid-argument-2.patch",
-                "Hardcode preview links based on environment": "patches/access_unpublished/DP-25897_change_unpublish_preview_links_v2.patch"
+                "Hardcode preview links based on environment": "patches/access_unpublished/DP-25897_change_unpublish_preview_links_v2.patch",
+                "Call to a member function label() on null (https://www.drupal.org/project/access_unpublished/issues/3137890)": "patches/access_unpublished/access_unpublished_listing_fix.patch"
             },
             "drupal/core": {
                 "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577)": "https://www.drupal.org/files/issues/2022-07-12/2575577-38.patch",
@@ -378,11 +387,14 @@
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
                 "Diffs with different line endings leads to Invalid $mode 3 specified (https://www.drupal.org/project/drupal/issues/3389715)": "https://www.drupal.org/files/issues/2024-01-09/Diffs-with-different-line-endings-leads-to-Invalid-mode-3-specified.patch",
                 "Statically cache editor attachments per format (https://www.drupal.org/i/3447794)": "patches/3447794-mr-9609.patch",
-                "An update to symfony/http-foundation plus a trailing space took down the views UI (https://www.drupal.org/project/drupal/issues/3486195)": "https://www.drupal.org/files/issues/2024-11-27/3486195-46.patch",
                 "Error: Cannot read properties of undefined (reading 'settings')\u2028 with dialog.position.js (https://www.drupal.org/project/drupal/issues/3356667)": "https://www.drupal.org/files/issues/2024-09-19/3356667-69-drupal-core-10.3.5-undefined.patch",
                 "CKEditor 5 balloons invisible when CKEditor 5 is used inside a modal (https://www.drupal.org/project/drupal/issues/3328425)": "https://www.drupal.org/files/issues/2024-09-19/3328425-50-drupal-core-10.3.5-ckeditor5-ballon.patch",
                 "Display Bug when using #states (Forms API) with Ajax Request (https://www.drupal.org/project/drupal/issues/1091852)": "https://www.drupal.org/files/issues/2023-12-18/1091852-186.patch",
-                "Exception thrown by responsive srcset images when the image is not yet in the file system (such as with Stage File Proxy) (https://www.drupal.org/project/drupal/issues/2827921)": "https://www.drupal.org/files/issues/2024-03-18/responsive_image-remove_missing_response_image_width_exception-2827921-22.patch"
+                "Image width/height from fallback image breaks responsive images (https://www.drupal.org/project/drupal/issues/3516726)": "https://www.drupal.org/files/issues/2025-04-04/3516726-responsive-image-fallback-dimensions.patch",
+                "Draggable table do not drag. Uncaught TypeError: Cannot read properties of undefined (reading 'colSpan') (https://www.drupal.org/project/drupal/issues/3441551)": "https://www.drupal.org/files/issues/2024-05-22/add-tabledrag-validation-10.2.x.patch",
+                "Exception thrown by responsive srcset images when the image is not yet in the file system (such as with Stage File Proxy) (https://www.drupal.org/project/drupal/issues/2827921)": "https://www.drupal.org/files/issues/2024-03-18/responsive_image-remove_missing_response_image_width_exception-2827921-22.patch",
+                "Add label to Tableselect select all checkbox (https://www.drupal.org/project/drupal/issues/2766853)": "patches/2766853-10_5.patch",
+                "Url generator will add '=' after query parameter when value is an empty string (https://www.drupal.org/project/drupal/issues/3040048)": "patches/drupal-url-generator-adds-equals-after-query-param-when-value-empty-string_issue-3040048.diff"
             },
             "drupal/conditional_fields": {
                 "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch"
@@ -391,9 +403,9 @@
                 "Add resize observer to parent class": "patches/csv-field-wrapper-class-ma__csvtable.patch"
             },
             "drupal/entity_embed": {
-                "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "patches/entity_embed/Trying-to-edit-embedded-entities-causes-uncaught-exception.patch",
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
-                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch"
+                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch",
+                "Drupal 10.5/11.2 compatability (tooltip broken, cannot edit embedded entities) (https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch)": "https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch"
             },
             "drupal/entity_usage": {
                 "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "patches/entity_usage/drupal-issue-3378832-InvalidArgumentException-the-internal-path-component-is-invalid.patch"
@@ -402,7 +414,8 @@
                 "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
             },
             "drupal/diff": {
-                "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch"
+                "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch",
+                "Make revisions overview page accessible (https://www.drupal.org/project/diff/issues/3228798)": "https://www.drupal.org/files/issues/2024-05-14/diff-3228798-17.patch"
             },
             "drupal/dropzonejs": {
                 "Dropzone element overwrites potential metadata and libraries added by other modules (https://www.drupal.org/project/drupal/issues/3303028)": "https://www.drupal.org/files/issues/2023-01-18/dropzone_overwrites_metadata_and_libraries-3303028-2_with-3211288.patch"
@@ -419,8 +432,7 @@
                 "3285499 - Options to automatically select/deselect ancestors/descendants when node is checked/unchecked.": "https://www.drupal.org/files/issues/2023-10-11/issue-3285499--automatic-selection-options--9.patch"
             },
             "drupal/field_group": {
-                "Provide page level error messaging when publishing validation is not met": "https://www.drupal.org/files/issues/2021-02-21/2787179-highlight-html5-validation-60.patch",
-                "3098550 - Nested groups render on other entity forms (or when fields are inaccessible) when they shouldn't": "https://www.drupal.org/files/issues/2020-06-18/3098550-12.patch"
+                "Form required class missing from horizontal field groups in Claro (https://www.drupal.org/project/field_group/issues/3160987)": "patches/field_group_claro_theme_tabs_required.patch"
             },
             "drupal/field_tokens": {
                 "Fatal errors in entities that does not declare getFieldDefinitions method (https://www.drupal.org/project/field_tokens/issues/2835032)": "https://www.drupal.org/files/issues/2835032-config-entity-support-9.patch"
@@ -448,14 +460,13 @@
                 "Nested paragraphs title gets cut off (https://www.drupal.org/project/paragraphs/issues/3246140)": "https://www.drupal.org/files/issues/2024-03-11/paragraphs-3246140-19-fix_paragraph_title_cutoff.patch"
             },
             "drupal/layout_paragraphs": {
-                "Replace dragula with SortableJS (Scroll to Top After Adding a New Component in Layout Paragraphs Builder when Field Groups enabled https://www.drupal.org/project/layout_paragraphs/issues/3392717)": "patches/layout_paragraphs/Replace-dragula-with-SortableJS-3392717-11.patch",
-                "Improve text paragraphs UX (https://www.drupal.org/project/layout_paragraphs/issues/3512377)": "patches/layout_paragraphs/DP-37429_improvove_text_paragraph_ux.patch"
+                "Improve text paragraphs UX (https://www.drupal.org/project/layout_paragraphs/issues/3512377)": "patches/layout_paragraphs/DP-37429_improve_text_paragraph_ux.patch"
             },
             "drupal/linkit": {
                 "Link shown after the autocomplete selection is the bare node/xxx link, not the alias (https://www.drupal.org/project/linkit/issues/2877535)": "https://www.drupal.org/files/issues/2023-10-05/linkit-2877535-64.patch"
             },
             "drupal/media_entity_download": {
-                "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2024-04-22/media_entity_download-ckeditor5_plugin-2928318-36.patch",
+                "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2025-07-22/media_entity_download-ckeditor5_plugin-drupal_10_5_2928318-41.patch",
                 "Track the usage of Media entity through media_entity_download route with entity_usage (https://www.drupal.org/project/media_entity_download/issues/3106062)": "https://www.drupal.org/files/issues/2024-11-06/3106062-15.patch"
             },
             "drupal/pathologic": {
@@ -469,20 +480,21 @@
                 "Filter by redirect destination does not work with URL alias (https://www.drupal.org/project/redirect/issues/2981544) (See DP-31078 before replacing)": "https://www.drupal.org/files/issues/2024-08-13/2981544-45.patch",
                 "Redirect loop wrong detection (service unavailable: RedirectLoopException) (https://www.drupal.org/project/redirect/issues/3401916)": "https://www.drupal.org/files/issues/2024-04-25/3401916-8.x-1.9.patch"
             },
-            "drupal/seven": {
-                "Add ckeditor5-stylesheets config (https://www.drupal.org/project/seven/issues/3267440)": "https://www.drupal.org/files/issues/2023-04-27/seven_add_ckeditor5-stylesheets-3267440-7.patch"
+            "drupal/type_tray": {
+                "Fix css selectors to not apply list styles to the user input (https://www.drupal.org/project/type_tray/issues/3531986)": "https://www.drupal.org/files/issues/2025-06-24/3531986_type_tray.patch"
             },
             "drupal/video_embed_field": {
                 "Support youtube shorts (https://www.drupal.org/project/video_embed_field/issues/3279789)": "patches/video_embed_field/Support-youtube-shorts.patch"
             },
             "drupal/views_bulk_operations": {
-                "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch"
+                "Remove the select/deselect all results within VBO": "patches/DP-39427-hide-select-all-results-from-views.patch"
             },
             "drupal/view_mode_page": {
                 "Context exception when trying to create url (https://www.drupal.org/project/view_mode_page/issues/3300706)": "https://www.drupal.org/files/issues/2023-05-01/3300706-17-context_exception_when_trying_to_create_url_0.patch"
             },
             "drupal/quick_node_clone": {
-                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2022-05-05/quick_node_clone-permissions_not_respected-2979426-34.patch"
+                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2025-05-19/2979426-46.patch",
+                "Cloning Entities with Layout Paragraphs breaks structure and moves subparagraphs into Disabled Items (https://www.drupal.org/project/quick_node_clone/issues/3218222)": "https://www.drupal.org/files/issues/2025-08-12/3218222-compatibility_with_8x-1-22.patch"
             },
             "drupal/views_bulk_edit": {
                 "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2024-01-10/views_bulk_edit-3024419-fix_required_fields-57.patch",

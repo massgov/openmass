@@ -25,10 +25,8 @@ dependencies:
     - serialization
     - taxonomy
     - user
-    - views_autocomplete_filters
     - views_bulk_operations
     - views_data_export
-    - views_porter_stemmer
 id: content
 label: Content
 module: views
@@ -97,24 +95,32 @@ display:
           batch: true
           batch_size: 10
           form_step: true
+          ajax_loader: false
           buttons: false
           action_title: Action
           clear_on_exposed: true
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
-            0:
+            -
               action_id: 'flag_action:watch_content_flag'
               preconfiguration:
                 add_confirmation: false
-            1:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: 'flag_action:watch_content_unflag'
               preconfiguration:
                 add_confirmation: false
-            11:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: views_bulk_edit
               preconfiguration:
                 add_confirmation: false
+                confirm_help_text: ''
                 label_override: 'Edit content'
+                message_override: ''
                 get_bundles_from_results: true
         title:
           id: title
@@ -1426,6 +1432,7 @@ display:
             pl: pl
             pt-br: pt-br
             pt-pt: pt-pt
+            quc: quc
             ro: ro
             ru: ru
             so: so
@@ -1789,7 +1796,17 @@ display:
           table: views
           field: area
           plugin_id: text
-      footer: {  }
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders: {  }
     cache_metadata:
       max-age: 0

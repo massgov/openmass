@@ -464,7 +464,6 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       }
       $paragraph_error_string = 'field_service_sections][' . $section_key . '][subform][field_service_section_content][' . $key . '][subform]';
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
-      _mass_validation_validate_mosaic_items($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
       _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
     }
@@ -765,7 +764,7 @@ function _mass_validation_form_node_executive_order_form_validate(array &$form, 
               }
               else {
                 // If the link has no title and is external throw an error.
-                $form_state->setErrorByName('field_executive_order_adjustment' . '][' . $key . '][subform][' . 'field_adjustment_type_link' . '][' . $field_key, t('External links require a title.'));
+                $form_state->setErrorByName('field_executive_order_adjustment][' . $key . '][subform][field_adjustment_type_link][' . $field_key, t('External links require a title.'));
               }
             }
           }
@@ -1366,6 +1365,50 @@ function _mass_validation_validate_custom_flexible_links(FormStateInterface $for
   }
 }
 
+function _mass_validation_validate_layout_paragraphs_custom_search(array $form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  if ($values['field_search_type']) {
+    $subtype = $values['field_search_type'][0]['value'];
+    switch ($subtype) {
+      case 'collection':
+        if (empty($values['field_collection'])) {
+          $form_state->setErrorByName(
+            'field_collection',
+            t('The "Collection" field required.')
+          );
+        }
+
+        break;
+
+      case 'external':
+        if (!empty($values['field_search_site_url'][0]['value'])) {
+          if (!UrlHelper::isValid($values['field_search_site_url'][0]['value'], TRUE)) {
+            $form_state->setErrorByName(
+              'field_search_site_url',
+              t('The value entered for the "Search site URL" field is invalid. See help text on field for more information.')
+            );
+          }
+        }
+        else {
+          $form_state->setErrorByName(
+            'field_search_site_url',
+            t('The "Search site URL" field is required.')
+          );
+        }
+
+        if (empty($values['field_search_query_param_name'][0]['value'])) {
+          $form_state->setErrorByName(
+            'field_search_query_param_name',
+            t('The "Name for query parameter" field is required.')
+          );
+        }
+
+        break;
+    }
+  }
+
+}
+
 function _mass_validation_validate_custom_search(FormStateInterface $form_state, $paragraph, $paragraph_error_string) {
   if (!isset($paragraph['subform']['field_search_type'])) {
     return;
@@ -1480,6 +1523,20 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
     case 'iframe':
       $form['#validate'][] = '_mass_validation_validate_custom_iframe_layout_paragraphs';
       break;
+    case 'service_section':
+      if (isset($form['field_service_section_link'], $form['field_subtitle'], $form['field_two_column'])) {
+        $form['field_subtitle']['#states'] = [
+          'visible' => [
+            ':input[name="field_two_column[value]"]' => ['checked' => TRUE],
+          ],
+        ];
+        $form['field_service_section_link']['#states'] = [
+          'visible' => [
+            ':input[name="field_two_column[value]"]' => ['checked' => TRUE],
+          ],
+        ];
+      }
+      break;
     case 'tableau_embed':
       // Check if the embed type field exists.
       if (isset($form['field_tableau_embed_type'], $form['field_tableau_url_token'])) {
@@ -1491,9 +1548,80 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
         ];
       }
       break;
+    case 'collection_search':
+      $form['#validate'][] = '_mass_validation_validate_layout_paragraphs_custom_search';
+      $selector = 'select[name="field_search_type"]';
+
+      // Dependent fields.
+      $form['field_collection']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'collection'],
+        ],
+        'required' => [
+          $selector => ['value' => 'collection'],
+        ],
+      ];
+
+      // Dependent fields.
+      $form['field_search_site_url']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'external'],
+        ],
+        'required' => [
+          $selector => ['value' => 'external'],
+        ],
+      ];
+
+      // Dependent fields.
+      $form['field_search_query_param_name']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'external'],
+        ],
+        'required' => [
+          $selector => ['value' => 'external'],
+        ],
+      ];
+      break;
+
     case 'info_details_card_group':
       $form['field_use_image_cards']['widget']['value']['#attributes']['class'][] = _mass_validation_form_hierarchy_class_helper('field-use-image-cards-checkbox', $form['#field_parents'] ?? []);
       break;
+    case 'featured_item_mosaic':
+      $form['#validate'][] = '_mass_validation_validate_layout_paragraphs_mosaic_items';
+      break;
+  }
+}
+
+/**
+ * Validates mosaic items to be 5 and Hightlight image for the first item.
+ */
+function _mass_validation_validate_layout_paragraphs_mosaic_items(array &$form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  if (!isset($values['field_featured_item_mosaic_items'])) {
+    return;
+  }
+  if (isset($values['field_featured_item_mosaic_items']['add_more'])) {
+    $form_state->setErrorByName('field_featured_item_mosaic_items_featured_item_add_more', t('You must provide 5 featured items.'));
+  }
+  // Find the item with the lowest weight.
+  foreach ($values['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
+    if (!isset($mosaic_array['_weight'])) {
+      continue;
+    }
+    $weight = (int) $mosaic_array['_weight'];
+    if (!isset($lowest) || $weight < $lowest) {
+      $lowest = $weight;
+      $first = $mosaic_array;
+    }
+
+    if (str_contains($mosaic_array['subform']['field_featured_item_link'][0]['uri'], 'internal:')) {
+      $form_state->setErrorByName('field_featured_item_mosaic_items][' . $mosaic_key . '][subform][field_featured_item_link][0][uri',
+        t('The entered value must be either a selected existing page or a complete URL.'));
+    }
+  }
+  if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
+    $form_state->setErrorByName('mosaic_hightlight',
+      t('You must provide a value for the Highlight Image of the first Featured Item.'));
   }
 }
 

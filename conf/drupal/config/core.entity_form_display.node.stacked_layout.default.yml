@@ -37,13 +37,13 @@ third_party_settings:
         - group_meta_info
         - group_extended_header
         - group_org_landing_page
+        - group_page_info
       label: 'Node Edit Form'
       region: content
       parent_name: ''
       weight: 1
       format_type: tabs
       format_settings:
-        label: 'Node Edit Form'
         classes: ''
         id: ''
         direction: horizontal
@@ -54,13 +54,16 @@ third_party_settings:
         - field_label
         - field_lede
         - field_photo
+        - field_related_content
+        - field_organizations
+        - field_intended_audience
+        - field_reusable_label
       label: 'Primary Content'
       region: content
       parent_name: group_node_edit_form
       weight: 108
       format_type: tab
       format_settings:
-        label: 'Primary Content'
         classes: ''
         id: ''
         formatter: open
@@ -121,6 +124,26 @@ third_party_settings:
       format_settings:
         classes: ''
         id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - field_metatags
+        - simple_sitemap
+        - url_redirects
+        - search
+        - search_nosnippet
+      label: 'Page info'
+      region: content
+      parent_name: group_node_edit_form
+      weight: 113
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -187,7 +210,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_select
-    weight: 13
+    weight: 122
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -209,14 +232,15 @@ content:
     third_party_settings: {  }
   field_metatags:
     type: metatag_firehose
-    weight: 6
+    weight: 3
     region: content
     settings:
-      sidebar: true
+      sidebar: false
+      use_details: true
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 12
+    weight: 121
     region: content
     settings:
       match_operator: CONTAINS
@@ -240,7 +264,7 @@ content:
     third_party_settings: {  }
   field_related_content:
     type: entity_reference_autocomplete
-    weight: 5
+    weight: 120
     region: content
     settings:
       match_operator: CONTAINS
@@ -250,7 +274,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 122
+    weight: 123
     region: content
     settings:
       match_operator: CONTAINS
@@ -260,7 +284,7 @@ content:
     third_party_settings: {  }
   field_topic_callout_links:
     type: link_default
-    weight: 2
+    weight: 6
     region: content
     settings:
       placeholder_url: ''
@@ -275,7 +299,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 11
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -298,20 +322,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -346,7 +370,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }

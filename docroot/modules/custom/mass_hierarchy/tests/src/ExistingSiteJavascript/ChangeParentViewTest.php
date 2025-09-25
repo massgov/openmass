@@ -4,11 +4,14 @@ namespace Drupal\Tests\mass_hierarchy\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
  * Tests move children action in the change_parents views.
  */
 class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
+
+  use ScreenShotTrait;
 
   /**
    * Loads the admin and logs in.
@@ -149,8 +152,11 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertSession()->pageTextContains($child2['title']);
 
     // Select all of them to change their parent.
-    $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
-    $this->getCurrentPage()->pressButton('Change parent');
+    $this->getCurrentPage()->find('css', '.vbo-table .select-all input')->check();
+    $this->getSession()->wait(3000);
+    $button = $this->getCurrentPage()->findButton('Change parent');
+    $this->assertNotNull($button, 'The "Change parent" button was not found.');
+    $button->click();
 
     // Select a wrong parent (incompatible bundle).
     $this->getCurrentPage()->fillField('New parent', $parent3Node->label());
@@ -166,12 +172,14 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->getCurrentPage()->fillField('New parent', $parent2Node->label());
 
     // Wait for the bulk operations to happen.
-    $this->getCurrentPage()->pressButton('Change parent');
+    $button = $this->getCurrentPage()->findButton('Change parent');
+    $this->assertNotNull($button, 'The "Change parent" button was not found.');
+    $button->click();
     $this->getSession()->wait(3000);
     $this->htmlOutput();
-
     // Check done message.
-    $this->assertSession()->pageTextContains('Action processing results');
+    $this->assertSession()->pageTextContains("Updated parent for {$child1['title']}");
+    $this->assertSession()->pageTextContains("Updated parent for {$child2['title']}");
 
     // Reload and ensure it has no children.
     $this->getSession()->reload();
@@ -228,7 +236,8 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     // Selecting the node to change the parent.
     $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
     $this->assertSession()->pageTextContains($child1['title']);
-    $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
+    $this->getCurrentPage()->find('css', '.vbo-table .select-all input')->check();
+    $this->getSession()->wait(2000);
     $this->getCurrentPage()->pressButton('Change parent');
 
     // Bulk updating to the new parent (second parent).

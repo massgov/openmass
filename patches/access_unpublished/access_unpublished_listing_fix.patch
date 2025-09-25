@@ -1,0 +1,41 @@
+diff --git a/src/AccessTokenListBuilder.php b/src/AccessTokenListBuilder.php
+index c5aec0d..040d82a 100644
+--- a/src/AccessTokenListBuilder.php
++++ b/src/AccessTokenListBuilder.php
+@@ -95,11 +95,20 @@ class AccessTokenListBuilder extends EntityListBuilder {
+       ];
+     }
+ 
+-    $row['host']['data'] = [
+-      '#type' => 'link',
+-      '#title' => $entity->getHost()->label(),
+-      '#url' => $entity->getHost()->toUrl(),
+-    ];
++    if ($entity->getHost()) {
++      $row['host']['data'] = [
++        '#type' => 'link',
++        '#title' => $entity->getHost()->label(),
++        '#url' => $entity->getHost()->toUrl(),
++      ];
++    }
++    else {
++      $row['host']['data'] = [
++        '#type' => 'link',
++        '#title' => 'Deleted',
++        '#url' => 'Deleted',
++      ];
++    }
+ 
+     $row['operations']['data'] = $this->buildOperations($entity);
+ 
+@@ -148,8 +157,8 @@ class AccessTokenListBuilder extends EntityListBuilder {
+         ],
+       ];
+     }
+-    else {
+-      $url = $this->accessTokenManager->getAccessTokenUrl($token, $token->getHost()->language());
++    elseif ($token->getHost()) {
++      $url = $this->accessTokenManager->getAccessTokenUrl($token, \Drupal::languageManager()->getDefaultLanguage());
+       $operations['copy'] = [
+         'title' => $this->t('Copy'),
+         'url' => Url::fromUserInput('#'),

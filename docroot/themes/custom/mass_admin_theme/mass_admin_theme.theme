@@ -10,6 +10,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Molecules;
+use Drupal\node\NodeInterface;
 use Drupal\views\Views;
 
 /**
@@ -20,6 +21,18 @@ use Drupal\views\Views;
 function mass_admin_theme_preprocess_paragraph__callout_link(&$variables) {
   $paragraph = $variables['elements']['#paragraph'];
   $variables['calloutLinks'] = Molecules::prepareCalloutLinks($paragraph);
+}
+
+/**
+ * Implements hook_library_info_alter().
+ */
+function mass_admin_theme_library_info_alter(&$libraries, $extension) {
+  // Unset styles shipped with claro them, we will use our own
+  // styles defined in the mass_admin_toolbar module.
+  if ($extension === 'toolbar') {
+    unset($libraries['toolbar']['css']);
+    unset($libraries['toolbar.menu']['css']);
+  }
 }
 
 /**
@@ -151,6 +164,36 @@ function mass_admin_theme_preprocess_menu_local_action(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK() for layout_paragraphs_builder templates.
+ *
+ * Adds the current node type (bundle) to the template variables when on
+ * a node edit or add form.
+ */
+function mass_admin_theme_preprocess_layout_paragraphs_builder(&$variables) {
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  // Default to NULL
+  $variables['node_type'] = NULL;
+
+  // Case 1: Edit form
+  if ($route_name === 'entity.node.edit_form') {
+    $node = $route_match->getParameter('node');
+    if ($node instanceof NodeInterface) {
+      $variables['node_type'] = $node->bundle();
+    }
+  }
+
+  // Case 2: Add form
+  elseif (str_starts_with($route_name, 'node.add')) {
+    $node_type = $route_match->getParameter('node_type');
+    if (!empty($node_type)) {
+      $variables['node_type'] = $node_type->id();
+    }
+  }
+}
+
+/**
  * Helper function to set description_display for node, media, and term add/edit pages.
  */
 function _add_description_display_before(&$variables) {
@@ -215,6 +258,17 @@ function mass_admin_theme_preprocess_html(&$variables) {
     foreach ($globalMetatagsRenderArray['#attached']['html_head'] as $item) {
       $variables['page']['#attached']['html_head'][] = $item;
     }
+  }
+  $route_match = \Drupal::routeMatch();
+  $route_name = $route_match->getRouteName();
+
+  $allowed_routes = [
+    'entity.node.edit_form',
+    'node.add',
+  ];
+
+  if (in_array($route_name, $allowed_routes, TRUE)) {
+    $variables['is_node'] = TRUE;
   }
 }
 
@@ -288,8 +342,10 @@ function mass_admin_theme_form_layout_paragraphs_component_form_alter(array &$fo
  */
 function mass_admin_theme_form_alter(&$form, &$form_state, $form_id) {
 
-  if ($form_id == 'node_info_details_form' || $form_id == 'node_info_details_edit_form' || $form_id == 'node_info_details_quick_node_clone_form') {
-    $form['#attached']['library'][] = 'mass_theme/global-styling-lp';
+  foreach (['info_details', 'service_page'] as $content_type) {
+    if ($form_id == "node_{$content_type}_form" || $form_id == "node_{$content_type}_edit_form" || $form_id == "node_{$content_type}_quick_node_clone_form") {
+      $form['#attached']['library'][] = 'mass_theme/global-styling-lp';
+    }
   }
 
   if (!empty($form['last_updated'])) {

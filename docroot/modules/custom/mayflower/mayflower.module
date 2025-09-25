@@ -6,10 +6,22 @@
  */
 
 use Composer\InstalledVersions as ComposerInstalledVersions;
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
+use Drupal\Core\Url;
+use Drupal\mass_content\EventsRendererOrgPages;
+use Drupal\mayflower\Helper;
+use Drupal\mayflower\Prepare\Atoms;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\mayflower\Prepare\Molecules;
+use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Twig\MayflowerLoader;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_theme().
@@ -36,6 +48,36 @@ function mayflower_theme() {
       'variables' => ['imagePromos' => NULL],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mayflower_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'revision_overview_form') {
+    $form['node_revisions_table']['#caption'] = new TranslatableMarkup('Use the radio buttons in the table below to select two revisions to compare. "Source" refers to the revision being compared from, while "target" refers to the revision being compared to. Then click the "Compare selected revisions" button to generate the comparison.');
+  }
+  if (!empty($form['moderation_state']['widget'][0])) {
+    $container = &$form['moderation_state']['widget'][0];
+
+    // Only proceed if a description exists.
+    if (!empty($container['#description'])) {
+      // Build a consistent ID (Drupal's default behavior).
+      $description_id = 'edit-moderation-state-0--description';
+
+      // Manually render the description with the expected ID.
+      $container['rendered_description'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'div',
+        '#attributes' => [
+          'id' => $description_id,
+          'class' => ['description', 'visually-hidden'],
+        ],
+        '#value' => $container['#description'],
+        '#weight' => 99,
+      ];
+    }
+  }
 }
 
 /**
@@ -76,14 +118,66 @@ function mayflower_library_info_build() {
         'minified' => TRUE,
         'weight' => -20,
       ],
+      "/$artifacts/assets/js/index-generated.js" => [
+        'minified' => TRUE,
+      ],
     ],
     'css' => [
       'theme' => [
         "/$artifacts/assets/css/index-lp.css" => [],
       ],
     ],
+    'dependencies' => [
+      'mayflower/init',
+      'mayflower/modernizr',
+    ],
   ];
   return $libraries;
+}
+
+/**
+ * Fetch contact info from parent service node.
+ */
+function mayflower_preprocess_paragraph__contact_placeholder(&$variables) {
+  $cache_tags = [];
+  $paragraph = $variables['paragraph'];
+  if ($node = Helper::getParentNode($paragraph)) {
+
+    // Prepare the Contact Us field, if it's populated.
+    if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
+      // Set up options for contact list.
+      $contact_list_options = [
+        'heading' => [
+          'title' => '',
+        ],
+        'groups' => [
+          'accordion' => TRUE,
+          'isExpanded' => FALSE,
+        ],
+      ];
+
+      // Prepare the contactList data object.
+      $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
+        ->applyTo($variables);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess logic for the org_events paragraph.
+ */
+function mayflower_preprocess_paragraph__org_events(&$variables) {
+  $paragraph = $variables['paragraph'];
+  // Gather events associated with this node.
+  $eventManager = \Drupal::service('mass_content.event_manager');
+  $eventsRender = (new EventsRendererOrgPages($eventManager, $paragraph))->render();
+  $variables = array_merge($variables, $eventsRender);
 }
 
 /**
@@ -230,5 +324,495 @@ function mayflower_preprocess_page(array &$variables) {
   }
   else {
     $variables['header_version_mixed'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_preprocess_paragraph__section_header(&$variables) {
+  if (!empty($variables['paragraph']->field_section_long_form_heading->value)) {
+    $title = $variables['paragraph']->field_section_long_form_heading->value;
+    // Slugify.
+    $utilities = \Drupal::service('mass_metatag.utilities');
+    $id = $utilities->slugify(trim($title));
+    $variables['id'] = $id;
+  }
+  $paragraph = $variables['paragraph'];
+  $variables['heading_level'] = 2;
+  if ($behavior_settings = $paragraph->getAllBehaviorSettings()) {
+    $parent_uuid = $behavior_settings['layout_paragraphs']['parent_uuid'] ?? NULL;
+    if (empty($parent_uuid)) {
+      return;
+    }
+
+    $host = $paragraph->getParentEntity();
+    if (empty($host)) {
+      return;
+    }
+    $parent_component = \Drupal::service('entity.repository')
+      ->loadEntityByUuid('paragraph', $parent_uuid);
+    if (empty($parent_component)) {
+      return;
+    }
+
+    if ($parent_component->bundle() === 'service_section') {
+      $has_heading = !$parent_component->get('field_service_section_heading')
+        ->isEmpty();
+      $section_style = (string) $parent_component->get('field_section_style')->value;
+      $is_two_column = (bool) $parent_component->get('field_two_column')->value;
+      $is_enhanced = ($section_style === 'enhanced');
+      $show_heading = $is_enhanced || ($section_style === 'simple' && $is_two_column);
+      $heading_level = ($show_heading && $has_heading) ? 3 : 2;
+      $variables['heading_level'] = $heading_level;
+    }
+  }
+
+}
+
+/**
+ * Implements hook_preprocess_paragraph__service_section().
+ */
+function mayflower_preprocess_paragraph__service_section(array &$variables) {
+  $paragraph = $variables['paragraph'];
+  $variables['section_style'] = $paragraph->field_section_style->value;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_preprocess_paragraph__key_message(array &$variables) {
+  mayflower_build_key_message_component($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_preprocess_paragraph__key_message_section(array &$variables) {
+  mayflower_build_key_message_component($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_build_key_message_component(array &$variables) {
+  mayflower_campaign_landing_paragraph_set_header_level($variables);
+  $paragraph = $variables['paragraph'];
+  $variables['button'] = [];
+  // Color mapping to their appropriate styles.
+  $colors = [
+    'dark_blue' => 'c-primary',
+    'light_blue' => 'c-primary-lightest',
+    'dark_green' => 'c-primary-alt',
+    'light_green' => 'c-primary-alt-lightest',
+    'white' => 'c-white',
+    'light_grey' => 'c-gray-lightest',
+  ];
+  // @todo Setup the button style to pass through once the designs are ready.
+  if (!empty($paragraph->field_button->title)) {
+    $button = $variables['elements']['field_button'][0];
+    $variables['button']['text'] = $button['#title'];
+    $variables['button']['href'] = $button['#url']->toString();
+  }
+
+  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
+
+  if (!empty($paragraph->field_text_overlay_color->value)) {
+    $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
+  }
+  if (!empty($paragraph->field_section_text_overlay_color->value)) {
+    $variables['textOverlaySection'] = isset($colors[$paragraph->field_section_text_overlay_color->value]) ? $colors[$paragraph->field_section_text_overlay_color->value] : '';
+  }
+  $variables['backgroundColor'] = '';
+  if (!empty($paragraph->field_background_type->value)) {
+    if (!empty($paragraph->field_background_color->value)) {
+      $variables['backgroundColor'] = isset($colors[$paragraph->field_background_color->value]) ? $colors[$paragraph->field_background_color->value] : '';
+    }
+    if (!empty($paragraph->field_section_background_color->value)) {
+      $variables['backgroundColor'] = isset($colors[$paragraph->field_section_background_color->value]) ? $colors[$paragraph->field_section_background_color->value] : '';
+    }
+
+    $variables['componentId'] = 'ID' . $paragraph->id();
+  }
+}
+
+/**
+ * Determines if a paragraph's parent field is field_header.
+ */
+function mayflower_campaign_landing_paragraph_set_header_level(array &$variables) {
+  $variables['level'] = 2;
+  $parent_field = $variables['paragraph']->parent_field_name->value;
+  if ($parent_field === 'field_header') {
+    $variables['level'] = 1;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $flexible_lg = $variables['paragraph'];
+
+  if ($behavior_settings = $flexible_lg->getAllBehaviorSettings()) {
+    $parent_uuid = $behavior_settings['layout_paragraphs']['parent_uuid'] ?? NULL;
+    if (!empty($parent_uuid)) {
+      if ($flexible_lg->getParentEntity()) {
+        if ($parent_component = \Drupal::service('entity.repository')
+          ->loadEntityByUuid('paragraph', $parent_uuid)) {
+          if ($parent_component->bundle() === 'service_section') {
+            $has_heading = !$parent_component->get('field_service_section_heading')
+              ->isEmpty();
+            $section_style = (string) $parent_component->get('field_section_style')->value;
+            $is_two_column = (bool) $parent_component->get('field_two_column')->value;
+            $is_enhanced = ($section_style === 'enhanced');
+            $show_heading = $is_enhanced || ($section_style === 'simple' && $is_two_column);
+            $heading_level = ($show_heading && $has_heading) ? 3 : 2;
+            $variables['heading_level'] = $heading_level;
+          }
+        }
+      }
+    }
+  }
+
+  $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
+
+  unset($flexible_lg->subsequent_links);
+
+  foreach ($all_flexible_links as $key => $flexible_lg) {
+
+    $base = 'flexible_links_group';
+    $variables['display_type'] = $flexible_lg->field_display_type->value;
+
+    $variables[$base][$key]['title'] = $flexible_lg->field_flexible_link_group_title->value;
+    $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
+    $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
+    $variables[$base][$key]['links'] = [];
+    $variables[$base][$key]['expanded'] = (bool) intval($flexible_lg->field_group_expanded->value);
+
+    $links = &$variables[$base][$key]['links'];
+    foreach ($flexible_lg->field_link_group as $index => $item) {
+      if (empty($item->entity)) {
+        continue;
+      }
+      switch ($item->entity->bundle()) {
+        case 'link_group_link':
+          if (empty($item->entity->field_link_group_link)) {
+            break;
+          }
+          /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
+          $link = $item->entity->field_link_group_link[0];
+          if (empty($link->get('computed_title'))) {
+            break;
+          }
+          $computed_title = $link->get('computed_title')->getValue();
+          $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
+          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
+          break;
+
+        case 'link_group_document':
+          if (empty($item->entity->field_file_download_single)) {
+            break;
+          }
+          /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
+          $media = $item->entity->field_file_download_single[0]->entity;
+          if ($media) {
+
+            if ($variables['display_type'] == "buttons") {
+              $original_file = $media->field_upload_file->entity;
+              $links[$index]['file_size'] = strtoupper(ByteSizeMarkup::create($original_file->getSize())->render());
+              $file_info = new \SplFileInfo($original_file->getFilename());
+              $file_extension = strtoupper($file_info->getExtension());
+              $file_icon = 'doc-' . strtolower($file_extension);
+              if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                $file_icon = 'doc-generic';
+              }
+              $links[$index]['file_icon'] = $file_icon;
+              $links[$index]['downloadable_file'] = TRUE;
+              $links[$index]['file_extension'] = $file_extension;
+              if (!$media->field_title->isEmpty()) {
+                $links[$index]['file_title'] = $media->field_title->value;
+              }
+              else {
+                $links[$index]['file_title'] = $media->label();
+              }
+              $links[$index]['mid'] = $media->id();
+
+            }
+            else {
+              // Check if the media entity has the 'field_upload_file' field and it's not empty.
+              if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
+                $file_media = $media->get('field_upload_file')->entity;
+
+                if ($file_media) {
+                  // Initialize the render array.
+                  $render_array = [];
+
+                  // Manually add calculated file size.
+                  $file_size = strtoupper(ByteSizeMarkup::create($file_media->getSize())->render());
+                  $render_array['calculated_file_size'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_size,
+                  ];
+
+                  // Manually add extra file extension and icon.
+                  $file_info = new \SplFileInfo($file_media->getFilename());
+                  $file_extension = strtoupper($file_info->getExtension());
+                  $file_icon = 'doc-' . strtolower($file_extension);
+
+                  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                    $file_icon = 'doc-generic';
+                  }
+
+                  $render_array['extra_file_extension'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_extension,
+                  ];
+
+                  $render_array['extra_file_icon'] = [
+                    '#type' => 'markup',
+                    '#markup' => $file_icon,
+                  ];
+                  if (!$media->field_title->isEmpty()) {
+                    $render_array['file_title'] = $media->field_title->value;
+                  }
+                  else {
+                    $render_array['file_title'] = $media->label();
+                  }
+                  $render_array['mid'] = $media->id();
+                  $render_array['media'] = $media;
+                  $language = $media->language();
+
+                  // Get the human-readable language name
+                  $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
+                  $render_array['language'] = $language_name;
+                  _mass_translations_media_helper($render_array);
+                  $links[$index]['download_link'] = $render_array;
+                }
+              }
+            }
+            $links[$index]['href'] = $media->toURL()->setAbsolute()->toString();
+            $links[$index]['text'] = $media->label();
+          }
+          break;
+      }
+    }
+  }
+}
+
+/**
+ * Fetch social links from parent org node.
+ */
+function mayflower_preprocess_paragraph__social_media(&$variables) {
+  $level = "2";
+  $paragraph = $variables['paragraph'];
+  if ($paragraph->parent_field_name->value == 'field_service_section_content') {
+    if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
+      if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
+        $level = "3";
+      }
+    }
+  }
+  if ($node = Helper::getParentNode($paragraph)) {
+    $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
+    $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
+      $node->$social_field_name->view() : [];
+    $variables['level'] = $level;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess for org_locations paragraphs.
+ */
+function mayflower_preprocess_paragraph__org_locations(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  if (Helper::isFieldPopulated($paragraph, 'field_org_ref_locations')) {
+    $mappedLocations_options = [
+      'locationDetailsLink' => [
+        'display' => TRUE,
+        'nid' => $node ? $node->id() : '',
+        'path' => $node ? \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) : '',
+      ],
+    ];
+
+    // Use aside for the text that displays next to the map with the button.
+    $mappedLocations_options['aside'] = [
+      'button' => $paragraph->field_location_button_label->value,
+      'paragraph' => [
+        'text' => Helper::fieldFullView($paragraph, 'field_location_button_short_desc'),
+      ],
+    ];
+
+    $sections[] = [
+      'pageContent' => [
+        [
+          'path' => '@organisms/by-author/mapped-locations.twig',
+          'data' => [
+            'mappedLocations' => Organisms::prepareMappedLocations($paragraph->field_org_ref_locations->referencedEntities(), $mappedLocations_options),
+          ],
+        ],
+      ],
+    ];
+
+    $variables['stackedRowSections'] = $sections;
+  }
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function mayflower_preprocess_field(&$variables, $hook) {
+  $element = $variables['element'];
+
+  // The first element of the featured items mosaic needs a slightly different template.
+  if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
+    // First image with an image style.
+    if ($highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight) {
+      if ($highlight->entity) {
+        $variables['items'][0]['content']['#view_mode'] = 'tall';
+      }
+    }
+  }
+
+  // Setup social link icons.
+  if (in_array($element['#field_name'], ['field_services_social_links', 'field_social_links'])) {
+    // Get icons for social links.
+    $services = [
+      'twitter',
+      'facebook',
+      'threads',
+      'flickr',
+      'blog',
+      'linkedin',
+      'google',
+      'instagram',
+      'medium',
+      'youtube',
+      'vimeo',
+      'bluesky'
+    ];
+
+    foreach ($variables['items'] as $index => &$item) {
+      $url = $item['content']['#url']->toString();
+      foreach ($services as $service) {
+        if (strpos($url, $service)) {
+          $item['icon'] = Helper::getIconPath($service);
+        }
+      }
+      if (strpos($url, 'bsky')) {
+        $item['icon'] = Helper::getIconPath('bluesky');
+      }
+      elseif (strpos($url, 'x.com')) {
+        $item['icon'] = Helper::getIconPath('twitter');
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Prepare video values for template.
+ */
+function mayflower_preprocess_paragraph__video(&$variables) {
+  $variables['video'] = Helper::getVideoAtomData($variables['paragraph']);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Prepares icon value for each social link item.
+ */
+function mayflower_preprocess_field__node__field_social_links(&$variables) {
+  // Get icons for social links.
+  $services = [
+    'twitter',
+    'facebook',
+    'threads',
+    'flickr',
+    'blog',
+    'linkedin',
+    'google',
+    'instagram',
+    'medium',
+    'youtube',
+    'bluesky',
+  ];
+
+  foreach ($variables['items'] as $index => &$item) {
+    $url = $item['content']['#url']->toString();
+    foreach ($services as $service) {
+      if (strpos($url, $service)) {
+        $item['icon'] = Helper::getIconPath($service);
+      }
+    }
+    if (strpos($url, 'bsky')) {
+      $item['icon'] = Helper::getIconPath('bluesky');
+    }
+    elseif (strpos($url, 'x.com')) {
+      $item['icon'] = Helper::getIconPath('twitter');
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Prepare collection_search values for template.
+ */
+function mayflower_preprocess_paragraph__collection_search(&$variables) {
+  $variables['searchBoxWithLinks'] = [];
+  $variables['searchBoxWithLinks']['form'] = [];
+
+  $p = $variables['paragraph'];
+  $variables['searchBoxWithLinks']['form']['headingText'] = $p->field_search_heading->value;
+  $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
+
+  switch ($p->field_search_type->value) {
+    case 'external':
+      if ($param_name = $p->field_search_query_param_name->value) {
+        $parsed_url = UrlHelper::parse($p->field_search_site_url->value);
+        if (array_key_exists($param_name, $parsed_url['query'])) {
+          unset($parsed_url['query'][$param_name]);
+        }
+        $action_url = Url::fromUri($parsed_url['path'], [
+          'query' => $parsed_url['query'],
+          'absolute' => TRUE,
+          'https' => TRUE,
+        ]);
+        $variables['searchBoxWithLinks']['form']['actionUrl'] = $action_url->toString();
+        $variables['searchBoxWithLinks']['form']['inputName'] = $param_name;
+      }
+      break;
+
+    case 'collection':
+      // In some rare cases field_url_name might be missing, so we set
+      // default value to avoid warnings.
+      $collection_url = '/';
+      if ($p->field_collection->referencedEntities()[0]->field_url_name) {
+        $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+      }
+      $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
+      $variables['searchBoxWithLinks']['form']['inputName'] = t('title');
+
+      break;
+  }
+
+  $variables['searchBoxWithLinks']['form']['footerText'] = [
+    'rteElements' => [
+      Atoms::prepareTextField($p, 'field_search_footer'),
+    ],
+  ];
+
+  if (!$p->field_search_related_info->isEmpty()) {
+    $variables['searchBoxWithLinks']['secondary']['relatedInfo'] = [
+      'rteElements' => [
+        Atoms::prepareTextField($p, 'field_search_related_info'),
+      ],
+    ];
   }
 }
