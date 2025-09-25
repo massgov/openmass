@@ -2265,7 +2265,8 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
+          disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
       relationships:
@@ -2336,7 +2337,17 @@ display:
             default_group_multiple: {  }
             group_items: {  }
       header: {  }
-      footer: {  }
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders: {  }
     cache_metadata:
       max-age: 0
@@ -3796,7 +3807,10 @@ display:
             value: "<p>This report will show you pages where a large number of visitors answered \"No\" to the question in the footer of all pages, \"Did you find what you were looking for on this webpage?” </p>\r\n<p><ol>\r\n<li>By default, the report shows pages that had at least 20 views and got at least 3 \"No\" responses in the past month. Adjust filters as needed.</li>\r\n<li>Pages are sorted by the number of \"No\" responses per 1000 views (descending). Click the column heading for \"Page views\" to focus on most-viewed pages.</li>\r\n<li>Click the number in the \"No's per 1000\" column to see verbatim feedback for a page. Look for patterns in feedback that suggest improvements.</li>\r\n</ol></p>\r\n<p>Also see: <a href=\"/admin/ma-dash/feedback\">Feedback Manager</a> (view, filter and sort individual feedback responses)</p>"
             format: basic_html
           tokenize: false
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: admin/content/pages_with_negative_feedback
       menu:
         type: none
