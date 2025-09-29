@@ -1,0 +1,8 @@
+services:
+  mass_unpublished_404.unpublished_entity_404_subscriber:
+    class: Drupal\mass_unpublished_404\EventSubscriber\UnpublishedEntity404Subscriber
+    arguments:
+      - '@current_user'
+      - '@?content_moderation.moderation_information'
+    tags:
+      - { name: event_subscriber }
