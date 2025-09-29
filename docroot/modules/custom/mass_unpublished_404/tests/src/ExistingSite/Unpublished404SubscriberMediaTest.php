@@ -29,7 +29,7 @@ class Unpublished404SubscriberMediaTest extends MassExistingSiteBase {
 
     // Admin (can view unpublished).
     $admin = $this->createUser();
-    $admin->addRole('administrator');
+    $admin->addRole('editor');
     $admin->activate();
     $admin->save();
     $this->admin = $admin;
