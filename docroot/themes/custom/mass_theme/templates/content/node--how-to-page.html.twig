@@ -84,7 +84,8 @@
           <div class="ma__details__content">
             {% block pageContent %}
               {# Below is the section for What you need. #}
-              {% if node.field_how_to_what_you_need is not empty %}
+              {% set what_you_need_content = content.field_how_to_what_you_need|render|trim %}
+              {% if what_you_need_content is not empty and what_you_need_content|striptags|trim is not empty %}
                 {% embed "@organisms/by-author/rich-text.twig" with {
                   "richText": {
                     "compHeading": {
@@ -138,7 +139,8 @@
                 {% endembed %}
               {% endif %}
               {# Below is the section for More info. #}
-              {% if content.field_how_to_more_info|render is not empty %}
+              {% set more_info_content = content.field_how_to_more_info|render|trim %}
+              {% if more_info_content is not empty and more_info_content|striptags|trim is not empty %}
                 {% embed "@organisms/by-author/rich-text.twig" with {
                   "richText": {
                     "compHeading": {
