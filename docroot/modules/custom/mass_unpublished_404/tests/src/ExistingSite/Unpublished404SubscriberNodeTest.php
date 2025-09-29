@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Drupal\Tests\mass_unpublished_404\ExistingSite;
 
@@ -13,7 +14,7 @@ use weitzman\DrupalTestTraits\Entity\NodeCreationTrait;
  *
  * Verifies 403→404 conversion for unpublished service_page (anon only).
  */
-class Unpublished404SubscriberTest extends MassExistingSiteBase {
+class Unpublished404SubscriberNodeTest extends MassExistingSiteBase {
 
   use NodeCreationTrait;
 
