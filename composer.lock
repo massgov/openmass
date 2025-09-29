@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bdef6e63b66f9e849e9776cc4d38cf35",
+    "content-hash": "9fd39106194c36c8124d9f0f961b6534",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -228,6 +228,157 @@
                 "source": "https://github.com/asm89/stack-cors/tree/v2.3.0"
             },
             "time": "2025-03-13T08:50:04+00:00"
+        },
+        {
+            "name": "aws/aws-crt-php",
+            "version": "v1.2.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/awslabs/aws-crt-php.git",
+                "reference": "d71d9906c7bb63a28295447ba12e74723bd3730e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/awslabs/aws-crt-php/zipball/d71d9906c7bb63a28295447ba12e74723bd3730e",
+                "reference": "d71d9906c7bb63a28295447ba12e74723bd3730e",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.35||^5.6.3||^9.5",
+                "yoast/phpunit-polyfills": "^1.0"
+            },
+            "suggest": {
+                "ext-awscrt": "Make sure you install awscrt native extension to use any of the functionality."
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "AWS SDK Common Runtime Team",
+                    "email": "aws-sdk-common-runtime@amazon.com"
+                }
+            ],
+            "description": "AWS Common Runtime for PHP",
+            "homepage": "https://github.com/awslabs/aws-crt-php",
+            "keywords": [
+                "amazon",
+                "aws",
+                "crt",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/awslabs/aws-crt-php/issues",
+                "source": "https://github.com/awslabs/aws-crt-php/tree/v1.2.7"
+            },
+            "time": "2024-10-18T22:15:13+00:00"
+        },
+        {
+            "name": "aws/aws-sdk-php",
+            "version": "3.356.26",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/aws/aws-sdk-php.git",
+                "reference": "98d100ee08eb5340148cc6010c0443eb346a8486"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/98d100ee08eb5340148cc6010c0443eb346a8486",
+                "reference": "98d100ee08eb5340148cc6010c0443eb346a8486",
+                "shasum": ""
+            },
+            "require": {
+                "aws/aws-crt-php": "^1.2.3",
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "ext-simplexml": "*",
+                "guzzlehttp/guzzle": "^7.4.5",
+                "guzzlehttp/promises": "^2.0",
+                "guzzlehttp/psr7": "^2.4.5",
+                "mtdowling/jmespath.php": "^2.8.0",
+                "php": ">=8.1",
+                "psr/http-message": "^1.0 || ^2.0"
+            },
+            "require-dev": {
+                "andrewsville/php-token-reflection": "^1.4",
+                "aws/aws-php-sns-message-validator": "~1.0",
+                "behat/behat": "~3.0",
+                "composer/composer": "^2.7.8",
+                "dms/phpunit-arraysubset-asserts": "^0.4.0",
+                "doctrine/cache": "~1.4",
+                "ext-dom": "*",
+                "ext-openssl": "*",
+                "ext-pcntl": "*",
+                "ext-sockets": "*",
+                "phpunit/phpunit": "^5.6.3 || ^8.5 || ^9.5",
+                "psr/cache": "^2.0 || ^3.0",
+                "psr/simple-cache": "^2.0 || ^3.0",
+                "sebastian/comparator": "^1.2.3 || ^4.0 || ^5.0",
+                "symfony/filesystem": "^v6.4.0 || ^v7.1.0",
+                "yoast/phpunit-polyfills": "^2.0"
+            },
+            "suggest": {
+                "aws/aws-php-sns-message-validator": "To validate incoming SNS notifications",
+                "doctrine/cache": "To use the DoctrineCacheAdapter",
+                "ext-curl": "To send requests using cURL",
+                "ext-openssl": "Allows working with CloudFront private distributions and verifying received SNS messages",
+                "ext-sockets": "To use client-side monitoring"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.0-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "Aws\\": "src/"
+                },
+                "exclude-from-classmap": [
+                    "src/data/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Amazon Web Services",
+                    "homepage": "http://aws.amazon.com"
+                }
+            ],
+            "description": "AWS SDK for PHP - Use Amazon Web Services in your PHP project",
+            "homepage": "http://aws.amazon.com/sdkforphp",
+            "keywords": [
+                "amazon",
+                "aws",
+                "cloud",
+                "dynamodb",
+                "ec2",
+                "glacier",
+                "s3",
+                "sdk"
+            ],
+            "support": {
+                "forum": "https://github.com/aws/aws-sdk-php/discussions",
+                "issues": "https://github.com/aws/aws-sdk-php/issues",
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.356.26"
+            },
+            "time": "2025-09-25T18:07:59+00:00"
         },
         {
             "name": "brick/math",
@@ -2506,6 +2657,72 @@
             }
         },
         {
+            "name": "drupal/ace_editor",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/ace_editor.git",
+                "reference": "2.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/ace_editor-2.0.2.zip",
+                "reference": "2.0.2",
+                "shasum": "7a36214b514dfde797c970335a68df360520c290"
+            },
+            "require": {
+                "drupal/core": "^10 || ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.0.2",
+                    "datestamp": "1752409176",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Growiel",
+                    "homepage": "https://www.drupal.org/user/2490940"
+                },
+                {
+                    "name": "interdruper",
+                    "homepage": "https://www.drupal.org/user/2437374"
+                },
+                {
+                    "name": "kiritoly",
+                    "homepage": "https://www.drupal.org/user/3222840"
+                },
+                {
+                    "name": "nylin",
+                    "homepage": "https://www.drupal.org/user/816040"
+                },
+                {
+                    "name": "rajab natshah",
+                    "homepage": "https://www.drupal.org/user/1414312"
+                }
+            ],
+            "description": "Ace is an embeddable code editor providing syntax highlighting and much more. See https://ace.c9.io/.",
+            "homepage": "https://www.drupal.org/project/ace_editor",
+            "keywords": [
+                "ACE",
+                "Drupal",
+                "Editor"
+            ],
+            "support": {
+                "source": "http://cgit.drupalcode.org/ace_editor",
+                "issues": "https://www.drupal.org/project/issues/ace_editor"
+            }
+        },
+        {
             "name": "drupal/acquia_purge",
             "version": "1.5.0",
             "source": {
@@ -2758,6 +2975,302 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/admin_toolbar",
                 "issues": "https://www.drupal.org/project/issues/admin_toolbar"
+            }
+        },
+        {
+            "name": "drupal/ai",
+            "version": "1.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/ai.git",
+                "reference": "1.1.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/ai-1.1.4.zip",
+                "reference": "1.1.4",
+                "shasum": "cb52f84b53a3b36d5b2f7bf42592d3437a3718cb"
+            },
+            "require": {
+                "drupal/core": "^10.2 || ^11",
+                "drupal/key": "^1.18",
+                "league/html-to-markdown": "^5.1",
+                "yethee/tiktoken": "^0.5.1"
+            },
+            "require-dev": {
+                "allanpichardo/mysql-vector": "^2.0",
+                "drupal/ai_assistant_api": "*",
+                "drupal/ai_search-ai_search": "*",
+                "drupal/eca": "^2.0",
+                "drupal/eca_content-eca_content": "*",
+                "drupal/field_validation": "^3.0@beta",
+                "drupal/key": "*",
+                "drupal/search_api": "^1.x-dev",
+                "drupal/search_api_solr": "^4.0",
+                "drupal/token": "^1.14",
+                "drush/drush": "^12|^13"
+            },
+            "suggest": {
+                "league/commonmark": "Allows previewing of chunked content when configuring the fields to be indexed in AI Search, and formats messages in the AI Chatbot module."
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.1.4",
+                    "datestamp": "1758118125",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "a.dmitriiev",
+                    "homepage": "https://www.drupal.org/user/3235287"
+                },
+                {
+                    "name": "andrewbelcher",
+                    "homepage": "https://www.drupal.org/user/655282"
+                },
+                {
+                    "name": "gxleano",
+                    "homepage": "https://www.drupal.org/user/3591999"
+                },
+                {
+                    "name": "kevinquillen",
+                    "homepage": "https://www.drupal.org/user/317279"
+                },
+                {
+                    "name": "kristen pol",
+                    "homepage": "https://www.drupal.org/user/8389"
+                },
+                {
+                    "name": "marcus_johansson",
+                    "homepage": "https://www.drupal.org/user/385947"
+                },
+                {
+                    "name": "scott_euser",
+                    "homepage": "https://www.drupal.org/user/3267594"
+                },
+                {
+                    "name": "seogow",
+                    "homepage": "https://www.drupal.org/user/3065779"
+                },
+                {
+                    "name": "valthebald",
+                    "homepage": "https://www.drupal.org/user/239562"
+                },
+                {
+                    "name": "wouters_f",
+                    "homepage": "https://www.drupal.org/user/721548"
+                },
+                {
+                    "name": "yautja_cetanu",
+                    "homepage": "https://www.drupal.org/user/626050"
+                }
+            ],
+            "description": "AI module for Drupal",
+            "homepage": "https://www.drupal.org/project/ai",
+            "support": {
+                "source": "https://git.drupalcode.org/project/ai"
+            }
+        },
+        {
+            "name": "drupal/ai_agents",
+            "version": "1.1.3",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/ai_agents.git",
+                "reference": "1.1.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/ai_agents-1.1.3.zip",
+                "reference": "1.1.3",
+                "shasum": "e1af67a94452d93b3a8cb64258d0b492aad16726"
+            },
+            "require": {
+                "drupal/ai": "^1.1.0",
+                "drupal/core": "^10.2 || ^11"
+            },
+            "require-dev": {
+                "drupal/bpmn_io": "3.0.x-dev",
+                "drupal/modeler_api": "1.0.x-dev",
+                "drupal/webform": "^6.0"
+            },
+            "suggest": {
+                "drupal/simple_crawler": "Allows the AI Form integrations to crawl websites.",
+                "drupal/unstructured": "Makes the AI Form integrations work better by allowing many file contexts."
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.1.3",
+                    "datestamp": "1758113722",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "akhil babu",
+                    "homepage": "https://www.drupal.org/user/3632866"
+                },
+                {
+                    "name": "andrewbelcher",
+                    "homepage": "https://www.drupal.org/user/655282"
+                },
+                {
+                    "name": "jurgenhaas",
+                    "homepage": "https://www.drupal.org/user/168924"
+                },
+                {
+                    "name": "marcus_johansson",
+                    "homepage": "https://www.drupal.org/user/385947"
+                },
+                {
+                    "name": "michaellander",
+                    "homepage": "https://www.drupal.org/user/636494"
+                },
+                {
+                    "name": "yautja_cetanu",
+                    "homepage": "https://www.drupal.org/user/626050"
+                }
+            ],
+            "description": "Allows AI agents to be used on Drupal websites to do changes and lookup things.",
+            "homepage": "https://www.drupal.org/project/ai_agents",
+            "keywords": [
+                "Drupal"
+            ],
+            "support": {
+                "source": "https://git.drupalcode.org/project/ai_agents"
+            }
+        },
+        {
+            "name": "drupal/ai_content_advisor",
+            "version": "dev-1.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/ai_content_advisor.git",
+                "reference": "246bf269341f525b70b346104d785e909f376ba6"
+            },
+            "require": {
+                "drupal/ai": "^1",
+                "drupal/core": "^10.3 || ^11",
+                "league/commonmark": "^2.5"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.x": "1.x-dev"
+                },
+                "drupal": {
+                    "version": "1.0.0+19-dev",
+                    "datestamp": "1758826605",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Juhani Väätäjä",
+                    "homepage": "https://www.drupal.org/u/j-vee",
+                    "email": "juhani@koodijarivi.fi",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Dima Storozhuk",
+                    "email": "dima@itech4web.com",
+                    "homepage": "https://www.drupal.org/u/dstorozhuk",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "The AI Content Advisor is a Drupal module that integrates with the Drupal's AI-module to provide content analysis directly within the node view.",
+            "homepage": "http://drupal.org/project/ai_content_advisor",
+            "support": {
+                "source": "https://git.drupalcode.org/project/ai_content_advisor",
+                "issues": "https://drupal.org/project/ai_content_advisor"
+            }
+        },
+        {
+            "name": "drupal/ai_provider_aws_bedrock",
+            "version": "1.1.0-beta3",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/ai_provider_aws_bedrock.git",
+                "reference": "1.1.0-beta3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/ai_provider_aws_bedrock-1.1.0-beta3.zip",
+                "reference": "1.1.0-beta3",
+                "shasum": "9eb6546c3a36284c60b6d6addede3c169d80b5ab"
+            },
+            "require": {
+                "aws/aws-sdk-php": "^3.316",
+                "drupal/ai": "^1.1.0-beta1",
+                "drupal/aws": "*",
+                "drupal/core": "^10.3 || ^11",
+                "drupal/key": "^1.18"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.1.0-beta3",
+                    "datestamp": "1749558608",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Beta releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "andrewbelcher",
+                    "homepage": "https://www.drupal.org/user/655282"
+                },
+                {
+                    "name": "danielveza",
+                    "homepage": "https://www.drupal.org/user/3362504"
+                },
+                {
+                    "name": "kim.pepper",
+                    "homepage": "https://www.drupal.org/user/370574"
+                },
+                {
+                    "name": "marcus_johansson",
+                    "homepage": "https://www.drupal.org/user/385947"
+                },
+                {
+                    "name": "yautja_cetanu",
+                    "homepage": "https://www.drupal.org/user/626050"
+                }
+            ],
+            "description": "AWS Bedrock provider implementation for the AI module for Drupal",
+            "homepage": "https://www.drupal.org/project/ai_provider_aws_bedrock",
+            "support": {
+                "source": "https://git.drupalcode.org/project/ai_provider_aws_bedrock"
             }
         },
         {
@@ -3065,6 +3578,69 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/auto_entitylabel",
                 "issues": "https://www.drupal.org/project/issues/auto_entitylabel"
+            }
+        },
+        {
+            "name": "drupal/aws",
+            "version": "2.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/aws.git",
+                "reference": "2.0.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/aws-2.0.4.zip",
+                "reference": "2.0.4",
+                "shasum": "11212a4c8a0539aafdb477eabb3e5d78985cb298"
+            },
+            "require": {
+                "aws/aws-sdk-php": "^3.54",
+                "drupal/core": "^9.2 || ^10 || ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.0.4",
+                    "datestamp": "1725464633",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Davis (davisben)",
+                    "homepage": "https://www.drupal.org/u/davisben",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "dragonwize",
+                    "homepage": "https://www.drupal.org/user/137882"
+                },
+                {
+                    "name": "mpriscella",
+                    "homepage": "https://www.drupal.org/user/2354820"
+                },
+                {
+                    "name": "recidive",
+                    "homepage": "https://www.drupal.org/user/12564"
+                },
+                {
+                    "name": "yas",
+                    "homepage": "https://www.drupal.org/user/17536"
+                }
+            ],
+            "description": "Provides a unified AWS profile management system.",
+            "homepage": "http://drupal.org/project/aws",
+            "support": {
+                "source": "https://git.drupalcode.org/project/aws",
+                "issues": "https://drupal.org/project/issues/aws"
             }
         },
         {
@@ -7180,26 +7756,32 @@
         },
         {
             "name": "drupal/key",
-            "version": "1.17.0",
+            "version": "1.20.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/key.git",
-                "reference": "8.x-1.17"
+                "reference": "8.x-1.20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/key-8.x-1.17.zip",
-                "reference": "8.x-1.17",
-                "shasum": "fa9f606d2ba0e20693e12040004e2ed31302ed03"
+                "url": "https://ftp.drupal.org/files/projects/key-8.x-1.20.zip",
+                "reference": "8.x-1.20",
+                "shasum": "f45415552de129e9976af72224393cd1d1f2ea65"
             },
             "require": {
-                "drupal/core": ">=8.9 <11"
+                "drupal/core": ">=8.9 <12"
+            },
+            "require-dev": {
+                "drush/drush": ">=9"
+            },
+            "suggest": {
+                "drush/drush": ">=11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.17",
-                    "datestamp": "1674343967",
+                    "version": "8.x-1.20",
+                    "datestamp": "1744582168",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7217,12 +7799,16 @@
             ],
             "authors": [
                 {
-                    "name": "Cellar Door",
+                    "name": "cellar door",
                     "homepage": "https://www.drupal.org/user/658076"
                 },
                 {
                     "name": "crashtest_",
                     "homepage": "https://www.drupal.org/user/261457"
+                },
+                {
+                    "name": "japerry",
+                    "homepage": "https://www.drupal.org/user/45640"
                 },
                 {
                     "name": "nerdstein",
@@ -7302,6 +7888,59 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/key_auth",
                 "issues": "https://www.drupal.org/project/issues/key_auth"
+            }
+        },
+        {
+            "name": "drupal/key_aws",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/key_aws.git",
+                "reference": "1.0.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/key_aws-1.0.1.zip",
+                "reference": "1.0.1",
+                "shasum": "a8d6d49d0bbb5f6c79faefcdd9875c9bfb893490"
+            },
+            "require": {
+                "drupal/core": "^8.9 || ^9 || ^10",
+                "drupal/key": "^1.16"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.0.1",
+                    "datestamp": "1662075514",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "George Anderson (geoanders)",
+                    "homepage": "https://www.drupal.org/u/geoanders",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Provides key provider for AWS authentication.",
+            "homepage": "https://drupal.org/project/key_aws",
+            "keywords": [
+                "AWS",
+                "Amazon",
+                "Authentication",
+                "Drupal"
+            ],
+            "support": {
+                "source": "https://git.drupalcode.org/project/key_aws",
+                "issues": "https://www.drupal.org/project/issues/key_aws"
             }
         },
         {
@@ -12419,6 +13058,195 @@
             "time": "2024-10-30T14:23:56+00:00"
         },
         {
+            "name": "league/commonmark",
+            "version": "2.7.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/commonmark.git",
+                "reference": "10732241927d3971d28e7ea7b5712721fa2296ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/10732241927d3971d28e7ea7b5712721fa2296ca",
+                "reference": "10732241927d3971d28e7ea7b5712721fa2296ca",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "league/config": "^1.1.1",
+                "php": "^7.4 || ^8.0",
+                "psr/event-dispatcher": "^1.0",
+                "symfony/deprecation-contracts": "^2.1 || ^3.0",
+                "symfony/polyfill-php80": "^1.16"
+            },
+            "require-dev": {
+                "cebe/markdown": "^1.0",
+                "commonmark/cmark": "0.31.1",
+                "commonmark/commonmark.js": "0.31.1",
+                "composer/package-versions-deprecated": "^1.8",
+                "embed/embed": "^4.4",
+                "erusev/parsedown": "^1.0",
+                "ext-json": "*",
+                "github/gfm": "0.29.0",
+                "michelf/php-markdown": "^1.4 || ^2.0",
+                "nyholm/psr7": "^1.5",
+                "phpstan/phpstan": "^1.8.2",
+                "phpunit/phpunit": "^9.5.21 || ^10.5.9 || ^11.0.0",
+                "scrutinizer/ocular": "^1.8.1",
+                "symfony/finder": "^5.3 | ^6.0 | ^7.0",
+                "symfony/process": "^5.4 | ^6.0 | ^7.0",
+                "symfony/yaml": "^2.3 | ^3.0 | ^4.0 | ^5.0 | ^6.0 | ^7.0",
+                "unleashedtech/php-coding-standard": "^3.1.1",
+                "vimeo/psalm": "^4.24.0 || ^5.0.0 || ^6.0.0"
+            },
+            "suggest": {
+                "symfony/yaml": "v2.3+ required if using the Front Matter extension"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "2.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\CommonMark\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Colin O'Dell",
+                    "email": "colinodell@gmail.com",
+                    "homepage": "https://www.colinodell.com",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Highly-extensible PHP Markdown parser which fully supports the CommonMark spec and GitHub-Flavored Markdown (GFM)",
+            "homepage": "https://commonmark.thephpleague.com",
+            "keywords": [
+                "commonmark",
+                "flavored",
+                "gfm",
+                "github",
+                "github-flavored",
+                "markdown",
+                "md",
+                "parser"
+            ],
+            "support": {
+                "docs": "https://commonmark.thephpleague.com/",
+                "forum": "https://github.com/thephpleague/commonmark/discussions",
+                "issues": "https://github.com/thephpleague/commonmark/issues",
+                "rss": "https://github.com/thephpleague/commonmark/releases.atom",
+                "source": "https://github.com/thephpleague/commonmark"
+            },
+            "funding": [
+                {
+                    "url": "https://www.colinodell.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.paypal.me/colinpodell/10.00",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/colinodell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/league/commonmark",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-07-20T12:47:49+00:00"
+        },
+        {
+            "name": "league/config",
+            "version": "v1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/config.git",
+                "reference": "754b3604fb2984c71f4af4a9cbe7b57f346ec1f3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/config/zipball/754b3604fb2984c71f4af4a9cbe7b57f346ec1f3",
+                "reference": "754b3604fb2984c71f4af4a9cbe7b57f346ec1f3",
+                "shasum": ""
+            },
+            "require": {
+                "dflydev/dot-access-data": "^3.0.1",
+                "nette/schema": "^1.2",
+                "php": "^7.4 || ^8.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.8.2",
+                "phpunit/phpunit": "^9.5.5",
+                "scrutinizer/ocular": "^1.8.1",
+                "unleashedtech/php-coding-standard": "^3.1",
+                "vimeo/psalm": "^4.7.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Config\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Colin O'Dell",
+                    "email": "colinodell@gmail.com",
+                    "homepage": "https://www.colinodell.com",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Define configuration arrays with strict schemas and access values with dot notation",
+            "homepage": "https://config.thephpleague.com",
+            "keywords": [
+                "array",
+                "config",
+                "configuration",
+                "dot",
+                "dot-access",
+                "nested",
+                "schema"
+            ],
+            "support": {
+                "docs": "https://config.thephpleague.com/",
+                "issues": "https://github.com/thephpleague/config/issues",
+                "rss": "https://github.com/thephpleague/config/releases.atom",
+                "source": "https://github.com/thephpleague/config"
+            },
+            "funding": [
+                {
+                    "url": "https://www.colinodell.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.paypal.me/colinpodell/10.00",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/colinodell",
+                    "type": "github"
+                }
+            ],
+            "time": "2022-12-11T20:36:23+00:00"
+        },
+        {
             "name": "league/container",
             "version": "4.2.5",
             "source": {
@@ -12589,6 +13417,95 @@
             "time": "2023-09-23T10:09:54+00:00"
         },
         {
+            "name": "league/html-to-markdown",
+            "version": "5.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/html-to-markdown.git",
+                "reference": "0b4066eede55c48f38bcee4fb8f0aa85654390fd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/html-to-markdown/zipball/0b4066eede55c48f38bcee4fb8f0aa85654390fd",
+                "reference": "0b4066eede55c48f38bcee4fb8f0aa85654390fd",
+                "shasum": ""
+            },
+            "require": {
+                "ext-dom": "*",
+                "ext-xml": "*",
+                "php": "^7.2.5 || ^8.0"
+            },
+            "require-dev": {
+                "mikehaertl/php-shellcommand": "^1.1.0",
+                "phpstan/phpstan": "^1.8.8",
+                "phpunit/phpunit": "^8.5 || ^9.2",
+                "scrutinizer/ocular": "^1.6",
+                "unleashedtech/php-coding-standard": "^2.7 || ^3.0",
+                "vimeo/psalm": "^4.22 || ^5.0"
+            },
+            "bin": [
+                "bin/html-to-markdown"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\HTMLToMarkdown\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Colin O'Dell",
+                    "email": "colinodell@gmail.com",
+                    "homepage": "https://www.colinodell.com",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Nick Cernis",
+                    "email": "nick@cern.is",
+                    "homepage": "http://modernnerd.net",
+                    "role": "Original Author"
+                }
+            ],
+            "description": "An HTML-to-markdown conversion helper for PHP",
+            "homepage": "https://github.com/thephpleague/html-to-markdown",
+            "keywords": [
+                "html",
+                "markdown"
+            ],
+            "support": {
+                "issues": "https://github.com/thephpleague/html-to-markdown/issues",
+                "source": "https://github.com/thephpleague/html-to-markdown/tree/5.1.1"
+            },
+            "funding": [
+                {
+                    "url": "https://www.colinodell.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.paypal.me/colinpodell/10.00",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/colinodell",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/league/html-to-markdown",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2023-07-12T21:21:09+00:00"
+        },
+        {
             "name": "league/oauth2-client",
             "version": "2.8.1",
             "source": {
@@ -12713,12 +13630,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/massgov/mayflower-artifacts",
-                "reference": "5e1375ec4bb54da540cbe4040462f6b97eb1b9e8"
+                "reference": "f02705c2206994ad51e19431474e14ce6e6cde80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/5e1375ec4bb54da540cbe4040462f6b97eb1b9e8",
-                "reference": "5e1375ec4bb54da540cbe4040462f6b97eb1b9e8",
+                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/f02705c2206994ad51e19431474e14ce6e6cde80",
+                "reference": "f02705c2206994ad51e19431474e14ce6e6cde80",
                 "shasum": ""
             },
             "require": {
@@ -12736,7 +13653,7 @@
                 }
             ],
             "description": "This repository is the product of the built artifact from massgov/mayflower",
-            "time": "2025-09-25T14:48:57+00:00"
+            "time": "2025-09-29T14:25:51+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -13101,6 +14018,72 @@
             "time": "2024-06-28T09:40:51+00:00"
         },
         {
+            "name": "mtdowling/jmespath.php",
+            "version": "2.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jmespath/jmespath.php.git",
+                "reference": "a2a865e05d5f420b50cc2f85bb78d565db12a6bc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jmespath/jmespath.php/zipball/a2a865e05d5f420b50cc2f85bb78d565db12a6bc",
+                "reference": "a2a865e05d5f420b50cc2f85bb78d565db12a6bc",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2.5 || ^8.0",
+                "symfony/polyfill-mbstring": "^1.17"
+            },
+            "require-dev": {
+                "composer/xdebug-handler": "^3.0.3",
+                "phpunit/phpunit": "^8.5.33"
+            },
+            "bin": [
+                "bin/jp.php"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.8-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/JmesPath.php"
+                ],
+                "psr-4": {
+                    "JmesPath\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Graham Campbell",
+                    "email": "hello@gjcampbell.co.uk",
+                    "homepage": "https://github.com/GrahamCampbell"
+                },
+                {
+                    "name": "Michael Dowling",
+                    "email": "mtdowling@gmail.com",
+                    "homepage": "https://github.com/mtdowling"
+                }
+            ],
+            "description": "Declaratively specify how to extract elements from a JSON document",
+            "keywords": [
+                "json",
+                "jsonpath"
+            ],
+            "support": {
+                "issues": "https://github.com/jmespath/jmespath.php/issues",
+                "source": "https://github.com/jmespath/jmespath.php/tree/2.8.0"
+            },
+            "time": "2024-09-04T18:46:31+00:00"
+        },
+        {
             "name": "myclabs/deep-copy",
             "version": "1.13.3",
             "source": {
@@ -13161,6 +14144,157 @@
             "time": "2025-07-05T12:25:42+00:00"
         },
         {
+            "name": "nette/schema",
+            "version": "v1.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nette/schema.git",
+                "reference": "da801d52f0354f70a638673c4a0f04e16529431d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nette/schema/zipball/da801d52f0354f70a638673c4a0f04e16529431d",
+                "reference": "da801d52f0354f70a638673c4a0f04e16529431d",
+                "shasum": ""
+            },
+            "require": {
+                "nette/utils": "^4.0",
+                "php": "8.1 - 8.4"
+            },
+            "require-dev": {
+                "nette/tester": "^2.5.2",
+                "phpstan/phpstan-nette": "^1.0",
+                "tracy/tracy": "^2.8"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.3-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause",
+                "GPL-2.0-only",
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "David Grudl",
+                    "homepage": "https://davidgrudl.com"
+                },
+                {
+                    "name": "Nette Community",
+                    "homepage": "https://nette.org/contributors"
+                }
+            ],
+            "description": "📐 Nette Schema: validating data structures against a given Schema.",
+            "homepage": "https://nette.org",
+            "keywords": [
+                "config",
+                "nette"
+            ],
+            "support": {
+                "issues": "https://github.com/nette/schema/issues",
+                "source": "https://github.com/nette/schema/tree/v1.3.2"
+            },
+            "time": "2024-10-06T23:10:23+00:00"
+        },
+        {
+            "name": "nette/utils",
+            "version": "v4.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nette/utils.git",
+                "reference": "c930ca4e3cf4f17dcfb03037703679d2396d2ede"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nette/utils/zipball/c930ca4e3cf4f17dcfb03037703679d2396d2ede",
+                "reference": "c930ca4e3cf4f17dcfb03037703679d2396d2ede",
+                "shasum": ""
+            },
+            "require": {
+                "php": "8.0 - 8.5"
+            },
+            "conflict": {
+                "nette/finder": "<3",
+                "nette/schema": "<1.2.2"
+            },
+            "require-dev": {
+                "jetbrains/phpstorm-attributes": "^1.2",
+                "nette/tester": "^2.5",
+                "phpstan/phpstan-nette": "^2.0@stable",
+                "tracy/tracy": "^2.9"
+            },
+            "suggest": {
+                "ext-gd": "to use Image",
+                "ext-iconv": "to use Strings::webalize(), toAscii(), chr() and reverse()",
+                "ext-intl": "to use Strings::webalize(), toAscii(), normalize() and compare()",
+                "ext-json": "to use Nette\\Utils\\Json",
+                "ext-mbstring": "to use Strings::lower() etc...",
+                "ext-tokenizer": "to use Nette\\Utils\\Reflection::getUseStatements()"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Nette\\": "src"
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause",
+                "GPL-2.0-only",
+                "GPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "David Grudl",
+                    "homepage": "https://davidgrudl.com"
+                },
+                {
+                    "name": "Nette Community",
+                    "homepage": "https://nette.org/contributors"
+                }
+            ],
+            "description": "🛠  Nette Utils: lightweight utilities for string & array manipulation, image handling, safe JSON encoding/decoding, validation, slug or strong password generating etc.",
+            "homepage": "https://nette.org",
+            "keywords": [
+                "array",
+                "core",
+                "datetime",
+                "images",
+                "json",
+                "nette",
+                "paginator",
+                "password",
+                "slugify",
+                "string",
+                "unicode",
+                "utf-8",
+                "utility",
+                "validation"
+            ],
+            "support": {
+                "issues": "https://github.com/nette/utils/issues",
+                "source": "https://github.com/nette/utils/tree/v4.0.8"
+            },
+            "time": "2025-08-06T21:43:34+00:00"
+        },
+        {
             "name": "nikic/php-parser",
             "version": "v5.6.1",
             "source": {
@@ -13217,6 +14351,18 @@
                 "source": "https://github.com/nikic/PHP-Parser/tree/v5.6.1"
             },
             "time": "2025-08-13T20:13:15+00:00"
+        },
+        {
+            "name": "npm-asset/ace-builds",
+            "version": "1.43.3",
+            "dist": {
+                "type": "tar",
+                "url": "https://registry.npmjs.org/ace-builds/-/ace-builds-1.43.3.tgz"
+            },
+            "type": "npm-asset",
+            "license": [
+                "BSD-3-Clause"
+            ]
         },
         {
             "name": "npm-asset/select2",
@@ -18570,6 +19716,90 @@
             "time": "2024-09-09T11:45:10+00:00"
         },
         {
+            "name": "symfony/polyfill-php80",
+            "version": "v1.33.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php80.git",
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
+                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php80\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ion Bazan",
+                    "email": "ion.bazan@gmail.com"
+                },
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php80/tree/v1.33.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-01-02T08:10:11+00:00"
+        },
+        {
             "name": "symfony/polyfill-php81",
             "version": "v1.33.0",
             "source": {
@@ -20248,6 +21478,57 @@
                 "source": "https://github.com/geocoder-php/php-common/tree/4.6.0"
             },
             "time": "2022-07-30T11:09:43+00:00"
+        },
+        {
+            "name": "yethee/tiktoken",
+            "version": "0.5.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yethee/tiktoken-php.git",
+                "reference": "94a4ac18ab505198f5a0955948ab29ce659c1697"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yethee/tiktoken-php/zipball/94a4ac18ab505198f5a0955948ab29ce659c1697",
+                "reference": "94a4ac18ab505198f5a0955948ab29ce659c1697",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "symfony/service-contracts": "^2.5 || ^3.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^12.0",
+                "mikey179/vfsstream": "^1.6.11",
+                "phpbench/phpbench": "^1.2",
+                "phpunit/phpunit": "^10.5.20",
+                "psalm/plugin-phpunit": "^0.19.0",
+                "vimeo/psalm": "5.25.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Yethee\\Tiktoken\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP version of tiktoken",
+            "keywords": [
+                "bpe",
+                "decode",
+                "encode",
+                "openai",
+                "tiktoken",
+                "tokenizer"
+            ],
+            "support": {
+                "issues": "https://github.com/yethee/tiktoken-php/issues",
+                "source": "https://github.com/yethee/tiktoken-php/tree/0.5.1"
+            },
+            "time": "2024-07-17T10:09:02+00:00"
         }
     ],
     "packages-dev": [
@@ -24662,90 +25943,6 @@
             "time": "2024-09-09T11:45:10+00:00"
         },
         {
-            "name": "symfony/polyfill-php80",
-            "version": "v1.33.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/polyfill-php80.git",
-                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-php80/zipball/0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
-                "reference": "0cc9dd0f17f61d8131e7df6b84bd344899fe2608",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.2"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/polyfill",
-                    "name": "symfony/polyfill"
-                }
-            },
-            "autoload": {
-                "files": [
-                    "bootstrap.php"
-                ],
-                "psr-4": {
-                    "Symfony\\Polyfill\\Php80\\": ""
-                },
-                "classmap": [
-                    "Resources/stubs"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Ion Bazan",
-                    "email": "ion.bazan@gmail.com"
-                },
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony polyfill backporting some PHP 8.0+ features to lower PHP versions",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "compatibility",
-                "polyfill",
-                "portable",
-                "shim"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/polyfill-php80/tree/v1.33.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2025-01-02T08:10:11+00:00"
-        },
-        {
             "name": "symfony/polyfill-php82",
             "version": "v1.32.0",
             "source": {
@@ -25183,6 +26380,8 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "drupal/ai_content_advisor": 20,
+        "drupal/ai_provider_aws_bedrock": 10,
         "drupal/ckeditor5_fullscreen": 10,
         "drupal/config_ignore": 20,
         "drupal/content_language_no_outbound": 5,
@@ -25201,7 +26400,9 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "ext-json": "*"
+        "ext-dom": "*",
+        "ext-json": "*",
+        "ext-libxml": "*"
     },
     "platform-dev": {},
     "platform-overrides": {
