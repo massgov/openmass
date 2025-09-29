@@ -40,7 +40,9 @@ final class UnpublishedEntity404Subscriber extends HttpExceptionSubscriberBase i
   }
 
   /**
-   * Convert 403 to 404 for anonymous users on canonical entity routes
+   * Convert 403 to 404.
+   *
+   * Convert for anonymous users on canonical entity routes
    * when the routed content entity is effectively unpublished.
    */
   public function on403(ExceptionEvent $event): void {

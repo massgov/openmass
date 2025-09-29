@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Drupal\Tests\mass_unpublished_404\ExistingSite;
@@ -56,9 +57,10 @@ class Unpublished404SubscriberMediaTest extends MassExistingSiteBase {
     $this->markEntityForCleanup($this->media);
     $this->markEntityForCleanup($file);
   }
-  
+
   /**
    * Force the shared media into a specific state.
+   *
    * Uses content moderation when present; falls back to status.
    */
   private function setMediaState(string $state): MediaInterface {
@@ -76,7 +78,8 @@ class Unpublished404SubscriberMediaTest extends MassExistingSiteBase {
     return $this->media->toUrl('canonical')->toString();
   }
 
-  /** Ensure anon gets 404 when visiting unpublished media canonical page. */
+  /**
+   * Ensure anon gets 404 when visiting unpublished media canonical page. */
   public function testAnonGets404OnUnpublishedMedia(): void {
     $this->setMediaState(MassModeration::DRAFT);
 
@@ -84,7 +87,8 @@ class Unpublished404SubscriberMediaTest extends MassExistingSiteBase {
     $this->assertSession()->statusCodeEquals(404);
   }
 
-  /** Ensure anon sees 200 for published media. */
+  /**
+   * Ensure anon sees 200 for published media. */
   public function testAnonSees200OnPublishedMedia(): void {
     $this->setMediaState(MassModeration::PUBLISHED);
 
@@ -92,7 +96,8 @@ class Unpublished404SubscriberMediaTest extends MassExistingSiteBase {
     $this->assertSession()->statusCodeEquals(200);
   }
 
-  /** Ensure editor/admin can access unpublished media (200). */
+  /**
+   * Ensure editor/admin can access unpublished media (200). */
   public function testEditorSees200OnUnpublishedMedia(): void {
     $this->setMediaState(MassModeration::DRAFT);
 

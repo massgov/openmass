@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Drupal\Tests\mass_unpublished_404\ExistingSite;
@@ -44,6 +45,7 @@ class Unpublished404SubscriberNodeTest extends MassExistingSiteBase {
 
   /**
    * Force the shared service_page into a specific state.
+   *
    * Uses content moderation when present.
    */
   private function setNodeState(string $state): NodeInterface {
