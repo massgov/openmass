@@ -9,9 +9,7 @@
 
   {% block binderSection %}
     {% for item in items %}
-      {% set item_content = item.content|render %}
-      {% set modified_content = item_content|replace({'<li>': '<li class="ma__toc--hierarchy__link">'}) %}
-      {{ modified_content|raw }}
+      {{ item.content }}
     {% endfor %}
   {% endblock %}
 
