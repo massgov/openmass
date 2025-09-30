@@ -59,21 +59,19 @@ class NearestMicrositeLookup {
       $microsites_by_home_id[$microsite->getHome()->id()] = $microsite;
     }
 
-    if (count($microsites_by_home_id)) {
+    if (!empty($microsites_by_home_id)) {
       $nestedSetStorage = $this->nestedSetStorageFactory->get('field_primary_parent', 'node');
       $key = $this->nestedSetNodeKeyFactory->fromEntity($node);
 
-      // Array of ancestors in hierarchy, starting with field_primary_parent and climbing upward.
-      /** @var \PNX\NestedSet\Node[] */
+      // Ancestors ordered nearest-first: parent (field_primary_parent) up to root.
+      /** @var \PNX\NestedSet\Node[] $ancestors */
       $ancestors = array_reverse($nestedSetStorage->findAncestors($key));
-      if ($ancestors) {
+      if (!empty($ancestors)) {
         foreach ($ancestors as $ancestor) {
           $ancestor_id = $ancestor->getNodeKey()->getId();
-          if (
-            !$nearest_microsite &&
-            isset($microsites_by_home_id[$ancestor_id])
-          ) {
-            $nearest_microsite = $microsites_by_home_id[$ancestor_id];
+          if (isset($microsites_by_home_id[$ancestor_id])) {
+            // Immediate bailout: the first match is the nearest microsite.
+            return $microsites_by_home_id[$ancestor_id];
           }
         }
       }
@@ -92,9 +90,22 @@ class NearestMicrositeLookup {
    *   The nearest microsite, or NULL if no microsite is found.
    */
   public function getNearestMicrosite(NodeInterface $node) {
-    if ($microsites = $this->micrositeLookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
-      return $this->selectNearestMicrosite($microsites, $node);
+    static $nearestCache = [];
+
+    $nid = (int) $node->id();
+    if (isset($nearestCache[$nid])) {
+      return $nearestCache[$nid];
     }
+
+    $result = NULL;
+    $microsites = $this->micrositeLookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
+    if (!empty($microsites)) {
+      $result = $this->selectNearestMicrosite($microsites, $node);
+    }
+
+    // Cache the result (including NULL) for subsequent calls in the same request.
+    $nearestCache[$nid] = $result;
+    return $result;
   }
 
 }
