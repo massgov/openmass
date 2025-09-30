@@ -1,6 +1,5 @@
 services:
-  emoji_validation.exception_subscriber:
-    class: Drupal\emoji_validation\EventSubscriber\EmojiValidationExceptionSubscriber
-    arguments: ['@messenger']
+  emoji_validation.constraint.no_emoji:
+    class: Drupal\emoji_validation\Plugin\Validation\Constraint\NoEmojiConstraintValidator
     tags:
-      - { name: event_subscriber }
+      - { name: validator.constraint_validator }

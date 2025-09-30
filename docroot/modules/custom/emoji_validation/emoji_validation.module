@@ -5,153 +5,179 @@
  * Emoji validation module to prevent emoji characters in text fields.
  */
 
+use Drupal\Core\Field\FieldConfigInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 
 /**
- * Returns the compiled emoji regex pattern (cached for performance).
+ * Implements hook_entity_base_field_info_alter().
  */
-function _emoji_validation_get_pattern() {
-  static $pattern = NULL;
-  if ($pattern === NULL) {
-    $pattern = '/[\x{1F600}-\x{1F64F}]|[\x{1F300}-\x{1F5FF}]|[\x{1F680}-\x{1F6FF}]|[\x{2600}-\x{26FF}]|[\x{2700}-\x{27BF}]|[\x{1F900}-\x{1F9FF}]|[\x{1FA70}-\x{1FAFF}]/u';
+function emoji_validation_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  foreach ($fields as $field_name => $field_definition) {
+    if (in_array($field_definition->getType(), ['text', 'text_long', 'text_with_summary', 'string', 'string_long', 'list_string'])) {
+      $constraints = $field_definition->getConstraints();
+      $constraints['NoEmojiConstraint'] = [];
+      $field_definition->setConstraints($constraints);
+    }
   }
-  return $pattern;
+}
+
+/**
+ * Implements hook_entity_bundle_field_info_alter().
+ */
+function emoji_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  foreach ($fields as $field_name => $field_definition) {
+    if (in_array($field_definition->getType(), ['text', 'text_long', 'text_with_summary', 'string', 'string_long', 'list_string'])) {
+      $constraints = $field_definition->getConstraints();
+      $constraints['NoEmojiConstraint'] = [];
+      $field_definition->setConstraints($constraints);
+    }
+  }
+}
+
+/**
+ * Implements hook_field_config_insert().
+ */
+function emoji_validation_field_config_insert(FieldConfigInterface $field_config) {
+  $text_field_types = ['text', 'text_long', 'text_with_summary', 'string', 'string_long', 'list_string'];
+  if (in_array($field_config->getType(), $text_field_types)) {
+    $constraints = $field_config->getConstraints();
+    $constraints['NoEmojiConstraint'] = [];
+    $field_config->setConstraints($constraints);
+    $field_config->save();
+  }
 }
 
 /**
  * Implements hook_form_alter().
+ *
+ * Validates entity autocomplete fields that create taxonomy terms.
  */
 function emoji_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Add emoji validation to all forms for text fields
-  $form['#validate'][] = '_emoji_validation_validate_all_text_fields';
+  if (isset($form['field_reusable_label'])) {
+    _emoji_validation_add_entity_autocomplete_validation($form, $form_state);
+    $form['#validate'][] = '_emoji_validation_validate_form_values';
+  }
+  
+  if (strpos($form_id, 'node_') === 0 && strpos($form_id, '_edit_form') !== FALSE) {
+    _emoji_validation_add_entity_autocomplete_validation($form, $form_state);
+    $form['#validate'][] = '_emoji_validation_validate_form_values';
+  }
 }
 
 /**
- * Universal validation function that checks ALL text fields for emojis.
+ * Adds validation to entity autocomplete fields targeting taxonomy terms.
  */
-function _emoji_validation_validate_all_text_fields(array &$form, FormStateInterface $form_state) {
-  // Get all form values
-  $values = $form_state->getValues();
-
-  // Recursively check ALL form values for emojis
-  _emoji_validation_check_all_values($form_state, $values, _emoji_validation_get_pattern(), []);
-}
-
-/**
- * Recursively checks ALL form values for emoji characters.
- */
-function _emoji_validation_check_all_values(FormStateInterface $form_state, $values, $emoji_pattern, $field_path = []) {
-  if (is_array($values)) {
-    foreach ($values as $key => $value) {
-      $current_path = array_merge($field_path, [$key]);
-
-      if (is_string($value)) {
-        // Check string values for emojis
-        if (!empty($value) && preg_match($emoji_pattern, $value)) {
-          $field_name = implode('][', $current_path);
-          $form_state->setErrorByName($field_name, t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
+function _emoji_validation_add_entity_autocomplete_validation(&$form, FormStateInterface $form_state) {
+  foreach ($form as $field_name => &$field_element) {
+    if (is_array($field_element) && isset($field_element['#type'])) {
+      if ($field_element['#type'] === 'entity_autocomplete') {
+        if (isset($field_element['#target_type']) && $field_element['#target_type'] === 'taxonomy_term') {
+          $field_element['#element_validate'][] = '_emoji_validation_validate_entity_autocomplete';
         }
       }
-      elseif (is_array($value)) {
-        // Recursively check array values
-        _emoji_validation_check_all_values($form_state, $value, $emoji_pattern, $current_path);
+      elseif (is_array($field_element) && !isset($field_element['#type'])) {
+        _emoji_validation_add_entity_autocomplete_validation($field_element, $form_state);
       }
     }
   }
-  elseif (is_string($values)) {
-    // Check single string values
-    if (!empty($values) && preg_match($emoji_pattern, $values)) {
-      $field_name = implode('][', $field_path);
-      $form_state->setErrorByName($field_name, t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
-    }
-  }
 }
 
 /**
- * Implements hook_entity_presave().
+ * Validates entity autocomplete field values for emojis.
  */
-function emoji_validation_entity_presave($entity) {
-  // Handle entity types (existing logic)
-  emoji_validation_entity_presave_other($entity);
-}
-
-/**
- * Handles entity presave validation for non-file entities.
- *
- * ENHANCEMENT: This provides a secondary validation layer that checks
- * the actual entity data (not just form data) to catch cases where
- * existing content already contains emojis and the user tries to save
- * without making changes.
- */
-function emoji_validation_entity_presave_other($entity) {
-  // Check nodes, paragraphs, and taxonomy terms (for labels)
-  if (!in_array($entity->getEntityTypeId(), ['node', 'paragraph', 'taxonomy_term'])) {
+function _emoji_validation_validate_entity_autocomplete($element, FormStateInterface $form_state, $form) {
+  $value = $element['#value'];
+  
+  if (empty($value)) {
     return;
   }
-
-  // Get the emoji pattern
-  $emoji_pattern = _emoji_validation_get_pattern();
-
-  $emoji_found = FALSE;
-  $emoji_fields = [];
-
-  // Special handling for taxonomy terms (labels)
-  if ($entity->getEntityTypeId() === 'taxonomy_term') {
-    // Check the taxonomy term name (label)
-    $name = $entity->getName();
-    if (!empty($name) && preg_match($emoji_pattern, $name)) {
-      $emoji_found = TRUE;
-      $emoji_fields[] = 'label name';
-    }
-
-    // Check taxonomy term description if it exists
-    if ($entity->hasField('description') && !$entity->get('description')->isEmpty()) {
-      $description = $entity->get('description')->value;
-      if (!empty($description) && preg_match($emoji_pattern, $description)) {
-        $emoji_found = TRUE;
-        $emoji_fields[] = 'description';
-      }
-    }
+  
+  if (_emoji_validation_contains_emoji($value)) {
+    $form_state->setError($element, t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
   }
-  else {
-    // Check all text fields in other entity types
-    $field_definitions = $entity->getFieldDefinitions();
-    foreach ($field_definitions as $field_name => $field_definition) {
-      if (in_array($field_definition->getType(), ['text', 'text_long', 'text_with_summary', 'string', 'string_long'])) {
-        $field_value = $entity->get($field_name)->getValue();
+}
 
-        if (!empty($field_value)) {
-          foreach ($field_value as $delta => $value) {
-            if (isset($value['value']) && !empty($value['value']) && preg_match($emoji_pattern, $value['value'])) {
-              $emoji_found = TRUE;
-              $emoji_fields[] = $field_name;
+/**
+ * Validates field_reusable_label values before taxonomy term creation.
+ */
+function _emoji_validation_validate_form_values($form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  
+  if (isset($values['field_reusable_label']) && is_array($values['field_reusable_label'])) {
+    foreach ($values['field_reusable_label'] as $delta => $item) {
+      if (!is_array($item)) {
+        continue;
+      }
+      
+      if (isset($item['target_id']) && !empty($item['target_id'])) {
+        $target_id = $item['target_id'];
+        
+        if (is_array($target_id)) {
+          if (isset($target_id['entity'])) {
+            $nested_target_id = $target_id['entity'];
+            
+            if (is_object($nested_target_id)) {
+              if (method_exists($nested_target_id, 'getName')) {
+                $value = $nested_target_id->getName();
+              } elseif (method_exists($nested_target_id, 'get')) {
+                $value = $nested_target_id->get('name')->value;
+              } elseif (isset($nested_target_id->name)) {
+                $value = $nested_target_id->name;
+              } else {
+                continue;
+              }
+            } elseif (is_string($nested_target_id)) {
+              $value = $nested_target_id;
+            } else {
+              continue;
             }
+          } else {
+            continue;
           }
+        } elseif (is_object($target_id)) {
+          if (method_exists($target_id, 'getName')) {
+            $value = $target_id->getName();
+          } elseif (method_exists($target_id, 'get')) {
+            $value = $target_id->get('name')->value;
+          } elseif (isset($target_id->name)) {
+            $value = $target_id->name;
+          } else {
+            continue;
+          }
+        } elseif (is_string($target_id)) {
+          $value = $target_id;
+        } else {
+          continue;
+        }
+        
+        if (_emoji_validation_contains_emoji($value)) {
+          $form_state->setErrorByName('field_reusable_label][' . $delta . '][target_id', 
+            t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
         }
       }
     }
   }
+}
 
-  // If emojis found, prevent save and show error
-  if ($emoji_found) {
-    $entity_type = $entity->getEntityTypeId();
-    $fields_list = implode(', ', $emoji_fields);
-
-    if ($entity_type === 'taxonomy_term') {
-      $error_message = t('This label contains emoji icons in the following fields: @fields. Please remove all emojis before saving.', [
-        '@fields' => $fields_list,
-      ]);
-    }
-    else {
-      $error_message = t('This content contains emoji icons in the following fields: @fields. Please remove all emojis before saving.', [
-        '@fields' => $fields_list,
-      ]);
-    }
-
-    // Show user-friendly error message
-    \Drupal::messenger()->addError($error_message);
-
-    // Prevent the save by throwing a validation exception
-    throw new \Drupal\Core\Entity\EntityStorageException($error_message);
+/**
+ * Delegates to centralized validator for consistent emoji detection.
+ *
+ * @param string $text
+ *   The text to check for emojis.
+ *
+ * @return bool
+ *   TRUE if emojis are found, FALSE otherwise.
+ */
+function _emoji_validation_contains_emoji($text) {
+  if (empty($text)) {
+    return FALSE;
   }
+  
+  $validator = \Drupal::service('emoji_validation.constraint.no_emoji');
+  $reflection = new \ReflectionClass($validator);
+  $method = $reflection->getMethod('containsEmoji');
+  $method->setAccessible(TRUE);
+  
+  return $method->invoke($validator, $text);
 }
