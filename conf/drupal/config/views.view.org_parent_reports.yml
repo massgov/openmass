@@ -26,7 +26,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Org parent reports'
+      title: 'Organization Parent Hierarchy'
       fields:
         title:
           id: title
@@ -38,16 +38,34 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-          label: ''
+          label: Organization
           exclude: false
           alter:
             alter_text: false
+            text: ''
             make_link: false
+            path: ''
             absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
             word_boundary: false
             ellipsis: false
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
             strip_tags: false
             trim: false
+            preserve_tags: ''
             html: false
           element_type: ''
           element_class: ''
@@ -85,7 +103,7 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-          label: 'Parent Org'
+          label: 'Parent Org level 1'
           exclude: false
           alter:
             alter_text: false
@@ -150,7 +168,7 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-          label: Title
+          label: 'Parent Org level 2'
           exclude: false
           alter:
             alter_text: false
@@ -215,7 +233,7 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-          label: Title
+          label: 'Parent Org level 3'
           exclude: false
           alter:
             alter_text: false
@@ -280,7 +298,7 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-          label: Title
+          label: 'Parent Org level 4'
           exclude: false
           alter:
             alter_text: false
@@ -345,7 +363,7 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-          label: Title
+          label: 'Parent Org level 5'
           exclude: false
           alter:
             alter_text: false
@@ -432,7 +450,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'use mass dashboard'
       cache:
         type: tag
         options: {  }
@@ -492,8 +510,8 @@ display:
           exposed: true
           expose:
             operator_id: title_op
-            label: 'Title of lowest leval org'
-            description: ''
+            label: 'Title of organization'
+            description: 'This filters organization in the first column only.'
             use_operator: false
             operator: title_op
             operator_limit_selection: false
@@ -665,7 +683,20 @@ display:
           admin_label: 'GreatX3 Grandparent org'
           plugin_id: standard
           required: false
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: "<p>This report shows all published organizations and the organizations linked in the \"Organization Parent\" field, all the way up to the 5th level parent organization. If there are no parent organization listed, that means that the organization is a top level organization. </p><p>This parent organization structure is not used in breadcrumbs (which use the \"Parent\" field) and is not directly visible to the public, but it is used in the following ways:\r\n<ul>\r\n<li>When visitors limit searches to a specific organization, their searches include content from all descendant organizations</li>\r\n<li>The Organization Analytics report linked from the <a href=\"/admin/home\">author welcome page</a>) uses this hierarchy and includes data for descendant organizations</li>\r\n<li>Within edit.mass.gov, authors can use a filter on <a href=\"/admin/advsearch/page\">Advanced Search for pages</a>, <a href=\"/admin/ma-dash/documents-advanced-search\">Advanced Search for documents</a>, and some <a href=\"/admin/ma-dash/reports\">other reports</a> to include content from an organization <strong>and</strong> all descendant organizations. </li></p>\r\n"
+            format: basic_html
+          tokenize: false
       footer: {  }
       display_extenders:
         metatag_display_extender:

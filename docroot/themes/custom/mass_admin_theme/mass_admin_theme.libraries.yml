@@ -83,10 +83,15 @@ doc-form:
   dependencies:
   - node/form
 layout_paragraphs:
-  version: VERSION
+  version: 1.0.1
   css:
     layout:
       css/overrides/layout-paragraphs.css: {}
+  js:
+    js/layout-paragraphs.js: { }
+  dependencies:
+    - core/jquery
+    - core/once
 
 entity_browser_custom:
   version: VERSION
@@ -104,3 +109,17 @@ toolbar-zoom-override:
     - core/drupal
     - core/jquery
     - toolbar/toolbar
+
+modal_scroll_guard:
+  version: 1.0.1
+  js:
+    js/modal-scroll-guard.js: {}
+  css:
+    theme:
+      css/modal-scroll-guard.css: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/drupal.ajax
+    - core/drupal.dialog
+    - core/drupal.dialog.ajax

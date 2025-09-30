@@ -1,5 +1,69 @@
 
 
+## [0.451.0] - September 23, 2025
+
+### Fixed
+  - DP-39524: Removed taxonomy access for authors and editors to prevent them from seeing or reordering taxonomies.
+  - DP-39790: Remove unnecessary tabindex="-1" from ma__header__hamburger__logo div to fix WCAG 2.1 accessibility issue.
+  - DP-39792: A11y - Responsive Menu button on mass.gov screen reader issues.
+  - DP-39793: A11y - The skip to main content link doesn't become visible on the screen when it receives focus.
+  - DP-41690: Fixed issues with CSV table not hiding elements when using "hide" feature.
+  - DP-42079: Fix failing tests.
+  - DP-42119: Fix image upload errors and restore image editing functionality in rich text field.
+  - DP-42120: Bug parent org filter misses org pages in some cases.
+  - DP-42212: Cloning a service page does not keep the content in layout paragraphs.
+  
+### Removed
+  - DP-42071: Improve TOC screen reader experience by removing menu role.
+  
+### Changed
+  - DP-42161: Modified permissions of a report view.
+  
+
+
+## [0.450.0] - September 16, 2025
+
+### Added
+  - DP-40519: Add top level org filter for all pages and all document views in CMS s.
+  - DP-41810: Add K'iche' language support to Drupal site with language code 'quc'.
+  - DP-42068: Added ancillary role to allow authors or editors to bulk edit temporarily. This is added on top of main role..
+  
+### Changed
+  - DP-42063: Removed temporary pages from backstop. Changed format types on some backstop pages to limit the number of screenshots.
+  
+
+
+## [0.449.0] - September 9, 2025
+
+### Added
+  - DP-39253: Configure layout paragraphs for service pages.
+  - DP-41910: More backstop test pages including some temporary ones.
+  - DP-41923: Add mimetype filter to document adv search report
+  
+### Fixed
+  - DP-40399: Brand Banner a11y fixes.
+  - DP-41011: Implement consistent focus styles for text input, selectbox, text areas and number inputs in default and high contrast modes.
+  - DP-40941: Fixed glossary terms breaking table styles, and overflow issues by table boundaries.
+  - DP-441557: Fix keyboard navigation skipping links in table of contents due to focus trapping logic.
+  - DP-41653: Fixed Android virtual keyboard dismissing immediately when focusing on any input by preventing Mayflower JavaScript from auto-focusing the hamburger menu button on Android devices.
+  
+
+
+## [0.448.0] - September 2, 2025
+
+### Changed
+  - DP-40756: Change order of fields on contact content type.
+  - DP-40850: Added accessibility attributes to document translation links for improved screen reader support.
+  - DP-41507: Add more filters to the file view used by the CX team only.
+  
+### Fixed
+  - DP-41581: Fix authoring add block button accessibility issue.
+  
+### Added
+  - DP-41771: Parent organization report showing parent org structure.
+  
+
+
 ## [0.447.0] - August 19, 2025
 
 ### Changed

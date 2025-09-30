@@ -50,7 +50,7 @@ services:
         - apt-get update
         - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
         - sudo apt update
-        # Install Node.js 16.x
+        # Install Node.js 22.x
         - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
         - apt-get install -y nodejs
         # Install opcache
@@ -59,9 +59,9 @@ services:
         - a2enmod headers rewrite
         - apache2ctl graceful
 
-        - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+        - curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg
         # https://linuxize.com/post/how-to-install-yarn-on-ubuntu-20-04/
-        - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+        - echo "deb [signed-by=/usr/share/keyrings/yarn-archive-keyring.gpg] https://dl.yarnpkg.com/debian stable main" > /etc/apt/sources.list.d/yarn.list
         - sudo apt update
         - sudo apt install yarn
         # See .ddev/php/my-php.ini for local configuration.

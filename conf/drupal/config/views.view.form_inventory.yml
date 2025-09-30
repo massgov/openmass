@@ -3,13 +3,19 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.node.field_collections
+    - field.storage.node.field_form_embed
     - field.storage.node.field_form_platform
+    - field.storage.node.field_form_url
     - field.storage.node.field_organizations
+    - field.storage.node.field_reusable_label
     - node.type.form_page
     - taxonomy.vocabulary.label
   module:
     - csv_serialization
+    - link
     - mass_bigquery
+    - mass_fields
     - mass_views
     - node
     - options
@@ -295,7 +301,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: Organization(s)
+          label: Organization
           exclude: false
           alter:
             alter_text: false
@@ -417,6 +423,83 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: created
+          plugin_id: field
+          label: 'Authored on'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: short_date_only
+            custom_date_format: ''
+            timezone: ''
+            tooltip:
+              date_format: long
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
+              description: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         changed:
           id: changed
           table: node_field_data
@@ -494,6 +577,73 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: field
+          label: Published
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: boolean
+          settings:
+            format: yes-no
+            format_custom_false: ''
+            format_custom_true: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         pageviews:
           id: pageviews
           table: mass_bigquery_data
@@ -551,6 +701,261 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
+        field_reusable_label:
+          id: field_reusable_label
+          table: node__field_reusable_label
+          field: field_reusable_label
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Label(s)
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_collections:
+          id: field_collections
+          table: node__field_collections
+          field: field_collections
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Collections
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_form_url:
+          id: field_form_url
+          table: node__field_form_url
+          field: field_form_url
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Form URL (forms.mass.gov only)'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: uri
+          type: link
+          settings:
+            trim_length: 80
+            url_only: true
+            url_plain: true
+            rel: '0'
+            target: '0'
+          group_column: ''
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_form_embed:
+          id: field_form_embed
+          table: node__field_form_embed
+          field: field_form_embed
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Embedded form (Formstack only)'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: true
+            trim: false
+            preserve_tags: '<script>'
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: false
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: form_embed_plain_source
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         operations:
           id: operations
           table: node_revision
@@ -801,7 +1206,7 @@ display:
           exposed: true
           expose:
             operator_id: ''
-            label: 'Organization Filter'
+            label: 'Organization (direct match)'
             description: ''
             use_operator: false
             operator: node_org_filter_op
@@ -828,6 +1233,65 @@ display:
               data_administrator: '0'
               collection_administrator: '0'
               prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+              bulk_edit: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        node_parent_org_top_filter:
+          id: node_parent_org_top_filter
+          table: node_field_data
+          field: node_parent_org_top_filter
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_top_parent_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: node_parent_org_top_filter_op
+            label: 'Organization (including all suborganizations)'
+            description: 'using the parent organization field for each organization'
+            use_operator: false
+            operator: node_parent_org_top_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: node_parent_org_top_filter
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1049,6 +1513,71 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        field_form_embed_value:
+          id: field_form_embed_value
+          table: node__field_form_embed
+          field: field_form_embed_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_form_embed_value_op
+            label: 'Formstack form domain'
+            description: 'Enter "massgov.formstack.com" for EOTSS provided formstack accounts. '
+            use_operator: false
+            operator: field_form_embed_value_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_form_embed_value
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+            autocomplete_contextual: 0
+            autocomplete_autosubmit: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -1066,8 +1595,14 @@ display:
             field_form_platform: field_form_platform
             field_organizations: field_organizations
             search: search
+            created: created
             changed: changed
+            status: status
             pageviews: pageviews
+            field_reusable_label: field_reusable_label
+            field_collections: field_collections
+            field_form_url: field_form_url
+            field_form_embed: field_form_embed
             operations: operations
           default: pageviews
           info:
@@ -1109,6 +1644,13 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
+            created:
+              sortable: true
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
             changed:
               sortable: true
               default_sort_order: desc
@@ -1116,9 +1658,38 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
+            status:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
             pageviews:
               sortable: true
               default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_reusable_label:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_collections:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_form_url:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_form_embed:
+              sortable: false
+              default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
@@ -1141,7 +1712,7 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
           disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
@@ -1150,7 +1721,17 @@ display:
       use_more_always: false
       use_more_text: more
       header: {  }
-      footer: {  }
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders:
         metatag_display_extender:
           metatags: {  }
@@ -1165,15 +1746,78 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
+        - 'config:field.storage.node.field_collections'
+        - 'config:field.storage.node.field_form_embed'
         - 'config:field.storage.node.field_form_platform'
+        - 'config:field.storage.node.field_form_url'
         - 'config:field.storage.node.field_organizations'
+        - 'config:field.storage.node.field_reusable_label'
   data_export_1:
     id: data_export_1
     display_title: 'Data export'
     display_plugin: data_export
-    position: 1
+    position: 2
     display_options:
       fields:
+        views_bulk_operations_bulk_form:
+          id: views_bulk_operations_bulk_form
+          table: views
+          field: views_bulk_operations_bulk_form
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: views_bulk_operations_bulk_form
+          label: 'Bulk operations'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          batch: true
+          batch_size: 10
+          form_step: true
+          ajax_loader: false
+          buttons: false
+          action_title: Action
+          clear_on_exposed: true
+          show_multipage_selection_box: default
+          show_select_all: always_hide
+          selected_actions: {  }
         title:
           id: title
           table: node_field_data
@@ -1375,7 +2019,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: Organization(s)
+          label: 'Organization (direct match)'
           exclude: false
           alter:
             alter_text: false
@@ -1497,6 +2141,83 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: created
+          plugin_id: field
+          label: 'Authored on'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: short_date_only
+            custom_date_format: ''
+            timezone: ''
+            tooltip:
+              date_format: long
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
+              description: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         changed:
           id: changed
           table: node_field_data
@@ -1574,6 +2295,73 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: field
+          label: Published
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: boolean
+          settings:
+            format: yes-no
+            format_custom_false: ''
+            format_custom_true: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         pageviews:
           id: pageviews
           table: mass_bigquery_data
@@ -1631,6 +2419,261 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
+        field_reusable_label:
+          id: field_reusable_label
+          table: node__field_reusable_label
+          field: field_reusable_label
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Label(s)
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_collections:
+          id: field_collections
+          table: node__field_collections
+          field: field_collections
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Collections
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_form_url:
+          id: field_form_url
+          table: node__field_form_url
+          field: field_form_url
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Form URL (forms.mass.gov only)'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: uri
+          type: link
+          settings:
+            trim_length: 80
+            url_only: true
+            url_plain: true
+            rel: '0'
+            target: '0'
+          group_column: ''
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        field_form_embed:
+          id: field_form_embed
+          table: node__field_form_embed
+          field: field_form_embed
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Embedded form (Formstack only)'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: true
+            trim: false
+            preserve_tags: '<script>'
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: false
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: form_embed_plain_source
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       style:
         type: data_export
         options:
@@ -1658,13 +2701,13 @@ display:
       filename: 'massgov-form-report-[date:html_datetime].csv'
       automatic_download: false
       export_method: batch
-      export_batch_size: 1000
+      export_batch_size: 300
       store_in_public_file_directory: false
       custom_redirect_path: false
       redirect_to_display: page_1
       include_query_params: true
     cache_metadata:
-      max-age: -1
+      max-age: 0
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
@@ -1673,8 +2716,12 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
+        - 'config:field.storage.node.field_collections'
+        - 'config:field.storage.node.field_form_embed'
         - 'config:field.storage.node.field_form_platform'
+        - 'config:field.storage.node.field_form_url'
         - 'config:field.storage.node.field_organizations'
+        - 'config:field.storage.node.field_reusable_label'
   page_1:
     id: page_1
     display_title: Page
@@ -1696,5 +2743,9 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
+        - 'config:field.storage.node.field_collections'
+        - 'config:field.storage.node.field_form_embed'
         - 'config:field.storage.node.field_form_platform'
+        - 'config:field.storage.node.field_form_url'
         - 'config:field.storage.node.field_organizations'
+        - 'config:field.storage.node.field_reusable_label'

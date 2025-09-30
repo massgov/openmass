@@ -1,0 +1,27 @@
+uuid: 2dc0a813-f9da-4af7-aa17-adf3757d594d
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_fields
+    - system
+  theme:
+    - mass_admin_theme
+id: mass_admin_theme_nodemetaformblock
+theme: mass_admin_theme
+region: header
+weight: -6
+provider: null
+plugin: node_meta_form_block
+settings:
+  id: node_meta_form_block
+  label: 'Node Meta Form Block'
+  label_display: '0'
+  provider: mass_fields
+  context_mapping:
+    node: '@node.node_route_context:node'
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: '/node/*/edit'

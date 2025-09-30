@@ -1202,7 +1202,7 @@ display:
           exposed: true
           expose:
             operator_id: ''
-            label: 'Organization Filter'
+            label: 'Organization (direct match)'
             description: ''
             use_operator: false
             operator: node_org_filter_op
@@ -1225,11 +1225,68 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        node_parent_org_top_filter:
+          id: node_parent_org_top_filter
+          table: node_field_data
+          field: node_parent_org_top_filter
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_top_parent_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: node_parent_org_top_filter_op
+            label: 'Organization (including all suborganizations)'
+            description: 'using the parent organization field for each organization'
+            use_operator: false
+            operator: node_parent_org_top_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: node_parent_org_top_filter
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1788,7 +1845,6 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            node_bulk_form: node_bulk_form
             title: title
             nid: nid
             type: type
@@ -1801,14 +1857,9 @@ display:
             name: name
             moderation_state: moderation_state
             pageviews: pageviews
-            operations: operations
+            nos_per_1000_cleaned: nos_per_1000_cleaned
           default: changed
           info:
-            node_bulk_form:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
             title:
               sortable: true
               default_sort_order: asc
@@ -1836,7 +1887,7 @@ display:
               empty_column: false
               responsive: ''
             field_primary_parent:
-              sortable: false
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
@@ -1891,7 +1942,9 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            operations:
+            nos_per_1000_cleaned:
+              sortable: true
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
@@ -1914,7 +1967,8 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
+          disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
       relationships:
@@ -1965,7 +2019,17 @@ display:
             value: '<p>Includes all content states including "trash".</p>'
             format: basic_html
           tokenize: false
-      footer: {  }
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders:
         metatag_display_extender:
           metatags: {  }
