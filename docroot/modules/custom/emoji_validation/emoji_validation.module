@@ -58,7 +58,7 @@ function emoji_validation_form_alter(&$form, FormStateInterface $form_state, $fo
     _emoji_validation_add_entity_autocomplete_validation($form, $form_state);
     $form['#validate'][] = '_emoji_validation_validate_form_values';
   }
-  
+
   if (strpos($form_id, 'node_') === 0 && strpos($form_id, '_edit_form') !== FALSE) {
     _emoji_validation_add_entity_autocomplete_validation($form, $form_state);
     $form['#validate'][] = '_emoji_validation_validate_form_values';
@@ -88,11 +88,11 @@ function _emoji_validation_add_entity_autocomplete_validation(&$form, FormStateI
  */
 function _emoji_validation_validate_entity_autocomplete($element, FormStateInterface $form_state, $form) {
   $value = $element['#value'];
-  
+
   if (empty($value)) {
     return;
   }
-  
+
   if (_emoji_validation_contains_emoji($value)) {
     $form_state->setError($element, t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
   }
@@ -103,20 +103,20 @@ function _emoji_validation_validate_entity_autocomplete($element, FormStateInter
  */
 function _emoji_validation_validate_form_values($form, FormStateInterface $form_state) {
   $values = $form_state->getValues();
-  
+
   if (isset($values['field_reusable_label']) && is_array($values['field_reusable_label'])) {
     foreach ($values['field_reusable_label'] as $delta => $item) {
       if (!is_array($item)) {
         continue;
       }
-      
+
       if (isset($item['target_id']) && !empty($item['target_id'])) {
         $target_id = $item['target_id'];
-        
+
         if (is_array($target_id)) {
           if (isset($target_id['entity'])) {
             $nested_target_id = $target_id['entity'];
-            
+
             if (is_object($nested_target_id)) {
               if (method_exists($nested_target_id, 'getName')) {
                 $value = $nested_target_id->getName();
@@ -150,9 +150,9 @@ function _emoji_validation_validate_form_values($form, FormStateInterface $form_
         } else {
           continue;
         }
-        
+
         if (_emoji_validation_contains_emoji($value)) {
-          $form_state->setErrorByName('field_reusable_label][' . $delta . '][target_id', 
+          $form_state->setErrorByName('field_reusable_label][' . $delta . '][target_id',
             t('Emoji icons are not allowed in text fields. Please remove prior to saving.'));
         }
       }
@@ -161,7 +161,7 @@ function _emoji_validation_validate_form_values($form, FormStateInterface $form_
 }
 
 /**
- * Delegates to centralized validator for consistent emoji detection.
+ * Delegates to emoji validator.
  *
  * @param string $text
  *   The text to check for emojis.
@@ -173,11 +173,11 @@ function _emoji_validation_contains_emoji($text) {
   if (empty($text)) {
     return FALSE;
   }
-  
+
   $validator = \Drupal::service('emoji_validation.constraint.no_emoji');
   $reflection = new \ReflectionClass($validator);
   $method = $reflection->getMethod('containsEmoji');
   $method->setAccessible(TRUE);
-  
+
   return $method->invoke($validator, $text);
 }
