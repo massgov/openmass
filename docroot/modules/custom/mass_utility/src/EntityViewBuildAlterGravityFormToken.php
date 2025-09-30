@@ -44,6 +44,7 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
 
       $build['#cache']['contexts'] = $build['#cache']['contexts'] ?? [];
       $build['#cache']['contexts'][] = 'url.query_args:gf_token';
+      $build['#cache']['contexts'][] = 'url.query_args:t';
       $build['#cache']['contexts'][] = 'user.roles';
 
       if (empty($build["field_form_url"][0]["#url"])) {
