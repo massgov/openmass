@@ -19,7 +19,7 @@ class NoEmojiConstraintValidator extends ConstraintValidator {
     }
 
     $text = $this->extractTextFromValue($value);
-    
+
     if (empty($text)) {
       return;
     }
@@ -49,23 +49,23 @@ class NoEmojiConstraintValidator extends ConstraintValidator {
       }
       return $text;
     }
-    
+
     // Handle FieldItem objects
     if ($value instanceof \Drupal\Core\Field\FieldItemInterface) {
       $item_value = $value->getValue();
       return $item_value['value'] ?? '';
     }
-    
+
     // Handle arrays (field values)
     if (is_array($value) && isset($value['value'])) {
       return $value['value'];
     }
-    
+
     // Handle strings directly
     if (is_string($value)) {
       return $value;
     }
-    
+
     // Fallback to string conversion
     return (string) $value;
   }

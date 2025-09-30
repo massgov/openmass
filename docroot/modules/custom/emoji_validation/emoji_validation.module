@@ -120,34 +120,46 @@ function _emoji_validation_validate_form_values($form, FormStateInterface $form_
             if (is_object($nested_target_id)) {
               if (method_exists($nested_target_id, 'getName')) {
                 $value = $nested_target_id->getName();
-              } elseif (method_exists($nested_target_id, 'get')) {
+              }
+              elseif (method_exists($nested_target_id, 'get')) {
                 $value = $nested_target_id->get('name')->value;
-              } elseif (isset($nested_target_id->name)) {
+              }
+              elseif (isset($nested_target_id->name)) {
                 $value = $nested_target_id->name;
-              } else {
+              }
+              else {
                 continue;
               }
-            } elseif (is_string($nested_target_id)) {
+            }
+            elseif (is_string($nested_target_id)) {
               $value = $nested_target_id;
-            } else {
+            }
+            else {
               continue;
             }
-          } else {
+          }
+          else {
             continue;
           }
-        } elseif (is_object($target_id)) {
+        }
+        elseif (is_object($target_id)) {
           if (method_exists($target_id, 'getName')) {
             $value = $target_id->getName();
-          } elseif (method_exists($target_id, 'get')) {
+          }
+          elseif (method_exists($target_id, 'get')) {
             $value = $target_id->get('name')->value;
-          } elseif (isset($target_id->name)) {
+          }
+          elseif (isset($target_id->name)) {
             $value = $target_id->name;
-          } else {
+          }
+          else {
             continue;
           }
-        } elseif (is_string($target_id)) {
+        }
+        elseif (is_string($target_id)) {
           $value = $target_id;
-        } else {
+        }
+        else {
           continue;
         }
 
