@@ -24,7 +24,7 @@ class NoEmojiConstraintValidator extends ConstraintValidator {
       return;
     }
 
-    if ($this->containsEmoji($text)) {
+    if (self::containsEmoji($text)) {
       $this->context->addViolation($constraint->message);
     }
   }
@@ -79,7 +79,7 @@ class NoEmojiConstraintValidator extends ConstraintValidator {
    * @return bool
    *   TRUE if emojis are found, FALSE otherwise.
    */
-  private function containsEmoji($text) {
+  public static function containsEmoji($text) {
     $legitimate_symbols = [
       '©', '®', '™', '✈', '★', '☆', '➔', '➤', '➥', '➦', '➧', '➨', '➩', '➪', '➫', '➬', '➭', '➮', '➯',
       '→', '←', '↑', '↓', '₽', '₹', '€', '£', '¥', '¢',
