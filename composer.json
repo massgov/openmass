@@ -133,7 +133,9 @@
         }
     ],
     "require": {
+        "ext-dom": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
         "andileco/eval-math": "^3.0",
         "christian-riesen/base32": "^1.3.1",
         "components/highlightjs": "9.7.*",
@@ -144,10 +146,15 @@
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
         "drupal/access_unpublished": "^1.4",
+        "drupal/ace_editor": "~2.0",
         "drupal/acquia_purge": "^1",
         "drupal/action": "^0.2",
         "drupal/address": "^1.9",
         "drupal/admin_toolbar": "^3.0",
+        "drupal/ai": "^1.1",
+        "drupal/ai_agents": "^1.1",
+        "drupal/ai_content_advisor": "1.x-dev@dev",
+        "drupal/ai_provider_aws_bedrock": "^1.1@beta",
         "drupal/akamai": "^5",
         "drupal/allowed_formats": "^2",
         "drupal/asset_cache_bust": "^1.0",
@@ -203,11 +210,13 @@
         "drupal/imagick": "^1",
         "drupal/inline_entity_form": "^1",
         "drupal/jquery_ui_autocomplete": "^2.0",
-        "drupal/key": "^1.10",
+        "drupal/key": "^1.18",
         "drupal/key_auth": "^2.1",
+        "drupal/key_aws": "^1.0",
         "drupal/key_value_field": "^1",
         "drupal/layout_paragraphs": "^2.1",
         "drupal/linkit": "^7.0",
+        "drupal/m4032404": "^2.0",
         "drupal/mailchimp_transactional": "^1",
         "drupal/maxlength": "^2",
         "drupal/media_entity_download": "^2.4",
@@ -265,8 +274,10 @@
         "enyo/dropzone": "5.9.3",
         "geocoder-php/open-cage-provider": "^4.6",
         "google/cloud-bigquery": "^1.25",
+        "league/commonmark": "^2.7",
         "massgov/mayflower-artifacts": "dev-develop",
         "monolog/monolog": "^3",
+        "npm-asset/ace-builds": "~1.0",
         "npm-asset/select2": "^4.1.0-rc.0",
         "oomphinc/composer-installers-extender": "^2.0",
         "phlak/semver": "^2.0",
@@ -505,6 +516,9 @@
             },
             "drupal/imageapi_optimize": {
                 "Skip animated gifs": "patches/imageapi_optimize/skip_animated_gifs.patch"
+            },
+            "drupal/ace_editor": {
+                "Fix the plugin initialization https://www.drupal.org/project/ace_editor/issues/3326303": "patches/ace_editor_fix_plugin_initialization.patch"
             }
         },
         "composer-exit-on-patch-failure": true,
