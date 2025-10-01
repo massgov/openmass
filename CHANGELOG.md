@@ -1,5 +1,25 @@
 
 
+## [0.452.0] - September 30, 2025
+
+### Added
+  - DP-39791: Added AI Content Advisor module and functionality.
+  - DP-42243: Add help text, filters, fields to various report views
+  - DP-42342: Add and configure m4032404 module for improved access denied handling
+  
+### Changed
+  - DP-39795: A11y - Update the linked logo on mass.gov so it doesn't duplicate text.
+  - DP-41856: Improve microsite performance.
+  
+### Fixed
+  - DP-41965: Fix keyboard navigation skipping appendix links in binder table of contents.
+  - DP-42150: Fix Image files upload error messages in rich text.
+  
+### Removed
+  - DP-41993: Green line beneath collapsible header.
+  
+
+
 ## [0.451.0] - September 23, 2025
 
 ### Fixed
