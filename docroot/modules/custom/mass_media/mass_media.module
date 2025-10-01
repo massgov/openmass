@@ -220,7 +220,7 @@ function mass_media_media_presave(MediaInterface $entity) {
 
       // Check if the usage of the document is 0.
       // If not process further to track the media.
-      $total = Drupal::service('mass_entity_usage.usage')->listUniqueSourcesCount($entity);
+      $total = Drupal::service('entity_usage.usage')->listSources($entity, FALSE);
       if (!$total) {
         foreach ($labels as $label) {
           // Check if there are paragraphs with the same labels.
