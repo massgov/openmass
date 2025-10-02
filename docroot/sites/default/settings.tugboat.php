@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * No longer needed as per https://docs.tugboatqa.com/faq/common-questions/#can-i-password-protect-my-preview-urls.
  *
