@@ -41,7 +41,6 @@
         } else {
           // Fallback: try to use Drupal's toolbar model if available
           if (Drupal.toolbar && Drupal.toolbar.models && Drupal.toolbar.models.toolbarModel) {
-            console.log("Using Drupal toolbar model to close");
             Drupal.toolbar.models.toolbarModel.set('activeTab', null);
           }
         }
