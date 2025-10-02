@@ -1,5 +1,46 @@
 
 
+## [0.452.0] - September 30, 2025
+
+### Added
+  - DP-39791: Added AI Content Advisor module and functionality.
+  - DP-42243: Add help text, filters, fields to various report views
+  - DP-42342: Add and configure m4032404 module for improved access denied handling
+  
+### Changed
+  - DP-39795: A11y - Update the linked logo on mass.gov so it doesn't duplicate text.
+  - DP-41856: Improve microsite performance.
+  
+### Fixed
+  - DP-41965: Fix keyboard navigation skipping appendix links in binder table of contents.
+  - DP-42150: Fix Image files upload error messages in rich text.
+  
+### Removed
+  - DP-41993: Green line beneath collapsible header.
+  
+
+
+## [0.451.0] - September 23, 2025
+
+### Fixed
+  - DP-39524: Removed taxonomy access for authors and editors to prevent them from seeing or reordering taxonomies.
+  - DP-39790: Remove unnecessary tabindex="-1" from ma__header__hamburger__logo div to fix WCAG 2.1 accessibility issue.
+  - DP-39792: A11y - Responsive Menu button on mass.gov screen reader issues.
+  - DP-39793: A11y - The skip to main content link doesn't become visible on the screen when it receives focus.
+  - DP-41690: Fixed issues with CSV table not hiding elements when using "hide" feature.
+  - DP-42079: Fix failing tests.
+  - DP-42119: Fix image upload errors and restore image editing functionality in rich text field.
+  - DP-42120: Bug parent org filter misses org pages in some cases.
+  - DP-42212: Cloning a service page does not keep the content in layout paragraphs.
+  
+### Removed
+  - DP-42071: Improve TOC screen reader experience by removing menu role.
+  
+### Changed
+  - DP-42161: Modified permissions of a report view.
+  
+
+
 ## [0.450.0] - September 16, 2025
 
 ### Added

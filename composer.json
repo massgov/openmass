@@ -82,10 +82,10 @@
             "type": "package",
             "package": {
                 "name": "enyo/dropzone",
-                "version": "5.7.2",
+                "version": "5.9.3",
                 "type": "drupal-library",
                 "dist": {
-                    "url": "https://github.com/enyo/dropzone/archive/v5.7.2.zip",
+                    "url": "https://github.com/dropzone/dropzone/releases/download/v5.9.3/dist.zip",
                     "type": "zip"
                 }
             }
@@ -133,7 +133,9 @@
         }
     ],
     "require": {
+        "ext-dom": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
         "andileco/eval-math": "^3.0",
         "christian-riesen/base32": "^1.3.1",
         "components/highlightjs": "9.7.*",
@@ -144,10 +146,15 @@
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
         "drupal/access_unpublished": "^1.4",
+        "drupal/ace_editor": "~2.0",
         "drupal/acquia_purge": "^1",
         "drupal/action": "^0.2",
         "drupal/address": "^1.9",
         "drupal/admin_toolbar": "^3.0",
+        "drupal/ai": "^1.1",
+        "drupal/ai_agents": "^1.1",
+        "drupal/ai_content_advisor": "1.x-dev@dev",
+        "drupal/ai_provider_aws_bedrock": "^1.1@beta",
         "drupal/akamai": "^5",
         "drupal/allowed_formats": "^2",
         "drupal/asset_cache_bust": "^1.0",
@@ -176,7 +183,7 @@
         "drupal/editoria11y": "2.1.22",
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
-        "drupal/entity_embed": "1.6",
+        "drupal/entity_embed": "^1.7",
         "drupal/entity_hierarchy": "^3.3",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "^2.3",
@@ -203,11 +210,13 @@
         "drupal/imagick": "^1",
         "drupal/inline_entity_form": "^1",
         "drupal/jquery_ui_autocomplete": "^2.0",
-        "drupal/key": "^1.10",
+        "drupal/key": "^1.18",
         "drupal/key_auth": "^2.1",
+        "drupal/key_aws": "^1.0",
         "drupal/key_value_field": "^1",
         "drupal/layout_paragraphs": "^2.1",
         "drupal/linkit": "^7.0",
+        "drupal/m4032404": "^2.0",
         "drupal/mailchimp_transactional": "^1",
         "drupal/maxlength": "^2",
         "drupal/media_entity_download": "^2.4",
@@ -262,11 +271,13 @@
         "drupal/views_simple_math_field": "^3.0",
         "drupal/views_taxonomy_term_name_into_id": "^1.0@alpha",
         "drush/drush": "^13",
-        "enyo/dropzone": "5.7.2",
+        "enyo/dropzone": "5.9.3",
         "geocoder-php/open-cage-provider": "^4.6",
         "google/cloud-bigquery": "^1.25",
+        "league/commonmark": "^2.7",
         "massgov/mayflower-artifacts": "dev-develop",
         "monolog/monolog": "^3",
+        "npm-asset/ace-builds": "~1.0",
         "npm-asset/select2": "^4.1.0-rc.0",
         "oomphinc/composer-installers-extender": "^2.0",
         "phlak/semver": "^2.0",
@@ -403,9 +414,9 @@
                 "Add resize observer to parent class": "patches/csv-field-wrapper-class-ma__csvtable.patch"
             },
             "drupal/entity_embed": {
-                "Trying to edit embedded entities causes uncaught exception (https://www.drupal.org/project/entity_embed/issues/3416512)": "patches/entity_embed/Trying-to-edit-embedded-entities-causes-uncaught-exception.patch",
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
-                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch"
+                "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch",
+                "Drupal 10.5/11.2 compatability (tooltip broken, cannot edit embedded entities) (https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch)": "https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch"
             },
             "drupal/entity_usage": {
                 "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "patches/entity_usage/drupal-issue-3378832-InvalidArgumentException-the-internal-path-component-is-invalid.patch"
@@ -493,7 +504,8 @@
                 "Context exception when trying to create url (https://www.drupal.org/project/view_mode_page/issues/3300706)": "https://www.drupal.org/files/issues/2023-05-01/3300706-17-context_exception_when_trying_to_create_url_0.patch"
             },
             "drupal/quick_node_clone": {
-                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2022-05-05/quick_node_clone-permissions_not_respected-2979426-34.patch"
+                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2025-05-19/2979426-46.patch",
+                "Cloning Entities with Layout Paragraphs breaks structure and moves subparagraphs into Disabled Items (https://www.drupal.org/project/quick_node_clone/issues/3218222)": "https://www.drupal.org/files/issues/2025-08-12/3218222-compatibility_with_8x-1-22.patch"
             },
             "drupal/views_bulk_edit": {
                 "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2024-01-10/views_bulk_edit-3024419-fix_required_fields-57.patch",
@@ -504,6 +516,9 @@
             },
             "drupal/imageapi_optimize": {
                 "Skip animated gifs": "patches/imageapi_optimize/skip_animated_gifs.patch"
+            },
+            "drupal/ace_editor": {
+                "Fix the plugin initialization https://www.drupal.org/project/ace_editor/issues/3326303": "patches/ace_editor_fix_plugin_initialization.patch"
             }
         },
         "composer-exit-on-patch-failure": true,
