@@ -103,6 +103,7 @@ $config['mass_analytics.settings']['looker_studio_url'] = getenv('LOOKER_STUDIO_
 $config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] = getenv('MANDRILL_API_KEY');
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
+$settings['simple_sitemap_engines.index_now.key'] = getenv('SIMPLE_SITEMAP_INDEX_NOW_KEY') ?? '';
 
 // Add database connection for Service Details migration.
 
