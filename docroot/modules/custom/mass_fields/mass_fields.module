@@ -775,6 +775,10 @@ function mass_fields_field_group_form_process_build_alter(array &$element, FormS
       // Target Group name.
       $target_group = 'group_page_info';
       if (isset($complete_form['group_page_info'])) {
+        if (isset($complete_form['simple_sitemap_index_now'])) {
+          $complete_form['simple_sitemap_index_now']['#group'] = $target_group;
+          $complete_form['simple_sitemap_index_now']['#weight'] = '-100';
+        }
         if (isset($complete_form['revision'])) {
           $complete_form['revision']['#group'] = $target_group;
           $complete_form['revision']['#weight'] = '-100';
