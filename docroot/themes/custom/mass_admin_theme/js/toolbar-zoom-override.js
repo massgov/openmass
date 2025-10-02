@@ -43,30 +43,41 @@
       // Function to close the toolbar tray
       function closeToolbarTray() {
         console.log("closeToolbarTray called");
-
-        // Remove is-active class from toolbar items and trays
-        const activeToolbarItems = $(".toolbar-item.is-active");
-        const activeTrays = $(".toolbar-tray.is-active");
-
-        console.log("Active toolbar items found:", activeToolbarItems.length);
-        console.log("Active trays found:", activeTrays.length);
-
-        if (activeToolbarItems.length > 0) {
-          console.log("Removing is-active from toolbar items");
-          activeToolbarItems.removeClass("is-active");
+        
+        // Instead of manually removing classes, try to trigger Drupal's close mechanism
+        // Find the active toolbar tab and simulate a click to close it
+        const activeTab = $(".toolbar-bar .toolbar-tab.is-active .toolbar-item");
+        
+        console.log("Active toolbar tabs found:", activeTab.length);
+        
+        if (activeTab.length > 0) {
+          console.log("Clicking active tab to close toolbar");
+          activeTab.trigger("click");
+        } else {
+          // Fallback: try to use Drupal's toolbar model if available
+          if (Drupal.toolbar && Drupal.toolbar.models && Drupal.toolbar.models.toolbarModel) {
+            console.log("Using Drupal toolbar model to close");
+            Drupal.toolbar.models.toolbarModel.set('activeTab', null);
+          } else {
+            // Last resort: manually remove classes
+            console.log("Fallback: manually removing classes");
+            const activeToolbarItems = $(".toolbar-item.is-active");
+            const activeTrays = $(".toolbar-tray.is-active");
+            
+            if (activeToolbarItems.length > 0) {
+              activeToolbarItems.removeClass("is-active");
+            }
+            
+            if (activeTrays.length > 0) {
+              activeTrays.removeClass("is-active");
+            }
+            
+            if ($("body").hasClass("toolbar-tray-open")) {
+              $("body").removeClass("toolbar-tray-open");
+            }
+          }
         }
-
-        if (activeTrays.length > 0) {
-          console.log("Removing is-active from toolbar trays");
-          activeTrays.removeClass("is-active");
-        }
-
-        // Also remove toolbar-tray-open from body if it exists
-        if ($("body").hasClass("toolbar-tray-open")) {
-          console.log("Removing toolbar-tray-open from body");
-          $("body").removeClass("toolbar-tray-open");
-        }
-
+        
         hideOverlay();
       }
 
