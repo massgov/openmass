@@ -70,22 +70,14 @@
         hideOverlay();
       }
 
-      // Check toolbar state
+      // Check toolbar state based on body class
       function checkToolbarState() {
         const bodyHasTrayOpen = $("body").hasClass("toolbar-tray-open");
-        const activeTrays = $(".toolbar-tray.is-active");
-        const activeItems = $(".toolbar-item.is-active");
 
         console.log("=== Toolbar State Check ===");
         console.log("Body has toolbar-tray-open:", bodyHasTrayOpen);
-        console.log("Active trays:", activeTrays.length);
-        console.log("Active items:", activeItems.length);
 
-        if (
-          bodyHasTrayOpen ||
-          activeTrays.length > 0 ||
-          activeItems.length > 0
-        ) {
+        if (bodyHasTrayOpen) {
           console.log("Tray is open - showing overlay");
           showOverlay();
         } else {
@@ -94,14 +86,27 @@
         }
       }
 
-      // Watch for clicks on toolbar items
-      $(document).on("click", ".toolbar-item", function (e) {
-        console.log("Toolbar item clicked:", $(this).text());
-
-        // Small delay to let Drupal process the click and update classes
-        setTimeout(function () {
-          checkToolbarState();
-        }, 100);
+      // Handle clicks on navigation links within the toolbar tray
+      $(document).on("click", ".toolbar-tray a", function (e) {
+        const $link = $(this);
+        const systemPath = $link.attr("data-drupal-link-system-path");
+        const role = $link.attr("role");
+        
+        console.log("=== LINK CLICKED IN TOOLBAR ===");
+        console.log("Link text:", $link.text().trim());
+        
+        if (role !== "button" && systemPath && systemPath.trim() !== "") {
+          console.log("Closing tray - navigation link detected");
+          
+          // Prevent the mutation observer from interfering
+          e.stopImmediatePropagation();
+          
+          // Close the tray immediately
+          closeToolbarTray();
+          
+          // Let the navigation proceed normally
+          return true;
+        }
       });
 
       // Handle overlay click to close tray
@@ -110,6 +115,22 @@
         e.preventDefault();
         e.stopPropagation();
         closeToolbarTray();
+      });
+
+      // Monitor body class changes using MutationObserver (AFTER click handlers)
+      const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === "attributes" && mutation.attributeName === "class") {
+            console.log("Body class changed, checking toolbar state");
+            checkToolbarState();
+          }
+        });
+      });
+
+      // Start observing body class changes
+      observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["class"],
       });
 
       // Initial check on page load
