@@ -49,8 +49,10 @@ function emoji_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInt
 
 /**
  * Implements hook_f_field_widget_single_element_form_alter().
+ *
  * Attach ONLY to taxonomy term autocompletes that auto-create terms.
  */
+
 /**
  * Implements hook_field_widget_single_element_form_alter().
  */
@@ -89,7 +91,8 @@ function emoji_validation_autocomplete_validate(array &$element, FormStateInterf
   // Widgets can send arrays or strings; normalize to a string.
   if (is_array($raw) && isset($raw['target_id'])) {
     $raw = (string) $raw['target_id'];
-  } else {
+  }
+  else {
     $raw = (string) $raw;
   }
 
@@ -105,8 +108,8 @@ function emoji_validation_autocomplete_validate(array &$element, FormStateInterf
     return;
   }
 
-  $factory   = \Drupal::service('validation.basic_recursive_validator_factory');
-  $validator = $factory->createValidator();
+  $factory    = \Drupal::service('validation.basic_recursive_validator_factory');
+  $validator  = $factory->createValidator();
   $constraint = new NoEmojiConstraint();
 
   foreach ($labels as $label) {
