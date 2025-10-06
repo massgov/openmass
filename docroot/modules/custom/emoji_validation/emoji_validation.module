@@ -6,7 +6,9 @@
  */
 
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\emoji_validation\Plugin\Validation\Constraint\NoEmojiConstraint;
 
 /**
  * Returns the list of text field types to validate.
@@ -21,7 +23,7 @@ function _emoji_validation_text_field_types() {
  * Attach NoEmojiConstraint to base fields (node.title, taxonomy_term.name, etc.).
  */
 function emoji_validation_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
-  foreach ($fields as $field_name => $field_definition) {
+  foreach ($fields as $field_definition) {
     if (in_array($field_definition->getType(), _emoji_validation_text_field_types(), TRUE)) {
       $constraints = $field_definition->getConstraints();
       $constraints['NoEmojiConstraint'] = [];
@@ -36,7 +38,7 @@ function emoji_validation_entity_base_field_info_alter(&$fields, EntityTypeInter
  * Attach NoEmojiConstraint to custom bundle fields (field_*).
  */
 function emoji_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
-  foreach ($fields as $field_name => $field_definition) {
+  foreach ($fields as $field_definition) {
     if (in_array($field_definition->getType(), _emoji_validation_text_field_types(), TRUE)) {
       $constraints = $field_definition->getConstraints();
       $constraints['NoEmojiConstraint'] = [];
@@ -46,24 +48,71 @@ function emoji_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInt
 }
 
 /**
- * Implements hook_entity_presave().
- *
- * Enforce emoji validation before saving any entity.
- * Skips taxonomy terms to allow emojis in labels/tags.
+ * Implements hook_field_widget_form_alter().
+ * Attach ONLY to taxonomy term autocompletes that auto-create terms.
  */
-function emoji_validation_entity_presave(EntityInterface $entity) {
-  // Skip validation for taxonomy terms (allow emojis in labels).
-  if ($entity->getEntityTypeId() === 'taxonomy_term') {
+function emoji_validation_field_widget_single_element_form_alter(array &$element, FormStateInterface $form_state, array $context): void {
+  $plugin_id = $context['widget']->getPluginId();
+  if (!in_array($plugin_id, ['entity_reference_autocomplete', 'entity_reference_autocomplete_tags'], TRUE)) {
     return;
   }
 
-  $violations = $entity->validate();
+  // Target entity & handler settings for this field.
+  $field_def = $context['items']->getFieldDefinition();
+  $target_type = $field_def->getSetting('target_type');
+  $handler_settings = $field_def->getSetting('handler_settings') ?? [];
 
-  foreach ($violations as $violation) {
-    if ($violation->getConstraint() instanceof \Drupal\emoji_validation\Plugin\Validation\Constraint\NoEmojiConstraint) {
-      throw new \Drupal\Core\Entity\EntityStorageException(
-        t('Emoji characters are not allowed. Please remove them before saving.')
-      );
+  // Auto-create can also appear on the element; check both places.
+  $auto_create = !empty($handler_settings['auto_create']) || !empty($element['#autocreate']);
+
+  // Only the “labels/tags” style fields should be validated here.
+  if ($target_type !== 'taxonomy_term' || !$auto_create) {
+    return;
+  }
+
+  // Attach to the actual text input.
+  if (isset($element['target_id'])) {
+    $element['target_id']['#element_validate'][] = 'emoji_validation_autocomplete_validate';
+  }
+}
+
+/**
+ * Element validate: reuse existing NoEmojiConstraint on typed labels.
+ */
+function emoji_validation_autocomplete_validate(array &$element, FormStateInterface $form_state, array &$form): void {
+  $raw = NestedArray::getValue($form_state->getUserInput(), $element['#parents']);
+  if ($raw === NULL || $raw === '') {
+    return;
+  }
+
+  if (is_array($raw) && isset($raw['target_id'])) {
+    $raw = (string) $raw['target_id'];
+  }
+
+  // Split tags into labels and strip trailing " (123)" IDs.
+  $labels = [];
+  if (is_string($raw)) {
+    foreach (preg_split('/\s*,\s*/', $raw, -1, PREG_SPLIT_NO_EMPTY) as $part) {
+      $labels[] = preg_replace('/\s*\([^)]+\)\s*$/', '', $part);
+    }
+  }
+
+  if (!$labels) {
+    return;
+  }
+
+  $factory   = \Drupal::service('validation.basic_recursive_validator_factory');
+  $validator = $factory->createValidator();
+  $constraint = new NoEmojiConstraint();
+
+  foreach ($labels as $label) {
+    if ($label === '') {
+      continue;
+    }
+    if (count($validator->validate($label, $constraint))) {
+      // IMPORTANT: set error on the textfield child we attached to.
+      $form_state->setError($element, t('Emoji characters are not allowed in “@value”.', ['@value' => $label]));
+      return;
     }
   }
 }
