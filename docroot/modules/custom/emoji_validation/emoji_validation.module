@@ -48,10 +48,13 @@ function emoji_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInt
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_f_field_widget_single_element_form_alter().
  * Attach ONLY to taxonomy term autocompletes that auto-create terms.
  */
-function emoji_validation_field_widget_single_element_form_alter(array &$element, FormStateInterface $form_state, array $context): void {
+/**
+ * Implements hook_field_widget_single_element_form_alter().
+ */
+function emoji_validation_field_widget_single_element_form_alter(array &$element, FormStateInterface $form_state, array $context) {
   $plugin_id = $context['widget']->getPluginId();
   if (!in_array($plugin_id, ['entity_reference_autocomplete', 'entity_reference_autocomplete_tags'], TRUE)) {
     return;
@@ -70,23 +73,24 @@ function emoji_validation_field_widget_single_element_form_alter(array &$element
     return;
   }
 
-  // Attach to the actual text input.
-  if (isset($element['target_id'])) {
-    $element['target_id']['#element_validate'][] = 'emoji_validation_autocomplete_validate';
-  }
+  // Attach to the parent to avoid value-shape mismatches on multi-value items.
+  $element['#element_validate'][] = 'emoji_validation_autocomplete_validate';
 }
 
 /**
  * Element validate: reuse existing NoEmojiConstraint on typed labels.
  */
 function emoji_validation_autocomplete_validate(array &$element, FormStateInterface $form_state, array &$form): void {
-  $raw = NestedArray::getValue($form_state->getUserInput(), $element['#parents']);
+  // Prefer the current element value; fall back to raw user input.
+  $raw = $element['target_id']['#value'] ?? NestedArray::getValue($form_state->getUserInput(), $element['#parents']);
   if ($raw === NULL || $raw === '') {
     return;
   }
-
+  // Widgets can send arrays or strings; normalize to a string.
   if (is_array($raw) && isset($raw['target_id'])) {
     $raw = (string) $raw['target_id'];
+  } else {
+    $raw = (string) $raw;
   }
 
   // Split tags into labels and strip trailing " (123)" IDs.
