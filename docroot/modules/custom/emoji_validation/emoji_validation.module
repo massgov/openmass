@@ -56,9 +56,9 @@ function emoji_validation_entity_presave(EntityInterface $entity) {
   if ($entity->getEntityTypeId() === 'taxonomy_term') {
     return;
   }
-  
+
   $violations = $entity->validate();
-  
+
   foreach ($violations as $violation) {
     if ($violation->getConstraint() instanceof \Drupal\emoji_validation\Plugin\Validation\Constraint\NoEmojiConstraint) {
       throw new \Drupal\Core\Entity\EntityStorageException(
