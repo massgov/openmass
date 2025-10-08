@@ -1,5 +1,20 @@
 
 
+## [0.453.0] - October 7, 2025
+
+### Changed
+  - DP-36788: Add cache context for timestamp parameter to ensure proper cache key generation for Gravity Forms pages with dynamic parameters.
+  - DP-42491: Blocked editoria11y from checking several CSS selectors
+  
+### Security
+  - DP-42123: Update node packages.
+  
+### Fixed
+  - DP-42395: Fixed datatable issue where pagination would unexpectedly hide.
+  - DP-42439: Fixes quotes in service page titles being rendered as HTML entities in table of contents
+  
+
+
 ## [0.452.0] - September 30, 2025
 
 ### Added
