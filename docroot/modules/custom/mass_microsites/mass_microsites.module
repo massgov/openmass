@@ -257,8 +257,12 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
     $parent_id = $entity->get('field_primary_parent')->target_id;
   }
 
-  /** @var \Drupal\node\NodeInterface $parent */
-  $parent = \Drupal::entityTypeManager()->getStorage('node')->load($parent_id);
+  /** @var \Drupal\node\NodeInterface|null $parent */
+  static $loadedParents = [];
+  if (!array_key_exists($parent_id, $loadedParents)) {
+    $loadedParents[$parent_id] = \Drupal::entityTypeManager()->getStorage('node')->load($parent_id);
+  }
+  $parent = $loadedParents[$parent_id];
 
   if (!$parent) {
     return $element;
@@ -335,13 +339,21 @@ function mass_microsites_theme_suggestions_page_alter(array &$suggestions, array
  *   The microsite object or FALSE if no microsite is found.
  */
 function _mass_microsites_get_microsite() {
-  if ($node = _mass_microsites_get_node()) {
-    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
-    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
-    if ($microsite) {
-      return $microsite;
-    }
+  static $micrositeCache = [];
+
+  if (!$node = _mass_microsites_get_node()) {
+    return FALSE;
   }
+
+  $nid = (int) $node->id();
+  if (array_key_exists($nid, $micrositeCache)) {
+    return $micrositeCache[$nid];
+  }
+
+  /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface|false $microsite */
+  $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+  $micrositeCache[$nid] = $microsite ?: FALSE;
+  return $micrositeCache[$nid];
 }
 
 /**
@@ -351,6 +363,13 @@ function _mass_microsites_get_microsite() {
  *   The node object or FALSE if no node is found.
  */
 function _mass_microsites_get_node() {
+  static $cachedNodeComputed = FALSE;
+  static $cachedNode = NULL;
+
+  if ($cachedNodeComputed) {
+    return $cachedNode;
+  }
+
   $params = \Drupal::routeMatch()->getParameters();
 
   $node_full_view_routes = [
@@ -361,10 +380,16 @@ function _mass_microsites_get_node() {
 
   $route_name = \Drupal::routeMatch()->getRouteName();
 
-  if (in_array($route_name, $node_full_view_routes)) {
+  if (in_array($route_name, $node_full_view_routes, TRUE)) {
     $node = $route_name === 'entity.node.preview' ? $params->get('node_preview') : $params->get('node');
-    return $node;
+    $cachedNode = $node ?: FALSE;
   }
+  else {
+    $cachedNode = FALSE;
+  }
+
+  $cachedNodeComputed = TRUE;
+  return $cachedNode;
 }
 
 /**

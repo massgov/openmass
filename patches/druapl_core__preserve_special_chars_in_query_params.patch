@@ -1,0 +1,113 @@
+diff --git a/lib/Drupal/Component/Utility/UrlHelper.php b/lib/Drupal/Component/Utility/UrlHelper.php
+--- a/lib/Drupal/Component/Utility/UrlHelper.php
++++ b/lib/Drupal/Component/Utility/UrlHelper.php	(date 1759788880140)
+@@ -217,18 +217,23 @@
+       }
+       // If there is a query string, transform it into keyed query parameters.
+       if (isset($parts[1])) {
+-        parse_str($parts[1], $options['query']);
++        // Preserve special characters by pre-encoding them
++        $query_string = static::preprocessQueryString($parts[1]);
++        parse_str($query_string, $options['query']);
++        $options['query'] = static::postprocessQueryArray($options['query']);
+       }
+     }
+     // Internal URLs.
+     else {
+-      // parse_url() does not support relative URLs, so make it absolute. For
+-      // instance, the relative URL "foo/bar:1" isn't properly parsed.
++      // parse_url() does not support relative URLs, so make it absolute.
+       $parts = parse_url('http://example.com/' . $url);
+       // Strip the leading slash that was just added.
+       $options['path'] = substr($parts['path'], 1);
+       if (isset($parts['query'])) {
+-        parse_str($parts['query'], $options['query']);
++        // Preserve special characters by pre-encoding them
++        $query_string = static::preprocessQueryString($parts['query']);
++        parse_str($query_string, $options['query']);
++        $options['query'] = static::postprocessQueryArray($options['query']);
+       }
+       if (isset($parts['fragment'])) {
+         $options['fragment'] = $parts['fragment'];
+@@ -238,6 +243,81 @@
+     return $options;
+   }
+
++  /**
++   * Preprocesses a query string to preserve special characters.
++   *
++   * parse_str() converts certain characters (dots, spaces, plus signs) to
++   * underscores in parameter names because PHP variable names cannot contain
++   * these characters. This helper method encodes these characters before
++   * parse_str() processes them, then decodes them afterward.
++   *
++   * @param string $query_string
++   *   The raw query string to preprocess.
++   *
++   * @return string
++   *   The preprocessed query string safe for parse_str().
++   */
++  protected static function preprocessQueryString($query_string) {
++    // For query strings without '=' (valueless parameters),
++    // the entire string becomes a parameter name and will be mangled by parse_str().
++    // We need to preserve these characters: . (dot), + (plus), space
++
++    // Strategy: Temporarily encode problematic characters that parse_str() converts
++    $placeholder_map = [
++      '.' => '__DOT__',
++      '+' => '__PLUS__',
++      ' ' => '__SPACE__',
++    ];
++
++    // Split by & to process each parameter separately
++    $params = explode('&', $query_string);
++    $processed_params = [];
++
++    foreach ($params as $param) {
++      // Check if this parameter has a value (contains =)
++      if (strpos($param, '=') !== FALSE) {
++        // Has a value: only encode the key part
++        [$key, $value] = explode('=', $param, 2);
++        $key = str_replace(array_keys($placeholder_map), array_values($placeholder_map), $key);
++        $processed_params[] = $key . '=' . $value;
++      } else {
++        // No value: encode the entire parameter (it becomes a key)
++        $processed_params[] = str_replace(array_keys($placeholder_map), array_values($placeholder_map), $param);
++      }
++    }
++
++    return implode('&', $processed_params);
++  }
++
++  /**
++   * Post-processes query array to restore special characters in keys.
++   *
++   * This reverses the encoding done by preprocessQueryString().
++   *
++   * @param array $query
++   *   The query array from parse_str().
++   *
++   * @return array
++   *   The query array with original characters restored in keys.
++   */
++  protected static function postprocessQueryArray($query) {
++    $placeholder_map = [
++      '__DOT__' => '.',
++      '__PLUS__' => '+',
++      '__SPACE__' => ' ',
++    ];
++
++    $processed = [];
++    foreach ($query as $key => $value) {
++      $original_key = str_replace(array_keys($placeholder_map), array_values($placeholder_map), $key);
++      $processed[$original_key] = is_array($value)
++        ? static::postprocessQueryArray($value)
++        : $value;
++    }
++
++    return $processed;
++  }
++
+   /**
+    * Encodes a Drupal path for use in a URL.
+    *
