@@ -74,7 +74,7 @@ class ReplaceUploadForm extends FormBase {
     $form['upload'] = [
       '#type' => 'dropzonejs',
       '#title' => $this->t('Step 1: Upload replacement files'),
-      '#description' => $this->t('Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which should include the media ID.'),
+      '#description' => $this->t('Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which must include the media ID.'),
       '#multiple' => TRUE,
       '#dropzone_description' => $this->t('Drag files here or click to upload.'),
       // Server-side validators:
@@ -108,6 +108,39 @@ class ReplaceUploadForm extends FormBase {
     ];
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $uploaded = $form_state->getValue('upload');
+    $files = $uploaded['uploaded_files'] ?? [];
+
+    if (empty($files) || !is_array($files)) {
+      return;
+    }
+
+    $mid_counts = [];
+    foreach ($files as $item) {
+      $filename = (string) ($item['filename'] ?? '');
+      if ($filename === '') {
+        continue;
+      }
+      // Normalize filenames that may have an auto-suffix before the ID token.
+      $normalized = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
+      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized, $m)) {
+        $mid = (int) $m[1];
+        $mid_counts[$mid] = ($mid_counts[$mid] ?? 0) + 1;
+      }
+    }
+
+    $duplicate_mids = array_keys(array_filter($mid_counts, static fn($c) => $c > 1));
+    if (!empty($duplicate_mids)) {
+      $form_state->setErrorByName('upload', $this->t('Duplicate uploads detected for Media ID(s): @ids. Please keep only one file per Media ID in this upload.', [
+        '@ids' => implode(', ', $duplicate_mids),
+      ]));
+    }
   }
 
   /**

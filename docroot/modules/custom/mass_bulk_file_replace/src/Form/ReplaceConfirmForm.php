@@ -143,6 +143,17 @@ class ReplaceConfirmForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
+    $form['actions']['cancel'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Cancel'),
+      // Do not validate; just bail out.
+      '#limit_validation_errors' => [],
+      '#submit' => [[static::class, 'cancelSubmit']],
+      '#attributes' => [
+        'class' => ['button', 'button--secondary'],
+      ],
+    ];
+
     return $form;
   }
 
@@ -276,7 +287,20 @@ class ReplaceConfirmForm extends FormBase {
     else {
       \Drupal::messenger()->addError(t('Some replacements failed.'));
     }
-    return new RedirectResponse(Url::fromRoute('<front>')->setAbsolute()->toString());
+    return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.upload')->setAbsolute()->toString());
+  }
+
+  /**
+   * Cancel handler: clear temp data and redirect away.
+   */
+  public static function cancelSubmit(array &$form, FormStateInterface $form_state) {
+    // Clear the uploaded files list from tempstore to avoid reprocessing later.
+    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
+    $key = 'uploaded_files_' . \Drupal::currentUser()->id();
+    $store->delete($key);
+
+    // Redirect to front page; adjust to a specific route if desired.
+    $form_state->setRedirect('mass_bulk_file_replace.upload');
   }
 
   /**
