@@ -1442,7 +1442,7 @@ display:
             operator_limit_selection: false
             operator_list: {  }
             identifier: status
-            required: true
+            required: false
             remember: false
             multiple: false
             remember_roles:
@@ -1462,6 +1462,9 @@ display:
               data_administrator: '0'
               collection_administrator: '0'
               prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+              bulk_edit: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1759,15 +1762,78 @@ display:
     position: 2
     display_options:
       fields:
-        views_bulk_operations_bulk_form:
-          id: views_bulk_operations_bulk_form
-          table: views
-          field: views_bulk_operations_bulk_form
+        field_form_embed:
+          id: field_form_embed
+          table: node__field_form_embed
+          field: field_form_embed
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: views_bulk_operations_bulk_form
-          label: 'Bulk operations'
+          plugin_id: field
+          label: 'Embedded form (Formstack only)'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: true
+            trim: false
+            preserve_tags: '<script>'
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: false
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: form_embed_plain_source
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        view_node:
+          id: view_node
+          table: node_field_revision
+          field: view_node
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: entity_link
+          label: 'URL of form page on Mass.gov'
           exclude: false
           alter:
             alter_text: false
@@ -1808,81 +1874,9 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          batch: true
-          batch_size: 10
-          form_step: true
-          ajax_loader: false
-          buttons: false
-          action_title: Action
-          clear_on_exposed: true
-          show_multipage_selection_box: default
-          show_select_all: always_hide
-          selected_actions: {  }
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: title
-          plugin_id: field
-          label: Title
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: false
-            ellipsis: false
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: true
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
+          text: view
+          output_url_as_text: true
+          absolute: true
         nid:
           id: nid
           table: node_field_data
@@ -1949,15 +1943,17 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_form_platform:
-          id: field_form_platform
-          table: node__field_form_platform
-          field: field_form_platform
+        title:
+          id: title
+          table: node_field_data
+          field: title
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
           plugin_id: field
-          label: 'Form platform'
+          label: Title
           exclude: false
           alter:
             alter_text: false
@@ -1977,8 +1973,8 @@ display:
             target: ''
             nl2br: false
             max_length: 0
-            word_boundary: true
-            ellipsis: true
+            word_boundary: false
+            ellipsis: false
             more_link: false
             more_link_text: ''
             more_link_path: ''
@@ -1999,8 +1995,9 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: list_default
-          settings: {  }
+          type: string
+          settings:
+            link_to_entity: true
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -2011,15 +2008,15 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_organizations:
-          id: field_organizations
-          table: node__field_organizations
-          field: field_organizations
+        pageviews:
+          id: pageviews
+          table: mass_bigquery_data
+          field: pageviews
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: field
-          label: 'Organization (direct match)'
+          plugin_id: numeric
+          label: 'Page views'
           exclude: false
           alter:
             alter_text: false
@@ -2060,31 +2057,25 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
-          settings:
-            link: false
-          group_column: target_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        search:
-          id: search
-          table: node_field_data
-          field: search
-          relationship: none
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ''
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+        name:
+          id: name
+          table: users_field_data
+          field: name
+          relationship: uid
           group_type: group
           admin_label: ''
-          entity_type: node
-          entity_field: search
+          entity_type: user
+          entity_field: name
           plugin_id: field
-          label: 'Exclude from search'
+          label: Author
           exclude: false
           alter:
             alter_text: false
@@ -2126,11 +2117,9 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: boolean
+          type: user_name
           settings:
-            format: true-false
-            format_custom_false: ''
-            format_custom_true: ''
+            link_to_entity: true
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -2362,15 +2351,15 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        pageviews:
-          id: pageviews
-          table: mass_bigquery_data
-          field: pageviews
+        field_organizations:
+          id: field_organizations
+          table: node__field_organizations
+          field: field_organizations
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: numeric
-          label: 'Page views'
+          plugin_id: field
+          label: 'Organization (direct match)'
           exclude: false
           alter:
             alter_text: false
@@ -2411,14 +2400,20 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         field_reusable_label:
           id: field_reusable_label
           table: node__field_reusable_label
@@ -2545,6 +2540,135 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        field_form_platform:
+          id: field_form_platform
+          table: node__field_form_platform
+          field: field_form_platform
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Form platform'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: list_default
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        search:
+          id: search
+          table: node_field_data
+          field: search
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: search
+          plugin_id: field
+          label: 'Exclude from search'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: boolean
+          settings:
+            format: true-false
+            format_custom_false: ''
+            format_custom_true: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
         field_form_url:
           id: field_form_url
           table: node__field_form_url
@@ -2612,68 +2736,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_form_embed:
-          id: field_form_embed
-          table: node__field_form_embed
-          field: field_form_embed
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: field
-          label: 'Embedded form (Formstack only)'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: true
-            trim: false
-            preserve_tags: '<script>'
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: false
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: form_embed_plain_source
-          settings: {  }
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
       style:
         type: data_export
         options:
@@ -2689,7 +2751,30 @@ display:
             utf8_bom: '0'
             use_serializer_encode_only: false
       defaults:
+        relationships: false
         fields: false
+      relationships:
+        content_of_latest_revision:
+          id: content_of_latest_revision
+          table: node_field_data
+          field: content_of_latest_revision
+          relationship: none
+          group_type: group
+          admin_label: 'Latest revision'
+          entity_type: node
+          plugin_id: standard
+          required: false
+        uid:
+          id: uid
+          table: node_field_revision
+          field: uid
+          relationship: content_of_latest_revision
+          group_type: group
+          admin_label: User
+          entity_type: node
+          entity_field: uid
+          plugin_id: standard
+          required: false
       display_extenders:
         metatag_display_extender:
           metatags: {  }
@@ -2707,7 +2792,7 @@ display:
       redirect_to_display: page_1
       include_query_params: true
     cache_metadata:
-      max-age: 0
+      max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
