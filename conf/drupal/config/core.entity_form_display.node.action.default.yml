@@ -39,7 +39,6 @@ third_party_settings:
       weight: 1
       format_type: tab
       format_settings:
-        label: 'Primary Content'
         classes: ''
         id: ''
         formatter: open
@@ -69,13 +68,13 @@ third_party_settings:
         - group_external
         - group_search
         - group_meta_info
+        - group_page_info
       label: 'Node Edit Form'
       region: content
       parent_name: ''
       weight: 1
       format_type: tabs
       format_settings:
-        label: 'Node Edit Form'
         classes: ''
         id: ''
         direction: horizontal
@@ -102,7 +101,6 @@ third_party_settings:
       weight: 6
       format_type: tab
       format_settings:
-        label: 'External Action'
         classes: ''
         id: ''
         formatter: closed
@@ -169,6 +167,25 @@ third_party_settings:
         formatter: closed
         description: ''
         required_fields: false
+    group_page_info:
+      children:
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_form
+      weight: 9
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
 _core:
   default_config_hash: P56WtT_6IidOSdmY0-9-aO8273_mW11WlvIyFa_9nBc
 id: node.action.default
@@ -288,6 +305,7 @@ content:
     region: content
     settings:
       sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
@@ -309,7 +327,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 9
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -332,20 +350,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 4
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -380,7 +398,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 8
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }

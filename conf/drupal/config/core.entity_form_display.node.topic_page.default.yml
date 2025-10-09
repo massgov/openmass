@@ -35,6 +35,7 @@ third_party_settings:
         - group_overview
         - group_content_cards
         - group_related_list
+        - group_page_info
       label: 'Topic Page Edit Form'
       region: content
       parent_name: ''
@@ -58,6 +59,7 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+        - field_image_credit
       label: Overview
       region: content
       parent_name: group_topic_page_edit_form
@@ -90,11 +92,31 @@ third_party_settings:
       label: 'Related list'
       region: content
       parent_name: group_topic_page_edit_form
-      weight: 23
+      weight: 22
       format_type: tab
       format_settings:
         classes: ''
         id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - field_topic_metatags
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_topic_page_edit_form
+      weight: 23
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -137,7 +159,7 @@ content:
     third_party_settings: {  }
   field_image_credit:
     type: string_textfield
-    weight: 65
+    weight: 68
     region: content
     settings:
       size: 60
@@ -263,12 +285,12 @@ content:
     weight: 3
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_topic_ref_related_topics:
     type: entity_reference_autocomplete
-    weight: 36
+    weight: 8
     region: content
     settings:
       match_operator: CONTAINS
@@ -301,20 +323,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }

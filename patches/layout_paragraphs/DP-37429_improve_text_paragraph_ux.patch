@@ -1,0 +1,177 @@
+diff --git a/css/builder.css b/css/builder.css
+index e01d327..14adad2 100644
+--- a/css/builder.css
++++ b/css/builder.css
+@@ -46,7 +46,7 @@
+   outline: 3px solid blue;
+ }
+ .js-lpb-component {
+-  cursor: grab;
++  cursor: pointer;
+ }
+ .js-lpb-component:hover .js-lpb-region,
+ .js-lpb-component:focus-within .js-lpb-region {
+@@ -421,3 +421,7 @@ a.lpb-enable-button::before {
+ .ck.ck-balloon-panel.ck-balloon-panel_visible {
+   z-index: 1500;
+ }
++
++.lp-builder:not(.is-navigating) .js-lpb-component:hover {
++  background-color: rgba(0, 0, 255, 0.05);
++}
+diff --git a/js/builder.js b/js/builder.js
+index 2d385cb..5ee32b7 100644
+--- a/js/builder.js
++++ b/js/builder.js
+@@ -1,6 +1,51 @@
+ (($, Drupal, debounce, dragula, once) => {
+   const idAttr = 'data-lpb-id';
+ 
++  let triggerElement = null; // To track the element that triggered the AJAX request.
++  let scrollPosition = 0; // To store the scroll position.
++
++  /**
++   * Hook into Drupal.ajax and capture the triggering element.
++   */
++  Drupal.behaviors.captureAjaxTrigger = {
++    attach: function (context, settings) {
++      // Iterate over all AJAX objects to bind a `beforeSend` hook.
++      if (Drupal.ajax) {
++        Object.values(Drupal.ajax.instances || {}).forEach((ajaxInstance) => {
++          if (!ajaxInstance || ajaxInstance.captureTriggerHook) {
++            // Skip already hooked instances.
++            return;
++          }
++          // Add a custom beforeSend handler.
++          ajaxInstance.options.beforeSend = function (xhr, ajaxSettings) {
++            const element = $(ajaxInstance.element);
++
++            // Check if the triggering element is the Edit button.
++            if (
++              element.hasClass('use-ajax') &&
++              (element.hasClass('lpb-edit') ||
++                element.hasClass('lpb-btn--add') ||
++                (element.hasClass('lpb-btn') && element.hasClass('after')) ||
++                (element.hasClass('lpb-btn') && element.hasClass('before')))
++            ) {
++              // Capture the triggering element and save the scroll position.
++              triggerElement = element;
++              scrollPosition = $(window).scrollTop();
++            }
++
++            // Call the original beforeSend if it exists.
++            if (ajaxInstance.originalBeforeSend) {
++              return ajaxInstance.originalBeforeSend(xhr, ajaxSettings);
++            }
++          };
++
++          // Mark this instance as hooked.
++          ajaxInstance.captureTriggerHook = true;
++        });
++      }
++    }
++  };
++
+   /**
+    * Attaches UI elements to $container.
+    * @param {jQuery} $container
+@@ -559,10 +604,27 @@
+ 
+       // Listen to relevant events and update UI.
+       once('lpb-events', '[data-lpb-id]').forEach((el) => {
+-        $(el).on('lpb-builder:init.lpb lpb-component:insert.lpb lpb-component:update.lpb lpb-component:move.lpb lpb-component:drop.lpb lpb-component:delete.lpb', (e) => {
+-          const $element = $(e.currentTarget);
+-          updateUi($element);
+-        });
++        $(el).on(
++          'lpb-builder:init.lpb lpb-component:insert.lpb lpb-component:update.lpb lpb-component:move.lpb lpb-component:drop.lpb lpb-component:delete.lpb',
++          (e) => {
++            const $element = $(e.currentTarget);
++            // Trigger scroll restoration for  'update' event.
++            if (e.type === 'lpb-component:update') {
++              if (triggerElement) {
++                window.scrollTo({
++                    top: scrollPosition,
++                    behavior: 'auto',
++                });
++              }
++            }
++            updateUi($element);
++            // Remove focus from all `+` buttons after a new component is inserted.
++            const $addButton = $element.find('.lpb-btn--add:focus');
++            if ($addButton.length) {
++              $addButton.blur();
++            }
++          }
++        );
+       });
+ 
+       // Initialize the editor drag and drop ui.
+@@ -611,6 +673,13 @@
+     const $element = $dialog || jQuery(event.target);
+     if ($element.attr('id').startsWith('lpb-dialog-')) {
+       updateDialogButtons($element);
++      if (triggerElement) {
++        window.scrollTo({
++            top: scrollPosition,
++            behavior: 'auto',
++        });
++        triggerElement.focus();
++      }
+       clearInterval(lpDialogInterval);
+       lpDialogInterval = setInterval(
+         repositionDialog.bind(null, lpDialogInterval),
+@@ -618,10 +687,53 @@
+       );
+     }
+   };
++
++  // Generic handler: open other components on background click.
++  $('body').on('click', '.js-lpb-component', function (e) {
++    const $component = $(this);
++
++    // Ensure this is the *nearest* component to the click
++    if ($(e.target).closest('.js-lpb-component')[0] !== this) {
++      return; // Nested component will handle its own click
++    }
++
++    // Only proceed if not clicking inside the controls bar
++    if ($component.hasClass('lpb-layout')) {
++      // Layouts are allowed, but skip if controls were clicked
++      if ($(e.target).closest('.lpb-controls').length) {
++        return;
++      }
++    } else {
++      // For non-layouts, skip if controls were clicked
++      if ($(e.target).closest('.lpb-controls').length) {
++        return;
++      }
++    }
++
++    e.preventDefault();
++
++    const $editButton = $component.find('.lpb-edit.use-ajax').first();
++    if ($editButton.length) {
++      $editButton.trigger('click');
++    }
++  });
++
+   if (typeof DrupalDialogEvent === 'undefined') {
+     $(window).on('dialog:aftercreate', handleAfterDialogCreate);
+   } else {
+     window.addEventListener('dialog:aftercreate', handleAfterDialogCreate);
+   }
+ 
++  // Listen to dialog *close* directly on the dialog content
++  $(document).on('dialogclose', '.ui-dialog-content', function (event) {
++    const $element = $(this);
++    if ($element.attr('id')?.startsWith('lpb-dialog-') && triggerElement) {
++      window.scrollTo({
++        top: scrollPosition,
++        behavior: 'auto',
++      });
++      triggerElement.focus();
++    }
++  });
++
+ })(jQuery, Drupal, Drupal.debounce, dragula, once);

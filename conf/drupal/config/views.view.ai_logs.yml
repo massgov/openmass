@@ -1,104 +1,37 @@
-uuid: 41c32c67-8699-4e3b-8eff-a69bc3e72025
+uuid: a72e62e8-44f5-4f79-974f-7e9c43c528b4
 langcode: en
 status: true
 dependencies:
   module:
-    - entity_usage
-    - paragraphs
-    - paragraphs_library
+    - ai_logging
     - user
 _core:
-  default_config_hash: 67G2lyvlXJE8P8b1oAheELEdM5i74aipXfDIZCpAsdQ
-id: paragraphs_library
-label: 'Paragraphs library'
+  default_config_hash: HmjLjdShYCjFsNcxrQDEuWWd9gGK5j9e6XztXvFd67k
+id: ai_logs
+label: 'AI Logs'
 module: views
-description: ''
+description: 'This view lists all logs from the AI suite of modules.'
 tag: ''
-base_table: paragraphs_library_item_field_data
+base_table: ai_log
 base_field: id
 display:
   default:
     id: default
-    display_title: Master
+    display_title: Default
     display_plugin: default
     position: 0
     display_options:
-      title: 'Paragraphs library'
+      title: 'AI Logs'
       fields:
-        label:
-          id: label
-          table: paragraphs_library_item_field_data
-          field: label
+        bundle:
+          id: bundle
+          table: ai_log
+          field: bundle
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: paragraphs_library_item
-          entity_field: label
-          plugin_id: field
-          label: Label
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: true
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        type:
-          id: type
-          table: paragraphs_item_field_data
-          field: type
-          relationship: paragraphs__target_id
-          group_type: group
-          admin_label: ''
-          entity_type: paragraph
-          entity_field: type
+          entity_type: ai_log
+          entity_field: bundle
           plugin_id: field
           label: Type
           exclude: false
@@ -155,272 +88,17 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        paragraphs__target_id:
-          id: paragraphs__target_id
-          table: paragraphs_library_item_field_data
-          field: paragraphs__target_id
+        created:
+          id: created
+          table: ai_log
+          field: created
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: paragraphs_library_item
-          entity_field: paragraphs
+          entity_type: ai_log
+          entity_field: created
           plugin_id: field
-          label: Paragraphs
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: paragraph_summary
-          settings: {  }
-          group_column: entity_id
-          group_columns:
-            target_id: target_id
-            target_revision_id: target_revision_id
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        langcode:
-          id: langcode
-          table: paragraphs_library_item_field_data
-          field: langcode
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: paragraphs_library_item
-          entity_field: langcode
-          plugin_id: field
-          label: Language
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: language
-          settings:
-            link_to_entity: false
-            native_language: false
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        id:
-          id: id
-          table: paragraphs_library_item_field_data
-          field: id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: paragraphs_library_item
-          entity_field: id
-          plugin_id: field
-          label: ID
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: number_integer
-          settings:
-            thousand_separator: ''
-            prefix_suffix: true
-          group_column: entity_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        count:
-          id: count
-          table: entity_usage
-          field: count
-          relationship: paragraphs_library_item_to_usage_entity
-          group_type: count
-          admin_label: ''
-          plugin_id: numeric
-          label: Used
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: true
-            path: 'admin/content/entity-usage/paragraphs_library_item/{{ id }}'
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MSBwbGFjZQNAY291bnQgcGxhY2Vz
-          prefix: ''
-          suffix: ''
-        changed:
-          id: changed
-          table: paragraphs_library_item_field_data
-          field: changed
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: paragraphs_library_item
-          entity_field: changed
-          plugin_id: field
-          label: Changed
+          label: Date
           exclude: false
           alter:
             alter_text: false
@@ -464,11 +142,11 @@ display:
           click_sort_column: value
           type: timestamp
           settings:
-            date_format: short
+            date_format: medium
             custom_date_format: ''
             timezone: ''
             tooltip:
-              date_format: ''
+              date_format: long
               custom_date_format: ''
             time_diff:
               enabled: false
@@ -476,7 +154,8 @@ display:
               past_format: '@interval ago'
               granularity: 2
               refresh: 60
-          group_column: entity_id
+              description: ''
+          group_column: value
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -486,16 +165,561 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        operations:
-          id: operations
-          table: paragraphs_library_item
-          field: operations
+        prompt:
+          id: prompt
+          table: ai_log
+          field: prompt
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: paragraphs_library_item
-          plugin_id: entity_operations
-          label: Operations
+          entity_type: ai_log
+          entity_field: prompt
+          plugin_id: field
+          label: Prompt
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 200
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: true
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: basic_string
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        output_text:
+          id: output_text
+          table: ai_log
+          field: output_text
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          entity_field: output_text
+          plugin_id: field
+          label: Response
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 200
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: true
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: basic_string
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        extra_data:
+          id: extra_data
+          table: ai_log
+          field: extra_data
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          entity_field: extra_data
+          plugin_id: field
+          label: 'Extra Data'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 200
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: true
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: basic_string
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        provider:
+          id: provider
+          table: ai_log
+          field: provider
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          entity_field: provider
+          plugin_id: field
+          label: Provider
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: false
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        model:
+          id: model
+          table: ai_log
+          field: model
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          entity_field: model
+          plugin_id: field
+          label: Model
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: false
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        tags_value:
+          id: tags_value
+          table: ai_log__tags
+          field: tags_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          entity_field: tags
+          plugin_id: field
+          label: Tags
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: false
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: ul
+          separator: ', '
+          field_api_classes: false
+        view_ai_log:
+          id: view_ai_log
+          table: ai_log
+          field: view_ai_log
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          plugin_id: entity_link
+          label: 'Link to AI Log'
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          text: View
+          output_url_as_text: false
+          absolute: false
+        edit_ai_log:
+          id: edit_ai_log
+          table: ai_log
+          field: edit_ai_log
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          plugin_id: entity_link_edit
+          label: 'Link to edit AI Log'
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          text: Edit
+          output_url_as_text: false
+          absolute: false
+        delete_ai_log:
+          id: delete_ai_log
+          table: ai_log
+          field: delete_ai_log
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          plugin_id: entity_link_delete
+          label: 'Link to delete AI Log'
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          text: Delete
+          output_url_as_text: false
+          absolute: false
+        dropbutton:
+          id: dropbutton
+          table: views
+          field: dropbutton
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: dropbutton
+          label: Actions
           exclude: false
           alter:
             alter_text: false
@@ -537,17 +761,31 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: true
+          fields:
+            view_ai_log: view_ai_log
+            edit_ai_log: edit_ai_log
+            delete_ai_log: delete_ai_log
+            bundle: '0'
+            created: '0'
+            prompt: '0'
+            output_text: '0'
+            extra_data: '0'
+            provider: '0'
+            model: '0'
+            tags_value: '0'
       pager:
-        type: mini
+        type: full
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 50
+          items_per_page: 25
           total_pages: null
           id: 0
           tags:
             next: ››
             previous: ‹‹
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -556,10 +794,11 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
+          quantity: 9
       exposed_form:
         type: basic
         options:
-          submit_button: Filter
+          submit_button: Apply
           reset_button: false
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
@@ -569,95 +808,60 @@ display:
       access:
         type: perm
         options:
-          perm: 'administer paragraphs library'
+          perm: 'view ai log'
       cache:
         type: tag
         options: {  }
-      empty:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
+      empty: {  }
+      sorts:
+        created:
+          id: created
+          table: ai_log
+          field: created
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: text_custom
-          empty: true
-          content: 'No library items available.'
-          tokenize: false
-      sorts: {  }
+          entity_type: ai_log
+          entity_field: created
+          plugin_id: date
+          order: DESC
+          expose:
+            label: ''
+            field_identifier: ''
+          exposed: false
+          granularity: second
       arguments: {  }
       filters:
-        label:
-          id: label
-          table: paragraphs_library_item_field_data
-          field: label
+        bundle:
+          id: bundle
+          table: ai_log
+          field: bundle
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: paragraphs_library_item
-          entity_field: label
-          plugin_id: string
-          operator: contains
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: label_op
-            label: Label
-            description: ''
-            use_operator: false
-            operator: label_op
-            identifier: label
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-          is_grouped: false
-          group_info:
-            label: Label
-            description: null
-            identifier: label
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1: {  }
-              2: {  }
-              3: {  }
-        type:
-          id: type
-          table: paragraphs_item_field_data
-          field: type
-          relationship: paragraphs__target_id
-          group_type: group
-          admin_label: ''
-          entity_type: paragraph
-          entity_field: type
+          entity_type: ai_log
+          entity_field: bundle
           plugin_id: bundle
           operator: in
           value: {  }
           group: 1
           exposed: true
           expose:
-            operator_id: type_op
+            operator_id: bundle_op
             label: Type
             description: ''
             use_operator: false
-            operator: type_op
-            identifier: type
+            operator: bundle_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: bundle
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              content_editor: '0'
               administrator: '0'
             reduce: false
           is_grouped: false
@@ -672,32 +876,44 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        default_langcode:
-          id: default_langcode
-          table: paragraphs_library_item_field_data
-          field: default_langcode
+        created:
+          id: created
+          table: ai_log
+          field: created
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: paragraphs_library_item
-          entity_field: default_langcode
-          plugin_id: boolean
-          operator: '='
-          value: '1'
+          entity_type: ai_log
+          entity_field: created
+          plugin_id: date
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
           group: 1
-          exposed: false
+          exposed: true
           expose:
-            operator_id: ''
-            label: ''
+            operator_id: created_op
+            label: 'Date from'
             description: ''
             use_operator: false
-            operator: ''
-            identifier: ''
+            operator: created_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: from
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -710,32 +926,132 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        default_langcode_1:
-          id: default_langcode_1
-          table: paragraphs_item_field_data
-          field: default_langcode
-          relationship: paragraphs__target_id
+        created_1:
+          id: created_1
+          table: ai_log
+          field: created
+          relationship: none
           group_type: group
           admin_label: ''
-          entity_type: paragraph
-          entity_field: default_langcode
-          plugin_id: boolean
-          operator: '='
-          value: '1'
+          entity_type: ai_log
+          entity_field: created
+          plugin_id: date
+          operator: '<='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
           group: 1
-          exposed: false
+          exposed: true
           expose:
-            operator_id: ''
-            label: ''
+            operator_id: created_1_op
+            label: To
             description: ''
             use_operator: false
-            operator: ''
-            identifier: ''
+            operator: created_1_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: to
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        provider:
+          id: provider
+          table: ai_log
+          field: provider
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          entity_field: provider
+          plugin_id: string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: provider_op
+            label: Provider
+            description: ''
+            use_operator: false
+            operator: provider_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: provider
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        model:
+          id: model
+          table: ai_log
+          field: model
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: ai_log
+          entity_field: model
+          plugin_id: string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: model_op
+            label: Model
+            description: ''
+            use_operator: false
+            operator: model_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: model
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -754,57 +1070,6 @@ display:
           1: AND
       style:
         type: table
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          columns:
-            label: label
-            type: type
-            id: id
-            count: count
-            operations: operations
-          default: '-1'
-          info:
-            label:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            type:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            id:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            count:
-              sortable: false
-              default_sort_order: asc
-              align: views-align-right
-              separator: ''
-              empty_column: false
-              responsive: ''
-            operations:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          override: true
-          sticky: false
-          summary: ''
-          empty_table: true
-          caption: ''
-          description: ''
       row:
         type: fields
       query:
@@ -815,40 +1080,17 @@ display:
           distinct: false
           replica: false
           query_tags: {  }
-      relationships:
-        paragraphs__target_id:
-          id: paragraphs__target_id
-          table: paragraphs_library_item_field_data
-          field: paragraphs__target_id
-          relationship: none
-          group_type: group
-          admin_label: Paragraphs
-          entity_type: paragraphs_library_item
-          entity_field: paragraphs
-          plugin_id: standard
-          required: true
-        paragraphs_library_item_to_usage_entity:
-          id: paragraphs_library_item_to_usage_entity
-          table: paragraphs_library_item
-          field: paragraphs_library_item_to_usage_entity
-          relationship: none
-          group_type: group
-          admin_label: 'Usage information (Paragraphs library item)'
-          entity_type: paragraphs_library_item
-          plugin_id: standard
-          required: false
-      group_by: true
+      relationships: {  }
       header: {  }
       footer: {  }
       display_extenders: {  }
     cache_metadata:
-      max-age: 0
+      max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user.permissions
       tags: {  }
   page_1:
     id: page_1
@@ -857,13 +1099,12 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: admin/content/paragraphs
+      path: admin/config/ai/logging/collection
     cache_metadata:
-      max-age: 0
+      max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user.permissions
       tags: {  }

@@ -57,6 +57,7 @@ third_party_settings:
         - group_details
         - group_additional_info
         - group_contacts
+        - group_page_info
       label: 'How To Page Edit Form'
       region: content
       parent_name: ''
@@ -139,7 +140,7 @@ third_party_settings:
       label: Contacts
       region: content
       parent_name: group_how_to_page_edit_form
-      weight: 24
+      weight: 23
       format_type: tab
       format_settings:
         classes: ''
@@ -160,6 +161,26 @@ third_party_settings:
       format_settings:
         classes: ''
         id: ''
+        description: ''
+        required_fields: true
+    group_page_info:
+      children:
+        - field_how_to_metatags
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_how_to_page_edit_form
+      weight: 24
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
         description: ''
         required_fields: true
 id: node.how_to_page.default
@@ -353,10 +374,10 @@ content:
           - fee
   field_how_to_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 3
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_how_to_methods_5:
@@ -600,7 +621,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -623,20 +644,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -675,7 +696,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 6
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

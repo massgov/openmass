@@ -43,7 +43,10 @@ class EventsRendererOrgPages {
   public function render() {
     // Gather events associated with this node.
     $eventManager = \Drupal::service('mass_content.event_manager');
-    $upcoming = $eventManager->hasUpcoming($this->parentNode);
+    $upcoming = NULL;
+    if ($this->parentNode) {
+      $upcoming = $eventManager->hasUpcoming($this->parentNode);
+    }
     $render = $upcoming ? $this->nextEvents() : $this->pastEventsLink();
     // To update if any event changes.
     $render['#cache']['tags'][] = 'node_list:event';

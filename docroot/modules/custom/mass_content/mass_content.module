@@ -757,19 +757,6 @@ function mass_content_field_widget_entity_reference_paragraphs_form_alter(&$elem
 /**
  * Implements hook_preprocess_HOOK().
  */
-function mass_content_preprocess_paragraph__section_header(&$variables) {
-  if (!empty($variables['paragraph']->field_section_long_form_heading->value)) {
-    $title = $variables['paragraph']->field_section_long_form_heading->value;
-    // Slugify.
-    $utilities = \Drupal::service('mass_metatag.utilities');
-    $id = $utilities->slugify(trim($title));
-    $variables['id'] = $id;
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
 function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables) {
   /** @var \Drupal\paragraphs\Entity\Paragraph */
   $flexible_lg = $variables['paragraph'];
@@ -1015,6 +1002,9 @@ function mass_content_preprocess_paragraph__flexible_link_group(&$variables) {
  */
 function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
 
+  if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'section_header' && $entity->parent_field_name->value == 'field_service_sections') {
+    $view_mode = 'stacked_row_section';
+  }
   // Display cards or compact cards depending on the settings.
   if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
     if ($entity->hasField('field_topic_name_only') && $entity->field_topic_name_only->value == 1) {

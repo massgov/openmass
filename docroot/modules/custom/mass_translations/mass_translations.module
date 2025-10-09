@@ -15,8 +15,9 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mass_translations\ClassResolverAttachIframeTranslationLibrary;
 use Drupal\mass_translations\Controller\TranslationsController;
-use Drupal\mayflower\Prepare\Organisms;
+use Drupal\mayflower\Prepare\Molecules;
 use Drupal\media\MediaInterface;
 use Drupal\node\NodeInterface;
 
@@ -45,6 +46,11 @@ function _mass_translations_media_helper(array &$variables) {
     ->setAbsolute()
     ->toString();
   $lang_codes = $languageManager->getLanguages();
+
+  // Generate unique document ID for accessibility
+  $document_id = 'doc-' . $media->id();
+
+  $document_title = !empty($media->field_title->value) ? $media->field_title->value : $media->field_upload_file->entity->getFilename();
 
   // Get all the translations for this media.
   $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
@@ -83,14 +89,28 @@ function _mass_translations_media_helper(array &$variables) {
           "title" => $name,
           "lang_label" => $name_en,
           "url" => $url,
+          // Add unique IDs and aria-labelledby for accessibility
+          "translation_id" => $document_id . '-' . $language_id,
+          "document_id" => $document_id . '-title',
+          // Include both the language name and document title for complete accessibility
+          "aria_labelledby" => $document_id . '-' . $language_id . ' ' . $document_id . '-title',
+          "document_title" => $document_title,
         ];
       }
     }
   }
   if (count($languages) >= 1) {
-    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
+    $inlineLinks = Molecules::prepareInlineLinksForLanguages($languages, [
+      "ariaLabel" => "Available Translations",
+      "document_id" => $document_id . '-title',
+      "document_title" => $document_title
+    ]);
     $variables += ["translationLinks" => $inlineLinks];
   }
+  // Add the document ID to variables for the main document link
+  $variables["document_id"] = $document_id . '-title';
+  $variables["document_title"] = $document_title;
+
   // Bubble cache tag to the current render. Based on template_preprocess_pager()
   // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
   CacheableMetadata::createFromRenderArray($variables)
@@ -153,7 +173,7 @@ function mass_translations_preprocess_node(&$variables) {
     }
 
     if (count($languages) > 1) {
-      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
+      $inlineLinks = Molecules::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
       $variables += ["translationLinks" => $inlineLinks];
     }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
@@ -162,6 +182,8 @@ function mass_translations_preprocess_node(&$variables) {
       ->addCacheTags($cache_tags)
       ->applyTo($variables);
   }
+
+  \Drupal::classResolver(ClassResolverAttachIframeTranslationLibrary::class)->attach($variables);
 }
 
 /**
