@@ -13,7 +13,6 @@ final class TrashbinCommands extends DrushCommands {
 
   use AutowireTrait;
 
-  const TRASHBIN_ONLY_TRASH = 'trashbin_only_trash';
   const TRASHBIN_PURGE = 'trashbin:purge';
 
   protected function __construct(
@@ -38,7 +37,7 @@ final class TrashbinCommands extends DrushCommands {
     $definition = $storage->getEntityType();
 
     // Resolve table/keys.
-    $base_table = method_exists($storage, 'getBaseTable') ? $storage->getBaseTable() : NULL;
+    $base_table = method_exists($storage, 'getBaseTable') ? $storage->getDataTable() : NULL;
     if (!$base_table) {
       $this->logger()->error('Entity type {type} does not have a base table and cannot be purged.', ['type' => $entity_type]);
       return;
@@ -59,6 +58,7 @@ final class TrashbinCommands extends DrushCommands {
     $query = $connection->select($base_table, 'b')
       ->fields('b', [$id_key])
       ->range(0, (int) $options['max']);
+    $query->condition('changed', $maximum, '<');
 
     // Note: innerJoin() returns the alias string, not the Select object, so it
     // must not be chained.
@@ -85,7 +85,7 @@ final class TrashbinCommands extends DrushCommands {
 
     $entities = $storage->loadMultiple($ids);
     foreach ($entities as $entity) {
-      if (\Drush\Drush::simulate()) {
+      if (Drush::simulate()) {
         $this->logger()->notice('Simulated delete of "{title}". ID={id}, {url}', [
           'title' => $entity->label(),
           'id' => $entity->id(),
