@@ -1,5 +1,19 @@
 
 
+## [0.454.0] - October 14, 2025
+
+### Added
+  - DP-42311: Add disclaimer field to AI Content Advisor Config
+  
+### Changed
+  - DP-42562: Updated form inventory report
+  
+### Fixed
+  - DP-42577: URL entered by author is cleaned, rendering it broken
+  - DP-42632: Restore collection visibility for Authors and Editors by re-adding the "access taxonomy overview" permission that was removed in DP-39524. To prevent these roles from seeing the Taxonomy tab in the Content menu, created a new "access taxonomy dashboard menu" permission that controls visibility of the Taxonomy menu item separately from the ability to view taxonomy terms in entity reference fields.
+  
+
+
 ## [0.453.0] - October 7, 2025
 
 ### Changed
