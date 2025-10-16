@@ -56,7 +56,7 @@ class NearestMicrositeLookup {
       $queryBuilderStorage = $this->queryBuilderStorageFactory->get('field_primary_parent', 'node');
 
       // Ancestors ordered nearest-first: parent (field_primary_parent) up to root.
-      $ancestors = array_reverse($queryBuilderStorage->findAncestors($node));
+      $ancestors = array_reverse($queryBuilderStorage->findAncestors($node)->getRecords());
       if (!empty($ancestors)) {
         foreach ($ancestors as $ancestor) {
           /** @var \Drupal\entity_hierarchy\Storage\Record $ancestor */
