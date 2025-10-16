@@ -36,16 +36,16 @@ final class TrashbinCommands extends DrushCommands {
     $storage = $this->etm->getStorage($entity_type);
     $definition = $storage->getEntityType();
 
-    // Resolve table/keys.
-    $base_table = method_exists($storage, 'getBaseTable') ? $storage->getDataTable() : NULL;
+    // Resolve table/keys from the entity type definition (nodes: node_field_data/node_revision).
+    $base_table = $definition->getDataTable() ?: $definition->getBaseTable();
     if (!$base_table) {
-      $this->logger()->error('Entity type {type} does not have a base table and cannot be purged.', ['type' => $entity_type]);
+      $this->logger()->error('Entity type {type} does not have a base/data table and cannot be purged.', ['type' => $entity_type]);
       return;
     }
 
     $id_key = $definition->getKey('id');
     $rev_key = $definition->getKey('revision');
-    $changed_key = $definition->getKey('changed');
+    $changed_key = 'changed';
 
     if (!$id_key || !$rev_key) {
       $this->logger()->error('Entity type {type} must be revisionable to use trashbin purge (missing id/revision keys).', ['type' => $entity_type]);
@@ -58,7 +58,6 @@ final class TrashbinCommands extends DrushCommands {
     $query = $connection->select($base_table, 'b')
       ->fields('b', [$id_key])
       ->range(0, (int) $options['max']);
-    $query->condition('changed', $maximum, '<');
 
     // Note: innerJoin() returns the alias string, not the Select object, so it
     // must not be chained.
@@ -69,11 +68,28 @@ final class TrashbinCommands extends DrushCommands {
       [':etype' => $entity_type]
     );
 
-    $query->condition('md.moderation_state', 'trash', '=');
-
-    if ($changed_key) {
-      $query->condition('b.' . $changed_key, $maximum, '<');
+    $revision_table = $definition->getRevisionTable();
+    $rt_timestamp = 'rt.revision_timestamp';
+    if ($entity_type == 'media') {
+      $rt_timestamp = 'rt.revision_created';
     }
+
+    if ($revision_table) {
+      $query->innerJoin(
+        $revision_table,
+        'rt',
+        'rt.' . $rev_key . ' = b.' . $rev_key . ' AND rt.' . $id_key . ' = b.' . $id_key
+      );
+    }
+
+    $query->condition('md.moderation_state', 'trash');
+    $query->where('b.' . $changed_key . ' <> ' . $rt_timestamp);
+    // Optional age cutoff: only when days-ago > 0. Use the later of changed vs
+    // revision timestamp so we never prematurely purge recently-touched items.
+    if (!empty($options['days-ago']) && (int) $options['days-ago'] > 0) {
+      $query->where('GREATEST(b.' . $changed_key . ', ' . $rt_timestamp . ') < :max', [':max' => $maximum]);
+    }
+    $query->orderBy($rt_timestamp, 'DESC');
 
     $ids = $query->execute()->fetchCol();
 
