@@ -351,8 +351,9 @@ function _mass_microsites_get_microsite() {
   }
 
   /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface|false $microsite */
-  $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
-  $micrositeCache[$nid] = $microsite ?: FALSE;
+//  $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+//  $micrositeCache[$nid] = $microsite ?: FALSE;
+  $micrositeCache[$nid] = FALSE;
   return $micrositeCache[$nid];
 }
 

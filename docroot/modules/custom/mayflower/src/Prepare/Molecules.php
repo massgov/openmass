@@ -1279,21 +1279,21 @@ class Molecules {
 
     if ($entity instanceof NodeInterface) {
       /** @var \Drupal\mass_microsites\NearestMicrositeLookup $micrositeLookup */
-      $micrositeLookup = \Drupal::service('mass_microsites.nearest_microsite_lookup');
-      $microsite = $micrositeLookup->getNearestMicrosite($entity);
-      if ($microsite) {
-        $show_default_scope = FALSE;
-        $default_scope = [
-          'value' => str_replace("-", "", $utilities->slugify(trim($microsite->label()))),
-          'type' => 'microsite',
-          'label' => t('in @microsite', ['@microsite' => $microsite->label()]),
-        ];
-        $placeholder = t('Search @microsite', ['@microsite' => $microsite->label()]);
-        $suggested_scopes[] = [
-          'label' => t('in all of Mass.gov'),
-        ];
-      }
-      else {
+//      $micrositeLookup = \Drupal::service('mass_microsites.nearest_microsite_lookup');
+//      $microsite = $micrositeLookup->getNearestMicrosite($entity);
+//      if ($microsite) {
+//        $show_default_scope = FALSE;
+//        $default_scope = [
+//          'value' => str_replace("-", "", $utilities->slugify(trim($microsite->label()))),
+//          'type' => 'microsite',
+//          'label' => t('in @microsite', ['@microsite' => $microsite->label()]),
+//        ];
+//        $placeholder = t('Search @microsite', ['@microsite' => $microsite->label()]);
+//        $suggested_scopes[] = [
+//          'label' => t('in all of Mass.gov'),
+//        ];
+//      }
+//      else {
         if ($entity->bundle() === 'org_page') {
           $orgs[] = $entity;
         }
@@ -1334,7 +1334,7 @@ class Molecules {
             }
           }
         }
-      }
+//      }
     }
     if (!empty($suggested_scopes)) {
       $has_suggestions = TRUE;

@@ -20,7 +20,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
    *
    * @var \Drupal\mass_microsites\NearestMicrositeLookup
    */
-  protected $micrositeLookup;
+//  protected $micrositeLookup;
 
   /**
    * {@inheritdoc}
@@ -28,7 +28,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
   public static function create(ContainerInterface $container) {
     /** @var self $instance */
     $instance = parent::create($container);
-    $instance->micrositeLookup = $container->get('mass_microsites.nearest_microsite_lookup');
+//    $instance->micrositeLookup = $container->get('mass_microsites.nearest_microsite_lookup');
     return $instance;
   }
 
@@ -302,14 +302,14 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       'operations' => [],
       'finished' => [static::class, 'finished'],
     ];
-    $microsite = $this->micrositeLookup->getNearestMicrosite($this->entity);
+//    $microsite = $this->micrositeLookup->getNearestMicrosite($this->entity);
     foreach ($children as $child) {
       $entity = \Drupal::entityTypeManager()
         ->getStorage($this->entity->getEntityTypeId())
         ->load($child['id']);
       $batch['operations'][] = [
         [static::class, 'rebuildTree'],
-        [$fieldName, $entity, $child['parent'], $child['weight'], $microsite],
+        [$fieldName, $entity, $child['parent'], $child['weight']],
       ];
     }
     batch_set($batch);
