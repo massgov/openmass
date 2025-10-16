@@ -22,7 +22,7 @@ final class TrashbinCommands extends DrushCommands {
   }
 
   /**
-   * Delete content entities that have been in the bin for more than n days.
+   * Delete content entities in Trash; when --days-ago=0, delete all trashed items; when >0, delete only those older than N days.
    */
   #[CLI\Command(name: self::TRASHBIN_PURGE, aliases: [])]
   #[CLI\Argument(name: 'entity_type', description: 'Entity type to purge')]
@@ -30,7 +30,11 @@ final class TrashbinCommands extends DrushCommands {
   #[CLI\Option(name: 'days-ago', description: 'Number of days that the item must be unchanged in the trashbin.')]
   #[CLI\Usage(name: 'drush --simulate trashbin:purge node', description: 'Get a report of what would be purged.')]
   public function purge($entity_type, $options = ['max' => 1000, 'days-ago' => 180]) {
-    $maximum = strtotime($options['days-ago'] . ' days ago', $this->time->getCurrentTime());
+    // Capture command start time to avoid racing with edits during execution.
+    $startedAt = $this->time->getCurrentTime();
+    $maximum = strtotime($options['days-ago'] . ' days ago', $startedAt);
+
+    $cutoff = ((int) $options['days-ago'] > 0) ? $maximum : $startedAt;
 
     // Validate entity type and get storage/definition.
     $storage = $this->etm->getStorage($entity_type);
@@ -82,13 +86,14 @@ final class TrashbinCommands extends DrushCommands {
       );
     }
 
+    // Always: moderation_state = 'trash'
     $query->condition('md.moderation_state', 'trash');
-    $query->where('b.' . $changed_key . ' <> ' . $rt_timestamp);
-    // Optional age cutoff: only when days-ago > 0. Use the later of changed vs
-    // revision timestamp so we never prematurely purge recently-touched items.
-    if (!empty($options['days-ago']) && (int) $options['days-ago'] > 0) {
-      $query->where('GREATEST(b.' . $changed_key . ', ' . $rt_timestamp . ') < :max', [':max' => $maximum]);
-    }
+
+    // Execution-stable cutoff:
+    // - days-ago > 0  → cutoff = now - N days
+    // - days-ago = 0  → cutoff = command start time (prevents deleting items created/edited during the run)
+    $query->where('GREATEST(b.' . $changed_key . ', ' . $rt_timestamp . ') < :cutoff', [':cutoff' => $cutoff]);
+
     $query->orderBy($rt_timestamp, 'DESC');
 
     $ids = $query->execute()->fetchCol();
