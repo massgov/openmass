@@ -7,6 +7,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_hierarchy\Form\HierarchyChildrenForm as EntityHierachyHierarchyChildrenForm;
+use Drupal\entity_hierarchy\Storage\RecordCollectionCallable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -23,12 +24,20 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
   protected $micrositeLookup;
 
   /**
+   * Query builder factory service.
+   *
+   * @var \Drupal\entity_hierarchy\Storage\QueryBuilderFactory
+   */
+  protected $queryBuilderFactory;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     /** @var self $instance */
     $instance = parent::create($container);
     $instance->micrositeLookup = $container->get('mass_microsites.nearest_microsite_lookup');
+    $instance->queryBuilderFactory = $container->get('entity_hierarchy.query_builder_factory');
     return $instance;
   }
 
@@ -74,19 +83,17 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         '#submit' => ['::updateField'],
       ];
     }
-    /** @var \PNX\NestedSet\Node $node */
-    /** @var \PNX\NestedSet\Node[] $children */
-    /** @var \PNX\NestedSet\NodeKey $nodeKey */
-    /** @var \PNX\NestedSet\NestedSetInterface $storage */
-    $nodeKey = $this->nodeKeyFactory->fromEntity($this->entity);
-    $storage = $this->nestedSetStorageFactory->get($fieldName, $this->entity->getEntityTypeId());
-    $children = $storage->findDescendants($nodeKey, 2);
-    $node = $storage->getNode($nodeKey);
+    /** @var \Drupal\entity_hierarchy\Storage\QueryBuilder $queryBuilder */
+    $queryBuilder = $this->queryBuilderFactory->get($fieldName, $this->entity->getEntityTypeId());
 
-    // Ensure entity depth does not exceed 9
-    $baseDepth = ($node) ? $node->getDepth() : 0;
+    // Get descendants with depth 2 (direct children and grandchildren).
+    $children = $queryBuilder->findDescendants($this->entity, 2);
 
-    $childEntities = $this->entityTreeNodeMapper->loadAndAccessCheckEntitysForTreeNodes($this->entity->getEntityTypeId(), $children, $cache);
+    // Filter for entities user has access to view.
+    $children = $children->filter(RecordCollectionCallable::viewLabelAccessFilter(...));
+
+    // Get base depth for indentation calculations.
+    $baseDepth = $queryBuilder->findDepth($this->entity);
 
     $form['#attached']['library'][] = 'mass_hierarchy/hierarchy';
     $form['#attached']['library'][] = 'entity_hierarchy/entity_hierarchy.nodetypeform';
@@ -136,35 +143,27 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
     $bundles = FALSE;
 
+    // Collect IDs for pageview data.
     $ids = [];
-    foreach ($children as $node) {
-      if (!$childEntities->contains($node)) {
-        // Doesn't exist or is access hidden.
+    foreach ($children as $record) {
+      $childEntity = $record->getEntity();
+      if (!$childEntity || !$childEntity->isDefaultRevision()) {
+        // Doesn't exist, is access hidden, or is not default revision.
         continue;
       }
-      /** @var \Drupal\Core\Entity\ContentEntityInterface $childEntity */
-      $childEntity = $childEntities->offsetGet($node);
-      if (!$childEntity->isDefaultRevision()) {
-        // We only update default revisions here.
-        continue;
-      }
-      $ids[] = $node->getId();
+      $ids[] = $record->getId();
     }
 
     if (!empty($ids)) {
       $pageviews = \Drupal::service('bigquery.storage')->getRecords($ids);
     }
 
-    foreach ($children as $weight => $node) {
-      if (!$childEntities->contains($node)) {
-        // Doesn't exist or is access hidden.
-        continue;
-      }
-
+    foreach ($children as $weight => $record) {
       /** @var \Drupal\node\Entity\Node $childEntity */
-      $childEntity = $childEntities->offsetGet($node);
-      if (!$childEntity->isDefaultRevision()) {
-        // We only update default revisions here.
+      $childEntity = $record->getEntity();
+
+      if (!$childEntity || !$childEntity->isDefaultRevision()) {
+        // Doesn't exist, is access hidden, or is not default revision.
         continue;
       }
 
@@ -172,21 +171,23 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         continue;
       }
 
-      $child = $node->getId();
+      $child = $record->getId();
 
-      $level = $node->getDepth() - $baseDepth;
+      $level = $record->getDepth();
 
       if ($level > 1) {
         continue;
       }
 
-      $nextElem = $children[$weight + 1] ?? FALSE;
+      // Convert RecordCollection to array for indexed access.
+      $childrenArray = iterator_to_array($children);
+      $nextElem = $childrenArray[$weight + 1] ?? FALSE;
       $inc = 1;
-      while ($nextElem && !$childEntities->contains($nextElem)) {
-        $nextElem = $children[$weight + $inc++] ?? FALSE;
+      while ($nextElem && !$nextElem->getEntity()) {
+        $nextElem = $childrenArray[$weight + $inc++] ?? FALSE;
       }
 
-      !$nextElem || ($nextElem->getDepth() <= $node->getDepth())
+      !$nextElem || ($nextElem->getDepth() <= $record->getDepth())
         ?: $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--parent';
 
       $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row';
@@ -198,7 +199,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       $form['children'][$child]['title'] = [
         [
           '#theme' => 'indentation',
-          '#size' => $node->getDepth() - $baseDepth - 1,
+          '#size' => $record->getDepth() - $baseDepth - 1,
         ],
         $childEntity->toLink()->toRenderable(),
         [
@@ -232,7 +233,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
       $form['children'][$child]['id'] = [
         '#type' => 'hidden',
-        '#value' => $node->getNodeKey()->getId(),
+        '#value' => $record->getId(),
         '#attributes' => ['class' => ['child-id']],
       ];
 
@@ -243,9 +244,13 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         $form['children'][$child]['pageviews']['#markup'] = 'n/a';
       }
 
+      // Find parent entity ID.
+      $parentEntity = $queryBuilder->findParent($childEntity);
+      $parentId = $parentEntity ? $parentEntity->id() : NULL;
+
       $form['children'][$child]['parent'] = [
         '#type' => 'hidden',
-        '#default_value' => $storage->findParent($node->getNodeKey())->getNodeKey()->getId(),
+        '#default_value' => $parentId,
         '#attributes' => ['class' => ['child-parent']],
       ];
 
