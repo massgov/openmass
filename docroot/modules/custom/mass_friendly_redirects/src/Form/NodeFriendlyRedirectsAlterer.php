@@ -1,0 +1,350 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\mass_friendly_redirects\Form;
+
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\path_alias\AliasManagerInterface;
+use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\node\NodeInterface;
+use Drupal\redirect\Entity\Redirect;
+use Drupal\mass_friendly_redirects\Service\PrefixManager;
+
+final class NodeFriendlyRedirectsAlterer {
+  use StringTranslationTrait;
+
+  public function __construct(
+    private AccountProxyInterface $currentUser,
+    private EntityTypeManagerInterface $etm,
+    private AliasManagerInterface $aliasManager,
+    private LanguageManagerInterface $languageManager,
+    private MessengerInterface $messenger,
+    private PrefixManager $prefixManager,
+  ) {}
+
+  /**
+   * Entrypoint called by the thin procedural hook.
+   */
+  public function alter(array &$form, FormStateInterface $form_state): void {
+    $entity = $form_state->getFormObject()->getEntity();
+    if (!$entity instanceof NodeInterface) {
+      return;
+    }
+
+    $account = $this->currentUser;
+    $is_admin = $account->hasPermission('administer redirects') || $account->hasPermission('administer site configuration');
+    $can_manage = $account->hasPermission('manage friendly redirects') || $is_admin;
+    if (!$can_manage) {
+      return;
+    }
+
+    // Hide the stock Redirects component for non-admins (if present).
+    if (!$is_admin && isset($form['path']['redirect'])) {
+      $form['path']['redirect']['#access'] = FALSE;
+    }
+
+    $prefix_options = $this->prefixManager->getPrefixOptions();
+
+
+    $form['mass_friendly_redirects'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Friendly URLs'),
+      '#group' => 'advanced',
+      '#open' => TRUE,
+      '#tree' => TRUE,
+    ];
+
+
+    $form['mass_friendly_redirects']['help'] = [
+      '#markup' => '<p>' . $this->t('Create simple, lowercase friendly URLs scoped to approved prefixes. Redirects are permanent (301). Targets always point to this page. Changes may take time to appear due to caching.') . '</p>',
+    ];
+
+    $form['mass_friendly_redirects']['prefix'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Prefix'),
+      '#options' => $prefix_options,
+      '#required' => !$is_admin,
+      '#empty_option' => $is_admin ? $this->t('- None (admin) -') : NULL,
+      '#description' => $this->t('Manage prefixes at Structure → Taxonomy → Friendly URL prefixes.'),
+    ];
+
+    $form['mass_friendly_redirects']['suffix'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Path after prefix'),
+      '#maxlength' => 255,
+      '#placeholder' => $this->t('e.g. flu or vaccine/locations'),
+      '#description' => $this->t('Lowercase only. Use hyphens for separators. Do not include leading or trailing slashes.'),
+    ];
+
+
+    $alias = $this->aliasManager->getAliasByPath('/node/' . $entity->id());
+    $form['mass_friendly_redirects']['target_display'] = [
+      '#type' => 'item',
+      '#title' => $this->t('Target'),
+      '#markup' => sprintf('<code>%s</code>', htmlspecialchars($alias ?: ('/node/' . $entity->id()), ENT_QUOTES)),
+      '#description' => $this->t('Target is fixed to this page. External URLs and jump links are not allowed. This is a path, not a clickable URL scheme.'),
+    ];
+
+    $form['mass_friendly_redirects']['actions'] = ['#type' => 'actions'];
+    $form['mass_friendly_redirects']['actions']['add'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Add URL Redirect'),
+      '#submit' => [static::class . '::submit'],
+      '#validate' => [static::class . '::validate'],
+      '#limit_validation_errors' => [['mass_friendly_redirects']],
+    ];
+
+
+    // Existing redirects table (filtered by role/prefix).
+    $form['mass_friendly_redirects']['existing'] = [
+      '#type' => 'table',
+      '#header' => [$this->t('Source'), $this->t('Status'), $this->t('Operations')],
+      '#empty' => $this->t('No friendly redirects found for this page.'),
+    ];
+
+
+    foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $is_admin, $prefix_options) as $rid => $row) {
+      $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
+      $form['mass_friendly_redirects']['existing'][$rid]['status'] = ['#markup' => '301'];
+      $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
+        '#type' => 'operations',
+        '#links' => [
+          'edit' => [
+            'title' => t('Edit'),
+            'url' => \Drupal\Core\Url::fromRoute('entity.redirect.edit_form', ['redirect' => $rid]),
+          ],
+          'delete' => [
+            'title' => t('Delete'),
+            'url' => \Drupal\Core\Url::fromRoute('entity.redirect.delete_form', ['redirect' => $rid]),
+          ],
+        ],
+      ];
+    }
+  }
+
+  /**
+   * FAPI validate callback.
+   */
+  public static function validate(array &$form, FormStateInterface $form_state): void {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $form_state->getFormObject()->getEntity();
+
+    /** @var \Drupal\mass_friendly_redirects\Service\PrefixManager $prefixMgr */
+    $prefixMgr = \Drupal::service('mass_friendly_redirects.prefix_manager');
+    $account = \Drupal::currentUser();
+    $is_admin = $account->hasPermission('administer redirects') || $account->hasPermission('administer site configuration');
+
+    $values = (array) $form_state->getValue('mass_friendly_redirects');
+    $prefix_tid = $values['prefix'] ?? '';
+    $suffix = (string) ($values['suffix'] ?? '');
+
+    $prefix_options = $prefixMgr->getPrefixOptions();
+
+    // Resolve chosen prefix.
+    $prefix = '';
+    if ($prefix_tid && isset($prefix_options[$prefix_tid])) {
+      $prefix = $prefix_options[$prefix_tid];
+    } elseif (!$is_admin) {
+      $form_state->setErrorByName('mass_friendly_redirects][prefix', t('Please pick a prefix.'));
+      return;
+    }
+
+    // Normalize and validate suffix.
+    $suffix = trim($suffix);
+    $suffix = trim($suffix, "/ \t\n\r\0\x0B");
+    if ($suffix === '' && !$is_admin) {
+      $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Please provide a path after the prefix.'));
+      return;
+    }
+
+    // Lowercase enforcement.
+    if ($suffix !== mb_strtolower($suffix)) {
+      $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Friendly URLs must be lowercase.'));
+    }
+
+    // Allowed chars: a-z, 0-9, hyphen and slashes; must not start or end with slash.
+    if ($suffix !== '' && !preg_match('@^[a-z0-9][a-z0-9\-/]*$@', $suffix)) {
+      $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Only lowercase letters, numbers, slashes, and hyphens are allowed. Do not start or end with a slash.'));
+    }
+
+    // Build & normalize source (no leading slash).
+    $source = '';
+    if ($prefix !== '' && $suffix !== '') {
+      $source = $prefix . '/' . $suffix;
+    } elseif ($prefix !== '' && $suffix === '') {
+      $source = $prefix;
+    } elseif ($prefix === '' && $is_admin) {
+      $source = $suffix;
+    }
+    $source = preg_replace('@/+@', '/', (string) $source);
+    $source = trim($source, '/');
+
+    if ($source === '') {
+      $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Source path cannot be empty.'));
+      return;
+    }
+    if ($source !== mb_strtolower($source)) {
+      $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Friendly URLs must be lowercase.'));
+    }
+
+    // Warn if duplicate exists (compound sub-property).
+    $storage = \Drupal::entityTypeManager()->getStorage('redirect');
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('redirect_source__path', $source)
+      ->execute();
+
+    if (!empty($ids)) {
+      \Drupal::messenger()->addWarning(t('A redirect for "/@src" already exists. You can edit it below.', ['@src' => $source]));
+    }
+
+    // Stash computed values for submit.
+    $form_state->setValue(['mass_friendly_redirects', '_computed_source'], $source);
+    $form_state->setValue(['mass_friendly_redirects', '_target_nid'], $node->id());
+  }
+
+  /**
+   * FAPI submit callback.
+   */
+  public static function submit(array &$form, FormStateInterface $form_state): void {
+    $values = (array) $form_state->getValue('mass_friendly_redirects');
+    $source = (string) ($values['_computed_source'] ?? '');
+    $nid = (int) ($values['_target_nid'] ?? 0);
+    if (!$source || !$nid) {
+      return;
+    }
+
+    $storage = \Drupal::entityTypeManager()->getStorage('redirect');
+    $ids = $storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('redirect_source__path', $source)
+      ->execute();
+
+    $targetUri = 'node/' . $nid;
+
+    if (!empty($ids)) {
+      /** @var \Drupal\redirect\Entity\Redirect $r */
+      $r = $storage->load(reset($ids));
+      $changed = FALSE;
+
+      // Compare using the stored URI string (compound field).
+      $item = $r->get('redirect_redirect')->first();
+      $currentUri = $item ? $item->get('uri')->getString() : '';
+
+      if ($currentUri !== $targetUri) {
+        $r->setRedirect($targetUri);
+        $changed = TRUE;
+      }
+      if ((int) $r->getStatusCode() !== 301) {
+        $r->setStatusCode(301);
+        $changed = TRUE;
+      }
+
+      if ($changed) {
+        $r->save();
+        \Drupal::messenger()->addStatus(t('Updated redirect "/@src" to point here.', ['@src' => $source]));
+      } else {
+        \Drupal::messenger()->addStatus(t('Redirect "/@src" already points here.', ['@src' => $source]));
+      }
+      return;
+    }
+
+    // Create new redirect using Redirect 1.x API.
+    $redirect = Redirect::create();
+    $redirect->setSource($source, []); // no leading slash
+    $redirect->setRedirect($targetUri);
+    $redirect->setStatusCode(301);
+    $redirect->set('language', \Drupal::languageManager()->getDefaultLanguage()->getId());
+    $redirect->save();
+
+    \Drupal::messenger()->addStatus(t('Added redirect "/@src" → this page.', ['@src' => $source]));
+  }
+
+  /**
+   * Load redirects that point to this node, filtered for admin/editor views.
+   *
+   * @return array<int|string,array{source:string}>
+   */
+  private static function loadNodeRedirects(
+    EntityTypeManagerInterface $etm,
+    AliasManagerInterface $aliasManager,
+    NodeInterface $node,
+    bool $is_admin,
+    array $prefix_options
+  ): array {
+    $storage = $etm->getStorage('redirect');
+    $query = $storage->getQuery()->accessCheck(FALSE);
+
+    // Always 301 for our UI.
+    $query->condition('status_code', 301);
+
+    // Destination: support multiple URI schemes that may exist in data.
+    $nid = $node->id();
+    $destGroup = $query->orConditionGroup()
+      ->condition('redirect_redirect__uri', 'node/' . $nid)
+      ->condition('redirect_redirect__uri', 'internal:/node/' . $nid)
+      ->condition('redirect_redirect__uri', 'entity:node/' . $nid);
+
+    // Include alias form if present (legacy data).
+    $aliasPath = '/node/' . $nid;
+    $alias = $aliasManager->getAliasByPath($aliasPath);
+    if ($alias && $alias !== $aliasPath) {
+      $destGroup->condition('redirect_redirect__uri', 'internal:' . $alias);
+    }
+    $query->condition($destGroup);
+
+    // Editors: restrict to allowed prefixes at the DB level.
+    if (!$is_admin) {
+      $allowed = array_values($prefix_options);
+      if ($allowed) {
+        $prefixGroup = $query->orConditionGroup();
+        foreach ($allowed as $p) {
+          if ($p === '') {
+            continue;
+          }
+          // Match exact prefix or prefix/*
+          $prefixGroupExact = $query->andConditionGroup()
+            ->condition('redirect_source__path', $p);
+          $prefixGroupLike = $query->andConditionGroup()
+            ->condition('redirect_source__path', $p . '/%', 'LIKE');
+          $prefixGroup->condition($prefixGroupExact);
+          $prefixGroup->condition($prefixGroupLike);
+        }
+        $query->condition($prefixGroup);
+      } else {
+        // No allowed prefixes configured => nothing to show.
+        return [];
+      }
+    }
+
+    // Order by path so we don't sort in PHP.
+    $query->sort('redirect_source__path', 'ASC');
+
+    $ids = $query->execute();
+    if (!$ids) {
+      return [];
+    }
+
+    /** @var \Drupal\redirect\Entity\Redirect[] $redirects */
+    $redirects = $storage->loadMultiple($ids);
+
+    $rows = [];
+    foreach ($redirects as $r) {
+      // Get raw source path without triggering extra URL building.
+      // Field is compound; path is stored in the 'path' property.
+      $item = $r->get('redirect_source')->first();
+      $path = $item ? (string) $item->get('path')->getString() : '';
+      if ($path === '') {
+        continue;
+      }
+      $rows[$r->id()] = ['source' => $path];
+    }
+
+    return $rows;
+  }
+}
