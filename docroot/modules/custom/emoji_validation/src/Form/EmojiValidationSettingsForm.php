@@ -42,11 +42,11 @@ class EmojiValidationSettingsForm extends ConfigFormBase {
   }
 
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $norm = static function(string $text): array {
+    $norm = static function (string $text): array {
       $lines = preg_split('/\R/u', $text ?? '') ?: [];
       return array_values(array_filter(array_map(static function ($s) {
         $s = strtoupper(trim($s));
-        return $s !== '' ? $s : null;
+        return $s !== '' ? $s : NULL;
       }, $lines)));
     };
 
@@ -58,4 +58,5 @@ class EmojiValidationSettingsForm extends ConfigFormBase {
 
     parent::submitForm($form, $form_state);
   }
+
 }
