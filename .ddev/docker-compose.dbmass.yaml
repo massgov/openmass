@@ -1,5 +1,5 @@
-# The following database service uses a `percona-server:5.6.40` image where mysql initialization done by
-# a custom `docker-entrypoint.sh` script. You can find that script and the `Dockerfile` in `.circleci/mysql-rebuild/`.
+# The following database service uses a MySQL 8.0.44 image.
+# You can find the `Dockerfile` in `.circleci/mysql-rebuild/`.
 # See https://medium.com/massgovdigital/dev-env-5d35b97f3473#cba3 for more info.
 # Further, the image is super sanitized (no unpublished content, old revisions, user data, etc.).
 services:
@@ -17,7 +17,7 @@ services:
       MYSQL_PASSWORD: circle
       MYSQL_DATABASE: circle
       MYSQL_RANDOM_ROOT_PASSWORD: 1
-    command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+    command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --innodb-flush-log-at-trx-commit=2 --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
     volumes:
       - dbmass:/var/lib/mysql
   web:
