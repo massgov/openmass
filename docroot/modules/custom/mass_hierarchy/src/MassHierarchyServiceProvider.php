@@ -16,11 +16,12 @@ class MassHierarchyServiceProvider extends ServiceProviderBase {
    */
   public function alter(ContainerBuilder $container) {
     // Override entity_hierarchy.breadcrumb service.
-//    if ($container->hasDefinition('entity_hierarchy.breadcrumb')) {
-//      $definition = $container->getDefinition('entity_hierarchy.breadcrumb');
-//      $definition->setClass('Drupal\mass_hierarchy\MassHierarchyBasedBreadcrumbBuilder');
-//      $definition->addArgument(new Reference('mass_microsites.nearest_microsite_lookup'));
-//    }
+    if ($container->hasDefinition('entity_hierarchy.breadcrumb')) {
+      $definition = $container->getDefinition('entity_hierarchy.breadcrumb');
+      $definition->setClass('Drupal\mass_hierarchy\MassHierarchyBasedBreadcrumbBuilder');
+      $definition->addArgument(new Reference('mass_microsites.nearest_microsite_lookup'));
+      $definition->addArgument(new Reference('router.admin_context'));
+    }
   }
 
 }

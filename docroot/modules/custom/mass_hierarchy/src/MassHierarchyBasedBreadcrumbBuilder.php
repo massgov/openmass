@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Drupal\mass_hierarchy;
 
 use Drupal\Core\Breadcrumb\Breadcrumb;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\entity_hierarchy\Storage\EntityTreeNodeMapperInterface;
-use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
-use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
+use Drupal\entity_hierarchy\Storage\QueryBuilderFactory;
+use Drupal\entity_hierarchy\Storage\RecordCollectionCallable;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_microsites\NearestMicrositeLookup;
@@ -25,28 +25,34 @@ use Drupal\node\Entity\Node;
 class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilder {
 
   /**
-   * The nearest microsite lookup service..
+   * The nearest microsite lookup service.
    *
    * @var \Drupal\mass_microsites\NearestMicrositeLookup
    */
   protected $nearestMicrositeLookup;
 
+  /**
+   * The admin context.
+   *
+   * @var \Drupal\Core\Routing\AdminContext;
+   */
+  protected $adminContext;
+
   public function __construct(
-    NestedSetStorageFactory $storage_factory,
-    NestedSetNodeKeyFactory $node_key_factory,
-    EntityTreeNodeMapperInterface $mapper,
     EntityFieldManagerInterface $entity_field_manager,
-    AdminContext $admin_context,
+    QueryBuilderFactory $storage_factory,
     NearestMicrositeLookup $nearest_microsite_lookup,
+    AdminContext $admin_context,
   ) {
-    parent::__construct($storage_factory, $node_key_factory, $mapper, $entity_field_manager, $admin_context);
+    parent::__construct($entity_field_manager, $storage_factory);
     $this->nearestMicrositeLookup = $nearest_microsite_lookup;
+    $this->adminContext = $admin_context;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function applies(RouteMatchInterface $route_match) {
+  public function applies(RouteMatchInterface $route_match, CacheableMetadata $cacheable_metadata = NULL) {
 
     if ($this->adminContext->isAdminRoute($route_match->getRouteObject())) {
       if ($route_match->getRouteName() === 'entity.media.edit_form' && $route_match->getParameter('media') instanceof DocumentBundle) {
@@ -118,21 +124,21 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     }
 
     $entity_type = $route_entity->getEntityTypeId();
-    $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
-    $ancestors = $storage->findAncestors($this->nodeKeyFactory->fromEntity($route_entity));
-    // Pass in the breadcrumb object for caching.
-    $ancestor_entities = $this->mapper->loadAndAccessCheckEntitysForTreeNodes($entity_type, $ancestors, $breadcrumb);
+    $storage = $this->queryBuilderFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
+    $ancestors = $storage->findAncestors($route_entity)->filter(RecordCollectionCallable::viewLabelAccessFilter(...))->buildTree();
 
     /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface; $nearest_microsite */
     $nearest_microsite = $this->nearestMicrositeLookup->getNearestMicrosite($route_entity);
     $microsite_root = $nearest_microsite?->getHome();
     $links = [];
-    foreach ($ancestor_entities as $ancestor_entity) {
-      if (!$ancestor_entities->contains($ancestor_entity)) {
-        // Doesn't exist or is access hidden.
-        continue;
-      }
-      $entity = $ancestor_entities->offsetGet($ancestor_entity);
+    foreach ($ancestors as $ancestor_entity) {
+
+      // TODO: Need to check if viewLabelAccessFilter offers similar access check as contains.
+//      if (!$ancestor_entities->contains($ancestor_entity)) {
+//        // Doesn't exist or is access hidden.
+//        continue;
+//      }
+      $entity = $ancestor_entity->getEntity();
 
       if ($microsite_root && empty($links) && $entity->id() !== $microsite_root->id()) {
         // If we're in a microsite, and the entity is not the microsite root, and we havn't found the root yet, skip.
