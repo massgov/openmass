@@ -50,7 +50,6 @@ final class NodeFriendlyRedirectsAlterer {
 
     $prefix_options = $this->prefixManager->getPrefixOptions();
 
-
     $form['mass_friendly_redirects'] = [
       '#type' => 'details',
       '#title' => $this->t('Friendly URLs'),
@@ -58,7 +57,6 @@ final class NodeFriendlyRedirectsAlterer {
       '#open' => TRUE,
       '#tree' => TRUE,
     ];
-
 
     $form['mass_friendly_redirects']['help'] = [
       '#markup' => '<p>' . $this->t('Create simple, lowercase friendly URLs scoped to approved prefixes. Redirects are permanent (301). Targets always point to this page. Changes may take time to appear due to caching.') . '</p>',
@@ -81,7 +79,6 @@ final class NodeFriendlyRedirectsAlterer {
       '#description' => $this->t('Lowercase only. Use hyphens for separators. Do not include leading or trailing slashes.'),
     ];
 
-
     $alias = $this->aliasManager->getAliasByPath('/node/' . $entity->id());
     $form['mass_friendly_redirects']['target_display'] = [
       '#type' => 'item',
@@ -99,14 +96,12 @@ final class NodeFriendlyRedirectsAlterer {
       '#limit_validation_errors' => [['mass_friendly_redirects']],
     ];
 
-
     // Existing redirects table (filtered by role/prefix).
     $form['mass_friendly_redirects']['existing'] = [
       '#type' => 'table',
       '#header' => [$this->t('Source'), $this->t('Status'), $this->t('Operations')],
       '#empty' => $this->t('No friendly redirects found for this page.'),
     ];
-
 
     foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $is_admin, $prefix_options) as $rid => $row) {
       $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
@@ -149,7 +144,8 @@ final class NodeFriendlyRedirectsAlterer {
     $prefix = '';
     if ($prefix_tid && isset($prefix_options[$prefix_tid])) {
       $prefix = $prefix_options[$prefix_tid];
-    } elseif (!$is_admin) {
+    }
+    elseif (!$is_admin) {
       $form_state->setErrorByName('mass_friendly_redirects][prefix', t('Please pick a prefix.'));
       return;
     }
@@ -176,9 +172,11 @@ final class NodeFriendlyRedirectsAlterer {
     $source = '';
     if ($prefix !== '' && $suffix !== '') {
       $source = $prefix . '/' . $suffix;
-    } elseif ($prefix !== '' && $suffix === '') {
+    }
+    elseif ($prefix !== '' && $suffix === '') {
       $source = $prefix;
-    } elseif ($prefix === '' && $is_admin) {
+    }
+    elseif ($prefix === '' && $is_admin) {
       $source = $suffix;
     }
     $source = preg_replace('@/+@', '/', (string) $source);
@@ -248,7 +246,8 @@ final class NodeFriendlyRedirectsAlterer {
       if ($changed) {
         $r->save();
         \Drupal::messenger()->addStatus(t('Updated redirect "/@src" to point here.', ['@src' => $source]));
-      } else {
+      }
+      else {
         \Drupal::messenger()->addStatus(t('Redirect "/@src" already points here.', ['@src' => $source]));
       }
       return;
@@ -256,7 +255,8 @@ final class NodeFriendlyRedirectsAlterer {
 
     // Create new redirect using Redirect 1.x API.
     $redirect = Redirect::create();
-    $redirect->setSource($source, []); // no leading slash
+    // No leading slash
+    $redirect->setSource($source, []);
     $redirect->setRedirect($targetUri);
     $redirect->setStatusCode(301);
     $redirect->set('language', \Drupal::languageManager()->getDefaultLanguage()->getId());
@@ -267,15 +267,13 @@ final class NodeFriendlyRedirectsAlterer {
 
   /**
    * Load redirects that point to this node, filtered for admin/editor views.
-   *
-   * @return array<int|string,array{source:string}>
    */
   private static function loadNodeRedirects(
     EntityTypeManagerInterface $etm,
     AliasManagerInterface $aliasManager,
     NodeInterface $node,
     bool $is_admin,
-    array $prefix_options
+    array $prefix_options,
   ): array {
     $storage = $etm->getStorage('redirect');
     $query = $storage->getQuery()->accessCheck(FALSE);
@@ -316,7 +314,8 @@ final class NodeFriendlyRedirectsAlterer {
           $prefixGroup->condition($prefixGroupLike);
         }
         $query->condition($prefixGroup);
-      } else {
+      }
+      else {
         // No allowed prefixes configured => nothing to show.
         return [];
       }
@@ -347,4 +346,5 @@ final class NodeFriendlyRedirectsAlterer {
 
     return $rows;
   }
+
 }

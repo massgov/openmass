@@ -36,7 +36,7 @@ final class PrefixTermFormAlterer {
   }
 
   /**
-   * Enforce lowercase, URL-friendly labels: ^[a-z0-9][a-z0-9\-]*$
+   * Enforce lowercase, URL-friendly labels: ^[a-z0-9][a-z0-9\-]*$.
    */
   public static function validatePrefixLabel(array &$form, FormStateInterface $form_state): void {
     $entity = $form_state->getFormObject()->getEntity();
@@ -62,4 +62,5 @@ final class PrefixTermFormAlterer {
       $form_state->setErrorByName('name][0][value', t('Only lowercase letters, numbers, and hyphens are allowed. Start with a letter or number.'));
     }
   }
+
 }

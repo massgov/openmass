@@ -25,7 +25,7 @@ final class PrefixManager {
   }
 
   /**
-   * @return array<string,string> key=term id, value=prefix (already URL-friendly)
+   * Get prefix options.
    */
   public function getPrefixOptions(): array {
     $storage = $this->etm->getStorage('taxonomy_term');
