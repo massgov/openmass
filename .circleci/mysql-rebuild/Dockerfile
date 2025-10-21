@@ -1,5 +1,5 @@
 # vim:set ft=dockerfile:
-FROM mysql:8.0.44
+FROM mysql:8.0
 
 # MW: Removed
 # VOLUME /var/lib/mysql
