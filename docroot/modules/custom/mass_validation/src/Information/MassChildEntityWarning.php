@@ -20,13 +20,9 @@ class MassChildEntityWarning extends ChildEntityWarning {
   public function getList() {
     $child_labels = [];
     $build = ['#theme' => 'item_list'];
-    foreach ($this->relatedEntities as $node) {
-      if (!$this->relatedEntities->contains($node) || $node == $this->parent) {
-        continue;
-      }
-      $child_labels[] = $this->relatedEntities->offsetGet($node)->toLink()->toString()->__toString();
+    foreach ($this->records as $record) {
+      $child_labels[] = $record->getEntity()->toLink()->toString()->__toString();;
     }
-    $build['$build#items'] = array_unique($child_labels);
     $build['#items'] = array_map("unserialize", array_unique(array_map("serialize", $child_labels)));
     $this->cache->applyTo($build);
     return $build;
