@@ -109,28 +109,6 @@ function mass_hierarchy_views_query_alter(ViewExecutable $view, QueryPluginBase 
 }
 
 /**
- * Deletes revision that are not current on the nested set table.
- */
-function mass_hierarchy_delete_other_revisions_from_nested_set_table(Node $node) {
-  if ($node->isNew()) {
-    return;
-  }
-
-  // Loading the node again to get the default revision.
-  // For instance, if the node comes from a draft we
-  // wont get the revision ID we need.
-  $node = Node::load($node->id());
-  $nid = $node->id();
-  $vid = $node->getRevisionId();
-
-  // Eliminates revisions that are not current on the nested set table.
-  $query = Drupal::database()->delete('nested_set_field_primary_parent_node');
-  $query->condition('id', $nid);
-  $query->condition('revision_id', $vid, '<>');
-  $query->execute();
-}
-
-/**
  * Implements hook_views_pre_render().
  */
 function mass_hierarchy_views_post_render(ViewExecutable $view) {
@@ -238,29 +216,3 @@ function _mass_hierarchy_breadcrumb_ajax(array &$form, FormStateInterface $form_
   return $response;
 }
 
-/**
- * Deletes all non-current revisions from the nested_set_field_primary_parent_node table.
- */
-function mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table() {
-  $res = \Drupal::database()->query(
-    'SELECT id, COUNT(*)
-    FROM nested_set_field_primary_parent_node
-    GROUP BY id
-    HAVING COUNT(*) > 1')->fetchAll();
-
-  foreach ($res as $value) {
-    $nid = $value->id;
-    $node = Node::load($nid);
-    if (!$node) {
-      continue;
-    }
-    mass_hierarchy_delete_other_revisions_from_nested_set_table($node);
-  }
-}
-
-/**
- * Implements hook_cron().
- */
-function mass_hierarchy_cron() {
-  mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table();
-}
