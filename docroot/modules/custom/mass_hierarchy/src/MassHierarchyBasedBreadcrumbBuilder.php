@@ -34,7 +34,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
   /**
    * The admin context.
    *
-   * @var \Drupal\Core\Routing\AdminContext;
+   * @var \Drupal\Core\Routing\AdminContext
    */
   protected $adminContext;
 
@@ -52,7 +52,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
   /**
    * {@inheritdoc}
    */
-  public function applies(RouteMatchInterface $route_match, CacheableMetadata $cacheable_metadata = NULL) {
+  public function applies(RouteMatchInterface $route_match, ?CacheableMetadata $cacheable_metadata = NULL) : bool {
 
     if ($this->adminContext->isAdminRoute($route_match->getRouteObject())) {
       if ($route_match->getRouteName() === 'entity.media.edit_form' && $route_match->getParameter('media') instanceof DocumentBundle) {
@@ -132,12 +132,6 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     $microsite_root = $nearest_microsite?->getHome();
     $links = [];
     foreach ($ancestors as $ancestor_entity) {
-
-      // TODO: Need to check if viewLabelAccessFilter offers similar access check as contains.
-//      if (!$ancestor_entities->contains($ancestor_entity)) {
-//        // Doesn't exist or is access hidden.
-//        continue;
-//      }
       $entity = $ancestor_entity->getEntity();
 
       if ($microsite_root && empty($links) && $entity->id() !== $microsite_root->id()) {

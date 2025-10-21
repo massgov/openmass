@@ -21,7 +21,7 @@ class MassChildEntityWarning extends ChildEntityWarning {
     $child_labels = [];
     $build = ['#theme' => 'item_list'];
     foreach ($this->records as $record) {
-      $child_labels[] = $record->getEntity()->toLink()->toString()->__toString();;
+      $child_labels[] = $record->getEntity()->toLink()->toString()->__toString();
     }
     $build['#items'] = array_map("unserialize", array_unique(array_map("serialize", $child_labels)));
     $this->cache->applyTo($build);

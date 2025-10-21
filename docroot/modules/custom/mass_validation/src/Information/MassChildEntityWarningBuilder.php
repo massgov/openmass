@@ -31,7 +31,7 @@ class MassChildEntityWarningBuilder extends ChildEntityWarningBuilder {
   /**
    * Gets warning about child entities before deleting a parent.
    *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $parent
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   Parent to be deleted.
    * @param bool $removeUnpublished
    *   Ignores unpublished items.
