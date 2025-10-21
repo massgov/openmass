@@ -111,8 +111,7 @@ function emoji_validation_autocomplete_validate(array &$element, FormStateInterf
 
     // 3) remove a trailing parenthesized ID (plus surrounding spaces) if present
     foreach ($parts as $part) {
-      // Matches optional space, "(", one or more non-")" chars, ")", optional spaces at end
-      // e.g., turns "Flu (123)" into "Flu" and leaves ordinary labels untouched.
+      // Matches optional space, then a trailing numeric ID in parentheses, e.g. " (123)".
       $labels[] = preg_replace('/\s*\(\d+\)\s*$/', '', $part);
     }
   }
