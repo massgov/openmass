@@ -104,7 +104,7 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
     /** @var \Drupal\entity_hierarchy\Storage\QueryBuilderFactory $query_builder_factory */
     $query_builder_factory = \Drupal::service('entity_hierarchy.query_builder_factory');
-    $nested_storage = $query_builder_factory->get('field_primary_parent', 'node');
+    $hierarchy_storage = $query_builder_factory->get('field_primary_parent', 'node');
     $new_parent = $form_state->getValue('new_parent');
 
     $list = $form['#list'];
@@ -112,7 +112,7 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
     foreach ($list as $item_id) {
       $nid = $item_id[0];
       $node = $node_storage->load($nid);
-      $descendants = $nested_storage->findDescendants($node);
+      $descendants = $hierarchy_storage->findDescendants($node);
 
       // Ensure the new parent is not one of the selected nodes.
       if ($new_parent == $nid) {
