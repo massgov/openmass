@@ -66,7 +66,6 @@ final class NodeFriendlyRedirectsAlterer {
       '#type' => 'select',
       '#title' => $this->t('Prefix'),
       '#options' => $prefix_options,
-      '#required' => !$is_admin,
       '#empty_option' => $is_admin ? $this->t('- None (admin) -') : NULL,
       '#description' => $this->t('Manage prefixes at Structure → Taxonomy → Friendly URL prefixes.'),
     ];
