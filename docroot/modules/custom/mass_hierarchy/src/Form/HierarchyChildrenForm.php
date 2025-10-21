@@ -90,7 +90,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     $children = $queryBuilder->findDescendants($this->entity, 2);
 
     // Filter for entities user has access to view.
-    $children = $children->filter(RecordCollectionCallable::viewLabelAccessFilter(...));
+    $children = $children->filter(RecordCollectionCallable::viewLabelAccessFilter(...))->buildTree();
 
     // Get base depth for indentation calculations.
     $baseDepth = $queryBuilder->findDepth($this->entity);
@@ -179,16 +179,11 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         continue;
       }
 
-      // Convert RecordCollection to array for indexed access.
-      $childrenArray = iterator_to_array($children);
-      $nextElem = $childrenArray[$weight + 1] ?? FALSE;
-      $inc = 1;
-      while ($nextElem && !$nextElem->getEntity()) {
-        $nextElem = $childrenArray[$weight + $inc++] ?? FALSE;
-      }
+      $has_children = $record->getChildren() ?? FALSE;
 
-      !$nextElem || ($nextElem->getDepth() <= $record->getDepth())
-        ?: $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--parent';
+      if ($has_children) {
+        $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--parent';
+      }
 
       $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row';
       $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--' . $childEntity->bundle();
