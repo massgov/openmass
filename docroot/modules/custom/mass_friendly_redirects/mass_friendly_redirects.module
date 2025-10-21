@@ -11,9 +11,9 @@ function mass_friendly_redirects_form_node_form_alter(array &$form, FormStateInt
   $form_object = $form_state->getFormObject();
   if (method_exists($form_object, 'getOperation')) {
     $op = $form_object->getOperation();
-    dump($op);
     if ($op !== 'edit') {
-      return; // Not an edit form; do nothing.
+      // Not an edit form; do nothing.
+      return;
     }
   }
   /** @var \Drupal\mass_friendly_redirects\Form\NodeFriendlyRedirectsAlterer $alterer */
