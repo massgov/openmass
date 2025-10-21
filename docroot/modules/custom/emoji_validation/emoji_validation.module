@@ -96,11 +96,24 @@ function emoji_validation_autocomplete_validate(array &$element, FormStateInterf
     $raw = (string) $raw;
   }
 
-  // Split tags into labels and strip trailing " (123)" IDs.
+  // Split tags by comma, trim pieces, drop empties, then strip trailing
+  // parenthesized numeric IDs like " (123)" that Drupal adds to display labels.
+  // Example raw input: "Health, Flu (123),  , COVID (456)".
   $labels = [];
   if (is_string($raw)) {
-    foreach (preg_split('/\s*,\s*/', $raw, -1, PREG_SPLIT_NO_EMPTY) as $part) {
-      $labels[] = preg_replace('/\s*\([^)]+\)\s*$/', '', $part);
+    $parts = explode(',', $raw);
+
+    // 1) trim each piece
+    $parts = array_map('trim', $parts);
+
+    // 2) drop empty strings that can appear from consecutive commas
+    $parts = array_values(array_filter($parts, static fn($p) => $p !== ''));
+
+    // 3) remove a trailing parenthesized ID (plus surrounding spaces) if present
+    foreach ($parts as $part) {
+      // Matches optional space, "(", one or more non-")" chars, ")", optional spaces at end
+      // e.g., turns "Flu (123)" into "Flu" and leaves ordinary labels untouched.
+      $labels[] = preg_replace('/\s*\(\d+\)\s*$/', '', $part);
     }
   }
 
