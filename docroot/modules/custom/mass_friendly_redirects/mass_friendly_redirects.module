@@ -8,6 +8,14 @@ use Drupal\Core\Form\FormStateInterface;
  * Node form alter (already present).
  */
 function mass_friendly_redirects_form_node_form_alter(array &$form, FormStateInterface $form_state): void {
+  $form_object = $form_state->getFormObject();
+  if (method_exists($form_object, 'getOperation')) {
+    $op = $form_object->getOperation();
+    dump($op);
+    if ($op !== 'edit') {
+      return; // Not an edit form; do nothing.
+    }
+  }
   /** @var \Drupal\mass_friendly_redirects\Form\NodeFriendlyRedirectsAlterer $alterer */
   $alterer = \Drupal::service('mass_friendly_redirects.node_form_alterer');
   $alterer->alter($form, $form_state);
