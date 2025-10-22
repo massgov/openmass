@@ -50,16 +50,20 @@ final class NodeFriendlyRedirectsAlterer {
 
     $prefix_options = $this->prefixManager->getPrefixOptions();
 
+    $wrapper_id = 'mass-friendly-redirects-wrapper';
+
     $form['mass_friendly_redirects'] = [
       '#type' => 'details',
       '#title' => $this->t('Friendly URLs'),
       '#group' => 'advanced',
       '#open' => TRUE,
       '#tree' => TRUE,
+      '#prefix' => '<div id="' . $wrapper_id . '">',
+      '#suffix' => '</div>',
     ];
 
     $form['mass_friendly_redirects']['help'] = [
-      '#markup' => '<p>' . $this->t('Create simple, lowercase friendly URLs scoped to approved prefixes. Redirects are permanent (301). Targets always point to this page. Changes may take time to appear due to caching.') . '</p>',
+      '#markup' => '<p>' . $this->t('Create simple, lowercase friendly URLs scoped to approved prefixes. Redirects are permanent (301) and always point to this page. Click the "Add URL Redirect" button to create the redirect instantly. Changes may take time to appear due to caching.') . '</p>',
     ];
 
     $form['mass_friendly_redirects']['prefix'] = [
@@ -93,7 +97,20 @@ final class NodeFriendlyRedirectsAlterer {
       '#submit' => [static::class . '::submit'],
       '#validate' => [static::class . '::validate'],
       '#limit_validation_errors' => [['mass_friendly_redirects']],
+      '#ajax' => [
+        'callback' => [static::class, 'ajax'],
+        'wrapper' => $wrapper_id,
+        'progress' => ['type' => 'throbber'],
+      ],
+      '#prevent_redirect' => TRUE,
     ];
+
+    // Ensure our validation also runs on full form save (but it will no-op if empty).
+    $form['#validate'][] = [static::class, 'validate'];
+    // Ensure saving the node will also create/update the redirect when fields are provided.
+    if (isset($form['actions']['submit'])) {
+      $form['actions']['submit']['#submit'][] = [static::class, 'submit'];
+    }
 
     // Existing redirects table (filtered by role/prefix).
     $form['mass_friendly_redirects']['existing'] = [
@@ -136,6 +153,11 @@ final class NodeFriendlyRedirectsAlterer {
     $values = (array) $form_state->getValue('mass_friendly_redirects');
     $prefix_tid = $values['prefix'] ?? '';
     $suffix = (string) ($values['suffix'] ?? '');
+
+    // If user didn't enter anything in our subform, skip validation.
+    if (($prefix_tid === '' || $prefix_tid === NULL) && trim((string) $suffix) === '') {
+      return;
+    }
 
     $prefix_options = $prefixMgr->getPrefixOptions();
 
@@ -249,6 +271,8 @@ final class NodeFriendlyRedirectsAlterer {
       else {
         \Drupal::messenger()->addStatus(t('Redirect "/@src" already points here.', ['@src' => $source]));
       }
+      // Stay on the same form and rebuild the section.
+      $form_state->setRebuild(TRUE);
       return;
     }
 
@@ -261,7 +285,17 @@ final class NodeFriendlyRedirectsAlterer {
     $redirect->set('language', \Drupal::languageManager()->getDefaultLanguage()->getId());
     $redirect->save();
 
+    // Stay on the same form and rebuild the section.
+    $form_state->setRebuild(TRUE);
+
     \Drupal::messenger()->addStatus(t('Added redirect "/@src" → this page.', ['@src' => $source]));
+  }
+
+  /**
+   * Ajax callback to refresh the Friendly URLs section.
+   */
+  public static function ajax(array &$form, FormStateInterface $form_state) {
+    return $form['mass_friendly_redirects'];
   }
 
   /**
