@@ -554,48 +554,4 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
     return $object->access('view', $account, $return_as_object);
   }
 
-  /**
-   * Batch finished callback.
-   *
-   * @param bool $success
-   *   Was the process successful?
-   * @param array $results
-   *   Batch process results array.
-   * @param array $operations
-   *   Performed operations array.
-   */
-  public static function finished($success, array $results, array $operations): ?RedirectResponse {
-    if ($success) {
-      foreach ($results['operations'] as $item) {
-        if (\strpos($item['message'], '@count') !== FALSE) {
-          $message = new FormattableMarkup($item['message'], [
-            '@count' => $item['count'],
-          ]);
-        }
-        else {
-          $message = new TranslatableMarkup('@message (@count)', [
-            '@message' => $item['message'],
-            '@count' => $item['count'],
-          ]);
-        }
-        static::message($message, $item['type']);
-      }
-
-      // Redirect back to the original view page (pager + filters) captured at start.
-      $store = \Drupal::service('tempstore.private')->get('download_media_action');
-      $target = $store->get('vbo_zip_return_url');
-      if (is_string($target) && $target !== '') {
-        // Consume the stored URL so it won't affect future runs.
-        $store->delete('vbo_zip_return_url');
-        return new RedirectResponse(Url::fromUserInput($target)->toString());
-      }
-    }
-    else {
-      $message = static::translate('Finished with an error.');
-      static::message($message, 'error');
-    }
-
-    return NULL;
-  }
-
 }
