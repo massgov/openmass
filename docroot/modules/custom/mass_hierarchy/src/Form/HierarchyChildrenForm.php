@@ -72,7 +72,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         '#type' => 'select',
         '#title' => $this->t('Field'),
         '#description' => $this->t('Field to reorder children in.'),
-        '#options' => array_map(function ($field_name) {
+        '#options' => array_map(function (string $field_name) {
           return $this->entity->getFieldDefinitions()[$field_name]->getLabel();
         }, $fields),
         '#default_value' => $fieldName,
@@ -145,13 +145,13 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
     // Collect IDs for pageview data.
     $ids = [];
-    foreach ($children as $record) {
-      $childEntity = $record->getEntity();
+    foreach ($children as $pageview_record) {
+      $childEntity = $pageview_record->getEntity();
       if (!$childEntity || !$childEntity->isDefaultRevision()) {
         // Doesn't exist, is access hidden, or is not default revision.
         continue;
       }
-      $ids[] = $record->getId();
+      $ids[] = $pageview_record->getId();
     }
 
     if (!empty($ids)) {
