@@ -86,7 +86,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     /** @var \Drupal\entity_hierarchy\Storage\QueryBuilder $queryBuilder */
     $queryBuilder = $this->queryBuilderFactory->get($fieldName, $this->entity->getEntityTypeId());
 
-    // Get descendants with depth 2 (direct children and grandchildren).
+    // Get descendants.
     $children = $queryBuilder->findDescendants($this->entity, 2);
 
     // Filter for entities user has access to view.
