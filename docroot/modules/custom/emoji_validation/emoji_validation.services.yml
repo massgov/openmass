@@ -1,0 +1,6 @@
+services:
+  emoji_validation.constraint.no_emoji:
+    class: Drupal\emoji_validation\Plugin\Validation\Constraint\NoEmojiConstraintValidator
+    arguments: ['@config.factory']
+    tags:
+      - { name: validator.constraint_validator }
