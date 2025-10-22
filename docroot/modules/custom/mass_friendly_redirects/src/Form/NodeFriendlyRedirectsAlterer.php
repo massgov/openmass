@@ -14,6 +14,9 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\mass_friendly_redirects\Service\PrefixManager;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 
 final class NodeFriendlyRedirectsAlterer {
   use StringTranslationTrait;
@@ -113,28 +116,34 @@ final class NodeFriendlyRedirectsAlterer {
     }
 
     // Existing redirects table (filtered by role/prefix).
+    $headers = [$this->t('Source'), $this->t('Status')];
+    if ($is_admin) {
+      $headers[] = $this->t('Operations');
+    }
     $form['mass_friendly_redirects']['existing'] = [
       '#type' => 'table',
-      '#header' => [$this->t('Source'), $this->t('Status'), $this->t('Operations')],
+      '#header' => $headers,
       '#empty' => $this->t('No friendly redirects found for this page.'),
     ];
 
     foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $is_admin, $prefix_options) as $rid => $row) {
       $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
       $form['mass_friendly_redirects']['existing'][$rid]['status'] = ['#markup' => '301'];
-      $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
-        '#type' => 'operations',
-        '#links' => [
-          'edit' => [
-            'title' => t('Edit'),
-            'url' => \Drupal\Core\Url::fromRoute('entity.redirect.edit_form', ['redirect' => $rid]),
+      if ($is_admin) {
+        $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
+          '#type' => 'operations',
+          '#links' => [
+            'edit' => [
+              'title' => t('Edit'),
+              'url' => \Drupal\Core\Url::fromRoute('entity.redirect.edit_form', ['redirect' => $rid]),
+            ],
+            'delete' => [
+              'title' => t('Delete'),
+              'url' => \Drupal\Core\Url::fromRoute('entity.redirect.delete_form', ['redirect' => $rid]),
+            ],
           ],
-          'delete' => [
-            'title' => t('Delete'),
-            'url' => \Drupal\Core\Url::fromRoute('entity.redirect.delete_form', ['redirect' => $rid]),
-          ],
-        ],
-      ];
+        ];
+      }
     }
   }
 
@@ -219,7 +228,53 @@ final class NodeFriendlyRedirectsAlterer {
       ->execute();
 
     if (!empty($ids)) {
-      \Drupal::messenger()->addWarning(t('A redirect for "/@src" already exists. You can edit it below.', ['@src' => $source]));
+      /** @var \Drupal\redirect\Entity\Redirect $existing */
+      $existing = $storage->load(reset($ids));
+      $dest_item = $existing->get('redirect_redirect')->first();
+      $dest_uri = $dest_item ? (string) $dest_item->get('uri')->getString() : '';
+      $alias_manager = \Drupal::service('path_alias.manager');
+      $nid_in_use = NULL;
+      $dest_path_display = '';
+      if (str_starts_with($dest_uri, 'internal:/')) {
+        $dest_path_display = substr($dest_uri, strlen('internal:'));
+        $internal_path = $alias_manager->getPathByAlias($dest_path_display);
+        if (preg_match('@^/node/(\\d+)$@', $internal_path, $m)) {
+          $nid_in_use = (int) $m[1];
+        }
+      }
+      elseif (str_starts_with($dest_uri, 'entity:node/')) {
+        $nid_in_use = (int) substr($dest_uri, strlen('entity:node/'));
+        $dest_path_display = $alias_manager->getAliasByPath('/node/' . $nid_in_use) ?: '/node/' . $nid_in_use;
+      }
+      elseif (str_starts_with($dest_uri, 'node/')) {
+        $nid_in_use = (int) substr($dest_uri, strlen('node/'));
+        $dest_path_display = $alias_manager->getAliasByPath('/node/' . $nid_in_use) ?: '/node/' . $nid_in_use;
+      }
+      else {
+        // Fallback.
+        $dest_path_display = $dest_uri;
+      }
+      // Build a safe link for the messenger (form errors escape HTML).
+      $link_markup = '';
+      if ($nid_in_use) {
+        $href = $alias_manager->getAliasByPath('/node/' . $nid_in_use) ?: '/node/' . $nid_in_use;
+        $link_markup = Link::fromTextAndUrl(t('this page'), Url::fromUserInput($href))->toString();
+      }
+      elseif ($dest_path_display) {
+        $link_markup = '<code>' . htmlspecialchars($dest_path_display, ENT_QUOTES) . '</code>';
+      }
+
+      // Form errors escape HTML, so keep the field error plain-text for focus/accessibility…
+      $plain = t('A redirect for "/@src" already exists.', ['@src' => $source]);
+      $form_state->setErrorByName('mass_friendly_redirects][suffix', $plain);
+
+      // …and add a separate messenger error with a clickable link.
+      if ($link_markup) {
+        \Drupal::messenger()->addError(Markup::create($plain . ' ' . t('(Currently points to @link.)', ['@link' => $link_markup])));
+      } else {
+        \Drupal::messenger()->addError($plain);
+      }
+      return;
     }
 
     // Stash computed values for submit.
@@ -329,29 +384,25 @@ final class NodeFriendlyRedirectsAlterer {
     }
     $query->condition($destGroup);
 
-    // Editors: restrict to allowed prefixes at the DB level.
-    if (!$is_admin) {
-      $allowed = array_values($prefix_options);
-      if ($allowed) {
-        $prefixGroup = $query->orConditionGroup();
-        foreach ($allowed as $p) {
-          if ($p === '') {
-            continue;
-          }
-          // Match exact prefix or prefix/*
-          $prefixGroupExact = $query->andConditionGroup()
-            ->condition('redirect_source__path', $p);
-          $prefixGroupLike = $query->andConditionGroup()
-            ->condition('redirect_source__path', $p . '/%', 'LIKE');
-          $prefixGroup->condition($prefixGroupExact);
-          $prefixGroup->condition($prefixGroupLike);
+    // Restrict to allowed prefixes at the DB level for all roles.
+    $allowed = array_values($prefix_options);
+    if ($allowed) {
+      $prefixGroup = $query->orConditionGroup();
+      foreach ($allowed as $p) {
+        if ($p === '') {
+          continue;
         }
-        $query->condition($prefixGroup);
+        // Match exact prefix or prefix/*.
+        $prefixGroup->condition($query->andConditionGroup()
+          ->condition('redirect_source__path', $p));
+        $prefixGroup->condition($query->andConditionGroup()
+          ->condition('redirect_source__path', $p . '/%', 'LIKE'));
       }
-      else {
-        // No allowed prefixes configured => nothing to show.
-        return [];
-      }
+      $query->condition($prefixGroup);
+    }
+    else {
+      // No allowed prefixes configured => nothing to show.
+      return [];
     }
 
     // Order by path so we don't sort in PHP.
