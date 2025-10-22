@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_bulk_file_replace\Plugin\Action;
 
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
 use Drupal\media\Entity\Media;
@@ -20,6 +22,7 @@ use Drupal\stage_file_proxy\DownloadManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsPreconfigurationInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Entity action to download files from media entities.
@@ -162,7 +165,6 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
    * {@inheritdoc}
    */
   public function buildPreConfigurationForm(array $form, array $values, FormStateInterface $form_state): array {
-    // Fetch available media types. Replace with your data source if needed.
     $media_types = $this->entityTypeManager
       ->getStorage('media_type')
       ->loadMultiple();
@@ -236,6 +238,10 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
    */
   public function executeMultiple(array $entities) {
     $batch_id = $this->context['sandbox']['current_batch'] ?? 1;
+    // Ensure the sandbox context is initialized.
+    if (!isset($this->context['sandbox']['processed'])) {
+      $this->context['sandbox']['processed'] = 0;
+    }
     $cid = $this->getCid($batch_id);
 
     // Collect media file paths in the current batch.
@@ -244,19 +250,33 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
     foreach ($entities as $entity) {
       if ($entity instanceof Media) {
-        $media_file_path = $this->getMediaFilePath($entity);
-        $media_real_file_path = $media_file_path['file_path'];
-        $media_file_uri = $media_file_path['file_uri'];
+        $info = $this->getMediaFilePath($entity);
+        // If getMediaFilePath returns NULL, mark as generic failure.
+        if ($info === NULL) {
+          $failed_file_paths[$entity->id()] = [
+            'file_path' => NULL,
+            'reason' => $this->t('Unknown error while preparing the file.'),
+          ];
+          continue;
+        }
+        // If getMediaFilePath surfaced an explicit error, record and continue.
+        if (!empty($info['error'])) {
+          $failed_file_paths[$entity->id()] = [
+            'file_path' => $info['file_path'] ?? ($info['file_uri'] ?? NULL),
+            'reason' => $info['error'],
+          ];
+          continue;
+        }
 
-        // Validate the paths.
-        if ($media_real_file_path) {
-          if ($this->validateMediaFilePath($media_real_file_path)) {
-            // Use the media ID as the key.
-            $file_paths[$entity->id()] = $media_real_file_path;
-          }
-          else {
-            $failed_file_paths[$entity->id()] = $media_real_file_path;
-          }
+        $media_real_file_path = $info['file_path'] ?? NULL;
+        if ($media_real_file_path && $this->validateMediaFilePath($media_real_file_path)) {
+          $file_paths[$entity->id()] = $media_real_file_path;
+        }
+        else {
+          $failed_file_paths[$entity->id()] = [
+            'file_path' => $media_real_file_path,
+            'reason' => $this->t('File not found or not readable.'),
+          ];
         }
       }
     }
@@ -265,7 +285,8 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
     $this->tempStore->set($cid, $file_paths);
     $this->tempStore->set($cid . '_failed', $failed_file_paths);
 
-    $processed = $this->context['sandbox']['processed'] + count($this->view->result);
+    $this->context['sandbox']['processed'] = $this->context['sandbox']['processed'] ?? 0;
+    $processed = $this->context['sandbox']['processed'] + count($entities);
 
     if (!isset($this->context['sandbox']['total']) || $processed >= $this->context['sandbox']['total']) {
       $all_files = $this->getAllFilePaths();
@@ -330,9 +351,13 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
    */
   protected function getMediaFilePath(Media $media) {
     $target_media_field = $this->getMediaFieldName($media->bundle());
-
     if (!$target_media_field) {
       $this->failedMediaTypes[] = $media->bundle();
+      return [
+        'file_path' => NULL,
+        'file_uri' => NULL,
+        'error' => $this->t('No export field configured for media type "@type".', ['@type' => $media->bundle()]),
+      ];
     }
 
     if ($target_media_field && $media->get($target_media_field)->entity) {
@@ -345,8 +370,17 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
         $origin_dir = trim(\Drupal::config('stage_file_proxy.settings')->get('origin_dir') ?? 'sites/default/files');
         $relative_path = str_replace('public://', '', $uri);
         $options = ['verify' => \Drupal::config('stage_file_proxy.settings')->get('verify')];
-
-        $this->downloadManager->fetch($server, $origin_dir, $relative_path, $options);
+        try {
+          $this->downloadManager->fetch($server, $origin_dir, $relative_path, $options);
+        }
+        catch (\Throwable $e) {
+          \Drupal::logger('mass_bulk_file_replace')->warning('Failed to fetch "@rel" from origin via SFP: @msg', ['@rel' => $relative_path, '@msg' => $e->getMessage()]);
+          return [
+            'file_path' => NULL,
+            'file_uri' => $uri,
+            'error' => $this->t('Could not fetch the file from the origin server.'),
+          ];
+        }
       }
 
       return [
@@ -381,7 +415,7 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
     // Ensure the private directory exists and is writable.
     $private = 'public://';
     if (!$this->fileSystem->prepareDirectory($private, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
-      $this->messenger->addError($this->t('Private files directory is not writable or missing.'));
+      $this->messenger->addError($this->t('We couldn’t create the download on the server. Please try again. If this keeps happening, contact CMS Support.'));
       \Drupal::logger('mass_bulk_file_replace')->error('Private dir not writable/missing.');
       return;
     }
@@ -389,8 +423,8 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
     // Resolve the real filesystem path for ZipArchive operations.
     $dir_real = $this->fileSystem->realpath($private);
     if ($dir_real === FALSE) {
-      $this->messenger->addError($this->t('Could not resolve the private files directory path.'));
-      \Drupal::logger('mass_bulk_file_replace')->error('realpath("private://") returned FALSE.');
+      $this->messenger->addError($this->t('We couldn’t prepare the download folder. Please try again or contact CMS Support.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('realpath for public files directory returned FALSE.');
       return;
     }
 
@@ -403,7 +437,7 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
     $zip = new \ZipArchive();
     if ($zip->open($zip_realpath, \ZipArchive::CREATE) !== TRUE) {
-      $this->messenger->addError($this->t('Could not create the ZIP file.'));
+      $this->messenger->addError($this->t('We couldn’t start building the ZIP. Please try again.'));
       \Drupal::logger('mass_bulk_file_replace')->error('ZipArchive->open() failed at @path', ['@path' => $zip_realpath]);
       return;
     }
@@ -421,7 +455,7 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
     // Confirm the ZIP exists on disk before linking.
     if (!file_exists($zip_realpath)) {
-      $this->messenger->addError($this->t('ZIP file was not created on disk.'));
+      $this->messenger->addError($this->t('Your download could not be created. This can happen if the server switches during processing. Please reload this page and try again. If it happens again, contact CMS Support with the time and number of documents you selected.'));
       \Drupal::logger('mass_bulk_file_replace')->error('ZIP missing after close: @path', ['@path' => $zip_realpath]);
       return;
     }
@@ -437,33 +471,39 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
     // Generate the download link using the stream wrapper path.
     $download_url = $this->fileUrlGenerator->generateAbsoluteString($zip_scheme);
-    $this->messenger->addStatus($this->t('Your download is ready: <a href=":url">Download ZIP</a>', [':url' => $download_url]));
+    $total_count = count($file_paths);
+    $this->messenger->addStatus($this->t('Your ZIP is ready (:count items). <a href=":url">Download</a>. The link will expire automatically.', [
+      ':url' => $download_url,
+      ':count' => $total_count,
+    ]));
 
     // Prepare and display the warning message for failed files.
     if (!empty($failed_file_paths)) {
-      $failed_links = [];
-      foreach ($failed_file_paths as $entity_id => $file_path) {
-        $file_path_basename = basename((string) $file_path);
-
-        // Generate the media entity edit URL.
+      $failed_lines = [];
+      foreach ($failed_file_paths as $entity_id => $data) {
+        // Backwards compatibility: allow string path values.
+        if (is_string($data)) {
+          $file_path_basename = basename((string) $data);
+          $reason = $this->t('File not found or not readable.');
+        }
+        else {
+          $file_path_basename = basename((string) ($data['file_path'] ?? ''));
+          $reason = isset($data['reason']) ? $data['reason'] : $this->t('Skipped.');
+        }
         $current_language = $this->languageManager->getCurrentLanguage()->getId();
         $media_entity_url = Url::fromRoute('entity.media.edit_form', ['media' => $entity_id])
           ->setOption('language', $this->languageManager->getLanguage($current_language));
-
-        // Prepare the failed file message with a clickable link for the media entity.
-        $failed_links[] = $this->t('<a href=":url">media entity: @entity_id</a> file: @file', [
+        $failed_lines[] = $this->t('<a href=":url">Media @entity_id</a> — @file — @reason', [
           ':url' => $media_entity_url->toString(),
           '@entity_id' => $entity_id,
-          '@file' => $file_path_basename,
+          '@file' => $file_path_basename ?: $this->t('(no file)'),
+          '@reason' => $reason,
         ]);
       }
-
-      // Display the warning message with the failed links, each on a new line.
-      $failed_links_output = implode('<br>', $failed_links);
-
-      // Use Markup::create to render the message as raw HTML, allowing links and line breaks.
-      $this->messenger->addWarning($this->t('The following files could not be added to the ZIP: <br> @failed_links', [
-        '@failed_links' => Markup::create($failed_links_output),
+      $failed_output = implode('<br>', $failed_lines);
+      $this->messenger->addWarning($this->t('Some documents were skipped (:count). The ZIP was created without these items:<br>@list', [
+        ':count' => count($failed_file_paths),
+        '@list' => Markup::create($failed_output),
       ]));
     }
   }
@@ -512,6 +552,50 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
    */
   public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     return $object->access('view', $account, $return_as_object);
+  }
+
+  /**
+   * Batch finished callback.
+   *
+   * @param bool $success
+   *   Was the process successful?
+   * @param array $results
+   *   Batch process results array.
+   * @param array $operations
+   *   Performed operations array.
+   */
+  public static function finished($success, array $results, array $operations): ?RedirectResponse {
+    if ($success) {
+      foreach ($results['operations'] as $item) {
+        if (\strpos($item['message'], '@count') !== FALSE) {
+          $message = new FormattableMarkup($item['message'], [
+            '@count' => $item['count'],
+          ]);
+        }
+        else {
+          $message = new TranslatableMarkup('@message (@count)', [
+            '@message' => $item['message'],
+            '@count' => $item['count'],
+          ]);
+        }
+        static::message($message, $item['type']);
+      }
+
+      // Redirect back to the original view page (pager + filters) captured at start.
+      $store = \Drupal::service('tempstore.private')->get('download_media_action');
+      $target = $store->get('vbo_zip_return_url');
+      if (is_string($target) && $target !== '') {
+        // Consume the stored URL so it won't affect future runs.
+        $store->delete('vbo_zip_return_url');
+        return new RedirectResponse(Url::fromUserInput($target)->toString());
+      }
+    }
+    else {
+      $message = static::translate('Finished with an error.');
+      static::message($message, 'error');
+    }
+
+    return NULL;
   }
 
 }
