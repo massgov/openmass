@@ -1,0 +1,56 @@
+{#
+/**
+ * @file
+ * Template implementation for the type_tray_page theme hook.
+ *
+ * Available variables:
+ * - items: An associative array of content types to be listed, where keys are
+ *   category machine names, and values are arrays of type teasers, keyed by
+ *   type ID.
+ * - layout: How the page should be laid out, either 'list' or 'grid'.
+ * - category_labels: An associative array where keys are category machine
+ *   names, and values their user-facing labels.
+ * - node_add_page_url: A URL for the node add page using the routing system.
+ */
+#}
+<div class="type-tray-page layout--{{ layout }}">
+  <div class="type-tray__header">
+    <div class="layout-links">
+      {% if layout == 'grid' %}
+        <span class="layout-link current-layout">{{ 'Grid'|t }}</span>
+      {% else %}
+        <a href="{{ node_add_page_url }}?layout=grid" link-text="{{ 'Click this for a row style layout.'|t }}" class="layout-link">{{ 'Grid'|t }}</a>
+      {% endif %}
+
+      |
+
+      {% if layout == 'list' %}
+        <span class="layout-link current-layout">{{ 'List'|t }}</span>
+      {% else %}
+        <a href="{{ node_add_page_url }}?layout=list" link-text="{{ 'Click this for a column style layout.'|t }}" class="layout-link">{{ 'List'|t }}</a>
+      {% endif %}
+    </div>
+
+    <form role="search" action="/" method="get" onsubmit="return false;">
+      <label for="header-search">
+        <span class="visually-hidden">Search</span>
+      </label>
+
+      <input type="text" id="header-search" class="search-input" data-type-tray="search-box" placeholder="{{ 'Search...'|t }}">
+    </form>
+  </div>
+  <div class="create-from-template-link">
+    <a href="{{ path('content_templates.node.add') }}">{{ 'Create from template'|t }}</a>
+  </div>
+
+  {% for category, categ_types in items %}
+    <div class="type-tray-category category--{{ category|clean_class }}">
+      <h2 id="{{ category|clean_class }}">{{ category_labels[category] }}</h2>
+      <ul>
+        {% for item in categ_types %}
+          <li data-type-tray="teaser-wrapper">{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,32 @@
+uuid: dbc6c4fd-7a7f-492d-bbd5-bbfa508b7b29
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.content_template.field_category
+    - taxonomy.vocabulary.template_category
+  module:
+    - content_templates
+_core:
+  default_config_hash: _AAjBmCK5eVVv2Fc9giy-_vM2NAITgHSTw4riR6kk70
+id: content_template.content_template.field_category
+field_name: field_category
+entity_type: content_template
+bundle: content_template
+label: Category
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      template_category: template_category
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference
