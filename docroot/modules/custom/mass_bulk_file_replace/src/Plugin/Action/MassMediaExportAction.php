@@ -454,7 +454,7 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
     // Confirm the ZIP exists on disk before linking.
     if (!file_exists($zip_realpath)) {
-      $this->messenger->addError($this->t('Your download could not be created. This can happen if the server switches during processing. Please reload this page and try again. If it happens again, contact CMS Support with the time and number of documents you selected.'));
+      $this->messenger->addError($this->t('Your download could not be created. This can happen if the media items you\'ve selected are missing, try accessing media items directly to verify files are in place. Please reload this page and try again. If it happens again, contact CMS Support with the time and number of documents you selected.'));
       \Drupal::logger('mass_bulk_file_replace')->error('ZIP missing after close: @path', ['@path' => $zip_realpath]);
       return;
     }
