@@ -1,0 +1,19 @@
+services:
+  mass_friendly_redirects.prefix_manager:
+    class: Drupal\mass_friendly_redirects\Service\PrefixManager
+    arguments: ['@entity_type.manager', '@string_translation']
+
+  mass_friendly_redirects.node_form_alterer:
+    class: Drupal\mass_friendly_redirects\Form\NodeFriendlyRedirectsAlterer
+    arguments:
+      - '@current_user'
+      - '@entity_type.manager'
+      - '@path_alias.manager'
+      - '@language_manager'
+      - '@messenger'
+      - '@mass_friendly_redirects.prefix_manager'
+
+  mass_friendly_redirects.term_form_alterer:
+    class: Drupal\mass_friendly_redirects\Form\PrefixTermFormAlterer
+    arguments:
+      - '@string_translation'
