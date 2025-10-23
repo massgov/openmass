@@ -2,7 +2,8 @@
 
 namespace Drupal\mass_bulk_file_replace\Plugin\Action;
 
-use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Action\Attribute\Action;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
@@ -19,21 +20,19 @@ use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\file\Entity\File;
 use Drupal\stage_file_proxy\DownloadManagerInterface;
+use Drupal\views\ViewExecutable;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsPreconfigurationInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Entity action to download files from media entities.
- *
- * @Action(
- *   id = "mass_bulk_file_replace_export_action",
- *   label = @Translation("Download selected media as ZIP"),
- *   type = "media",
- *   confirm = TRUE,
- * )
  */
+#[Action(
+  id: "mass_bulk_file_replace_export_action",
+  label: new TranslatableMarkup('Download selected media as ZIP'),
+  type: 'media'
+)]
 class MassMediaExportAction extends ViewsBulkOperationsActionBase implements ViewsBulkOperationsPreconfigurationInterface, ContainerFactoryPluginInterface {
 
   protected DownloadManagerInterface $downloadManager;
@@ -547,11 +546,30 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
     $this->executeMultiple([$entity]);
   }
 
-  /**
-   * {@inheritdoc}
-   */
   public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
-    return $object->access('view', $account, $return_as_object);
+    /** @var \Drupal\media\MediaInterface $object */
+    // Get current moderation state.
+    $state = $object->get('moderation_state')->getString();
+
+    if ($state == "restricted") {
+      // Get the current user.
+      $uid = \Drupal::currentUser()->id();
+      $current_user_roles = \Drupal::currentUser()->getRoles();
+      $author_id = $object->getOwner()->id();
+
+      // If the user is not an administrator.
+      if (!in_array("administrator", $current_user_roles)) {
+        // If the current user is not the author.
+        if ($uid !== $author_id) {
+          return;
+        }
+      }
+    }
+
+    $access = $object->access('update', $account, TRUE)
+      ->andIf($object->status->access('update', $account, TRUE));
+
+    return $return_as_object ? $access : $access->isAllowed();
   }
 
 }
