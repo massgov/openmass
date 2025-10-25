@@ -12,8 +12,10 @@ use Drupal\Core\Url;
 use Drupal\flag\Entity\Flag;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
+use Drupal\media\Entity\Media;
 
 const WATCH_FLAG = 'watch_content';
+const WATCH_MEDIA_FLAG = 'watch_media';
 
 /**
  * Implements hook_help().
@@ -50,6 +52,20 @@ function mass_flagging_node_update(Node $node) {
  */
 function mass_flagging_node_insert(Node $node) {
   mass_flagging_node_update_insert_add_watcher($node);
+}
+
+/**
+ * Implements hook_media_update().
+ */
+function mass_flagging_media_update(Media $media) {
+  mass_flagging_media_update_insert_add_watcher($media);
+}
+
+/**
+ * Implements hook_media_insert().
+ */
+function mass_flagging_media_insert(Media $media) {
+  mass_flagging_media_update_insert_add_watcher($media);
 }
 
 /**
@@ -115,8 +131,8 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
       $previous_moderation_state = '';
       $current_moderation_state = '';
       if ($previous_revision && $current_revision &&
-          $previous_revision->hasField('moderation_state') && $current_revision->hasField('moderation_state') &&
-          !$previous_revision->get('moderation_state')->isEmpty() && !$current_revision->get('moderation_state')->isEmpty()) {
+        $previous_revision->hasField('moderation_state') && $current_revision->hasField('moderation_state') &&
+        !$previous_revision->get('moderation_state')->isEmpty() && !$current_revision->get('moderation_state')->isEmpty()) {
 
         $previous_moderation_state = $previous_revision->get('moderation_state')->getString();
         $current_moderation_state = $current_revision->get('moderation_state')->getString();
@@ -142,10 +158,10 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
         ]);
       }
       $is_published_has_new_draft = $previous_revision && $previous_revision->hasField('moderation_state') &&
-          !$previous_revision->get('moderation_state')->isEmpty() &&
-          $previous_revision->get('moderation_state')->getString() == MassModeration::PUBLISHED &&
-          $node->hasField('moderation_state') && !$node->get('moderation_state')->isEmpty() &&
-          $node->get('moderation_state')->getString() == MassModeration::DRAFT;
+        !$previous_revision->get('moderation_state')->isEmpty() &&
+        $previous_revision->get('moderation_state')->getString() == MassModeration::PUBLISHED &&
+        $node->hasField('moderation_state') && !$node->get('moderation_state')->isEmpty() &&
+        $node->get('moderation_state')->getString() == MassModeration::DRAFT;
 
       if ($is_published_has_new_draft) {
         \Drupal::logger('mass_flagging')->info('Published node @nid now has a new draft revision.', [
@@ -246,6 +262,45 @@ function mass_flagging_node_update_insert_add_watcher(EntityInterface $node) {
         ':flag_url' => $unwatch_flag['flag_url'],
         '@flag_title' => $unwatch_flag['flag_title'],
         ':watched_content' => Url::fromRoute('view.watched_content.page')->toString(),
+      ]));
+    }
+  }
+}
+
+/**
+ * Add a user as a watcher for media updates or inserts.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $media
+ *   The media object that is being updated or inserted.
+ */
+function mass_flagging_media_update_insert_add_watcher(EntityInterface $media) {
+  // Add flag for the user editing or creating the media.
+  $watch_flag = \Drupal::entityTypeManager()->getStorage('flag')->load(WATCH_MEDIA_FLAG);
+  $flag_service = \Drupal::service('flag');
+  $current_user = \Drupal::currentUser();
+  $owner = $media->getOwner();
+  $is_vbo = Drupal::routeMatch()->getRouteName() == 'system.batch_page.json';
+
+  // Prevent adding a flag/watcher with the VBO module for change author by.
+  // Check to see the owner of the media and the VBO module.
+  if ($owner->id() && $is_vbo) {
+    $flag_owner = $flag_service->getEntityFlaggings($watch_flag, $media, $owner);
+    if (empty($flag_owner)) {
+      // Check if the media is flagged by $owner if so don't do anything.
+      $flag_service->flag($watch_flag, $media, $owner);
+    }
+  }
+
+  // If the current user edits or creates a new media it will add the flag to media for current_user.
+  if (!$current_user->isAnonymous() && !$is_vbo) {
+    $flagging = $flag_service->getEntityFlaggings($watch_flag, $media, $current_user);
+    if (empty($flagging)) {
+      // Adds the flag.
+      $flag_service->flag($watch_flag, $media, $current_user);
+
+      // Notifies user that they are now automatically watching the media.
+      \Drupal::messenger()->addStatus(t('This @media_type has been added to your "My documents" view.', [
+        '@media_type' => $media->bundle(),
       ]));
     }
   }
