@@ -280,7 +280,7 @@ function mass_flagging_media_update_insert_add_watcher(EntityInterface $media) {
   $current_user = \Drupal::currentUser();
   $owner = $media->getOwner();
   $is_vbo = Drupal::routeMatch()->getRouteName() == 'system.batch_page.json';
-
+  
   // Prevent adding a flag/watcher with the VBO module for change author by.
   // Check to see the owner of the media and the VBO module.
   if ($owner->id() && $is_vbo) {
@@ -290,7 +290,7 @@ function mass_flagging_media_update_insert_add_watcher(EntityInterface $media) {
       $flag_service->flag($watch_flag, $media, $owner);
     }
   }
-
+  
   // If the current user edits or creates a new media it will add the flag to media for current_user.
   if (!$current_user->isAnonymous() && !$is_vbo) {
     $flagging = $flag_service->getEntityFlaggings($watch_flag, $media, $current_user);
