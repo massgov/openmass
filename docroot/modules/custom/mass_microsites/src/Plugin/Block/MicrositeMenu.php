@@ -93,9 +93,7 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
   public function build() {
     $cache = new CacheableMetadata();
 
-    if (!($node = $this->getContextValue('node')) ||
-      !($node instanceof NodeInterface) ||
-      !($microsites = $this->childOfMicrositeLookup->findMicrositesForNodeAndField($node, $this->configuration['field']))) {
+    if (!($node = $this->getContextValue('node')) || !($node instanceof NodeInterface)) {
       $build = [];
       if ($node) {
         $cache->addCacheableDependency($node);
@@ -104,8 +102,30 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
       return $build;
     }
 
-    /** @var MicrositeInterface $microsite */
-    $microsite = $this->nearestMicrositeLookup->selectNearestMicrosite($microsites, $node);
+    $field = $this->configuration['field'];
+    $nid = (int) $node->id();
+
+    // Per-request caches to prevent duplicate DB work during a single render.
+    static $micrositesCache = [];
+    static $nearestCache = [];
+
+    if (!isset($micrositesCache[$nid][$field])) {
+      $micrositesCache[$nid][$field] = $this->childOfMicrositeLookup->findMicrositesForNodeAndField($node, $field);
+    }
+    $microsites = $micrositesCache[$nid][$field];
+
+    if (empty($microsites)) {
+      $build = [];
+      $cache->addCacheableDependency($node);
+      $cache->applyTo($build);
+      return $build;
+    }
+
+    /** @var MicrositeInterface|null $microsite */
+    if (!isset($nearestCache[$nid][$field])) {
+      $nearestCache[$nid][$field] = $this->nearestMicrositeLookup->selectNearestMicrosite($microsites, $node);
+    }
+    $microsite = $nearestCache[$nid][$field];
     if (!$microsite) {
       return [];
     }
@@ -139,7 +159,8 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     // Hence this is a relative depth that we must convert to an actual
     // (absolute) depth, that may never exceed the maximum depth.
     if ($depth > 0) {
-      $parameters->setMaxDepth(min($level + $depth - 1, $this->menuTree->maxDepth()));
+      $maxDepth = $this->menuTree->maxDepth();
+      $parameters->setMaxDepth(min($level + $depth - 1, $maxDepth));
     }
 
     // For menu blocks with start level greater than 1, only show menu items
@@ -150,7 +171,8 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
         // Active trail array is child-first. Reverse it, and pull the new menu
         // root based on the parent of the configured start level.
         if ($depth > 0) {
-          $parameters->setMaxDepth(min($level - 1 + $depth - 1, $this->menuTree->maxDepth()));
+          $maxDepth = isset($maxDepth) ? $maxDepth : $this->menuTree->maxDepth();
+          $parameters->setMaxDepth(min($level - 1 + $depth - 1, $maxDepth));
         }
       }
       else {
@@ -173,6 +195,17 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
   }
 
   /**
+   * Lazily retrieves and caches the nested set storage per request and field.
+   */
+  private function getTreeStorage(string $field) {
+    static $storageCache = [];
+    if (!isset($storageCache[$field])) {
+      $storageCache[$field] = $this->nestedSetStorageFactory->get($field, 'node');
+    }
+    return $storageCache[$field];
+  }
+
+  /**
    * Retrieves cache tags for sub-pages of the given home node.
    *
    * @param \Drupal\node\NodeInterface $home
@@ -182,8 +215,16 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
    *   An array of cache tags for the sub-pages of the given home node.
    */
   private function getSubPagesCacheTags(NodeInterface $home): array {
+    $field = $this->configuration['field'];
+    $nid = (int) $home->id();
+
+    static $tagsCache = [];
+    if (isset($tagsCache[$nid][$field])) {
+      return $tagsCache[$nid][$field];
+    }
+
     $parent_node = new NodeKey($home->id(), $home->getRevisionId());
-    $tree_storage = $this->nestedSetStorageFactory->get($this->configuration['field'], 'node');
+    $tree_storage = $this->getTreeStorage($field);
     $root_node = $tree_storage->getNode($parent_node);
     $children = $tree_storage->findChildren($root_node->getNodeKey());
     $children_node_cache_tags = [];
@@ -192,7 +233,7 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
       $children_node_cache_tags[] = 'node:' . $child->getNodeKey()->getId();
     }
 
-    return $children_node_cache_tags;
+    return $tagsCache[$nid][$field] = $children_node_cache_tags;
   }
 
   /**

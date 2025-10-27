@@ -133,7 +133,9 @@
         }
     ],
     "require": {
+        "ext-dom": "*",
         "ext-json": "*",
+        "ext-libxml": "*",
         "andileco/eval-math": "^3.0",
         "christian-riesen/base32": "^1.3.1",
         "components/highlightjs": "9.7.*",
@@ -144,10 +146,15 @@
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
         "drupal/access_unpublished": "^1.4",
+        "drupal/ace_editor": "~2.0",
         "drupal/acquia_purge": "^1",
         "drupal/action": "^0.2",
         "drupal/address": "^1.9",
         "drupal/admin_toolbar": "^3.0",
+        "drupal/ai": "^1.1",
+        "drupal/ai_agents": "^1.1",
+        "drupal/ai_content_advisor": "1.x-dev@dev",
+        "drupal/ai_provider_aws_bedrock": "^1.1@beta",
         "drupal/akamai": "^5",
         "drupal/allowed_formats": "^2",
         "drupal/asset_cache_bust": "^1.0",
@@ -204,11 +211,13 @@
         "drupal/imagick": "^1",
         "drupal/inline_entity_form": "^1",
         "drupal/jquery_ui_autocomplete": "^2.0",
-        "drupal/key": "^1.10",
+        "drupal/key": "^1.18",
         "drupal/key_auth": "^2.1",
+        "drupal/key_aws": "^1.0",
         "drupal/key_value_field": "^1",
         "drupal/layout_paragraphs": "^2.1",
         "drupal/linkit": "^7.0",
+        "drupal/m4032404": "^2.0",
         "drupal/mailchimp_transactional": "^1",
         "drupal/maxlength": "^2",
         "drupal/media_entity_download": "^2.4",
@@ -266,8 +275,10 @@
         "enyo/dropzone": "5.9.3",
         "geocoder-php/open-cage-provider": "^4.6",
         "google/cloud-bigquery": "^1.25",
+        "league/commonmark": "^2.7",
         "massgov/mayflower-artifacts": "dev-develop",
         "monolog/monolog": "^3",
+        "npm-asset/ace-builds": "~1.0",
         "npm-asset/select2": "^4.1.0-rc.0",
         "oomphinc/composer-installers-extender": "^2.0",
         "phlak/semver": "^2.0",
@@ -395,7 +406,8 @@
                 "Draggable table do not drag. Uncaught TypeError: Cannot read properties of undefined (reading 'colSpan') (https://www.drupal.org/project/drupal/issues/3441551)": "https://www.drupal.org/files/issues/2024-05-22/add-tabledrag-validation-10.2.x.patch",
                 "Exception thrown by responsive srcset images when the image is not yet in the file system (such as with Stage File Proxy) (https://www.drupal.org/project/drupal/issues/2827921)": "https://www.drupal.org/files/issues/2024-03-18/responsive_image-remove_missing_response_image_width_exception-2827921-22.patch",
                 "Add label to Tableselect select all checkbox (https://www.drupal.org/project/drupal/issues/2766853)": "patches/2766853-10_5.patch",
-                "Url generator will add '=' after query parameter when value is an empty string (https://www.drupal.org/project/drupal/issues/3040048)": "patches/drupal-url-generator-adds-equals-after-query-param-when-value-empty-string_issue-3040048.diff"
+                "Url generator will add '=' after query parameter when value is an empty string (https://www.drupal.org/project/drupal/issues/3040048)": "patches/drupal-url-generator-adds-equals-after-query-param-when-value-empty-string_issue-3040048.diff",
+                "Fix query parameter names with special characters being converted to underscores": "patches/druapl_core__preserve_special_chars_in_query_params.patch"
             },
             "drupal/conditional_fields": {
                 "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch"
@@ -506,6 +518,12 @@
             },
             "drupal/imageapi_optimize": {
                 "Skip animated gifs": "patches/imageapi_optimize/skip_animated_gifs.patch"
+            },
+            "drupal/ace_editor": {
+                "Fix the plugin initialization https://www.drupal.org/project/ace_editor/issues/3326303": "patches/ace_editor_fix_plugin_initialization.patch"
+            },
+            "drupal/editoria11y": {
+                "Fix result name options to use editoria11y_results table instead of editoria11y_dismissals (DP-42700)": "patches/editoria11y--result-name-options-results.patch"
             }
         },
         "composer-exit-on-patch-failure": true,

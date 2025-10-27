@@ -44,6 +44,7 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
 
       $build['#cache']['contexts'] = $build['#cache']['contexts'] ?? [];
       $build['#cache']['contexts'][] = 'url.query_args:gf_token';
+      $build['#cache']['contexts'][] = 'url.query_args:t';
       $build['#cache']['contexts'][] = 'user.roles';
 
       if (empty($build["field_form_url"][0]["#url"])) {
@@ -64,7 +65,12 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
         return;
       }
 
-      $iframe_url->setOption('query', ['gf_token' => $gf_token]);
+      $query_params = ['gf_token' => $gf_token];
+      if ($timestamp = $this->requestStack->getCurrentRequest()->get('t')) {
+        $query_params['t'] = $timestamp;
+      }
+
+      $iframe_url->setOption('query', $query_params);
       $build["field_form_url"]["iframe_url"]['#markup'] = $iframe_url->toString();
     }
   }
