@@ -274,6 +274,11 @@ function mass_flagging_node_update_insert_add_watcher(EntityInterface $node) {
  *   The media object that is being updated or inserted.
  */
 function mass_flagging_media_update_insert_add_watcher(EntityInterface $media) {
+  // Only auto-flag document media types for "My documents" view.
+  if ($media->bundle() !== 'document') {
+    return;
+  }
+
   // Add flag for the user editing or creating the media.
   $watch_flag = \Drupal::entityTypeManager()->getStorage('flag')->load(WATCH_MEDIA_FLAG);
   $flag_service = \Drupal::service('flag');
@@ -299,9 +304,7 @@ function mass_flagging_media_update_insert_add_watcher(EntityInterface $media) {
       $flag_service->flag($watch_flag, $media, $current_user);
 
       // Notifies user that they are now automatically watching the media.
-      \Drupal::messenger()->addStatus(t('This @media_type has been added to your "My documents" view.', [
-        '@media_type' => $media->bundle(),
-      ]));
+      \Drupal::messenger()->addStatus(t('This document has been added to your "My documents" view.'));
     }
   }
 }
