@@ -29,4 +29,5 @@ final class FriendlyRedirectsServiceTest extends ExistingSiteBase {
     $this->assertNotEmpty($opts);
     $this->assertContains('qag', array_values($opts));
   }
+
 }

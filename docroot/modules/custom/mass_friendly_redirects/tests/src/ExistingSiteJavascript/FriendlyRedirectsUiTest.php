@@ -58,7 +58,8 @@ final class FriendlyRedirectsUiTest extends ExistingSiteSelenium2DriverTestBase 
         $summary->click();
         $this->assertSession()->assertWaitOnAjaxRequest();
       }
-    } else {
+    }
+    else {
       // JS fallback by text.
       $session->executeScript("
         var s = Array.from(document.querySelectorAll('summary')).find(e => e.textContent.trim().includes('Friendly URLs'));
@@ -161,8 +162,9 @@ final class FriendlyRedirectsUiTest extends ExistingSiteSelenium2DriverTestBase 
     $this->assertSession()->pageTextNotContains('/some/other/path');
   }
 
-  // ---------- Helpers ---------- //
-
+  /**
+   * ---------- Helpers ----------
+   */
   private function ensurePrefix(string $name): void {
     $exists = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->getQuery()
       ->condition('vid', 'friendly_url_prefixes')
@@ -199,4 +201,5 @@ final class FriendlyRedirectsUiTest extends ExistingSiteSelenium2DriverTestBase 
     $r->save();
     return $r;
   }
+
 }
