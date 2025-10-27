@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\mass_friendly_redirects\ExistingSite;
 
+use Drupal\mass_content_moderation\MassModeration;
 use weitzman\DrupalTestTraits\DrupalTrait;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\node\Entity\Node;
@@ -84,9 +85,10 @@ final class FriendlyRedirectsUiTest extends ExistingSiteSelenium2DriverTestBase 
 
     // Create a simple node to test against.
     $this->node = Node::create([
-      'type' => 'page',
+      'type' => 'info_details',
       'title' => 'Friendly Redirects Test Node',
       'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
     ]);
     $this->node->save();
 
@@ -191,7 +193,7 @@ final class FriendlyRedirectsUiTest extends ExistingSiteSelenium2DriverTestBase 
   private function makeRedirect(string $sourceNoSlash, $nid): Redirect {
     $nid = (int) $nid;
     $r = Redirect::create();
-    $r->setSource($sourceNoSlash, []);
+    $r->setSource(ltrim($sourceNoSlash, '/'), []);
     $r->setRedirect('node/' . $nid);
     $r->setStatusCode(301);
     $r->save();
