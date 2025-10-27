@@ -163,7 +163,7 @@ final class FriendlyRedirectsUiTest extends ExistingSiteSelenium2DriverTestBase 
   }
 
   /**
-   * ---------- Helpers ----------
+   * Helpers.
    */
   private function ensurePrefix(string $name): void {
     $exists = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->getQuery()
