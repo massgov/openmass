@@ -271,7 +271,8 @@ final class NodeFriendlyRedirectsAlterer {
       // …and add a separate messenger error with a clickable link.
       if ($link_markup) {
         \Drupal::messenger()->addError(Markup::create($plain . ' ' . t('(Currently points to @link.)', ['@link' => $link_markup])));
-      } else {
+      }
+      else {
         \Drupal::messenger()->addError($plain);
       }
       return;
