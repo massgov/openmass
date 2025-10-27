@@ -46,4 +46,5 @@ final class GeoRequestSanitizer implements EventSubscriberInterface {
       }
     }
   }
+
 }
