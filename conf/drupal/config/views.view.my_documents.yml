@@ -1502,15 +1502,15 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        flagged:
-          id: flagged
-          table: flagging
-          field: flagged
-          relationship: flag_relationship
+        uid_current_1:
+          id: uid_current_1
+          table: users
+          field: uid_current
+          relationship: revision_user
           group_type: group
           admin_label: ''
-          entity_type: flagging
-          plugin_id: boolean
+          entity_type: user
+          plugin_id: user_current
           operator: '='
           value: '1'
           group: 2
@@ -1678,6 +1678,17 @@ display:
           flag: watch_media
           user_scope: current
           by_uid: false
+        revision_user:
+          id: revision_user
+          table: media_revision
+          field: revision_user
+          relationship: none
+          group_type: group
+          admin_label: 'Revision User'
+          entity_type: media
+          entity_field: revision_user
+          plugin_id: standard
+          required: false
         field_upload_file_target_id:
           id: field_upload_file_target_id
           table: media__field_upload_file
