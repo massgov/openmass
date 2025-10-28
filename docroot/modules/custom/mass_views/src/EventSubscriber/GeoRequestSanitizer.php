@@ -34,7 +34,7 @@ final class GeoRequestSanitizer implements EventSubscriberInterface {
     // Validate and sanitize lat/lng using helper.
     if ($q->has('lat')) {
       $lat = $this->sanitizeCoordinate($q->get('lat'), -90, 90);
-      if ($lat === null) {
+      if ($lat === NULL) {
         $q->remove('lat');
       }
       else {
@@ -44,7 +44,7 @@ final class GeoRequestSanitizer implements EventSubscriberInterface {
 
     if ($q->has('lng')) {
       $lng = $this->sanitizeCoordinate($q->get('lng'), -180, 180);
-      if ($lng === null) {
+      if ($lng === NULL) {
         $q->remove('lng');
       }
       else {
@@ -62,7 +62,8 @@ final class GeoRequestSanitizer implements EventSubscriberInterface {
   private function sanitizeCoordinate($value, float $min, float $max): ?string {
     if (is_string($value)) {
       $value = trim($value);
-      $value = trim($value, "'\""); // remove quotes
+      // Remove quotes
+      $value = trim($value, "'\"");
     }
     if (!is_numeric($value)) {
       return NULL;
