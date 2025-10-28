@@ -31,20 +31,47 @@ final class GeoRequestSanitizer implements EventSubscriberInterface {
       return;
     }
 
-    // Remove lat/lng if empty or invalid.
+    // Validate and sanitize lat/lng using helper.
     if ($q->has('lat')) {
-      $lat = $q->get('lat');
-      if (!is_numeric($lat) || $lat < -90 || $lat > 90) {
+      $lat = $this->sanitizeCoordinate($q->get('lat'), -90, 90);
+      if ($lat === null) {
         $q->remove('lat');
+      }
+      else {
+        $q->set('lat', $lat);
       }
     }
 
     if ($q->has('lng')) {
-      $lng = $q->get('lng');
-      if (!is_numeric($lng) || $lng < -180 || $lng > 180) {
+      $lng = $this->sanitizeCoordinate($q->get('lng'), -180, 180);
+      if ($lng === null) {
         $q->remove('lng');
       }
+      else {
+        $q->set('lng', $lng);
+      }
     }
+  }
+
+  /**
+   * Sanitize a coordinate by trimming spaces/quotes and validating range.
+   *
+   * @return string|null
+   *   Returns normalized numeric string if valid, or NULL if invalid.
+   */
+  private function sanitizeCoordinate($value, float $min, float $max): ?string {
+    if (is_string($value)) {
+      $value = trim($value);
+      $value = trim($value, "'\""); // remove quotes
+    }
+    if (!is_numeric($value)) {
+      return NULL;
+    }
+    $value = (float) $value;
+    if ($value < $min || $value > $max) {
+      return NULL;
+    }
+    return (string) $value;
   }
 
 }
