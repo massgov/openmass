@@ -1,5 +1,15 @@
 
 
+## [0.455.0] - October 28, 2025
+
+### Added
+  - DP-41563: Added validation to prevent emoji and visual characters in text fields across all content types.
+  
+### Changed
+  - DP-42621: Fix accessibliity issue with map on service and org pages.
+  
+
+
 ## [0.454.0] - October 21, 2025
 
 ### Added
