@@ -240,6 +240,7 @@ function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_s
 
 /**
  * Validates to ensure at least one value is filled out for field_organizations.
+ * Also validates that only org_page nodes are referenced.
  */
 function _mass_validation_field_organizations_validate(array &$form, FormStateInterface $form_state) {
   if ($form_state->hasValue('field_organizations')) {
@@ -290,6 +291,23 @@ function _mass_validation_field_organizations_validate(array &$form, FormStateIn
       // the error on field_organizations.
       if ((count($multiple_ogranizations) == 1 && isset($multiple_ogranizations['add_more'])) || $multiple_ogranizations[0]['target_id'] == NULL) {
         $form_state->setErrorByName($error_key, t('At least one organization value must be filled out.'));
+      }
+    }
+
+    // Validate that only org_page nodes are referenced.
+    $organizations = $form_state->getValue('field_organizations');
+    foreach ($organizations as $delta => $org) {
+      if (is_array($org) && !empty($org['target_id'])) {
+        $node = Node::load($org['target_id']);
+        if ($node && $node->bundle() !== 'org_page') {
+          $form_state->setErrorByName(
+            'field_organizations][' . $delta . '][target_id',
+            t('Only organization pages can be referenced in this field. The item "@title" is a @type page and is not allowed.', [
+              '@title' => $node->getTitle(),
+              '@type' => $node->bundle(),
+            ])
+          );
+        }
       }
     }
   }
