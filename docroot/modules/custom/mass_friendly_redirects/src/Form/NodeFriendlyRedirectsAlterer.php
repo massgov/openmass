@@ -130,7 +130,6 @@ final class NodeFriendlyRedirectsAlterer {
         'wrapper' => $wrapper_id,
         'progress' => ['type' => 'throbber'],
       ],
-      '#prevent_redirect' => TRUE,
     ];
 
     // Ensure our validation also runs on full form save (but it will no-op if empty).
