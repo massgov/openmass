@@ -93,6 +93,31 @@ final class NodeFriendlyRedirectsAlterer {
       '#description' => $this->t('Target is fixed to this page. External URLs and jump links are not allowed. This is a path, not a clickable URL scheme.'),
     ];
 
+    // If the previous request computed and submitted a redirect, clear inputs so
+    // they don't re-trigger validation on subsequent node Save. Also override
+    // any persisted user input on rebuild to visually reset the fields.
+    $mfv = (array) $form_state->getValue('mass_friendly_redirects');
+    if (!empty($mfv['_computed_source']) && !empty($mfv['_target_nid'])) {
+      // Clear values in form state to avoid duplicate processing on Save.
+      $form_state->unsetValue(['mass_friendly_redirects', '_computed_source']);
+      $form_state->unsetValue(['mass_friendly_redirects', '_target_nid']);
+      $form_state->setValue(['mass_friendly_redirects', 'prefix'], NULL);
+      $form_state->setValue(['mass_friendly_redirects', 'suffix'], '');
+
+      // Also clear the raw user input so FAPI doesn't repopulate from POST.
+      $input = $form_state->getUserInput();
+      if (isset($input['mass_friendly_redirects'])) {
+        unset($input['mass_friendly_redirects']['prefix'], $input['mass_friendly_redirects']['suffix']);
+        $form_state->setUserInput($input);
+      }
+
+      // Force empty defaults/values for this rebuild so the UI looks reset.
+      $form['mass_friendly_redirects']['prefix']['#default_value'] = NULL;
+      $form['mass_friendly_redirects']['prefix']['#value'] = NULL;
+      $form['mass_friendly_redirects']['suffix']['#default_value'] = '';
+      $form['mass_friendly_redirects']['suffix']['#value'] = '';
+    }
+
     $form['mass_friendly_redirects']['actions'] = ['#type' => 'actions'];
     $form['mass_friendly_redirects']['actions']['add'] = [
       '#type' => 'submit',
@@ -385,25 +410,27 @@ final class NodeFriendlyRedirectsAlterer {
     }
     $query->condition($destGroup);
 
-    // Restrict to allowed prefixes at the DB level for all roles.
-    $allowed = array_values($prefix_options);
-    if ($allowed) {
-      $prefixGroup = $query->orConditionGroup();
-      foreach ($allowed as $p) {
-        if ($p === '') {
-          continue;
+    // Restrict to allowed prefixes only for non-admins.
+    if (!$is_admin) {
+      $allowed = array_values($prefix_options);
+      if ($allowed) {
+        $prefixGroup = $query->orConditionGroup();
+        foreach ($allowed as $p) {
+          if ($p === '') {
+            continue;
+          }
+          // Match exact prefix or prefix/*.
+          $prefixGroup->condition($query->andConditionGroup()
+            ->condition('redirect_source__path', $p));
+          $prefixGroup->condition($query->andConditionGroup()
+            ->condition('redirect_source__path', $p . '/%', 'LIKE'));
         }
-        // Match exact prefix or prefix/*.
-        $prefixGroup->condition($query->andConditionGroup()
-          ->condition('redirect_source__path', $p));
-        $prefixGroup->condition($query->andConditionGroup()
-          ->condition('redirect_source__path', $p . '/%', 'LIKE'));
+        $query->condition($prefixGroup);
       }
-      $query->condition($prefixGroup);
-    }
-    else {
-      // No allowed prefixes configured => nothing to show.
-      return [];
+      else {
+        // No allowed prefixes configured => nothing to show for editors.
+        return [];
+      }
     }
 
     // Order by path so we don't sort in PHP.
