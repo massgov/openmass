@@ -19,29 +19,23 @@
         var $form = $(formEl);
 
         function getTargetState() {
-          // Common widget structure: moderation_state[0][state]
           var nested = $form.find('[name="moderation_state[0][state]"]').val();
           if (nested) {return nested;}
 
-          // Alternative single input name some widgets use.
           var alt = $form.find('[name="moderation_state__target_state"]').val();
           if (alt) {return alt;}
 
-          // Any select that looks like moderation state.
           var anySelect = $form.find('select[name*="moderation_state"]').val();
           if (anySelect) {return anySelect;}
 
-          // Hidden field posted by some widgets.
           var anyHidden = $form.find('input[type="hidden"][name*="moderation_state"]').val();
           if (anyHidden) {return anyHidden;}
 
-          // Data-drupal-selector fallback (often: edit-moderation-state-0-state)
           var dataSel = $form.find('[data-drupal-selector*="moderation-state"]').val();
           return dataSel || null;
         }
 
         function getTargetStateLabel() {
-          // Try common select widget first.
           var $select = $form.find('select[name*="moderation_state"] option:selected');
           if ($select.length) {
             return $select.text().trim();
@@ -76,14 +70,11 @@
                   // 4) prefer clicking the actual submit button (some workflows attach handlers there)
                   var $submit = $form.find('.form-actions [type="submit"]:not([disabled]):first');
 
-                  // Defer one tick so the dialog DOM is fully removed before submit.
                   setTimeout(function () {
                     if ($submit.length) {
-                      // Triggers any button-specific behaviors Drupal/CM attaches.
                       $submit[0].click();
                     }
                     else {
-                      // Fallback to native form submit (bypasses jQuery handlers).
                       $form.get(0).submit();
                     }
                   }, 0);
