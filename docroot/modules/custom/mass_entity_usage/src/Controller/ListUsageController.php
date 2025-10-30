@@ -422,11 +422,7 @@ class ListUsageController extends ControllerBase {
       return 0;
     }
 
-    // Get all inbound usage rows (unpaged).
-    // Shape is compatible with your existing prepareRows():
-    //   [ 'node' => [ nid => records, ... ],
-    //     'paragraph' => [ pid => records, ... ],
-    //     'block_content' => [ bid => records, ... ], ... ]
+    // Get all inbound usage rows.
     $sources_by_type = $this->entityUsage->listSources($this->entity);
 
     $nids = [];
