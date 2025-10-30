@@ -49,7 +49,7 @@ function mass_entity_usage_queue_info_alter(&$queues) {
 }
 
 /**
- * Alter only node edit forms (not node add, not other entity forms).
+ * Implements hook_form_FORM_ID_alter().
  */
 function mass_entity_usage_form_node_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   LinkingPagesWarning::alter($form, $form_state, $form_id);
