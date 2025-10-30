@@ -225,6 +225,7 @@ function mass_admin_theme_preprocess_form_element(&$variables) {
 
   if (isset($variables['element']['#id']) &&
     ($variables['element']['#id'] === 'edit-upload')
+    && ($variables['element']['#multiple'] !== TRUE)
   ) {
     $variables['prefix'] = t('Please note, only one image can be embedded at a time.');
   }
