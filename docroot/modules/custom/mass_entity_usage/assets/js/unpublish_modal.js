@@ -21,19 +21,19 @@
         function getTargetState() {
           // Common widget structure: moderation_state[0][state]
           var nested = $form.find('[name="moderation_state[0][state]"]').val();
-          if (nested) return nested;
+          if (nested) {return nested;}
 
           // Alternative single input name some widgets use.
           var alt = $form.find('[name="moderation_state__target_state"]').val();
-          if (alt) return alt;
+          if (alt) {return alt;}
 
           // Any select that looks like moderation state.
           var anySelect = $form.find('select[name*="moderation_state"]').val();
-          if (anySelect) return anySelect;
+          if (anySelect) {return anySelect;}
 
           // Hidden field posted by some widgets.
           var anyHidden = $form.find('input[type="hidden"][name*="moderation_state"]').val();
-          if (anyHidden) return anyHidden;
+          if (anyHidden) {return anyHidden;}
 
           // Data-drupal-selector fallback (often: edit-moderation-state-0-state)
           var dataSel = $form.find('[data-drupal-selector*="moderation-state"]').val();
@@ -61,7 +61,7 @@
             width: 600,
             buttons: [
               {
-                text: Drupal.t('Continue & @state', { '@state': getTargetStateLabel() }),
+                text: Drupal.t('Continue & @state', {'@state': getTargetStateLabel()}),
                 classes: 'button button--primary',
                 click: function () {
                   // 1) mark confirmed
@@ -81,7 +81,8 @@
                     if ($submit.length) {
                       // Triggers any button-specific behaviors Drupal/CM attaches.
                       $submit[0].click();
-                    } else {
+                    }
+                    else {
                       // Fallback to native form submit (bypasses jQuery handlers).
                       $form.get(0).submit();
                     }
