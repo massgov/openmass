@@ -1,5 +1,16 @@
 
 
+## [0.456.0] - November 4, 2025
+
+### Changed
+  - DP-39972: Added DBAL patch to ensure entity hierarchy is using correct transaction isolation level.
+  - DP-43090: Hide email addresses and leaflet map tiles from editoria11y accessibility checking.
+  
+### Fixed
+  - DP-42974: Fix misc 500 errors on Mass.gov.
+  
+
+
 ## [0.455.0] - October 28, 2025
 
 ### Added

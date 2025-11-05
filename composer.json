@@ -175,6 +175,7 @@
         "drupal/csv_field": "^2.0",
         "drupal/csv_serialization": "^2.0 || ^3.0",
         "drupal/datalayer": "^2",
+        "drupal/dbal": "^2.0",
         "drupal/devel": "^5",
         "drupal/diff": "^1.7",
         "drupal/draggableviews": "^2.1",
@@ -194,7 +195,7 @@
         "drupal/field_group": "^4.0",
         "drupal/field_tokens": "dev-8.x-1.x",
         "drupal/file_browser": "^1",
-        "drupal/flag": "^4.0",
+        "drupal/flag": "4.0.0-beta5",
         "drupal/focal_point": "dev-2.x",
         "drupal/geocoder": "^4.23",
         "drupal/geofield": "^1.57",
@@ -414,6 +415,9 @@
             "drupal/csv_field": {
                 "Add resize observer to parent class": "patches/csv-field-wrapper-class-ma__csvtable.patch"
             },
+            "drupal/dbal": {
+                "ConnectionFactory does not include init_commands": "patches/dbal/3555065-mr-10.patch"
+            },
             "drupal/entity_embed": {
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
                 "ImageFieldFormatter fails with Stage File Proxy when validating missing remote images (https://www.drupal.org/project/entity_embed/issues/3516580)": "https://www.drupal.org/files/issues/2025-04-01/3516580_3.patch",
@@ -421,9 +425,6 @@
             },
             "drupal/entity_usage": {
                 "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "patches/entity_usage/drupal-issue-3378832-InvalidArgumentException-the-internal-path-component-is-invalid.patch"
-            },
-            "drupal/flag": {
-                "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
             },
             "drupal/diff": {
                 "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch",
