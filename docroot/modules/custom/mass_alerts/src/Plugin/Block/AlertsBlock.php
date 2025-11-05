@@ -114,7 +114,7 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
       }
     }
 
-    if (!empty(array_intersect($org_ids, $excluded_org_ids))) {
+    if (!empty(array_intersect($org_ids, $excluded_org_ids)) && strpos($path, 'sitewide') !== FALSE) {
       return [
         '#markup' => '',
         '#path' => $path,
