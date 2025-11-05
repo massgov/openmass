@@ -15,6 +15,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class ReplaceUploadForm extends FormBase {
 
+  private const MAX_UPLOADS = 10;
+
   /**
    * @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
   protected $tempStoreFactory;
@@ -74,8 +76,9 @@ class ReplaceUploadForm extends FormBase {
     $form['upload'] = [
       '#type' => 'dropzonejs',
       '#title' => $this->t('Step 1: Upload replacement files'),
-      '#description' => $this->t('Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which must include the media ID.'),
+      '#description' => $this->t('Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which must include the media ID. You can upload up to @count files per batch.', ['@count' => self::MAX_UPLOADS]),
       '#multiple' => TRUE,
+      '#max_files' => self::MAX_UPLOADS,
       '#dropzone_description' => $this->t('Drag files here or click to upload.'),
       // Server-side validators:
       '#upload_validators' => [
@@ -88,11 +91,19 @@ class ReplaceUploadForm extends FormBase {
       // Client-side Dropzone settings:
       '#dropzonejs_settings' => [
         'parallelUploads' => 1,
-      // MB
+        'maxFiles' => self::MAX_UPLOADS,
+        // MB
         'maxFilesize' => 128,
         // Mirror the allowed types for client-side filtering:
         'acceptedFiles' => $accepted_files,
+        'dictMaxFilesExceeded' => $this->t('You can upload up to @count files at a time. Remove some files to continue.', ['@count' => self::MAX_UPLOADS]),
       ],
+//      '#dropzonejs_events' => [
+//        // If a file sneaks past the internal maxFiles check, remove it immediately.
+//        'addedfile' => 'function(file){ if(this.files && this.files.length > ' . self::MAX_UPLOADS . '){ this.removeFile(file); } }',
+//        // Provide a consistent UX when the cap is reached.
+//        'maxfilesexceeded' => 'function(file){ this.removeFile(file); }',
+//      ],
       '#extensions' => $exts_space,
     ];
 
@@ -116,6 +127,16 @@ class ReplaceUploadForm extends FormBase {
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $uploaded = $form_state->getValue('upload');
     $files = $uploaded['uploaded_files'] ?? [];
+
+    // Enforce maximum files per batch.
+    $count = is_array($files) ? count($files) : 0;
+    if ($count > self::MAX_UPLOADS) {
+      $form_state->setErrorByName('upload', $this->t('You can upload up to @max files at a time. You selected @count.', [
+        '@max' => self::MAX_UPLOADS,
+        '@count' => $count,
+      ]));
+      return;
+    }
 
     if (empty($files) || !is_array($files)) {
       return;
