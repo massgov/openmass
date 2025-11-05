@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class ReplaceUploadForm extends FormBase {
 
-  private const MAX_UPLOADS = 10;
+  private const MAX_UPLOADS = 100;
 
   /**
    * @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
@@ -91,19 +91,9 @@ class ReplaceUploadForm extends FormBase {
       // Client-side Dropzone settings:
       '#dropzonejs_settings' => [
         'parallelUploads' => 1,
-        'maxFiles' => self::MAX_UPLOADS,
-        // MB
         'maxFilesize' => 128,
-        // Mirror the allowed types for client-side filtering:
         'acceptedFiles' => $accepted_files,
-        'dictMaxFilesExceeded' => $this->t('You can upload up to @count files at a time. Remove some files to continue.', ['@count' => self::MAX_UPLOADS]),
       ],
-//      '#dropzonejs_events' => [
-//        // If a file sneaks past the internal maxFiles check, remove it immediately.
-//        'addedfile' => 'function(file){ if(this.files && this.files.length > ' . self::MAX_UPLOADS . '){ this.removeFile(file); } }',
-//        // Provide a consistent UX when the cap is reached.
-//        'maxfilesexceeded' => 'function(file){ this.removeFile(file); }',
-//      ],
       '#extensions' => $exts_space,
     ];
 
@@ -117,6 +107,9 @@ class ReplaceUploadForm extends FormBase {
       '#value' => $this->t('Continue to replacement confirmation'),
       '#button_type' => 'primary',
     ];
+
+    $form['#attached']['library'][] = 'mass_bulk_file_replace/dropzone_limit';
+    $form['#attached']['drupalSettings']['massBulkFileReplace']['maxUploads'] = self::MAX_UPLOADS;
 
     return $form;
   }
