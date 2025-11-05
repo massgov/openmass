@@ -1,11 +1,3 @@
-#mass_alerts.configuration:
-#  path: '/admin/config/mass'
-#  defaults:
-#    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
-#    _title: 'Mass.gov 2'
-#  requirements:
-#    _permission: 'access administration pages'
-
 mass_alerts.notifications:
   path: '/admin/config/mass/notifications'
   defaults:
@@ -38,3 +30,11 @@ mass_alerts.page_alerts:
     _controller: 'Drupal\mass_alerts\Controller\AlertsController::handlePageRequest'
   requirements:
     _permission: 'access content'
+
+mass_alerts.exclusions_form:
+  path: '/admin/config/mass/hidden-organizations'
+  defaults:
+    _form: '\Drupal\mass_alerts\Form\AlertsExclusionsForm'
+    _title: 'Alerts: Hidden organizations'
+  requirements:
+    _permission: 'administer mass alerts exclusions'
