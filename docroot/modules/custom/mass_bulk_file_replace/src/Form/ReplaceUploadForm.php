@@ -76,7 +76,8 @@ class ReplaceUploadForm extends FormBase {
     $form['upload'] = [
       '#type' => 'dropzonejs',
       '#title' => $this->t('Step 1: Upload replacement files'),
-      '#description' => $this->t('Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which must include the media ID. You can upload up to @count files per batch.', ['@count' => self::MAX_UPLOADS]),
+      '#description' => $this->t('<p>Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which must include the media ID. You can upload up to @count files per batch.</p><p><strong>Instructions:</strong> Make sure each uploaded file includes the text "DO_NOT_CHANGE_THIS_MEDIA_ID_{ID}" in its filename (e.g., <em>something_DO_NOT_CHANGE_THIS_MEDIA_ID_123.pdf</em>). This will be used to identify the correct media entity to replace.</p>', ['@count' => self::MAX_UPLOADS]),
+      '#description_display' => 'before',
       '#multiple' => TRUE,
       '#max_files' => self::MAX_UPLOADS,
       '#dropzone_description' => $this->t('Drag files here or click to upload.'),
@@ -95,10 +96,6 @@ class ReplaceUploadForm extends FormBase {
         'acceptedFiles' => $accepted_files,
       ],
       '#extensions' => $exts_space,
-    ];
-
-    $form['instructions'] = [
-      '#markup' => $this->t('<p><strong>Instructions:</strong> Make sure each uploaded file includes the text "DO_NOT_CHANGE_THIS_MEDIA_ID_{ID}" in its filename (e.g., <em>something_DO_NOT_CHANGE_THIS_MEDIA_ID_123.pdf</em>). This will be used to identify the correct media entity to replace.</p>'),
     ];
 
     $form['actions']['#type'] = 'actions';
