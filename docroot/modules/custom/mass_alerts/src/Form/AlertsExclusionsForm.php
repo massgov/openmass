@@ -148,4 +148,5 @@ class AlertsExclusionsForm extends ConfigFormBase {
     }
     $form_state->set('excluded_org_nids', $nids);
   }
+
 }
