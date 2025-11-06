@@ -110,7 +110,7 @@
       boxes.forEach((cb) => {
         cb.addEventListener('change', function () {
           setTimeout(enforceCap, 0);
-        });
+        }, {passive: true, once: false});
       });
 
       // Watch the multipage counter and on-page status for text changes
