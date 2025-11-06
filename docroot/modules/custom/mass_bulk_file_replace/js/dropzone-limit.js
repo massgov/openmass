@@ -1,10 +1,16 @@
 (function (Drupal, once, drupalSettings) {
   'use strict';
 
+  /* global Dropzone:false */
+
   // Waits for integration to attach and the Dropzone instance to exist.
   function withDropzone(el, cb, tries = 20) {
-    if (el.dropzone) return cb(el.dropzone);
-    if (tries <= 0) return;
+    if (el.dropzone) {
+      return cb(el.dropzone);
+    }
+    if (tries <= 0) {
+      return;
+    }
     setTimeout(() => withDropzone(el, cb, tries - 1), 50);
   }
 
@@ -34,7 +40,9 @@
           };
           const hideBannerIfOk = () => {
             const banner = el.querySelector('[data-dz-limit-msg]');
-            if (banner && dz.getAcceptedFiles().length <= limit) banner.remove();
+            if (banner && dz.getAcceptedFiles().length <= limit) {
+              banner.remove();
+            }
           };
 
           // Built-in event in many builds.
@@ -46,7 +54,9 @@
             if (file.previewElement) {
               file.previewElement.classList.add('dz-error');
               const em = file.previewElement.querySelector('[data-dz-errormessage]');
-              if (em) em.textContent = msg;
+              if (em) {
+                em.textContent = msg;
+              }
             }
             showBanner(msg);
           });
@@ -62,7 +72,9 @@
               if (file.previewElement) {
                 file.previewElement.classList.add('dz-error');
                 const em = file.previewElement.querySelector('[data-dz-errormessage]');
-                if (em) em.textContent = msg;
+                if (em) {
+                  em.textContent = msg;
+                }
               }
               showBanner(msg);
             }
@@ -71,6 +83,6 @@
           dz.on('removedfile', hideBannerIfOk);
         });
       });
-    },
+    }
   };
 })(Drupal, once, drupalSettings);

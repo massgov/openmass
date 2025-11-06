@@ -1,21 +1,28 @@
 (function (Drupal, drupalSettings, once) {
+  'use strict';
   Drupal.behaviors.massVboLimit = {
     attach: function (context) {
       const cfg = (drupalSettings.massBulkFileReplace || {}).vboLimit;
-      if (!cfg || !cfg.limit) return;
+      if (!cfg || !cfg.limit) {
+        return;
+      }
 
       const limit = parseInt(cfg.limit, 10);
       const checkboxSelector = cfg.checkboxSelector || '.views-table tbody input.js-vbo-checkbox';
       const footerSelector = cfg.footerSelector || '.vbo-view-form .vbo-operations';
 
       const boxes = once('massVboLimit', checkboxSelector, context);
-      if (!boxes.length) return;
+      if (!boxes.length) {
+        return;
+      }
 
       const headerBoxList = once('massVboLimitHeader', '.views-table thead .select-all input[type="checkbox"]', context);
       const headerBox = headerBoxList.length ? headerBoxList[0] : null;
 
       function parseCount(el) {
-        if (!el) return 0;
+        if (!el) {
+          return 0;
+        }
         const m = (el.textContent || '').match(/\b(\d+)\b/);
         return m ? parseInt(m[1], 10) : 0;
       }
@@ -39,7 +46,9 @@
       let msgEl = null;
       function showMessage(text) {
         const footer = document.querySelector(footerSelector);
-        if (!footer) return;
+        if (!footer) {
+          return;
+        }
         if (!msgEl) {
           msgEl = document.createElement('div');
           msgEl.setAttribute('data-vbo-limit-msg', '1');
@@ -49,7 +58,10 @@
         msgEl.textContent = text;
       }
       function clearMessage() {
-        if (msgEl) { msgEl.remove(); msgEl = null; }
+        if (msgEl) {
+          msgEl.remove();
+          msgEl = null;
+        }
       }
 
       function pageAllChecked() {
@@ -68,7 +80,8 @@
               cb.disabled = true;
               cb.setAttribute('disabled', 'disabled');
               cb.setAttribute('aria-disabled', 'true');
-            } else {
+            }
+            else {
               cb.disabled = false;
               cb.removeAttribute('disabled');
               cb.removeAttribute('aria-disabled');
@@ -87,7 +100,8 @@
         // Optional UX: message when fully capped.
         if (remaining === 0) {
           showMessage('Selection limit reached (' + limit + '). Deselect an item to pick another.');
-        } else {
+        }
+        else {
           clearMessage();
         }
       }
@@ -102,11 +116,13 @@
       // Watch the multipage counter and on-page status for text changes
       const mp = document.querySelector('#edit-multipage summary');
       const watchTargets = [];
-      if (mp) watchTargets.push(mp);
+      if (mp) {
+        watchTargets.push(mp);
+      }
       document.querySelectorAll('[id^="edit-status"]').forEach(el => watchTargets.push(el));
       if (watchTargets.length) {
         const mo = new MutationObserver(() => enforceCap());
-        watchTargets.forEach(t => mo.observe(t, { childList: true, subtree: true, characterData: true }));
+        watchTargets.forEach(t => mo.observe(t, {childList: true, subtree: true, characterData: true}));
       }
 
       // Initial enforcement
