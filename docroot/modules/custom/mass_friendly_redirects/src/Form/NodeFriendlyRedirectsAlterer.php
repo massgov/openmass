@@ -66,7 +66,7 @@ final class NodeFriendlyRedirectsAlterer {
     ];
 
     $form['mass_friendly_redirects']['help'] = [
-      '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Click the "Add URL Redirect" button to create the friendly URL. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: https://www.mass.gov/prefix/path</p>',
+      '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: https://www.mass.gov/prefix/path</p>',
     ];
 
     $form['mass_friendly_redirects']['prefix'] = [
@@ -81,16 +81,14 @@ final class NodeFriendlyRedirectsAlterer {
       '#type' => 'textfield',
       '#title' => $this->t('Path after prefix'),
       '#maxlength' => 255,
-      '#placeholder' => $this->t('e.g. flu or vaccine/locations'),
+      '#placeholder' => $this->t('e.g. flu or vaccine-locations'),
       '#description' => $this->t('Lowercase only (all case variations will work after it is created). Use hyphens for separators. Do not include leading or trailing slashes.'),
     ];
 
     $alias = $this->aliasManager->getAliasByPath('/node/' . $entity->id());
     $form['mass_friendly_redirects']['target_display'] = [
       '#type' => 'item',
-      '#title' => $this->t('Target'),
-      '#markup' => sprintf('<code>%s</code>', htmlspecialchars($alias ?: ('/node/' . $entity->id()), ENT_QUOTES)),
-      '#description' => $this->t('Target is fixed to this page. External URLs and jump links are not allowed. This is a path, not a clickable URL scheme.'),
+      '#title' => $this->t('Current friendly URLs for this page'),
     ];
 
     // If the previous request computed and submitted a redirect, clear inputs so
@@ -140,7 +138,7 @@ final class NodeFriendlyRedirectsAlterer {
     }
 
     // Existing redirects table (filtered by role/prefix).
-    $headers = [$this->t('Source'), $this->t('Status')];
+    $headers = [$this->t('Friendly URL')];
     if ($is_admin) {
       $headers[] = $this->t('Operations');
     }
@@ -152,7 +150,6 @@ final class NodeFriendlyRedirectsAlterer {
 
     foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $is_admin, $prefix_options) as $rid => $row) {
       $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
-      $form['mass_friendly_redirects']['existing'][$rid]['status'] = ['#markup' => '301'];
       if ($is_admin) {
         $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
           '#type' => 'operations',
