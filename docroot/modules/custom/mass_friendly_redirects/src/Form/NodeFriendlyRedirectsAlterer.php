@@ -119,7 +119,7 @@ final class NodeFriendlyRedirectsAlterer {
     $form['mass_friendly_redirects']['actions'] = ['#type' => 'actions'];
     $form['mass_friendly_redirects']['actions']['add'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Add URL Redirect'),
+      '#value' => $this->t('Add Friendly URL'),
       '#submit' => [static::class . '::submit'],
       '#validate' => [static::class . '::validate'],
       '#limit_validation_errors' => [['mass_friendly_redirects']],
