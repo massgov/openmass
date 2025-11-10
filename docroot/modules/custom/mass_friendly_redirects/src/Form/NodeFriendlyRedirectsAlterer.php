@@ -211,7 +211,7 @@ final class NodeFriendlyRedirectsAlterer {
 
     // Lowercase enforcement.
     if ($suffix !== mb_strtolower($suffix)) {
-      $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Friendly URLs must be lowercase.'));
+      $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Friendly URLs must be entered in lowercase. All case variations will work after it is created.'));
     }
 
     // Allowed chars: a-z, 0-9, hyphen and slashes; must not start or end with slash.
