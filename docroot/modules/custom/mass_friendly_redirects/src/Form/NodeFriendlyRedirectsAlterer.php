@@ -148,7 +148,7 @@ final class NodeFriendlyRedirectsAlterer {
       '#empty' => $this->t('No friendly redirects found for this page.'),
     ];
 
-    foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $is_admin, $prefix_options) as $rid => $row) {
+    foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $prefix_options) as $rid => $row) {
       $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
       if ($is_admin) {
         $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
@@ -364,13 +364,12 @@ final class NodeFriendlyRedirectsAlterer {
   }
 
   /**
-   * Load redirects that point to this node, filtered for admin/editor views.
+   * Load redirects that point to this node, filtered by allowed prefixes.
    */
   private static function loadNodeRedirects(
     EntityTypeManagerInterface $etm,
     AliasManagerInterface $aliasManager,
     NodeInterface $node,
-    bool $is_admin,
     array $prefix_options,
   ): array {
     $storage = $etm->getStorage('redirect');
