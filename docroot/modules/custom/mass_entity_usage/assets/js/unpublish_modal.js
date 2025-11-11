@@ -56,7 +56,7 @@
             width: 600,
             buttons: [
               {
-                text: Drupal.t('Continue & @state', {'@state': getTargetStateLabel()}),
+                text: Drupal.t('Continue and move to @state', {'@state': getTargetStateLabel()}),
                 classes: 'button button--primary',
                 click: function () {
                   // 1) mark confirmed
