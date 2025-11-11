@@ -155,13 +155,12 @@ final class NodeFriendlyRedirectsAlterer {
           '#type' => 'container',
           '#attributes' => ['class' => ['mfr-ops', 'links', 'inline']],
         ];
-        $form['mass_friendly_redirects']['existing'][$rid]['ops']['links'] = [
-          '#type' => 'operations',
-          '#links' => [
-            'edit' => [
-              'title' => t('Edit'),
-              'url' => \Drupal\Core\Url::fromRoute('entity.redirect.edit_form', ['redirect' => $rid]),
-            ],
+        $form['mass_friendly_redirects']['existing'][$rid]['ops']['edit'] = [
+          '#type' => 'link',
+          '#url' => Url::fromRoute('entity.redirect.edit_form', ['redirect' => $rid]),
+          '#title' => t('Edit'),
+          '#attributes' => [
+            'class' => ['mfr-edit', 'button', 'button--small'],
           ],
         ];
         $form['mass_friendly_redirects']['existing'][$rid]['ops']['delete'] = [
@@ -178,7 +177,7 @@ final class NodeFriendlyRedirectsAlterer {
             'progress' => ['type' => 'throbber'],
           ],
           '#attributes' => [
-            'class' => ['mfr-delete', 'button', 'button--link', 'button--small'],
+            'class' => ['mfr-delete', 'button', 'button--small'],
             'data-confirm' => t('Delete "/@src"? This may break links if people are using this URL.', ['@src' => $row['source']]),
           ],
         ];
