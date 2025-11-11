@@ -47,8 +47,8 @@ final class LinkingPagesWarning {
         'linkingPagesCount' => $count,
         'unpublishStates' => ['unpublished', 'trash'],
         'modalTitle' => (string) t('Heads up'),
-        'modalMessageSingular' => t('There is 1 published page linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update it.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage',]),
-        'modalMessagePlural' => t('There are @count published pages linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update them.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage',]),
+        'modalMessageSingular' => t('There is 1 published page linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update it.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage']),
+        'modalMessagePlural' => t('There are @count published pages linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update them.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage']),
       ];
     }
 
