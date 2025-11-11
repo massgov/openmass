@@ -61,9 +61,10 @@ final class NodeFriendlyRedirectsAlterer {
       '#group' => 'advanced',
       '#open' => TRUE,
       '#tree' => TRUE,
-      '#prefix' => '<div id="' . $wrapper_id . '">',
-      '#suffix' => '</div>',
+      '#attributes' => ['id' => $wrapper_id],
     ];
+    // Attach UI behaviors (confirm dialog for delete, etc.).
+    $form['#attached']['library'][] = 'mass_friendly_redirects/ui';
 
     $form['mass_friendly_redirects']['help'] = [
       '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: https://www.mass.gov/prefix/path</p>',
@@ -149,17 +150,36 @@ final class NodeFriendlyRedirectsAlterer {
     foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $prefix_options) as $rid => $row) {
       $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
       if ($is_admin) {
+        // Group an operations list (Edit) with a link-styled AJAX Delete.
         $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
+          '#type' => 'container',
+          '#attributes' => ['class' => ['mfr-ops', 'links', 'inline']],
+        ];
+        $form['mass_friendly_redirects']['existing'][$rid]['ops']['links'] = [
           '#type' => 'operations',
           '#links' => [
             'edit' => [
               'title' => t('Edit'),
               'url' => \Drupal\Core\Url::fromRoute('entity.redirect.edit_form', ['redirect' => $rid]),
             ],
-            'delete' => [
-              'title' => t('Delete'),
-              'url' => \Drupal\Core\Url::fromRoute('entity.redirect.delete_form', ['redirect' => $rid]),
-            ],
+          ],
+        ];
+        $form['mass_friendly_redirects']['existing'][$rid]['ops']['delete'] = [
+          '#type' => 'submit',
+          '#value' => t('Delete'),
+          '#name' => 'mfr_delete_' . $rid,
+          '#submit' => [static::class . '::deleteRedirect'],
+          '#limit_validation_errors' => [],
+          '#ajax' => [
+            // Custom event. Do NOT use default click here.
+            'event' => 'mfr-confirmed',
+            'callback' => [static::class, 'ajax'],
+            'wrapper'  => $wrapper_id,
+            'progress' => ['type' => 'throbber'],
+          ],
+          '#attributes' => [
+            'class' => ['mfr-delete', 'button', 'button--link', 'button--small'],
+            'data-confirm' => t('Delete "/@src"? This may break links if people are using this URL.', ['@src' => $row['source']]),
           ],
         ];
       }
@@ -359,6 +379,42 @@ final class NodeFriendlyRedirectsAlterer {
    */
   public static function ajax(array &$form, FormStateInterface $form_state) {
     return $form['mass_friendly_redirects'];
+  }
+
+  /**
+   * AJAX delete handler for a single redirect row.
+   */
+  public static function deleteRedirect(array &$form, FormStateInterface $form_state): void {
+    // Discover redirect id from element parents; the numeric parent is the rid.
+    $trigger = $form_state->getTriggeringElement();
+    $parents = $trigger['#array_parents'] ?? $trigger['#parents'] ?? [];
+    $rid = NULL;
+    foreach (array_reverse($parents) as $p) {
+      if (is_numeric($p)) {
+        $rid = (int) $p;
+        break;
+      }
+    }
+    if (!$rid) {
+      $form_state->setRebuild(TRUE);
+      return;
+    }
+
+    $storage = \Drupal::entityTypeManager()->getStorage('redirect');
+    /** @var \Drupal\redirect\Entity\Redirect|null $redirect */
+    $redirect = $storage->load($rid);
+    if ($redirect) {
+      $src_item = $redirect->get('redirect_source')->first();
+      $src_path = $src_item ? (string) $src_item->get('path')->getString() : '';
+      $redirect->delete();
+      \Drupal::messenger()->addStatus(t('Deleted friendly URL "/@src".', ['@src' => $src_path ?: $rid]));
+    }
+    else {
+      \Drupal::messenger()->addWarning(t('The selected friendly URL no longer exists.'));
+    }
+
+    // Rebuild so the table refreshes via the same AJAX callback/wrapper.
+    $form_state->setRebuild(TRUE);
   }
 
   /**
