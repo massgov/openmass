@@ -1,5 +1,14 @@
 
 
+## [0.457.0] - November 11, 2025
+
+### Fixed
+  - DP-37258: Prevent non-organization pages from being pasted and saved in Organization(s) fields by adding form-level validation. Entity-level validation is handled by Drupal core's ValidReferenceConstraint based on field configuration.
+  - DP-42199: Don't show empty list container when org page has no nav bar.
+  - DP-42398: Fixed PHP CodeSniffer issues.
+  
+
+
 ## [0.456.1] - November 5, 2025
 
 ### Added
