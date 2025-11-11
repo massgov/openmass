@@ -23,16 +23,22 @@ final class LinkingPagesWarning {
       return;
     }
 
+    $disable_bundles = ['alert', 'sitewide_alert', 'external_data_resource', 'api_service_card', 'utility_drawer'];
+    if (in_array($node->bundle(), $disable_bundles)) {
+      return;
+    }
+
     // Hidden flag to bypass the modal after user confirms.
     $form['mass_linking_unpublish_confirmed'] = [
       '#type' => 'hidden',
       '#value' => '0',
     ];
 
-    // Get count via your controller.
-    /** @var \Drupal\mass_entity_usage\Controller\ListUsageController $ctrl */
-    $ctrl = \Drupal::classResolver(ListUsageController::class);
-    $count = $ctrl->countPublishedLinkingPages('node', (int) $node->id());
+    $count = \Drupal::service('mass_entity_usage.usage')->listUniqueSourcesCount($node);
+
+    if ($count == 0) {
+      return;
+    }
 
     // Attach library + settings for modal behavior.
     if ($count > 0) {
@@ -41,12 +47,13 @@ final class LinkingPagesWarning {
         'linkingPagesCount' => $count,
         'unpublishStates' => ['unpublished', 'trash'],
         'modalTitle' => (string) t('Heads up'),
-        'modalMessageSingular' => (string) t('There is 1 published page linking here. You can still unpublish.'),
-        'modalMessagePlural' => (string) t('There are @count published pages linking here. You can still unpublish.'),
+        'modalMessageSingular' => t('There is 1 published page linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update it.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage',]),
+        'modalMessagePlural' => t('There are @count published pages linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update them.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage',]),
       ];
     }
+
     // Static, non-blocking info above the Save area.
-    $message = t('There @is_are @n published page@s linking here.', [
+    $message = t('There @is_are @n published page@s using this piece of content.', [
       '@is_are' => $count === 1 ? 'is' : 'are',
       '@n' => $count,
       '@s' => $count === 1 ? '' : 's',

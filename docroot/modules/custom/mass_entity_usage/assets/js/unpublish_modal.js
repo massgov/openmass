@@ -7,8 +7,9 @@
       var count = parseInt(settings.linkingPagesCount || 0, 10);
       var unpublishStates = settings.unpublishStates || ['archived', 'unpublished', 'trash'];
       var title = settings.modalTitle || 'Heads up';
-      var msg1 = settings.modalMessageSingular || 'There is 1 published page linking here. You can still unpublish.';
-      var msgN = settings.modalMessagePlural || 'There are @count published pages linking here. You can still unpublish.';
+      var msg1 = settings.modalMessageSingular;
+      var msgN = settings.modalMessagePlural;
+
 
       // If nothing links here, there is nothing to warn about.
       if (!count || count <= 0) {
@@ -48,7 +49,7 @@
 
         function openConfirm() {
           var text = (count === 1) ? msg1 : msgN.replace('@count', count);
-          var $wrapper = $('<div class="mass-linking-unpublish-modal"><p>' + Drupal.checkPlain(text) + '</p></div>');
+          var $wrapper = $('<div class="mass-linking-unpublish-modal"><p>' + text + '</p></div>');
 
           var dialog = Drupal.dialog($wrapper.get(0), {
             title: title,
