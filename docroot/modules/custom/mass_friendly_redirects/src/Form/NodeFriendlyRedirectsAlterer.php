@@ -73,7 +73,7 @@ final class NodeFriendlyRedirectsAlterer {
       '#type' => 'select',
       '#title' => $this->t('Prefix'),
       '#options' => $prefix_options,
-      '#empty_option' => $is_admin ? $this->t('- None (admin) -') : NULL,
+      '#empty_option' => NULL,
       '#description' => $this->t('Choose the prefix for the URL. To request a new prefix, contact us in ServiceNow.'),
     ];
 
@@ -191,15 +191,12 @@ final class NodeFriendlyRedirectsAlterer {
 
     $prefix_options = $prefixMgr->getPrefixOptions();
 
-    // Resolve chosen prefix.
-    $prefix = '';
-    if ($prefix_tid && isset($prefix_options[$prefix_tid])) {
-      $prefix = $prefix_options[$prefix_tid];
-    }
-    elseif (!$is_admin) {
+    // Resolve chosen prefix (required for everyone in this UI).
+    if (!$prefix_tid || !isset($prefix_options[$prefix_tid])) {
       $form_state->setErrorByName('mass_friendly_redirects][prefix', t('Please pick a prefix.'));
       return;
     }
+    $prefix = $prefix_options[$prefix_tid];
 
     // Normalize and validate suffix.
     $suffix = trim($suffix);
@@ -219,17 +216,8 @@ final class NodeFriendlyRedirectsAlterer {
       $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Only lowercase letters, numbers, slashes, and hyphens are allowed. Do not start or end with a slash.'));
     }
 
-    // Build & normalize source (no leading slash).
-    $source = '';
-    if ($prefix !== '' && $suffix !== '') {
-      $source = $prefix . '/' . $suffix;
-    }
-    elseif ($prefix !== '' && $suffix === '') {
-      $source = $prefix;
-    }
-    elseif ($prefix === '' && $is_admin) {
-      $source = $suffix;
-    }
+    // Prefix is required; build source with selected prefix.
+    $source = ($suffix === '') ? $prefix : ($prefix . '/' . $suffix);
     $source = preg_replace('@/+@', '/', (string) $source);
     $source = trim($source, '/');
 
@@ -406,27 +394,29 @@ final class NodeFriendlyRedirectsAlterer {
     }
     $query->condition($destGroup);
 
-    // Restrict to allowed prefixes only for non-admins.
-    if (!$is_admin) {
-      $allowed = array_values($prefix_options);
-      if ($allowed) {
-        $prefixGroup = $query->orConditionGroup();
-        foreach ($allowed as $p) {
-          if ($p === '') {
-            continue;
-          }
-          // Match exact prefix or prefix/*.
-          $prefixGroup->condition($query->andConditionGroup()
-            ->condition('redirect_source__path', $p));
-          $prefixGroup->condition($query->andConditionGroup()
-            ->condition('redirect_source__path', $p . '/%', 'LIKE'));
+    // Restrict to allowed prefixes for everyone (admins can use the full
+    // Redirects UI to manage non-friendly redirects). Keep Friendly URLs area
+    // consistent between admins and editors.
+    $allowed = array_values($prefix_options);
+    if ($allowed) {
+      $prefixGroup = $query->orConditionGroup();
+      foreach ($allowed as $p) {
+        if ($p === '') {
+          continue;
         }
-        $query->condition($prefixGroup);
+        // Match exact prefix or prefix/*.
+        $prefixGroup->condition(
+          $query->andConditionGroup()->condition('redirect_source__path', $p)
+        );
+        $prefixGroup->condition(
+          $query->andConditionGroup()->condition('redirect_source__path', $p . '/%', 'LIKE')
+        );
       }
-      else {
-        // No allowed prefixes configured => nothing to show for editors.
-        return [];
-      }
+      $query->condition($prefixGroup);
+    }
+    else {
+      // No allowed prefixes configured => nothing to show in Friendly URLs.
+      return [];
     }
 
     // Order by path so we don't sort in PHP.
