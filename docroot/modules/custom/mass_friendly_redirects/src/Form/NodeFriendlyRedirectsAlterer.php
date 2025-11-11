@@ -109,11 +109,9 @@ final class NodeFriendlyRedirectsAlterer {
         $form_state->setUserInput($input);
       }
 
-      // Force empty defaults/values for this rebuild so the UI looks reset.
+      // Force empty defaults for this rebuild so the UI looks reset.
       $form['mass_friendly_redirects']['prefix']['#default_value'] = NULL;
-      $form['mass_friendly_redirects']['prefix']['#value'] = NULL;
       $form['mass_friendly_redirects']['suffix']['#default_value'] = '';
-      $form['mass_friendly_redirects']['suffix']['#value'] = '';
     }
 
     $form['mass_friendly_redirects']['actions'] = ['#type' => 'actions'];
