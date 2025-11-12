@@ -53,8 +53,9 @@ final class LinkingPagesWarning {
     }
 
     // Static, non-blocking info above the Save area.
-    $message = t('There @is_are @n published page@s using this piece of content.', [
+    $message = t('There @is_are <a href="@usagePageLink" target="_blank">@n published page@s using this piece of content</a>.', [
       '@is_are' => $count === 1 ? 'is' : 'are',
+      '@usagePageLink' => $node->toUrl()->toString() . '/mass-usage',
       '@n' => $count,
       '@s' => $count === 1 ? '' : 's',
     ]);
