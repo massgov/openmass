@@ -41,10 +41,8 @@ final class NodeFriendlyRedirectsAlterer {
 
     $account = $this->currentUser;
     $is_admin = $account->hasPermission('administer redirects') || $account->hasPermission('administer site configuration');
-    $can_manage = $account->hasPermission('manage friendly redirects') || $is_admin;
-    if (!$can_manage) {
-      return;
-    }
+    // Only users with this permission can create/delete. Others may still view the list.
+    $can_manage = $account->hasPermission('manage friendly redirects');
 
     // Hide the stock Redirects component for non-admins (if present).
     if (!$is_admin && isset($form['path']['redirect'])) {
@@ -66,79 +64,80 @@ final class NodeFriendlyRedirectsAlterer {
     // Attach UI behaviors (confirm dialog for delete, etc.).
     $form['#attached']['library'][] = 'mass_friendly_redirects/ui';
 
-    $form['mass_friendly_redirects']['help'] = [
-      '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: https://www.mass.gov/prefix/path</p>',
-    ];
+    if ($can_manage) {
+      $form['mass_friendly_redirects']['help'] = [
+        '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: https://www.mass.gov/prefix/path</p>',
+      ];
 
-    $form['mass_friendly_redirects']['prefix'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Prefix'),
-      '#options' => $prefix_options,
-      '#empty_option' => NULL,
-      '#description' => $this->t('Choose the prefix for the URL. To request a new prefix, contact us in ServiceNow.'),
-    ];
+      $form['mass_friendly_redirects']['prefix'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Prefix'),
+        '#options' => $prefix_options,
+        '#empty_option' => NULL,
+        '#description' => $this->t('Choose the prefix for the URL. To request a new prefix, contact us in ServiceNow.'),
+      ];
 
-    $form['mass_friendly_redirects']['suffix'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Path after prefix'),
-      '#maxlength' => 255,
-      '#placeholder' => $this->t('e.g. flu or vaccine-locations'),
-      '#description' => $this->t('Lowercase only (all case variations will work after it is created). Use hyphens for separators. Do not include leading or trailing slashes.'),
-    ];
+      $form['mass_friendly_redirects']['suffix'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Path after prefix'),
+        '#maxlength' => 255,
+        '#placeholder' => $this->t('e.g. flu or vaccine-locations'),
+        '#description' => $this->t('Lowercase only (all case variations will work after it is created). Use hyphens for separators. Do not include leading or trailing slashes.'),
+      ];
 
-    $alias = $this->aliasManager->getAliasByPath('/node/' . $entity->id());
-    $form['mass_friendly_redirects']['target_display'] = [
-      '#type' => 'item',
-      '#title' => $this->t('Current friendly URLs for this page'),
-    ];
+      $form['mass_friendly_redirects']['target_display'] = [
+        '#type' => 'item',
+        '#title' => $this->t('Current friendly URLs for this page'),
+      ];
 
-    // If the previous request computed and submitted a redirect, clear inputs so
-    // they don't re-trigger validation on subsequent node Save. Also override
-    // any persisted user input on rebuild to visually reset the fields.
-    $mfv = (array) $form_state->getValue('mass_friendly_redirects');
-    if (!empty($mfv['_computed_source']) && !empty($mfv['_target_nid'])) {
-      // Clear values in form state to avoid duplicate processing on Save.
-      $form_state->unsetValue(['mass_friendly_redirects', '_computed_source']);
-      $form_state->unsetValue(['mass_friendly_redirects', '_target_nid']);
-      $form_state->setValue(['mass_friendly_redirects', 'prefix'], NULL);
-      $form_state->setValue(['mass_friendly_redirects', 'suffix'], '');
+      // If the previous request computed and submitted a redirect, clear inputs so
+      // they don't re-trigger validation on subsequent node Save. Also override
+      // any persisted user input on rebuild to visually reset the fields.
+      $mfv = (array) $form_state->getValue('mass_friendly_redirects');
+      if (!empty($mfv['_computed_source']) && !empty($mfv['_target_nid'])) {
+        // Clear values in form state to avoid duplicate processing on Save.
+        $form_state->unsetValue(['mass_friendly_redirects', '_computed_source']);
+        $form_state->unsetValue(['mass_friendly_redirects', '_target_nid']);
+        $form_state->setValue(['mass_friendly_redirects', 'prefix'], NULL);
+        $form_state->setValue(['mass_friendly_redirects', 'suffix'], '');
 
-      // Also clear the raw user input so FAPI doesn't repopulate from POST.
-      $input = $form_state->getUserInput();
-      if (isset($input['mass_friendly_redirects'])) {
-        unset($input['mass_friendly_redirects']['prefix'], $input['mass_friendly_redirects']['suffix']);
-        $form_state->setUserInput($input);
+        // Also clear the raw user input so FAPI doesn't repopulate from POST.
+        $input = $form_state->getUserInput();
+        if (isset($input['mass_friendly_redirects'])) {
+          unset($input['mass_friendly_redirects']['prefix'], $input['mass_friendly_redirects']['suffix']);
+          $form_state->setUserInput($input);
+        }
+
+        // Force empty defaults for this rebuild so the UI looks reset.
+        $form['mass_friendly_redirects']['prefix']['#default_value'] = NULL;
+        $form['mass_friendly_redirects']['suffix']['#default_value'] = '';
       }
 
-      // Force empty defaults for this rebuild so the UI looks reset.
-      $form['mass_friendly_redirects']['prefix']['#default_value'] = NULL;
-      $form['mass_friendly_redirects']['suffix']['#default_value'] = '';
-    }
+      $form['mass_friendly_redirects']['actions'] = ['#type' => 'actions'];
+      $form['mass_friendly_redirects']['actions']['add'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Add Friendly URL'),
+        '#submit' => [static::class . '::submit'],
+        '#validate' => [static::class . '::validate'],
+        '#limit_validation_errors' => [['mass_friendly_redirects']],
+        '#ajax' => [
+          'callback' => [static::class, 'ajax'],
+          'wrapper' => $wrapper_id,
+          'progress' => ['type' => 'throbber'],
+        ],
+      ];
 
-    $form['mass_friendly_redirects']['actions'] = ['#type' => 'actions'];
-    $form['mass_friendly_redirects']['actions']['add'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Add Friendly URL'),
-      '#submit' => [static::class . '::submit'],
-      '#validate' => [static::class . '::validate'],
-      '#limit_validation_errors' => [['mass_friendly_redirects']],
-      '#ajax' => [
-        'callback' => [static::class, 'ajax'],
-        'wrapper' => $wrapper_id,
-        'progress' => ['type' => 'throbber'],
-      ],
-    ];
-
-    // Ensure our validation also runs on full form save (but it will no-op if empty).
-    $form['#validate'][] = [static::class, 'validate'];
-    // Ensure saving the node will also create/update the redirect when fields are provided.
-    if (isset($form['actions']['submit'])) {
-      $form['actions']['submit']['#submit'][] = [static::class, 'submit'];
+      // Ensure our validation also runs on full form save (but it will no-op if empty).
+      $form['#validate'][] = [static::class, 'validate'];
+      // Ensure saving the node will also create/update the redirect when fields are provided.
+      if (isset($form['actions']['submit'])) {
+        $form['actions']['submit']['#submit'][] = [static::class, 'submit'];
+      }
     }
 
     // Existing redirects table (filtered by role/prefix).
     $headers = [$this->t('Friendly URL')];
-    if ($is_admin) {
+    if ($can_manage) {
       $headers[] = $this->t('Operations');
     }
     $form['mass_friendly_redirects']['existing'] = [
@@ -149,7 +148,7 @@ final class NodeFriendlyRedirectsAlterer {
 
     foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $prefix_options) as $rid => $row) {
       $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
-      if ($is_admin) {
+      if ($can_manage) {
         // Group an operations list (Edit) with a link-styled AJAX Delete.
         $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
           '#type' => 'container',
@@ -189,13 +188,15 @@ final class NodeFriendlyRedirectsAlterer {
    * FAPI validate callback.
    */
   public static function validate(array &$form, FormStateInterface $form_state): void {
+    // Only users with manage permission can create/update friendly URLs.
+    if (!\Drupal::currentUser()->hasPermission('manage friendly redirects')) {
+      return;
+    }
     /** @var \Drupal\node\NodeInterface $node */
     $node = $form_state->getFormObject()->getEntity();
 
     /** @var \Drupal\mass_friendly_redirects\Service\PrefixManager $prefixMgr */
     $prefixMgr = \Drupal::service('mass_friendly_redirects.prefix_manager');
-    $account = \Drupal::currentUser();
-    $is_admin = $account->hasPermission('administer redirects') || $account->hasPermission('administer site configuration');
 
     $values = (array) $form_state->getValue('mass_friendly_redirects');
     $prefix_tid = $values['prefix'] ?? '';
@@ -218,7 +219,7 @@ final class NodeFriendlyRedirectsAlterer {
     // Normalize and validate suffix.
     $suffix = trim($suffix);
     $suffix = trim($suffix, "/ \t\n\r\0\x0B");
-    if ($suffix === '' && !$is_admin) {
+    if ($suffix === '') {
       $form_state->setErrorByName('mass_friendly_redirects][suffix', t('Please provide a path after the prefix.'));
       return;
     }
@@ -290,16 +291,28 @@ final class NodeFriendlyRedirectsAlterer {
         $link_markup = '<code>' . htmlspecialchars($dest_path_display, ENT_QUOTES) . '</code>';
       }
 
+      // Build a link to the redirects report filtered by this source path.
+      $report_link = Link::fromTextAndUrl(
+        t('See report showing where this URL is used. You can remove it from that page if needed.'),
+        Url::fromUserInput('/admin/ma-dash/reports/redirects', [
+          'query' => ['redirect_source__path' => '/' . $source],
+        ])
+      )->toString();
+
       // Form errors escape HTML, so keep the field error plain-text for focus/accessibility…
       $plain = t('A redirect for "/@src" already exists.', ['@src' => $source]);
       $form_state->setErrorByName('mass_friendly_redirects][suffix', $plain);
 
-      // …and add a separate messenger error with a clickable link.
+      // …and add a separate messenger error with a clickable link and report link.
       if ($link_markup) {
-        \Drupal::messenger()->addError(Markup::create($plain . ' ' . t('(Currently points to @link.)', ['@link' => $link_markup])));
+        \Drupal::messenger()->addError(Markup::create(
+          $plain . ' ' .
+          t('(Currently points to @link.)', ['@link' => $link_markup]) . ' ' .
+          $report_link
+        ));
       }
       else {
-        \Drupal::messenger()->addError($plain);
+        \Drupal::messenger()->addError(Markup::create($plain . ' ' . $report_link));
       }
       return;
     }
@@ -313,6 +326,9 @@ final class NodeFriendlyRedirectsAlterer {
    * FAPI submit callback.
    */
   public static function submit(array &$form, FormStateInterface $form_state): void {
+    if (!\Drupal::currentUser()->hasPermission('manage friendly redirects')) {
+      return;
+    }
     $values = (array) $form_state->getValue('mass_friendly_redirects');
     $source = (string) ($values['_computed_source'] ?? '');
     $nid = (int) ($values['_target_nid'] ?? 0);
@@ -384,6 +400,11 @@ final class NodeFriendlyRedirectsAlterer {
    * AJAX delete handler for a single redirect row.
    */
   public static function deleteRedirect(array &$form, FormStateInterface $form_state): void {
+    if (!\Drupal::currentUser()->hasPermission('manage friendly redirects')) {
+      \Drupal::messenger()->addError(t('You do not have permission to delete friendly URLs.'));
+      $form_state->setRebuild(TRUE);
+      return;
+    }
     // Discover redirect id from element parents; the numeric parent is the rid.
     $trigger = $form_state->getTriggeringElement();
     $parents = $trigger['#array_parents'] ?? $trigger['#parents'] ?? [];
