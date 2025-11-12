@@ -1,5 +1,6 @@
 /* checkov:skip=CKV3_SAST_74: This file does not use postMessage; event listeners are scoped to internal buttons, sanitized, and required for Drupal AJAX confirmation UX. */
 (function (Drupal, once, $, drupalSettings) {
+  'use strict';
   Drupal.behaviors.mfrDeleteConfirm = {
     attach(context) {
       once('mfrDeleteConfirm', '.mfr-delete', context).forEach((btn) => {
@@ -26,7 +27,9 @@
                   setTimeout(() => { $(btn).trigger('mfr-confirmed'); }, 0);
                 }
               },
-              { text: Drupal.t('Cancel'), class: 'button', click: function () { dialog.close(); } }
+              {text: Drupal.t('Cancel'), class: 'button', click: function () {
+                dialog.close();
+              }}
             ],
             close: function () { container.remove(); }
           });
@@ -35,9 +38,9 @@
         };
 
         // Intercept both mouse and keyboard activations (Drupal AJAX often binds on mousedown).
-        btn.addEventListener('click', intercept, { capture: true });
+        btn.addEventListener('click', intercept, {capture: true});
         btn.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') intercept(e);
+          if (e.key === 'Enter' || e.key === ' ') { intercept(e); }
         });
       });
     }
