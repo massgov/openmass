@@ -70,10 +70,16 @@ final class NodeFriendlyRedirectsAlterer {
       ];
 
       $form['mass_friendly_redirects']['prefix'] = [
-        '#type' => 'select',
+        '#type' => 'select2',
+        '#multiple' => FALSE,
         '#title' => $this->t('Prefix'),
         '#options' => $prefix_options,
         '#empty_option' => NULL,
+        '#select2' => [
+          'placeholder' => $this->t('Start typing to find a prefix'),
+          'allowClear' => FALSE,
+          'width' => '400',
+        ],
         '#description' => $this->t('Choose the prefix for the URL. To request a new prefix, contact us in ServiceNow.'),
       ];
 
@@ -146,21 +152,15 @@ final class NodeFriendlyRedirectsAlterer {
       '#empty' => $this->t('No friendly redirects found for this page.'),
     ];
 
-    foreach (static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $prefix_options) as $rid => $row) {
+    $existing_redirects = static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $prefix_options);
+
+    foreach ($existing_redirects as $rid => $row) {
       $form['mass_friendly_redirects']['existing'][$rid]['source'] = ['#markup' => '<code>/' . htmlspecialchars($row['source']) . '</code>'];
       if ($can_manage) {
         // Group an operations list (Edit) with a link-styled AJAX Delete.
         $form['mass_friendly_redirects']['existing'][$rid]['ops'] = [
           '#type' => 'container',
           '#attributes' => ['class' => ['mfr-ops', 'links', 'inline']],
-        ];
-        $form['mass_friendly_redirects']['existing'][$rid]['ops']['edit'] = [
-          '#type' => 'link',
-          '#url' => Url::fromRoute('entity.redirect.edit_form', ['redirect' => $rid]),
-          '#title' => t('Edit'),
-          '#attributes' => [
-            'class' => ['mfr-edit', 'button', 'button--small'],
-          ],
         ];
         $form['mass_friendly_redirects']['existing'][$rid]['ops']['delete'] = [
           '#type' => 'submit',
@@ -181,6 +181,19 @@ final class NodeFriendlyRedirectsAlterer {
           ],
         ];
       }
+    }
+
+    // If this page already has a friendly URL, hide the Add button and show
+    // a simple note instead. We enforce a single friendly URL per page in the
+    // UI to keep things predictable for editors.
+    if ($can_manage && !empty($existing_redirects)) {
+      if (isset($form['mass_friendly_redirects']['actions']['add'])) {
+        $form['mass_friendly_redirects']['actions']['add']['#access'] = FALSE;
+      }
+      $form['mass_friendly_redirects']['actions']['limit_notice'] = [
+        '#type' => 'item',
+        '#markup' => $this->t('This page already has a friendly URL. Only one friendly URL is allowed. Delete the existing one to change it.'),
+      ];
     }
   }
 
@@ -468,26 +481,10 @@ final class NodeFriendlyRedirectsAlterer {
     $query->condition($destGroup);
 
     // Restrict to allowed prefixes for everyone (admins can use the full
-    // Redirects UI to manage non-friendly redirects). Keep Friendly URLs area
-    // consistent between admins and editors.
+    // Redirects UI to manage non-friendly redirects). To avoid huge OR
+    // condition groups (and "too many tables" joins)
     $allowed = array_values($prefix_options);
-    if ($allowed) {
-      $prefixGroup = $query->orConditionGroup();
-      foreach ($allowed as $p) {
-        if ($p === '') {
-          continue;
-        }
-        // Match exact prefix or prefix/*.
-        $prefixGroup->condition(
-          $query->andConditionGroup()->condition('redirect_source__path', $p)
-        );
-        $prefixGroup->condition(
-          $query->andConditionGroup()->condition('redirect_source__path', $p . '/%', 'LIKE')
-        );
-      }
-      $query->condition($prefixGroup);
-    }
-    else {
+    if (!$allowed) {
       // No allowed prefixes configured => nothing to show in Friendly URLs.
       return [];
     }
@@ -512,6 +509,23 @@ final class NodeFriendlyRedirectsAlterer {
       if ($path === '') {
         continue;
       }
+
+      // Filter by allowed prefixes here instead of in SQL to avoid massive
+      // OR condition groups and excessive JOINs when many prefixes exist.
+      $allowed_match = FALSE;
+      foreach ($allowed as $p) {
+        if ($p === '') {
+          continue;
+        }
+        if ($path === $p || str_starts_with($path, $p . '/')) {
+          $allowed_match = TRUE;
+          break;
+        }
+      }
+      if (!$allowed_match) {
+        continue;
+      }
+
       $rows[$r->id()] = ['source' => $path];
     }
 
