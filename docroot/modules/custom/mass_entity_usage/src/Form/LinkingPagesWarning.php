@@ -47,27 +47,10 @@ final class LinkingPagesWarning {
         'linkingPagesCount' => $count,
         'unpublishStates' => ['unpublished', 'trash'],
         'modalTitle' => (string) t('Heads up'),
-        'modalMessageSingular' => t('There is 1 published page linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update it.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage']),
-        'modalMessagePlural' => t('There are @count published pages linking here. You can still unpublish it if it does not have any children. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update them.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage']),
+        'modalMessageSingular' => t('There is 1 published page linking here. You can still unpublish it <strong>if it does not have any children</strong>. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update it.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage']),
+        'modalMessagePlural' => t('There are @count published pages linking here. You can still unpublish it <strong>if it does not have any children</strong>. However, we recommend that you review <a href="@usagePageLink" target="_blank">pages linking here</a> and update them.', ['@usagePageLink' => $node->toUrl()->toString() . '/mass-usage']),
       ];
     }
-
-    // Static, non-blocking info above the Save area.
-    $message = t('There @is_are <a href="@usagePageLink" target="_blank">@n published page@s using this piece of content</a>.', [
-      '@is_are' => $count === 1 ? 'is' : 'are',
-      '@usagePageLink' => $node->toUrl()->toString() . '/mass-usage',
-      '@n' => $count,
-      '@s' => $count === 1 ? '' : 's',
-    ]);
-
-    $form['mass_linking_pages_warning'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['messages', 'messages--warning', 'mass-linking-pages-warning'],
-      ],
-      'markup' => ['#markup' => $message],
-      '#group' => 'footer',
-    ];
   }
 
 }
