@@ -66,7 +66,7 @@ final class NodeFriendlyRedirectsAlterer {
 
     if ($can_manage) {
       $form['mass_friendly_redirects']['help'] = [
-        '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: https://www.mass.gov/prefix/path</p>',
+        '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: mass.gov/prefix/path</p>',
       ];
 
       $form['mass_friendly_redirects']['prefix'] = [
@@ -87,7 +87,6 @@ final class NodeFriendlyRedirectsAlterer {
         '#type' => 'textfield',
         '#title' => $this->t('Path after prefix'),
         '#maxlength' => 255,
-        '#placeholder' => $this->t('e.g. flu or vaccine-locations'),
         '#description' => $this->t('Lowercase only (all case variations will work after it is created). Use hyphens for separators. Do not include leading or trailing slashes.'),
       ];
 
