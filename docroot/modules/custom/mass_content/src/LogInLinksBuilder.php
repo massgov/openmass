@@ -86,7 +86,11 @@ class LogInLinksBuilder {
       }
 
       // Move to the parent node.
-      $refs = $entity->getPrimaryParent()->referencedEntities();
+      $primary_parent = $entity->getPrimaryParent();
+      if (!$primary_parent) {
+        break;
+      }
+      $refs = $primary_parent->referencedEntities();
       $entity = $refs[0] ?? NULL;
       // Reduce max levels to prevent infinite loops.
       $max_level--;

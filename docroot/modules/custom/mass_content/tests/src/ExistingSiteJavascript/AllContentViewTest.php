@@ -71,7 +71,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
       'action' => 'Right-rail (prototype)',
       'rules' => 'Rules of Court',
       'service_page' => 'Service',
-      'stacked_layout' => 'Stacked layout (prototype)',
+      'stacked_layout' => 'Stacked layout - prototype',
       'topic_page' => 'Topic Page',
       'utility_drawer' => 'Utility Drawer',
     ];
