@@ -3,8 +3,10 @@ langcode: en
 status: true
 dependencies:
   module:
+    - ace_editor
     - editor
     - entity_embed
+    - filter_empty_tags
     - linkit
     - mass_fields
     - pathologic
@@ -14,6 +16,21 @@ name: 'Basic HTML'
 format: basic_html
 weight: 0
 filters:
+  ace_filter:
+    id: ace_filter
+    provider: ace_editor
+    status: false
+    weight: 0
+    settings:
+      theme: cobalt
+      syntax: html
+      height: 500px
+      width: 700px
+      font_size: 12pt
+      line_numbers: true
+      show_invisibles: false
+      print_margins: true
+      use_wrap_mode: true
   auto_heading_id:
     id: auto_heading_id
     provider: mass_fields
@@ -44,6 +61,16 @@ filters:
     status: true
     weight: 11
     settings: {  }
+  filter_empty_tags:
+    id: filter_empty_tags
+    provider: filter_empty_tags
+    status: true
+    weight: 0
+    settings:
+      do_not_consider_empty: 'button canvas drupal-media drupal-entity iframe object script svg textarea td th p'
+      filter_spaces: false
+      filter_nbsp: false
+      filter_br: false
   filter_html:
     id: filter_html
     provider: filter
@@ -100,3 +127,4 @@ filters:
     weight: -10
     settings:
       title: false
+      media_substitution: metadata
