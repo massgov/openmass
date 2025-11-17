@@ -5,6 +5,8 @@
  * Contains mass_entity_usage.module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\mass_entity_usage\Form\LinkingPagesWarning;
 use Drupal\mass_entity_usage\UsageTrackingBlocker;
 
 /**
@@ -44,4 +46,11 @@ function mass_entity_usage_queue_info_alter(&$queues) {
   if (isset($queues['entity_usage_tracker'])) {
     unset($queues['entity_usage_tracker']['cron']);
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_entity_usage_form_node_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  LinkingPagesWarning::alter($form, $form_state, $form_id);
 }
