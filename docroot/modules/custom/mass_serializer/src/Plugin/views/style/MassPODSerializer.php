@@ -95,6 +95,7 @@ class MassPODSerializer extends Serializer implements CacheableDependencyInterfa
         'field_contact_information',
         'field_publishing_frequency',
         'field_license',
+        // @deprecated DP-42778: field_start_date is deprecated and hidden from the document form.
         'field_start_date',
         'field_end_date',
         'field_geographic_place',

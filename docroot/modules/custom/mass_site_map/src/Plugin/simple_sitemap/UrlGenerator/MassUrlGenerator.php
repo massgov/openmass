@@ -103,6 +103,8 @@ class MassUrlGenerator extends EntityUrlGenerator {
             'priority' => 0.5,
             'changefreq' => 'daily',
           ];
+          // @deprecated DP-42778: field_start_date is deprecated and hidden from the document form.
+          // It may be removed in a future release. The field still exists and auto-populates with current date.
           if ($start = $entity->get('field_start_date')->date) {
             $data['pagemap']['metatags'][] = [
               'name' => 'mg_date',

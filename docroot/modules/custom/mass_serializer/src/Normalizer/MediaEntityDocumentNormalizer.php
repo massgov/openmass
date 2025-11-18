@@ -41,6 +41,7 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
     'field_contact_information',
     'field_publishing_frequency',
     'field_license',
+    // @deprecated DP-42778: field_start_date is deprecated and hidden from the document form.
     'field_start_date',
     'field_end_date',
     'field_geographic_place',
@@ -176,6 +177,8 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
     }
 
     // Temporal coverage.
+    // @deprecated DP-42778: field_start_date is deprecated and hidden from the document form.
+    // It may be removed in a future release. The field still exists and auto-populates with current date.
     $start_date = $attributes['field_start_date'];
     // If End Date is empty then use Start Date as the end of period.
     $end_date = empty($attributes['field_end_date']) ? $attributes['field_start_date'] : $attributes['field_end_date'];
