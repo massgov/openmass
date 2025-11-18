@@ -77,8 +77,9 @@ class ReplaceUploadForm extends FormBase {
 
     $form['upload'] = [
       '#type' => 'dropzonejs',
-      '#title' => $this->t('Step 1: Upload replacement files'),
-      '#description' => $this->t('<p>Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which must include the media ID. You can upload up to @count files per batch.</p><p><strong>Instructions:</strong> Make sure each uploaded file includes the text "DO_NOT_CHANGE_THIS_MEDIA_ID_{ID}" in its filename (e.g., <em>something_DO_NOT_CHANGE_THIS_MEDIA_ID_123.pdf</em>). This will be used to identify the correct media entity to replace.</p>', ['@count' => self::MAX_UPLOADS]),
+      '#title' => $this->t('Upload replacement files'),
+      '#description' => $this->t('<p>Upload one or more replacement files. Each file will be matched to an existing media item by its filename, which must include the media ID. You can upload up to @count files per batch.</p><p><strong>Instructions:</strong> Make sure each uploaded file includes the text "DO_NOT_CHANGE_THIS_MEDIA_ID_{ID}" in its filename (e.g., <em>something_DO_NOT_CHANGE_THIS_MEDIA_ID_123.pdf</em>). This will be used to identify the correct media entity to replace.</p><p><strong>Note:</strong> If all filenames match their corresponding media items, the replacements will be completed automatically after you click <strong>Start replacement</strong>.
+If any filenames do not match, you will be redirected to a review screen to confirm those files manually.</p>', ['@count' => self::MAX_UPLOADS]),
       '#description_display' => 'before',
       '#multiple' => TRUE,
       '#max_files' => self::MAX_UPLOADS,
@@ -103,7 +104,7 @@ class ReplaceUploadForm extends FormBase {
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Continue to replacement confirmation'),
+      '#value' => $this->t('Start replacement'),
       '#button_type' => 'primary',
     ];
 
@@ -343,7 +344,7 @@ class ReplaceUploadForm extends FormBase {
 
     if (!empty($mismatch_fids)) {
       \Drupal::messenger()->addStatus(t('Some uploaded files need manual verification before replacement.'));
-      return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.confirm')->setAbsolute()->toString());
+      return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.mismatch')->setAbsolute()->toString());
     }
 
     \Drupal::messenger()->addStatus(t('All uploaded files were successfully replaced.'));
