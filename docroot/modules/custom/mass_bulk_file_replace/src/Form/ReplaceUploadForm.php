@@ -6,6 +6,8 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -160,15 +162,30 @@ class ReplaceUploadForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $user = $this->currentUser();
     $uploaded = $form_state->getValue('upload');
+    $items = $uploaded['uploaded_files'] ?? [];
+
+    if (empty($items) || !is_array($items)) {
+      $this->messenger()->addWarning($this->t('No files were uploaded.'));
+      return;
+    }
+
+    // Clear any previous mismatch list for this user.
+    $store = $this->tempStoreFactory->get('mass_bulk_file_replace');
+    $store->delete('mismatch_files_' . $user->id());
 
     $operations = [];
-    foreach ($uploaded['uploaded_files'] as $item) {
+    foreach ($items as $item) {
       if (!empty($item['path']) && file_exists($item['path'])) {
         $operations[] = [
           [get_class($this), 'processFileBatch'],
-          [$item, $user->id()],
+          [$item, $user->id(), $user->getDisplayName()],
         ];
       }
+    }
+
+    if (empty($operations)) {
+      $this->messenger()->addWarning($this->t('No valid files were found to process.'));
+      return;
     }
 
     $batch = [
@@ -179,28 +196,158 @@ class ReplaceUploadForm extends FormBase {
     batch_set($batch);
   }
 
-  public static function processFileBatch($item, $uid, &$context) {
+  public static function processFileBatch($item, $uid, $username, &$context) {
+    // Basic sanity check on input.
+    $filename = isset($item['filename']) ? (string) $item['filename'] : '';
+    $path = isset($item['path']) ? (string) $item['path'] : '';
+
+    if ($filename === '' || $path === '' || !file_exists($path)) {
+      return;
+    }
+
+    // Normalize for media ID extraction: remove auto-suffix before the token.
+    $normalized_for_id = preg_replace('/_\\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+)/i', '', $filename);
+
+    $mid = NULL;
+    if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\\d+)/i', $normalized_for_id, $matches)) {
+      $mid = (int) $matches[1];
+    }
+
+    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
+    $mismatch_key = 'mismatch_files_' . $uid;
+    $mismatch_fids = $store->get($mismatch_key) ?? [];
+
+    $is_match = FALSE;
+    $media = NULL;
+    $old_file = NULL;
+
+    if ($mid) {
+      $media = Media::load($mid);
+      if ($media && $media->bundle() === 'document' && !$media->get('field_upload_file')->isEmpty()) {
+        $old_file = $media->get('field_upload_file')->entity;
+        if ($old_file) {
+          $existing_filename = $old_file->getFilename();
+
+          // For comparison, remove the DO_NOT_CHANGE token from the uploaded
+          // filename and compare against the existing filename.
+          $normalized_comparison = preg_replace('/_?DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+/i', '', $normalized_for_id);
+
+          $uploaded_lower = mb_strtolower($normalized_comparison);
+          $existing_lower = mb_strtolower($existing_filename);
+
+          // Consider it a safe match if:
+          // 1) Filenames match exactly (case-insensitive), OR
+          // 2) The uploaded base name starts with the existing base name
+          //    (allows suffix variants like "housing-proposal2-ally.pdf").
+          if ($uploaded_lower === $existing_lower) {
+            $is_match = TRUE;
+          }
+          else {
+            $uploaded_base = pathinfo($uploaded_lower, PATHINFO_FILENAME);
+            $existing_base = pathinfo($existing_lower, PATHINFO_FILENAME);
+            if ($uploaded_base !== '' && $existing_base !== '' && str_starts_with($uploaded_base, $existing_base)) {
+              $is_match = TRUE;
+            }
+          }
+        }
+      }
+    }
+
+    if ($is_match && $media && $old_file) {
+      // SAFE MATCH CASE:
+      // Reuse the existing file entity attached to the media and overwrite
+      // its underlying file with the uploaded file contents.
+
+      // Build a cleaned filename for the destination (no DO_NOT_CHANGE token).
+      $clean_name = preg_replace('/_\\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+)/i', '', $filename);
+      $clean_name = preg_replace('/_?DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+/i', '', $clean_name);
+
+      if ($clean_name === '') {
+        $clean_name = $filename;
+      }
+
+      // Resolve the destination directory using the media's field settings.
+      $field_definition = $media->getFieldDefinition('field_upload_file');
+      $settings = $field_definition ? $field_definition->getSettings() : [];
+      $file_directory = $settings['file_directory'] ?? '';
+
+      if (!empty($file_directory)) {
+        $token_service = \Drupal::token();
+        $data = ['media' => $media];
+        $file_directory = $token_service->replace($file_directory, $data);
+        $destination = 'public://' . $file_directory;
+      }
+      else {
+        $destination = 'public://';
+      }
+
+      /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+      $file_system = \Drupal::service('file_system');
+      if (!$file_system->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+        \Drupal::logger('mass_bulk_file_replace')->error('Failed to prepare directory: @dest', ['@dest' => $destination]);
+        return;
+      }
+
+      $destination_uri = rtrim($destination, '/') . '/' . $clean_name;
+
+      // Copy uploaded file into final destination, overwriting any existing file.
+      $copied = $file_system->copy($path, $destination_uri, FileSystemInterface::EXISTS_REPLACE);
+      if (!$copied) {
+        \Drupal::logger('mass_bulk_file_replace')->error('Failed to copy uploaded file "@file" to "@dest".', ['@file' => $path, '@dest' => $destination_uri]);
+        return;
+      }
+
+      // Update the existing file entity to point at the new URI and filename.
+      $old_file->setFileUri($destination_uri);
+      $old_file->setFilename($clean_name);
+      $old_file->setPermanent();
+      $old_file->save();
+
+      // Create a new media revision with a log message.
+      $media->setNewRevision();
+      $media->setRevisionLogMessage("File has been replaced using bulk replace tool by $username.");
+      $media->set('field_upload_file', $old_file);
+      $media->save();
+
+      return;
+    }
+
+    // MISMATCH CASE:
+    // Anything that reaches here is treated as a mismatch needing manual
+    // verification on the confirmation form. We now create a temporary file
+    // entity and store only its fid for the confirm step to use.
     $file = File::create([
-      'uri' => $item['path'],
-      'filename' => $item['filename'],
+      'uri' => $path,
+      'filename' => $filename,
       'status' => 0,
     ]);
     $file->save();
+    $fid = $file->id();
 
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $existing = $store->get('uploaded_files_' . $uid) ?? [];
-    $existing[] = $file->id();
-    $store->set('uploaded_files_' . $uid, $existing);
+    $mismatch_fids[] = $fid;
+    $store->set($mismatch_key, $mismatch_fids);
   }
 
   public static function batchFinished($success, $results, $operations) {
-    if ($success) {
-      return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.confirm')->setAbsolute()->toString());
-    }
-    else {
-      \Drupal::messenger()->addError('Something went wrong while processing the files.');
+    $current_user = \Drupal::currentUser();
+    $uid = $current_user->id();
+    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
+
+    if (!$success) {
+      \Drupal::messenger()->addError(t('Something went wrong while processing the files.'));
       return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.upload')->setAbsolute()->toString());
     }
+
+    $mismatch_key = 'mismatch_files_' . $uid;
+    $mismatch_fids = $store->get($mismatch_key) ?? [];
+
+    if (!empty($mismatch_fids)) {
+      \Drupal::messenger()->addStatus(t('Some uploaded files need manual verification before replacement.'));
+      return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.confirm')->setAbsolute()->toString());
+    }
+
+    \Drupal::messenger()->addStatus(t('All uploaded files were successfully replaced.'));
+    return new RedirectResponse(Url::fromRoute('mass_bulk_file_replace.upload')->setAbsolute()->toString());
   }
 
 }
