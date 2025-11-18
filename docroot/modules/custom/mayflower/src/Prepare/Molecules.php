@@ -866,7 +866,7 @@ class Molecules {
           $groups = array_slice($groups, 0, 1);
           break;
         }
-        $groups = '';
+        $groups = [];
       }
     }
 
