@@ -1762,10 +1762,22 @@ class Helper {
   /**
    * Return the HTML to reference an SVG.
    */
-  public static function getSvgEmbed($hash) {
-    return sprintf('<svg aria-hidden="true" focusable="false"><use xlink:href="#%s"></use></svg>', $hash);
+  public static function getSvgEmbed($hash, $dimensions = []) {
+    // Build dimension attributes
+    $dimensionAttrs = '';
+    if (!empty($dimensions['width'])) {
+      $dimensionAttrs .= ' width="' . htmlspecialchars($dimensions['width']) . '"';
+    }
+    if (!empty($dimensions['height'])) {
+      $dimensionAttrs .= ' height="' . htmlspecialchars($dimensions['height']) . '"';
+    }
+    
+    return sprintf(
+      '<svg aria-hidden="true" focusable="false" height="18" width="18" %s><use href="#%s"></use></svg>',
+      $dimensionAttrs,
+      $hash
+    );
   }
-
   /**
    * Return the HTML to SVG source.
    *

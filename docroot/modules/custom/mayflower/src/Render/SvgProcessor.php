@@ -19,19 +19,6 @@ use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Response attachments processor to dump SVGs to a single block on the page.
- *
- * This allows us to do use the following render array:
- *
- * [
- *   '#markup' => '<svg-placeholder path="foo.svg">',
- *   '#attachments' => [
- *     'svg' => ['foo.svg']
- *   ]
- * ]
- *
- * On output, 'foo.svg' will be imported into the bottom of the page 1x, and the
- * placeholder will be swapped with an SVG use reference, embedding the SVG once
- * and using it everywhere.
  */
 class SvgProcessor extends HtmlResponseAttachmentsProcessor {
 
@@ -44,27 +31,30 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
 
   /**
    * Constructs a SvgProcessor object.
-   *
-   * @param \Drupal\Core\Render\AttachmentsResponseProcessorInterface $html_response_attachments_processor
-   *   The HTML response attachments processor service.
-   * @param \Drupal\Core\Asset\AssetResolverInterface $asset_resolver
-   *   An asset resolver.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   A config factory for retrieving required config objects.
-   * @param \Drupal\Core\Asset\AssetCollectionRendererInterface $css_collection_renderer
-   *   The CSS asset collection renderer.
-   * @param \Drupal\Core\Asset\AssetCollectionRendererInterface $js_collection_renderer
-   *   The JS asset collection renderer.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The request stack.
-   * @param \Drupal\Core\Render\RendererInterface $renderer
-   *   The renderer.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
-   *   The module handler service.
    */
   public function __construct(AttachmentsResponseProcessorInterface $html_response_attachments_processor, AssetResolverInterface $asset_resolver, ConfigFactoryInterface $config_factory, AssetCollectionRendererInterface $css_collection_renderer, AssetCollectionRendererInterface $js_collection_renderer, RequestStack $request_stack, RendererInterface $renderer, ModuleHandlerInterface $module_handler) {
     $this->htmlResponseAttachmentsProcessor = $html_response_attachments_processor;
     parent::__construct($asset_resolver, $config_factory, $css_collection_renderer, $js_collection_renderer, $request_stack, $renderer, $module_handler);
+  }
+
+  /**
+   * Extract width and height from original SVG.
+   *
+   * @param \DOMElement $svgNode
+   *   The original SVG node.
+   *
+   * @return array
+   *   Array with width and height attributes.
+   */
+  protected function extractDimensions(\DOMElement $svgNode) {
+    $dimensions = [];
+    if ($svgNode->hasAttribute('width')) {
+      $dimensions['width'] = $svgNode->getAttribute('width');
+    }
+    if ($svgNode->hasAttribute('height')) {
+      $dimensions['height'] = $svgNode->getAttribute('height');
+    }
+    return $dimensions;
   }
 
   /**
@@ -73,8 +63,6 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
   public function processAttachments(AttachmentsInterface $response) {
     if ($response instanceof HtmlResponse) {
 
-      // (Note this is copied verbatim from
-      // \Drupal\Core\Render\HtmlResponseAttachmentsProcessor::processAttachments)
       try {
         $response = $this->renderPlaceholders($response);
       }
@@ -94,8 +82,12 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
           $replacement = '';
           if ($svgNode = Helper::getSvg($path)) {
             $hash = md5($path);
+            
+            // Extract dimensions from original SVG
+            $dimensions = $this->extractDimensions($svgNode);
+            
             $svgNode->setAttribute('id', $hash);
-            $replacement = Helper::getSvgEmbed($hash);
+            $replacement = Helper::getSvgEmbed($hash, $dimensions);
             $inlined[] = Helper::getSvgSource($hash, $svgNode);
           }
           $content = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $content);
@@ -122,8 +114,12 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
               $replacement = '';
               if ($svgNode = Helper::getSvg($path)) {
                 $hash = md5($path);
+                
+                // Extract dimensions from original SVG
+                $dimensions = $this->extractDimensions($svgNode);
+                
                 $svgNode->setAttribute('id', $hash);
-                $replacement = Helper::getSvgEmbed($hash);
+                $replacement = Helper::getSvgEmbed($hash, $dimensions);
                 $inlined[] = Helper::getSvgSource($hash, $svgNode);
               }
               $command['data'] = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $command['data']);
@@ -145,8 +141,12 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
               $replacement = '';
               if ($svgNode = Helper::getSvg($path)) {
                 $hash = md5($path);
+                
+                // Extract dimensions from original SVG
+                $dimensions = $this->extractDimensions($svgNode);
+                
                 $svgNode->setAttribute('id', $hash);
-                $replacement = Helper::getSvgEmbed($hash);
+                $replacement = Helper::getSvgEmbed($hash, $dimensions);
                 $inlined[] = Helper::getSvgSource($hash, $svgNode);
               }
               $command['data'] = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $command['data']);
