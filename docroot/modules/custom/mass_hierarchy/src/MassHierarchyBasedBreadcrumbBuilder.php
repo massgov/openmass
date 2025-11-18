@@ -25,7 +25,7 @@ use Drupal\node\Entity\Node;
 class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilder {
 
   /**
-   * The nearest microsite lookup service..
+   * The nearest microsite lookup service.
    *
    * @var \Drupal\mass_microsites\NearestMicrositeLookup
    */
