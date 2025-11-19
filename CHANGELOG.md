@@ -1,3 +1,7 @@
+## [0.458.1] - November 19, 2025
+
+### Changed
+  - DP-42746: Upgraded entity_hierarchy to 5.x.
 
 
 ## [0.458.0] - November 18, 2025
