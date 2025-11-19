@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
+use Drupal\mass_bulk_file_replace\FilenameMediaMatchTrait;
 use Drupal\media\Entity\Media;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * Step 1: Upload form using DropzoneJS.
  */
 class ReplaceUploadForm extends FormBase {
+  use FilenameMediaMatchTrait;
 
   private const MAX_UPLOADS = 100;
 
@@ -141,10 +143,8 @@ If any filenames do not match, you will be redirected to a review screen to conf
       if ($filename === '') {
         continue;
       }
-      // Normalize filenames that may have an auto-suffix before the ID token.
-      $normalized = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
-      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized, $m)) {
-        $mid = (int) $m[1];
+      $mid = static::extractMediaId($filename);
+      if ($mid) {
         $mid_counts[$mid] = ($mid_counts[$mid] ?? 0) + 1;
       }
     }
@@ -206,13 +206,7 @@ If any filenames do not match, you will be redirected to a review screen to conf
       return;
     }
 
-    // Normalize for media ID extraction: remove auto-suffix before the token.
-    $normalized_for_id = preg_replace('/_\\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+)/i', '', $filename);
-
-    $mid = NULL;
-    if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\\d+)/i', $normalized_for_id, $matches)) {
-      $mid = (int) $matches[1];
-    }
+    $mid = static::extractMediaId($filename);
 
     $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
     $mismatch_key = 'mismatch_files_' . $uid;
@@ -229,26 +223,8 @@ If any filenames do not match, you will be redirected to a review screen to conf
         if ($old_file) {
           $existing_filename = $old_file->getFilename();
 
-          // For comparison, remove the DO_NOT_CHANGE token from the uploaded
-          // filename and compare against the existing filename.
-          $normalized_comparison = preg_replace('/_?DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+/i', '', $normalized_for_id);
-
-          $uploaded_lower = mb_strtolower($normalized_comparison);
-          $existing_lower = mb_strtolower($existing_filename);
-
-          // Consider it a safe match if:
-          // 1) Filenames match exactly (case-insensitive), OR
-          // 2) The uploaded base name starts with the existing base name
-          // (allows suffix variants like "housing-proposal2-ally.pdf").
-          if ($uploaded_lower === $existing_lower) {
+          if (static::isSafeFilenameMatch($filename, $existing_filename)) {
             $is_match = TRUE;
-          }
-          else {
-            $uploaded_base = pathinfo($uploaded_lower, PATHINFO_FILENAME);
-            $existing_base = pathinfo($existing_lower, PATHINFO_FILENAME);
-            if ($uploaded_base !== '' && $existing_base !== '' && str_starts_with($uploaded_base, $existing_base)) {
-              $is_match = TRUE;
-            }
           }
         }
       }
@@ -259,10 +235,7 @@ If any filenames do not match, you will be redirected to a review screen to conf
       // Reuse the existing file entity attached to the media and overwrite
       // its underlying file with the uploaded file contents.
 
-      // Build a cleaned filename for the destination (no DO_NOT_CHANGE token).
-      $clean_name = preg_replace('/_\\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+)/i', '', $filename);
-      $clean_name = preg_replace('/_?DO_NOT_CHANGE_THIS_MEDIA_ID_\\d+/i', '', $clean_name);
-
+      $clean_name = static::getDisplayFilename($filename);
       if ($clean_name === '') {
         $clean_name = $filename;
       }

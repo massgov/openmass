@@ -10,15 +10,17 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\Tableselect;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
+use Drupal\mass_bulk_file_replace\FilenameMediaMatchTrait;
 use Drupal\media\Entity\Media;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Step 2: Confirm replacement mapping.
+ * Step 2: Mismatch replacement confirm.
  */
 class ReplaceMismatchForm extends FormBase {
+  use FilenameMediaMatchTrait;
 
   /**
    * @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
@@ -67,14 +69,11 @@ class ReplaceMismatchForm extends FormBase {
         continue;
       }
       $filename = $new_file->getFilename();
-      // First remove any numeric auto-suffix before the token.
-      $normalized_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
-      // Then remove the DO_NOT_CHANGE token itself for display.
-      $display_new = preg_replace('/_?DO_NOT_CHANGE_THIS_MEDIA_ID_\d+/i', '', $normalized_filename);
+      // Use shared helpers to derive display name and media ID.
+      $display_new = static::getDisplayFilename($filename);
+      $mid = static::extractMediaId($filename);
 
-      // Extract media ID from filename using pattern.
-      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized_filename, $matches)) {
-        $mid = (int) $matches[1];
+      if ($mid !== NULL) {
         if (isset($seen_media_ids[$mid])) {
           continue;
         }
@@ -200,16 +199,15 @@ class ReplaceMismatchForm extends FormBase {
     }
 
     $filename = $file->getFilename();
-    $normalized_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
-    if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized_filename, $matches)) {
-      $mid = (int) $matches[1];
+    $mid = static::extractMediaId($filename);
+    if ($mid !== NULL) {
       $media = Media::load($mid);
       if ($media && $media->bundle() === 'document') {
         $file->setPermanent();
         $file->save();
 
         // Normalize filename early so any hooks that react on save see the final name.
-        $cleaned_filename = preg_replace('/_?do_not_change_this_media_id_\d+/i', '', $filename);
+        $cleaned_filename = static::getDisplayFilename($filename);
         if ($cleaned_filename && $cleaned_filename !== $filename) {
           $current_uri = $file->getFileUri();
           /** @var \Drupal\Core\File\FileSystemInterface $fs */
