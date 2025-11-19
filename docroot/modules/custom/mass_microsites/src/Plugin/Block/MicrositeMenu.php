@@ -7,14 +7,12 @@ use Drupal\Core\Menu\MenuActiveTrailInterface;
 use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
-use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
+use Drupal\entity_hierarchy\Storage\QueryBuilderFactory;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
 use Drupal\entity_hierarchy_microsite\Plugin\MicrositePluginTrait;
 use Drupal\mass_microsites\NearestMicrositeLookup;
 use Drupal\node\NodeInterface;
 use Drupal\system\Plugin\Block\SystemMenuBlock;
-use PNX\NestedSet\NodeKey;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -35,9 +33,7 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
     create as traitCreate;
   }
 
-  protected NestedSetStorageFactory $nestedSetStorageFactory;
-
-  protected NestedSetNodeKeyFactory $nestedSetNodeKeyFactory;
+  protected QueryBuilderFactory $queryBuilderFactory;
 
   protected NearestMicrositeLookup $nearestMicrositeLookup;
 
@@ -54,15 +50,12 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
    *   The menu tree service.
    * @param \Drupal\Core\Menu\MenuActiveTrailInterface $menu_active_trail
    *   The active menu trail service.
-   * @param NestedSetStorageFactory $nested_set_storage_factory
-   *   The nested set storage service.
-   * @param NestedSetNodeKeyFactory $nested_set_node_key_factory
-   *   The nested set node key service.
+   * @param QueryBuilderFactory $query_builder_factory
+   *   The query builder storage service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, MenuLinkTreeInterface $menu_tree, MenuActiveTrailInterface $menu_active_trail, NestedSetStorageFactory $nested_set_storage_factory, NestedSetNodeKeyFactory $nested_set_node_key_factory, NearestMicrositeLookup $nearest_microsite_lookup) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, MenuLinkTreeInterface $menu_tree, MenuActiveTrailInterface $menu_active_trail, QueryBuilderFactory $query_builder_factory, NearestMicrositeLookup $nearest_microsite_lookup) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $menu_tree, $menu_active_trail);
-    $this->nestedSetStorageFactory = $nested_set_storage_factory;
-    $this->nestedSetNodeKeyFactory = $nested_set_node_key_factory;
+    $this->queryBuilderFactory = $query_builder_factory;
     $this->nearestMicrositeLookup = $nearest_microsite_lookup;
   }
 
@@ -77,8 +70,7 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
       $plugin_definition,
       $container->get('menu.link_tree'),
       $container->get('menu.active_trail'),
-      $container->get('entity_hierarchy.nested_set_storage_factory'),
-      $container->get('entity_hierarchy.nested_set_node_factory'),
+      $container->get('entity_hierarchy.query_builder_factory'),
       $container->get('mass_microsites.nearest_microsite_lookup')
     );
 
@@ -195,12 +187,12 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
   }
 
   /**
-   * Lazily retrieves and caches the nested set storage per request and field.
+   * Lazily retrieves and caches query builder storage per request and field.
    */
   private function getTreeStorage(string $field) {
     static $storageCache = [];
     if (!isset($storageCache[$field])) {
-      $storageCache[$field] = $this->nestedSetStorageFactory->get($field, 'node');
+      $storageCache[$field] = $this->queryBuilderFactory->get($field, 'node');
     }
     return $storageCache[$field];
   }
@@ -223,14 +215,12 @@ class MicrositeMenu extends SystemMenuBlock implements ContainerFactoryPluginInt
       return $tagsCache[$nid][$field];
     }
 
-    $parent_node = new NodeKey($home->id(), $home->getRevisionId());
     $tree_storage = $this->getTreeStorage($field);
-    $root_node = $tree_storage->getNode($parent_node);
-    $children = $tree_storage->findChildren($root_node->getNodeKey());
+    $children = $tree_storage->findChildren($home);
     $children_node_cache_tags = [];
 
     foreach ($children as $child) {
-      $children_node_cache_tags[] = 'node:' . $child->getNodeKey()->getId();
+      $children_node_cache_tags[] = 'node:' . $child->getId();
     }
 
     return $tagsCache[$nid][$field] = $children_node_cache_tags;

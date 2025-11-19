@@ -102,22 +102,17 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
    */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-    /** @var \Drupal\entity_hierarchy\Storage\NestedSetStorageFactory */
-    $nested_storage_factory = \Drupal::service('entity_hierarchy.nested_set_storage_factory');
-
-    $nested_storage = $nested_storage_factory->get('field_primary_parent', 'node');
+    /** @var \Drupal\entity_hierarchy\Storage\QueryBuilderFactory $query_builder_factory */
+    $query_builder_factory = \Drupal::service('entity_hierarchy.query_builder_factory');
+    $hierarchy_storage = $query_builder_factory->get('field_primary_parent', 'node');
     $new_parent = $form_state->getValue('new_parent');
-
-    /** @var \Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory */
-    $key_factory = \Drupal::service('entity_hierarchy.nested_set_node_factory');
 
     $list = $form['#list'];
 
     foreach ($list as $item_id) {
       $nid = $item_id[0];
       $node = $node_storage->load($nid);
-      $thisNode = $key_factory->fromEntity($node);
-      $descendants = $nested_storage->findDescendants($thisNode);
+      $descendants = $hierarchy_storage->findDescendants($node);
 
       // Ensure the new parent is not one of the selected nodes.
       if ($new_parent == $nid) {
