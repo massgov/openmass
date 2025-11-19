@@ -1,4 +1,15 @@
 
+
+## [0.458.0] - November 18, 2025
+
+### Added
+  - DP-40019: Add warning to authors if they try to unpublish a page or document that has published pages linking here.
+  - DP-42243: Create new scratch file from selection.
+  
+### Fixed
+  - DP-42197: A11Y eliminate empty list tag on how-to pages.
+  
+
 ## [0.457.1] - November 13, 2025
 
 ### Security
