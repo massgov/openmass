@@ -15,8 +15,7 @@ if (file_exists('/var/www/site-php')) {
   $conf['acquia_hosting_settings_autoconnect'] = FALSE;
   require "/var/www/site-php/massgov/massgov-settings.inc";
   $databases['default']['default']['init_commands'] = [
-    'isolation_level' => "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED",
-    'cte_max_recursion_depth' => "SET SESSION cte_max_recursion_depth = 10000000"
+    'isolation_level' => "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED"
   ];
   if (function_exists("acquia_hosting_db_choose_active")) {
     acquia_hosting_db_choose_active();
