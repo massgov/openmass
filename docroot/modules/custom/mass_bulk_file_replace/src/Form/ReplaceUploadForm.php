@@ -239,7 +239,7 @@ If any filenames do not match, you will be redirected to a review screen to conf
           // Consider it a safe match if:
           // 1) Filenames match exactly (case-insensitive), OR
           // 2) The uploaded base name starts with the existing base name
-          //    (allows suffix variants like "housing-proposal2-ally.pdf").
+          // (allows suffix variants like "housing-proposal2-ally.pdf").
           if ($uploaded_lower === $existing_lower) {
             $is_match = TRUE;
           }
