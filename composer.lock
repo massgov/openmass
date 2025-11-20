@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "62827d260d9e35c5bafc6b87712748b1",
+    "content-hash": "cec44cbb6878a2bb6a02b07fdc03d2cf",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -5721,23 +5721,21 @@
         },
         {
             "name": "drupal/entity_hierarchy",
-            "version": "3.3.11",
+            "version": "5.0.0-alpha8",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/entity_hierarchy.git",
-                "reference": "3.3.11"
+                "reference": "5.0.0-alpha8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/entity_hierarchy-3.3.11.zip",
-                "reference": "3.3.11",
-                "shasum": "f80df45157b6227e813e92a19656a7083f943ac3"
+                "url": "https://ftp.drupal.org/files/projects/entity_hierarchy-5.0.0-alpha8.zip",
+                "reference": "5.0.0-alpha8",
+                "shasum": "2bc0ac6d49eddf65e1048e10de277bb30b98e47f"
             },
             "require": {
-                "drupal/core": "^10.1 || ~11",
-                "drupal/dbal": "~1.0 || ~2",
-                "php": ">=8.1",
-                "previousnext/nested-set": "^0.1.1 || ~1 || ~2"
+                "drupal/core": ">=10.2",
+                "php": "^8.1"
             },
             "require-dev": {
                 "drupal/workbench_access": "*"
@@ -5745,16 +5743,11 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.3.11",
-                    "datestamp": "1721950550",
+                    "version": "5.0.0-alpha8",
+                    "datestamp": "1753248429",
                     "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "drush": {
-                    "services": {
-                        "drush.services.yml": "^9"
+                        "status": "not-covered",
+                        "message": "Alpha releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -5763,6 +5756,10 @@
                 "GPL-2.0-or-later"
             ],
             "authors": [
+                {
+                    "name": "acbramley",
+                    "homepage": "https://www.drupal.org/user/1036766"
+                },
                 {
                     "name": "fenstrat",
                     "homepage": "https://www.drupal.org/user/362649"
@@ -5774,6 +5771,10 @@
                 {
                     "name": "larowlan",
                     "homepage": "https://www.drupal.org/user/395439"
+                },
+                {
+                    "name": "nterbogt",
+                    "homepage": "https://www.drupal.org/user/102218"
                 },
                 {
                     "name": "webdrips",
@@ -16058,59 +16059,6 @@
                 "source": "https://github.com/previousnext/drupal-test-utils/tree/0.0.1"
             },
             "time": "2022-12-13T23:56:09+00:00"
-        },
-        {
-            "name": "previousnext/nested-set",
-            "version": "2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/previousnext/nested-set.git",
-                "reference": "40d9f21afa6b5ef82fab4f7810fae5ee4ef9adfa"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/previousnext/nested-set/zipball/40d9f21afa6b5ef82fab4f7810fae5ee4ef9adfa",
-                "reference": "40d9f21afa6b5ef82fab4f7810fae5ee4ef9adfa",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": "^3.3",
-                "php": ">=8.0"
-            },
-            "require-dev": {
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-                "drupal/coder": "^8.3.12",
-                "ext-pdo_sqlite": "*",
-                "pear/console_table": "^1.3",
-                "phpcompatibility/php-compatibility": "^9.3",
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan": "^1.4",
-                "phpstan/phpstan-deprecation-rules": "^1.0",
-                "phpunit/phpunit": "^8.5 || ^9.3",
-                "squizlabs/php_codesniffer": "^3.7.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "PNX\\NestedSet\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Kim Pepper",
-                    "email": "kim@pepper.id.au"
-                }
-            ],
-            "description": "A PHP Doctrine DBAL implementation for Nested Sets.",
-            "support": {
-                "issues": "https://github.com/previousnext/nested-set/issues",
-                "source": "https://github.com/previousnext/nested-set/tree/2.0.1"
-            },
-            "time": "2022-12-01T05:34:18+00:00"
         },
         {
             "name": "previousnext/phpunit-finder",
