@@ -57,7 +57,7 @@ final class NodeFriendlyRedirectsAlterer {
       '#type' => 'details',
       '#title' => $this->t('Friendly URLs'),
       '#group' => 'advanced',
-      '#open' => TRUE,
+      '#open' => FALSE,
       '#tree' => TRUE,
       '#attributes' => ['id' => $wrapper_id],
     ];
@@ -66,7 +66,7 @@ final class NodeFriendlyRedirectsAlterer {
 
     if ($can_manage) {
       $form['mass_friendly_redirects']['help'] = [
-        '#markup' => '<p>' . $this->t('Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>URL format: mass.gov/prefix/path</p>',
+        '#markup' => '<p>' . $this->t('Create a friendly URL when you need a web address that’s easy to share and remember. See out Knowledge Base for friendly URL best practices. Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>Create one friendly URL. Pick an approved prefix (usually your org’s acronym) and a short, clear keyword(s). Avoid unfamiliar acronyms. May take up to 35 minutes to work.</p><p>URL format: mass.gov/prefix/keyword(s)</p>',
       ];
 
       $form['mass_friendly_redirects']['prefix'] = [
@@ -85,7 +85,7 @@ final class NodeFriendlyRedirectsAlterer {
 
       $form['mass_friendly_redirects']['suffix'] = [
         '#type' => 'textfield',
-        '#title' => $this->t('Path after prefix'),
+        '#title' => $this->t('Keyword(s)'),
         '#maxlength' => 255,
         '#description' => $this->t('Lowercase only (all case variations will work after it is created). Use hyphens for separators. Do not include leading or trailing slashes.'),
       ];
