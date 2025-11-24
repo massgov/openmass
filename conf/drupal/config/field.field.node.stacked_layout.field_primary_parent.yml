@@ -1,50 +1,33 @@
-uuid: 5b0a91e8-e6fc-4513-bace-3b88527a66ec
+uuid: 5aba5dfb-8ecb-4273-8271-375588308389
 langcode: en
 status: true
 dependencies:
   config:
     - field.storage.node.field_primary_parent
-    - node.type.binder
-    - node.type.campaign_landing
-    - node.type.curated_list
-    - node.type.decision_tree
-    - node.type.guide_page
-    - node.type.how_to_page
-    - node.type.info_details
-    - node.type.org_page
-    - node.type.service_page
-    - node.type.topic_page
+    - node.type.stacked_layout
   module:
     - entity_hierarchy
-id: node.decision_tree.field_primary_parent
+id: node.stacked_layout.field_primary_parent
 field_name: field_primary_parent
 entity_type: node
-bundle: decision_tree
+bundle: stacked_layout
 label: 'Parent page'
 description: '<p>Choose the parent for the current page. Parents are higher-level pages that link to child pages that contain more detailed content. Normally, you will want to make sure that you have a link on the parent to this page. Learn more about the <a href="https://www.mass.gov/kb/parent-field" target="_blank">Parent page field</a>.</p> <p>The breadcrumb that this field will generate is shown below. If you select a new parent, the breadcrumb that would result in is shown.</p> '
 required: false
 translatable: true
-default_value: {  }
+default_value: { }
 default_value_callback: ''
 settings:
   handler: 'default:node'
   handler_settings:
-    target_bundles:
-      binder: binder
-      curated_list: curated_list
-      guide_page: guide_page
-      how_to_page: how_to_page
-      info_details: info_details
-      org_page: org_page
-      campaign_landing: campaign_landing
-      service_page: service_page
-      topic_page: topic_page
+    target_bundles: { }
     sort:
       field: title
       direction: ASC
     auto_create: false
-    auto_create_bundle: binder
+    auto_create_bundle: ''
   weight_min: -50
   weight_max: 50
   weight_label: Weight
 field_type: entity_reference_hierarchy
+
