@@ -1,5 +1,13 @@
 
 
+## [0.459.0] - November 25, 2025
+
+### Changed
+  - DP-43031: Allow Stacked Layout content type to be used as a parent for Info Details pages in the primary parent field.
+  - DP-43523: BACKPORT undo changes that make parent page not required.
+  
+
+
 ## [0.458.2] - November 20, 2025
 
 ### Fixed
