@@ -1,5 +1,10 @@
 
 
+## [0.458.2] - November 20, 2025
+
+### Fixed
+- DP-42746: Patch entity_hierarchy to fix recursive queries.
+
 ## [0.458.1] - November 19, 2025
 
 ### Changed
@@ -11,10 +16,10 @@
 ### Added
   - DP-40019: Add warning to authors if they try to unpublish a page or document that has published pages linking here.
   - DP-42243: Create new scratch file from selection.
-  
+
 ### Fixed
   - DP-42197: A11Y eliminate empty list tag on how-to pages.
-  
+
 
 ## [0.457.1] - November 13, 2025
 
