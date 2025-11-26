@@ -34,22 +34,25 @@ trait FilenameMediaMatchTrait {
    * Determine whether uploaded vs existing filenames are a "safe" match.
    */
   protected static function isSafeFilenameMatch(string $uploadedFilename, string $existingFilename): bool {
-    // Strip token & normalize to lowercase for comparison.
-    $uploaded_norm = mb_strtolower(
-      preg_replace('/_?DO_NOT_CHANGE_THIS_MEDIA_ID_\d+/i', '', static::normalizeForId($uploadedFilename))
-    );
-    $existing_norm = mb_strtolower($existingFilename);
+    // Uploaded filenames may include the DO_NOT_CHANGE token and an auto-suffix
+    // before it; normalize those away to the author-facing form.
+    $uploaded_norm = mb_strtolower(static::getDisplayFilename($uploadedFilename));
+    $existing_processed = preg_replace('/_(\d+)(\.[a-zA-Z0-9]+)$/', '$2', $existingFilename);
+    $existing_norm = mb_strtolower($existing_processed);
 
+    // Exact match after normalization is always safe.
     if ($uploaded_norm === $existing_norm) {
       return TRUE;
     }
 
+    // Otherwise, allow cases where the uploaded base name starts with
+    // the existing base name (e.g., housing-proposal2-ally vs housing-proposal2).
     $uploaded_base = pathinfo($uploaded_norm, PATHINFO_FILENAME);
     $existing_base = pathinfo($existing_norm, PATHINFO_FILENAME);
 
-    return $uploaded_base !== '' &&
-      $existing_base !== '' &&
-      str_starts_with($uploaded_base, $existing_base);
+    return $uploaded_base !== ''
+      && $existing_base !== ''
+      && str_starts_with($uploaded_base, $existing_base);
   }
 
 }
