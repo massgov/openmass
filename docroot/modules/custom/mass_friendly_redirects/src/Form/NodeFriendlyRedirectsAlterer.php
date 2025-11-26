@@ -305,17 +305,24 @@ final class NodeFriendlyRedirectsAlterer {
 
       // Build a link to the redirects report filtered by this source path.
       $report_link = Link::fromTextAndUrl(
-        t('See report showing where this URL is used. You can remove it from that page if needed.'),
+        t('See report showing where this URL is used.'),
         Url::fromUserInput('/admin/ma-dash/reports/redirects', [
           'query' => ['redirect_source__path' => '/' . $source],
         ])
       )->toString();
+      $report_link .= ' You can remove it from that page if needed.';
 
-      // Form errors escape HTML, so keep the field error plain-text for focus/accessibility…
       $plain = t('A redirect for "/@src" already exists.', ['@src' => $source]);
-      $form_state->setErrorByName('mass_friendly_redirects][suffix', $plain);
 
-      // …and add a separate messenger error with a clickable link and report link.
+      // Attach the report link directly to the field error so editors see the
+      // guidance right where the error appears.
+      $form_state->setErrorByName(
+        'mass_friendly_redirects][suffix',
+        Markup::create($plain . ' ' . $report_link)
+      );
+
+      // Also show a status message with destination details (if available)
+      // plus the same report link.
       if ($link_markup) {
         \Drupal::messenger()->addError(Markup::create(
           $plain . ' ' .
