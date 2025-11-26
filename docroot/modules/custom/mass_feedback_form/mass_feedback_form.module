@@ -29,7 +29,8 @@ function mass_feedback_form_help($route_name, RouteMatchInterface $route_match) 
 /**
  * Implements hook_theme().
  *
- * Defines twig templates for two feedback form blocks, one called by PageFeedbackForm and the other by NodeFeedbackContainer.
+ * Defines twig templates for two feedback form blocks, one called by
+ * PageFeedbackForm and the other by NodeFeedbackContainer.
  */
 function mass_feedback_form_theme() {
   return [
@@ -45,6 +46,15 @@ function mass_feedback_form_theme() {
       'base hook' => 'block',
     ],
   ];
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function mass_feedback_form_preprocess(&$variables, $hook) {
+  if (in_array($hook, ['mass_feedback_form_without_organization', 'mass_feedback_form', 'block__node_feedback_container', 'node']) ) {
+    $variables['feedback_submission_api_endpoint'] = getenv('FEEDBACK_SUBMISSION_API_ENDPOINT');
+  }
 }
 
 /**
