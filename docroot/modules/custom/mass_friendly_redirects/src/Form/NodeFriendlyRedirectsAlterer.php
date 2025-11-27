@@ -343,7 +343,7 @@ final class NodeFriendlyRedirectsAlterer {
       )->toString();
       $report_link .= ' You can remove it from that page if needed.';
 
-      $plain = t('A redirect for "/@src" already exists.', ['@src' => $source]);
+      $plain = t('A friendly URL for "/@src" already exists.', ['@src' => $source]);
 
       // Attach the report link directly to the field error so editors see the
       // guidance right where the error appears.
