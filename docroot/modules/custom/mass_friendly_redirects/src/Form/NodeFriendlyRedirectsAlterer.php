@@ -550,12 +550,16 @@ final class NodeFriendlyRedirectsAlterer {
 
       // Filter by allowed prefixes here instead of in SQL to avoid massive
       // OR condition groups and excessive JOINs when many prefixes exist.
+      // Only treat a redirect as a "friendly URL" if it has the prefix PLUS
+      // at least one additional segment (e.g. "dua/claimants"), not just the
+      // bare prefix like "dua" or "dua/".
       $allowed_match = FALSE;
       foreach ($allowed as $p) {
         if ($p === '') {
           continue;
         }
-        if ($path === $p || str_starts_with($path, $p . '/')) {
+        $prefix_with_slash = $p . '/';
+        if (str_starts_with($path, $prefix_with_slash) && strlen($path) > strlen($prefix_with_slash)) {
           $allowed_match = TRUE;
           break;
         }
