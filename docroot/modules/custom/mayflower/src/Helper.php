@@ -1773,7 +1773,7 @@ class Helper {
     }
     
     return sprintf(
-      '<svg aria-hidden="true" focusable="false" height="18" width="18" %s><use href="#%s"></use></svg>',
+      '<svg aria-hidden="true" focusable="false"%s><use href="#%s"></use></svg>',
       $dimensionAttrs,
       $hash
     );

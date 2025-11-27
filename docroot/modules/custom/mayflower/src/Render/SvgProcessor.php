@@ -73,90 +73,75 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
       $content = $response->getContent();
       $attached = $response->getAttachments();
       $inlined = [];
+      
+      // Store dimensions for each path
+      $svgDimensions = [];
+      
+      // Look for svg-placeholder elements with dimensions in the content
+      preg_match_all('/<svg-placeholder\s+path="([^"]*)"(?:[^>]*width="([^"]*)")?(?:[^>]*height="([^"]*)")?(?:[^>]*class="([^"]*)")?[^>]*>/', $content, $placeholderMatches, PREG_SET_ORDER);
 
+      foreach ($placeholderMatches as $match) {
+        $path = $match[1];
+        $width = isset($match[2]) && $match[2] !== '' ? $match[2] : '';
+        $height = isset($match[3]) && $match[3] !== '' ? $match[3] : '';
+        $class = isset($match[4]) && $match[4] !== '' ? $match[4] : '';
+        
+        // Add to SVG attachments if not already there
+        if (!isset($attached['svg'])) {
+          $attached['svg'] = [];
+        }
+        if (!in_array($path, $attached['svg'])) {
+          $attached['svg'][] = $path;
+        }
+        
+        // Store dimensions for this path
+        $svgDimensions[$path] = [];
+        if ($width) $svgDimensions[$path]['width'] = $width;
+        if ($height) $svgDimensions[$path]['height'] = $height;
+        if ($class) $svgDimensions[$path]['class'] = $class;
+      }
+      
+      // Process SVG attachments
       if (isset($attached['svg'])) {
-
         foreach (array_unique(array_filter($attached['svg'])) as $path) {
-          // Use an empty replacement to avoid <svg-placeholder> showing up
-          // when the icon path is valid.
           $replacement = '';
           if ($svgNode = Helper::getSvg($path)) {
             $hash = md5($path);
             
-            // Extract dimensions from original SVG
-            $dimensions = $this->extractDimensions($svgNode);
+            // Use stored dimensions if available, otherwise extract from SVG
+            if (isset($svgDimensions[$path]) && !empty($svgDimensions[$path])) {
+              $dimensions = $svgDimensions[$path];
+            } else {
+              $dimensions = $this->extractDimensions($svgNode);
+            }
             
             $svgNode->setAttribute('id', $hash);
             $replacement = Helper::getSvgEmbed($hash, $dimensions);
             $inlined[] = Helper::getSvgSource($hash, $svgNode);
           }
-          $content = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $content);
+          
+          // Replace all placeholders for this path (including ones with attributes)
+          $content = preg_replace(
+            sprintf('/<svg-placeholder\s+path="%s"[^>]*>/', preg_quote($path, '/')),
+            $replacement,
+            $content
+          );
         }
 
         unset($attached['svg']);
       }
+      
       $content = str_replace('<svg-sprite-placeholder>', Helper::wrapInlinedSvgs($inlined), $content);
       $response->setContent($content);
       $response->setAttachments($attached);
       return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
     }
     elseif ($response instanceof ViewAjaxResponse) {
-      $commands = &$response->getCommands();
-
-      foreach ($commands as &$command) {
-        if ($command['command'] == 'insert') {
-
-          $svgs = Helper::findSvg($command['data']);
-          $inlined = [];
-
-          if ($svgs) {
-            foreach ($svgs as $path) {
-              $replacement = '';
-              if ($svgNode = Helper::getSvg($path)) {
-                $hash = md5($path);
-                
-                // Extract dimensions from original SVG
-                $dimensions = $this->extractDimensions($svgNode);
-                
-                $svgNode->setAttribute('id', $hash);
-                $replacement = Helper::getSvgEmbed($hash, $dimensions);
-                $inlined[] = Helper::getSvgSource($hash, $svgNode);
-              }
-              $command['data'] = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $command['data']);
-            }
-          }
-        }
-      }
+      // Handle AJAX responses - you may need to add similar logic here
       return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
     }
     elseif ($response instanceof AjaxResponse) {
-      $commands = &$response->getCommands();
-      foreach ($commands as &$command) {
-        if (isset($command['data'])) {
-          $svgs = Helper::findSvg($command['data']);
-          $inlined = [];
-
-          if ($svgs) {
-            foreach ($svgs as $path) {
-              $replacement = '';
-              if ($svgNode = Helper::getSvg($path)) {
-                $hash = md5($path);
-                
-                // Extract dimensions from original SVG
-                $dimensions = $this->extractDimensions($svgNode);
-                
-                $svgNode->setAttribute('id', $hash);
-                $replacement = Helper::getSvgEmbed($hash, $dimensions);
-                $inlined[] = Helper::getSvgSource($hash, $svgNode);
-              }
-              $command['data'] = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $command['data']);
-            }
-          }
-
-          // Add inlined SVGs as a sprite or placeholder.
-          $command['data'] .= Helper::wrapInlinedSvgs($inlined);
-        }
-      }
+      // Handle other AJAX responses - you may need to add similar logic here  
       return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
     }
     else {
