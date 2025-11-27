@@ -56,7 +56,8 @@ final class NodeFriendlyRedirectsAlterer {
     $form['mass_friendly_redirects'] = [
       '#type' => 'details',
       '#title' => $this->t('Friendly URLs'),
-      '#group' => 'advanced',
+      '#group' => 'group_page_info',
+      '#weight' => '99',
       '#open' => FALSE,
       '#tree' => TRUE,
       '#attributes' => ['id' => $wrapper_id],
@@ -66,7 +67,11 @@ final class NodeFriendlyRedirectsAlterer {
 
     if ($can_manage) {
       $form['mass_friendly_redirects']['help'] = [
-        '#markup' => '<p>' . $this->t('Create a friendly URL when you need a web address that’s easy to share and remember. See out Knowledge Base for friendly URL best practices. Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p><p>Create one friendly URL. Pick an approved prefix (usually your org’s acronym) and a short, clear keyword(s). Avoid unfamiliar acronyms. May take up to 35 minutes to work.</p><p>URL format: mass.gov/prefix/keyword(s)</p>',
+        '#markup' => '<p>' . $this->t('Create a friendly URL when you need a web address that’s easy to share and remember. See our Knowledge Base for friendly URL best practices. Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p>',
+      ];
+
+      $form['mass_friendly_redirects']['help_prefix'] = [
+        '#markup' => $this->t('<p>Create one friendly URL. Pick an approved prefix (usually your org’s acronym) and a short, clear keyword(s). Avoid unfamiliar acronyms. May take up to 35 minutes to work.</p><p>URL format: mass.gov/prefix/keyword(s)</p>'),
       ];
 
       $form['mass_friendly_redirects']['prefix'] = [
@@ -150,6 +155,11 @@ final class NodeFriendlyRedirectsAlterer {
       '#header' => $headers,
       '#empty' => $this->t('No friendly redirects found for this page.'),
     ];
+    $form['mass_friendly_redirects']['actions']['limit_notice'] = [
+      '#type' => 'item',
+      '#access' => FALSE,
+      '#markup' => $this->t('This page already has a friendly URL. Only one friendly URL is allowed. Delete the existing one to change it.'),
+    ];
 
     $existing_redirects = static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $prefix_options);
 
@@ -189,10 +199,31 @@ final class NodeFriendlyRedirectsAlterer {
       if (isset($form['mass_friendly_redirects']['actions']['add'])) {
         $form['mass_friendly_redirects']['actions']['add']['#access'] = FALSE;
       }
-      $form['mass_friendly_redirects']['actions']['limit_notice'] = [
-        '#type' => 'item',
-        '#markup' => $this->t('This page already has a friendly URL. Only one friendly URL is allowed. Delete the existing one to change it.'),
-      ];
+    }
+
+    // Hide the current-URLs heading and table when there are no friendly URLs
+    // for this page, so editors don't see an empty box.
+    if (empty($existing_redirects)) {
+      if (isset($form['mass_friendly_redirects']['target_display'])) {
+        $form['mass_friendly_redirects']['target_display']['#access'] = FALSE;
+      }
+      if (isset($form['mass_friendly_redirects']['existing'])) {
+        $form['mass_friendly_redirects']['existing']['#access'] = FALSE;
+      }
+    }
+
+    if ($can_manage && !empty($existing_redirects)) {
+      if (isset($form['mass_friendly_redirects']['prefix'])) {
+        $form['mass_friendly_redirects']['prefix']['#access'] = FALSE;
+      }
+      if (isset($form['mass_friendly_redirects']['suffix'])) {
+        $form['mass_friendly_redirects']['suffix']['#access'] = FALSE;
+      }
+      if (isset($form['mass_friendly_redirects']['actions']['add'])) {
+        $form['mass_friendly_redirects']['actions']['add']['#access'] = FALSE;
+      }
+      $form['mass_friendly_redirects']['actions']['limit_notice']['#access'] = TRUE;
+      $form['mass_friendly_redirects']['help_prefix']['#access'] = FALSE;
     }
   }
 
@@ -412,6 +443,7 @@ final class NodeFriendlyRedirectsAlterer {
    * Ajax callback to refresh the Friendly URLs section.
    */
   public static function ajax(array &$form, FormStateInterface $form_state) {
+    $form['mass_friendly_redirects']['#open'] = TRUE;
     return $form['mass_friendly_redirects'];
   }
 
