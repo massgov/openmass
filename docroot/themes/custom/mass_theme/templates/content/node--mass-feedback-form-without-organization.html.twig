@@ -1,69 +1,25 @@
 {% set reportMessage = false %}
 {% set showHelp = false %}
-{% set showHelp = false %}
 {% set warnmsg = false %}
 {% set helpText = "The feedback will only be used for improving the website." %}
-
 {% set hiddenElements = [
   {
-    "id": "field47056299",
-    "name": "field47056299",
-    "value": url('<current>'),
-    "class": "fsField"
+    "id": "node-id-hidden",
+    "name": "node_id",
+    "value": node.id,
+    "class": "ma-feedback-hidden-field"
   },
   {
-    "id": "field58154059",
-    "name": "field58154059",
-    "value": "entityIdentifier",
-    "class": "fsField data-layer-substitute"
-  },
-  {
-    "id": "field57432673",
-    "name": "field57432673",
-    "value": "entityIdentifier",
-    "class": "fsField data-layer-substitute"
-  },
-  {
-    "id": "field68798989",
-    "name": "field68798989",
+    "id": "latitude-hidden",
+    "name": "latitude",
     "value": "",
-    "class": "fsField unique-id-substitute"
+    "class": "ma-feedback-hidden-field ma-feedback-latitude"
   },
   {
-    "id": "field97986104",
-    "name": "field97986104",
-    "value": "9999",
-    "class": "fsField"
-  },
-  {
-    "id": "form2521317",
-    "name": "form",
-    "value": "2521317"
-  },
-  {
-    "id": "viewkeyvx39GBYJhi",
-    "name": "viewkey",
-    "value": "vx39GBYJhi"
-  },
-  {
-    "id": "hidden_fields2521317",
-    "name": "hidden_fields",
-    "value": ""
-  },
-  {
-    "id": "submit2521317",
-    "name": "_submit",
-    "value": "1"
-  },
-  {
-    "id": "style_version2521317",
-    "name": "style_version",
-    "value": "3"
-  },
-  {
-    "id": "viewparam",
-    "name": "viewparam",
-    "value": "524744"
+    "id": "longitude-hidden",
+    "name": "longitude",
+    "value": "",
+    "class": "ma-feedback-hidden-field ma-feedback-longitude"
   }
 ] %}
 
@@ -71,8 +27,8 @@
 
 {% include "@organisms/feedback/mass-feedback.twig" with {
 
-  "formAction": 'https://www.formstack.com/forms/index.php',
-  "formId": "2521317",
+  "formAction": feedback_submission_api_endpoint,
+  "formId": "feedback-form",
   "heading": "Help Us Improve Mass.gov",
   "title": {
     "value": "Did you find what you were looking for on this webpage?",
@@ -84,15 +40,15 @@
     "inline": true,
     "items": [
       {
-        "name": "field47054416",
+        "name": "info_found",
         "value": "Yes",
         "label": "Yes",
-        "id": "field47054416_1",
+        "id": "info_found-yes",
         "checked": false,
       },
       {
-        "name": "field47054416",
-        "id": "field47054416_2",
+        "name": "info_found",
+        "id": "info_found-no",
         "value": "No",
         "label": "No",
         "checked": false,
@@ -106,8 +62,8 @@
   "affirmativeTextarea": {
     "required": false,
     "maxlength": 500,
-    "id": "field52940022",
-    "name": "field52940022",
+    "id": "explain-affirmative",
+    "name": "explain",
     "describedBy": "helptext-feedback-no-response",
     "errorIds": "affirmative-textarea-error-alert"
   },
@@ -118,8 +74,8 @@
   "negativeTextarea": {
     "required": true,
     "maxlength": 500,
-    "id": "field47054414",
-    "name": "field47054414",
+    "id": "explain-negative",
+    "name": "explain",
     "errorMsg": "Please let us know how we can improve this page.",
     "describedBy": "helptext-feedback-no-response",
     "errorIds": "negative-textarea-error-alert"
