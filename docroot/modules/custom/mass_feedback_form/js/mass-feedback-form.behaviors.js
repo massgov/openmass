@@ -4,9 +4,7 @@
  * Handles submission to the Lambda feedback API instead of Formstack.
  */
 
-/* global dataLayer, drupalSettings, once */
-
-(function ($) {
+(function ($, once) {
   'use strict';
 
   /**
@@ -16,12 +14,14 @@
     attach: function (context) {
 
       // Cache for geolocation promise (to avoid multiple requests)
-      var geoLocationPromise = null;
-      var geoLocationPromiseStarted = false;
+      let geoLocationPromise = null;
+      let geoLocationPromiseStarted = false;
 
       /**
        * Get or create the geolocation promise.
        * Only requests geolocation once, subsequent calls return the same promise.
+       *
+       * @return {Promise} Promise resolving with geolocation data or rejection.
        */
       function getGeolocationPromise() {
         if (!geoLocationPromiseStarted) {
@@ -39,18 +39,18 @@
 
       // Process feedback forms using Drupal's once() function
       once('massFeedbackForm', '.ma__mass-feedback-form', context).forEach(function (element) {
-        var $self = $(element);
-        var $form = $self.find('form').not('has-error');
+        const $self = $(element);
+        const $form = $self.find('form').not('has-error');
 
         if (!$form.length) {
           return;
         }
 
-        var feedback = $self[0];
-        var $success = $self.find('#success-screen');
-        var $submitBtn = $('input[type="submit"]', $form);
-        var formAction = $form.attr('action');
-        var isSubmitting = false;
+        const feedback = $self[0];
+        const $success = $self.find('#success-screen');
+        const $submitBtn = $('input[type="submit"]', $form);
+        const formAction = $form.attr('action');
+        let isSubmitting = false;
 
         // Prevent double-click form submission
         $submitBtn.on('click', function (e) {
@@ -91,6 +91,8 @@
       /**
        * Get user's geolocation if available.
        * Returns a promise that resolves with {latitude, longitude} or rejects.
+       *
+       * @return {Promise} Promise resolving with {latitude, longitude} object or rejection.
        */
       function getMassgovGeolocation() {
         return new Promise(function (resolve, reject) {
@@ -108,7 +110,7 @@
               clearTimeout(timeoutId);
               resolve({
                 latitude: position.coords.latitude.toString(),
-                longitude: position.coords.longitude.toString(),
+                longitude: position.coords.longitude.toString()
               });
             },
             function (error) {
@@ -118,32 +120,40 @@
             {
               enableHighAccuracy: false,
               timeout: 10000,
-              maximumAge: 300000, // 5 minutes cache
-            },
+              maximumAge: 300000 // 5 minutes cache
+            }
           );
         });
       }
 
       /**
        * Submit feedback to Lambda API.
+       *
+       * @param {jQuery} $form The form element.
+       * @param {string} formAction The API endpoint URL.
+       * @param {Object} geoData The geolocation data {latitude, longitude}.
+       * @param {jQuery} $success The success message element.
+       * @param {Element} feedback The feedback container element.
+       * @param {jQuery} $submitBtn The submit button element.
+       * @param {Function} onComplete Callback when submission is complete.
        */
       function submitFeedback($form, formAction, geoData, $success, feedback, $submitBtn, onComplete) {
-        var formData = new FormData($form[0]);
+        const formData = new FormData($form[0]);
 
         // Get explain field - handle both visible and hidden textareas with same name
         // The form has two textareas with name="explain" (positive and negative feedback)
         // FormData.get() only returns the first one, so we need to get the visible one
-        var explainField = '';
-        var explainInputs = $form.find('textarea[name="explain"]');
+        let explainField = '';
+        const explainInputs = $form.find('textarea[name="explain"]');
         explainInputs.each(function () {
-          var $textarea = $(this);
+          const $textarea = $(this);
           // Check if textarea is visible (not hidden by CSS display:none or parent hidden class)
           if ($textarea.is(':visible') && !$textarea.closest('.feedback-response').hasClass('hidden')) {
             explainField = $textarea.val() || '';
           }
         });
 
-        var payload = {
+        const payload = {
           node_id: parseInt(formData.get('node_id')) || 0,
           info_found: formData.get('info_found') === 'Yes',
           explain: explainField,
@@ -157,8 +167,6 @@
           payload.longitude = geoData.longitude;
         }
 
-        console.log('Submitting feedback:', payload);
-
         fetch(formAction, {
           method: 'POST',
           headers: {
@@ -166,24 +174,22 @@
             'Accept': 'application/json',
             'Accept-Language': navigator.language || 'en-US',
             'X-Requested-With': 'XMLHttpRequest',
-            'User-Agent': navigator.userAgent,
+            'User-Agent': navigator.userAgent
           },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(payload)
         })
           .then(function (response) {
             if (!response.ok) {
               return response.json().then(function (data) {
                 throw {
                   status: response.status,
-                  data: data,
+                  data: data
                 };
               });
             }
             return response.json();
           })
           .then(function (data) {
-            console.log('Feedback submitted successfully:', data);
-
             // Show success screen
             $form.addClass('hidden');
             $success.removeClass('hidden');
@@ -215,9 +221,12 @@
 
       /**
        * Display error message in the form.
+       *
+       * @param {jQuery} $form The form element.
+       * @param {string} message The error message to display.
        */
       function showErrorMessage($form, message) {
-        var $messages = $form.find('.messages');
+        let $messages = $form.find('.messages');
         if (!$messages.length) {
           $form.prepend('<div class="messages" style="font-weight: bold; color: #d73d32; margin-bottom: 20px;"/>');
           $messages = $form.find('.messages');
@@ -229,6 +238,6 @@
           $messages.fadeOut();
         }, 5000);
       }
-    },
+    }
   };
-})(jQuery);
+})(jQuery, once);
