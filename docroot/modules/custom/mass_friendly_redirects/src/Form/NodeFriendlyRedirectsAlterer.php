@@ -436,7 +436,7 @@ final class NodeFriendlyRedirectsAlterer {
     // Stay on the same form and rebuild the section.
     $form_state->setRebuild(TRUE);
 
-    \Drupal::messenger()->addStatus(t('Added redirect "/@src" → this page.', ['@src' => $source]));
+    \Drupal::messenger()->addStatus(t('Added friendly URL "/@src" → this page.', ['@src' => $source]));
   }
 
   /**
