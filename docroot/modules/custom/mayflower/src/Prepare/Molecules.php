@@ -524,7 +524,7 @@ class Molecules {
 
       case 'fax':
         $name = t('Fax');
-        $icon = 'fax-icon';
+        $icon = 'fax';
         break;
 
       case 'phone':
