@@ -158,7 +158,7 @@
           info_found: formData.get('info_found') === 'Yes',
           explain: explainField,
           url: window.location.href,
-          timestamp: new Date().toISOString(),
+          timestamp: new Date().toISOString()
         };
 
         // Add geolocation if available
@@ -193,7 +193,7 @@
             // Show success screen
             $form.addClass('hidden');
             $success.removeClass('hidden');
-            feedback.scrollIntoView({ behavior: 'smooth' });
+            feedback.scrollIntoView({behavior: 'smooth'});
 
             // Reset form after delay
             setTimeout(function () {
