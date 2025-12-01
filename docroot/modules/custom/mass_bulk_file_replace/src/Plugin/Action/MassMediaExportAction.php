@@ -269,7 +269,11 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
 
         $media_real_file_path = $info['file_path'] ?? NULL;
         if ($media_real_file_path && $this->validateMediaFilePath($media_real_file_path)) {
-          $file_paths[$entity->id()] = $media_real_file_path;
+          $file_paths[$entity->id()] = [
+            'file_path' => $media_real_file_path,
+            // Prefer the managed File entity's filename; fall back to the path basename.
+            'filename' => $info['filename'] ?? basename($media_real_file_path),
+          ];
         }
         else {
           $failed_file_paths[$entity->id()] = [
@@ -385,6 +389,7 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
       return [
         'file_path' => $this->fileSystem->realpath($file->getFileUri()),
         'file_uri' => $file->getFileUri(),
+        'filename' => $file->getFilename(),
       ];
     }
     return NULL;
@@ -400,7 +405,8 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
    * clickable links to their corresponding media entity pages.
    *
    * @param array $file_paths
-   *   An array of file paths to be included in the ZIP file.
+   *   An array keyed by media ID. Each value is either a string file path
+   *   or an array with 'file_path' and 'filename' keys.
    * @param array $failed_file_paths
    *   (optional) An associative array where the keys are media
    *   entity IDs and the values are the file paths that failed
@@ -441,11 +447,25 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
       return;
     }
 
-    foreach ($file_paths as $media_id => $file_path) {
+    foreach ($file_paths as $media_id => $data) {
+      // Support both the new structured form and the legacy string form.
+      if (is_array($data)) {
+        $file_path = $data['file_path'] ?? NULL;
+        $original_filename = $data['filename'] ?? NULL;
+      }
+      else {
+        $file_path = $data;
+        $original_filename = NULL;
+      }
+
       if (is_string($file_path) && file_exists($file_path) && is_readable($file_path)) {
-        $path_parts = pathinfo($file_path);
-        $ext = isset($path_parts['extension']) && $path_parts['extension'] !== '' ? ('.' . $path_parts['extension']) : '';
-        $custom_filename = $path_parts['filename'] . '_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $media_id . $ext;
+        // If we don't have an explicit filename from the File entity,
+        // fall back to the basename of the path.
+        if ($original_filename === NULL || $original_filename === '') {
+          $original_filename = basename($file_path);
+        }
+
+        $custom_filename = $this->buildExportFilename($original_filename, (int) $media_id);
         $zip->addFile($file_path, $custom_filename);
       }
     }
@@ -505,6 +525,28 @@ class MassMediaExportAction extends ViewsBulkOperationsActionBase implements Vie
         '@list' => Markup::create($failed_output),
       ]));
     }
+  }
+
+  /**
+   * Builds the filename used inside the ZIP for a media file.
+   *
+   * The original filename is preserved exactly, with the
+   * DO_NOT_CHANGE_THIS_MEDIA_ID_{ID} token appended before the extension.
+   *
+   * @param string $original_filename
+   *   The original filename from the managed file entity.
+   * @param int $media_id
+   *   The media entity ID.
+   *
+   * @return string
+   *   The filename to use inside the ZIP.
+   */
+  protected function buildExportFilename(string $original_filename, int $media_id): string {
+    $parts = pathinfo($original_filename);
+    $ext = isset($parts['extension']) && $parts['extension'] !== '' ? ('.' . $parts['extension']) : '';
+    $base = $parts['filename'];
+
+    return $base . '_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $media_id . $ext;
   }
 
   /**
