@@ -682,18 +682,18 @@ function mayflower_preprocess_field(&$variables, $hook) {
   if (in_array($element['#field_name'], ['field_services_social_links', 'field_social_links'])) {
     // Get icons for social links.
     $services = [
-      'twitter',
-      'facebook',
-      'threads',
-      'flickr',
+      'x-logo',
+      'facebook-logo',
+      'thread-logo',
+      'flickr-logo',
       'blog',
-      'linkedin',
+      'linkedin-logo',
       'google',
-      'instagram',
-      'medium',
-      'youtube',
-      'vimeo',
-      'bluesky'
+      'instagram-logo',
+      'medium-logo',
+      'youtube-logo',
+      'vimeo-logo',
+      'bluesky-logo'
     ];
 
     foreach ($variables['items'] as $index => &$item) {
@@ -730,17 +730,18 @@ function mayflower_preprocess_paragraph__video(&$variables) {
 function mayflower_preprocess_field__node__field_social_links(&$variables) {
   // Get icons for social links.
   $services = [
-    'twitter',
-    'facebook',
-    'threads',
-    'flickr',
+    'x-logo',
+    'facebook-logo',
+    'thread-logo',
+    'flickr-logo',
     'blog',
-    'linkedin',
+    'linkedin-logo',
     'google',
-    'instagram',
-    'medium',
-    'youtube',
-    'bluesky',
+    'instagram-logo',
+    'medium-logo',
+    'youtube-logo',
+    'vimeo-logo',
+    'bluesky-logo'
   ];
 
   foreach ($variables['items'] as $index => &$item) {
