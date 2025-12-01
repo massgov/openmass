@@ -293,7 +293,7 @@ class Molecules {
     $services = [
       'x-logo',
       'facebook-logo',
-      'thread-logo',
+      'threads-logo',
       'flickr-logo',
       'blog',
       'linkedin-logo',
