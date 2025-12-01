@@ -85,7 +85,7 @@ final class NodeFriendlyRedirectsAlterer {
           'allowClear' => FALSE,
           'width' => '400',
         ],
-        '#description' => $this->t('Choose the prefix for the URL. To request a new prefix, contact us in ServiceNow.'),
+        '#description' => $this->t('Choose the prefix for the URL. To request a new prefix, <a href="https://www.mass.gov/kb/servicenow" target="_blank">contact us in ServiceNow</a>.'),
       ];
 
       $form['mass_friendly_redirects']['suffix'] = [
