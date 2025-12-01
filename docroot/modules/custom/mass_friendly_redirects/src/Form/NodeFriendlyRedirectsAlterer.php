@@ -67,7 +67,7 @@ final class NodeFriendlyRedirectsAlterer {
 
     if ($can_manage) {
       $form['mass_friendly_redirects']['help'] = [
-        '#markup' => '<p>' . $this->t('Create a friendly URL when you need a web address that’s easy to share and remember. See our Knowledge Base for friendly URL best practices. Create friendly URLs scoped to approved prefixes. Use lowercase only when creating - friendly URLs will work in any case. Changes may take up to 35 minutes to appear due to caching.') . '</p>',
+        '#markup' => '<p>' . $this->t('Create a friendly URL when you need a web address that’s easy to share and remember. See our <a href="https://www.mass.gov/kb/friendly-URLs" target="_blank">Knowledge Base for friendly URL best practices</a>.') . '</p>',
       ];
 
       $form['mass_friendly_redirects']['help_prefix'] = [
@@ -158,7 +158,7 @@ final class NodeFriendlyRedirectsAlterer {
     $form['mass_friendly_redirects']['actions']['limit_notice'] = [
       '#type' => 'item',
       '#access' => FALSE,
-      '#markup' => $this->t('This page already has a friendly URL. Only one friendly URL is allowed. Delete the existing one to change it.'),
+      '#markup' => $this->t('This page has a prefix-scoped friendly URL. Only one is allowed. Delete the existing one to change it. If you recently changed it, it may take up to 35 minutes to work.'),
     ];
 
     $existing_redirects = static::loadNodeRedirects($this->etm, $this->aliasManager, $entity, $prefix_options);
