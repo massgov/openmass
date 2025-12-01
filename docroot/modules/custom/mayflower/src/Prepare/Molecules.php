@@ -291,17 +291,18 @@ class Molecules {
 
     // Get icons for social links.
     $services = [
-      'twitter',
-      'facebook',
-      'threads',
-      'flickr',
+      'x-logo',
+      'facebook-logo',
+      'thread-logo',
+      'flickr-logo',
       'blog',
-      'linkedin',
+      'linkedin-logo',
       'google',
-      'instagram',
-      'medium',
-      'youtube',
-      'vimeo',
+      'instagram-logo',
+      'medium-logo',
+      'youtube-logo',
+      'vimeo-logo',
+      'bluesky-logo'
     ];
 
     foreach ($links as $link) {
