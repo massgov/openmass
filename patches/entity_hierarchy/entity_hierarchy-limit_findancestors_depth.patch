@@ -1,0 +1,29 @@
+diff --git a/src/Storage/QueryBuilder.php b/src/Storage/QueryBuilder.php
+index bcb5619..11e16f9 100644
+--- a/src/Storage/QueryBuilder.php
++++ b/src/Storage/QueryBuilder.php
+@@ -62,6 +62,11 @@ class QueryBuilder {
+       // Drupal doesn't store an empty row for a NULL parent. Add it back in.
+       if ($first_record = reset($records)) {
+         $record = Record::create($type, $first_record->getTargetId(), 0, $first_record->getDepth() - 1);
++        if ($first_record->getDepth() == -10) {
++          \Drupal::logger('entity_hierarchy')->debug('Node @entity_id has a depth of 10 or greater.', [
++            '@entity_id' => $entity->id(),
++          ]);
++        }
+       }
+       else {
+         $record = Record::create($type, (int) $entity->id(), 0, 0);
+diff --git a/src/Storage/QueryBuilderTrait.php b/src/Storage/QueryBuilderTrait.php
+index f8d81e1..5bf6877 100644
+--- a/src/Storage/QueryBuilderTrait.php
++++ b/src/Storage/QueryBuilderTrait.php
+@@ -120,6 +120,7 @@ WITH RECURSIVE ancestors AS
+   SELECT c.$column_id, c.$column_revision_id, c.$column_target_id, c.$column_weight, ancestors.depth-1
+     FROM {{$table_name}} c
+     JOIN ancestors ON c.$column_id=ancestors.targetId
++    WHERE ancestors.depth > -10
+ )
+ CTESQL;
+     return $sql;
+

@@ -20,6 +20,7 @@ class MassHierarchyServiceProvider extends ServiceProviderBase {
       $definition = $container->getDefinition('entity_hierarchy.breadcrumb');
       $definition->setClass('Drupal\mass_hierarchy\MassHierarchyBasedBreadcrumbBuilder');
       $definition->addArgument(new Reference('mass_microsites.nearest_microsite_lookup'));
+      $definition->addArgument(new Reference('router.admin_context'));
     }
   }
 
