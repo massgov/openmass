@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_entity_view().
+ *
+ * 1) On Info Details nodes with a boolean flag enabled, attach JS that forwards
+ *    selected query parameters to links pointing at Form pages.
+ *
+ * 2) On Form Page nodes, attach settings for iframe behavior.
+ *
+ * @see https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Entity%21entity.api.php/function/hook_entity_view/10
+ */
+function mass_form_context_entity_view(
+  array &$build,
+  EntityInterface $entity,
+  EntityViewDisplayInterface $display,
+  string $view_mode
+): void {
+  if (!$entity instanceof NodeInterface) {
+    return;
+  }
+
+  $bundle = $entity->bundle();
+
+  // 1) Info pages: forward GET params → links on this page (opt-in field).
+  if ($bundle === 'info_details') {
+    // Adjust to your actual field machine name if different.
+    $field_name = 'field_forward_query_params';
+    if ($entity->hasField($field_name) && (bool) $entity->get($field_name)->value) {
+      $build['#attached']['library'][] = 'mass_form_context/info_links';
+      $build['#attached']['drupalSettings']['massFormContext']['forwardQueryToFormLinks'] = [
+        'enabled' => TRUE,
+        // Whitelist; can be extended later if needed.
+        'allowedKeys' => [
+          'referrer',
+          'org',
+          'parentorg',
+          'site',
+        ],
+      ];
+    }
+  }
+
+  // 2) Form pages: provide settings for iframe behavior.
+  if ($bundle === 'form_page') {
+    $build['#attached']['drupalSettings']['massFormContext']['iframe'] = [
+      'allowedKeys' => [
+        'referrer',
+        'org',
+        'parentorg',
+        'site',
+      ],
+    ];
+    // The iframe JS library itself is attached from node--form-page.html.twig
+    // so it only loads when the Gravity Forms embed is present.
+  }
+}

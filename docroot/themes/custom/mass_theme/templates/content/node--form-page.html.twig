@@ -83,10 +83,14 @@
         </script>
       {% elseif node.getPlatform().getString() == constant('Drupal\\mass_content\\Entity\\Bundle\\node\\FormPageBundle::PLATFORM_GRAVITY_FORMS') %}
         {{ attach_library('mass_utility/mass_utility.mass_forms_form_redirect_after_submission') }}
+        {{ attach_library('mass_form_context/iframe') }}
+
+        {% set gf_url = content.field_form_url.iframe_url %}
         {% include "@atoms/09-media/iframe.twig" with {
           "iframe": {
-            "customClass": 'js-iframe-resizer',
-            "src": content.field_form_url.iframe_url,
+            "customClass": 'js-iframe-resizer js-gf-iframe',
+            "src": '',
+            "data_src": gf_url,
             "height": 'auto',
             "title": "Embedded form: " ~ node.label,
           }
