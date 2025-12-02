@@ -291,12 +291,6 @@ public static function prepareIconLinks($entity, array $options = []) {
   // Creates array of links with link parts.
   $links = Helper::separatedLinks($entity, $fields['socialLinks']);
 
-    dump('=== prepareIconLinks Debug ===');
-  dump('Entity type: ' . $entity->getEntityTypeId());
-  dump('Entity bundle: ' . $entity->bundle());
-  dump('Fields found:', $fields);
-  dump('Links array:', $links);
-
   // Map social media domains to their icon names
   $serviceMapping = [
     'twitter.com' => 'x-logo',
