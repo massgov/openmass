@@ -277,68 +277,56 @@ class Molecules {
    *      ], ...]
    *    ]
    */
-public static function prepareIconLinks($entity, array $options = []) {
-    \Drupal::logger('mayflower')->info('=== prepareIconLinks called ===');
+  public static function prepareIconLinks($entity, array $options = []) {
+    $items = [];
+    $map = [
+      'socialLinks' => ['field_social_links', 'field_services_social_links'],
+    ];
 
-  $items = [];
-  $map = [
-    'socialLinks' => ['field_social_links', 'field_services_social_links'],
-  ];
+    // Determines which fieldnames to use from the map.
+    $fields = Helper::getMappedFields($entity, $map);
 
-  // Determines which fieldnames to use from the map.
-  $fields = Helper::getMappedFields($entity, $map);
+    // Creates array of links with link parts.
+    $links = Helper::separatedLinks($entity, $fields['socialLinks']);
 
-  // Creates array of links with link parts.
-  $links = Helper::separatedLinks($entity, $fields['socialLinks']);
+    // Get icons for social links.
+    $services = [
+      'x-logo',
+      'facebook-logo',
+      'threads-logo',
+      'flickr-logo',
+      'blog',
+      'linkedin-logo',
+      'google',
+      'instagram-logo',
+      'medium-logo',
+      'youtube-logo',
+      'vimeo-logo',
+      'bluesky-logo'
+    ];
 
-    dump('=== prepareIconLinks Debug ===');
-  dump('Entity type: ' . $entity->getEntityTypeId());
-  dump('Entity bundle: ' . $entity->bundle());
-  dump('Fields found:', $fields);
-  dump('Links array:', $links);
+    foreach ($links as $link) {
+      $icon = '';
 
-  // Map social media domains to their icon names
-  $serviceMapping = [
-    'twitter.com' => 'x-logo',
-    'x.com' => 'x-logo',
-    'facebook.com' => 'facebook-logo',
-    'threads.net' => 'threads-logo',
-    'flickr.com' => 'flickr-logo',
-    'linkedin.com' => 'linkedin-logo',
-    'instagram.com' => 'instagram-logo',
-    'medium.com' => 'medium-logo',
-    'youtube.com' => 'youtube-logo',
-    'vimeo.com' => 'vimeo-logo',
-    'bsky.app' => 'bluesky-logo',
-    'bluesky.social' => 'bluesky-logo',
-    // Keep these without -logo suffix
-    'blog' => 'blog',
-    'google.com' => 'google',
-  ];
-
-  foreach ($links as $link) {
-    $icon = '';
-
-    // Check each service mapping
-    foreach ($serviceMapping as $domain => $iconName) {
-      if (strpos($link['href'], $domain) !== FALSE) {
-        $icon = $iconName;
-        break;
+      foreach ($services as $key => $service) {
+        if (strpos($link['href'], $service) !== FALSE) {
+          $icon = $service;
+          break;
+        }
       }
+
+      $items[] = [
+        'icon' => $icon,
+        'link' => $link,
+      ];
     }
 
-    $items[] = [
-      'icon' => $icon,
-      'link' => $link,
+    return [
+      'iconLinks' => [
+        'items' => $items,
+      ],
     ];
   }
-
-  return [
-    'iconLinks' => [
-      'items' => $items,
-    ],
-  ];
-}
 
   /**
    * Returns the variables structure required to render sectionLinks template.
