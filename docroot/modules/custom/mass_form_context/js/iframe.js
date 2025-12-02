@@ -8,47 +8,59 @@
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return { forms: {} };
+        return {
+          forms: {}
+        };
       }
       const data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return { forms: {} };
+        return {
+          forms: {}
+        };
       }
       if (!data.forms || typeof data.forms !== 'object') {
         data.forms = {};
       }
       return data;
-    } catch (e) {
-      return { forms: {} };
+    }
+    catch (e) {
+      return {
+        forms: {}
+      };
     }
   }
 
   function saveStorage(storage) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
-    } catch (e) {
-      // ignore storage errors
+    }
+    catch (e) {
+      // Ignore storage errors.
     }
   }
 
   function cleanUrlRemovingAllowed(allowed) {
-    if (!allowed.length) return;
+    if (!allowed.length) {
+      return;
+    }
 
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    let changed = false;
+    var url = new URL(window.location.href);
+    var params = new URLSearchParams(url.search);
+    var changed = false;
 
-    allowed.forEach((key) => {
+    allowed.forEach(function (key) {
       if (params.has(key)) {
         params.delete(key);
         changed = true;
       }
     });
 
-    if (!changed) return;
+    if (!changed) {
+      return;
+    }
 
-    const newSearch = params.toString();
-    const cleanUrl =
+    var newSearch = params.toString();
+    var cleanUrl =
       url.origin +
       url.pathname +
       (newSearch ? '?' + newSearch : '') +
@@ -58,31 +70,34 @@
   }
 
   Drupal.behaviors.massFormContextGravityFormsIframe = {
-    attach(context) {
-      const iframes = once(
+    attach: function (context) {
+      var iframes = once(
         'mass-form-context-gf-iframe',
         'iframe.js-gf-iframe[data-src]',
         context
       );
-      if (!iframes.length) return;
+      if (!iframes.length) {
+        return;
+      }
 
-      const allowed =
-        drupalSettings.massFormContext?.iframe?.allowedKeys ||
-        ['referrer', 'org', 'parentorg', 'site'];
+      var mfcSettings = drupalSettings.massFormContext || {};
+      var iframeSettings = mfcSettings.iframe || {};
+      var allowed = iframeSettings.allowedKeys || ['referrer', 'org', 'parentorg', 'site'];
 
-      const now = Date.now();
-      const storage = loadStorage();
-      const formPath = window.location.pathname; // e.g. "/forms/foo"
+      var now = Date.now();
+      var storage = loadStorage();
+      var formPath = window.location.pathname; // e.g. "/forms/foo"
 
       // 1️⃣ Start with stored context for this specific form path (if any and not expired).
-      let storedParams = new URLSearchParams();
-      const existing = storage.forms[formPath];
+      var storedParams = new URLSearchParams();
+      var existing = storage.forms[formPath];
 
       if (existing && existing.params) {
-        const age = now - (existing.timestamp || 0);
+        var age = now - (existing.timestamp || 0);
         if (age <= TTL_MS) {
           storedParams = new URLSearchParams(existing.params);
-        } else {
+        }
+        else {
           // Expired → forget it for this form.
           delete storage.forms[formPath];
           saveStorage(storage);
@@ -90,11 +105,11 @@
       }
 
       // 2️⃣ Merge in any allowed params from the Form page URL (direct external → form).
-      const urlParams = new URLSearchParams(window.location.search);
-      let hasUrlParams = false;
+      var urlParams = new URLSearchParams(window.location.search);
+      var hasUrlParams = false;
 
-      urlParams.forEach((value, key) => {
-        if (!allowed.length || allowed.includes(key)) {
+      urlParams.forEach(function (value, key) {
+        if (!allowed.length || allowed.indexOf(key) !== -1) {
           storedParams.set(key, value); // URL wins over stored
           hasUrlParams = true;
         }
@@ -104,27 +119,29 @@
       if (hasUrlParams) {
         storage.forms[formPath] = {
           params: storedParams.toString(),
-          timestamp: now,
+          timestamp: now
         };
         saveStorage(storage);
         cleanUrlRemovingAllowed(allowed);
       }
 
       // 4️⃣ Build iframe.src from data-src + storedParams for this form.
-      iframes.forEach((iframe) => {
-        const baseSrc = iframe.getAttribute('data-src');
-        if (!baseSrc) return;
-
-        let url;
-        try {
-          url = new URL(baseSrc, window.location.origin);
-        } catch (e) {
+      iframes.forEach(function (iframe) {
+        var baseSrc = iframe.getAttribute('data-src');
+        if (!baseSrc) {
           return;
         }
 
-        storedParams.forEach((value, key) => {
-          if (!allowed.length || allowed.includes(key)) {
-            url.searchParams.set(value ? ''+key : key, value);
+        var url;
+        try {
+          url = new URL(baseSrc, window.location.origin);
+        }
+        catch (e) {
+          return;
+        }
+
+        storedParams.forEach(function (value, key) {
+          if (!allowed.length || allowed.indexOf(key) !== -1) {
             url.searchParams.set(key, value);
           }
         });
@@ -132,6 +149,6 @@
         iframe.setAttribute('src', url.toString());
         iframe.removeAttribute('data-src');
       });
-    },
+    }
   };
 })(Drupal, drupalSettings, once);

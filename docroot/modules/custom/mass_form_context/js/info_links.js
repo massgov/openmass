@@ -2,52 +2,65 @@
   'use strict';
 
   const STORAGE_KEY = 'massFormContext';
+  const TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
   function loadStorage() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return { forms: {} };
+        return {
+          forms: {}
+        };
       }
       const data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return { forms: {} };
+        return {
+          forms: {}
+        };
       }
       if (!data.forms || typeof data.forms !== 'object') {
         data.forms = {};
       }
       return data;
-    } catch (e) {
-      return { forms: {} };
+    }
+    catch (e) {
+      return {
+        forms: {}
+      };
     }
   }
 
   function saveStorage(storage) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
-    } catch (e) {
-      // ignore storage errors (quota, privacy settings, etc.)
+    }
+    catch (e) {
+      // Ignore storage errors (quota, privacy settings, etc.).
     }
   }
 
   function cleanUrlRemovingAllowed(allowed) {
-    if (!allowed.length) return;
+    if (!allowed.length) {
+      return;
+    }
 
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    let changed = false;
+    var url = new URL(window.location.href);
+    var params = new URLSearchParams(url.search);
+    var changed = false;
 
-    allowed.forEach((key) => {
+    allowed.forEach(function (key) {
       if (params.has(key)) {
         params.delete(key);
         changed = true;
       }
     });
 
-    if (!changed) return;
+    if (!changed) {
+      return;
+    }
 
-    const newSearch = params.toString();
-    const cleanUrl =
+    var newSearch = params.toString();
+    var cleanUrl =
       url.origin +
       url.pathname +
       (newSearch ? '?' + newSearch : '') +
@@ -57,20 +70,21 @@
   }
 
   Drupal.behaviors.massFormContextForwardQueryToFormLinks = {
-    attach(context) {
-      const settings =
-        drupalSettings.massFormContext?.forwardQueryToFormLinks || {};
-      if (!settings.enabled) return;
+    attach: function (context) {
+      var mfcSettings = drupalSettings.massFormContext || {};
+      var settings = mfcSettings.forwardQueryToFormLinks || {};
+      if (!settings.enabled) {
+        return;
+      }
 
-      const allowed =
-        settings.allowedKeys || ['referrer', 'org', 'parentorg', 'site'];
+      var allowed = settings.allowedKeys || ['referrer', 'org', 'parentorg', 'site'];
 
       // 1️⃣ Extract allowed params from current URL.
-      const current = new URLSearchParams(window.location.search);
-      const filtered = new URLSearchParams();
+      var current = new URLSearchParams(window.location.search);
+      var filtered = new URLSearchParams();
 
-      current.forEach((value, key) => {
-        if (!allowed.length || allowed.includes(key)) {
+      current.forEach(function (value, key) {
+        if (!allowed.length || allowed.indexOf(key) !== -1) {
           filtered.set(key, value);
         }
       });
@@ -80,36 +94,37 @@
         return;
       }
 
-      const now = Date.now();
-      const storage = loadStorage();
+      var now = Date.now();
+      var storage = loadStorage();
 
       // 2️⃣ Find all form links on this Info page and map them to this context.
-      const selector = [
+      var selector = [
         'a[href^="/forms/"]',
         'a[href^="https://www.mass.gov/forms/"]',
-        'a[href^="https://mass.gov/forms/"]',
+        'a[href^="https://mass.gov/forms/"]'
       ].join(', ');
 
-      const links = once(
+      var links = once(
         'mass-form-context-map-forms',
         selector,
         context
       );
 
       if (links.length) {
-        const paramsString = filtered.toString();
+        var paramsString = filtered.toString();
 
-        links.forEach((link) => {
+        links.forEach(function (link) {
           try {
-            const url = new URL(link.href, window.location.origin);
-            const formPath = url.pathname; // e.g. "/forms/foo"
+            var url = new URL(link.href, window.location.origin);
+            var formPath = url.pathname; // e.g. "/forms/foo"
 
             storage.forms[formPath] = {
               params: paramsString,
-              timestamp: now,
+              timestamp: now
             };
-          } catch (e) {
-            // ignore invalid links
+          }
+          catch (e) {
+            // Ignore invalid links.
           }
         });
 
@@ -119,6 +134,6 @@
 
       // 3️⃣ Clean allowed params from current Info URL, keep the rest (analytics, etc.).
       cleanUrlRemovingAllowed(allowed);
-    },
+    }
   };
 })(Drupal, drupalSettings, once);
