@@ -1,7 +1,13 @@
 uuid: cff7b99e-30ca-4bd9-afd5-dfb1265400ec
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - taxonomy_unique
+third_party_settings:
+  taxonomy_unique:
+    enabled: true
+    message: 'Term "%term" already exists in vocabulary "%vocabulary".'
 _core:
   default_config_hash: yvzn9drN2KAe4KR-iLswaFygRaimgMBl-wIbCHxw2BU
 name: 'Friendly URL prefixes'
