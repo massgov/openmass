@@ -277,10 +277,12 @@ If any filenames do not match, you will be redirected to a review screen to conf
       $old_file->setPermanent();
       $old_file->save();
 
+      $now = \Drupal::time()->getRequestTime();
       // Create a new media revision with a log message.
       $media->setNewRevision();
       $media->setRevisionUserId($uid);
-      $media->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+      $media->setRevisionCreationTime($now);
+      $media->setChangedTime($now);
       $media->setRevisionLogMessage("File has been replaced using bulk replace tool by $username.");
       $media->set('field_upload_file', $old_file);
       $media->save();
