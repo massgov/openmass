@@ -263,6 +263,8 @@ class ReplaceMismatchForm extends FormBase {
         }
 
         $media->setNewRevision();
+        $media->setRevisionUserId(\Drupal::currentUser()->id());
+        $media->setRevisionCreationTime(\Drupal::time()->getRequestTime());
         $media->setRevisionLogMessage("File has been replaced using bulk replace tool by $username.");
         $media->set('field_upload_file', $file);
 
