@@ -10,15 +10,17 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Element\Tableselect;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
+use Drupal\mass_bulk_file_replace\FilenameMediaMatchTrait;
 use Drupal\media\Entity\Media;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Step 2: Confirm replacement mapping.
+ * Step 2: Mismatch replacement confirm.
  */
-class ReplaceConfirmForm extends FormBase {
+class ReplaceMismatchForm extends FormBase {
+  use FilenameMediaMatchTrait;
 
   /**
    * @var \Drupal\Core\TempStore\PrivateTempStoreFactory */
@@ -47,7 +49,7 @@ class ReplaceConfirmForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $user = $this->currentUser();
     $store = $this->tempStoreFactory->get('mass_bulk_file_replace');
-    $fids = $store->get('uploaded_files_' . $user->id()) ?? [];
+    $fids = $store->get('mismatch_files_' . $user->id()) ?? [];
 
     $header = [
       'fid' => $this->t('New File ID'),
@@ -67,11 +69,11 @@ class ReplaceConfirmForm extends FormBase {
         continue;
       }
       $filename = $new_file->getFilename();
-      $normalized_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
+      // Use shared helpers to derive display name and media ID.
+      $display_new = static::getDisplayFilename($filename);
+      $mid = static::extractMediaId($filename);
 
-      // Extract media ID from filename using pattern.
-      if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized_filename, $matches)) {
-        $mid = (int) $matches[1];
+      if ($mid !== NULL) {
         if (isset($seen_media_ids[$mid])) {
           continue;
         }
@@ -80,7 +82,7 @@ class ReplaceConfirmForm extends FormBase {
           $old_file = $media->field_upload_file->entity;
           $result = [
             'fid' => $fid,
-            'new' => $filename,
+            'new' => $display_new,
             'old' => $old_file ? $old_file->getFilename() : $this->t('Unknown'),
             'mid' => $mid,
             'media' => Link::fromTextAndUrl(
@@ -111,7 +113,7 @@ class ReplaceConfirmForm extends FormBase {
       else {
         $options[$fid] = [
           'fid' => $fid,
-          'new' => $new_file->getFilename(),
+          'new' => $display_new,
           'old' => $this->t('No match'),
           'mid' => $this->t('N/A'),
           'media' => $this->t('No matching media'),
@@ -121,12 +123,16 @@ class ReplaceConfirmForm extends FormBase {
       }
     }
 
+    $form['mismatch_note'] = [
+      '#type' => 'markup',
+      '#markup' => '<p><em>Only files that did not safely match their existing media are shown below. All matched files were already replaced automatically.</em></p>',
+    ];
     $form['replacements'] = [
       '#type' => 'tableselect',
       '#header' => $header,
       '#options' => $options,
       '#default_value' => $default_keys,
-      '#empty' => $this->t('No matching media entities found for the uploaded files.'),
+      '#empty' => $this->t('There are no files requiring manual verification.'),
       '#js_select' => TRUE,
       '#process' => [
         [Tableselect::class, 'processTableselect'],
@@ -193,16 +199,15 @@ class ReplaceConfirmForm extends FormBase {
     }
 
     $filename = $file->getFilename();
-    $normalized_filename = preg_replace('/_\d+(?=_DO_NOT_CHANGE_THIS_MEDIA_ID_\d+)/i', '', $filename);
-    if (preg_match('/DO_NOT_CHANGE_THIS_MEDIA_ID_(\d+)/i', $normalized_filename, $matches)) {
-      $mid = (int) $matches[1];
+    $mid = static::extractMediaId($filename);
+    if ($mid !== NULL) {
       $media = Media::load($mid);
       if ($media && $media->bundle() === 'document') {
         $file->setPermanent();
         $file->save();
 
         // Normalize filename early so any hooks that react on save see the final name.
-        $cleaned_filename = preg_replace('/_?do_not_change_this_media_id_\d+/i', '', $filename);
+        $cleaned_filename = static::getDisplayFilename($filename);
         if ($cleaned_filename && $cleaned_filename !== $filename) {
           $current_uri = $file->getFileUri();
           /** @var \Drupal\Core\File\FileSystemInterface $fs */
@@ -265,7 +270,7 @@ class ReplaceConfirmForm extends FormBase {
 
         // Remove file from tempstore to avoid reprocessing.
         $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-        $key = 'uploaded_files_' . \Drupal::currentUser()->id();
+        $key = 'mismatch_files_' . \Drupal::currentUser()->id();
         $fids = $store->get($key) ?? [];
         $fids = array_diff($fids, [$fid]);
         $store->set($key, $fids);
@@ -296,7 +301,7 @@ class ReplaceConfirmForm extends FormBase {
   public static function cancelSubmit(array &$form, FormStateInterface $form_state) {
     // Clear the uploaded files list from tempstore to avoid reprocessing later.
     $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $key = 'uploaded_files_' . \Drupal::currentUser()->id();
+    $key = 'mismatch_files_' . \Drupal::currentUser()->id();
     $store->delete($key);
 
     // Redirect to front page; adjust to a specific route if desired.
