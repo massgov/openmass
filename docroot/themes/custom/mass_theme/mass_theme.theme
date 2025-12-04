@@ -779,11 +779,20 @@ function mass_theme_preprocess_node_location(&$variables) {
     }
     // iFrames.
     if ($node->field_iframe->entity) {
+      $iframe_entity = $node->field_iframe->entity;
+      $iframe_title = '';
+      // Check if the accessibility title field exists and has a value.
+      if (Helper::isFieldPopulated($iframe_entity, 'field_iframe_accessibility_title')) {
+        $title_value = Helper::fieldValue($iframe_entity, 'field_iframe_accessibility_title');
+        if (!empty($title_value)) {
+          $iframe_title = ' title="' . Html::escape($title_value) . '"';
+        }
+      }
       $widgets[] = [
         'path' => '@atoms/11-text/raw-html.twig',
         'data' => [
           'rawHtml' => [
-            'content' => '<iframe src="' . $node->field_iframe->entity->field_url->uri . '" height="' . $node->field_iframe->entity->field_height->value . '" style="width:100%;"></iframe>',
+            'content' => '<iframe src="' . $node->field_iframe->entity->field_url->uri . '" height="' . $node->field_iframe->entity->field_height->value . '"' . $iframe_title . ' style="width:100%;"></iframe>',
           ],
         ],
       ];

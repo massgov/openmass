@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.stacked_layout.field_metatags
     - field.field.node.stacked_layout.field_organizations
     - field.field.node.stacked_layout.field_photo
+    - field.field.node.stacked_layout.field_primary_parent
     - field.field.node.stacked_layout.field_related_content
     - field.field.node.stacked_layout.field_reusable_label
     - field.field.node.stacked_layout.field_topic_callout_links
@@ -24,6 +25,7 @@ dependencies:
   module:
     - content_moderation
     - entity_browser
+    - entity_hierarchy
     - field_group
     - link
     - metatag
@@ -376,6 +378,7 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
+  field_primary_parent: true
   langcode: true
   path: true
   promote: true
