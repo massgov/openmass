@@ -9,10 +9,16 @@ use Drupal\node\NodeInterface;
 /**
  * Implements hook_entity_view().
  *
- * 1) On Info Details nodes with a boolean flag enabled, attach JS that forwards
- *    selected query parameters to links pointing at Form pages.
+ * Behaviors:
+ *  1) Start pages (all nodes except info_details + form_page):
+ *     Attach JS to store last Mass.gov page context in localStorage.
  *
- * 2) On Form Page nodes, attach settings for iframe behavior.
+ *  2) Info Details pages:
+ *     If the author-enabled flag is checked, attach JS that forwards
+ *     explicit or fallback params → form links.
+ *
+ *  3) Form pages:
+ *     Attach settings for iframe JS so it can build the final iframe src.
  */
 function mass_form_context_entity_view(
   array &$build,
@@ -20,21 +26,66 @@ function mass_form_context_entity_view(
   EntityViewDisplayInterface $display,
   string $view_mode,
 ): void {
+
+  // Only care about nodes.
   if (!$entity instanceof NodeInterface) {
+    return;
+  }
+
+  // Ensure we only act on the *route* node, not any nested/rendered nodes.
+  $route_match = \Drupal::routeMatch();
+  $route_node = $route_match->getParameter('node');
+  if ($route_node instanceof NodeInterface && $route_node->id() !== $entity->id()) {
+    // This is some other node being rendered on the page; ignore it.
     return;
   }
 
   $bundle = $entity->bundle();
 
-  // 1) Info pages: forward GET params → links on this page (opt-in field).
+  //
+  // 1) START PAGES → attach page_context.js
+  //
+  // Apply to EVERYTHING EXCEPT info_details + form_page.
+  //
+  if (!in_array($bundle, ['info_details', 'form_page'], TRUE)) {
+
+    // Attach the page_context library.
+    $build['#attached']['library'][] = 'mass_form_context/page_context';
+
+    // Provide org metadata to JS so it can store it in localStorage.
+    // Adjust field machine names if needed.
+    $org = NULL;
+    $parentorg = NULL;
+
+    if ($entity->hasField('mg_organization')) {
+      $org = $entity->get('mg_organization')->value;
+    }
+    if ($entity->hasField('mg_parent_org')) {
+      $parentorg = $entity->get('mg_parent_org')->value;
+    }
+
+    $build['#attached']['drupalSettings']['massFormContext']['pageContext'] = [
+      'org' => $org,
+      'parentorg' => $parentorg,
+      'site' => 'mass.gov',
+      'isStartPage' => TRUE,
+    ];
+  }
+
+  //
+  // 2) INFO DETAILS PAGES → forward GET params to form links
+  //
   if ($bundle === 'info_details') {
-    // Adjust to your actual field machine name if different.
+
+    // Field enabling forwarding (adjust if needed).
     $field_name = 'field_forward_query_params';
+
     if ($entity->hasField($field_name) && (bool) $entity->get($field_name)->value) {
+
       $build['#attached']['library'][] = 'mass_form_context/info_links';
+
       $build['#attached']['drupalSettings']['massFormContext']['forwardQueryToFormLinks'] = [
         'enabled' => TRUE,
-        // Whitelist; can be extended later if needed.
         'allowedKeys' => [
           'referrer',
           'org',
@@ -45,8 +96,11 @@ function mass_form_context_entity_view(
     }
   }
 
-  // 2) Form pages: provide settings for iframe behavior.
+  //
+  // 3) FORM PAGES → iframe parameter injection
+  //
   if ($bundle === 'form_page') {
+
     $build['#attached']['drupalSettings']['massFormContext']['iframe'] = [
       'allowedKeys' => [
         'referrer',
@@ -55,7 +109,7 @@ function mass_form_context_entity_view(
         'site',
       ],
     ];
-    // The iframe JS library itself is attached from node--form-page.html.twig
-    // so it only loads when the Gravity Forms embed is present.
+
+    // The iframe JS library itself is attached in the node twig template.
   }
 }

@@ -1,32 +1,29 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  const STORAGE_KEY = 'massFormContext';
-  const TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+  var STORAGE_KEY = 'massFormContext';
+  var TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
   function loadStorage() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return {
-          forms: {}
-        };
+        return { forms: {}, lastPage: null };
       }
-      const data = JSON.parse(raw);
+      var data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return {
-          forms: {}
-        };
+        return { forms: {}, lastPage: null };
       }
       if (!data.forms || typeof data.forms !== 'object') {
         data.forms = {};
       }
+      if (!data.lastPage || typeof data.lastPage !== 'object') {
+        data.lastPage = null;
+      }
       return data;
     }
     catch (e) {
-      return {
-        forms: {}
-      };
+      return { forms: {}, lastPage: null };
     }
   }
 
@@ -35,7 +32,7 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
     }
     catch (e) {
-      // Ignore storage errors (quota, privacy settings, etc.).
+      // Ignore storage errors.
     }
   }
 
@@ -78,8 +75,10 @@
       }
 
       var allowed = settings.allowedKeys || ['referrer', 'org', 'parentorg', 'site'];
+      var now = Date.now();
+      var storage = loadStorage();
 
-      // 1️⃣ Extract allowed params from current URL.
+      // 1️⃣ Start with allowed params from current URL.
       var current = new URLSearchParams(window.location.search);
       var filtered = new URLSearchParams();
 
@@ -89,15 +88,24 @@
         }
       });
 
+      // 2️⃣ If no URL params, fall back to lastPage context (from a start page).
+      if (!filtered.toString() && storage.lastPage && storage.lastPage.params) {
+        var age = now - (storage.lastPage.timestamp || 0);
+        if (age <= TTL_MS) {
+          filtered = new URLSearchParams(storage.lastPage.params);
+        }
+        else {
+          storage.lastPage = null;
+          saveStorage(storage);
+        }
+      }
+
       if (!filtered.toString()) {
-        // Nothing to store for this page.
+        // No context available for this Info page.
         return;
       }
 
-      var now = Date.now();
-      var storage = loadStorage();
-
-      // 2️⃣ Find all form links on this Info page and map them to this context.
+      // 3️⃣ Map this context to all /forms/... links on the Info page.
       var selector = [
         'a[href^="/forms/"]',
         'a[href^="https://www.mass.gov/forms/"]',
@@ -128,11 +136,10 @@
           }
         });
 
-        // Save back to storage.
         saveStorage(storage);
       }
 
-      // 3️⃣ Clean allowed params from current Info URL, keep the rest (analytics, etc.).
+      // 4️⃣ Clean only allowed params from the Info URL (if any).
       cleanUrlRemovingAllowed(allowed);
     }
   };

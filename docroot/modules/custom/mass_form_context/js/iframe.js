@@ -1,32 +1,29 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  const STORAGE_KEY = 'massFormContext';
-  const TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+  var STORAGE_KEY = 'massFormContext';
+  var TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
   function loadStorage() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return {
-          forms: {}
-        };
+        return { forms: {}, lastPage: null };
       }
-      const data = JSON.parse(raw);
+      var data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return {
-          forms: {}
-        };
+        return { forms: {}, lastPage: null };
       }
       if (!data.forms || typeof data.forms !== 'object') {
         data.forms = {};
       }
+      if (!data.lastPage || typeof data.lastPage !== 'object') {
+        data.lastPage = null;
+      }
       return data;
     }
     catch (e) {
-      return {
-        forms: {}
-      };
+      return { forms: {}, lastPage: null };
     }
   }
 
@@ -98,24 +95,22 @@
           storedParams = new URLSearchParams(existing.params);
         }
         else {
-          // Expired → forget it for this form.
           delete storage.forms[formPath];
           saveStorage(storage);
         }
       }
 
-      // 2️⃣ Merge in any allowed params from the Form page URL (direct external → form).
+      // 2️⃣ Merge any allowed params from the Form page URL (direct external → form).
       var urlParams = new URLSearchParams(window.location.search);
       var hasUrlParams = false;
 
       urlParams.forEach(function (value, key) {
         if (!allowed.length || allowed.indexOf(key) !== -1) {
-          storedParams.set(key, value); // URL wins over stored
+          storedParams.set(key, value); // URL wins
           hasUrlParams = true;
         }
       });
 
-      // 3️⃣ If URL carried allowed params, update this form's entry and clean only those keys.
       if (hasUrlParams) {
         storage.forms[formPath] = {
           params: storedParams.toString(),
@@ -123,6 +118,23 @@
         };
         saveStorage(storage);
         cleanUrlRemovingAllowed(allowed);
+      }
+
+      // 3️⃣ If still no context, fall back to lastPage (start page on mass.gov).
+      if (!storedParams.toString() && storage.lastPage && storage.lastPage.params) {
+        var lastAge = now - (storage.lastPage.timestamp || 0);
+        if (lastAge <= TTL_MS) {
+          storedParams = new URLSearchParams(storage.lastPage.params);
+          storage.forms[formPath] = {
+            params: storedParams.toString(),
+            timestamp: now
+          };
+          saveStorage(storage);
+        }
+        else {
+          storage.lastPage = null;
+          saveStorage(storage);
+        }
       }
 
       // 4️⃣ Build iframe.src from data-src + storedParams for this form.
