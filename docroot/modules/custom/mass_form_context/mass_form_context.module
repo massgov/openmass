@@ -52,22 +52,10 @@ function mass_form_context_entity_view(
     // Attach the page_context library.
     $build['#attached']['library'][] = 'mass_form_context/page_context';
 
-    // Provide org metadata to JS so it can store it in localStorage.
-    // Adjust field machine names if needed.
-    $org = NULL;
-    $parentorg = NULL;
-
-    if ($entity->hasField('mg_organization')) {
-      $org = $entity->get('mg_organization')->value;
-    }
-    if ($entity->hasField('mg_parent_org')) {
-      $parentorg = $entity->get('mg_parent_org')->value;
-    }
-
     $build['#attached']['drupalSettings']['massFormContext']['pageContext'] = [
-      'org' => $org,
-      'parentorg' => $parentorg,
-      'site' => 'mass.gov',
+      'org' => '',
+      'parentorg' => '',
+      'site' => \Drupal::request()->getHttpHost(),
       'isStartPage' => TRUE,
     ];
   }

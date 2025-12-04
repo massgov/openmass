@@ -8,11 +8,11 @@
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return { forms: {}, lastPage: null };
+        return {forms: {}, lastPage: null};
       }
       var data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return { forms: {}, lastPage: null };
+        return {forms: {}, lastPage: null};
       }
       if (!data.forms || typeof data.forms !== 'object') {
         data.forms = {};
@@ -23,7 +23,7 @@
       return data;
     }
     catch (e) {
-      return { forms: {}, lastPage: null };
+      return {forms: {}, lastPage: null};
     }
   }
 
@@ -56,18 +56,35 @@
       // Always capture the current page URL as referrer.
       params.set('referrer', window.location.href);
 
-      // Optional org/parentorg/site from drupalSettings (backend can populate).
-      if (pageContext.org) {
-        params.set('org', pageContext.org);
+      // --- ORG: from drupalSettings OR from meta[name="mg_organization"] ---
+      var orgValue = pageContext.org;
+      if (!orgValue) {
+        var orgMeta = document.querySelector('meta[name="mg_organization"]');
+        if (orgMeta && orgMeta.getAttribute('content')) {
+          orgValue = orgMeta.getAttribute('content');
+        }
       }
-      if (pageContext.parentorg) {
-        params.set('parentorg', pageContext.parentorg);
+      if (orgValue) {
+        params.set('org', orgValue);
       }
+
+      // --- PARENT ORG: from drupalSettings OR from meta[name="mg_parent_org"] ---
+      var parentOrgValue = pageContext.parentorg;
+      if (!parentOrgValue) {
+        var parentMeta = document.querySelector('meta[name="mg_parent_org"]');
+        if (parentMeta && parentMeta.getAttribute('content')) {
+          parentOrgValue = parentMeta.getAttribute('content');
+        }
+      }
+      if (parentOrgValue) {
+        params.set('parentorg', parentOrgValue);
+      }
+
+      // Site: from drupalSettings if provided, otherwise host.
       if (pageContext.site) {
         params.set('site', pageContext.site);
       }
       else {
-        // Fallback: infer site from host.
         params.set('site', window.location.host);
       }
 

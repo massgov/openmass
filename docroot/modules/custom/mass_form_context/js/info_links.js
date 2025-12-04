@@ -8,11 +8,11 @@
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return { forms: {}, lastPage: null };
+        return {forms: {}, lastPage: null};
       }
       var data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return { forms: {}, lastPage: null };
+        return {forms: {}, lastPage: null};
       }
       if (!data.forms || typeof data.forms !== 'object') {
         data.forms = {};
@@ -23,7 +23,7 @@
       return data;
     }
     catch (e) {
-      return { forms: {}, lastPage: null };
+      return {forms: {}, lastPage: null};
     }
   }
 

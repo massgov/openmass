@@ -8,11 +8,11 @@
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return { forms: {}, lastPage: null };
+        return {forms: {}, lastPage: null};
       }
       var data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return { forms: {}, lastPage: null };
+        return {forms: {}, lastPage: null};
       }
       if (!data.forms || typeof data.forms !== 'object') {
         data.forms = {};
@@ -23,7 +23,7 @@
       return data;
     }
     catch (e) {
-      return { forms: {}, lastPage: null };
+      return {forms: {}, lastPage: null};
     }
   }
 
@@ -85,46 +85,58 @@
       var storage = loadStorage();
       var formPath = window.location.pathname; // e.g. "/forms/foo"
 
-      // 1️⃣ Start with stored context for this specific form path (if any and not expired).
-      var storedParams = new URLSearchParams();
+      // --- 1) Check existing per-form mapping (we may use it later if URL has no params) ---
       var existing = storage.forms[formPath];
-
       if (existing && existing.params) {
         var age = now - (existing.timestamp || 0);
-        if (age <= TTL_MS) {
-          storedParams = new URLSearchParams(existing.params);
-        }
-        else {
+        if (age > TTL_MS) {
+          // Expired → remove.
           delete storage.forms[formPath];
+          existing = null;
           saveStorage(storage);
         }
       }
 
-      // 2️⃣ Merge any allowed params from the Form page URL (direct external → form).
+      // --- 2) Read allowed params from the Form page URL ---
       var urlParams = new URLSearchParams(window.location.search);
+      var urlFiltered = new URLSearchParams();
       var hasUrlParams = false;
 
       urlParams.forEach(function (value, key) {
         if (!allowed.length || allowed.indexOf(key) !== -1) {
-          storedParams.set(key, value); // URL wins
+          urlFiltered.set(key, value);
           hasUrlParams = true;
         }
       });
 
+      // --- 3) Decide source of truth for storedParams ---
+      var storedParams = new URLSearchParams();
+
       if (hasUrlParams) {
+        // CASE A: URL has allowed params → URL is the ONLY source of truth.
+        storedParams = urlFiltered;
+
+        // Overwrite per-form mapping with these exact params.
         storage.forms[formPath] = {
           params: storedParams.toString(),
           timestamp: now
         };
         saveStorage(storage);
+
+        // Clean allowed params from the visible URL.
         cleanUrlRemovingAllowed(allowed);
       }
-
-      // 3️⃣ If still no context, fall back to lastPage (start page on mass.gov).
-      if (!storedParams.toString() && storage.lastPage && storage.lastPage.params) {
+      else if (existing && existing.params) {
+        // CASE B: No URL params, use existing per-form mapping (already validated for TTL).
+        storedParams = new URLSearchParams(existing.params);
+      }
+      else if (storage.lastPage && storage.lastPage.params) {
+        // CASE C: No URL params and no mapping → fall back to lastPage (start page).
         var lastAge = now - (storage.lastPage.timestamp || 0);
         if (lastAge <= TTL_MS) {
           storedParams = new URLSearchParams(storage.lastPage.params);
+
+          // Persist this context as the per-form mapping for future visits.
           storage.forms[formPath] = {
             params: storedParams.toString(),
             timestamp: now
@@ -136,8 +148,9 @@
           saveStorage(storage);
         }
       }
+      // CASE D: No URL params, no mapping, no lastPage → storedParams stays empty.
 
-      // 4️⃣ Build iframe.src from data-src + storedParams for this form.
+      // --- 4) Build iframe.src from data-src + storedParams for this form. ---
       iframes.forEach(function (iframe) {
         var baseSrc = iframe.getAttribute('data-src');
         if (!baseSrc) {
