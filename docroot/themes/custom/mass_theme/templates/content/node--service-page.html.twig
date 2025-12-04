@@ -116,7 +116,9 @@
 
   {% if introPageContent.video %}
     {% set video = introPageContent.video %}
-    {% set video = video|merge({"headingLevel": level + 1}) %}
+    {# Determine parent heading level: video appears after page header (H1), so parent is H1, video should be H2 #}
+    {% set parent_heading_level = 1 %}
+    {% set video = video|merge({"headingLevel": parent_heading_level + 1}) %}
     {% include "@atoms/09-media/video.twig" %}
   {% endif %}
 {% endblock %}
