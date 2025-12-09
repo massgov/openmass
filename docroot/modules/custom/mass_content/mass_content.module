@@ -1052,6 +1052,8 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Same alias from the node title to be able to sort nodes and media by title.
   $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
+  // @deprecated DP-42778: field_start_date is deprecated and hidden from the document form.
+  // It may be removed in a future release. The field still exists and auto-populates with current date.
   $media_query->addField('media__field_start_date', 'field_start_date_value', 'node__field_date_published_field_date_published_value');
   $media_query->addField('media_field_data', 'mid', 'extra_column_3');
 
