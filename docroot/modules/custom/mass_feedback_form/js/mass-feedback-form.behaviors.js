@@ -82,12 +82,17 @@
           }
         });
 
+        // Get unique device ID from localStorage for spam detection
+        // This ID is created by device.js and persists across sessions
+        const mgFeedbackId = localStorage.getItem('massgovDeviceId') || null;
+
         const payload = {
           node_id: parseInt(formData.get('node_id')) || 0,
           info_found: formData.get('info_found') === 'Yes',
           explain: explainField,
           url: window.location.href,
-          timestamp: new Date().toISOString()
+          timestamp: new Date().toISOString(),
+          mg_feedback_id: mgFeedbackId
         };
 
         fetch(formAction, {
