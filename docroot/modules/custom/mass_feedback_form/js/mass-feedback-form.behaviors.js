@@ -113,18 +113,10 @@
             return response.json();
           })
           .then(function (data) {
-            // Show success screen
+            // Show success screen and keep it visible
             $form.addClass('hidden');
             $success.removeClass('hidden');
             feedback.scrollIntoView({behavior: 'smooth'});
-
-            // Reset form after delay
-            setTimeout(function () {
-              $form.removeClass('hidden');
-              $success.addClass('hidden');
-              $form[0].reset();
-              $submitBtn.prop('disabled', false);
-            }, 5000);
           })
           .catch(function (error) {
             console.error('Feedback submission failed:', error);
