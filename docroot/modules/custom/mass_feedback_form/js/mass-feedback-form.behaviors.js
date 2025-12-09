@@ -8,34 +8,10 @@
   'use strict';
 
   /**
-   * Support feedback form submission to Lambda API with geolocation support.
+   * Support feedback form submission to Lambda API.
    */
   Drupal.behaviors.massFeedbackForm = {
     attach: function (context) {
-
-      // Cache for geolocation promise (to avoid multiple requests)
-      let geoLocationPromise = null;
-      let geoLocationPromiseStarted = false;
-
-      /**
-       * Get or create the geolocation promise.
-       * Only requests geolocation once, subsequent calls return the same promise.
-       *
-       * @return {Promise} Promise resolving with geolocation data or rejection.
-       */
-      function getGeolocationPromise() {
-        if (!geoLocationPromiseStarted) {
-          geoLocationPromiseStarted = true;
-          geoLocationPromise = getMassgovGeolocation();
-          // Ensure any promise rejection is handled to prevent unhandled rejection errors
-          geoLocationPromise.catch(function (error) {
-            console.warn('Geolocation request failed:', error.message || error);
-            // Don't rethrow - let consumers handle it
-            return {};
-          });
-        }
-        return geoLocationPromise;
-      }
 
       // Process feedback forms using Drupal's once() function
       once('massFeedbackForm', '.ma__mass-feedback-form', context).forEach(function (element) {
@@ -71,17 +47,9 @@
           isSubmitting = true;
           $submitBtn.prop('disabled', true);
 
-          // Wait for geolocation to complete (or fail), then submit
-          var geoPromise = getGeolocationPromise();
-          geoPromise.then(function (geoData) {
-            submitFeedback($form, formAction, geoData, $success, feedback, $submitBtn, function () {
-              isSubmitting = false;
-            });
-          }).catch(function (error) {
-            console.warn('Geolocation error, submitting without coordinates:', error);
-            submitFeedback($form, formAction, {}, $success, feedback, $submitBtn, function () {
-              isSubmitting = false;
-            });
+          // Submit feedback.
+          submitFeedback($form, formAction, $success, feedback, $submitBtn, function () {
+            isSubmitting = false;
           });
 
           return false;
@@ -89,55 +57,16 @@
       });
 
       /**
-       * Get user's geolocation if available.
-       * Returns a promise that resolves with {latitude, longitude} or rejects.
-       *
-       * @return {Promise} Promise resolving with {latitude, longitude} object or rejection.
-       */
-      function getMassgovGeolocation() {
-        return new Promise(function (resolve, reject) {
-          if (!navigator.geolocation) {
-            reject(new Error('Geolocation not supported'));
-            return;
-          }
-
-          var timeoutId = setTimeout(function () {
-            reject(new Error('Geolocation timeout'));
-          }, 10000); // 10 second timeout
-
-          navigator.geolocation.getCurrentPosition(
-            function (position) {
-              clearTimeout(timeoutId);
-              resolve({
-                latitude: position.coords.latitude.toString(),
-                longitude: position.coords.longitude.toString()
-              });
-            },
-            function (error) {
-              clearTimeout(timeoutId);
-              reject(error);
-            },
-            {
-              enableHighAccuracy: false,
-              timeout: 10000,
-              maximumAge: 300000 // 5 minutes cache
-            }
-          );
-        });
-      }
-
-      /**
        * Submit feedback to Lambda API.
        *
        * @param {jQuery} $form The form element.
        * @param {string} formAction The API endpoint URL.
-       * @param {Object} geoData The geolocation data {latitude, longitude}.
        * @param {jQuery} $success The success message element.
        * @param {Element} feedback The feedback container element.
        * @param {jQuery} $submitBtn The submit button element.
        * @param {Function} onComplete Callback when submission is complete.
        */
-      function submitFeedback($form, formAction, geoData, $success, feedback, $submitBtn, onComplete) {
+      function submitFeedback($form, formAction, $success, feedback, $submitBtn, onComplete) {
         const formData = new FormData($form[0]);
 
         // Get explain field - handle both visible and hidden textareas with same name
@@ -160,12 +89,6 @@
           url: window.location.href,
           timestamp: new Date().toISOString()
         };
-
-        // Add geolocation if available
-        if (geoData && geoData.latitude && geoData.longitude) {
-          payload.latitude = geoData.latitude;
-          payload.longitude = geoData.longitude;
-        }
 
         fetch(formAction, {
           method: 'POST',
