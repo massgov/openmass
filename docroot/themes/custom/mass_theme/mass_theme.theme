@@ -6927,6 +6927,40 @@ function mass_theme_campaign_landing_paragraph_set_header_level(array &$variable
 }
 
 /**
+ * Determines the parent heading level for a video paragraph.
+ *
+ * @param \Drupal\paragraphs\Entity\Paragraph $paragraph
+ *   The video paragraph entity.
+ *
+ * @return int
+ *   The parent heading level (1-6).
+ */
+function mass_theme_get_video_parent_heading_level($paragraph) {
+  $parent_level = 2;
+  if (!$paragraph->hasField('parent_field_name') || $paragraph->parent_field_name->isEmpty()) {
+    return $parent_level;
+  }
+  $parent_field = $paragraph->parent_field_name->value;
+  if ($parent_field === 'field_info_details_header_media' || $parent_field === 'field_header') {
+    $parent_level = 1;
+  }
+  elseif ($parent_field === 'field_info_details_sections' || strpos($parent_field, 'section') !== FALSE) {
+    $parent_level = 2;
+  }
+  return $parent_level;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_theme_preprocess_paragraph__video(array &$variables) {
+  $paragraph = $variables['paragraph'];
+  $parent_heading_level = mass_theme_get_video_parent_heading_level($paragraph);
+  $variables['parent_heading_level'] = $parent_heading_level;
+  $variables['video_heading_level'] = $parent_heading_level + 1;
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  */
 function mass_theme_preprocess_paragraph__video_with_header(array &$variables) {

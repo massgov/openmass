@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "373e2e6b582a241ebda74cb2581670a3",
+    "content-hash": "7b9eaac987df7c8956b05827d445e02c",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -10389,6 +10389,84 @@
             "support": {
                 "source": "https://cgit.drupalcode.org/subpathauto",
                 "issues": "https://www.drupal.org/project/issues/subpathauto"
+            }
+        },
+        {
+            "name": "drupal/taxonomy_unique",
+            "version": "2.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/taxonomy_unique.git",
+                "reference": "8.x-2.6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/taxonomy_unique-8.x-2.6.zip",
+                "reference": "8.x-2.6",
+                "shasum": "8b5d53ba14b6e26811fd97f1eb2ecda33ef0f7e8"
+            },
+            "require": {
+                "drupal/core": "^8.9 || ^9 || ^10 || ^11"
+            },
+            "require-dev": {
+                "drupal/coder": "^8.3.6",
+                "squizlabs/php_codesniffer": "^3.4.1"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-2.6",
+                    "datestamp": "1724782346",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "scripts": {
+                "post-install-cmd": [
+                    "./vendor/bin/phpcs --config-set installed_paths ../../drupal/coder/coder_sniffer",
+                    "./vendor/bin/phpcs --config-set show_progress 1"
+                ],
+                "post-update-cmd": [
+                    "./vendor/bin/phpcs --config-set installed_paths ../../drupal/coder/coder_sniffer",
+                    "./vendor/bin/phpcs --config-set show_progress 1"
+                ],
+                "phpcs": [
+                    "./vendor/bin/phpcs --standard=Drupal,DrupalPractice ./ --ignore=./vendor"
+                ],
+                "phpcbf": [
+                    "./vendor/bin/phpcbf --standard=Drupal,DrupalPractice ./ --ignore=./vendor"
+                ]
+            },
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Rafael Schally",
+                    "homepage": "https://www.drupal.org/user/291091",
+                    "email": "rafael.schally@gmail.com"
+                },
+                {
+                    "name": "grevil",
+                    "homepage": "https://www.drupal.org/user/3668491"
+                },
+                {
+                    "name": "sch4lly",
+                    "homepage": "https://www.drupal.org/user/856550"
+                }
+            ],
+            "description": "Checks for duplicate occurrences of term names.",
+            "homepage": "https://www.drupal.org/project/taxonomy_unique",
+            "keywords": [
+                "drupal",
+                "taxonomy",
+                "ui"
+            ],
+            "support": {
+                "source": "https://git.drupalcode.org/project/taxonomy_unique"
             }
         },
         {
