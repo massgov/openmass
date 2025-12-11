@@ -159,10 +159,34 @@ function mass_admin_pages_form_node_service_page_edit_form_alter(&$form, &$form_
  * Implements hook_views_data_alter().
  */
 function mass_admin_pages_views_data_alter(array &$data) {
-  $data['editoria11y_results']['entity_id']['relationship'] = [
-    'base' => 'node_field_data',
-    'base field' => 'nid',
-    'id' => 'standard',
-    'label' => t('Entity ID'),
-  ];
+  // 1) Keep your original relationship: results -> node.
+  if (isset($data['editoria11y_results']['entity_id'])) {
+    $data['editoria11y_results']['entity_id']['relationship'] = [
+      'base' => 'node_field_data',  // Join TO this table…
+      'base field' => 'nid',        // …using node_field_data.nid
+      'id' => 'standard',
+      'label' => t('Node'),
+      'title' => t('Node'),
+      'help' => t('The node this Editoria11y result belongs to.'),
+    ];
+  }
+
+  // 2) NEW: node revisions -> editoria11y_results.
+  if (isset($data['node_field_revision'])) {
+    $data['node_field_revision']['editoria11y_results'] = [
+      'title' => t('Editoria11y results'),
+      'help'  => t('Editoria11y test results for this node.'),
+      'relationship' => [
+        'id'         => 'standard',
+        // Table we are joining TO.
+        'base'       => 'editoria11y_results',
+        // Column on editoria11y_results.
+        'base field' => 'entity_id',
+        // Column on node_field_revision we join FROM.
+        'field'      => 'nid',
+        'label'      => t('Editoria11y results'),
+        'help'       => t('Join node revisions to Editoria11y results by nid.'),
+      ],
+    ];
+  }
 }
