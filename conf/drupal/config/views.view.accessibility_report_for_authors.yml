@@ -2079,6 +2079,22 @@ display:
     display_plugin: page
     position: 9
     display_options:
+      defaults:
+        header: false
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: "<p>Caution: this data is based on real-time scans done when authors view pages while editing on edit.mass.gov. It should not be considered a complete report for the following reasons.</p>\r\n<ul>\r\n<li>Authors are able edit pages in a way that they never view the page after the edit. If they don't view it, it isn't checked.</li>\r\n<li>If Editoria11y finds no issue on a page, it stores nothing. In the data model, there is no way to tell the difference between a page that has no issues and a page that was never checked.</li>\r\n<li>If a page was not viewed by a logged-in author on edit.mass.gov after the Editoria11y feature was released 2/5/2024, it will not appear on the report.</li>\r\n</ul>\r\n<p>Consider using SiteImprove data for reports. It crawls all author created pages that are not hidden from search with the exception of news and events.</p>"
+            format: basic_html
+          tokenize: false
       display_extenders:
         metatag_display_extender:
           metatags: {  }
