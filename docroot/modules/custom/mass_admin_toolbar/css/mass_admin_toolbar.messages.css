@@ -1,0 +1,84 @@
+/**
+ * @file mass_admin_toolbar.messages.css
+ *
+ * Styles for dashboard messages and close buttons.
+ */
+
+/* Messages Container */
+.messages-list__item {
+  position: relative; /* Added for close button positioning */
+}
+
+.mass-dashboard-tabs__messages > .messages {
+  margin: 10px 20px;
+  font-size: 1rem;
+}
+.toolbar .mass-dashboard-tabs__messages a {
+  display: inline;
+}
+
+/* Messages Container, closed */
+.mass-dashboard-tabs__message.is-closed {
+  display: none;
+  padding: 10px 20px;
+}
+
+/* Zap toolbar link styling within the message area. */
+.mass-dashboard-tabs.toolbar .mass-dashboard-tabs__message a {
+  display: inline;
+  line-height: inherit;
+}
+
+/* Close button for messages - Fill variant with accent green */
+.mass-dashboard-messages-close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  min-width: 44px;
+  min-height: 44px;
+  background-color: #14854f;
+  border: none;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  color: #ffffff;
+  z-index: 100;
+  transition: background-color 0.15s ease;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hover state */
+.mass-dashboard-messages-close-button:hover {
+  background-color: #1a9d5f;
+  color: #ffffff;
+}
+
+/* Active/Pressed state */
+.mass-dashboard-messages-close-button:active {
+  background-color: #0f6b3e;
+  color: #ffffff;
+}
+
+/* Focus state with visible focus indicator */
+.mass-dashboard-messages-close-button:focus,
+.mass-dashboard-messages-close-button:focus-visible {
+  background-color: #14854f;
+  color: #ffffff;
+  outline: 3px solid #0076d1 !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px #ffffff, 0 0 0 4px #0076d1;
+}
+
+/* Remove default outline for browsers that support focus-visible */
+.mass-dashboard-messages-close-button:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
