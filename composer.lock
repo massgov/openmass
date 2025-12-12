@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b9eaac987df7c8956b05827d445e02c",
+    "content-hash": "8830827bba19c405a173482456e9a0a3",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -9051,6 +9051,66 @@
             "homepage": "https://www.drupal.org/project/pathologic",
             "support": {
                 "source": "https://git.drupalcode.org/project/pathologic"
+            }
+        },
+        {
+            "name": "drupal/pdf_services",
+            "version": "1.0.0-alpha4",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/pdf_services.git",
+                "reference": "1.0.0-alpha4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/pdf_services-1.0.0-alpha4.zip",
+                "reference": "1.0.0-alpha4",
+                "shasum": "e067deb3f9a09378ec3acaf654fed89c16173942"
+            },
+            "require": {
+                "drupal/core": "^10",
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0"
+            },
+            "require-dev": {
+                "drupal/symfony_mailer_lite": "^1.0",
+                "drupal/views_bulk_operations": "^4.0",
+                "drush/drush": "^12.0"
+            },
+            "suggest": {
+                "drupal/file": "Required for handling file uploads and management"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.0.0-alpha4",
+                    "datestamp": "1760550272",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Nicholas Stees (nicholass)",
+                    "homepage": "https://www.drupal.org/user/3735949",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "nicholass",
+                    "homepage": "https://www.drupal.org/user/3487851"
+                }
+            ],
+            "description": "Integrates with Adobe PDF Services API for PDF analysis and optimization.",
+            "homepage": "https://www.drupal.org/project/pdf_services",
+            "support": {
+                "source": "https://git.drupalcode.org/project/pdf_services",
+                "issues": "https://www.drupal.org/project/issues/pdf_services"
             }
         },
         {
@@ -26447,6 +26507,7 @@
         "drupal/imageapi_optimize_resmushit": 10,
         "drupal/openid_connect": 20,
         "drupal/openid_connect_windows_aad": 20,
+        "drupal/pdf_services": 15,
         "drupal/phpstorm_metadata": 15,
         "drupal/views_taxonomy_term_name_into_id": 15,
         "drupaltest/queue-runner-trait": 20,
@@ -26463,5 +26524,5 @@
     "platform-overrides": {
         "php": "8.3"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.9.0"
 }
