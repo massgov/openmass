@@ -277,55 +277,62 @@ class Molecules {
    *      ], ...]
    *    ]
    */
-  public static function prepareIconLinks($entity, array $options = []) {
-    $items = [];
-    $map = [
-      'socialLinks' => ['field_social_links', 'field_services_social_links'],
-    ];
+public static function prepareIconLinks($entity, array $options = []) {
+    \Drupal::logger('mayflower')->info('=== prepareIconLinks called ===');
 
-    // Determines which fieldnames to use from the map.
-    $fields = Helper::getMappedFields($entity, $map);
+  $items = [];
+  $map = [
+    'socialLinks' => ['field_social_links', 'field_services_social_links'],
+  ];
 
-    // Creates array of links with link parts.
-    $links = Helper::separatedLinks($entity, $fields['socialLinks']);
+  // Determines which fieldnames to use from the map.
+  $fields = Helper::getMappedFields($entity, $map);
 
-    // Get icons for social links.
-    $services = [
-      'twitter',
-      'facebook',
-      'threads',
-      'flickr',
-      'blog',
-      'linkedin',
-      'google',
-      'instagram',
-      'medium',
-      'youtube',
-      'vimeo',
-    ];
+  // Creates array of links with link parts.
+  $links = Helper::separatedLinks($entity, $fields['socialLinks']);
 
-    foreach ($links as $link) {
-      $icon = '';
+  // Map social media domains to their icon names
+  $serviceMapping = [
+    'twitter.com' => 'x-logo',
+    'x.com' => 'x-logo',
+    'facebook.com' => 'facebook-logo',
+    'threads.net' => 'threads-logo',
+    'flickr.com' => 'flickr-logo',
+    'linkedin.com' => 'linkedin-logo',
+    'instagram.com' => 'instagram-logo',
+    'medium.com' => 'medium-logo',
+    'youtube.com' => 'youtube-logo',
+    'vimeo.com' => 'vimeo-logo',
+    'bsky.app' => 'bluesky-logo',
+    'bluesky.social' => 'bluesky-logo',
+    // Keep these without -logo suffix
+    'blog' => 'blog',
+    'google.com' => 'google',
+  ];
 
-      foreach ($services as $key => $service) {
-        if (strpos($link['href'], $service) !== FALSE) {
-          $icon = $service;
-          break;
-        }
+  foreach ($links as $link) {
+    $icon = '';
+
+    // Check each service mapping
+    foreach ($serviceMapping as $domain => $iconName) {
+      if (strpos($link['href'], $domain) !== FALSE) {
+        $icon = $iconName;
+        break;
       }
-
-      $items[] = [
-        'icon' => $icon,
-        'link' => $link,
-      ];
     }
 
-    return [
-      'iconLinks' => [
-        'items' => $items,
-      ],
+    $items[] = [
+      'icon' => $icon,
+      'link' => $link,
     ];
   }
+
+  return [
+    'iconLinks' => [
+      'items' => $items,
+    ],
+  ];
+}
 
   /**
    * Returns the variables structure required to render sectionLinks template.
@@ -524,7 +531,7 @@ class Molecules {
 
       case 'fax':
         $name = t('Fax');
-        $icon = 'fax-icon';
+        $icon = 'fax';
         break;
 
       case 'phone':

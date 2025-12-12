@@ -49,12 +49,32 @@ class MayflowerExtension extends AbstractExtension {
    *
    * @see \Drupal\mayflower\Render\SvgProcessor::processAttachments()
    */
-  public function displayIcon($name) {
+  public function displayIcon($name, $width = '', $height = '', $class = '') {
     $path = $this->getIconPath($name);
+    
+    // Build the template with dimensions and class
+    $template = '<svg-placeholder path="{{path}}"';
+    $context = ['path' => $path];
+    
+    if ($width) {
+      $template .= ' width="{{width}}"';
+      $context['width'] = $width;
+    }
+    if ($height) {
+      $template .= ' height="{{height}}"';
+      $context['height'] = $height;
+    }
+    if ($class) {
+      $template .= ' class="{{class}}"';
+      $context['class'] = $class;
+    }
+    
+    $template .= '>';
+    
     return [
       '#type' => 'inline_template',
-      '#template' => '<svg-placeholder path="{{path}}">',
-      '#context' => ['path' => $path],
+      '#template' => $template,
+      '#context' => $context,
       '#attached' => [
         'svg' => [$path],
       ],
