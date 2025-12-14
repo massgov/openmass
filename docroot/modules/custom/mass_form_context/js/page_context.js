@@ -2,28 +2,58 @@
   'use strict';
 
   var STORAGE_KEY = 'massFormContext';
-  var TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  // Basic sanitization caps.
+  var MAX_PARAMS = 100;
+  var MAX_KEY_LEN = 150;
+  var MAX_VAL_LEN = 1000;
+
+  function getIgnoredKeys() {
+    var s = (drupalSettings.massFormContext || {}).ignoreKeys || [];
+    // Always ignore "utm_*" via prefix rule too (see isIgnoredKey()).
+    return Array.isArray(s) ? s : [];
+  }
+
+  function isIgnoredKey(key, ignoredKeys) {
+    if (!key) {
+      return true;
+    }
+    // Treat any utm_* as analytics without enumerating.
+    if (key.indexOf('utm_') === 0) {
+      return true;
+    }
+    return ignoredKeys.indexOf(key) !== -1;
+  }
 
   function loadStorage() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return {forms: {}, lastPage: null};
+        return {
+          qs: {},
+          current_page: null,
+          current_page_org: null,
+          prior_page: null,
+          prior_page_org: null
+        };
       }
       var data = JSON.parse(raw);
       if (!data || typeof data !== 'object') {
-        return {forms: {}, lastPage: null};
+        throw new Error('bad storage');
       }
-      if (!data.forms || typeof data.forms !== 'object') {
-        data.forms = {};
-      }
-      if (!data.lastPage || typeof data.lastPage !== 'object') {
-        data.lastPage = null;
+      if (!data.qs || typeof data.qs !== 'object') {
+        data.qs = {};
       }
       return data;
     }
     catch (e) {
-      return {forms: {}, lastPage: null};
+      return {
+        qs: {},
+        current_page: null,
+        current_page_org: null,
+        prior_page: null,
+        prior_page_org: null
+      };
     }
   }
 
@@ -32,8 +62,26 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
     }
     catch (e) {
-      // Ignore storage errors.
+      // Ignore (quota, privacy settings, etc).
     }
+  }
+
+  function getCleanCurrentUrl() {
+    // Store cleaned URL for safety (no querystring), but DO NOT change the browser URL.
+    return window.location.origin + window.location.pathname + window.location.hash;
+  }
+
+  function getOrgFromMeta() {
+    // Prefer parent org.
+    var parent = document.querySelector('meta[name="mg_parent_org"]');
+    if (parent && parent.getAttribute('content')) {
+      return parent.getAttribute('content');
+    }
+    var org = document.querySelector('meta[name="mg_organization"]');
+    if (org && org.getAttribute('content')) {
+      return org.getAttribute('content');
+    }
+    return '';
   }
 
   Drupal.behaviors.massFormContextPageContext = {
@@ -43,56 +91,44 @@
         return;
       }
 
-      var mfcSettings = drupalSettings.massFormContext || {};
-      var pageContext = mfcSettings.pageContext || {};
-
-      // Only run on real "start pages".
-      if (!pageContext.isStartPage) {
-        return;
-      }
-
-      var params = new URLSearchParams();
-
-      // Always capture the current page URL as referrer.
-      params.set('referrer', window.location.href);
-
-      // --- ORG: from drupalSettings OR from meta[name="mg_organization"] ---
-      var orgValue = pageContext.org;
-      if (!orgValue) {
-        var orgMeta = document.querySelector('meta[name="mg_organization"]');
-        if (orgMeta && orgMeta.getAttribute('content')) {
-          orgValue = orgMeta.getAttribute('content');
-        }
-      }
-      if (orgValue) {
-        params.set('org', orgValue);
-      }
-
-      // --- PARENT ORG: from drupalSettings OR from meta[name="mg_parent_org"] ---
-      var parentOrgValue = pageContext.parentorg;
-      if (!parentOrgValue) {
-        var parentMeta = document.querySelector('meta[name="mg_parent_org"]');
-        if (parentMeta && parentMeta.getAttribute('content')) {
-          parentOrgValue = parentMeta.getAttribute('content');
-        }
-      }
-      if (parentOrgValue) {
-        params.set('parentorg', parentOrgValue);
-      }
-
-      // Site: from drupalSettings if provided, otherwise host.
-      if (pageContext.site) {
-        params.set('site', pageContext.site);
-      }
-      else {
-        params.set('site', window.location.host);
-      }
-
+      var ignoredKeys = getIgnoredKeys();
       var storage = loadStorage();
-      storage.lastPage = {
-        params: params.toString(),
-        timestamp: Date.now()
-      };
+
+      // 1) Capture all query params except ignored analytics keys.
+      var seen = new URLSearchParams(window.location.search);
+      var count = 0;
+
+      seen.forEach(function (value, key) {
+        if (count >= MAX_PARAMS) {
+          return;
+        }
+        if (isIgnoredKey(key, ignoredKeys)) {
+          return;
+        }
+        if (!key || key.length > MAX_KEY_LEN) {
+          return;
+        }
+        if (typeof value !== 'string') {
+          return;
+        }
+        if (value.length > MAX_VAL_LEN) {
+          value = value.slice(0, MAX_VAL_LEN);
+        }
+
+        storage.qs[key] = value; // overwrite existing keys
+        count += 1;
+      });
+
+      // 2) Rotate current → prior (overwrite).
+      if (storage.current_page || storage.current_page_org) {
+        storage.prior_page = storage.current_page || null;
+        storage.prior_page_org = storage.current_page_org || null;
+      }
+
+      // 3) Set current page + org (cleaned URL stored, but browser URL stays unchanged).
+      storage.current_page = getCleanCurrentUrl();
+      storage.current_page_org = getOrgFromMeta();
+
       saveStorage(storage);
     }
   };

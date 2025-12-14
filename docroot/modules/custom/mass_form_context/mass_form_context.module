@@ -8,17 +8,6 @@ use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_entity_view().
- *
- * Behaviors:
- *  1) Start pages (all nodes except info_details + form_page):
- *     Attach JS to store last Mass.gov page context in localStorage.
- *
- *  2) Info Details pages:
- *     If the author-enabled flag is checked, attach JS that forwards
- *     explicit or fallback params → form links.
- *
- *  3) Form pages:
- *     Attach settings for iframe JS so it can build the final iframe src.
  */
 function mass_form_context_entity_view(
   array &$build,
@@ -26,78 +15,30 @@ function mass_form_context_entity_view(
   EntityViewDisplayInterface $display,
   string $view_mode,
 ): void {
-
-  // Only care about nodes.
   if (!$entity instanceof NodeInterface) {
     return;
   }
 
-  // Ensure we only act on the *route* node, not any nested/rendered nodes.
-  $route_match = \Drupal::routeMatch();
-  $route_node = $route_match->getParameter('node');
+  // Only act on the route node (avoid nested rendered nodes).
+  $route_node = \Drupal::routeMatch()->getParameter('node');
   if ($route_node instanceof NodeInterface && $route_node->id() !== $entity->id()) {
-    // This is some other node being rendered on the page; ignore it.
     return;
   }
 
   $bundle = $entity->bundle();
 
-  //
-  // 1) START PAGES → attach page_context.js
-  //
-  // Apply to EVERYTHING EXCEPT info_details + form_page.
-  //
-  if (!in_array($bundle, ['info_details', 'form_page'], TRUE)) {
-
-    // Attach the page_context library.
+  // Attach context tracking on any NON-form page.
+  if ($bundle !== 'form_page') {
     $build['#attached']['library'][] = 'mass_form_context/page_context';
-
-    $build['#attached']['drupalSettings']['massFormContext']['pageContext'] = [
-      'org' => '',
-      'parentorg' => '',
-      'site' => \Drupal::request()->getHttpHost(),
-      'isStartPage' => TRUE,
-    ];
   }
 
-  //
-  // 2) INFO DETAILS PAGES → forward GET params to form links
-  //
-  if ($bundle === 'info_details') {
+  // Provide ignore list for both JS files (can be tweaked later).
+  // Note: we also ignore anything starting with "utm_" in JS automatically.
+  $build['#attached']['drupalSettings']['massFormContext']['ignoreKeys'] = [
+    'gclid',
+    'fbclid',
+    'msclkid',
+  ];
 
-    // Field enabling forwarding (adjust if needed).
-    $field_name = 'field_forward_query_params';
-
-    if ($entity->hasField($field_name) && (bool) $entity->get($field_name)->value) {
-
-      $build['#attached']['library'][] = 'mass_form_context/info_links';
-
-      $build['#attached']['drupalSettings']['massFormContext']['forwardQueryToFormLinks'] = [
-        'enabled' => TRUE,
-        'allowedKeys' => [
-          'referrer',
-          'org',
-          'parentorg',
-          'site',
-        ],
-      ];
-    }
-  }
-
-  //
-  // 3) FORM PAGES → iframe parameter injection
-  //
-  if ($bundle === 'form_page') {
-
-    $build['#attached']['drupalSettings']['massFormContext']['iframe'] = [
-      'allowedKeys' => [
-        'referrer',
-        'org',
-        'parentorg',
-        'site',
-      ],
-    ];
-
-    // The iframe JS library itself is attached in the node twig template.
-  }
+  // Form page iframe JS remains attached in twig template.
 }
