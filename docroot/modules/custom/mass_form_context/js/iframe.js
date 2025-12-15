@@ -58,11 +58,13 @@
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
     }
-    catch (e) {}
+    catch (e) {
+      throw new Error('bad storage');
+    }
   }
 
   function appendIfValue(sp, key, value) {
-    if (value !== null && value !== undefined && value !== '') {
+    if (value !== null && value !== '') {
       sp.set(key, value);
     }
   }
