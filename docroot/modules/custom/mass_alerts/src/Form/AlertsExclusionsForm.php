@@ -28,7 +28,6 @@ class AlertsExclusionsForm extends ConfigFormBase {
     ];
     $form['#prefix'] = '<div class="description">' . implode('<br>', $instructions) . '</div>';
 
-
     if ($form_state->get('initialized') !== TRUE) {
       $stored = array_values(array_unique(array_map('intval', (array) ($config->get('excluded_org_ids') ?? []))));
       $form_state->set('excluded_org_nids', $stored);
