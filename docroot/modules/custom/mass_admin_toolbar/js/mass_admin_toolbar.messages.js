@@ -24,7 +24,7 @@
     element.addEventListener('transitionend', function handler() {
       element.removeEventListener('transitionend', handler);
       element.remove();
-    }, { once: true });
+    }, {once: true});
   }
 
   /**
