@@ -18,7 +18,7 @@ class FeedbackManagerTest extends ExistingSiteSelenium2DriverTestBase {
   protected $page;
 
   /**
-   * The rendered results on the page..
+   * The rendered results on the page.
    *
    * @var \Behat\Mink\Element\DocumentElement
    */

@@ -1,18 +1,132 @@
 
 
+## [0.460.0] - December 9, 2025
+
+### Added
+  - DP-42374: Add author created friendly URLs.
+  
+### Changed
+  - DP-43205: Pass parent heading level + 1 to video atoms on service and news pages so hidden video titles stop appearing in tables of contents.
+  - DP-43854: Updated Akamai configuration.
+  
+### Fixed
+  - DP-43756: Bulk upload uses wrong revision date.
+  
+
+
+## [0.459.0] - December 2, 2025
+
+### Changed
+  - DP-42997: Make referenced sources field not required on advisory and disable Caspio embed option
+  - DP-43031: Allow Stacked Layout content type to be used as a parent for Info Details pages in the primary parent field.
+  - DP-43451: Bulk document import enhancements to validation/verification.
+  - DP-43523: BACKPORT undo changes that make parent page not required.
+  - DP-43647: Removing empty tags in rich text editor fields which cause accessibliity issues.
+  
+### Fixed
+  - DP-43215: Glossary causes a line break in short description.
+  - DP-43650: Add title attribute to iframe elements on location pages using the "Title for Accessibility" field value for screen reader accessibility.
+  
+### Removed
+  - DP-43577: Removed the DBAL module.
+  
+
+
+## [0.458.2] - November 20, 2025
+
+### Fixed
+- DP-42746: Patch entity_hierarchy to fix recursive queries.
+
+## [0.458.1] - November 19, 2025
+
+### Changed
+  - DP-42746: Upgraded entity_hierarchy to 5.x.
+
+
+## [0.458.0] - November 18, 2025
+
+### Added
+  - DP-40019: Add warning to authors if they try to unpublish a page or document that has published pages linking here.
+  - DP-42243: Create new scratch file from selection.
+
+### Fixed
+  - DP-42197: A11Y eliminate empty list tag on how-to pages.
+
+
+## [0.457.1] - November 13, 2025
+
+### Security
+- DP-43379: Update Drupal core.
+
+## [0.457.0] - November 11, 2025
+
+### Added
+  - DP-40669: Export and update document in bulk.
+
+### Changed
+  - DP-43120: Improve mobile layout of the sitewide alerts.
+
+### Fixed
+  - DP-37258: Prevent non-organization pages from being pasted and saved in Organization(s) fields by adding form-level validation. Entity-level validation is handled by Drupal core's ValidReferenceConstraint based on field configuration.
+  - DP-42199: Don't show empty list container when org page has no nav bar.
+  - DP-42398: Fixed PHP CodeSniffer issues.
+
+
+
+## [0.456.1] - November 5, 2025
+
+### Added
+- DP-43211: Hide sidewide alerts for pages with certain Organization(s) values.
+
+## [0.456.0] - November 4, 2025
+
+### Changed
+  - DP-39972: Added DBAL patch to ensure entity hierarchy is using correct transaction isolation level.
+  - DP-43090: Hide email addresses and leaflet map tiles from editoria11y accessibility checking.
+
+### Fixed
+  - DP-42974: Fix misc 500 errors on Mass.gov.
+
+
+
+## [0.455.0] - October 28, 2025
+
+### Added
+  - DP-41563: Added validation to prevent emoji and visual characters in text fields across all content types.
+
+### Changed
+  - DP-42621: Fix accessibliity issue with map on service and org pages.
+
+
+
+## [0.454.0] - October 21, 2025
+
+### Added
+  - DP-42311: Add disclaimer field to AI Content Advisor Config
+
+### Changed
+  - DP-42562: Updated form inventory report
+
+### Fixed
+  - DP-42577: URL entered by author is cleaned, rendering it broken
+  - DP-42632: Restore collection visibility for Authors and Editors by re-adding the "access taxonomy overview" permission that was removed in DP-39524. To prevent these roles from seeing the Taxonomy tab in the Content menu, created a new "access taxonomy dashboard menu" permission that controls visibility of the Taxonomy menu item separately from the ability to view taxonomy terms in entity reference fields.
+  - DP-42700: Fixed issue type filter in Editoria11y report to show all issue types instead of just manual checks, and increased filter box width for better usability.
+
+
+
 ## [0.453.0] - October 7, 2025
 
 ### Changed
   - DP-36788: Add cache context for timestamp parameter to ensure proper cache key generation for Gravity Forms pages with dynamic parameters.
   - DP-42491: Blocked editoria11y from checking several CSS selectors
-  
+
 ### Security
   - DP-42123: Update node packages.
-  
+
 ### Fixed
   - DP-42395: Fixed datatable issue where pagination would unexpectedly hide.
   - DP-42439: Fixes quotes in service page titles being rendered as HTML entities in table of contents
-  
+
 
 
 ## [0.452.0] - September 30, 2025
@@ -21,18 +135,18 @@
   - DP-39791: Added AI Content Advisor module and functionality.
   - DP-42243: Add help text, filters, fields to various report views
   - DP-42342: Add and configure m4032404 module for improved access denied handling
-  
+
 ### Changed
   - DP-39795: A11y - Update the linked logo on mass.gov so it doesn't duplicate text.
   - DP-41856: Improve microsite performance.
-  
+
 ### Fixed
   - DP-41965: Fix keyboard navigation skipping appendix links in binder table of contents.
   - DP-42150: Fix Image files upload error messages in rich text.
-  
+
 ### Removed
   - DP-41993: Green line beneath collapsible header.
-  
+
 
 
 ## [0.451.0] - September 23, 2025
@@ -47,13 +161,13 @@
   - DP-42119: Fix image upload errors and restore image editing functionality in rich text field.
   - DP-42120: Bug parent org filter misses org pages in some cases.
   - DP-42212: Cloning a service page does not keep the content in layout paragraphs.
-  
+
 ### Removed
   - DP-42071: Improve TOC screen reader experience by removing menu role.
-  
+
 ### Changed
   - DP-42161: Modified permissions of a report view.
-  
+
 
 
 ## [0.450.0] - September 16, 2025
@@ -62,10 +176,10 @@
   - DP-40519: Add top level org filter for all pages and all document views in CMS s.
   - DP-41810: Add K'iche' language support to Drupal site with language code 'quc'.
   - DP-42068: Added ancillary role to allow authors or editors to bulk edit temporarily. This is added on top of main role..
-  
+
 ### Changed
   - DP-42063: Removed temporary pages from backstop. Changed format types on some backstop pages to limit the number of screenshots.
-  
+
 
 
 ## [0.449.0] - September 9, 2025
@@ -74,14 +188,14 @@
   - DP-39253: Configure layout paragraphs for service pages.
   - DP-41910: More backstop test pages including some temporary ones.
   - DP-41923: Add mimetype filter to document adv search report
-  
+
 ### Fixed
   - DP-40399: Brand Banner a11y fixes.
   - DP-41011: Implement consistent focus styles for text input, selectbox, text areas and number inputs in default and high contrast modes.
   - DP-40941: Fixed glossary terms breaking table styles, and overflow issues by table boundaries.
   - DP-441557: Fix keyboard navigation skipping links in table of contents due to focus trapping logic.
   - DP-41653: Fixed Android virtual keyboard dismissing immediately when focusing on any input by preventing Mayflower JavaScript from auto-focusing the hamburger menu button on Android devices.
-  
+
 
 
 ## [0.448.0] - September 2, 2025
@@ -90,13 +204,13 @@
   - DP-40756: Change order of fields on contact content type.
   - DP-40850: Added accessibility attributes to document translation links for improved screen reader support.
   - DP-41507: Add more filters to the file view used by the CX team only.
-  
+
 ### Fixed
   - DP-41581: Fix authoring add block button accessibility issue.
-  
+
 ### Added
   - DP-41771: Parent organization report showing parent org structure.
-  
+
 
 
 ## [0.447.0] - August 19, 2025
@@ -108,10 +222,10 @@
   - DP-41013: Change help text for iframe submission to send authors to servicenow.
   - DP-41089: Advanced search report for docs, removed old adv search for docs view that was unused. Minor changes to other view.
   - DP-41345: Minor accessibility fixes in authoring interface.
-  
+
 ### Fixed
   - DP-41056: Bug adding a link with a querystring that has no = sign.
-  
+
 
 
 ## [0.446.0] - July 29, 2025
@@ -120,10 +234,10 @@
   - DP-39203: Saving a draft of a published document moves published version to private file system.
   - DP-39360: Fix high contrast mode, increase border contrast..
   - DP-41001: Fix collection filter input spacing and layout styles.
-  
+
 ### Added
   - DP-40086: Add iframe translation synchronization and language change handling.
-  
+
 
 
 ## [0.445.0] - July 22, 2025

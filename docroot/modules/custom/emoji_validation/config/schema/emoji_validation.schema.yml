@@ -1,0 +1,17 @@
+emoji_validation.settings:
+  type: config_object
+  label: 'Emoji validation settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enable emoji validation'
+    allowed_codepoints:
+      type: sequence
+      label: 'Allowed code points (hex, e.g., 00B0)'
+      sequence:
+        type: string
+    allowed_ranges:
+      type: sequence
+      label: 'Allowed ranges (hex start-end, e.g., 2200-22FF)'
+      sequence:
+        type: string
