@@ -22,6 +22,13 @@ class AlertsExclusionsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config(self::CONFIG_NAME);
 
+    $instructions = [
+      $this->t('Use this configuration to disable the display on sitewide alerts on pages related to certain organizations. This affects all sitewide alerts. This does not affect organization or page based alerts.'),
+      $this->t('These orgs are stored in the database and a code change is not needed to add or remove organizations.'),
+    ];
+    $form['#prefix'] = '<div class="description">' . implode('<br>', $instructions) . '</div>';
+
+
     if ($form_state->get('initialized') !== TRUE) {
       $stored = array_values(array_unique(array_map('intval', (array) ($config->get('excluded_org_ids') ?? []))));
       $form_state->set('excluded_org_nids', $stored);
