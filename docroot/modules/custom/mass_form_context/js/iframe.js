@@ -59,7 +59,7 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
     }
     catch (e) {
-      throw new Error('bad storage');
+      // Ignore storage errors (quota/privacy).
     }
   }
 
@@ -67,6 +67,23 @@
     if (value !== null && value !== '') {
       sp.set(key, value);
     }
+  }
+
+  function getCleanCurrentUrl() {
+    // Store cleaned URL for the form page (no querystring), but do NOT alter the browser URL.
+    return window.location.origin + window.location.pathname + window.location.hash;
+  }
+
+  function getOrgFromMeta() {
+    var parent = document.querySelector('meta[name="mg_parent_org"]');
+    if (parent && parent.getAttribute('content')) {
+      return parent.getAttribute('content');
+    }
+    var org = document.querySelector('meta[name="mg_organization"]');
+    if (org && org.getAttribute('content')) {
+      return org.getAttribute('content');
+    }
+    return '';
   }
 
   Drupal.behaviors.massFormContextGravityFormsIframe = {
@@ -79,7 +96,13 @@
       var ignoredKeys = getIgnoredKeys();
       var storage = loadStorage();
 
-      // 1) Also capture query params present on the FORM page URL (external → form),
+      // Snapshot the "two pages before form" BEFORE we update storage to the form page.
+      var linkingPage = storage.current_page;
+      var linkingPageOrg = storage.current_page_org;
+      var previousPage = storage.prior_page;
+      var previousPageOrg = storage.prior_page_org;
+
+      // 1) Capture query params present on the FORM page URL (external → form),
       // except analytics keys. (No URL cleanup.)
       var seen = new URLSearchParams(window.location.search);
       var count = 0;
@@ -105,21 +128,40 @@
         count += 1;
       });
 
+      // 2) Update localStorage so "current_page" becomes the FORM page itself.
+      // This satisfies the requirement that storage is updated on form pages.
+      var formPage = getCleanCurrentUrl();
+      var formPageOrg = getOrgFromMeta();
+
+      if (storage.current_page || storage.current_page_org) {
+        storage.prior_page = storage.current_page || null;
+        storage.prior_page_org = storage.current_page_org || null;
+      }
+      storage.current_page = formPage;
+      storage.current_page_org = formPageOrg;
+
       saveStorage(storage);
 
-      // 2) Build final params: all stored qs + tracking vars.
+      // 3) Build final params: all stored qs + page context vars.
       var finalParams = new URLSearchParams();
 
       Object.keys(storage.qs || {}).forEach(function (k) {
         finalParams.set(k, storage.qs[k]);
       });
 
-      appendIfValue(finalParams, 'linking_page', storage.current_page);
-      appendIfValue(finalParams, 'linking_page_org', storage.current_page_org);
-      appendIfValue(finalParams, 'previous_page', storage.prior_page);
-      appendIfValue(finalParams, 'previous_page_org', storage.prior_page_org);
+      // What linked to the form (the page before the form).
+      appendIfValue(finalParams, 'linking_page', linkingPage);
+      appendIfValue(finalParams, 'linking_page_org', linkingPageOrg);
 
-      // 3) Apply to iframe src and remove data-src after use.
+      // The page before the linking page.
+      appendIfValue(finalParams, 'previous_page', previousPage);
+      appendIfValue(finalParams, 'previous_page_org', previousPageOrg);
+
+      // The form page itself (new requirement).
+      appendIfValue(finalParams, 'form_page', formPage);
+      appendIfValue(finalParams, 'form_page_org', formPageOrg);
+
+      // 4) Apply to iframe src and remove data-src after use.
       iframes.forEach(function (iframe) {
         var baseSrc = iframe.getAttribute('data-src');
         if (!baseSrc) {
