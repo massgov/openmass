@@ -29,7 +29,7 @@
   line-height: inherit;
 }
 
-/* Close button for messages - Fill variant with accent green */
+ /* Close button for messages - Default (status/success) */
 .mass-dashboard-messages-close-button {
   position: absolute;
   top: 10px;
@@ -38,7 +38,7 @@
   height: 32px;
   min-width: 44px;
   min-height: 44px;
-  background-color: #14854f;
+  background-color: #42a877;
   border: none;
   font-size: 24px;
   font-weight: 400;
@@ -48,29 +48,29 @@
   cursor: pointer;
   color: #ffffff;
   z-index: 100;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Hover state */
+/* Status/Success message close button - Hover state */
 .mass-dashboard-messages-close-button:hover {
-  background-color: #1a9d5f;
+  background-color: #52c087;
   color: #ffffff;
 }
 
-/* Active/Pressed state */
+/* Status/Success message close button - Active/Pressed state */
 .mass-dashboard-messages-close-button:active {
-  background-color: #0f6b3e;
+  background-color: #328a5f;
   color: #ffffff;
 }
 
-/* Focus state with visible focus indicator */
+/* Status/Success message close button - Focus state with visible focus indicator */
 .mass-dashboard-messages-close-button:focus,
 .mass-dashboard-messages-close-button:focus-visible {
-  background-color: #14854f;
+  background-color: #42a877;
   color: #ffffff;
   outline: 3px solid #0076d1 !important;
   outline-offset: 2px;
@@ -81,4 +81,44 @@
 .mass-dashboard-messages-close-button:focus:not(:focus-visible) {
   outline: none;
   box-shadow: none;
+}
+
+/* Error message close button */
+.messages--error .mass-dashboard-messages-close-button {
+  background-color: #e34f4f;
+}
+
+.messages--error .mass-dashboard-messages-close-button:hover {
+  background-color: #e86767;
+}
+
+.messages--error .mass-dashboard-messages-close-button:active {
+  background-color: #c93f3f;
+}
+
+.messages--error .mass-dashboard-messages-close-button:focus,
+.messages--error .mass-dashboard-messages-close-button:focus-visible {
+  background-color: #e34f4f;
+}
+
+/* Warning message close button - Yellow with black text for contrast */
+.messages--warning .mass-dashboard-messages-close-button {
+  background-color: #e0ac00;
+  color: #000000;
+}
+
+.messages--warning .mass-dashboard-messages-close-button:hover {
+  background-color: #f0bc10;
+  color: #000000;
+}
+
+.messages--warning .mass-dashboard-messages-close-button:active {
+  background-color: #c09600;
+  color: #000000;
+}
+
+.messages--warning .mass-dashboard-messages-close-button:focus,
+.messages--warning .mass-dashboard-messages-close-button:focus-visible {
+  background-color: #e0ac00;
+  color: #000000;
 }
