@@ -3,6 +3,9 @@
 
   var STORAGE_KEY = 'massFormContext';
 
+  // Reset if last view was more than 1 hour ago.
+  var RESET_AFTER_MS = 60 * 60 * 1000;
+
   // Basic sanitization caps.
   var MAX_PARAMS = 100;
   var MAX_KEY_LEN = 150;
@@ -14,56 +17,86 @@
     return Array.isArray(s) ? s : [];
   }
 
-  function isIgnoredKey(key, ignoredKeys) {
-    if (!key) {
-      return true;
+function isIgnoredKey(key, ignoredKeys) {
+  if (!key) {
+    return true;
+  }
+
+  // Treat any utm_* as analytics without enumerating.
+  if (key.indexOf('utm_') === 0) {
+    return true;
+  }
+
+  // Explicitly ignore common analytics params.
+  if (key === '_ga' || key === '_gl') {
+    return true;
+  }
+
+  return ignoredKeys.indexOf(key) !== -1;
+}
+
+  function defaultStorage() {
+    return {
+      qs: {},
+
+      current_page: null,
+      current_page_org: null,
+
+      prior_page_1: null,
+      prior_page_org_1: null,
+
+      prior_page_2: null,
+      prior_page_org_2: null,
+
+      // Single timestamp used for 1-hour reset.
+      last_view_ts: null
+    };
+  }
+
+  function normalizeStorage(data) {
+    if (!data || typeof data !== 'object') {
+      return defaultStorage();
     }
-    // Treat any utm_* as analytics without enumerating.
-    if (key.indexOf('utm_') === 0) {
-      return true;
+    if (!data.qs || typeof data.qs !== 'object') {
+      data.qs = {};
     }
-    return ignoredKeys.indexOf(key) !== -1;
+
+    // Ensure expected keys exist (shape hardening).
+    var d = defaultStorage();
+    Object.keys(d).forEach(function (k) {
+      if (!(k in data)) {
+        data[k] = d[k];
+      }
+    });
+
+    return data;
   }
 
   function loadStorage() {
     try {
-      var raw = localStorage.getItem(STORAGE_KEY);
+      var raw = sessionStorage.getItem(STORAGE_KEY);
       if (!raw) {
-        return {
-          qs: {},
-          current_page: null,
-          current_page_org: null,
-          prior_page: null,
-          prior_page_org: null
-        };
+        return defaultStorage();
       }
-      var data = JSON.parse(raw);
-      if (!data || typeof data !== 'object') {
-        throw new Error('bad storage');
-      }
-      if (!data.qs || typeof data.qs !== 'object') {
-        data.qs = {};
-      }
-      return data;
+      return normalizeStorage(JSON.parse(raw));
     }
     catch (e) {
-      return {
-        qs: {},
-        current_page: null,
-        current_page_org: null,
-        prior_page: null,
-        prior_page_org: null
-      };
+      return defaultStorage();
     }
   }
 
   function saveStorage(storage) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
     }
     catch (e) {
       // Ignore (quota, privacy settings, etc).
     }
+  }
+
+  function shouldReset(storage, nowTs) {
+    var last = storage && storage.last_view_ts;
+    return (typeof last === 'number') && ((nowTs - last) > RESET_AFTER_MS);
   }
 
   function getCleanCurrentUrl() {
@@ -91,8 +124,14 @@
         return;
       }
 
+      var nowTs = Date.now();
       var ignoredKeys = getIgnoredKeys();
       var storage = loadStorage();
+
+      // Reset everything if more than an hour has passed since the last page view.
+      if (shouldReset(storage, nowTs)) {
+        storage = defaultStorage();
+      }
 
       // 1) Capture all query params except ignored analytics keys.
       var seen = new URLSearchParams(window.location.search);
@@ -119,15 +158,23 @@
         count += 1;
       });
 
-      // 2) Rotate current → prior (overwrite).
+      // 2) Shift history back:
+      //    current -> prior_page_1
+      //    prior_page_1 -> prior_page_2
       if (storage.current_page || storage.current_page_org) {
-        storage.prior_page = storage.current_page || null;
-        storage.prior_page_org = storage.current_page_org || null;
+        storage.prior_page_2 = storage.prior_page_1 || null;
+        storage.prior_page_org_2 = storage.prior_page_org_1 || null;
+
+        storage.prior_page_1 = storage.current_page || null;
+        storage.prior_page_org_1 = storage.current_page_org || null;
       }
 
-      // 3) Set current page + org (cleaned URL stored, but browser URL stays unchanged).
+      // 3) Set current page + org (cleaned URL stored, browser URL unchanged).
       storage.current_page = getCleanCurrentUrl();
       storage.current_page_org = getOrgFromMeta();
+
+      // Update last view timestamp for 1-hour reset logic.
+      storage.last_view_ts = nowTs;
 
       saveStorage(storage);
     }
