@@ -188,10 +188,6 @@
     appendIfValue(sp, 'linking_page_org', ctx.linking_page_org);
     appendIfValue(sp, 'previous_page', ctx.previous_page);
     appendIfValue(sp, 'previous_page_org', ctx.previous_page_org);
-    appendIfValue(sp, 'form_page', ctx.form_page);
-    appendIfValue(sp, 'form_page_org', ctx.form_page_org);
-
-    // 3) Additional “one more back” params (new).
     appendIfValue(sp, 'previous_page_2', ctx.previous_page_2);
     appendIfValue(sp, 'previous_page_org_2', ctx.previous_page_org_2);
 
