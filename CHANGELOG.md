@@ -1,5 +1,18 @@
 
 
+## [0.461.0] - December 16, 2025
+
+### Security
+  - DP-43782: Drupal AI module update.
+  
+### Changed
+  - DP-43955: Add header help text to a11y report.
+  
+### Added
+  - DP-43985: Help text for exclude from search and sitewide alert config page.
+  
+
+
 ## [0.460.0] - December 9, 2025
 
 ### Added
