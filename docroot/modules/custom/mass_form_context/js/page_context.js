@@ -17,23 +17,23 @@
     return Array.isArray(s) ? s : [];
   }
 
-function isIgnoredKey(key, ignoredKeys) {
-  if (!key) {
-    return true;
-  }
+  function isIgnoredKey(key, ignoredKeys) {
+    if (!key) {
+      return true;
+    }
 
-  // Treat any utm_* as analytics without enumerating.
-  if (key.indexOf('utm_') === 0) {
-    return true;
-  }
+    // Treat any utm_* as analytics without enumerating.
+    if (key.indexOf('utm_') === 0) {
+      return true;
+    }
 
-  // Explicitly ignore common analytics params.
-  if (key === '_ga' || key === '_gl') {
-    return true;
-  }
+    // Explicitly ignore common analytics params.
+    if (key === '_ga' || key === '_gl') {
+      return true;
+    }
 
-  return ignoredKeys.indexOf(key) !== -1;
-}
+    return ignoredKeys.indexOf(key) !== -1;
+  }
 
   function defaultStorage() {
     return {
@@ -41,12 +41,15 @@ function isIgnoredKey(key, ignoredKeys) {
 
       current_page: null,
       current_page_org: null,
+      current_page_parent_org: null,
 
       prior_page_1: null,
       prior_page_org_1: null,
+      prior_page_parent_org_1: null,
 
       prior_page_2: null,
       prior_page_org_2: null,
+      prior_page_parent_org_2: null,
 
       // Single timestamp used for 1-hour reset.
       last_view_ts: null
@@ -105,14 +108,17 @@ function isIgnoredKey(key, ignoredKeys) {
   }
 
   function getOrgFromMeta() {
-    // Prefer parent org.
-    var parent = document.querySelector('meta[name="mg_parent_org"]');
-    if (parent && parent.getAttribute('content')) {
-      return parent.getAttribute('content');
-    }
     var org = document.querySelector('meta[name="mg_organization"]');
     if (org && org.getAttribute('content')) {
       return org.getAttribute('content');
+    }
+    return '';
+  }
+
+  function getParentOrgFromMeta() {
+    var parent = document.querySelector('meta[name="mg_parent_org"]');
+    if (parent && parent.getAttribute('content')) {
+      return parent.getAttribute('content');
     }
     return '';
   }
@@ -164,14 +170,17 @@ function isIgnoredKey(key, ignoredKeys) {
       if (storage.current_page || storage.current_page_org) {
         storage.prior_page_2 = storage.prior_page_1 || null;
         storage.prior_page_org_2 = storage.prior_page_org_1 || null;
+        storage.prior_page_parent_org_2 = storage.prior_page_parent_org_1 || null;
 
         storage.prior_page_1 = storage.current_page || null;
         storage.prior_page_org_1 = storage.current_page_org || null;
+        storage.prior_page_parent_org_1 = storage.current_page_parent_org || null;
       }
 
       // 3) Set current page + org (cleaned URL stored, browser URL unchanged).
       storage.current_page = getCleanCurrentUrl();
       storage.current_page_org = getOrgFromMeta();
+      storage.current_page_parent_org = getParentOrgFromMeta();
 
       // Update last view timestamp for 1-hour reset logic.
       storage.last_view_ts = nowTs;

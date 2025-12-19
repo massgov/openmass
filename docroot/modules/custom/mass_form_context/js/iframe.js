@@ -36,12 +36,15 @@
 
       current_page: null,
       current_page_org: null,
+      current_page_parent_org: null,
 
       prior_page_1: null,
       prior_page_org_1: null,
+      prior_page_parent_org_1: null,
 
       prior_page_2: null,
       prior_page_org_2: null,
+      prior_page_parent_org_2: null,
 
       // Used to decide whether to reset everything after inactivity.
       last_view_ts: null,
@@ -103,7 +106,7 @@
   }
 
   function appendIfValue(sp, key, value) {
-    if (value !== null && value !== '') {
+    if (typeof value === 'string' && value !== '') {
       sp.set(key, value);
     }
   }
@@ -114,13 +117,17 @@
   }
 
   function getOrgFromMeta() {
-    var parent = document.querySelector('meta[name="mg_parent_org"]');
-    if (parent && parent.getAttribute('content')) {
-      return parent.getAttribute('content');
-    }
     var org = document.querySelector('meta[name="mg_organization"]');
     if (org && org.getAttribute('content')) {
       return org.getAttribute('content');
+    }
+    return '';
+  }
+
+  function getParentOrgFromMeta() {
+    var parent = document.querySelector('meta[name="mg_parent_org"]');
+    if (parent && parent.getAttribute('content')) {
+      return parent.getAttribute('content');
     }
     return '';
   }
@@ -151,7 +158,8 @@
     });
   }
 
-  function buildIframeContext(storage, linkingPage, linkingPageOrg, previousPage, previousPageOrg, previousPage2, previousPageOrg2, formPage, formPageOrg) {
+  function buildIframeContext(storage, linkingPage, linkingPageOrg, linkingPageParentOrg, previousPage, previousPageOrg, previousPageParentOrg,
+ previousPage2, previousPageOrg2, previousPageParentOrg2, formPage, formPageOrg, formPageParentOrg) {
     // Debug object you can inspect in sessionStorage.
     return {
       // Custom params captured during the session (excluding analytics).
@@ -160,15 +168,19 @@
       // Page context.
       linking_page: linkingPage || '',
       linking_page_org: linkingPageOrg || '',
+      linking_page_parent_org: linkingPageParentOrg || '',
       previous_page: previousPage || '',
       previous_page_org: previousPageOrg || '',
+      previous_page_parent_org: previousPageParentOrg || '',
 
       // One more page back (new).
       previous_page_2: previousPage2 || '',
       previous_page_org_2: previousPageOrg2 || '',
+      previous_page_parent_org_2: previousPageParentOrg2 || '',
 
       form_page: formPage || '',
       form_page_org: formPageOrg || '',
+      form_page_parent_org: formPageParentOrg || '',
 
       // Helpful extra debug info.
       built_at: Date.now()
@@ -186,10 +198,13 @@
     // 2) Context params (existing).
     appendIfValue(sp, 'linking_page', ctx.linking_page);
     appendIfValue(sp, 'linking_page_org', ctx.linking_page_org);
+    appendIfValue(sp, 'linking_page_parent_org', ctx.linking_page_parent_org);
     appendIfValue(sp, 'previous_page', ctx.previous_page);
     appendIfValue(sp, 'previous_page_org', ctx.previous_page_org);
+    appendIfValue(sp, 'previous_page_parent_org', ctx.previous_page_parent_org);
     appendIfValue(sp, 'previous_page_2', ctx.previous_page_2);
     appendIfValue(sp, 'previous_page_org_2', ctx.previous_page_org_2);
+    appendIfValue(sp, 'previous_page_parent_org_2', ctx.previous_page_parent_org_2);
 
     return sp;
   }
@@ -214,14 +229,18 @@
       // These are set by page_context.js on non-form pages.
       var linkingPage = storage.current_page;
       var linkingPageOrg = storage.current_page_org;
+      var linkingPageParentOrg = storage.current_page_parent_org;
       var previousPage = storage.prior_page_1;
       var previousPageOrg = storage.prior_page_org_1;
+      var previousPageParentOrg = storage.prior_page_parent_org_1;
       var previousPage2 = storage.prior_page_2;
       var previousPageOrg2 = storage.prior_page_org_2;
+      var previousPageParentOrg2 = storage.prior_page_parent_org_2;
 
       // Always compute the form page (clean URL + org).
       var formPage = getCleanCurrentUrl();
       var formPageOrg = getOrgFromMeta();
+      var formPageParentOrg = getParentOrgFromMeta();
 
       // 1) Capture query params present on the FORM page URL (external → form),
       // except analytics keys. (No URL cleanup.)
@@ -233,16 +252,20 @@
         if (storage.current_page || storage.current_page_org) {
           storage.prior_page_2 = storage.prior_page_1 || null;
           storage.prior_page_org_2 = storage.prior_page_org_1 || null;
+          storage.prior_page_parent_org_2 = storage.prior_page_parent_org_1 || null;
 
           storage.prior_page_1 = storage.current_page || null;
           storage.prior_page_org_1 = storage.current_page_org || null;
+          storage.prior_page_parent_org_1 = storage.current_page_parent_org || null;
         }
 
         storage.current_page = formPage;
         storage.current_page_org = formPageOrg;
+        storage.current_page_parent_org = formPageParentOrg;
       } else {
         // Still ensure org is current in case meta differs.
         storage.current_page_org = formPageOrg;
+        storage.current_page_parent_org = formPageParentOrg;
       }
 
       // Update last view timestamp for 1-hour reset logic.
@@ -253,12 +276,16 @@
         storage,
         linkingPage,
         linkingPageOrg,
+        linkingPageParentOrg,
         previousPage,
         previousPageOrg,
+        previousPageParentOrg,
         previousPage2,
         previousPageOrg2,
+        previousPageParentOrg2,
         formPage,
-        formPageOrg
+        formPageOrg,
+        formPageParentOrg
       );
 
       saveStorage(storage);
