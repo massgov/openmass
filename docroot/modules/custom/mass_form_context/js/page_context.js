@@ -2,22 +2,74 @@
   'use strict';
 
   var STORAGE_KEY = 'massFormContext';
+  var TTL_MS = 60 * 60 * 1000; // 1 hour
 
-  // 1 hour TTL (sessionStorage, but TTL prevents stale data inside a long session).
-  var TTL_MS = 60 * 60 * 1000;
-
-  // Basic sanitization caps (avoid someone stuffing huge values into storage).
   var MAX_PARAMS = 100;
   var MAX_KEY_LEN = 150;
   var MAX_VAL_LEN = 1000;
 
   function getBackend() {
-    // Prefer sessionStorage (non-persistent).
     return window.sessionStorage;
   }
 
   function now() {
     return Date.now ? Date.now() : new Date().getTime();
+  }
+
+  function stripControlChars(str) {
+    var s = String(str == null ? '' : str);
+    var out = '';
+    for (var i = 0; i < s.length; i += 1) {
+      var code = s.charCodeAt(i);
+      // Drop ASCII control chars 0x00-0x1F and DEL 0x7F.
+      if ((code >= 0 && code <= 31) || code === 127) {
+        continue;
+      }
+      out += s.charAt(i);
+    }
+    return out;
+  }
+
+  function sanitizeKey(key) {
+    var k = String(key || '').trim();
+    if (!k) {
+      return '';
+    }
+    k = stripControlChars(k);
+    if (k.length > MAX_KEY_LEN) {
+      k = k.substring(0, MAX_KEY_LEN);
+    }
+    return k;
+  }
+
+  function sanitizeVal(val) {
+    var v = stripControlChars(val);
+    if (v.length > MAX_VAL_LEN) {
+      v = v.substring(0, MAX_VAL_LEN);
+    }
+    return v;
+  }
+
+  function emptyStorage() {
+    return {
+      qs: {},
+
+      current_page: null,
+      current_page_org: null,
+      current_page_parent_org: null,
+
+      prior_page: null,
+      prior_page_org: null,
+      prior_page_parent_org: null,
+
+      prior_page_2: null,
+      prior_page_2_org: null,
+      prior_page_2_parent_org: null,
+
+      last_iframe_context: null,
+
+      _ts: null
+    };
   }
 
   function safeParse(raw) {
@@ -29,38 +81,13 @@
     }
   }
 
-  function emptyStorage() {
-    return {
-      // Query params seen during session (except ignored keys).
-      qs: {},
-
-      // Most recent NON-form page.
-      current_page: null,
-      current_page_org: null,
-      current_page_parent_org: null,
-
-      // One step back.
-      prior_page: null,
-      prior_page_org: null,
-      prior_page_parent_org: null,
-
-      // Two steps back.
-      prior_page_2: null,
-      prior_page_2_org: null,
-      prior_page_2_parent_org: null,
-
-      // Debug: what iframe.js last used.
-      last_iframe_context: null,
-
-      // Timestamp for TTL handling.
-      _ts: null
-    };
-  }
-
   function loadStorage() {
     var backend = getBackend();
-    var raw;
+    if (!backend) {
+      return emptyStorage();
+    }
 
+    var raw;
     try {
       raw = backend.getItem(STORAGE_KEY);
     }
@@ -82,19 +109,41 @@
       return emptyStorage();
     }
 
-    // Normalize.
     if (!data.qs || typeof data.qs !== 'object') {
       data.qs = {};
     }
+
+    // Ensure expected keys exist (backwards-compat safe).
     if (!('current_page' in data)) {
       data.current_page = null;
     }
+    if (!('current_page_org' in data)) {
+      data.current_page_org = null;
+    }
+    if (!('current_page_parent_org' in data)) {
+      data.current_page_parent_org = null;
+    }
+
     if (!('prior_page' in data)) {
       data.prior_page = null;
     }
+    if (!('prior_page_org' in data)) {
+      data.prior_page_org = null;
+    }
+    if (!('prior_page_parent_org' in data)) {
+      data.prior_page_parent_org = null;
+    }
+
     if (!('prior_page_2' in data)) {
       data.prior_page_2 = null;
     }
+    if (!('prior_page_2_org' in data)) {
+      data.prior_page_2_org = null;
+    }
+    if (!('prior_page_2_parent_org' in data)) {
+      data.prior_page_2_parent_org = null;
+    }
+
     if (!('last_iframe_context' in data)) {
       data.last_iframe_context = null;
     }
@@ -108,14 +157,12 @@
       getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
     }
     catch (e) {
-      // Ignore storage errors.
+      // Ignore storage errors (privacy/quota).
     }
   }
 
   function getIgnoredKeys() {
-    // Provided by Drupal (so we don't hardcode analytics keys).
-    // drupalSettings.massFormContext.ignoreKeys = ['utm_source', 'gclid', ...]
-    var cfg = (drupalSettings.massFormContext || {}).ignoreKeys || [];
+    var cfg = ((drupalSettings.massFormContext || {}).ignoreKeys) || [];
     return Array.isArray(cfg) ? cfg : [];
   }
 
@@ -132,55 +179,19 @@
     return false;
   }
 
-  function sanitizeKey(key) {
-    var k = String(key || '').trim();
-    if (!k) {
-      return '';
-    }
-    // Strip control chars.
-    k = k.replace(/[\u0000-\u001F\u007F]/g, '');
-    if (k.length > MAX_KEY_LEN) {
-      k = k.substring(0, MAX_KEY_LEN);
-    }
-    return k;
-  }
-
-  function sanitizeVal(val) {
-    var v = String(val == null ? '' : val);
-    // Strip control chars & null bytes.
-    v = v.replace(/[\u0000-\u001F\u007F]/g, '');
-    if (v.length > MAX_VAL_LEN) {
-      v = v.substring(0, MAX_VAL_LEN);
-    }
-    return v;
-  }
-
   function readMeta(name) {
-    // Pull org info from metatags on the page.
-    // <meta name="mg_organization" content="foo,bar">
     var el = document.querySelector('meta[name="' + name + '"]');
     if (!el) {
       return '';
     }
-    var c = el.getAttribute('content') || '';
-    return sanitizeVal(c);
-  }
-
-  function getPageOrg() {
-    // Prefer mg_organization; fallback to mg_parent_org if needed.
-    // (You can decide later if you want both; right now we store both separately.)
-    return readMeta('mg_organization');
-  }
-
-  function getPageParentOrg() {
-    return readMeta('mg_parent_org');
+    return sanitizeVal(el.getAttribute('content') || '');
   }
 
   function captureQueryParams(storage) {
     var ignored = getIgnoredKeys();
     var sp = new URLSearchParams(window.location.search || '');
-
     var count = 0;
+
     sp.forEach(function (value, key) {
       if (count >= MAX_PARAMS) {
         return;
@@ -199,13 +210,12 @@
 
   Drupal.behaviors.massFormContextPageContext = {
     attach: function (context) {
-      // Run once per page load.
       var onceResult = once('mass-form-context-page-context', 'html', context);
       if (!onceResult.length) {
         return;
       }
 
-      // Do NOT run on form pages (we want linking_page to remain the page before the form).
+      // Skip form pages so the "linking_page" stays the page before the form.
       var cfg = (drupalSettings.massFormContext || {});
       if (cfg.isFormPage) {
         return;
@@ -213,24 +223,26 @@
 
       var storage = loadStorage();
 
-      // Store qs seen on this page (except ignored).
+      // 1) Capture query params seen on this page (minus ignored keys).
       captureQueryParams(storage);
 
-      // Rotate history (current -> prior -> prior2).
-      if (storage.current_page) {
-        storage.prior_page_2 = storage.prior_page;
-        storage.prior_page_2_org = storage.prior_page_org;
-        storage.prior_page_2_parent_org = storage.prior_page_parent_org;
+      // 2) Rotate history (current -> prior -> prior2).
+      // Only rotate if we have a previous current_page and we are navigating to a new URL.
+      var thisUrl = window.location.href;
+      if (storage.current_page && storage.current_page !== thisUrl) {
+        storage.prior_page_2 = storage.prior_page || null;
+        storage.prior_page_2_org = storage.prior_page_org || null;
+        storage.prior_page_2_parent_org = storage.prior_page_parent_org || null;
 
-        storage.prior_page = storage.current_page;
-        storage.prior_page_org = storage.current_page_org;
-        storage.prior_page_parent_org = storage.current_page_parent_org;
+        storage.prior_page = storage.current_page || null;
+        storage.prior_page_org = storage.current_page_org || null;
+        storage.prior_page_parent_org = storage.current_page_parent_org || null;
       }
 
-      // Set new current page values.
-      storage.current_page = window.location.href;
-      storage.current_page_org = getPageOrg();
-      storage.current_page_parent_org = getPageParentOrg();
+      // 3) Set current page + org values from metatags.
+      storage.current_page = thisUrl;
+      storage.current_page_org = readMeta('mg_organization');
+      storage.current_page_parent_org = readMeta('mg_parent_org');
 
       saveStorage(storage);
     }
