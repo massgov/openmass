@@ -2,35 +2,29 @@
   'use strict';
 
   var STORAGE_KEY = 'massFormContext';
+  var TTL_MS = 60 * 60 * 1000;
 
-  // Reset if last view was more than 1 hour ago.
-  var RESET_AFTER_MS = 60 * 60 * 1000;
-
-  var MAX_PARAMS = 100;
   var MAX_KEY_LEN = 150;
   var MAX_VAL_LEN = 1000;
 
-  function getIgnoredKeys() {
-    var s = (drupalSettings.massFormContext || {}).ignoreKeys || [];
-    return Array.isArray(s) ? s : [];
+  function getBackend() {
+    return window.sessionStorage;
   }
 
-  function isIgnoredKey(key, ignoredKeys) {
-    if (!key) {
-      return true;
-    }
-    // Treat utm_* as analytics without enumerating.
-    if (key.indexOf('utm_') === 0) {
-      return true;
-    }
-    // Explicitly ignore common analytics params.
-    if (key === '_ga' || key === '_gl') {
-      return true;
-    }
-    return ignoredKeys.indexOf(key) !== -1;
+  function now() {
+    return Date.now ? Date.now() : new Date().getTime();
   }
 
-  function defaultStorage() {
+  function safeParse(raw) {
+    try {
+      return JSON.parse(raw);
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  function emptyStorage() {
     return {
       qs: {},
 
@@ -38,282 +32,173 @@
       current_page_org: null,
       current_page_parent_org: null,
 
-      prior_page_1: null,
-      prior_page_org_1: null,
-      prior_page_parent_org_1: null,
+      prior_page: null,
+      prior_page_org: null,
+      prior_page_parent_org: null,
 
       prior_page_2: null,
-      prior_page_org_2: null,
-      prior_page_parent_org_2: null,
+      prior_page_2_org: null,
+      prior_page_2_parent_org: null,
 
-      // Used to decide whether to reset everything after inactivity.
-      last_view_ts: null,
+      last_iframe_context: null,
 
-      // Debug object (what was last sent to the iframe).
-      last_iframe_context: null
+      _ts: null
     };
   }
 
-  function normalizeStorage(data) {
-    if (!data || typeof data !== 'object') {
-      return defaultStorage();
+  function loadStorage() {
+    var backend = getBackend();
+    var raw;
+
+    try {
+      raw = backend.getItem(STORAGE_KEY);
     }
+    catch (e) {
+      return emptyStorage();
+    }
+
+    if (!raw) {
+      return emptyStorage();
+    }
+
+    var data = safeParse(raw);
+    if (!data || typeof data !== 'object') {
+      return emptyStorage();
+    }
+
+    if (data._ts && (now() - data._ts) > TTL_MS) {
+      return emptyStorage();
+    }
+
     if (!data.qs || typeof data.qs !== 'object') {
       data.qs = {};
-    }
-
-    // Ensure expected keys exist (shape hardening).
-    var d = defaultStorage();
-    Object.keys(d).forEach(function (k) {
-      if (!(k in data)) {
-        data[k] = d[k];
-      }
-    });
-
-    // Ensure last_iframe_context is either null or an object.
-    if (data.last_iframe_context !== null && typeof data.last_iframe_context !== 'object') {
-      data.last_iframe_context = null;
     }
 
     return data;
   }
 
-  function loadStorage() {
+  function saveStorage(data) {
+    data._ts = now();
     try {
-      var raw = sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return defaultStorage();
-      }
-      return normalizeStorage(JSON.parse(raw));
+      getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
     }
-    catch (e) {
-      return defaultStorage();
-    }
+    catch (e) {}
   }
 
-  function saveStorage(storage) {
-    try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+  function sanitizeKey(key) {
+    var k = String(key || '').trim();
+    if (!k) {
+      return '';
     }
-    catch (e) {
-      // Ignore storage errors (quota/privacy).
+    k = k.replace(/[\u0000-\u001F\u007F]/g, '');
+    if (k.length > MAX_KEY_LEN) {
+      k = k.substring(0, MAX_KEY_LEN);
     }
+    return k;
   }
 
-  function shouldReset(storage, nowTs) {
-    var last = storage && storage.last_view_ts;
-    return (typeof last === 'number') && ((nowTs - last) > RESET_AFTER_MS);
-  }
-
-  function appendIfValue(sp, key, value) {
-    if (typeof value === 'string' && value !== '') {
-      sp.set(key, value);
+  function sanitizeVal(val) {
+    var v = String(val == null ? '' : val);
+    v = v.replace(/[\u0000-\u001F\u007F]/g, '');
+    if (v.length > MAX_VAL_LEN) {
+      v = v.substring(0, MAX_VAL_LEN);
     }
+    return v;
   }
 
-  function getCleanCurrentUrl() {
-    // Cleaned URL for storage/iframe (no querystring). Do NOT change browser URL.
-    return window.location.origin + window.location.pathname + window.location.hash;
-  }
-
-  function getOrgFromMeta() {
-    var org = document.querySelector('meta[name="mg_organization"]');
-    if (org && org.getAttribute('content')) {
-      return org.getAttribute('content');
+  function appendIfValue(params, key, value) {
+    if (!value) {
+      return;
     }
-    return '';
+    params.set(key, sanitizeVal(value));
   }
 
-  function getParentOrgFromMeta() {
-    var parent = document.querySelector('meta[name="mg_parent_org"]');
-    if (parent && parent.getAttribute('content')) {
-      return parent.getAttribute('content');
-    }
-    return '';
-  }
+  function buildFinalParams(storage) {
+    var finalParams = new URLSearchParams();
 
-  function captureQueryParamsIntoStorage(storage, ignoredKeys) {
-    var seen = new URLSearchParams(window.location.search);
-    var count = 0;
-
-    seen.forEach(function (value, key) {
-      if (count >= MAX_PARAMS) {
+    // 1) Add all stored querystring params (except ignored already removed in page_context.js).
+    Object.keys(storage.qs || {}).forEach(function (k) {
+      var key = sanitizeKey(k);
+      if (!key) {
         return;
       }
-      if (isIgnoredKey(key, ignoredKeys)) {
-        return;
-      }
-      if (!key || key.length > MAX_KEY_LEN) {
-        return;
-      }
-      if (typeof value !== 'string') {
-        return;
-      }
-      if (value.length > MAX_VAL_LEN) {
-        value = value.slice(0, MAX_VAL_LEN);
-      }
-
-      storage.qs[key] = value; // overwrite existing keys
-      count += 1;
-    });
-  }
-
-  function buildIframeContext(storage, linkingPage, linkingPageOrg, linkingPageParentOrg, previousPage, previousPageOrg, previousPageParentOrg,
- previousPage2, previousPageOrg2, previousPageParentOrg2, formPage, formPageOrg, formPageParentOrg) {
-    // Debug object you can inspect in sessionStorage.
-    return {
-      // Custom params captured during the session (excluding analytics).
-      qs: storage.qs || {},
-
-      // Page context.
-      linking_page: linkingPage || '',
-      linking_page_org: linkingPageOrg || '',
-      linking_page_parent_org: linkingPageParentOrg || '',
-      previous_page: previousPage || '',
-      previous_page_org: previousPageOrg || '',
-      previous_page_parent_org: previousPageParentOrg || '',
-
-      // One more page back (new).
-      previous_page_2: previousPage2 || '',
-      previous_page_org_2: previousPageOrg2 || '',
-      previous_page_parent_org_2: previousPageParentOrg2 || '',
-
-      form_page: formPage || '',
-      form_page_org: formPageOrg || '',
-      form_page_parent_org: formPageParentOrg || '',
-
-      // Helpful extra debug info.
-      built_at: Date.now()
-    };
-  }
-
-  function buildFinalParamsFromContext(ctx) {
-    var sp = new URLSearchParams();
-
-    // 1) All custom params.
-    Object.keys(ctx.qs || {}).forEach(function (k) {
-      sp.set(k, ctx.qs[k]);
+      finalParams.set(key, sanitizeVal(storage.qs[k]));
     });
 
-    // 2) Context params (existing).
-    appendIfValue(sp, 'linking_page', ctx.linking_page);
-    appendIfValue(sp, 'linking_page_org', ctx.linking_page_org);
-    appendIfValue(sp, 'linking_page_parent_org', ctx.linking_page_parent_org);
-    appendIfValue(sp, 'previous_page', ctx.previous_page);
-    appendIfValue(sp, 'previous_page_org', ctx.previous_page_org);
-    appendIfValue(sp, 'previous_page_parent_org', ctx.previous_page_parent_org);
-    appendIfValue(sp, 'previous_page_2', ctx.previous_page_2);
-    appendIfValue(sp, 'previous_page_org_2', ctx.previous_page_org_2);
-    appendIfValue(sp, 'previous_page_parent_org_2', ctx.previous_page_parent_org_2);
+    // 2) Add tracking vars (Joe naming in the URL).
+    // linking_page = page directly before the form page.
+    appendIfValue(finalParams, 'linking_page', storage.current_page);
+    appendIfValue(finalParams, 'linking_page_org', storage.current_page_org);
+    appendIfValue(finalParams, 'linking_page_parent_org', storage.current_page_parent_org);
 
-    return sp;
+    // previous_page = one step before linking_page.
+    appendIfValue(finalParams, 'previous_page', storage.prior_page);
+    appendIfValue(finalParams, 'previous_page_org', storage.prior_page_org);
+    appendIfValue(finalParams, 'previous_page_parent_org', storage.prior_page_parent_org);
+
+    // previous_page2 = two steps before linking_page.
+    appendIfValue(finalParams, 'previous_page2', storage.prior_page_2);
+    appendIfValue(finalParams, 'previous_page2_org', storage.prior_page_2_org);
+    appendIfValue(finalParams, 'previous_page2_parent_org', storage.prior_page_2_parent_org);
+
+    return finalParams;
   }
 
-  Drupal.behaviors.massFormContextGravityFormsIframe = {
+  function applyParamsToIframe(iframe, finalParams) {
+    var baseSrc = iframe.getAttribute('data-src');
+    if (!baseSrc) {
+      return;
+    }
+
+    var url;
+    try {
+      url = new URL(baseSrc);
+    }
+    catch (e) {
+      // If baseSrc is relative (shouldn't be for forms), fallback.
+      try {
+        url = new URL(baseSrc, window.location.origin);
+      }
+      catch (e2) {
+        return;
+      }
+    }
+
+    // Merge: keep base iframe params first, then override/add from finalParams.
+    finalParams.forEach(function (value, key) {
+      url.searchParams.set(key, value);
+    });
+
+    iframe.setAttribute('src', url.toString());
+    iframe.removeAttribute('data-src');
+  }
+
+  Drupal.behaviors.massFormContextIframe = {
     attach: function (context) {
-      var iframes = once('mass-form-context-gf-iframe', 'iframe.js-gf-iframe[data-src]', context);
+      var onceResult = once('mass-form-context-iframe', 'html', context);
+      if (!onceResult.length) {
+        return;
+      }
+
+      var iframes = Array.prototype.slice.call(document.querySelectorAll('iframe[data-src]'));
       if (!iframes.length) {
         return;
       }
 
-      var nowTs = Date.now();
-      var ignoredKeys = getIgnoredKeys();
       var storage = loadStorage();
+      var finalParams = buildFinalParams(storage);
 
-      // Reset everything if more than an hour has passed since the last page view.
-      if (shouldReset(storage, nowTs)) {
-        storage = defaultStorage();
-      }
-
-      // Snapshot the “pages before form” BEFORE we mutate storage.
-      // These are set by page_context.js on non-form pages.
-      var linkingPage = storage.current_page;
-      var linkingPageOrg = storage.current_page_org;
-      var linkingPageParentOrg = storage.current_page_parent_org;
-      var previousPage = storage.prior_page_1;
-      var previousPageOrg = storage.prior_page_org_1;
-      var previousPageParentOrg = storage.prior_page_parent_org_1;
-      var previousPage2 = storage.prior_page_2;
-      var previousPageOrg2 = storage.prior_page_org_2;
-      var previousPageParentOrg2 = storage.prior_page_parent_org_2;
-
-      // Always compute the form page (clean URL + org).
-      var formPage = getCleanCurrentUrl();
-      var formPageOrg = getOrgFromMeta();
-      var formPageParentOrg = getParentOrgFromMeta();
-
-      // 1) Capture query params present on the FORM page URL (external → form),
-      // except analytics keys. (No URL cleanup.)
-      captureQueryParamsIntoStorage(storage, ignoredKeys);
-
-      // 2) Update storage so current_page becomes the FORM page itself,
-      // shifting history ONLY if we are not already on this same form page (avoid rotate on refresh).
-      if (storage.current_page !== formPage) {
-        if (storage.current_page || storage.current_page_org) {
-          storage.prior_page_2 = storage.prior_page_1 || null;
-          storage.prior_page_org_2 = storage.prior_page_org_1 || null;
-          storage.prior_page_parent_org_2 = storage.prior_page_parent_org_1 || null;
-
-          storage.prior_page_1 = storage.current_page || null;
-          storage.prior_page_org_1 = storage.current_page_org || null;
-          storage.prior_page_parent_org_1 = storage.current_page_parent_org || null;
-        }
-
-        storage.current_page = formPage;
-        storage.current_page_org = formPageOrg;
-        storage.current_page_parent_org = formPageParentOrg;
-      } else {
-        // Still ensure org is current in case meta differs.
-        storage.current_page_org = formPageOrg;
-        storage.current_page_parent_org = formPageParentOrg;
-      }
-
-      // Update last view timestamp for 1-hour reset logic.
-      storage.last_view_ts = nowTs;
-
-      // 3) Build and store a debug context object that matches what we’ll send to iframe.
-      storage.last_iframe_context = buildIframeContext(
-        storage,
-        linkingPage,
-        linkingPageOrg,
-        linkingPageParentOrg,
-        previousPage,
-        previousPageOrg,
-        previousPageParentOrg,
-        previousPage2,
-        previousPageOrg2,
-        previousPageParentOrg2,
-        formPage,
-        formPageOrg,
-        formPageParentOrg
-      );
-
+      // Debug: store what we are about to send to the iframe.
+      var debugObj = {};
+      finalParams.forEach(function (value, key) {
+        debugObj[key] = value;
+      });
+      storage.last_iframe_context = debugObj;
       saveStorage(storage);
 
-      // 4) Build final params FROM storage.last_iframe_context (single source of truth).
-      var finalParams = buildFinalParamsFromContext(storage.last_iframe_context || { qs: {} });
-
-      // 5) Apply to iframe src and remove data-src after use.
+      // Apply to all matching iframes (usually just one).
       iframes.forEach(function (iframe) {
-        var baseSrc = iframe.getAttribute('data-src');
-        if (!baseSrc) {
-          return;
-        }
-
-        var url;
-        try {
-          url = new URL(baseSrc, window.location.origin);
-        }
-        catch (e) {
-          return;
-        }
-
-        finalParams.forEach(function (value, key) {
-          url.searchParams.set(key, value);
-        });
-
-        iframe.setAttribute('src', url.toString());
-        iframe.removeAttribute('data-src');
+        applyParamsToIframe(iframe, finalParams);
       });
     }
   };

@@ -19,7 +19,7 @@ function mass_form_context_entity_view(
     return;
   }
 
-  // Only act on the route node (avoid nested rendered nodes).
+  // Only act on the route node (avoid nested node renders).
   $route_node = \Drupal::routeMatch()->getParameter('node');
   if ($route_node instanceof NodeInterface && $route_node->id() !== $entity->id()) {
     return;
@@ -27,18 +27,31 @@ function mass_form_context_entity_view(
 
   $bundle = $entity->bundle();
 
-  // Attach context tracking on any NON-form page.
+  // Provide ignoreKeys to JS (config-driven list; no hardcoding).
+  // Adjust this to wherever you store it (config, settings.php, etc).
+  // For now, keep it empty unless you already wire it up.
+  $build['#attached']['drupalSettings']['massFormContext']['ignoreKeys'] = [
+    // Ad click ids / common analytics.
+    'gclid',
+    'gbraid',
+    'wbraid',
+    'dclid',
+    'fbclid',
+    'msclkid',
+
+    // Common GA-ish keys.
+    '_ga',
+    '_gid',
+    '_gl',
+  ];
+
+  // Flag used by page_context.js to skip form pages.
+  $build['#attached']['drupalSettings']['massFormContext']['isFormPage'] = ($bundle === 'form_page');
+
+  // Attach page_context library to all node pages EXCEPT form_page.
   if ($bundle !== 'form_page') {
     $build['#attached']['library'][] = 'mass_form_context/page_context';
   }
 
-  // Provide ignore list for both JS files (can be tweaked later).
-  // Note: we also ignore anything starting with "utm_" in JS automatically.
-  $build['#attached']['drupalSettings']['massFormContext']['ignoreKeys'] = [
-    'gclid',
-    'fbclid',
-    'msclkid',
-  ];
-
-  // Form page iframe JS remains attached in twig template.
+  // iframe.js library is still attached from twig (only when gravity iframe exists).
 }

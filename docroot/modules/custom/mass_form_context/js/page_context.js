@@ -3,187 +3,234 @@
 
   var STORAGE_KEY = 'massFormContext';
 
-  // Reset if last view was more than 1 hour ago.
-  var RESET_AFTER_MS = 60 * 60 * 1000;
+  // 1 hour TTL (sessionStorage, but TTL prevents stale data inside a long session).
+  var TTL_MS = 60 * 60 * 1000;
 
-  // Basic sanitization caps.
+  // Basic sanitization caps (avoid someone stuffing huge values into storage).
   var MAX_PARAMS = 100;
   var MAX_KEY_LEN = 150;
   var MAX_VAL_LEN = 1000;
 
-  function getIgnoredKeys() {
-    var s = (drupalSettings.massFormContext || {}).ignoreKeys || [];
-    // Always ignore "utm_*" via prefix rule too (see isIgnoredKey()).
-    return Array.isArray(s) ? s : [];
+  function getBackend() {
+    // Prefer sessionStorage (non-persistent).
+    return window.sessionStorage;
   }
 
-  function isIgnoredKey(key, ignoredKeys) {
-    if (!key) {
-      return true;
-    }
-
-    // Treat any utm_* as analytics without enumerating.
-    if (key.indexOf('utm_') === 0) {
-      return true;
-    }
-
-    // Explicitly ignore common analytics params.
-    if (key === '_ga' || key === '_gl') {
-      return true;
-    }
-
-    return ignoredKeys.indexOf(key) !== -1;
+  function now() {
+    return Date.now ? Date.now() : new Date().getTime();
   }
 
-  function defaultStorage() {
+  function safeParse(raw) {
+    try {
+      return JSON.parse(raw);
+    }
+    catch (e) {
+      return null;
+    }
+  }
+
+  function emptyStorage() {
     return {
+      // Query params seen during session (except ignored keys).
       qs: {},
 
+      // Most recent NON-form page.
       current_page: null,
       current_page_org: null,
       current_page_parent_org: null,
 
-      prior_page_1: null,
-      prior_page_org_1: null,
-      prior_page_parent_org_1: null,
+      // One step back.
+      prior_page: null,
+      prior_page_org: null,
+      prior_page_parent_org: null,
 
+      // Two steps back.
       prior_page_2: null,
-      prior_page_org_2: null,
-      prior_page_parent_org_2: null,
+      prior_page_2_org: null,
+      prior_page_2_parent_org: null,
 
-      // Single timestamp used for 1-hour reset.
-      last_view_ts: null
+      // Debug: what iframe.js last used.
+      last_iframe_context: null,
+
+      // Timestamp for TTL handling.
+      _ts: null
     };
   }
 
-  function normalizeStorage(data) {
-    if (!data || typeof data !== 'object') {
-      return defaultStorage();
+  function loadStorage() {
+    var backend = getBackend();
+    var raw;
+
+    try {
+      raw = backend.getItem(STORAGE_KEY);
     }
+    catch (e) {
+      return emptyStorage();
+    }
+
+    if (!raw) {
+      return emptyStorage();
+    }
+
+    var data = safeParse(raw);
+    if (!data || typeof data !== 'object') {
+      return emptyStorage();
+    }
+
+    // TTL enforcement.
+    if (data._ts && (now() - data._ts) > TTL_MS) {
+      return emptyStorage();
+    }
+
+    // Normalize.
     if (!data.qs || typeof data.qs !== 'object') {
       data.qs = {};
     }
-
-    // Ensure expected keys exist (shape hardening).
-    var d = defaultStorage();
-    Object.keys(d).forEach(function (k) {
-      if (!(k in data)) {
-        data[k] = d[k];
-      }
-    });
+    if (!('current_page' in data)) {
+      data.current_page = null;
+    }
+    if (!('prior_page' in data)) {
+      data.prior_page = null;
+    }
+    if (!('prior_page_2' in data)) {
+      data.prior_page_2 = null;
+    }
+    if (!('last_iframe_context' in data)) {
+      data.last_iframe_context = null;
+    }
 
     return data;
   }
 
-  function loadStorage() {
+  function saveStorage(data) {
+    data._ts = now();
     try {
-      var raw = sessionStorage.getItem(STORAGE_KEY);
-      if (!raw) {
-        return defaultStorage();
+      getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    catch (e) {
+      // Ignore storage errors.
+    }
+  }
+
+  function getIgnoredKeys() {
+    // Provided by Drupal (so we don't hardcode analytics keys).
+    // drupalSettings.massFormContext.ignoreKeys = ['utm_source', 'gclid', ...]
+    var cfg = (drupalSettings.massFormContext || {}).ignoreKeys || [];
+    return Array.isArray(cfg) ? cfg : [];
+  }
+
+  function isIgnoredKey(key, ignoredKeys) {
+    if (!key) {
+      return false;
+    }
+    var k = String(key).toLowerCase();
+    for (var i = 0; i < ignoredKeys.length; i += 1) {
+      if (k === String(ignoredKeys[i]).toLowerCase()) {
+        return true;
       }
-      return normalizeStorage(JSON.parse(raw));
     }
-    catch (e) {
-      return defaultStorage();
-    }
+    return false;
   }
 
-  function saveStorage(storage) {
-    try {
-      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(storage));
+  function sanitizeKey(key) {
+    var k = String(key || '').trim();
+    if (!k) {
+      return '';
     }
-    catch (e) {
-      // Ignore (quota, privacy settings, etc).
+    // Strip control chars.
+    k = k.replace(/[\u0000-\u001F\u007F]/g, '');
+    if (k.length > MAX_KEY_LEN) {
+      k = k.substring(0, MAX_KEY_LEN);
     }
+    return k;
   }
 
-  function shouldReset(storage, nowTs) {
-    var last = storage && storage.last_view_ts;
-    return (typeof last === 'number') && ((nowTs - last) > RESET_AFTER_MS);
-  }
-
-  function getCleanCurrentUrl() {
-    // Store cleaned URL for safety (no querystring), but DO NOT change the browser URL.
-    return window.location.origin + window.location.pathname + window.location.hash;
-  }
-
-  function getOrgFromMeta() {
-    var org = document.querySelector('meta[name="mg_organization"]');
-    if (org && org.getAttribute('content')) {
-      return org.getAttribute('content');
+  function sanitizeVal(val) {
+    var v = String(val == null ? '' : val);
+    // Strip control chars & null bytes.
+    v = v.replace(/[\u0000-\u001F\u007F]/g, '');
+    if (v.length > MAX_VAL_LEN) {
+      v = v.substring(0, MAX_VAL_LEN);
     }
-    return '';
+    return v;
   }
 
-  function getParentOrgFromMeta() {
-    var parent = document.querySelector('meta[name="mg_parent_org"]');
-    if (parent && parent.getAttribute('content')) {
-      return parent.getAttribute('content');
+  function readMeta(name) {
+    // Pull org info from metatags on the page.
+    // <meta name="mg_organization" content="foo,bar">
+    var el = document.querySelector('meta[name="' + name + '"]');
+    if (!el) {
+      return '';
     }
-    return '';
+    var c = el.getAttribute('content') || '';
+    return sanitizeVal(c);
+  }
+
+  function getPageOrg() {
+    // Prefer mg_organization; fallback to mg_parent_org if needed.
+    // (You can decide later if you want both; right now we store both separately.)
+    return readMeta('mg_organization');
+  }
+
+  function getPageParentOrg() {
+    return readMeta('mg_parent_org');
+  }
+
+  function captureQueryParams(storage) {
+    var ignored = getIgnoredKeys();
+    var sp = new URLSearchParams(window.location.search || '');
+
+    var count = 0;
+    sp.forEach(function (value, key) {
+      if (count >= MAX_PARAMS) {
+        return;
+      }
+      var k = sanitizeKey(key);
+      if (!k) {
+        return;
+      }
+      if (isIgnoredKey(k, ignored)) {
+        return;
+      }
+      storage.qs[k] = sanitizeVal(value);
+      count += 1;
+    });
   }
 
   Drupal.behaviors.massFormContextPageContext = {
     attach: function (context) {
-      var onceResult = once('mass-form-context-page', 'html', context);
+      // Run once per page load.
+      var onceResult = once('mass-form-context-page-context', 'html', context);
       if (!onceResult.length) {
         return;
       }
 
-      var nowTs = Date.now();
-      var ignoredKeys = getIgnoredKeys();
+      // Do NOT run on form pages (we want linking_page to remain the page before the form).
+      var cfg = (drupalSettings.massFormContext || {});
+      if (cfg.isFormPage) {
+        return;
+      }
+
       var storage = loadStorage();
 
-      // Reset everything if more than an hour has passed since the last page view.
-      if (shouldReset(storage, nowTs)) {
-        storage = defaultStorage();
+      // Store qs seen on this page (except ignored).
+      captureQueryParams(storage);
+
+      // Rotate history (current -> prior -> prior2).
+      if (storage.current_page) {
+        storage.prior_page_2 = storage.prior_page;
+        storage.prior_page_2_org = storage.prior_page_org;
+        storage.prior_page_2_parent_org = storage.prior_page_parent_org;
+
+        storage.prior_page = storage.current_page;
+        storage.prior_page_org = storage.current_page_org;
+        storage.prior_page_parent_org = storage.current_page_parent_org;
       }
 
-      // 1) Capture all query params except ignored analytics keys.
-      var seen = new URLSearchParams(window.location.search);
-      var count = 0;
-
-      seen.forEach(function (value, key) {
-        if (count >= MAX_PARAMS) {
-          return;
-        }
-        if (isIgnoredKey(key, ignoredKeys)) {
-          return;
-        }
-        if (!key || key.length > MAX_KEY_LEN) {
-          return;
-        }
-        if (typeof value !== 'string') {
-          return;
-        }
-        if (value.length > MAX_VAL_LEN) {
-          value = value.slice(0, MAX_VAL_LEN);
-        }
-
-        storage.qs[key] = value; // overwrite existing keys
-        count += 1;
-      });
-
-      // 2) Shift history back:
-      //    current -> prior_page_1
-      //    prior_page_1 -> prior_page_2
-      if (storage.current_page || storage.current_page_org) {
-        storage.prior_page_2 = storage.prior_page_1 || null;
-        storage.prior_page_org_2 = storage.prior_page_org_1 || null;
-        storage.prior_page_parent_org_2 = storage.prior_page_parent_org_1 || null;
-
-        storage.prior_page_1 = storage.current_page || null;
-        storage.prior_page_org_1 = storage.current_page_org || null;
-        storage.prior_page_parent_org_1 = storage.current_page_parent_org || null;
-      }
-
-      // 3) Set current page + org (cleaned URL stored, browser URL unchanged).
-      storage.current_page = getCleanCurrentUrl();
-      storage.current_page_org = getOrgFromMeta();
-      storage.current_page_parent_org = getParentOrgFromMeta();
-
-      // Update last view timestamp for 1-hour reset logic.
-      storage.last_view_ts = nowTs;
+      // Set new current page values.
+      storage.current_page = window.location.href;
+      storage.current_page_org = getPageOrg();
+      storage.current_page_parent_org = getPageParentOrg();
 
       saveStorage(storage);
     }
