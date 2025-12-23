@@ -1,5 +1,12 @@
 
 
+## [0.462.0] - December 23, 2025
+
+### Fixed
+  - DP-43883: Refactored the Close message handler to not overlap with tabs and work also for admin theme.
+  
+
+
 ## [0.461.0] - December 16, 2025
 
 ### Security
