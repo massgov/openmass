@@ -1,6 +1,7 @@
 /**
- * @file mass_dashboard_messages_tabs.css
+ * @file mass_admin_toolbar.tabs.css
  *
+ * Styles for the dashboard tabs (primary and secondary).
  */
 
 /* Container */
@@ -79,70 +80,4 @@
 .secondary-tabs > li > a.is-active {
   background-color: rgba(181, 181, 181, 0.5);
   color: #0c2240; /*Drupal hover color*/
-}
-
-/* Messages Container */
-.mass-dashboard-tabs__messages > .messages {
-  margin: 10px 20px;
-  font-size: 1rem;
-}
-.toolbar .mass-dashboard-tabs__messages a {
-  display: inline;
-}
-
-/* Messages Container, closed */
-.mass-dashboard-tabs__message.is-closed {
-  display: none;
-  padding: 10px 20px;
-}
-
-/* Zap toolbar link styling within the message area. */
-.mass-dashboard-tabs.toolbar .mass-dashboard-tabs__message a {
-  display: inline;
-  line-height: inherit;
-}
-
-/* Open/Close Messages Trigger */
-.mass-dashboard-tabs__trigger {
-  position: absolute;
-  top: 0;
-  left: 20px;
-  display: inline-block;
-  border-left: 1px solid #b5b5b5;
-  border-right: 1px solid #b5b5b5;
-  padding: 8px 25px;
-  color: #0032a0;
-}
-
-/* Place "Hide" in for messaging when the drawer is open */
-.mass-dashboard-tabs__trigger > .show {
-  display: none;
-}
-.mass-dashboard-tabs__trigger > .hide {
-  display: inline;
-}
-
-/* Place "Show" in for messaging when the drawer is closed */
-.mass-dashboard-tabs__trigger.is-closed > .show {
-  display: inline;
-}
-.mass-dashboard-tabs__trigger.is-closed > .hide {
-  display: none;
-}
-
-/* add in an arrow indicator to the message */
-.mass-dashboard-tabs__trigger:after {
-  content: url('../images/icon-arrow.png');
-  position: relative;
-  top: 2px;
-  display: inline-block;
-  margin-left: 10px;
-}
-
-/* Rotate the arrow indicator when the drawer is closed */
-.mass-dashboard-tabs__trigger.is-closed:after {
-  -ms-transform: rotate(180deg); /* IE 9 */
-  -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
-  transform: rotate(180deg);
-  top: -.5px;
 }

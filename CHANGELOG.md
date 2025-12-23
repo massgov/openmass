@@ -1,5 +1,32 @@
 
 
+## [0.461.0] - December 16, 2025
+
+### Security
+  - DP-43782: Drupal AI module update.
+  
+### Changed
+  - DP-43955: Add header help text to a11y report.
+  
+### Added
+  - DP-43985: Help text for exclude from search and sitewide alert config page.
+  
+
+
+## [0.460.0] - December 9, 2025
+
+### Added
+  - DP-42374: Add author created friendly URLs.
+  
+### Changed
+  - DP-43205: Pass parent heading level + 1 to video atoms on service and news pages so hidden video titles stop appearing in tables of contents.
+  - DP-43854: Updated Akamai configuration.
+  
+### Fixed
+  - DP-43756: Bulk upload uses wrong revision date.
+  
+
+
 ## [0.459.0] - December 2, 2025
 
 ### Changed
