@@ -50,9 +50,9 @@ class MayflowerExtension extends AbstractExtension {
    * @see \Drupal\mayflower\Render\SvgProcessor::processAttachments()
    */
   public function displayIcon($name, $width = '', $height = '', $class = '', $bold = true) {
-    $path = $this->getIconPath($name);
+    $path = $this->getIconPath($name, $bold);
     
-    // Build the template with dimensions and class
+    // Build the template with dimensions, class, and bold
     $template = '<svg-placeholder path="{{path}}"';
     $context = ['path' => $path];
     
@@ -68,6 +68,10 @@ class MayflowerExtension extends AbstractExtension {
       $template .= ' class="{{class}}"';
       $context['class'] = $class;
     }
+    
+    // Add bold attribute to the placeholder
+    $template .= ' bold="{{bold}}"';
+    $context['bold'] = $bold ? 'true' : 'false';
     
     $template .= '>';
     
