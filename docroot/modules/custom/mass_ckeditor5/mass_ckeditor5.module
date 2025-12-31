@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Mass CKEditor 5 module file.
+ */
+
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\editor\Entity\Editor;
+
+/**
+ * Implements hook_help().
+ */
+function mass_ckeditor5_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.mass_ckeditor5':
+      return '<p>' . t('Provides hierarchical numbering for nested ordered lists with legal-style formatting.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_ckeditor_css_alter().
+ */
+function mass_ckeditor5_ckeditor_css_alter(array &$css, Editor $editor) {
+  // Add CKEditor-specific CSS for proper preview in the editor (CKEditor 4).
+  $css[] = \Drupal::service('extension.list.module')->getPath('mass_ckeditor5') . '/css/legal-list-ckeditor.css';
+}
+
+/**
+ * Implements hook_library_info_alter().
+ *
+ * https://www.drupal.org/docs/core-modules-and-themes/core-modules/ckeditor-5-module/how-to-style-custom-content-in-ckeditor-5#s-registering-ckeditor-5-stylesheets-from-a-module
+ */
+function mass_ckeditor5_library_info_alter(&$libraries, $extension) {
+  $module = 'mass_ckeditor5';
+  if ($extension === 'ckeditor5') {
+    // Add paths to stylesheets specified by a modules's ckeditor5-stylesheets
+    // config property.
+    $module_path = \Drupal::service('extension.list.module')->getPath($module);
+    $info = \Drupal::service('extension.list.module')->getExtensionInfo($module);
+    if (isset($info['ckeditor5-stylesheets']) && $info['ckeditor5-stylesheets'] !== FALSE) {
+      $css = $info['ckeditor5-stylesheets'];
+      foreach ($css as $key => $url) {
+        // CSS URL is external or relative to Drupal root.
+        if (UrlHelper::isExternal($url) || $url[0] === '/') {
+          $css[$key] = $url;
+        }
+        // CSS URL is relative to theme.
+        else {
+          $css[$key] = '/' . $module_path . '/' . $url;
+        }
+      }
+    }
+    $libraries['internal.drupal.ckeditor5.stylesheets'] = [
+      'css' => [
+        'theme' => array_merge(
+          $libraries['internal.drupal.ckeditor5.stylesheets']['css']['theme'] ?? [],
+          array_fill_keys(array_values($css), [])
+        ),
+      ],
+    ];
+  }
+}

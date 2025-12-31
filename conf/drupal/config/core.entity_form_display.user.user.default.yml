@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.user.user.field_approval_notes
     - field.field.user.user.field_approved
+    - field.field.user.user.field_ck5_premium_notifications
     - field.field.user.user.field_user_org
     - field.field.user.user.user_picture
     - image.style.thumbnail
@@ -71,6 +72,12 @@ content:
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
+    third_party_settings: {  }
+  field_ck5_premium_notifications:
+    type: boolean_checkbox
+    weight: 0
+    region: content
+    settings: {  }
     third_party_settings: {  }
 hidden:
   contact: true
