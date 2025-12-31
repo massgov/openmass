@@ -122,9 +122,7 @@
         {{/if}}
         <div class="back">
           <a href="#">
-            <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35">
-             <path d="M17.5,35C7.8,35,0,27.2,0,17.5C0,7.8,7.8,0,17.5,0C27.2,0,35,7.8,35,17.5C35,27.2,27.2,35,17.5,35zM11,17l8,8l3,-2.9l-5.1,-5.1l5.1,-5.1l-3,-2.9l-8,8z" />
-            </svg>
+            {{ icon('caret-left', '36px', '36px') }}
             Go Back
           </a>
         </div>
@@ -172,7 +170,9 @@
             <div class="ma__key-actions__items">
             {{#each step.actions}}
               <div class="ma__callout-link">
-                <a href="{{url}}"><span class="ma__callout-link__container"><span class="ma__callout-link__text" >{{text}}&nbsp;<svg aria-hidden="true" id="SvgjsSvg1000" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="16" height="18" viewBox="0 0 16 18"><defs id="SvgjsDefs1001"></defs><path id="SvgjsPath1007" d="M983.721 1887.28L983.721 1887.28L986.423 1890L986.423 1890L986.423 1890L983.721 1892.72L983.721 1892.72L978.318 1898.17L975.617 1895.45L979.115 1891.92L971.443 1891.92L971.443 1888.0700000000002L979.103 1888.0700000000002L975.617 1884.5500000000002L978.318 1881.8300000000002Z " transform="matrix(1,0,0,1,-971,-1881)"></path></svg></span></span></a>
+                <a href="{{url}}"><span class="ma__callout-link__container"><span class="ma__callout-link__text" >{{text}}&nbsp;
+                {{ icon('arrow', '20px', '20px')}}
+                </span></span></a>
               </div>
             {{/each}}
             </div>
