@@ -20,21 +20,42 @@ This module provides hierarchical numbering for nested ordered lists with legal-
    drush cr
    ```
 
-3. Configure the text format:
+3. Configure the text format and enable the filter:
    - Go to Configuration → Text formats and editors
    - Edit the desired text format (e.g., Full HTML)
    - Enable the "Legal-Style List Numbering" filter
    - Save the configuration
 
+4. Add the Legal style to CKEditor (optional but recommended):
+   - In the same text format configuration
+   - Find the "CKEditor settings" → "Styles" dropdown configuration
+   - Add: `ol.list-style-legal|Legal`
+   - This allows users to apply the Legal style via the Styles dropdown instead of editing source code
+
 ## Usage
+
+### Configuration
+
+To enable the Legal style option in CKEditor:
+
+1. Go to **Configuration → Text formats and editors**
+2. Edit your desired text format (e.g., Full HTML)
+3. In the "CKEditor settings" section, find the "Styles" dropdown configuration
+4. Add the following style class definition:
+   ```
+   ol.list-style-legal|Legal
+   ```
+5. Save the configuration
+
+### Creating Legal-Style Lists
 
 To create a hierarchical numbered list in CKEditor:
 
 1. Create an ordered list using the list button in CKEditor
-2. Add the class `list-style-legal` to the ordered list:
-   - Click on the list
-   - Use the "Source" button or add the class via the styles dropdown
-   - Add `class="list-style-legal"` to the `<ol>` tag
+2. Click on the ordered list to select it
+3. Use the "Styles" dropdown in the toolbar
+4. Select "Legal" from the available styles
+5. The list will immediately show hierarchical numbering (1., 1.1., 1.2., etc.)
 
 Example Input HTML:
 ```html
@@ -120,9 +141,6 @@ The module includes two separate CSS files:
 ## Customization
 
 To modify the numbering format or styling:
-1. Edit `css/legal-list.css` to change the visual appearance
-2. Modify `src/Plugin/Filter/FilterLegalListNumbering.php` to change the numbering logic
-
-## Support
-
-For issues or questions, please contact the Mass.gov development team.
+1. Edit `css/legal-list.css` to change the visual appearance on a front end.
+2. Edit `css/legal-list-ckeditor.css` to change the visual appearance in CKEditor.
+3. Modify `src/Plugin/Filter/FilterLegalListNumbering.php` to change the numbering logic
