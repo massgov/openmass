@@ -95,6 +95,8 @@ class EntitySorter {
       }
     }
     elseif ($object instanceof Media) {
+      // @deprecated DP-42778: field_start_date is deprecated and hidden from the document form.
+      // It may be removed in a future release. The field still exists and auto-populates with current date.
       $date = Helper::fieldValue($object, 'field_start_date');
       $date = $this->formatDateValue($date);
     }
