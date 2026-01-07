@@ -56,8 +56,9 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
         return;
       }
 
-      // Normalize iframe URL to always point to slashed url.
-      $iframe_url = Url::fromUri(trim($iframe_url->setAbsolute()->toString(), '/') . '/');
+      // Normalize iframe URL to ensure path ends with slash, but preserve query parameters.
+      $iframe_url->setAbsolute();
+      $iframe_url = $this->normalizeUrlPath($iframe_url);
 
       $build["field_form_url"]["iframe_url"]['#markup'] = $iframe_url->toString();
       $gf_token = $this->requestStack->getCurrentRequest()->get('gf_token');
@@ -73,6 +74,39 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
       $iframe_url->setOption('query', $query_params);
       $build["field_form_url"]["iframe_url"]['#markup'] = $iframe_url->toString();
     }
+  }
+
+  /**
+   * Normalizes a URL's path to end with a trailing slash, preserving query parameters.
+   *
+   * @param \Drupal\Core\Url $url
+   *   The URL object to normalize.
+   *
+   * @return \Drupal\Core\Url
+   *   The normalized URL object.
+   */
+  private function normalizeUrlPath(Url $url): Url {
+    $absolute_url = $url->toString();
+    
+    $path = parse_url($absolute_url, PHP_URL_PATH);
+    
+    if (!$path || $path === '/' || str_ends_with($path, '/')) {
+      return $url;
+    }
+    
+    $parsed = parse_url($absolute_url);
+    if (empty($parsed['scheme']) || empty($parsed['host'])) {
+      return $url;
+    }
+
+    // Reconstruct URL with normalized path while preserving query
+    $normalized_url = $parsed['scheme'] . '://' . $parsed['host']
+      . (isset($parsed['port']) ? ':' . $parsed['port'] : '')
+      . $parsed['path'] . '/'
+      . (isset($parsed['query']) ? '?' . $parsed['query'] : '')
+      . (isset($parsed['fragment']) ? '#' . $parsed['fragment'] : '');
+
+    return Url::fromUri($normalized_url);
   }
 
   /**
