@@ -87,13 +87,13 @@ class EntityViewBuildAlterGravityFormToken implements ContainerInjectionInterfac
    */
   private function normalizeUrlPath(Url $url): Url {
     $absolute_url = $url->toString();
-    
+
     $path = parse_url($absolute_url, PHP_URL_PATH);
-    
+
     if (!$path || $path === '/' || str_ends_with($path, '/')) {
       return $url;
     }
-    
+
     $parsed = parse_url($absolute_url);
     if (empty($parsed['scheme']) || empty($parsed['host'])) {
       return $url;
