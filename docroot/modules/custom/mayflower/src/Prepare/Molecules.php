@@ -1127,7 +1127,7 @@ public static function prepareIconLinks($entity, array $options = []) {
           // Use a decorative link to match Mayflower
           $location_decorative_link = '<span class="ma__decorative-link"><a href="'
                       . $location_url . '">' . $location_link->getText() .
-                      ' <svg aria-hidden="true" id="SvgjsSvg1000" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="16" height="18" viewBox="0 0 16 18"><defs id="SvgjsDefs1001"></defs><path id="SvgjsPath1007" d="M983.721 1887.28L983.721 1887.28L986.423 1890L986.423 1890L986.423 1890L983.721 1892.72L983.721 1892.72L978.318 1898.17L975.617 1895.45L979.115 1891.92L971.443 1891.92L971.443 1888.0700000000002L979.103 1888.0700000000002L975.617 1884.5500000000002L978.318 1881.8300000000002Z " transform="matrix(1,0,0,1,-971,-1881)"></path></svg></a></span>';
+                      ' <svg viewBox="0 0 24 24" width="16px" height="16px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor"><path d="m21.546 12.796-6.75 6.75a1.127 1.127 0 1 1-1.594-1.594l4.83-4.827H4.25a1.125 1.125 0 1 1 0-2.25h13.781l-4.827-4.83a1.127 1.127 0 1 1 1.594-1.594l6.75 6.75a1.125 1.125 0 0 1-.002 1.595"></path></svg></a></span>';
         }
 
         if (!$address = Helper::formatAddress($addressEntity->field_address_address)) {
