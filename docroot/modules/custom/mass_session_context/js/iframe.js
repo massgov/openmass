@@ -1,7 +1,7 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  var STORAGE_KEY = 'massFormContext';
+  var STORAGE_KEY = 'massSessionContext';
   var TTL_MS = 60 * 60 * 1000; // 1 hour
 
   var MAX_KEY_LEN = 150;
@@ -182,9 +182,9 @@
     iframe.removeAttribute('data-src');
   }
 
-  Drupal.behaviors.massFormContextIframe = {
+  Drupal.behaviors.massSessionContextIframe = {
     attach: function (context) {
-      var onceResult = once('mass-form-context-iframe', 'html', context);
+      var onceResult = once('mass-session-context-iframe', 'html', context);
       if (!onceResult.length) {
         return;
       }

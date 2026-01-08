@@ -1,7 +1,7 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  var STORAGE_KEY = 'massFormContext';
+  var STORAGE_KEY = 'massSessionContext';
   var TTL_MS = 60 * 60 * 1000; // 1 hour
 
   var MAX_PARAMS = 100;
@@ -162,7 +162,7 @@
   }
 
   function getIgnoredKeys() {
-    var cfg = ((drupalSettings.massFormContext || {}).ignoreKeys) || [];
+    var cfg = ((drupalSettings.massSessionContext || {}).ignoreKeys) || [];
     return Array.isArray(cfg) ? cfg : [];
   }
 
@@ -208,15 +208,15 @@
     });
   }
 
-  Drupal.behaviors.massFormContextPageContext = {
+  Drupal.behaviors.massSessionContextPageContext = {
     attach: function (context) {
-      var onceResult = once('mass-form-context-page-context', 'html', context);
+      var onceResult = once('mass-session-context-page-context', 'html', context);
       if (!onceResult.length) {
         return;
       }
 
       // Skip form pages so the "linking_page" stays the page before the form.
-      var cfg = (drupalSettings.massFormContext || {});
+      var cfg = (drupalSettings.massSessionContext || {});
       if (cfg.isFormPage) {
         return;
       }

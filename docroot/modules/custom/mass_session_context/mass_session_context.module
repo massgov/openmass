@@ -9,7 +9,7 @@ use Drupal\node\NodeInterface;
 /**
  * Implements hook_entity_view().
  */
-function mass_form_context_entity_view(
+function mass_session_context_entity_view(
   array &$build,
   EntityInterface $entity,
   EntityViewDisplayInterface $display,
@@ -30,7 +30,7 @@ function mass_form_context_entity_view(
   // Provide ignoreKeys to JS (config-driven list; no hardcoding).
   // Adjust this to wherever you store it (config, settings.php, etc).
   // For now, keep it empty unless you already wire it up.
-  $build['#attached']['drupalSettings']['massFormContext']['ignoreKeys'] = [
+  $build['#attached']['drupalSettings']['massSessionContext']['ignoreKeys'] = [
     // Ad click ids / common analytics.
     'gclid',
     'gbraid',
@@ -46,12 +46,13 @@ function mass_form_context_entity_view(
   ];
 
   // Flag used by page_context.js to skip form pages.
-  $build['#attached']['drupalSettings']['massFormContext']['isFormPage'] = ($bundle === 'form_page');
+  $build['#attached']['drupalSettings']['massSessionContext']['isFormPage'] = ($bundle === 'form_page');
 
   // Attach page_context library to all node pages EXCEPT form_page.
   if ($bundle !== 'form_page') {
-    $build['#attached']['library'][] = 'mass_form_context/page_context';
+    $build['#attached']['library'][] = 'mass_session_context/page_context';
   }
 
   // iframe.js library is still attached from twig (only when gravity iframe exists).
 }
+
