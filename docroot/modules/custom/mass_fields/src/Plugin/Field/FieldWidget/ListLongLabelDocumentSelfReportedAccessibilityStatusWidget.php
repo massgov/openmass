@@ -49,6 +49,9 @@ class ListLongLabelDocumentSelfReportedAccessibilityStatusWidget extends ListLon
     $element['#options'] = $options;
     $element['#default_value'] = $selected ? reset($selected) : '_none';
 
+    // Attach JavaScript library to reset accessibility status when file is removed.
+    $element['#attached']['library'][] = 'mass_fields/accessibility_status_reset';
+
     return $element;
   }
 
