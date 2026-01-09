@@ -225,3 +225,13 @@ function mass_admin_toolbar_theme() {
     ],
   ];
 }
+
+/**
+ * Implements hook_preprocess_HOOK() for status_messages.
+ */
+function mass_admin_toolbar_preprocess_status_messages(&$variables) {
+  // Add the messages library to all status messages.
+  if (!empty($variables['message_list'])) {
+    $variables['#attached']['library'][] = 'mass_admin_toolbar/messages';
+  }
+}
