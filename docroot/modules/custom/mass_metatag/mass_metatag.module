@@ -52,6 +52,11 @@ function mass_metatag_token_info() {
     'description' => t('The labels related to the current node.'),
     'type' => 'node',
   ];
+  $info['tokens']['node']['mass_collections'] = [
+    'name' => t('Node collections'),
+    'description' => t('The collections related to the current node.'),
+    'type' => 'node',
+  ];  
   $info['tokens']['node']['dm_services'] = [
     'name' => t('Related service pages'),
     'description' => t("The service pages related to the current node."),
@@ -284,8 +289,25 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             }
           }
           break;
+ 
+        case 'mass_collections':
+          $metatag_utils = \Drupal::service('mass_metatag.utilities');
+          if (isset($data['node'])) {
+            if ($data['node'] instanceof ContentEntityInterface) {
+              $collections = $metatag_utils->getAllCollectionsFromEntity($data['node']);
+              // Remove hyphens from the collections...
+              $collection_names = [];
+              foreach ($collections as $key => $value) {
+                $collection_names[$key] = str_replace("-", "", $value);
+              }
 
-        case 'mass_microsite':
+              // Separate the collections with a comma.
+              $replacements[$original] = implode(',', $collection_names);
+            }
+          }
+          break;
+
+       case 'mass_microsite':
           if ($data['node'] instanceof NodeBundle) {
             $node = $data['node'];
             /**
