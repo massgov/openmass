@@ -56,7 +56,7 @@ function mass_metatag_token_info() {
     'name' => t('Node collections'),
     'description' => t('The collections related to the current node.'),
     'type' => 'node',
-  ];  
+  ];
   $info['tokens']['node']['dm_services'] = [
     'name' => t('Related service pages'),
     'description' => t("The service pages related to the current node."),
@@ -289,7 +289,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             }
           }
           break;
- 
+
         case 'mass_collections':
           $metatag_utils = \Drupal::service('mass_metatag.utilities');
           if (isset($data['node'])) {
@@ -307,7 +307,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           }
           break;
 
-       case 'mass_microsite':
+        case 'mass_microsite':
           if ($data['node'] instanceof NodeBundle) {
             $node = $data['node'];
             /**
