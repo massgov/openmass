@@ -22,7 +22,6 @@ dependencies:
     - workflows.workflow.media_states
   module:
     - content_moderation
-    - datetime
     - entity_reference_tree
     - field_group
     - file
@@ -33,9 +32,9 @@ third_party_settings:
       children:
         - field_start_date
       label: Timeframe
-      region: content
-      parent_name: group_basic
-      weight: 15
+      region: hidden
+      parent_name: ''
+      weight: 11
       format_type: fieldset
       format_settings:
         classes: ''
@@ -78,7 +77,6 @@ third_party_settings:
         - field_organizations
         - langcode
         - field_media_english_version
-        - group_timeframe
         - field_document_label
         - field_collections
         - field_internal_notes
@@ -195,12 +193,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_start_date:
-    type: datetime_default
-    weight: 7
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_title:
     type: string_textfield
     weight: 2
@@ -295,4 +287,5 @@ hidden:
   field_file_mime: true
   field_language: true
   field_size: true
+  field_start_date: true
   name: true
