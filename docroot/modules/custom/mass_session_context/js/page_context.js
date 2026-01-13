@@ -156,9 +156,7 @@
     try {
       getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
     }
-    catch (e) {
-      // Ignore storage errors (privacy/quota).
-    }
+    catch (e) {}
   }
 
   function getIgnoredKeys() {
@@ -167,16 +165,10 @@
   }
 
   function isIgnoredKey(key, ignoredKeys) {
-    if (!key) {
-      return false;
-    }
-    var k = String(key).toLowerCase();
-    for (var i = 0; i < ignoredKeys.length; i += 1) {
-      if (k === String(ignoredKeys[i]).toLowerCase()) {
-        return true;
-      }
-    }
-    return false;
+    var k = String(key || '').toLowerCase();
+    return ignoredKeys.map(function (i) {
+      return String(i).toLowerCase();
+    }).indexOf(k) !== -1;
   }
 
   function readMeta(name) {
@@ -197,10 +189,7 @@
         return;
       }
       var k = sanitizeKey(key);
-      if (!k) {
-        return;
-      }
-      if (isIgnoredKey(k, ignored)) {
+      if (!k || isIgnoredKey(k, ignored)) {
         return;
       }
       storage.qs[k] = sanitizeVal(value);
@@ -215,21 +204,19 @@
         return;
       }
 
-      // Skip form pages so the "linking_page" stays the page before the form.
       var cfg = (drupalSettings.massSessionContext || {});
-      if (cfg.isFormPage) {
-        return;
-      }
+      var isFormPage = !!cfg.isFormPage;
 
       var storage = loadStorage();
 
-      // 1) Capture query params seen on this page (minus ignored keys).
+      // 1) Capture query params
       captureQueryParams(storage);
 
-      // 2) Rotate history (current -> prior -> prior2).
-      // Only rotate if we have a previous current_page and we are navigating to a new URL.
       var thisUrl = window.location.href;
-      if (storage.current_page && storage.current_page !== thisUrl) {
+
+      // 2) Rotate ONLY if NOT a form page
+      if (!isFormPage && storage.current_page && storage.current_page !== thisUrl) {
+
         storage.prior_page_2 = storage.prior_page || null;
         storage.prior_page_2_org = storage.prior_page_org || null;
         storage.prior_page_2_parent_org = storage.prior_page_parent_org || null;
@@ -239,7 +226,7 @@
         storage.prior_page_parent_org = storage.current_page_parent_org || null;
       }
 
-      // 3) Set current page + org values from metatags.
+      // 3) Always set current page (INCLUDING form pages)
       storage.current_page = thisUrl;
       storage.current_page_org = readMeta('mg_organization');
       storage.current_page_parent_org = readMeta('mg_parent_org');

@@ -115,7 +115,12 @@
 
   function saveStorage(data) {
     data._ts = now();
-    getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+      getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    catch (e) {
+      // Ignore storage errors.
+    }
   }
 
   function appendIfValue(params, key, value) {
@@ -127,7 +132,7 @@
   function buildFinalParams(storage) {
     var finalParams = new URLSearchParams();
 
-    // 1) Add ALL stored querystring params (minus ignored keys already filtered in page_context.js).
+    // 1) Add ALL stored querystring params (ignoreKeys already applied in page_context.js).
     Object.keys(storage.qs || {}).forEach(function (k) {
       var key = sanitizeKey(k);
       if (!key) {
@@ -136,21 +141,24 @@
       finalParams.set(key, sanitizeVal(storage.qs[k]));
     });
 
-    // 2) Add Joe's context fields using storage naming as the source of truth:
-    // linking_page = current_page (page before form)
-    appendIfValue(finalParams, 'linking_page', storage.current_page);
-    appendIfValue(finalParams, 'linking_page_org', storage.current_page_org);
-    appendIfValue(finalParams, 'linking_page_parent_org', storage.current_page_parent_org);
+    // IMPORTANT:
+    // With updated page_context.js, on a form page:
+    //   current_page = form page
+    //   prior_page   = linking page (page before form)
+    //   prior_page_2 = page before linking page
 
-    // previous_page = prior_page
-    appendIfValue(finalParams, 'previous_page', storage.prior_page);
-    appendIfValue(finalParams, 'previous_page_org', storage.prior_page_org);
-    appendIfValue(finalParams, 'previous_page_parent_org', storage.prior_page_parent_org);
+    // linking_page = prior_page (page that linked to the form)
+    appendIfValue(finalParams, 'linking_page', storage.prior_page);
+    appendIfValue(finalParams, 'linking_page_org', storage.prior_page_org);
+    appendIfValue(finalParams, 'linking_page_parent_org', storage.prior_page_parent_org);
 
-    // previous_page2 = prior_page_2
-    appendIfValue(finalParams, 'previous_page2', storage.prior_page_2);
-    appendIfValue(finalParams, 'previous_page2_org', storage.prior_page_2_org);
-    appendIfValue(finalParams, 'previous_page2_parent_org', storage.prior_page_2_parent_org);
+    // previous_page = prior_page_2
+    appendIfValue(finalParams, 'previous_page', storage.prior_page_2);
+    appendIfValue(finalParams, 'previous_page_org', storage.prior_page_2_org);
+    appendIfValue(finalParams, 'previous_page_parent_org', storage.prior_page_2_parent_org);
+
+    // previous_page2: we don't have a 3rd hop in storage, so leave unset.
+    // (keeps behavior consistent and avoids wrong data)
 
     return finalParams;
   }
@@ -189,7 +197,6 @@
         return;
       }
 
-      // Only target lazy iframes.
       var iframes = Array.prototype.slice.call(document.querySelectorAll('iframe[data-src]'));
       if (!iframes.length) {
         return;

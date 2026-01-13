@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\node\NodeInterface;
+use Drupal\mass_content\Entity\Bundle\node\FormPageBundle;
 
 /**
  * Implements hook_entity_view().
@@ -45,13 +46,13 @@ function mass_session_context_entity_view(
     '_gl',
   ];
 
-  // Flag used by page_context.js to skip form pages.
+  // Flag used by page_context.js to prevent rotation on form pages
   $build['#attached']['drupalSettings']['massSessionContext']['isFormPage'] = ($bundle === 'form_page');
 
-  // Attach page_context library to all node pages EXCEPT form_page.
-  if ($bundle !== 'form_page') {
-    $build['#attached']['library'][] = 'mass_session_context/page_context';
-  }
+  $build['#attached']['library'][] = 'mass_session_context/page_context';
 
-  // iframe.js library is still attached from twig (only when gravity iframe exists).
+  // Attach iframe.js ONLY for Gravity Forms form pages.
+  if ($entity instanceof FormPageBundle && $entity->isGravityForms()) {
+    $build['#attached']['library'][] = 'mass_session_context/iframe';
+  }
 }
