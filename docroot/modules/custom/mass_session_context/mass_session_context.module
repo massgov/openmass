@@ -50,9 +50,4 @@ function mass_session_context_entity_view(
   $build['#attached']['drupalSettings']['massSessionContext']['isFormPage'] = ($bundle === 'form_page');
 
   $build['#attached']['library'][] = 'mass_session_context/page_context';
-
-  // Attach iframe.js ONLY for Gravity Forms form pages.
-  if ($entity instanceof FormPageBundle && $entity->isGravityForms()) {
-    $build['#attached']['library'][] = 'mass_session_context/iframe';
-  }
 }
