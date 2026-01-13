@@ -153,10 +153,7 @@
 
   function saveStorage(data) {
     data._ts = now();
-    try {
-      getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-    catch (e) {}
+    getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
   }
 
   function getIgnoredKeys() {
