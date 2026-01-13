@@ -49,5 +49,7 @@ function mass_session_context_entity_view(
   // Flag used by page_context.js to prevent rotation on form pages
   $build['#attached']['drupalSettings']['massSessionContext']['isFormPage'] = ($bundle === 'form_page');
 
-  $build['#attached']['library'][] = 'mass_session_context/page_context';
+  if ($bundle !== 'form_page') {
+    $build['#attached']['library'][] = 'mass_session_context/page_context';
+  }
 }
