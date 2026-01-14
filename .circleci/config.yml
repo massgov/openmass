@@ -637,17 +637,32 @@ jobs:
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-                  if [ "${!BACKSTOP_REF}" == "" ]; then
+
+                  # Ensure the env var exists and is non-empty.
+                  if [ -z "${!BACKSTOP_REF:-}" ]; then
                     echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
                     exit 1
                   fi
+
                   STOPPED_AT=$(curl --request GET \
                     --fail \
                     --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
-                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
-                  LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at // empty')
+
+                  if [ -z "$STOPPED_AT" ]; then
+                    echo "Could not read stopped_at for job ${!BACKSTOP_REF} (API returned empty/null)."
+                    exit 1
+                  fi
+
+                  LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s 2>/dev/null || true)
                   STALE_TIME=$(date -d "-168 hours" +%s)
-                  if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
+
+                  if [ -z "$LAST_SUCCESS" ]; then
+                    echo "Could not parse stopped_at as a date: STOPPED_AT='$STOPPED_AT'"
+                    exit 1
+                  fi
+
+                  if [ "$LAST_SUCCESS" -le "$STALE_TIME" ]; then
                     echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
                     exit 1
                   fi
