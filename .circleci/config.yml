@@ -541,16 +541,7 @@ jobs:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            EXIT_CODE=0
-            backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-            # Retry
-            if [ "$EXIT_CODE" != "0" ]; then
-              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-            fi
-            # Retry
-            if [ "$EXIT_CODE" != "0" ]; then
-              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
-            fi
+            backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
       - run:
           name: Archive Reference Screenshots
           command: |
@@ -617,16 +608,7 @@ jobs:
                 name: Capture Backstop Reference Screenshots
                 working_directory: backstop
                 command: |
-                  EXIT_CODE=0
-                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-                  # Retry
-                  if [ "$EXIT_CODE" != "0" ]; then
-                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-                  fi
-                  # Retry
-                  if [ "$EXIT_CODE" != "0" ]; then
-                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
-                  fi
+                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
       - unless:
           condition: << parameters.force-reference >>
           steps:
