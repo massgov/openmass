@@ -41,7 +41,7 @@ class ListLongLabelWidget extends OptionsButtonsWidget {
     $processed = [];
 
     // Define allowed HTML tags for labels.
-    $allowed_tags = ['strong', 'em', 'p', 'br', 'a', 'ul', 'ol', 'li', 'span', 'div'];
+    $allowed_tags = ['strong', 'em', 'p', 'br', 'a', 'ul', 'ol', 'li', 'span', 'small'];
 
     foreach ($options as $key => $label) {
       // Filter HTML to only allow specific tags, then mark as safe.

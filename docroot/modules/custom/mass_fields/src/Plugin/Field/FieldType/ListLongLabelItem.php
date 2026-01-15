@@ -52,7 +52,7 @@ class ListLongLabelItem extends ListStringItem {
         $element['allowed_values']['table'][$delta]['item']['label']['#type'] = 'textarea';
         $element['allowed_values']['table'][$delta]['item']['label']['#rows'] = 5;
         $element['allowed_values']['table'][$delta]['item']['label']['#title'] = $this->t('Label (HTML allowed)');
-        $element['allowed_values']['table'][$delta]['item']['label']['#description'] = $this->t('Enter the option label. HTML tags allowed: &lt;strong&gt;, &lt;em&gt;, &lt;p&gt;, &lt;br&gt;, &lt;a&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;.');
+        $element['allowed_values']['table'][$delta]['item']['label']['#description'] = $this->t('Enter the option label. HTML tags allowed: &lt;strong&gt;, &lt;em&gt;, &lt;p&gt;, &lt;br&gt;, &lt;a&gt;, &lt;ul&gt;, &lt;ol&gt;, &lt;li&gt;, &lt;span&gt;, &lt;small&gt;.');
       }
     }
 
