@@ -21,13 +21,13 @@
           if ($fidsField.length && !$fidsField.val()) {
             // File was removed, reset accessibility status to _none.
             const $form = $fidsField.closest('form');
-            const $accessibilityRadios = $form.find('input[name="field_accessibility_status"]');
+            const $accessibilityRadios = $form.find('input[name="field_accessibility_self_rpt"]');
 
             // Uncheck all radios.
             $accessibilityRadios.prop('checked', false);
 
             // Check the _none radio button.
-            const $noneRadio = $form.find('input[name="field_accessibility_status"][value="_none"]');
+            const $noneRadio = $form.find('input[name="field_accessibility_self_rpt"][value="_none"]');
             if ($noneRadio.length) {
               $noneRadio.prop('checked', true).trigger('change');
             }
