@@ -134,6 +134,17 @@
     return el ? sanitizeVal(el.getAttribute('content') || '') : '';
   }
 
+  function canonicalizeUrl(urlString) {
+    try {
+      var u = new URL(urlString, window.location.href);
+      return u.origin + u.pathname;
+    }
+    catch (e) {
+      // Best-effort fallback: strip query/hash.
+      return String(urlString || '').split('#')[0].split('?')[0];
+    }
+  }
+
   function captureQueryParams(storage) {
     var ignored = getIgnoredKeys();
     var sp = new URLSearchParams(window.location.search || '');
@@ -169,8 +180,11 @@
 
       var thisUrl = window.location.href;
 
-      // 2) Rotate history ONLY when URL changes
-      if (storage.current_page && storage.current_page !== thisUrl) {
+      var thisKey = canonicalizeUrl(thisUrl);
+      var currentKey = storage.current_page ? canonicalizeUrl(storage.current_page) : null;
+
+      // 2) Rotate history ONLY when the canonical page changes (ignore query/hash changes)
+      if (currentKey && currentKey !== thisKey) {
 
         storage.prior_page_2 = storage.prior_page || null;
         storage.prior_page_2_org = storage.prior_page_org || null;
