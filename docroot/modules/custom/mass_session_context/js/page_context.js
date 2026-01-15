@@ -21,7 +21,6 @@
     var out = '';
     for (var i = 0; i < s.length; i += 1) {
       var code = s.charCodeAt(i);
-      // Drop ASCII control chars 0x00-0x1F and DEL 0x7F.
       if ((code >= 0 && code <= 31) || code === 127) {
         continue;
       }
@@ -67,7 +66,6 @@
       prior_page_2_parent_org: null,
 
       last_iframe_context: null,
-
       _ts: null
     };
   }
@@ -104,48 +102,13 @@
       return emptyStorage();
     }
 
-    // TTL enforcement.
+    // TTL
     if (data._ts && (now() - data._ts) > TTL_MS) {
       return emptyStorage();
     }
 
     if (!data.qs || typeof data.qs !== 'object') {
       data.qs = {};
-    }
-
-    // Ensure expected keys exist (backwards-compat safe).
-    if (!('current_page' in data)) {
-      data.current_page = null;
-    }
-    if (!('current_page_org' in data)) {
-      data.current_page_org = null;
-    }
-    if (!('current_page_parent_org' in data)) {
-      data.current_page_parent_org = null;
-    }
-
-    if (!('prior_page' in data)) {
-      data.prior_page = null;
-    }
-    if (!('prior_page_org' in data)) {
-      data.prior_page_org = null;
-    }
-    if (!('prior_page_parent_org' in data)) {
-      data.prior_page_parent_org = null;
-    }
-
-    if (!('prior_page_2' in data)) {
-      data.prior_page_2 = null;
-    }
-    if (!('prior_page_2_org' in data)) {
-      data.prior_page_2_org = null;
-    }
-    if (!('prior_page_2_parent_org' in data)) {
-      data.prior_page_2_parent_org = null;
-    }
-
-    if (!('last_iframe_context' in data)) {
-      data.last_iframe_context = null;
     }
 
     return data;
@@ -162,18 +125,13 @@
   }
 
   function isIgnoredKey(key, ignoredKeys) {
-    var k = String(key || '').toLowerCase();
-    return ignoredKeys.map(function (i) {
-      return String(i).toLowerCase();
-    }).indexOf(k) !== -1;
+    var k = String(key).toLowerCase();
+    return ignoredKeys.indexOf(k) !== -1;
   }
 
   function readMeta(name) {
     var el = document.querySelector('meta[name="' + name + '"]');
-    if (!el) {
-      return '';
-    }
-    return sanitizeVal(el.getAttribute('content') || '');
+    return el ? sanitizeVal(el.getAttribute('content') || '') : '';
   }
 
   function captureQueryParams(storage) {
@@ -186,7 +144,10 @@
         return;
       }
       var k = sanitizeKey(key);
-      if (!k || isIgnoredKey(k, ignored)) {
+      if (!k) {
+        return;
+      }
+      if (isIgnoredKey(k, ignored)) {
         return;
       }
       storage.qs[k] = sanitizeVal(value);
@@ -196,13 +157,10 @@
 
   Drupal.behaviors.massSessionContextPageContext = {
     attach: function (context) {
-      var onceResult = once('mass-session-context-page-context', 'html', context);
+      var onceResult = once('mass-session-context-page', 'html', context);
       if (!onceResult.length) {
         return;
       }
-
-      var cfg = (drupalSettings.massSessionContext || {});
-      var isFormPage = !!cfg.isFormPage;
 
       var storage = loadStorage();
 
@@ -211,8 +169,8 @@
 
       var thisUrl = window.location.href;
 
-      // 2) Rotate ONLY if NOT a form page
-      if (!isFormPage && storage.current_page && storage.current_page !== thisUrl) {
+      // 2) Rotate history ONLY when URL changes
+      if (storage.current_page && storage.current_page !== thisUrl) {
 
         storage.prior_page_2 = storage.prior_page || null;
         storage.prior_page_2_org = storage.prior_page_org || null;
@@ -223,7 +181,7 @@
         storage.prior_page_parent_org = storage.current_page_parent_org || null;
       }
 
-      // 3) Always set current page (INCLUDING form pages)
+      // 3) Set new current page
       storage.current_page = thisUrl;
       storage.current_page_org = readMeta('mg_organization');
       storage.current_page_parent_org = readMeta('mg_parent_org');
