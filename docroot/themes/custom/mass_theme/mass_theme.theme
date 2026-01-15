@@ -7021,36 +7021,26 @@ function mass_theme_preprocess_paragraph__campaign_features(&$variables) {
   }
   $view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
   $large_card_entity = $paragraph->field_full_width_featured_item->entity;
-  $large_card_render_array = $view_builder->build($view_builder->view($large_card_entity));
-  $large_card_theme_values = mass_theme_featured_content_cards($large_card_render_array);
-  $componentId = 'ID' . $paragraph->id();
-  $features['campaignFullWidthFeature'] = $large_card_theme_values + [
-    'id' => $componentId,
-    'bgImage' => '',
-    'mobileBgImage' => '',
-    'level' => $level,
-    'text' => $large_card_render_array['field_rich_text_description'],
-  ];
-  $small_cards = [];
-  foreach ($paragraph->field_2up_featured_item as $small_card) {
-    $small_card_render_array = $view_builder->build($view_builder->view($small_card->entity));
-    $small_theme_values = mass_theme_featured_content_cards($small_card_render_array);
-    $small_cards[] = $small_theme_values + [
+  if ($large_card_entity) {
+    $large_card_render_array = $view_builder->build($view_builder->view($large_card_entity));
+    $features['campaignFullWidthFeature'] = mass_theme_featured_content_cards($large_card_render_array) + [
       'bgImage' => '',
       'mobileBgImage' => '',
       'level' => $level,
-      'text' => $small_card_render_array['field_rich_text_description'],
+      'text' => $large_card_render_array['field_rich_text_description'],
     ];
   }
-  foreach ($paragraph->field_2up_featured_item_2 as $small_card) {
-    $small_card_render_array = $view_builder->build($view_builder->view($small_card->entity));
-    $small_theme_values = mass_theme_featured_content_cards($small_card_render_array);
-    $small_cards[] = $small_theme_values + [
-      'bgImage' => '',
-      'mobileBgImage' => '',
-      'level' => $level,
-      'text' => $small_card_render_array['field_rich_text_description'],
-    ];
+  $small_cards = [];
+  foreach ([$paragraph->field_2up_featured_item, $paragraph->field_2up_featured_item_2] as $field) {
+    if ($small_card_entity = $field->entity) {
+      $small_card_render_array = $view_builder->build($view_builder->view($small_card_entity));
+      $small_cards[] = mass_theme_featured_content_cards($small_card_render_array) + [
+        'bgImage' => '',
+        'mobileBgImage' => '',
+        'level' => $level,
+        'text' => $small_card_render_array['field_rich_text_description'],
+      ];
+    }
   }
   $features['campaignFeature2up'] = $small_cards;
 
@@ -7073,6 +7063,7 @@ function mass_theme_featured_content_cards(&$variables) {
     $return_array = [
       'link' => '#',
       'thumbnail' => '',
+      'id' => 'ID' . $paragraph->id(),
     ];
 
     if (is_object($paragraph->field_image->entity)) {
