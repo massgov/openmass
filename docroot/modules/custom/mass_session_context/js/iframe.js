@@ -22,9 +22,12 @@
   const CONTEXT_PARAM_MAP = {
     linking_page: ['current_page'],
     previous_page: ['prior_page', 'previous_page'],
+    previous_page_2: ['prior_page_2', 'previous_page_2'],
     linking_page_org: ['current_page_org'],
     previous_page_org: ['prior_page_org', 'previous_page_org'],
-    previous_page_parent_org: ['prior_page_parent_org', 'previous_page_parent_org']
+    previous_page_2_org: ['prior_page_2_org', 'previous_page_2_org'],
+    previous_page_parent_org: ['prior_page_parent_org', 'previous_page_parent_org'],
+    previous_page_2_parent_org: ['prior_page_2_parent_org', 'previous_page_2_parent_org']
   };
 
   /**
@@ -34,9 +37,12 @@
   const RESERVED_PARAMS = new Set([
     'linking_page',
     'previous_page',
+    'previous_page_2',
     'linking_page_org',
     'previous_page_org',
-    'previous_page_parent_org'
+    'previous_page_2_org',
+    'previous_page_parent_org',
+    'previous_page_2_parent_org'
   ]);
 
   // Markers to avoid rewriting the same iframe repeatedly.
