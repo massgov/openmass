@@ -104,6 +104,16 @@ $config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] =
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 
+// Check in env var is defined. Adobe PDF Services API Credentials
+if (!empty(getenv('ADOBE_PDF_SERVICES_CLIENT_ID'))) {
+  $config['pdf_services.settings']['client_id'] = getenv('ADOBE_PDF_SERVICES_CLIENT_ID');
+}
+
+if (!empty(getenv('ADOBE_PDF_SERVICES_CLIENT_SECRET'))) {
+  $config['pdf_services.settings']['client_secret'] = getenv('ADOBE_PDF_SERVICES_CLIENT_SECRET');
+}
+
+
 // Add database connection for Service Details migration.
 
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
