@@ -1,0 +1,35 @@
+/**
+ * CKEditor-specific CSS for legal-style list numbering.
+ * Uses CSS counters to show hierarchical numbering in the editor.
+ */
+
+.ck-content ol.list-style-legal {
+  counter-reset: item;
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0.5em 0;
+}
+
+.ck-content ol.list-style-legal li {
+  display: block;
+  margin-bottom: 0.5em;
+  padding-left: 0;
+}
+
+.ck-content ol.list-style-legal li:before {
+  content: counters(item, ".") ". ";
+  counter-increment: item;
+  margin-right: 0.5em;
+}
+
+.ck-content ol.list-style-legal ol {
+  counter-reset: item;
+  list-style-type: none;
+  padding-left: 2em;
+  margin-top: 0.5em;
+}
+
+/* Handle CKEditor's bogus paragraph spans */
+.ck-content ol.list-style-legal span.ck-list-bogus-paragraph {
+  display: inline;
+}

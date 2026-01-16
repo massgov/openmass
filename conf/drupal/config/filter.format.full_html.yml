@@ -3,9 +3,11 @@ langcode: en
 status: true
 dependencies:
   module:
+    - ace_editor
     - editor
     - entity_embed
     - linkit
+    - mass_ckeditor5
     - mass_fields
     - pathologic
 _core:
@@ -14,6 +16,21 @@ name: 'Full HTML'
 format: full_html
 weight: 1
 filters:
+  ace_filter:
+    id: ace_filter
+    provider: ace_editor
+    status: false
+    weight: 0
+    settings:
+      theme: cobalt
+      syntax: html
+      height: 500px
+      width: 700px
+      font_size: 12pt
+      line_numbers: true
+      show_invisibles: false
+      print_margins: true
+      use_wrap_mode: true
   auto_heading_id:
     id: auto_heading_id
     provider: mass_fields
@@ -50,7 +67,7 @@ filters:
     status: false
     weight: -10
     settings:
-      allowed_html: '<ul class="list-style-none list-style-disc list-style-circle list-style-square"> <ol class="list-style-decimal list-style-decimal-leading-zero list-style-upper-roman list-style-lower-roman list-style-upper-alpha list-style-lower-alpha">'
+      allowed_html: '<ul class="list-style-none list-style-disc list-style-circle list-style-square"> <ol class="list-style-decimal list-style-decimal-leading-zero list-style-upper-roman list-style-lower-roman list-style-upper-alpha list-style-lower-alpha list-style-legal">'
       filter_html_help: true
       filter_html_nofollow: false
   filter_htmlcorrector:
@@ -81,6 +98,12 @@ filters:
     status: true
     weight: -50
     settings: {  }
+  legal_list_numbering:
+    id: legal_list_numbering
+    provider: mass_ckeditor5
+    status: true
+    weight: 0
+    settings: {  }
   linkit:
     id: linkit
     provider: linkit
@@ -88,3 +111,4 @@ filters:
     weight: -11
     settings:
       title: false
+      media_substitution: metadata
