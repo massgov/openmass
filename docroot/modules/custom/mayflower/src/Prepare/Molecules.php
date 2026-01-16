@@ -278,7 +278,6 @@ class Molecules {
    *    ]
    */
 public static function prepareIconLinks($entity, array $options = []) {
-    \Drupal::logger('mayflower')->info('=== prepareIconLinks called ===');
 
   $items = [];
   $map = [
