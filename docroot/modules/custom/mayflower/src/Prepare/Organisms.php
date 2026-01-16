@@ -1554,7 +1554,7 @@ class Organisms {
       'online' => 'laptop',
       'phone' => 'phone',
       'mail' => 'mail',
-      'fax' => 'fax-icon',
+      'fax' => 'fax',
       'in person' => 'profile',
       'text' => 'message',
       'by_email' => 'mail',

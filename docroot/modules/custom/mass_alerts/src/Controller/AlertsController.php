@@ -383,21 +383,49 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
    * Attach svg to rendered content.
    */
   private function attachSvg(&$content) {
-
-    $svgs = Helper::findSvg($content);
     $inlined = [];
+    $svgDimensions = [];
+    
+    // Look for svg-placeholder elements with dimensions in the content
+    preg_match_all('/<svg-placeholder\s+path="([^"]*)"(?:[^>]*width="([^"]*)")?(?:[^>]*height="([^"]*)")?(?:[^>]*class="([^"]*)")?[^>]*>/', $content, $placeholderMatches, PREG_SET_ORDER);
 
-    if ($svgs) {
-      foreach ($svgs as $path) {
-        $replacement = '';
-        if ($svgNode = Helper::getSvg($path)) {
-          $hash = md5($path);
-          $svgNode->setAttribute('id', $hash);
-          $replacement = Helper::getSvgEmbed($hash);
-          $inlined[] = Helper::getSvgSource($hash, $svgNode);
-        }
-        $content = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $content);
+    $svgPaths = [];
+    foreach ($placeholderMatches as $match) {
+      $path = $match[1];
+      $width = isset($match[2]) && $match[2] !== '' ? $match[2] : '';
+      $height = isset($match[3]) && $match[3] !== '' ? $match[3] : '';
+      $class = isset($match[4]) && $match[4] !== '' ? $match[4] : '';
+      
+      // Store unique paths
+      $svgPaths[] = $path;
+      
+      // Store dimensions for this path
+      $svgDimensions[$path] = [];
+      if ($width) $svgDimensions[$path]['width'] = $width;
+      if ($height) $svgDimensions[$path]['height'] = $height;
+      if ($class) $svgDimensions[$path]['class'] = $class;
+    }
+
+    // Process each unique SVG path
+    foreach (array_unique($svgPaths) as $path) {
+      $replacement = '';
+      if ($svgNode = Helper::getSvg($path)) {
+        $hash = md5($path);
+        $svgNode->setAttribute('id', $hash);
+        
+        // Use stored dimensions if available
+        $dimensions = isset($svgDimensions[$path]) ? $svgDimensions[$path] : [];
+        
+        $replacement = Helper::getSvgEmbed($hash, $dimensions);
+        $inlined[] = Helper::getSvgSource($hash, $svgNode);
       }
+      
+      // Replace all placeholders for this path (including ones with attributes)
+      $content = preg_replace(
+        sprintf('/<svg-placeholder\s+path="%s"[^>]*>/', preg_quote($path, '/')),
+        $replacement,
+        $content
+      );
     }
 
     if (!empty($inlined)) {

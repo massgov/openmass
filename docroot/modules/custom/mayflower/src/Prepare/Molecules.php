@@ -277,55 +277,61 @@ class Molecules {
    *      ], ...]
    *    ]
    */
-  public static function prepareIconLinks($entity, array $options = []) {
-    $items = [];
-    $map = [
-      'socialLinks' => ['field_social_links', 'field_services_social_links'],
-    ];
+public static function prepareIconLinks($entity, array $options = []) {
 
-    // Determines which fieldnames to use from the map.
-    $fields = Helper::getMappedFields($entity, $map);
+  $items = [];
+  $map = [
+    'socialLinks' => ['field_social_links', 'field_services_social_links'],
+  ];
 
-    // Creates array of links with link parts.
-    $links = Helper::separatedLinks($entity, $fields['socialLinks']);
+  // Determines which fieldnames to use from the map.
+  $fields = Helper::getMappedFields($entity, $map);
 
-    // Get icons for social links.
-    $services = [
-      'twitter',
-      'facebook',
-      'threads',
-      'flickr',
-      'blog',
-      'linkedin',
-      'google',
-      'instagram',
-      'medium',
-      'youtube',
-      'vimeo',
-    ];
+  // Creates array of links with link parts.
+  $links = Helper::separatedLinks($entity, $fields['socialLinks']);
 
-    foreach ($links as $link) {
-      $icon = '';
+  // Map social media domains to their icon names
+  $serviceMapping = [
+    'twitter.com' => 'x-logo',
+    'x.com' => 'x-logo',
+    'facebook.com' => 'facebook-logo',
+    'threads.net' => 'threads-logo',
+    'flickr.com' => 'flickr-logo',
+    'linkedin.com' => 'linkedin-logo',
+    'instagram.com' => 'instagram-logo',
+    'medium.com' => 'medium-logo',
+    'youtube.com' => 'youtube-logo',
+    'vimeo.com' => 'vimeo-logo',
+    'bsky.app' => 'bluesky-logo',
+    'bluesky.social' => 'bluesky-logo',
+    // Keep these without -logo suffix
+    'blog' => 'blog',
+    'google.com' => 'google',
+  ];
 
-      foreach ($services as $key => $service) {
-        if (strpos($link['href'], $service) !== FALSE) {
-          $icon = $service;
-          break;
-        }
+  foreach ($links as $link) {
+    $icon = '';
+
+    // Check each service mapping
+    foreach ($serviceMapping as $domain => $iconName) {
+      if (strpos($link['href'], $domain) !== FALSE) {
+        $icon = $iconName;
+        break;
       }
-
-      $items[] = [
-        'icon' => $icon,
-        'link' => $link,
-      ];
     }
 
-    return [
-      'iconLinks' => [
-        'items' => $items,
-      ],
+    $items[] = [
+      'icon' => $icon,
+      'link' => $link,
     ];
   }
+
+  return [
+    'iconLinks' => [
+      'items' => $items,
+    ],
+  ];
+}
 
   /**
    * Returns the variables structure required to render sectionLinks template.
@@ -524,7 +530,7 @@ class Molecules {
 
       case 'fax':
         $name = t('Fax');
-        $icon = 'fax-icon';
+        $icon = 'fax';
         break;
 
       case 'phone':
@@ -1120,7 +1126,7 @@ class Molecules {
           // Use a decorative link to match Mayflower
           $location_decorative_link = '<span class="ma__decorative-link"><a href="'
                       . $location_url . '">' . $location_link->getText() .
-                      ' <svg aria-hidden="true" id="SvgjsSvg1000" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="16" height="18" viewBox="0 0 16 18"><defs id="SvgjsDefs1001"></defs><path id="SvgjsPath1007" d="M983.721 1887.28L983.721 1887.28L986.423 1890L986.423 1890L986.423 1890L983.721 1892.72L983.721 1892.72L978.318 1898.17L975.617 1895.45L979.115 1891.92L971.443 1891.92L971.443 1888.0700000000002L979.103 1888.0700000000002L975.617 1884.5500000000002L978.318 1881.8300000000002Z " transform="matrix(1,0,0,1,-971,-1881)"></path></svg></a></span>';
+                      ' <svg viewBox="0 0 24 24" width="16px" height="16px" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor"><path d="m21.546 12.796-6.75 6.75a1.127 1.127 0 1 1-1.594-1.594l4.83-4.827H4.25a1.125 1.125 0 1 1 0-2.25h13.781l-4.827-4.83a1.127 1.127 0 1 1 1.594-1.594l6.75 6.75a1.125 1.125 0 0 1-.002 1.595"></path></svg></a></span>';
         }
 
         if (!$address = Helper::formatAddress($addressEntity->field_address_address)) {
