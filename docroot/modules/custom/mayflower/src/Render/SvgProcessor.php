@@ -138,14 +138,6 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
       $response->setAttachments($attached);
       return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
     }
-    elseif ($response instanceof ViewAjaxResponse) {
-      // Handle AJAX responses - you may need to add similar logic here
-      return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
-    }
-    elseif ($response instanceof AjaxResponse) {
-      // Handle other AJAX responses - you may need to add similar logic here  
-      return $this->htmlResponseAttachmentsProcessor->processAttachments($response);
-    }
     else {
       throw new \InvalidArgumentException('\Drupal\Core\Render\HtmlResponse instance expected.');
     }
