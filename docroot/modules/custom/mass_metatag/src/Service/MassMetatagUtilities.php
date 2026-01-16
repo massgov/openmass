@@ -124,4 +124,28 @@ class MassMetatagUtilities {
     return $result;
   }
 
+  /**
+   * Gets all Collections for the passed node.
+   *
+   * @param ContentEntityInterface $entity
+   *   The node to get Collections from.
+   *
+   * @return string[]
+   *   The array of slugified Collections names related to this node.
+   */
+  public function getAllCollectionsFromEntity(ContentEntityInterface $entity) {
+    $result = [];
+
+    if (!empty($entity)) {
+      if ($entity->hasField('field_collections')) {
+        $collections = $entity->field_collections->referencedEntities();
+        foreach ($collections as $collection) {
+          $result[] = $this->slugify(trim($collection->label()));
+        }
+      }
+    }
+
+    return $result;
+  }
+
 }

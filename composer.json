@@ -184,7 +184,7 @@
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
         "drupal/entity_embed": "^1.7",
-        "drupal/entity_hierarchy": "^3.3",
+        "drupal/entity_hierarchy": "^5",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "^2.3",
         "drupal/entity_usage": "2.0.0-beta12",
@@ -194,12 +194,14 @@
         "drupal/field_group": "^4.0",
         "drupal/field_tokens": "dev-8.x-1.x",
         "drupal/file_browser": "^1",
-        "drupal/flag": "^4.0",
+        "drupal/filter_empty_tags": "^2.1",
+        "drupal/flag": "4.0.0-beta5",
         "drupal/focal_point": "dev-2.x",
         "drupal/geocoder": "^4.23",
         "drupal/geofield": "^1.57",
         "drupal/google_map_field": "^2.0",
         "drupal/google_tag": "^2.0",
+        "drupal/highlightjs_input_filter": "^1.1",
         "drupal/http_response_headers": "^2",
         "drupal/hux": "^1.1",
         "drupal/iframe_resizer": "^2.0",
@@ -251,6 +253,7 @@
         "drupal/simple_sitemap": "^4.2",
         "drupal/stage_file_proxy": "^3",
         "drupal/subpathauto": "^1",
+        "drupal/taxonomy_unique": "^2.6",
         "drupal/term_reference_tree": "^2",
         "drupal/token": "1.12.0",
         "drupal/twig_field_value": "^2",
@@ -422,9 +425,6 @@
             "drupal/entity_usage": {
                 "InvalidArgumentException: The internal path component is invalid. (https://www.drupal.org/project/entity_usage/issues/3378832)": "patches/entity_usage/drupal-issue-3378832-InvalidArgumentException-the-internal-path-component-is-invalid.patch"
             },
-            "drupal/flag": {
-                "Flags problem with VBO module in views (2893259)": "https://www.drupal.org/files/issues/2020-07-25/flag-vbo-2893259-40.patch"
-            },
             "drupal/diff": {
                 "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch",
                 "Make revisions overview page accessible (https://www.drupal.org/project/diff/issues/3228798)": "https://www.drupal.org/files/issues/2024-05-14/diff-3228798-17.patch"
@@ -437,8 +437,7 @@
                 "Sorting not working in view with entity browser (https://www.drupal.org/project/entity_browser/issues/3216540)": "https://www.drupal.org/files/issues/2021-06-02/3216540-7_0.patch"
             },
             "drupal/entity_hierarchy": {
-                "Enable entity_hierarchy_breadcrumb module to work on node edit routes": "patches/entity_hierarchy_breadcrumb_for_admin_routes.patch",
-                "Async support & save only changed, based on https://www.drupal.org/files/issues/2021-05-06/3178313-tree-editor-3.patch) but only save parent changes when saving on the children tab": "patches/DP-23411_node-hierarchy-async-support-save-only-changed--v6.patch"
+                "Limit the depth used by findAncestors recursion": "patches/entity_hierarchy/entity_hierarchy-limit_findancestors_depth.patch"
             },
             "drupal/entity_reference_tree": {
                 "3285499 - Options to automatically select/deselect ancestors/descendants when node is checked/unchecked.": "https://www.drupal.org/files/issues/2023-10-11/issue-3285499--automatic-selection-options--9.patch"
