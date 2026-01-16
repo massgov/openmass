@@ -176,6 +176,10 @@ class ListUsageController extends ControllerBase {
           // If for some reason this record is broken, just skip it.
           continue;
         }
+        // Skip if it is not the latest revision.
+        if (!$source_entity->isLatestRevision()) {
+          continue;
+        }
         $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
         $default_key = count($records) - 1;
 
