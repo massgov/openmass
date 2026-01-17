@@ -31,11 +31,28 @@ final class NodeFriendlyRedirectsAlterer {
   ) {}
 
   /**
+   * Check if the form alteration is applicable for the given entity.
+   *
+   * @param mixed $entity
+   *   The entity to check.
+   *
+   * @return bool
+   *   TRUE if applicable, FALSE otherwise.
+   */
+  public function isApplicable(mixed $entity): bool {
+    if (!$entity instanceof NodeInterface) {
+      return FALSE;
+    }
+
+    return $entity->bundle() !== 'api_service_card';
+  }
+
+  /**
    * Entrypoint called by the thin procedural hook.
    */
   public function alter(array &$form, FormStateInterface $form_state): void {
     $entity = $form_state->getFormObject()->getEntity();
-    if (!$entity instanceof NodeInterface) {
+    if (!$this->isApplicable($entity)) {
       return;
     }
 
