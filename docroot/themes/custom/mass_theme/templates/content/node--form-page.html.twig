@@ -83,18 +83,34 @@
         </script>
       {% elseif node.getPlatform().getString() == constant('Drupal\\mass_content\\Entity\\Bundle\\node\\FormPageBundle::PLATFORM_GRAVITY_FORMS') %}
         {{ attach_library('mass_utility/mass_utility.mass_forms_form_redirect_after_submission') }}
-        {{ attach_library('mass_session_context/iframe') }}
 
         {% set gf_url = content.field_form_url.iframe_url %}
-        {% include "@atoms/09-media/iframe.twig" with {
-          "iframe": {
-            "customClass": 'js-iframe-resizer js-gf-iframe',
-            "src": '',
-            "data_src": gf_url,
-            "height": 'auto',
-            "title": "Embedded form: " ~ node.label,
-          }
-        } %}
+
+        {# Authors can opt-in to passing querystring/context to forms.mass.gov. #}
+        {% set include_querystring = node.field_form_include_querystring.value %}
+
+        {# Only attach iframe.js when we intend to rewrite/apply params. #}
+        {% if include_querystring %}
+          {{ attach_library('mass_session_context/iframe') }}
+          {% include "@atoms/09-media/iframe.twig" with {
+            "iframe": {
+              "customClass": 'js-iframe-resizer js-gf-iframe',
+              "src": '',
+              "data_src": gf_url,
+              "height": 'auto',
+              "title": "Embedded form: " ~ node.label,
+            }
+          } %}
+        {% else %}
+          {% include "@atoms/09-media/iframe.twig" with {
+            "iframe": {
+              "customClass": 'js-iframe-resizer js-gf-iframe',
+              "src": gf_url,
+              "height": 'auto',
+              "title": "Embedded form: " ~ node.label,
+            }
+          } %}
+        {% endif %}
       {% endif %}
     {% endblock %}
     </div>
