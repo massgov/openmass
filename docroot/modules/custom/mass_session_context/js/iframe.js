@@ -10,32 +10,16 @@
    */
 
   /**
-   * Session storage keys (new first, legacy fallback second).
+   * Session storage key (single source of truth).
    * @type {string[]}
    */
-  const STORAGE_KEYS = ['massSessionContext', 'mass_form_context'];
+  const STORAGE_KEYS = ['massSessionContext'];
 
   /**
-   * Maps form query params to session context keys (first match wins).
-   * @type {Object<string, string[]>}
+   * Context keys we send to the form. These key names are identical in session storage and iframe query params.
+   * @type {string[]}
    */
-  const CONTEXT_PARAM_MAP = {
-    linking_page: ['current_page'],
-    previous_page: ['prior_page', 'previous_page'],
-    previous_page_2: ['prior_page_2', 'previous_page_2'],
-    linking_page_org: ['current_page_org'],
-    linking_page_parent_org: ['current_page_parent_org'],
-    previous_page_org: ['prior_page_org', 'previous_page_org'],
-    previous_page_2_org: ['prior_page_2_org', 'previous_page_2_org'],
-    previous_page_parent_org: ['prior_page_parent_org', 'previous_page_parent_org'],
-    previous_page_2_parent_org: ['prior_page_2_parent_org', 'previous_page_2_parent_org']
-  };
-
-  /**
-   * Params we own / should never be overwritten by accumulated journey params.
-   * @type {Set<string>}
-   */
-  const RESERVED_PARAMS = new Set([
+  const CONTEXT_KEYS = [
     'linking_page',
     'previous_page',
     'previous_page_2',
@@ -45,7 +29,13 @@
     'previous_page_2_org',
     'previous_page_parent_org',
     'previous_page_2_parent_org'
-  ]);
+  ];
+
+  /**
+   * Params we own / should never be overwritten by accumulated journey params.
+   * @type {Set<string>}
+   */
+  const RESERVED_PARAMS = new Set(CONTEXT_KEYS);
 
   // Markers to avoid rewriting the same iframe repeatedly.
   const DATA_APPLIED_ATTR = 'data-mass-form-context-applied';
@@ -71,7 +61,7 @@
         }
       }
       catch (e) {
-        // ignore and keep trying other keys
+        // ignore and keep trying
       }
     }
 
@@ -120,31 +110,6 @@
   }
 
   /**
-   * Checks if a URL points at forms.mass.gov.
-   *
-   * @param {string} urlString
-   *   A URL string.
-   *
-   * @return {boolean}
-   *   TRUE if forms URL.
-   */
-  function isFormsUrl(urlString) {
-    if (!urlString) {
-      return false;
-    }
-
-    let url;
-    try {
-      url = new URL(urlString, window.location.href);
-    }
-    catch (e) {
-      return false;
-    }
-
-    return url.hostname === 'forms.mass.gov';
-  }
-
-  /**
    * Returns the canonical base URL for an iframe (prefers data-src).
    *
    * @param {HTMLIFrameElement} iframe
@@ -186,30 +151,6 @@
   }
 
   /**
-   * Gets the first non-empty value from a list of keys.
-   *
-   * @param {Object|null} context
-   *   Session context.
-   * @param {string[]} keys
-   *   Keys to check.
-   *
-   * @return {string|null}
-   *   Normalized value.
-   */
-  function getFirstContextValue(context, keys) {
-    for (let i = 0; i < keys.length; i++) {
-      const k = keys[i];
-      const raw = (context && Object.prototype.hasOwnProperty.call(context, k)) ? context[k] : null;
-      const v = normalizeValue(raw);
-      if (v) {
-        return v;
-      }
-    }
-
-    return null;
-  }
-
-  /**
    * Apply context to a single iframe element.
    *
    * @param {HTMLIFrameElement} iframe
@@ -229,19 +170,19 @@
       return;
     }
 
-    if (!isFormsUrl(base)) {
-      return;
-    }
-
-    if (iframe.getAttribute(DATA_APPLIED_ATTR) === '1') {
-      return;
-    }
-
     let url;
     try {
       url = new URL(base, window.location.href);
     }
     catch (e) {
+      return;
+    }
+
+    if (url.hostname !== 'forms.mass.gov') {
+      return;
+    }
+
+    if (iframe.getAttribute(DATA_APPLIED_ATTR) === '1') {
       return;
     }
 
@@ -251,16 +192,16 @@
 
     let changed = false;
 
-    Object.keys(CONTEXT_PARAM_MAP).forEach(function (paramName) {
-      const contextKeys = CONTEXT_PARAM_MAP[paramName];
-      const normalized = getFirstContextValue(context, contextKeys);
+    CONTEXT_KEYS.forEach(function (key) {
+      const normalized = normalizeValue(context ? context[key] : null);
+      if (!normalized) {
+        return;
+      }
 
-      if (normalized) {
-        const existing = url.searchParams.get(paramName);
-        if (existing !== normalized) {
-          url.searchParams.set(paramName, normalized);
-          changed = true;
-        }
+      const existing = url.searchParams.get(key);
+      if (existing !== normalized) {
+        url.searchParams.set(key, normalized);
+        changed = true;
       }
     });
 

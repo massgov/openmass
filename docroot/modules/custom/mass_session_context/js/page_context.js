@@ -53,17 +53,17 @@
     return {
       qs: {},
 
-      current_page: null,
-      current_page_org: null,
-      current_page_parent_org: null,
+      linking_page: null,
+      linking_page_org: null,
+      linking_page_parent_org: null,
 
-      prior_page: null,
-      prior_page_org: null,
-      prior_page_parent_org: null,
+      previous_page: null,
+      previous_page_org: null,
+      previous_page_parent_org: null,
 
-      prior_page_2: null,
-      prior_page_2_org: null,
-      prior_page_2_parent_org: null,
+      previous_page_2: null,
+      previous_page_2_org: null,
+      previous_page_2_parent_org: null,
 
       last_iframe_context: null,
       _ts: null
@@ -181,24 +181,24 @@
       var thisUrl = window.location.href;
 
       var thisKey = canonicalizeUrl(thisUrl);
-      var currentKey = storage.current_page ? canonicalizeUrl(storage.current_page) : null;
+      var currentKey = storage.linking_page ? canonicalizeUrl(storage.linking_page) : null;
 
       // 2) Rotate history ONLY when the canonical page changes (ignore query/hash changes)
       if (currentKey && currentKey !== thisKey) {
 
-        storage.prior_page_2 = storage.prior_page || null;
-        storage.prior_page_2_org = storage.prior_page_org || null;
-        storage.prior_page_2_parent_org = storage.prior_page_parent_org || null;
+        storage.previous_page_2 = storage.previous_page || null;
+        storage.previous_page_2_org = storage.previous_page_org || null;
+        storage.previous_page_2_parent_org = storage.previous_page_parent_org || null;
 
-        storage.prior_page = storage.current_page || null;
-        storage.prior_page_org = storage.current_page_org || null;
-        storage.prior_page_parent_org = storage.current_page_parent_org || null;
+        storage.previous_page = storage.linking_page || null;
+        storage.previous_page_org = storage.linking_page_org || null;
+        storage.previous_page_parent_org = storage.linking_page_parent_org || null;
       }
 
       // 3) Set new current page
-      storage.current_page = thisUrl;
-      storage.current_page_org = readMeta('mg_organization');
-      storage.current_page_parent_org = readMeta('mg_parent_org');
+      storage.linking_page = thisUrl;
+      storage.linking_page_org = readMeta('mg_organization');
+      storage.linking_page_parent_org = readMeta('mg_parent_org');
 
       saveStorage(storage);
     }
