@@ -1,5 +1,21 @@
 
 
+## [0.462.0] - January 13, 2026
+
+### Added
+  - DP-44410: Add filter for collection to the advanced search for pages view and bulk edit labels view, added collections metadata to pages
+  - DP-43938: Author report for editors.
+  
+### Changed
+  - DP-42825: Change MySQL version in Tugboat and CircleCI to match Acquia db version
+  - DP-42778: Disable Start date field for documents by hiding it from the document form display, removing it from all views, and marking it as deprecated.
+  
+### Fixed
+  - DP-44226: Added several missing content types to trash and my content views.
+  - DP-43883: Refactored the Close message handler to not overlap with tabs and work also for admin theme.
+
+
+
 ## [0.461.0] - December 16, 2025
 
 ### Security
