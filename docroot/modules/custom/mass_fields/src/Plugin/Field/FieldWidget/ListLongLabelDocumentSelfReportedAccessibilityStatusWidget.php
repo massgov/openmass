@@ -60,7 +60,7 @@ class ListLongLabelDocumentSelfReportedAccessibilityStatusWidget extends ListLon
    */
   protected function getEmptyLabel() {
     if (!$this->required && !$this->multiple) {
-      return new FormattableMarkup('<strong>TBD:</strong><br/><small> You can\'t publish this document unless you choose one of the other states.</small>', []);
+      return new FormattableMarkup('<small><strong>TBD:</strong><br/><small> You can\'t publish this document unless you choose one of the other states.</small></small>', []);
     }
   }
 
