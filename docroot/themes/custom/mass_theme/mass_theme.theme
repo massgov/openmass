@@ -4701,7 +4701,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
           // Also convert the Url object to a string for the template
           if (isset($variables['items'][$index]['content']['#url'])) {
             $url = $variables['items'][$index]['content']['#url'];
-            if ($url instanceof \Drupal\Core\Url) {
+            if ($url instanceof Url) {
               $variables['items'][$index]['content']['#url'] = $url->toString();
             }
           }
