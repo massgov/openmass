@@ -1332,7 +1332,7 @@ class Organisms {
     }
     else {
       $description = [];
-    };
+    }
 
     $table = [];
     if (!empty($items)) {
