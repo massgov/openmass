@@ -748,7 +748,7 @@ function mayflower_preprocess_field__node__field_social_links(&$variables) {
 
   foreach ($variables['items'] as $index => &$item) {
     $url_obj = $item['content']['#url'];
-    $url = $url_obj instanceof \Drupal\Core\Url ? $url_obj->toString() : $url_obj;
+    $url = $url_obj instanceof Url ? $url_obj->toString() : $url_obj;
 
     foreach ($serviceMapping as $domain => $iconName) {
       if (strpos($url, $domain) !== FALSE) {
