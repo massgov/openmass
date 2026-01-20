@@ -1765,25 +1765,26 @@ class Helper {
   public static function getSvgEmbed($hash, $dimensions = []) {
     // Build dimension attributes with defaults
     $dimensionAttrs = '';
-    
+
     // Set default dimensions if not provided
     $width = !empty($dimensions['width']) ? $dimensions['width'] : '24px';
     $height = !empty($dimensions['height']) ? $dimensions['height'] : '24px';
-    
+
     $dimensionAttrs .= ' width="' . htmlspecialchars($width) . '"';
     $dimensionAttrs .= ' height="' . htmlspecialchars($height) . '"';
-    
+
     // Add class if provided
     if (!empty($dimensions['class'])) {
       $dimensionAttrs .= ' class="' . htmlspecialchars($dimensions['class']) . '"';
     }
-    
+
     return sprintf(
       '<svg aria-hidden="true" focusable="false"%s><use href="#%s"></use></svg>',
       $dimensionAttrs,
       $hash
     );
   }
+
   /**
    * Return the HTML to SVG source.
    *
