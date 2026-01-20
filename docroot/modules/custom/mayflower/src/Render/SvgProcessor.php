@@ -85,8 +85,6 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
         $width = isset($match[2]) && $match[2] !== '' ? $match[2] : '';
         $height = isset($match[3]) && $match[3] !== '' ? $match[3] : '';
         $class = isset($match[4]) && $match[4] !== '' ? $match[4] : '';
-        // Default to true
-        $bold = isset($match[5]) && $match[5] !== '' ? $match[5] : 'true';
 
         // Add to SVG attachments if not already there
         if (!isset($attached['svg'])) {
