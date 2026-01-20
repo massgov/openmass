@@ -49,13 +49,13 @@ class MayflowerExtension extends AbstractExtension {
    *
    * @see \Drupal\mayflower\Render\SvgProcessor::processAttachments()
    */
-  public function displayIcon($name, $width = '', $height = '', $class = '', $bold = true) {
+  public function displayIcon($name, $width = '', $height = '', $class = '', $bold = TRUE) {
     $path = $this->getIconPath($name, $bold);
-    
+
     // Build the template with dimensions, class, and bold
     $template = '<svg-placeholder path="{{path}}"';
     $context = ['path' => $path];
-    
+
     if ($width) {
       $template .= ' width="{{width}}"';
       $context['width'] = $width;
@@ -68,13 +68,13 @@ class MayflowerExtension extends AbstractExtension {
       $template .= ' class="{{class}}"';
       $context['class'] = $class;
     }
-    
+
     // Add bold attribute to the placeholder
     $template .= ' bold="{{bold}}"';
     $context['bold'] = $bold ? 'true' : 'false';
-    
+
     $template .= '>';
-    
+
     return [
       '#type' => 'inline_template',
       '#template' => $template,
@@ -102,7 +102,7 @@ class MayflowerExtension extends AbstractExtension {
    * @return string
    *   The path to the icon file.
    */
-  private function getIconPath($name, $bold = true) {
+  private function getIconPath($name, $bold = TRUE) {
     $parts = pathinfo($name) + ['dirname' => ''];
 
     // Temporary BC layer to convert twig SVG names to file ones.
@@ -111,24 +111,25 @@ class MayflowerExtension extends AbstractExtension {
       @trigger_error(sprintf('Deprecated icon path used: %s. This will be converted to %s for the time being, but you should replace the in-code reference so it does not break in the future.', $name, $newName), E_USER_DEPRECATED);
       $parts = pathinfo($newName);
     }
-    
+
     // Pass a named icon through to the predefined icons directory.
     if (!isset($parts['extension']) && $parts['dirname'] === '.') {
       $iconName = $parts['filename'];
-      
+
       if ($bold) {
         // Try bold version first
         $boldPath = sprintf('%s/bold/%s--bold.svg', $this->iconDirectory, $iconName);
         if (file_exists($boldPath)) {
           return sprintf('%s/bold/%s--bold.svg', $this->iconDirectory, $iconName);
         }
-        
+
         // Fallback to regular version
         $regularPath = sprintf('%s/%s.svg', $this->iconDirectory, $iconName);
         if (file_exists($regularPath)) {
           return $regularPath;
         }
-      } else {
+      }
+      else {
         // Use regular version
         return sprintf('%s/%s.svg', $this->iconDirectory, $iconName);
       }

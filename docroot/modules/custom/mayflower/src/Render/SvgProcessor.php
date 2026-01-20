@@ -73,10 +73,10 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
       $content = $response->getContent();
       $attached = $response->getAttachments();
       $inlined = [];
-      
+
       // Store dimensions for each path
       $svgDimensions = [];
-      
+
       // Look for svg-placeholder elements with dimensions AND bold parameter in the content
       preg_match_all('/<svg-placeholder\s+path="([^"]*)"(?:[^>]*width="([^"]*)")?(?:[^>]*height="([^"]*)")?(?:[^>]*class="([^"]*)")?(?:[^>]*bold="([^"]*)")?[^>]*>/', $content, $placeholderMatches, PREG_SET_ORDER);
 
@@ -85,9 +85,9 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
         $width = isset($match[2]) && $match[2] !== '' ? $match[2] : '';
         $height = isset($match[3]) && $match[3] !== '' ? $match[3] : '';
         $class = isset($match[4]) && $match[4] !== '' ? $match[4] : '';
-        $bold = isset($match[5]) && $match[5] !== '' ? $match[5] : 'true'; // Default to true
+        // Default to true
+        $bold = isset($match[5]) && $match[5] !== '' ? $match[5] : 'true';
 
-        
         // Add to SVG attachments if not already there
         if (!isset($attached['svg'])) {
           $attached['svg'] = [];
@@ -95,33 +95,40 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
         if (!in_array($path, $attached['svg'])) {
           $attached['svg'][] = $path;
         }
-        
+
         // Store dimensions for this path
         $svgDimensions[$path] = [];
-        if ($width) $svgDimensions[$path]['width'] = $width;
-        if ($height) $svgDimensions[$path]['height'] = $height;
-        if ($class) $svgDimensions[$path]['class'] = $class;
+        if ($width) {
+          $svgDimensions[$path]['width'] = $width;
+        }
+        if ($height) {
+          $svgDimensions[$path]['height'] = $height;
+        }
+        if ($class) {
+          $svgDimensions[$path]['class'] = $class;
+        }
       }
-      
+
       // Process SVG attachments
       if (isset($attached['svg'])) {
         foreach (array_unique(array_filter($attached['svg'])) as $path) {
           $replacement = '';
           if ($svgNode = Helper::getSvg($path)) {
             $hash = md5($path);
-            
+
             // Use stored dimensions if available, otherwise extract from SVG
             if (isset($svgDimensions[$path]) && !empty($svgDimensions[$path])) {
               $dimensions = $svgDimensions[$path];
-            } else {
+            }
+            else {
               $dimensions = $this->extractDimensions($svgNode);
             }
-            
+
             $svgNode->setAttribute('id', $hash);
             $replacement = Helper::getSvgEmbed($hash, $dimensions);
             $inlined[] = Helper::getSvgSource($hash, $svgNode);
           }
-          
+
           // Replace all placeholders for this path (including ones with attributes)
           $content = preg_replace(
             sprintf('/<svg-placeholder\s+path="%s"[^>]*>/', preg_quote($path, '/')),
@@ -132,7 +139,7 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
 
         unset($attached['svg']);
       }
-      
+
       $content = str_replace('<svg-sprite-placeholder>', Helper::wrapInlinedSvgs($inlined), $content);
       $response->setContent($content);
       $response->setAttachments($attached);
