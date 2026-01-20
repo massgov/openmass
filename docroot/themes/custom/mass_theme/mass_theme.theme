@@ -4690,7 +4690,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
     $entity = $variables['element']['#object'];
 
     // Get the processed icon links using the prepareIconLinks function
-    $iconLinksData = \Drupal\mayflower\Prepare\Molecules::prepareIconLinks($entity);
+    $iconLinksData = Molecules::prepareIconLinks($entity);
 
     // Add icon data to each item
     if (isset($iconLinksData['iconLinks']['items'])) {
