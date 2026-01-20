@@ -4684,20 +4684,20 @@ function mass_theme_preprocess_field(&$variables, $hook) {
   $element = $variables['element'];
 
   // Process social media links fields
-  if (in_array($variables['field_name'], ['field_social_links', 'field_services_social_links']) 
+  if (in_array($variables['field_name'], ['field_social_links', 'field_services_social_links'])
       && $variables['entity_type'] == 'node') {
-    
+
     $entity = $variables['element']['#object'];
-    
+
     // Get the processed icon links using the prepareIconLinks function
     $iconLinksData = \Drupal\mayflower\Prepare\Molecules::prepareIconLinks($entity);
-    
+
     // Add icon data to each item
     if (isset($iconLinksData['iconLinks']['items'])) {
       foreach ($iconLinksData['iconLinks']['items'] as $index => $iconLinkItem) {
         if (isset($variables['items'][$index])) {
           $variables['items'][$index]['icon'] = $iconLinkItem['icon'];
-          
+
           // Also convert the Url object to a string for the template
           if (isset($variables['items'][$index]['content']['#url'])) {
             $url = $variables['items'][$index]['content']['#url'];
