@@ -277,61 +277,61 @@ class Molecules {
    *      ], ...]
    *    ]
    */
-public static function prepareIconLinks($entity, array $options = []) {
+  public static function prepareIconLinks($entity, array $options = []) {
 
-  $items = [];
-  $map = [
-    'socialLinks' => ['field_social_links', 'field_services_social_links'],
-  ];
+    $items = [];
+    $map = [
+      'socialLinks' => ['field_social_links', 'field_services_social_links'],
+    ];
 
-  // Determines which fieldnames to use from the map.
-  $fields = Helper::getMappedFields($entity, $map);
+    // Determines which fieldnames to use from the map.
+    $fields = Helper::getMappedFields($entity, $map);
 
-  // Creates array of links with link parts.
-  $links = Helper::separatedLinks($entity, $fields['socialLinks']);
+    // Creates array of links with link parts.
+    $links = Helper::separatedLinks($entity, $fields['socialLinks']);
 
-  // Map social media domains to their icon names
-  $serviceMapping = [
-    'twitter.com' => 'x-logo',
-    'x.com' => 'x-logo',
-    'facebook.com' => 'facebook-logo',
-    'threads.net' => 'threads-logo',
-    'flickr.com' => 'flickr-logo',
-    'linkedin.com' => 'linkedin-logo',
-    'instagram.com' => 'instagram-logo',
-    'medium.com' => 'medium-logo',
-    'youtube.com' => 'youtube-logo',
-    'vimeo.com' => 'vimeo-logo',
-    'bsky.app' => 'bluesky-logo',
-    'bluesky.social' => 'bluesky-logo',
+    // Map social media domains to their icon names
+    $serviceMapping = [
+      'twitter.com' => 'x-logo',
+      'x.com' => 'x-logo',
+      'facebook.com' => 'facebook-logo',
+      'threads.net' => 'threads-logo',
+      'flickr.com' => 'flickr-logo',
+      'linkedin.com' => 'linkedin-logo',
+      'instagram.com' => 'instagram-logo',
+      'medium.com' => 'medium-logo',
+      'youtube.com' => 'youtube-logo',
+      'vimeo.com' => 'vimeo-logo',
+      'bsky.app' => 'bluesky-logo',
+      'bluesky.social' => 'bluesky-logo',
     // Keep these without -logo suffix
-    'blog' => 'blog',
-    'google.com' => 'google',
-  ];
+      'blog' => 'blog',
+      'google.com' => 'google',
+    ];
 
-  foreach ($links as $link) {
-    $icon = '';
+    foreach ($links as $link) {
+      $icon = '';
 
-    // Check each service mapping
-    foreach ($serviceMapping as $domain => $iconName) {
-      if (strpos($link['href'], $domain) !== FALSE) {
-        $icon = $iconName;
-        break;
+      // Check each service mapping
+      foreach ($serviceMapping as $domain => $iconName) {
+        if (strpos($link['href'], $domain) !== FALSE) {
+          $icon = $iconName;
+          break;
+        }
       }
+
+      $items[] = [
+        'icon' => $icon,
+        'link' => $link,
+      ];
     }
 
-    $items[] = [
-      'icon' => $icon,
-      'link' => $link,
+    return [
+      'iconLinks' => [
+        'items' => $items,
+      ],
     ];
   }
-
-  return [
-    'iconLinks' => [
-      'items' => $items,
-    ],
-  ];
-}
 
   /**
    * Returns the variables structure required to render sectionLinks template.
@@ -1320,7 +1320,7 @@ public static function prepareIconLinks($entity, array $options = []) {
                 $suggested_scopes[$slug] = [
                   'label' => t('in @org', ['@org' => trim($org->label())]),
                   'type' => 'org',
-                  'value' => $slug
+                  'value' => $slug,
                 ];
               }
               $parent = $org->field_parent->entity;
@@ -1332,7 +1332,7 @@ public static function prepareIconLinks($entity, array $options = []) {
                     $suggested_scopes[$parent_slug] = [
                       'label' => t('in @org', ['@org' => trim($parent->label())]),
                       'type' => 'org',
-                      'value' => $parent_slug
+                      'value' => $parent_slug,
                     ];
                   }
                 }
