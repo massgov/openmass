@@ -78,7 +78,7 @@ class SvgProcessor extends HtmlResponseAttachmentsProcessor {
       $svgDimensions = [];
 
       // Look for svg-placeholder elements with dimensions AND bold parameter in the content
-      preg_match_all('/<svg-placeholder\s+path="([^"]*)"(?:[^>]*width="([^"]*)")?(?:[^>]*height="([^"]*)")?(?:[^>]*class="([^"]*)")?(?:[^>]*bold="([^"]*)")?[^>]*>/', $content, $placeholderMatches, PREG_SET_ORDER);
+      preg_match_all('/<svg-placeholder\s+path="([^"]*)"(?:[^>]*width="([^"]*)")?(?:[^>]*height="([^"]*)")?(?:[^>]*class="([^"]*)")?[^>]*>/', $content, $placeholderMatches, PREG_SET_ORDER);
 
       foreach ($placeholderMatches as $match) {
         $path = $match[1];
