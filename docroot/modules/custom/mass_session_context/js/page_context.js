@@ -53,9 +53,9 @@
     return {
       qs: {},
 
-      linking_page: null,
-      linking_page_org: null,
-      linking_page_parent_org: null,
+      current_page: null,
+      current_page_org: null,
+      current_page_parent_org: null,
 
       previous_page: null,
       previous_page_org: null,
@@ -125,8 +125,16 @@
   }
 
   function isIgnoredKey(key, ignoredKeys) {
+    if (!key) {
+      return false;
+    }
     var k = String(key).toLowerCase();
-    return ignoredKeys.indexOf(k) !== -1;
+    for (var i = 0; i < ignoredKeys.length; i += 1) {
+      if (k === String(ignoredKeys[i]).toLowerCase()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   function readMeta(name) {
@@ -181,7 +189,7 @@
       var thisUrl = window.location.href;
 
       var thisKey = canonicalizeUrl(thisUrl);
-      var currentKey = storage.linking_page ? canonicalizeUrl(storage.linking_page) : null;
+      var currentKey = storage.current_page ? canonicalizeUrl(storage.current_page) : null;
 
       // 2) Rotate history ONLY when the canonical page changes (ignore query/hash changes)
       if (currentKey && currentKey !== thisKey) {
@@ -190,15 +198,15 @@
         storage.previous_page_2_org = storage.previous_page_org || null;
         storage.previous_page_2_parent_org = storage.previous_page_parent_org || null;
 
-        storage.previous_page = storage.linking_page || null;
-        storage.previous_page_org = storage.linking_page_org || null;
-        storage.previous_page_parent_org = storage.linking_page_parent_org || null;
+        storage.previous_page = storage.current_page || null;
+        storage.previous_page_org = storage.current_page_org || null;
+        storage.previous_page_parent_org = storage.current_page_parent_org || null;
       }
 
       // 3) Set new current page
-      storage.linking_page = thisUrl;
-      storage.linking_page_org = readMeta('mg_organization');
-      storage.linking_page_parent_org = readMeta('mg_parent_org');
+      storage.current_page = thisUrl;
+      storage.current_page_org = readMeta('mg_organization');
+      storage.current_page_parent_org = readMeta('mg_parent_org');
 
       saveStorage(storage);
     }

@@ -45,10 +45,10 @@ function mass_session_context_entity_view(
     '_gl',
   ];
 
-  // Flag used by page_context.js to prevent rotation on form pages
-  $build['#attached']['drupalSettings']['massSessionContext']['isFormPage'] = ($bundle === 'form_page');
-
-  if ($bundle !== 'form_page') {
-    $build['#attached']['library'][] = 'mass_session_context/page_context';
-  }
+  // Flag used by page_context.js to handle form pages.
+  $is_form_page = ($bundle === 'form_page');
+  $build['#attached']['drupalSettings']['massSessionContext']['isFormPage'] = $is_form_page;
+  
+  // Always attach page_context so journey/history is recorded even when iframe is not used.
+  $build['#attached']['library'][] = 'mass_session_context/page_context';
 }

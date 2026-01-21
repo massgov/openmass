@@ -20,11 +20,11 @@
    * @type {string[]}
    */
   const CONTEXT_KEYS = [
-    'linking_page',
+    'current_page',
     'previous_page',
     'previous_page_2',
-    'linking_page_org',
-    'linking_page_parent_org',
+    'current_page_org',
+    'current_page_parent_org',
     'previous_page_org',
     'previous_page_2_org',
     'previous_page_parent_org',
