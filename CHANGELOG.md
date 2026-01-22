@@ -1,5 +1,17 @@
 
 
+## [0.463.0] - January 20, 2026
+
+### Changed
+  - DP-43066: Updates to Drupal UI (API Service Cards) to support Agency Profile Collection (Part 2).
+  - DP-44436: empty span tags that have spaces are no longer removed from rich text fields. This prevents some user reported issues.
+  - DP-44496: empty span tags that have spaces are no longer removed from rich text fields on rules of court. This prevents some user reported issues.
+  
+### Added
+  - DP-44028: Added a possibility to have multiple CSV columns as URL.
+  
+
+
 ## [0.462.0] - January 13, 2026
 
 ### Added
