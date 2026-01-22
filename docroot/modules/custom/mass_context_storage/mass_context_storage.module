@@ -48,7 +48,6 @@ function mass_context_storage_entity_view(
   // Flag used by page_context.js to handle form pages.
   $is_form_page = ($bundle === 'form_page');
   $build['#attached']['drupalSettings']['massContextStorage']['isFormPage'] = $is_form_page;
-//massSessionContext
   // Always attach page_context so journey/history is recorded even when iframe is not used.
   $build['#attached']['library'][] = 'mass_context_storage/page_context';
 }
