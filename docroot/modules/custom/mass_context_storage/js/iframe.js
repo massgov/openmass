@@ -10,10 +10,26 @@
    */
 
   /**
-   * Session storage key (single source of truth).
+   * Local storage key (single source of truth).
    * @type {string[]}
    */
-  const STORAGE_KEYS = ['massSessionContext'];
+  const STORAGE_KEYS = ['massContextStorage'];
+
+  // 1 hour idle TTL (must match page_context.js).
+  const TTL_MS = 60 * 60 * 1000;
+
+  function now() {
+    return Date.now ? Date.now() : new Date().getTime();
+  }
+
+  function clearStoredValue(storageKey) {
+    try {
+      window.localStorage.removeItem(storageKey);
+    }
+    catch (e) {
+      // ignore
+    }
+  }
 
   /**
    * Context keys we send to the form. These key names are identical in session storage and iframe query params.
@@ -42,7 +58,7 @@
   const DATA_ORIGINAL_SRC_ATTR = 'data-mass-form-original-src';
 
   /**
-   * Read the stored context object from sessionStorage.
+   * Read the stored context object from localStorage.
    *
    * @return {Object|null}
    *   Parsed context object or null.
@@ -51,12 +67,17 @@
     for (let i = 0; i < STORAGE_KEYS.length; i++) {
       const key = STORAGE_KEYS[i];
       try {
-        const raw = window.sessionStorage.getItem(key);
+        const raw = window.localStorage.getItem(key);
         if (!raw) {
           continue;
         }
         const parsed = JSON.parse(raw);
         if (parsed && typeof parsed === 'object') {
+          // TTL: if last pageview is older than 1 hour, clear and ignore.
+          if (parsed._ts && (now() - parsed._ts) > TTL_MS) {
+            clearStoredValue(key);
+            continue;
+          }
           return parsed;
         }
       }

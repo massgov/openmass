@@ -9,7 +9,7 @@ use Drupal\node\NodeInterface;
 /**
  * Implements hook_entity_view().
  */
-function mass_session_context_entity_view(
+function mass_context_storage_entity_view(
   array &$build,
   EntityInterface $entity,
   EntityViewDisplayInterface $display,
@@ -30,7 +30,7 @@ function mass_session_context_entity_view(
   // Provide ignoreKeys to JS (config-driven list; no hardcoding).
   // Adjust this to wherever you store it (config, settings.php, etc).
   // For now, keep it empty unless you already wire it up.
-  $build['#attached']['drupalSettings']['massSessionContext']['ignoreKeys'] = [
+  $build['#attached']['drupalSettings']['massContextStorage']['ignoreKeys'] = [
     // Ad click ids / common analytics.
     'gclid',
     'gbraid',
@@ -47,8 +47,8 @@ function mass_session_context_entity_view(
 
   // Flag used by page_context.js to handle form pages.
   $is_form_page = ($bundle === 'form_page');
-  $build['#attached']['drupalSettings']['massSessionContext']['isFormPage'] = $is_form_page;
-
+  $build['#attached']['drupalSettings']['massContextStorage']['isFormPage'] = $is_form_page;
+//massSessionContext
   // Always attach page_context so journey/history is recorded even when iframe is not used.
-  $build['#attached']['library'][] = 'mass_session_context/page_context';
+  $build['#attached']['library'][] = 'mass_context_storage/page_context';
 }

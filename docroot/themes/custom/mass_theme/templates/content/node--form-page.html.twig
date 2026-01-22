@@ -91,7 +91,7 @@
 
         {# Only attach iframe.js when we intend to rewrite/apply params. #}
         {% if include_querystring %}
-          {{ attach_library('mass_session_context/iframe') }}
+          {{ attach_library('mass_context_storage/iframe') }}
           {% include "@atoms/09-media/iframe.twig" with {
             "iframe": {
               "customClass": 'js-iframe-resizer js-gf-iframe',

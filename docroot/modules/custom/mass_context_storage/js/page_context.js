@@ -1,7 +1,7 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  var STORAGE_KEY = 'massSessionContext';
+  var STORAGE_KEY = 'massContextStorage';
   var TTL_MS = 60 * 60 * 1000; // 1 hour
 
   var MAX_PARAMS = 100;
@@ -9,7 +9,7 @@
   var MAX_VAL_LEN = 1000;
 
   function getBackend() {
-    return window.sessionStorage;
+    return window.localStorage;
   }
 
   function now() {
@@ -79,6 +79,18 @@
     }
   }
 
+  function clearStoredValue() {
+    try {
+      var backend = getBackend();
+      if (backend) {
+        backend.removeItem(STORAGE_KEY);
+      }
+    }
+    catch (e) {
+      // Ignore.
+    }
+  }
+
   function loadStorage() {
     var backend = getBackend();
     if (!backend) {
@@ -102,8 +114,9 @@
       return emptyStorage();
     }
 
-    // TTL
+    // TTL: if last pageview was more than 1 hour ago, clear and start fresh.
     if (data._ts && (now() - data._ts) > TTL_MS) {
+      clearStoredValue();
       return emptyStorage();
     }
 
@@ -116,11 +129,16 @@
 
   function saveStorage(data) {
     data._ts = now();
-    getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
+    try {
+      getBackend().setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+    catch (e) {
+      // Ignore storage errors (privacy/quota).
+    }
   }
 
   function getIgnoredKeys() {
-    var cfg = ((drupalSettings.massSessionContext || {}).ignoreKeys) || [];
+    var cfg = ((drupalSettings.massContextStorage || {}).ignoreKeys) || [];
     return Array.isArray(cfg) ? cfg : [];
   }
 
@@ -174,7 +192,7 @@
     });
   }
 
-  Drupal.behaviors.massSessionContextPageContext = {
+  Drupal.behaviors.massContextStoragePageContext = {
     attach: function (context) {
       var onceResult = once('mass-session-context-page', 'html', context);
       if (!onceResult.length) {
