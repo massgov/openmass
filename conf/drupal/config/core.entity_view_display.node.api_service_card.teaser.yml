@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.api_service_card.field_api_srv_card_status
     - field.field.node.api_service_card.field_api_srv_card_tenant
     - field.field.node.api_service_card.field_environment
+    - field.field.node.api_service_card.field_journey
     - node.type.api_service_card
   module:
     - user
@@ -22,6 +23,11 @@ targetEntityType: node
 bundle: api_service_card
 mode: teaser
 content:
+  content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
+    weight: -20
+    region: content
   links:
     settings: {  }
     third_party_settings: {  }
@@ -38,4 +44,5 @@ hidden:
   field_api_srv_card_status: true
   field_api_srv_card_tenant: true
   field_environment: true
+  field_journey: true
   langcode: true

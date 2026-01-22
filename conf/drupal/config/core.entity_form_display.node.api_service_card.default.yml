@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.api_service_card.field_api_srv_card_status
     - field.field.node.api_service_card.field_api_srv_card_tenant
     - field.field.node.api_service_card.field_environment
+    - field.field.node.api_service_card.field_journey
     - node.type.api_service_card
   module:
     - allowed_formats
@@ -20,6 +21,7 @@ dependencies:
     - link
     - mass_fields
     - maxlength
+    - paragraphs
     - text
 third_party_settings:
   field_group:
@@ -28,6 +30,7 @@ third_party_settings:
         - group_card_details
         - group_card_meta
         - group_idv_settings
+        - group_profile_collection
       label: Tabs
       region: content
       parent_name: ''
@@ -37,7 +40,8 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
-        direction: vertical
+        label_as_html: false
+        direction: horizontal
         width_breakpoint: 640
     group_card_details:
       children:
@@ -75,15 +79,16 @@ third_party_settings:
     group_idv_settings:
       children:
         - group_idv_details
-      label: 'IDV Settings'
+      label: 'Callback URLs'
       region: content
       parent_name: group_tabs
-      weight: 23
+      weight: 22
       format_type: tab
       format_settings:
         classes: ''
         show_empty_fields: false
         id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -91,7 +96,7 @@ third_party_settings:
       children:
         - group_idv_logout_url_locale
         - group_idv_return_url
-      label: 'IDV Details'
+      label: Details
       region: content
       parent_name: group_idv_settings
       weight: 7
@@ -100,13 +105,14 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
+        label_as_html: false
         direction: horizontal
         width_breakpoint: 640
     group_idv_logout_url_locale:
       children:
         - field_api_srv_card_logout_locale
         - field_api_srv_card_logout_urls
-      label: 'IDV Logout URL'
+      label: 'Logout URL'
       region: content
       parent_name: group_idv_details
       weight: 20
@@ -115,6 +121,7 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -122,7 +129,7 @@ third_party_settings:
       children:
         - field_api_srv_card_ret_locale
         - field_api_srv_card_idv_ret_urls
-      label: 'IDV Return URL'
+      label: 'Return URL'
       region: content
       parent_name: group_idv_details
       weight: 21
@@ -131,6 +138,23 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_profile_collection:
+      children:
+        - field_journey
+      label: 'Profile Collection'
+      region: content
+      parent_name: group_tabs
+      weight: 23
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: false
         formatter: closed
         description: ''
         required_fields: true
@@ -252,6 +276,26 @@ content:
     weight: 4
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_journey:
+    type: paragraphs
+    weight: 26
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: closed
+      closed_mode: summary
+      autocollapse: all
+      closed_mode_threshold: 0
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: api_service_card_journey
+      features:
+        add_above: add_above
+        collapse_edit_all: collapse_edit_all
+        convert: '0'
+        duplicate: duplicate
     third_party_settings: {  }
   title:
     type: string_textfield

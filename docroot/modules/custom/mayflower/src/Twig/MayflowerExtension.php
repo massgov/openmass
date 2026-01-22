@@ -49,12 +49,36 @@ class MayflowerExtension extends AbstractExtension {
    *
    * @see \Drupal\mayflower\Render\SvgProcessor::processAttachments()
    */
-  public function displayIcon($name) {
-    $path = $this->getIconPath($name);
+  public function displayIcon($name, $width = '', $height = '', $class = '', $bold = TRUE) {
+    $path = $this->getIconPath($name, $bold);
+
+    // Build the template with dimensions, class, and bold
+    $template = '<svg-placeholder path="{{path}}"';
+    $context = ['path' => $path];
+
+    if ($width) {
+      $template .= ' width="{{width}}"';
+      $context['width'] = $width;
+    }
+    if ($height) {
+      $template .= ' height="{{height}}"';
+      $context['height'] = $height;
+    }
+    if ($class) {
+      $template .= ' class="{{class}}"';
+      $context['class'] = $class;
+    }
+
+    // Add bold attribute to the placeholder
+    $template .= ' bold="{{bold}}"';
+    $context['bold'] = $bold ? 'true' : 'false';
+
+    $template .= '>';
+
     return [
       '#type' => 'inline_template',
-      '#template' => '<svg-placeholder path="{{path}}">',
-      '#context' => ['path' => $path],
+      '#template' => $template,
+      '#context' => $context,
       '#attached' => [
         'svg' => [$path],
       ],
@@ -72,11 +96,13 @@ class MayflowerExtension extends AbstractExtension {
    *
    * @param string $name
    *   The name of the icon.
+   * @param bool $bold
+   *   Whether to use the bold version of the icon.
    *
    * @return string
    *   The path to the icon file.
    */
-  private function getIconPath($name) {
+  private function getIconPath($name, $bold = TRUE) {
     $parts = pathinfo($name) + ['dirname' => ''];
 
     // Temporary BC layer to convert twig SVG names to file ones.
@@ -85,16 +111,31 @@ class MayflowerExtension extends AbstractExtension {
       @trigger_error(sprintf('Deprecated icon path used: %s. This will be converted to %s for the time being, but you should replace the in-code reference so it does not break in the future.', $name, $newName), E_USER_DEPRECATED);
       $parts = pathinfo($newName);
     }
+
     // Pass a named icon through to the predefined icons directory.
     if (!isset($parts['extension']) && $parts['dirname'] === '.') {
-      return sprintf('%s/%s.svg', $this->iconDirectory, $parts['filename']);
+      $iconName = $parts['filename'];
+
+      if ($bold) {
+        // Try bold version first
+        $boldPath = sprintf('%s/bold/%s--bold.svg', $this->iconDirectory, $iconName);
+        if (file_exists($boldPath)) {
+          return sprintf('%s/bold/%s--bold.svg', $this->iconDirectory, $iconName);
+        }
+
+        // Fallback to regular version
+        $regularPath = sprintf('%s/%s.svg', $this->iconDirectory, $iconName);
+        if (file_exists($regularPath)) {
+          return $regularPath;
+        }
+      }
+      else {
+        // Use regular version
+        return sprintf('%s/%s.svg', $this->iconDirectory, $iconName);
+      }
     }
 
     // Otherwise, $name is a file path.
-    // Note: This can result in empty strings or non-SVG files being passed
-    // on as icons. We don't want to do file_exists() checks here, since this
-    // function is called a lot, so that is handled further down the line.
-    // @see Drupal\mayflower\Render\SvgProcessor::getSvg().
     return $name;
   }
 
