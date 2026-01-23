@@ -4683,6 +4683,33 @@ function mass_theme_preprocess_page(&$variables) {
 function mass_theme_preprocess_field(&$variables, $hook) {
   $element = $variables['element'];
 
+  // Process social media links fields
+  if (in_array($variables['field_name'], ['field_social_links', 'field_services_social_links'])
+      && $variables['entity_type'] == 'node') {
+
+    $entity = $variables['element']['#object'];
+
+    // Get the processed icon links using the prepareIconLinks function
+    $iconLinksData = Molecules::prepareIconLinks($entity);
+
+    // Add icon data to each item
+    if (isset($iconLinksData['iconLinks']['items'])) {
+      foreach ($iconLinksData['iconLinks']['items'] as $index => $iconLinkItem) {
+        if (isset($variables['items'][$index])) {
+          $variables['items'][$index]['icon'] = $iconLinkItem['icon'];
+
+          // Also convert the Url object to a string for the template
+          if (isset($variables['items'][$index]['content']['#url'])) {
+            $url = $variables['items'][$index]['content']['#url'];
+            if ($url instanceof Url) {
+              $variables['items'][$index]['content']['#url'] = $url->toString();
+            }
+          }
+        }
+      }
+    }
+  }
+
   if ($element['#field_name'] == 'field_binder_pages') {
     $variables['host_entity'] = $variables['element']['#object'];
   }
@@ -5006,7 +5033,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
       // Do we have fax numbers? If so, display them under one icon.
       if (!empty($fax_details) && $value == 'fax') {
         $groups[] = [
-          'icon' => 'fax-icon',
+          'icon' => 'fax',
           'name' => 'Fax',
           'items' => $fax_details,
         ];
@@ -7021,36 +7048,26 @@ function mass_theme_preprocess_paragraph__campaign_features(&$variables) {
   }
   $view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
   $large_card_entity = $paragraph->field_full_width_featured_item->entity;
-  $large_card_render_array = $view_builder->build($view_builder->view($large_card_entity));
-  $large_card_theme_values = mass_theme_featured_content_cards($large_card_render_array);
-  $componentId = 'ID' . $paragraph->id();
-  $features['campaignFullWidthFeature'] = $large_card_theme_values + [
-    'id' => $componentId,
-    'bgImage' => '',
-    'mobileBgImage' => '',
-    'level' => $level,
-    'text' => $large_card_render_array['field_rich_text_description'],
-  ];
-  $small_cards = [];
-  foreach ($paragraph->field_2up_featured_item as $small_card) {
-    $small_card_render_array = $view_builder->build($view_builder->view($small_card->entity));
-    $small_theme_values = mass_theme_featured_content_cards($small_card_render_array);
-    $small_cards[] = $small_theme_values + [
+  if ($large_card_entity) {
+    $large_card_render_array = $view_builder->build($view_builder->view($large_card_entity));
+    $features['campaignFullWidthFeature'] = mass_theme_featured_content_cards($large_card_render_array) + [
       'bgImage' => '',
       'mobileBgImage' => '',
       'level' => $level,
-      'text' => $small_card_render_array['field_rich_text_description'],
+      'text' => $large_card_render_array['field_rich_text_description'],
     ];
   }
-  foreach ($paragraph->field_2up_featured_item_2 as $small_card) {
-    $small_card_render_array = $view_builder->build($view_builder->view($small_card->entity));
-    $small_theme_values = mass_theme_featured_content_cards($small_card_render_array);
-    $small_cards[] = $small_theme_values + [
-      'bgImage' => '',
-      'mobileBgImage' => '',
-      'level' => $level,
-      'text' => $small_card_render_array['field_rich_text_description'],
-    ];
+  $small_cards = [];
+  foreach ([$paragraph->field_2up_featured_item, $paragraph->field_2up_featured_item_2] as $field) {
+    if ($small_card_entity = $field->entity) {
+      $small_card_render_array = $view_builder->build($view_builder->view($small_card_entity));
+      $small_cards[] = mass_theme_featured_content_cards($small_card_render_array) + [
+        'bgImage' => '',
+        'mobileBgImage' => '',
+        'level' => $level,
+        'text' => $small_card_render_array['field_rich_text_description'],
+      ];
+    }
   }
   $features['campaignFeature2up'] = $small_cards;
 
@@ -7073,6 +7090,7 @@ function mass_theme_featured_content_cards(&$variables) {
     $return_array = [
       'link' => '#',
       'thumbnail' => '',
+      'id' => 'ID' . $paragraph->id(),
     ];
 
     if (is_object($paragraph->field_image->entity)) {
