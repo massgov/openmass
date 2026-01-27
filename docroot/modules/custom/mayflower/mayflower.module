@@ -682,18 +682,18 @@ function mayflower_preprocess_field(&$variables, $hook) {
   if (in_array($element['#field_name'], ['field_services_social_links', 'field_social_links'])) {
     // Get icons for social links.
     $services = [
-      'twitter',
-      'facebook',
-      'threads',
-      'flickr',
+      'x-logo',
+      'facebook-logo',
+      'threads-logo',
+      'flickr-logo',
       'blog',
-      'linkedin',
+      'linkedin-logo',
       'google',
-      'instagram',
-      'medium',
-      'youtube',
-      'vimeo',
-      'bluesky'
+      'instagram-logo',
+      'medium-logo',
+      'youtube-logo',
+      'vimeo-logo',
+      'bluesky-logo',
     ];
 
     foreach ($variables['items'] as $index => &$item) {
@@ -728,33 +728,39 @@ function mayflower_preprocess_paragraph__video(&$variables) {
  * Prepares icon value for each social link item.
  */
 function mayflower_preprocess_field__node__field_social_links(&$variables) {
-  // Get icons for social links.
-  $services = [
-    'twitter',
-    'facebook',
-    'threads',
-    'flickr',
-    'blog',
-    'linkedin',
-    'google',
-    'instagram',
-    'medium',
-    'youtube',
-    'bluesky',
+  // Map domains to icon names
+  $serviceMapping = [
+    'twitter.com' => 'x-logo',
+    'x.com' => 'x-logo',
+    'facebook.com' => 'facebook-logo',
+    'threads.net' => 'threads-logo',
+    'flickr.com' => 'flickr-logo',
+    'blog' => 'blog',
+    'linkedin.com' => 'linkedin-logo',
+    'google.com' => 'google',
+    'instagram.com' => 'instagram-logo',
+    'medium.com' => 'medium-logo',
+    'youtube.com' => 'youtube-logo',
+    'vimeo.com' => 'vimeo-logo',
+    'bsky.app' => 'bluesky-logo',
+    'bluesky.social' => 'bluesky-logo',
   ];
 
   foreach ($variables['items'] as $index => &$item) {
-    $url = $item['content']['#url']->toString();
-    foreach ($services as $service) {
-      if (strpos($url, $service)) {
-        $item['icon'] = Helper::getIconPath($service);
+    $url_obj = $item['content']['#url'];
+    $url = $url_obj instanceof Url ? $url_obj->toString() : $url_obj;
+
+    foreach ($serviceMapping as $domain => $iconName) {
+      if (strpos($url, $domain) !== FALSE) {
+        $item['icon'] = Helper::getIconPath($iconName);
+        // Stop after first match
+        break;
       }
     }
-    if (strpos($url, 'bsky')) {
-      $item['icon'] = Helper::getIconPath('bluesky');
-    }
-    elseif (strpos($url, 'x.com')) {
-      $item['icon'] = Helper::getIconPath('twitter');
+
+    // Special case for bsky (if not already matched)
+    if (empty($item['icon']) && strpos($url, 'bsky') !== FALSE) {
+      $item['icon'] = Helper::getIconPath('bluesky-logo');
     }
   }
 }
