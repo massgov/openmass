@@ -54,7 +54,7 @@ class LogInLinksBuilderTest extends MassExistingSiteBase {
    * Checks contextual logins links from LogInLinksBuilder and UI.
    */
   private function checkContextualLogInLinks($node, $links) {
-    $llb = new LogInLinksBuilder();
+    $llb = \Drupal::service('mass_content.log_in_links_builder');
     $generated_links = $llb->getLoginLinksWithCacheTags($node);
 
     $this->checkLinksData($links, $generated_links);

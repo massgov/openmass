@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.form_page.field_collections
     - field.field.node.form_page.field_english_version
     - field.field.node.form_page.field_form_embed
+    - field.field.node.form_page.field_form_include_querystring
     - field.field.node.form_page.field_form_lede
     - field.field.node.form_page.field_form_listing_desc
     - field.field.node.form_page.field_form_platform
@@ -70,6 +71,16 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 5
+    region: content
+  field_form_include_querystring:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 18
     region: content
   field_form_lede:
     type: string
