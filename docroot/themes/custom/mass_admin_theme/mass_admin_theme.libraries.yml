@@ -53,6 +53,7 @@ admin_overrides:
       css/overrides/collections-field.css: {}
       css/overrides/modals.css: {}
       css/overrides/select2-override.css: {}
+      css/overides/toolbar-zoom-override.css: {}
     layout:
       css/layout/layout.page.css: {}
   js:
@@ -97,6 +98,17 @@ entity_browser_custom:
   css:
     theme:
       css/overrides/entity-browser-custom.css: {}
+
+toolbar-zoom-override:
+  css:
+    theme:
+      css/overrides/toolbar-zoom-override.css: {}
+  js:
+    js/toolbar-zoom-override.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - toolbar/toolbar
 
 modal_scroll_guard:
   version: 1.0.1
