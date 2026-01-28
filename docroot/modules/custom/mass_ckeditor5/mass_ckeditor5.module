@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Mass CKEditor 5 module file.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\editor\Entity\Editor;
+
+/**
+ * Implements hook_help().
+ */
+function mass_ckeditor5_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.mass_ckeditor5':
+      return '<p>' . t('Provides hierarchical numbering for nested ordered lists with legal-style formatting.') . '</p>';
+  }
+}
+
+/**
+ * Implements hook_library_info_alter().
+ */
+function mass_ckeditor5_library_info_alter(&$libraries, $extension) {
+  // Be ready for D11+.
+  // Once we swicth to D11 - we can remove the service, add autowiring,
+  // remove that code.
+  \Drupal::service('mass_ckeditor5.library_info_alter_hook')
+    ->libraryInfoAlter($libraries, $extension);
+}
+
