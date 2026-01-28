@@ -29,22 +29,26 @@ function mass_feedback_form_help($route_name, RouteMatchInterface $route_match) 
 /**
  * Implements hook_theme().
  *
- * Defines twig templates for two feedback form blocks, one called by PageFeedbackForm and the other by NodeFeedbackContainer.
+ * Defines twig templates for two feedback form blocks, one called by
+ * PageFeedbackForm and the other by NodeFeedbackContainer.
  */
 function mass_feedback_form_theme() {
   return [
-    'mass_feedback_form_without_organization' => [
-      'render element' => NULL,
-    ],
-    'mass_feedback_form' => [
-      'variables' => ['node_id' => NULL],
-    ],
     'block__node_feedback_container' => [
       'render element' => 'elements',
       'template' => 'block--node-feedback-container',
       'base hook' => 'block',
     ],
   ];
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function mass_feedback_form_preprocess(&$variables, $hook) {
+  if (in_array($hook, ['node', 'node__mass_feedback_form_without_organization'])) {
+    $variables['feedback_submission_api_endpoint'] = getenv('FEEDBACK_SUBMISSION_API_ENDPOINT');
+  }
 }
 
 /**
@@ -130,9 +134,8 @@ function mass_feedback_form_node_view(array &$build, EntityInterface $node, Enti
       $org_node_view_feedback = $view_builder->view($node, 'feedback');
     }
     elseif ($node->bundle() === 'topic_page' && $node->get('field_organizations')->isEmpty()) {
-      $org_node_view_feedback = [
-        '#theme' => 'mass_feedback_form_without_organization',
-      ];
+      $org_node_view_feedback = $view_builder->view($node, 'feedback');
+      $org_node_view_feedback['#theme'] = 'node__mass_feedback_form_without_organization';
     }
     else {
       if ($node->field_organizations->count() > 0 && !empty($node->field_organizations[0]->entity)) {
