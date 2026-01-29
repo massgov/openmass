@@ -1,0 +1,331 @@
+/* Accessible Google Translate Widget Styles - Compact for Utility Nav */
+
+/* Fix Google Translate spacing issue with notranslate elements */
+.notranslate {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+html.translated-ltr .notranslate,
+html.translated-rtl .notranslate {
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+}
+
+/* Hide default Google Translate widget */
+.ads-goog-te-wrapper {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Hide Google Translate top banner */
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+
+.skiptranslate iframe {
+    display: none !important;
+}
+
+body > .skiptranslate {
+    display: none !important;
+}
+
+.goog-te-menu-frame {
+    display: none !important;
+}
+
+body {
+    top: 0 !important;
+}
+
+/* Compact styling for utility nav integration */
+.ma__utility-nav__translate .ads-translate-container {
+    display: inline-block;
+    margin: 0;
+}
+
+/* Hide fieldset border and make it inline */
+.ma__utility-nav__translate .ads-translate-fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+}
+
+/* Hide the legend visually but keep for screen readers */
+.ma__utility-nav__translate .ads-translate-legend {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Make the label visible and inline */
+.ma__utility-nav__translate .ads-translate-label {
+    display: inline-block !important;
+    color: #fff !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    margin: 0 8px 0 0 !important;
+    vertical-align: middle !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    left: auto !important;
+}
+
+/* Make select wrapper inline */
+.ma__utility-nav__translate .ads-translate-select-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0;
+}
+
+/* Style the select to fit in utility nav */
+.ma__utility-nav__translate .ads-translate-select {
+    padding: 4px 8px;
+    font-size: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    background-color: transparent;
+    color: #fff;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: 120px;
+}
+
+.ma__utility-nav__translate .ads-translate-select:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.ma__utility-nav__translate .ads-translate-select:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Hide the dropdown icon from example */
+.ma__utility-nav__translate .ads-translate-icon {
+    display: none;
+}
+
+/* Hide help text visually but keep for screen readers */
+.ma__utility-nav__translate .ads-translate-help,
+.ads-sr-only {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Style Apply and English (Reset) buttons to fit inline in utility nav */
+.ma__utility-nav__translate .ads-translate-button {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    cursor: pointer;
+    margin-left: 8px;
+    margin-right: 0;
+    vertical-align: middle;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.ma__utility-nav__translate .ads-translate-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.ma__utility-nav__translate .ads-translate-button:focus {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+.ma__utility-nav__translate .ads-translate-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* English (Reset) button - slightly different styling */
+.ma__utility-nav__translate .ads-translate-reset-button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.ma__utility-nav__translate .ads-translate-reset-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Screen reader status messages */
+.ads-status-message {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+
+
+/* Responsive styles for mobile/tablet */
+@media (max-width: 768px) {
+
+  /* Hamburger menu specific styles */
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-container {
+    display: block;
+    width: 100%;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-fieldset {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 16px 20px;
+    border: none;
+    background-color: transparent;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-label {
+    display: block !important;
+    color: #141414 !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    margin: 0 0 12px 0 !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    left: auto !important;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-select-wrapper {
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-select {
+    width: 100%;
+    padding: 8px 12px;
+    font-size: 16px;
+    border: 2px solid #707070;
+    border-radius: 0;
+    background-color: #fff;
+    color: #141414;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    min-width: auto;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-select:hover {
+    background-color: #f2f2f2;
+    border-color: #535353;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-select:focus {
+    outline: 2px solid #3e94cf;
+    outline-offset: 2px;
+    border-color: #707070;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #fff;
+    background-color: #14558f;
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    margin: 0 0 12px 0;
+    text-align: center;
+    transition: background-color 0.2s ease;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-button:hover {
+    background-color: #104472;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-button:focus {
+    outline: 2px solid #3e94cf;
+    outline-offset: 2px;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-reset-button {
+    background-color: #fff;
+    color: #141414;
+    border: 2px solid #707070;
+    margin-bottom: 0;
+  }
+
+  .ma__header__hamburger__utility-nav .ma__utility-nav__translate .ads-translate-reset-button:hover {
+    background-color: #f2f2f2;
+    border-color: #535353;
+  }
+
+  /* Stack elements vertically on mobile */
+  .ma__utility-nav .ma__utility-nav__items .ma__utility-nav__item .ma__utility-nav__translate .ads-translate-fieldset {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      width: 100% !important;
+      padding: 12px !important;
+      border: none !important;
+  }
+
+  .ma__utility-nav .ma__utility-nav__items .ma__utility-nav__item .ma__utility-nav__translate .ads-translate-label {
+      display: block !important;
+      margin-bottom: 8px !important;
+      margin-right: 0 !important;
+      font-size: 14px !important;
+      width: 100% !important;
+  }
+
+  .ma__utility-nav .ma__utility-nav__items .ma__utility-nav__item .ma__utility-nav__translate .ads-translate-select-wrapper {
+      display: block !important;
+      width: 100% !important;
+      margin-bottom: 8px !important;
+  }
+
+  .ma__utility-nav .ma__utility-nav__items .ma__utility-nav__item .ma__utility-nav__translate .ads-translate-select {
+      width: 100% !important;
+      min-width: auto !important;
+  }
+
+  .ma__utility-nav .ma__utility-nav__items .ma__utility-nav__item .ma__utility-nav__translate .ads-translate-button {
+      display: block !important;
+      width: 100% !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      margin-bottom: 8px !important;
+      text-align: center !important;
+  }
+
+  .ma__utility-nav .ma__utility-nav__items .ma__utility-nav__item .ma__utility-nav__translate .ads-translate-reset-button {
+      margin-bottom: 0 !important;
+  }
+}

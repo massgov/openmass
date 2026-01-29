@@ -172,6 +172,72 @@
             const applyButton = document.getElementById('ads-translate-apply');
             const resetButton = document.getElementById('ads-translate-reset');
             const statusMessage = document.getElementById('ads-translate-status');
+            const selectLanguageLabel = document.getElementById('ads-translate-label');
+
+            // Translations for "Select language" in different languages
+            const selectLanguageTranslations = {
+                'en': 'Select language',
+                'af': 'Kies taal',
+                'sq': 'Zgjidhni gjuhën',
+                'am': 'ቋንቋ ይምረጡ',
+                'ar': 'اختر اللغة',
+                'hy': 'Ընտրեք լեզուն',
+                'zh-CN': '选择语言',
+                'zh-TW': '選擇語言',
+                'tl': 'Pumili ng wika',
+                'fr': 'Sélectionner la langue',
+                'de': 'Sprache wählen',
+                'el': 'Επιλέξτε γλώσσα',
+                'gu': 'ભાષા પસંદ કરો',
+                'ht': 'Chwazi lang',
+                'iw': 'בחר שפה',
+                'he': 'בחר שפה',
+                'hi': 'भाषा चुनें',
+                'hmn': 'Xaiv lus',
+                'it': 'Seleziona la lingua',
+                'ja': '言語を選択',
+                'km': 'ជ្រើសរើសភាសា',
+                'rw': 'Hitamo ururimi',
+                'ko': '언어 선택',
+                'lo': 'ເລືອກພາສາ',
+                'ml': 'ഭാഷ തിരഞ്ഞെടുക്കുക',
+                'my': 'ဘာသာစကားကို ရွေးချယ်ပါ',
+                'ne': 'भाषा चयन गर्नुहोस्',
+                'ps': 'ژبه غوره کړئ',
+                'fa': 'زبان را انتخاب کنید',
+                'pl': 'Wybierz język',
+                'pt': 'Selecionar idioma',
+                'ro': 'Selectați limba',
+                'ru': 'Выберите язык',
+                'so': 'Dooro luqadda',
+                'es': 'Seleccionar idioma',
+                'sw': 'Chagua lugha',
+                'ta': 'மொழியைத் தேர்ந்தெடுக்கவும்',
+                'te': 'భాషను ఎంచుకోండి',
+                'th': 'เลือกภาษา',
+                'ti': 'ቋንቋ ምረጽ',
+                'tr': 'Dil seçin',
+                'uk': 'Виберіть мову',
+                'ur': 'زبان منتخب کریں',
+                'vi': 'Chọn ngôn ngữ'
+            };
+
+            // Detect browser language and update label
+            function updateSelectLanguageLabel() {
+                const browserLang = navigator.language || navigator.userLanguage;
+                const langCode = browserLang.split('-')[0]; // Get just the language code (e.g., 'en' from 'en-US')
+
+                // Update label text if we have a translation for this language
+                if (selectLanguageLabel && selectLanguageTranslations[langCode]) {
+                    selectLanguageLabel.textContent = selectLanguageTranslations[langCode];
+                } else if (selectLanguageLabel && selectLanguageTranslations[browserLang]) {
+                    // Try full locale code (e.g., 'zh-CN')
+                    selectLanguageLabel.textContent = selectLanguageTranslations[browserLang];
+                }
+            }
+
+            // Update label on page load
+            updateSelectLanguageLabel();
 
             // Store the original page language in a cookie
             const ORIGINAL_LANG_COOKIE = 'original_page_lang';
