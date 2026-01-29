@@ -37,27 +37,25 @@ table.dataTable.collapsed>tbody>tr>td.dtr-control {
 
 table.dataTable.collapsed>tbody>tr>td.dtr-control:before,
 table.dataTable.collapsed>tbody>tr>th.dtr-control:before {
-  top: 50%;
-  left: 0;
   height: 1em;
   width: 1em;
-  margin-top: -9px;
-  position: absolute;
-  content: "+";
+  position: relative;
+  content: "+" !important;
   font-size: 1.6em;
   font-weight: 700;
   line-height: .75em;
   color: #388557;
   border-radius: 0;
   box-shadow: none;
-  border: none;
   background: none;
   font-family: "Noto Sans VF","Noto Sans","Helvetica","Arial",sans-serif;
+  border: none !important;
+  vertical-align: sub;
 }
 
 table.dataTable.collapsed>tbody>tr.dtr-expanded>td.dtr-control:before,
 table.dataTable.collapsed>tbody>tr.dtr-expanded>th.dtr-control:before {
-  content: "᠆"; /* small hyphen-minus */
+  content: "᠆" !important; /* small hyphen-minus */
   background: none;
   border: none;
 }
