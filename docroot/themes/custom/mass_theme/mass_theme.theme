@@ -8,6 +8,7 @@
 use Drupal\block\Entity\Block;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Component\Utility\Xss as XssAlias;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -16,6 +17,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
@@ -6731,6 +6733,25 @@ function mass_theme_form_system_theme_settings_alter(&$form, $form_state) {
     '#title' => t('Choose google translate languages?'),
     '#default_value' => theme_get_setting('languages', 'mass_theme'),
   ];
+
+  $codes = array_map(function($language, $code) {
+    return "<li>$language: <pre><code>$code</code></pre></li>";
+  }, $languages, array_keys($languages));
+  $codes_html = '<ul>' . implode('', $codes) . '</ul>';
+
+  $form['mass_theme_settings']['select_language_translations'] = [
+    '#type' => 'textarea',
+    '#title' => t('"Select language" in native languages'),
+    '#default_value' => theme_get_setting('select_language_translations', 'mass_theme'),
+    '#description' => t('Insert pairs in format "code|translation_in_native_language". List of language codes:'),
+  ];
+  $form['mass_theme_settings']['info'] = [
+    '#type' => 'details',
+    '#title' => t('Codes'),
+    '#open' => FALSE,
+  ];
+
+  $form['mass_theme_settings']['info']['#markup'] = XssAlias::filter($codes_html, ['ul', 'li', 'pre', 'code']);
 }
 
 /**
