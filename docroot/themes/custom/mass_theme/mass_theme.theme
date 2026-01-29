@@ -4551,6 +4551,12 @@ function mass_theme_preprocess_html(&$variables) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
 
+  if ($select_language_translations = theme_get_setting('select_language_translations', 'mass_theme')) {
+    $variables['select_language_translations'] = array_map(function($language_pair) {
+      return explode('|', $language_pair);
+    }, explode(PHP_EOL, $select_language_translations));
+  }
+
   // Add glossary functionality if the page references glossaries.
   $params = \Drupal::routeMatch()->getParameters();
   if ($params->has('node')) {
