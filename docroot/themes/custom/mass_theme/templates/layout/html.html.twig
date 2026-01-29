@@ -135,19 +135,408 @@
       <template id="glossary-popup-template">{% include '@molecules/popover.twig' with popoverContext %}</template>
     {% endif %}
 
-    {# Google Translate JS #}
+    {# Google Translate Script #}
+    <script type="text/javascript">
+        // CRITICAL: Capture original HTML lang BEFORE Google Translate can change it
+        window.originalPageLang = document.documentElement.getAttribute('lang') || 'en';
+
+        // Prevent Google Translate from changing lang to "auto"
+        const originalSetAttribute = Element.prototype.setAttribute;
+        Element.prototype.setAttribute = function(name, value) {
+            if (this === document.documentElement && name === 'lang' && value === 'auto') {
+                // Block Google Translate from setting lang="auto"
+                return;
+            }
+            return originalSetAttribute.call(this, name, value);
+        };
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: window.originalPageLang,
+                includedLanguages: '{{ languages }}',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false,
+                multilanguagePage: true
+            }, 'google_translate_element');
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+    {# Accessible Interface Script #}
     <script>
-      function googleTranslateElementInit() {
-        new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: '{{ languages }}', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
-        document.querySelector('#google_translate_element') !== null ? document.querySelector('#google_translate_element').classList.add('has-rendered') : '';
-      }
-      (function() {
-        var script = document.createElement('script');
-        script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-        script.async = true;
-        element = document.getElementsByTagName('head')[0];
-        element.appendChild(script);
-      })();
+        (function() {
+            const languageSelect = document.getElementById('ads-translate-select');
+            const applyButton = document.getElementById('ads-translate-apply');
+            const resetButton = document.getElementById('ads-translate-reset');
+            const statusMessage = document.getElementById('ads-translate-status');
+            const selectLanguageLabel = document.getElementById('ads-translate-label');
+
+            // Translations for "Select language" in different languages
+            // Convert array of [code, translation] pairs to object
+            const selectLanguageTranslationsArray = {{ select_language_translations|default([])|json_encode|raw }};
+            const selectLanguageTranslations = {};
+
+            // Default English translation
+            selectLanguageTranslations['en'] = 'Select language';
+
+            // Build translations object from theme settings
+            selectLanguageTranslationsArray.forEach(function(pair) {
+                if (pair && pair.length >= 2) {
+                    const code = pair[0].trim();
+                    const translation = pair[1].trim();
+                    if (code && translation) {
+                        selectLanguageTranslations[code] = translation;
+                    }
+                }
+            });
+
+            // Detect browser language and update label
+            function updateSelectLanguageLabel() {
+                const browserLang = navigator.language || navigator.userLanguage;
+                const langCode = browserLang.split('-')[0]; // Get just the language code (e.g., 'en' from 'en-US')
+
+                // Update label text if we have a translation for this language
+                if (selectLanguageLabel && selectLanguageTranslations[langCode]) {
+                    selectLanguageLabel.textContent = selectLanguageTranslations[langCode];
+                } else if (selectLanguageLabel && selectLanguageTranslations[browserLang]) {
+                    // Try full locale code (e.g., 'zh-CN')
+                    selectLanguageLabel.textContent = selectLanguageTranslations[browserLang];
+                }
+            }
+
+            // Update label on page load
+            updateSelectLanguageLabel();
+
+            // Store the original page language in a cookie
+            const ORIGINAL_LANG_COOKIE = 'original_page_lang';
+
+            function getOriginalPageLanguage() {
+                // Check cookie first
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === ORIGINAL_LANG_COOKIE) {
+                        return value;
+                    }
+                }
+
+                // Use the captured original language from before Google Translate modified it
+                let originalLang = window.originalPageLang || 'en';
+
+                // Warn if HTML tag was missing lang attribute
+                if (!window.originalPageLang || window.originalPageLang.trim() === '') {
+                    console.log('Warning: HTML tag is missing lang attribute. Defaulting to "en" (English). Please add lang attribute to <html> tag for proper accessibility.');
+                    originalLang = 'en';
+                }
+
+                // Store it in a cookie for future reference (1 year)
+                const cookieDomain = getCookieDomain();
+                const maxAge = 60 * 60 * 24 * 365;
+
+                if (cookieDomain) {
+                    document.cookie = `${ORIGINAL_LANG_COOKIE}=${originalLang}; path=/; domain=${cookieDomain}; max-age=${maxAge}; SameSite=Lax`;
+                } else {
+                    document.cookie = `${ORIGINAL_LANG_COOKIE}=${originalLang}; path=/; max-age=${maxAge}; SameSite=Lax`;
+                }
+
+                return originalLang;
+            }
+
+            // Set the reset button's lang and notranslate attributes
+            const originalPageLang = getOriginalPageLanguage();
+            resetButton.setAttribute('lang', originalPageLang);
+            resetButton.classList.add('notranslate');
+
+            // Set reset button text
+            const originalLangOption = languageSelect.querySelector(`option[value="${originalPageLang}"]`);
+            const originalLangName = originalLangOption ? originalLangOption.text : 'English';
+            resetButton.textContent = originalLangName;
+
+            // Add lang attribute to notranslate elements
+            function addLangToNotranslateElements() {
+                const originalLang = getOriginalPageLanguage();
+
+                // Find all elements with class="notranslate"
+                const notranslateByClass = document.querySelectorAll('.notranslate');
+                notranslateByClass.forEach(element => {
+                    // Only add lang if it doesn't already exist
+                    if (!element.hasAttribute('lang')) {
+                        element.setAttribute('lang', originalLang);
+                    }
+                });
+
+                // Find all elements with translate="no"
+                const notranslateByAttribute = document.querySelectorAll('[translate="no"]');
+                notranslateByAttribute.forEach(element => {
+                    // Only add lang if it doesn't already exist
+                    if (!element.hasAttribute('lang')) {
+                        element.setAttribute('lang', originalLang);
+                    }
+                });
+            }
+
+            // Run on page load
+            addLangToNotranslateElements();
+
+            // Run after DOM changes (for dynamically added content)
+            const observer = new MutationObserver(() => {
+                addLangToNotranslateElements();
+            });
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+
+            // Get the root domain for cookies
+            function getCookieDomain() {
+                const hostname = window.location.hostname;
+
+                // If localhost or IP address, don't use domain attribute
+                if (hostname === 'localhost' || /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) {
+                    return null;
+                }
+
+                const parts = hostname.split('.');
+
+                // If it's already a root domain (e.g., "example.com" has 2 parts)
+                if (parts.length <= 2) {
+                    return `.${hostname}`;
+                }
+
+                // Return root domain with leading dot (e.g., ".mass.gov" from "www.mass.gov")
+                return `.${parts.slice(-2).join('.')}`;
+            }
+
+            // Clear all Google Translate cookies completely
+            function clearAllGoogleTranslateCookies() {
+                const cookieDomain = getCookieDomain();
+                const hostname = window.location.hostname;
+
+                // Get all current googtrans cookies
+                const cookies = document.cookie.split(';');
+                const googtransCookies = cookies.filter(c => c.trim().startsWith('googtrans='));
+
+                // Clear each one we find
+                googtransCookies.forEach(() => {
+                    // Clear without domain
+                    document.cookie = `googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+
+                    // Clear with current hostname
+                    document.cookie = `googtrans=; path=/; domain=${hostname}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+
+                    // Clear with root domain
+                    if (cookieDomain) {
+                        document.cookie = `googtrans=; path=/; domain=${cookieDomain}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+                    }
+                });
+            }
+
+            // Monitor and clean up duplicate cookies created by Google Translate
+            function monitorAndCleanCookies() {
+                const cookieDomain = getCookieDomain();
+                const hostname = window.location.hostname;
+
+                setInterval(() => {
+                    const cookies = document.cookie.split(';');
+                    let googtransCount = 0;
+                    let rootDomainCookieValue = null;
+
+                    // Count googtrans cookies and find the root domain one
+                    cookies.forEach(cookie => {
+                        const [name, value] = cookie.trim().split('=');
+                        if (name === 'googtrans' && value) {
+                            googtransCount++;
+                            // This is the one we want to keep
+                            if (googtransCount === 1) {
+                                rootDomainCookieValue = value;
+                            }
+                        }
+                    });
+
+                    // If we have more than one googtrans cookie, clean them up
+                    if (googtransCount > 1 && rootDomainCookieValue) {
+                        // Clear all cookies
+                        document.cookie = `googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+                        document.cookie = `googtrans=; path=/; domain=${hostname}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+                        if (cookieDomain) {
+                            document.cookie = `googtrans=; path=/; domain=${cookieDomain}; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+                        }
+
+                        // Re-set the single cookie we want
+                        setTimeout(() => {
+                            if (cookieDomain) {
+                                document.cookie = `googtrans=${rootDomainCookieValue}; path=/; domain=${cookieDomain}; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+                            } else {
+                                document.cookie = `googtrans=${rootDomainCookieValue}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+                            }
+                        }, 50);
+                    }
+                }, 500); // Check every 500ms
+            }
+
+            // Start monitoring for duplicate cookies
+            monitorAndCleanCookies();
+
+            // Initialize current language from cookie or HTML lang attribute
+            function getCurrentLanguage() {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    const [name, value] = cookie.trim().split('=');
+                    if (name === 'googtrans') {
+                        // Cookie format is /SOURCE/TARGET (e.g., /en/es or /de/fr)
+                        const match = value.match(/\/[^\/]+\/(.+)/);
+                        if (match && match[1]) {
+                            return match[1];
+                        }
+                    }
+                }
+
+                // If no translation cookie, return the original page language
+                return originalPageLang;
+            }
+
+            // Set the select to show current language on page load (only once)
+            let currentLanguageCode = getCurrentLanguage();
+            let hasInitialized = false;
+
+            function initializeLanguageSelect() {
+                if (!hasInitialized) {
+                    // Verify the language code exists in our dropdown
+                    const optionExists = Array.from(languageSelect.options).some(opt => opt.value === currentLanguageCode);
+
+                    if (!optionExists) {
+                        console.warn(`Language code "${currentLanguageCode}" not found in dropdown. Defaulting to original page language.`);
+                        currentLanguageCode = getOriginalPageLanguage();
+                    }
+
+                    // Set the select value to current language
+                    languageSelect.value = currentLanguageCode;
+
+                    // Also set the "selected" attribute on the option for semantic correctness
+                    const options = languageSelect.options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].value === currentLanguageCode) {
+                            options[i].setAttribute('selected', 'selected');
+                        } else {
+                            options[i].removeAttribute('selected');
+                        }
+                    }
+
+                    // Restore the correct lang attribute (Google Translate may have changed it to "auto")
+                    document.documentElement.lang = currentLanguageCode;
+                    hasInitialized = true;
+                }
+            }
+
+            // Initialize immediately
+            initializeLanguageSelect();
+
+            // Force correct lang attribute after a short delay (in case Google Translate interferes)
+            setTimeout(() => {
+                if (document.documentElement.lang === 'auto') {
+                    document.documentElement.lang = currentLanguageCode;
+                    console.log(`Corrected lang attribute from "auto" to "${currentLanguageCode}"`);
+                }
+            }, 100);
+
+            // Also initialize after DOM is fully ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeLanguageSelect);
+            }
+
+            // Apply button click handler
+            applyButton.addEventListener('click', function() {
+                const selectedLanguage = languageSelect.value;
+                const selectedText = languageSelect.options[languageSelect.selectedIndex].text;
+
+                // Check if already on this language
+                if (selectedLanguage === currentLanguageCode) {
+                    statusMessage.textContent = `Already displaying in ${selectedText}`;
+                    return;
+                }
+
+                currentLanguageCode = selectedLanguage;
+
+                // Special handling: if selecting the original page language, treat it as a reset
+                if (selectedLanguage === originalPageLang) {
+                    resetToOriginalLanguage();
+                } else {
+                    triggerGoogleTranslate(selectedLanguage, selectedText);
+                }
+            });
+
+            // Reset button click handler
+            resetButton.addEventListener('click', function() {
+                resetToOriginalLanguage();
+            });
+
+            // Reset to original language function
+            function resetToOriginalLanguage() {
+                // Update HTML lang attribute IMMEDIATELY
+                document.documentElement.lang = originalPageLang;
+
+                // Announce to screen reader immediately
+                const originalLangName = languageSelect.querySelector(`option[value="${originalPageLang}"]`)?.text || originalPageLang;
+                statusMessage.textContent = `Resetting to original language: ${originalLangName}`;
+
+                // Disable buttons during reset
+                applyButton.disabled = true;
+                resetButton.disabled = true;
+                resetButton.textContent = 'Resetting...';
+
+                // Clear ALL Google Translate cookies
+                clearAllGoogleTranslateCookies();
+
+                // Wait for cookies to clear, then reload
+                setTimeout(() => {
+                    window.location.reload();
+                }, 250);
+            }
+
+            // Allow Enter key on select to trigger apply
+            languageSelect.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    applyButton.click();
+                }
+            });
+
+            // Trigger Google Translate programmatically
+            function triggerGoogleTranslate(langCode, langName) {
+                // Update HTML lang attribute IMMEDIATELY for screen readers
+                document.documentElement.lang = langCode;
+
+                // Announce to screen reader immediately
+                statusMessage.textContent = `Changing page language to ${langName}`;
+
+                // Disable button during translation
+                applyButton.disabled = true;
+                applyButton.textContent = 'Translating...';
+
+                // Set translation cookie with proper source language
+                const cookieDomain = getCookieDomain();
+                const cookieValue = `/${originalPageLang}/${langCode}`;
+                const maxAge = 60 * 60 * 24 * 365; // 1 year in seconds
+
+                // Clear old cookies first
+                clearAllGoogleTranslateCookies();
+
+                // Wait for cookies to clear, then set new cookie
+                setTimeout(() => {
+                    if (cookieDomain) {
+                        document.cookie = `googtrans=${cookieValue}; path=/; domain=${cookieDomain}; max-age=${maxAge}; SameSite=Lax`;
+                    } else {
+                        document.cookie = `googtrans=${cookieValue}; path=/; max-age=${maxAge}; SameSite=Lax`;
+                    }
+
+                    // Wait for cookie to be set, then reload
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 100);
+                }, 150);
+            }
+        })();
     </script>
 
     <js-bottom-placeholder token="{{ placeholder_token|raw }}">
