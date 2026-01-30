@@ -279,7 +279,7 @@ function mass_fields_entity_base_field_info(EntityTypeInterface $entity_type) {
     ->setTranslatable(FALSE)
     ->setDisplayConfigurable('form', TRUE)
     ->setDisplayOptions('form', $options)
-    ->setDescription('If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
+    ->setDescription('Content can only be hidden from search if this option is selected <strong>before</strong> the content is first published and if no links point to it. If you later uncheck this option, it may take several days for the page to appear in search results. Selecting this option after the content has already been published will not work.');
   $nosnippet = BaseFieldDefinition::create('boolean')
     ->setLabel(t('Omit snippet in search results'))
     ->setDefaultValue(FALSE)

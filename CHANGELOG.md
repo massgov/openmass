@@ -1,5 +1,60 @@
 
 
+## [0.464.0] - January 27, 2026
+
+### Changed
+  - DP-39285: Update all icons on the site to use the new icon set with updated sizes and weight options.
+  - DP-44560: Updated Mayflower artifacts to dev-patternlab/DP-44560-A11Y-dont-put-link-to-person-if-they-have-no-page branch for testing purposes.
+  
+### Added
+  - DP-42935: Pass data on referring pages to form pages.
+  
+### Fixed
+  - DP-44414: Fix duplicate HTML IDs on featured content cards in campaign features paragraphs. Each card now uses its own unique paragraph entity ID instead of sharing the parent paragraph's ID or having empty IDs. Added null checks and refactored small card processing logic.
+  
+
+
+## [0.463.0] - January 20, 2026
+
+### Changed
+  - DP-43066: Updates to Drupal UI (API Service Cards) to support Agency Profile Collection (Part 2).
+  - DP-44436: empty span tags that have spaces are no longer removed from rich text fields. This prevents some user reported issues.
+  - DP-44496: empty span tags that have spaces are no longer removed from rich text fields on rules of court. This prevents some user reported issues.
+  
+### Added
+  - DP-44028: Added a possibility to have multiple CSV columns as URL.
+  
+
+
+## [0.462.0] - January 13, 2026
+
+### Added
+  - DP-44410: Add filter for collection to the advanced search for pages view and bulk edit labels view, added collections metadata to pages
+  - DP-43938: Author report for editors.
+  
+### Changed
+  - DP-42825: Change MySQL version in Tugboat and CircleCI to match Acquia db version
+  - DP-42778: Disable Start date field for documents by hiding it from the document form display, removing it from all views, and marking it as deprecated.
+  
+### Fixed
+  - DP-44226: Added several missing content types to trash and my content views.
+  - DP-43883: Refactored the Close message handler to not overlap with tabs and work also for admin theme.
+
+
+
+## [0.461.0] - December 16, 2025
+
+### Security
+  - DP-43782: Drupal AI module update.
+  
+### Changed
+  - DP-43955: Add header help text to a11y report.
+  
+### Added
+  - DP-43985: Help text for exclude from search and sitewide alert config page.
+  
+
+
 ## [0.460.0] - December 9, 2025
 
 ### Added
