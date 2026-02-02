@@ -107,3 +107,31 @@ table#field-org-ref-locations-values tr.draggable td.delta-order {
 .paragraphs-add-wrapper input[type=submit] {
   margin-bottom: 1rem;
 }
+
+
+/* Start: Remove when there will be a solution for https://www.drupal.org/project/paragraphs/issues/3246140 */
+.js .paragraph-top {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: auto auto 1fr auto;
+  grid-template-columns: auto auto 1fr auto;
+}
+
+@media (min-width: 992px) {
+  .js .paragraph-top {
+    -ms-grid-columns: auto auto 1fr auto;
+    grid-template-columns: auto auto 1fr auto;
+  }
+}
+
+.js .paragraphs-convert-button {
+  margin-left: 0;
+}
+
+.paragraph-top {
+  display: grid;
+  grid-template-columns: auto auto 1fr auto;
+  grid-template-rows: auto auto;
+  align-items: baseline;
+}
+/* End: Remove when there will be a solution for https://www.drupal.org/project/paragraphs/issues/3246140 */
