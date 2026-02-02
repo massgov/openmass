@@ -8,12 +8,12 @@
 {# Set top heading level for the component. #}
 {% set level = 4 %}
 
-{% embed "@molecules/contact/contact-group.twig" with {
-  "contactGroup": {
-    "name": "Phone",
-    "icon": "phone",
-    "level": level
-  }
+{% embed '@molecules/contact/contact-group.twig' with {
+  contactGroup: {
+    name: 'Phone',
+    icon: 'phone',
+    level: level,
+  },
 } %}
   {% block groupItems %}
     {% for item in items %}

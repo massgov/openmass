@@ -5,39 +5,39 @@
  */
  #}
 
-{% include "@molecules/image-promo.twig" with {
-  'imagePromo': {
-    'title': {
-      'text': label,
-      'href': url,
-      'type': '',
+{{ include('@molecules/image-promo.twig', {
+  imagePromo: {
+    title: {
+      text: label,
+      href: url,
+      type: '',
     },
-    'tags': null,
-    'image': {
-      'src': node.field_sub_brand.entity.fileuri ? file_url(node.field_sub_brand.entity.fileuri) : '',
-      'alt': node.field_sub_brand.alt,
-      'height': '100',
-      'width': '100',
-      'href': url,
+    tags: null,
+    image: {
+      src: node.field_sub_brand.entity.fileuri ? file_url(node.field_sub_brand.entity.fileuri) : '',
+      alt: node.field_sub_brand.alt,
+      height: '100',
+      width: '100',
+      href: url,
     },
-    'description': {
-      'richText': {
-        'rteElements': [{
-          'path': '@atoms/11-text/raw-html.twig',
-          'data': {
-            'rawHtml': {
-              'content': content.field_sub_title|field_value,
+    description: {
+      richText: {
+        rteElements: [{
+          path: '@atoms/11-text/raw-html.twig',
+          data: {
+            rawHtml: {
+              content: content.field_sub_title|field_value,
             },
           },
         }],
-      }
+      },
     },
-    "link": {
-      "text": "More Information",
-      "href": url,
-      "info": "More information about " ~ node.label,
+    link: {
+      text: 'More Information',
+      href: url,
+      info: 'More information about ' ~ node.label,
     },
-  }
-} %}
+  },
+}) }}
 
 {{ content|without('field_sub_brand', 'field_sub_title') }}

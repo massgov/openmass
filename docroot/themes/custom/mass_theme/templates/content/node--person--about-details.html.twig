@@ -78,28 +78,28 @@
 {% set bio = false %}
 {% if node.field_publish_bio_page.value %}
   {% set bio = {
-    "href": url,
-    "text": "More about " ~ node.field_person_first_name.value ~ " " ~ node.field_person_last_name.value
+    href: url,
+    text: 'More about ' ~ node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value,
   } %}
 {% endif %}
 
 {# Increase heading number by 1 from the parent heading. #}
 {% set level = level + 1 %}
 
-{% embed "@organisms/by-author/person-card.twig" with {
-  "person": {
-    "name": {
-      "title": node.field_person_first_name.value ~ " " ~ node.field_person_last_name.value,
-      "level": level,
-      "color": "transparent",
-      "centered": true
+{% embed '@organisms/by-author/person-card.twig' with {
+  person: {
+    name: {
+      title: node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value,
+      level: level,
+      color: 'transparent',
+      centered: true,
     },
-    "title": {
-      "text": node.field_person_role_title.value,
-      "level": level + 1
+    title: {
+      text: node.field_person_role_title.value,
+      level: level + 1,
     },
-    "bio": bio
-  }
+    bio: bio,
+  },
 } %}
   {% block personCardImage %}
     {{ content.field_person_profile_image }}

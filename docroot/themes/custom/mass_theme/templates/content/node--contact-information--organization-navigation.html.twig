@@ -73,7 +73,7 @@
   {% set level = elements['#level'] %}
 {% endif %}
 
-{% embed "@organisms/by-template/org-nav-contact-row.twig" with {
+{% embed '@organisms/by-template/org-nav-contact-row.twig' with {
   hasManyAdditional: true,
 } %}
 
@@ -83,9 +83,9 @@
     {# If there is a location listing page for the referencing organization
     page, display the link. #}
     {% if content.location_listings_url|render is not empty %}
-      {% embed "@molecules/contact/contact-group.twig" %}
+      {% embed '@molecules/contact/contact-group.twig' %}
         {% block groupItems %}
-          {% include "@molecules/contact/contact-item.twig" with {
+          {{ include('@molecules/contact/contact-item.twig', {
             item: {
               type: 'seeAllLink',
               link: {
@@ -93,7 +93,7 @@
                 text: 'See all our locations'|t,
               },
             },
-          } %}
+          }) }}
         {% endblock %}
       {% endembed %}
     {% endif %}
@@ -105,11 +105,11 @@
 
     {# The application login links from the referencing organization page. #}
     {% if content.application_login_links|render is not empty %}
-      {% embed "@molecules/contact/contact-group.twig" with {
-        "contactGroup": {
-          "name": "Login to"|t ~ "...",
-          "icon": "login",
-          "level": level,
+      {% embed '@molecules/contact/contact-group.twig' with {
+        contactGroup: {
+          name: 'Login to'|t ~ '...',
+          icon: 'login',
+          level: level,
         },
       } %}
         {% block groupItems %}

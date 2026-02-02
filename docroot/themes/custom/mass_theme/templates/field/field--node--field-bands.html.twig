@@ -42,19 +42,19 @@
     {% for key, value in subheads %}
       {%
         set link = [{
-          'text': value,
-          'href': key,
+          text: value,
+          href: key,
         }]
       %}
       {% set links = links|merge(link) %}
     {% endfor %}
     {%
       set jumpLinks = {
-        'title': 'In this guide'|t,
-        'links': links,
+        title: 'In this guide'|t,
+        links: links,
       }
     %}
-    {% include '@organisms/by-template/jump-links.twig' %}
+    {{ include('@organisms/by-template/jump-links.twig') }}
   {% endif %}
 {# Render band #}
 {% for band in bands %}

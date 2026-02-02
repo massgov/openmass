@@ -8,14 +8,14 @@
  #}
 {%
   set sectionLinks = {
-    'title': {
-      'href': url,
-      'text': label|field_value
+    title: {
+      href: url,
+      text: label|field_value,
     },
   }
 %}
 {% extends 'node.html.twig' %}
 
 {% block pageContent %}
-  {% include "@molecules/section-links.twig" with sectionLinks %}
+  {{ include('@molecules/section-links.twig', sectionLinks) }}
 {% endblock %}

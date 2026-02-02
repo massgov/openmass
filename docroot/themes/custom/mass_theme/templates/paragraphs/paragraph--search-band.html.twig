@@ -39,29 +39,29 @@
 #}
 {%
 set searchBanner = {
-  'bgWide': search1600x400_image_url,
-  'bgNarrow': search800x400_image_url,
-  'imageName': content.field_name|field_value,
-  'imageAuthor': content.field_caption|field_value,
-  'form': {
-    'path': '@custom_includes/molecules-banner-search.html.twig',
-    'content': {
-      searchFormId: 'cse-search-band-search-form'
-    }
-  },
-  'title': content.field_title|field_value ? content.field_title|field_value : title,
-  'intro': content.field_description|field_value ? content.field_description|field_value : intro,
-  'linkList': {
-    'stacked': false,
-    'hideBullets': true,
-    'compHeading': {
-      'title': content.field_link_six['#title'],
-      'color': 'yellow',
-      'id': '',
-      'centered': true
+  bgWide: search1600x400_image_url,
+  bgNarrow: search800x400_image_url,
+  imageName: content.field_name|field_value,
+  imageAuthor: content.field_caption|field_value,
+  form: {
+    path: '@custom_includes/molecules-banner-search.html.twig',
+    content: {
+      searchFormId: 'cse-search-band-search-form',
     },
-    'links': items
-  }
+  },
+  title: content.field_title|field_value ? content.field_title|field_value : title,
+  intro: content.field_description|field_value ? content.field_description|field_value : intro,
+  linkList: {
+    stacked: false,
+    hideBullets: true,
+    compHeading: {
+      title: content.field_link_six['#title'],
+      color: 'yellow',
+      id: '',
+      centered: true,
+    },
+    links: items,
+  },
 }
 %}
-{% include '@organisms/by-author/search-banner.twig' %}
+{{ include('@organisms/by-author/search-banner.twig') }}

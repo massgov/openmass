@@ -67,24 +67,24 @@
  */
 #}
 {% set headingLevel = 3 %}
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "level": headingLevel,
-    "emphasizedText": "",
-    "tags": "",
-    "contents": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph": {
-          "text": node.field_advisory_listing_desc.value ?: ""
-        }
-      }
-    }]
-  }
-} %}
+    level: headingLevel,
+    emphasizedText: '',
+    tags: '',
+    contents: [{
+      path: '@atoms/11-text/paragraph.twig',
+      data: {
+        paragraph: {
+          text: node.field_advisory_listing_desc.value ?: '',
+        },
+      },
+    }],
+  },
+}) }}

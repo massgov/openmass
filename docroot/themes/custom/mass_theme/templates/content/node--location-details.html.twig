@@ -23,17 +23,17 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -42,8 +42,8 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block pageContent %}
@@ -55,50 +55,50 @@
         {% set video = pageContent[i]['video'] %}
         {# Determine parent heading level: video is in a section, so parent is section heading (H2), video should be H3 #}
         {% set parent_heading_level = 2 %}
-        {% set video = video|merge({"headingLevel": parent_heading_level + 1}) %}
-        {% include "@atoms/09-media/video.twig" %}
+        {% set video = video|merge({headingLevel: parent_heading_level + 1}) %}
+        {{ include('@atoms/09-media/video.twig') }}
       {% endif %}
       {% if pageContent[i]['iframe'] %}
         {% set iframe = pageContent[i]['iframe'] %}
-        {% include "@atoms/09-media/iframe.twig" %}
+        {{ include('@atoms/09-media/iframe.twig') }}
       {% endif %}
       {% if pageContent[i]['title'] %}
         <div class="ma__rich-text">
-          {% include "@atoms/04-headings/comp-heading.twig" with {
-            'compHeading': pageContent[i]['title']['compHeading']
-          } %}
+          {{ include('@atoms/04-headings/comp-heading.twig', {
+            compHeading: pageContent[i]['title']['compHeading'],
+          }) }}
         </div>
       {% endif %}
       {% if pageContent[i]['richText'] %}
         {% set richText = pageContent[i]['richText'] %}
-        {% include "@organisms/by-author/rich-text.twig" %}
+        {{ include('@organisms/by-author/rich-text.twig') }}
       {% endif %}
       {% if pageContent[i]['keyActions'] %}
         {% set keyActions = pageContent[i]['keyActions'] %}
-        {% set keyActions = keyActions|merge({'compHeading': {
-              'title': keyActions.compHeading.title,
-              'titleContext': keyActions.compHeading.titleContext,
-              'level': level,
-              'id': keyActions.compHeading.id}}) %}
-        {% include "@organisms/by-author/key-actions.twig" %}
+        {% set keyActions = keyActions|merge({compHeading: {
+              title: keyActions.compHeading.title,
+              titleContext: keyActions.compHeading.titleContext,
+              level: level,
+              id: keyActions.compHeading.id}}) %}
+        {{ include('@organisms/by-author/key-actions.twig') }}
       {% endif %}
       {% if pageContent[i]['formDownloads'] %}
         {% set formDownloads = pageContent[i]['formDownloads'] %}
-        {% set formDownloads = formDownloads|merge({'compHeading': {
-              'title': formDownloads.compHeading.title,
-              'titleContext': formDownloads.compHeading.titleContext,
-              'level': level,
-              'id': formDownloads.compHeading.id}}) %}
-        {% include "@organisms/by-author/form-downloads.twig" %}
+        {% set formDownloads = formDownloads|merge({compHeading: {
+              title: formDownloads.compHeading.title,
+              titleContext: formDownloads.compHeading.titleContext,
+              level: level,
+              id: formDownloads.compHeading.id}}) %}
+        {{ include('@organisms/by-author/form-downloads.twig') }}
       {% endif %}
       {% if pageContent[i]['actionMap'] %}
         {% set googleMap = pageContent[i]['actionMap'] %}
-        {% set googleMap = googleMap|merge({'compHeading': {
-              'title': googleMap.compHeading.title,
-              'titleContext': googleMap.compHeading.titleContext,
-              'level': level,
-              'id': googleMap.compHeading.id}}) %}
-        {% include "@molecules/google-map.twig" %}
+        {% set googleMap = googleMap|merge({compHeading: {
+              title: googleMap.compHeading.title,
+              titleContext: googleMap.compHeading.titleContext,
+              level: level,
+              id: googleMap.compHeading.id}}) %}
+        {{ include('@molecules/google-map.twig') }}
         {{ attach_library('mass_map/google-map-api') }}
       {% endif %}
     {% endfor %}
@@ -111,12 +111,12 @@
   {% if sidebar.linkList %}
     {% set linkList = sidebar.linkList %}
     {% set compHeading = linkList.compHeading|merge({
-      'level': level,
-      'titleContext': linkList.compHeading.titleContext,
-      'sidebar': true
+      level: level,
+      titleContext: linkList.compHeading.titleContext,
+      sidebar: true,
      }) %}
-    {% set linkList = linkList|merge({'compHeading': compHeading}) %}
-    {% include "@organisms/by-author/link-list.twig" %}
+    {% set linkList = linkList|merge({compHeading: compHeading}) %}
+    {{ include('@organisms/by-author/link-list.twig') }}
   {% endif %}
 {% endblock %}
 

@@ -37,18 +37,18 @@
  */
 #}
 
-{% embed "@organisms/contact/contact-list.twig" with {
-  "contactList": {
-    "viewSpecific": false,
-    "compHeading": {
-      "title": "Contact",
-      "sub": false,
-      "color": "",
-      "id": "contact",
-      "centered": "",
-      "titleContext": ""
-    }
-  }
+{% embed '@organisms/contact/contact-list.twig' with {
+  contactList: {
+    viewSpecific: false,
+    compHeading: {
+      title: 'Contact',
+      sub: false,
+      color: '',
+      id: 'contact',
+      centered: '',
+      titleContext: '',
+    },
+  },
 } %}
   {% block contactListContacts %}
     {% for item in items %}

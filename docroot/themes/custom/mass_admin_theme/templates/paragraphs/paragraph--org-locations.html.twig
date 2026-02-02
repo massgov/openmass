@@ -46,15 +46,15 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
       {% for stackedRowSection in stackedRowSections %}
-        {% set stackedRowSection = stackedRowSection|merge({'level': level}) %}
-        {% include "@organisms/by-author/stacked-row-section.twig" %}
+        {% set stackedRowSection = stackedRowSection|merge({level: level}) %}
+        {{ include('@organisms/by-author/stacked-row-section.twig') }}
         {# Add Google Maps API only when a map is included in the page. #}
         {% if stackedRowSection.pageContent[0].path == '@organisms/by-author/mapped-locations.twig' %}
           {{ attach_library('mass_map/google-map-api') }}

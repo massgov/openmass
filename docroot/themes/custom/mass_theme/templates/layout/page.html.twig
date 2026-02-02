@@ -48,17 +48,17 @@
  * @see html.html.twig
  */
 #}
-{% include "@molecules/brand-banner.twig" with {
-  "brandBanner": {
-    "bgTheme": "dark",
-    "bgColor": "c-primary-alt",
-    "hasSeal": true
-  }
-} %}
+{{ include('@molecules/brand-banner.twig', {
+  brandBanner: {
+    bgTheme: 'dark',
+    bgColor: 'c-primary-alt',
+    hasSeal: true,
+  },
+}) }}
 {{ page.emergency_alert }}
 <div class="alert-overlay"></div>
 {{ page.flag_links }}
-{% set header_class = "" %}
+{% set header_class = '' %}
 {% if hide_main_nav %}
   {% set header_class = ' ma__header--hidden' %}
 {% endif %}
@@ -74,17 +74,17 @@
 
     <div class="ma__header__container">
       <div class="ma__header__hamburger__logo">
-        {% include "@atoms/09-media/site-logo.twig" with {
+        {{ include('@atoms/09-media/site-logo.twig', {
           title: microsite_info.title,
           url: microsite_info.url,
           altTitle: microsite_info.altTitle,
           hideImage: microsite_info.hideImage,
-          sealImage,
-        } only %}
+          sealImage: sealImage,
+        }, false) }}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
-          {% include "@molecules/header-search.twig" %}
+          {{ include('@molecules/header-search.twig') }}
         </div>
       {% endif %}
     </div>
@@ -104,17 +104,17 @@
 
     <div class="ma__header__container">
       <div class="ma__header__hamburger__logo">
-        {% include "@atoms/09-media/site-logo.twig" with {
+        {{ include('@atoms/09-media/site-logo.twig', {
           title: microsite_info.title,
           url: microsite_info.url,
           altTitle: microsite_info.altTitle,
           hideImage: microsite_info.hideImage,
-          sealImage,
-        } only %}
+          sealImage: sealImage,
+        }, false) }}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
-          {% include "@molecules/header-search.twig" %}
+          {{ include('@molecules/header-search.twig') }}
         </div>
       {% endif %}
     </div>
@@ -148,5 +148,5 @@
   {% endblock %}
 </main>
 {% if page.footer or page.footer_navigation %}
-  {% include directory ~ "/templates/includes/organisms-footer.html.twig" %}
+  {{ include(directory ~ '/templates/includes/organisms-footer.html.twig') }}
 {% endif %}

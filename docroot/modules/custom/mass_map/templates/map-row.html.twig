@@ -6,19 +6,19 @@
 #}
 {%
 set mappedLocations = {
-  'compHeading': {
-    'title': 'Locations',
-    'sub': '',
-    'color': '',
-    'id': '',
-    'centered': ''
+  compHeading: {
+    title: 'Locations',
+    sub: '',
+    color: '',
+    id: '',
+    centered: '',
   },
-  'link': {
-    'href': '#',
-    'text': 'Location Details',
-    'chevron': 'true'
+  link: {
+    href: '#',
+    text: 'Location Details',
+    chevron: 'true',
   },
-  'googleMap': locationListing['googleMap']
+  googleMap: locationListing['googleMap'],
 }
 %}
 <section class='ma__mapped-locations'>
@@ -26,16 +26,16 @@ set mappedLocations = {
     <div class='ma__mapped-locations__header'>
       {% if mappedLocations.compHeading %}
         {% set compHeading = mappedLocations.compHeading %}
-        {% include '@atoms/04-headings/comp-heading.twig' %}
+        {{ include('@atoms/04-headings/comp-heading.twig') }}
       {% endif %}
       {% if mappedLocations.link %}
         {% set link = mappedLocations.link %}
-        {% include '@atoms/11-text/link.twig' %}
+        {{ include('@atoms/11-text/link.twig') }}
       {% endif %}
     </div>
   {% endif %}
   <div class='ma__mapped-locations__map'>
     {% set googleMap = mappedLocations.googleMap %}
-    {% include '@molecules/google-map.twig' %}
+    {{ include('@molecules/google-map.twig') }}
   </div>
 </section>

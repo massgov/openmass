@@ -23,18 +23,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -46,13 +46,13 @@
   {{ content.referencing_binders }}
 
   {% if translationLinks %}
-    {% include "@molecules/inline-links-language.twig" with {
-      "inlineLinks": translationLinks
-    } %}
+    {{ include('@molecules/inline-links-language.twig', {
+      inlineLinks: translationLinks,
+    }) }}
   {% endif %}
 
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block main %}
@@ -62,8 +62,8 @@
     <div class="page-content">
     {% block pageContent %}
       {% if formRequirements %}
-        {% set formRequirements = formRequirements|merge({'level': level}) %}
-        {% include "@organisms/by-author/form-requirements.twig" %}
+        {% set formRequirements = formRequirements|merge({level: level}) %}
+        {{ include('@organisms/by-author/form-requirements.twig') }}
       {% endif %}
       {% if node.getPlatform().getString() == constant('Drupal\\mass_content\\Entity\\Bundle\\node\\FormPageBundle::PLATFORM_FORMSTACK') %}
         <div aria-live="polite" aria-relevant="all" class="form_embed feedback">
@@ -92,24 +92,24 @@
         {# Only attach iframe.js when we intend to rewrite/apply params. #}
         {% if include_querystring %}
           {{ attach_library('mass_context_storage/iframe') }}
-          {% include "@atoms/09-media/iframe.twig" with {
-            "iframe": {
-              "customClass": 'js-iframe-resizer js-gf-iframe',
-              "src": '',
-              "data_src": gf_url,
-              "height": 'auto',
-              "title": "Embedded form: " ~ node.label,
-            }
-          } %}
+          {{ include('@atoms/09-media/iframe.twig', {
+            iframe: {
+              customClass: 'js-iframe-resizer js-gf-iframe',
+              src: '',
+              data_src: gf_url,
+              height: 'auto',
+              title: 'Embedded form: ' ~ node.label,
+            },
+          }) }}
         {% else %}
-          {% include "@atoms/09-media/iframe.twig" with {
-            "iframe": {
-              "customClass": 'js-iframe-resizer js-gf-iframe',
-              "src": gf_url,
-              "height": 'auto',
-              "title": "Embedded form: " ~ node.label,
-            }
-          } %}
+          {{ include('@atoms/09-media/iframe.twig', {
+            iframe: {
+              customClass: 'js-iframe-resizer js-gf-iframe',
+              src: gf_url,
+              height: 'auto',
+              title: 'Embedded form: ' ~ node.label,
+            },
+          }) }}
         {% endif %}
       {% endif %}
     {% endblock %}
@@ -117,15 +117,15 @@
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/contact/contact-list.twig" %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({level: level}) %}
+        {% set contactList = contactList|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/contact/contact-list.twig') }}
       {% endif %}
       {% if sideContent.mediaContact %}
         {% set contactList = sideContent.mediaContact %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/contact/contact-list.twig" %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({level: level}) %}
+        {% set contactList = contactList|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/contact/contact-list.twig') }}
       {% endif %}
     </aside>
   </div>

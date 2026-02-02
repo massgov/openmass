@@ -7,17 +7,17 @@
 
 {%
   set narrowTemplate = {
-  'side': 'left',
-  'color': 'green',
+  side: 'left',
+  color: 'green',
   }
 %}
 
 {% if narrowTemplate.side %}
-  {% set side = "ma__narrow-template--" ~ narrowTemplate.side %}
+  {% set side = 'ma__narrow-template--' ~ narrowTemplate.side %}
 {% endif %}
 
 {% if narrowTemplate.color %}
-  {% set color = "ma__narrow-template--" ~ narrowTemplate.color %}
+  {% set color = 'ma__narrow-template--' ~ narrowTemplate.color %}
 {% endif %}
 
 <main id="main-content" class="ma__narrow-template {{ side }} {{ color }}" tabindex="-1">
@@ -33,20 +33,20 @@
       {% block narrowContent %}
         {%
           set transitionPage = {
-            'icon': '@atoms/05-icons/svg-crossroads.twig',
-            'message': content.field_message|field_value,
-            'href': 'http://www.mass.gov',
-            'submit': 'Continue',
-            'back': 'Back',
-            'inputCheckbox': {
-              'value': 'hide-transition-page',
-              'id': 'hide-transition-page',
-              'label': content.field_interstitial_checkbox_msg|field_value,
-              'checked': '',
-            }
+            icon: '@atoms/05-icons/svg-crossroads.twig',
+            message: content.field_message|field_value,
+            href: 'http://www.mass.gov',
+            submit: 'Continue',
+            back: 'Back',
+            inputCheckbox: {
+              value: 'hide-transition-page',
+              id: 'hide-transition-page',
+              label: content.field_interstitial_checkbox_msg|field_value,
+              checked: '',
+            },
           }
         %}
-        {% include "@organisms/by-template/transition-page.twig" with {'transitionPage': transitionPage} %}
+        {{ include('@organisms/by-template/transition-page.twig', {transitionPage: transitionPage}) }}
         {{ attach_library('mass_theme/interstitial-page') }}
       {% endblock %}
     </div>

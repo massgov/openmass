@@ -40,7 +40,7 @@
   set statsCallout = {
   pull: content.field_alignment|field_value|render.__toString(),
   stat: content.field_stat|field_value|render.__toString(),
-  content: content.field_description|field_value|render.__toString()
+  content: content.field_description|field_value|render.__toString(),
 }
 %}
-{% include "@molecules/callout-stats.twig" with statsCallout %}
+{{ include('@molecules/callout-stats.twig', statsCallout) }}

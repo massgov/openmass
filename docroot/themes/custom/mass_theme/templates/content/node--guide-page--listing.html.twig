@@ -78,8 +78,8 @@
   {% set eyebrow = {} %}
   {% if data_listing_icon is defined and data_listing_icon_label is defined %}
     {% set eyebrow = {
-      "icon": data_listing_icon,
-      "label": data_listing_icon_label
+      icon: data_listing_icon,
+      label: data_listing_icon_label,
     } %}
   {% endif %}
   {% set organizations = [] %}
@@ -97,48 +97,48 @@
     {% endfor %}
   {% endif %}
 
-  {% include "@molecules/general-teaser.twig" with {
-    "generalTeaser": {
-      "eyebrow": eyebrow,
-      "title": {
-        "href": url,
-        "text": label,
-        "info": "",
-        "property": ""
+  {{ include('@molecules/general-teaser.twig', {
+    generalTeaser: {
+      eyebrow: eyebrow,
+      title: {
+        href: url,
+        text: label,
+        info: '',
+        property: '',
       },
-      "level": headingLevel,
-      "emphasizedText": organizations,
-      "tags": formats,
-      "contents": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": node.field_guide_page_lede.value ?: ''
-          }
-        }
-      }]
-    }
-  } %}
+      level: headingLevel,
+      emphasizedText: organizations,
+      tags: formats,
+      contents: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: node.field_guide_page_lede.value ?: '',
+          },
+        },
+      }],
+    },
+  }) }}
 {% else %}
-  {% include "@molecules/general-teaser.twig" with {
-    "generalTeaser": {
-      "title": {
-        "href": url,
-        "text": label,
-        "info": "",
-        "property": ""
+  {{ include('@molecules/general-teaser.twig', {
+    generalTeaser: {
+      title: {
+        href: url,
+        text: label,
+        info: '',
+        property: '',
       },
-      "level": headingLevel,
-      "emphasizedText": "",
-      "tags": "",
-      "contents": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": node.field_guide_page_lede.value ?: ""
-          }
-        }
-      }]
-    }
-  } %}
+      level: headingLevel,
+      emphasizedText: '',
+      tags: '',
+      contents: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: node.field_guide_page_lede.value ?: '',
+          },
+        },
+      }],
+    },
+  }) }}
 {% endif %}

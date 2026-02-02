@@ -68,15 +68,15 @@
 #}
 {%
 set decorativeLink = {
-  'type': link_type,
-  'href': link_url,
-  'text': link_title
+  type: link_type,
+  href: link_url,
+  text: link_title,
 }
 %}
 <li class="ma__top-actions__item">
   <div class="ma__top-actions__link">
     <div class="ma__callout-link js-clickable ">
-      {% include "@atoms/decorative-link.twig" with decorativeLink %}
+      {{ include('@atoms/decorative-link.twig', decorativeLink) }}
     </div>
   </div>
 </li>

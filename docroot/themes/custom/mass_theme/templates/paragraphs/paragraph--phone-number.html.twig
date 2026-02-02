@@ -39,21 +39,21 @@
  */
 #}
 {% set number = paragraph.field_phone.value %}
-{% set number_formated = '+1' ~ number|replace({'-': "", '+': "", ' ': "", '(': "", ')': ""}) %}
+{% set number_formated = '+1' ~ number|replace({'-': '', '+': '', ' ': '', '(': '', ')': ''}) %}
 {% set details = false %}
 {% if paragraph.field_caption is not empty %}
   {% set details = content.field_caption %}
 {% endif %}
-{% include "@molecules/contact/contact-item.twig" with {
-  "item": {
-    "type": "phone",
-    "label": paragraph.field_label.value,
-    "address": "",
-    "link": {
-      "href": number_formated,
-      "info": "",
-      "text": number
+{{ include('@molecules/contact/contact-item.twig', {
+  item: {
+    type: 'phone',
+    label: paragraph.field_label.value,
+    address: '',
+    link: {
+      href: number_formated,
+      info: '',
+      text: number,
     },
-    "details": details
-  }
-} %}
+    details: details,
+  },
+}) }}

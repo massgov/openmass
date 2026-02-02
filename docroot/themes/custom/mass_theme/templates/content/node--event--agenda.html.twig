@@ -19,18 +19,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -40,25 +40,25 @@
     {% endblock %}
   {% endembed %}
   {# Update header to only print the properties needed for Agenda page, eg title and time of event. #}
-  {% set pageHeader = pageHeader|merge({'title': "Agenda for " ~ (pageHeader.title)}) %}
-  {% set pageHeader = pageHeader|merge({'category': ""}) %}
-  {% set pageHeader = pageHeader|merge({'optionalContents': (pageHeader.optionalContents|slice(0, 1))}) %}
-  {% set pageHeader = pageHeader|merge({'divider': false}) %}
+  {% set pageHeader = pageHeader|merge({title: 'Agenda for ' ~ (pageHeader.title)}) %}
+  {% set pageHeader = pageHeader|merge({category: ''}) %}
+  {% set pageHeader = pageHeader|merge({optionalContents: (pageHeader.optionalContents|slice(0, 1))}) %}
+  {% set pageHeader = pageHeader|merge({divider: false}) %}
 
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 
 {% endblock %}
 
 {% block pageContent %}
   {% if sideContent.contactList %}
-    {% set contactList = sideContent.contactList|merge({'compHeading': sideContent.contactList.sidebarHeading, 'sidebarHeading': null}) %}
-    {% include "@organisms/contact/contact-list.twig" %}
+    {% set contactList = sideContent.contactList|merge({compHeading: sideContent.contactList.sidebarHeading, sidebarHeading: null}) %}
+    {{ include('@organisms/contact/contact-list.twig') }}
   {% endif %}
 
   {% if sideContent.mediaContact %}
-    {% set contactList = sideContent.mediaContact|merge({'compHeading': sideContent.mediaContact.sidebarHeading, 'sidebarHeading': null}) %}
-    {% include "@organisms/contact/contact-list.twig" %}
+    {% set contactList = sideContent.mediaContact|merge({compHeading: sideContent.mediaContact.sidebarHeading, sidebarHeading: null}) %}
+    {{ include('@organisms/contact/contact-list.twig') }}
   {% endif %}
 
   {{ content.field_event_meeting_agenda_sect }}
@@ -69,11 +69,11 @@
 {% block sidebarContent %}
   {% if sideContent.contactList %}
     {% set contactList = sideContent.contactList %}
-    {% include "@organisms/contact/contact-list.twig" %}
+    {{ include('@organisms/contact/contact-list.twig') }}
   {% endif %}
   {% if sideContent.mediaContact %}
     {% set contactList = sideContent.mediaContact %}
-    {% include "@organisms/contact/contact-list.twig" %}
+    {{ include('@organisms/contact/contact-list.twig') }}
   {% endif %}
 
   {# Render only the contactUs section in the optionalContents. #}
@@ -83,27 +83,27 @@
       {% set date = pageHeader.optionalContents[0].data.eventTeaser.date.startDate %}
       {% set location = render_var(optionSection.data.contactUs.groups[0].items[0].value) %}
       {% set sideContentEventListing = {
-        "sidebarHeading": {
-        "title": "Related Event"
+        sidebarHeading: {
+        title: 'Related Event',
         },
-        "events": [{
-          "title": {
-            "href": render_var(url('<current>')),
-            "text": node.label,
-            "info": "",
-            "property": ""
+        events: [{
+          title: {
+            href: render_var(url('<current>')),
+            text: node.label,
+            info: '',
+            property: '',
           },
-          "location": location,
-          "date": {
-            "summary": date
+          location: location,
+          date: {
+            summary: date,
           },
-          "time": null,
-          "description": content.field_event_lede|field_value
+          time: null,
+          description: content.field_event_lede|field_value,
         }],
-        "more": null
+        more: null,
       } %}
       {% set eventListing = sideContentEventListing %}
-      {% include "@organisms/by-author/event-listing.twig" %}
+      {{ include('@organisms/by-author/event-listing.twig') }}
     {% endif %}
   {% endfor %}
 
@@ -112,20 +112,20 @@
     {% set minutes_url = render_var(url('<current>')) ~ '/minutes' %}
 
     {% set sideContentRelated = {
-      'sidebarHeading': {
-        'title': "Related",
+      sidebarHeading: {
+        title: 'Related',
       },
-      'stacked': true,
-      'links': [
+      stacked: true,
+      links: [
         {
-        "href": minutes_url,
-        "text": node.label ~ " Meeting Minutes",
-        "info": "",
-        "property": ""
-        }
-      ]
+        href: minutes_url,
+        text: node.label ~ ' Meeting Minutes',
+        info: '',
+        property: '',
+        },
+      ],
     } %}
     {% set linkList = sideContentRelated %}
-    {% include "@organisms/by-author/link-list.twig" %}
+    {{ include('@organisms/by-author/link-list.twig') }}
   {% endif %}
 {% endblock %}

@@ -42,7 +42,7 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
@@ -51,7 +51,7 @@
       <section class="ma__action-finder ma__action-finder--no-background ">
         <div class="ma__action-finder__container">
           <div class="ma__action-finder__items">
-        {% include '@organisms/by-author/callout-links.twig' %}
+        {{ include('@organisms/by-author/callout-links.twig') }}
           </div>
         </div>
       </section>

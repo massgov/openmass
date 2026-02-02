@@ -46,56 +46,56 @@
         border: none;
       }
     </style>
-    {% embed "@molecules/relationship-indicators.twig" with {
-      "relationshipIndicators": {
-        "pageTitle": node.label,
-        "primary": {
-          "label": "part of"
+    {% embed '@molecules/relationship-indicators.twig' with {
+      relationshipIndicators: {
+        pageTitle: node.label,
+        primary: {
+          label: 'part of',
         },
-        "secondary": {
-          "label": secondary ? "offered by" : ""
-        }
-      }
+        secondary: {
+          label: secondary ? 'offered by' : '',
+        },
+      },
     } %}
       {% block primaryRelationship %}
         {% for item in primary %}
-          {% include "@atoms/item-link.twig" with {
-            "itemLink": {
-              "title": item.title,
-              "href": item.href
-            }
-          } %}
+          {{ include('@atoms/item-link.twig', {
+            itemLink: {
+              title: item.title,
+              href: item.href,
+            },
+          }) }}
         {% endfor %}
       {% endblock %}
     {% endembed %}
   {% endif %}
   {# Build the pageHeader variable dynamically #}
   {% set pageHeader = {
-    "title": node.label,
-    "underline": "TRUE",
+    title: node.label,
+    underline: 'TRUE',
   } %}
 
   {# Check if 'field_display_short_description' is checked #}
   {% if node.field_display_short_description.value == '1' %}
     {% set pageHeader = pageHeader|merge({
-      "description": node.field_topic_lede.value
+      description: node.field_topic_lede.value,
     }) %}
   {% endif %}
 
   {# Include the 'page-header' template with the dynamic 'pageHeader' #}
-  {% include "@organisms/page-header/page-header.twig" with {
-    "pageHeader": pageHeader
-  } %}
+  {{ include('@organisms/page-header/page-header.twig', {
+    pageHeader: pageHeader,
+  }) }}
 {% endblock %}
 
 {% block pageContent %}
 
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
-  {% embed "@organisms/by-author/stacked-row-section.twig" with {
-    "stackedRowSection": {
-      "narrow": true
-    }
+  {% embed '@organisms/by-author/stacked-row-section.twig' with {
+    stackedRowSection: {
+      narrow: true,
+    },
   } %}
     {% block stackedRowContentOverride %}
       {% if numOfSections %}
@@ -103,7 +103,7 @@
           {% if pageContent[i]['expandableContent'] %}
 
             {% set tableOfContentsHierarchy = pageContent[i]['expandableContent']['content'] %}
-            {% include "@organisms/by-template/table-of-contents-hierarchy.twig" %}
+            {{ include('@organisms/by-template/table-of-contents-hierarchy.twig') }}
 
           {% endif %}
         {% endfor %}
@@ -117,12 +117,12 @@
   {% set related_tipics_are_visible = node.field_organizations.isEmpty != true or node.field_topic_ref_related_topics.isEmpty != true %}
   {% if related_tipics_are_visible %}
     <section class="ma__related-orgs-and-topics">
-      {% include "@atoms/04-headings/comp-heading.twig" with {
-        "compHeading": {
-          "title": "Related Information",
-          "level": level
+      {{ include('@atoms/04-headings/comp-heading.twig', {
+        compHeading: {
+          title: 'Related Information',
+          level: level,
         },
-      } %}
+      }) }}
       <div class="ma__related-orgs-and-topics__columns">
         {{ content.field_organizations }}
         {{ content.field_topic_ref_related_topics }}

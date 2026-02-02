@@ -12,30 +12,30 @@
  * @ingroup themeable
  */
 #}
-{% include "@molecules/download-link-multilang.twig" with {
-  "downloadLink": {
-    "iconSize": '',
-    "icon": content.extra_file_icon['#markup'],
-    "decorativeLink": {
-      "href": url('media_entity_download.download', {'media': elements['#media'].mid.value}),
-      "text": content.field_title|field_value,
-      "info": '',
-      "property": '',
+{{ include('@molecules/download-link-multilang.twig', {
+  downloadLink: {
+    iconSize: '',
+    icon: content.extra_file_icon['#markup'],
+    decorativeLink: {
+      href: url('media_entity_download.download', {media: elements['#media'].mid.value}),
+      text: content.field_title|field_value,
+      info: '',
+      property: '',
     },
-    "language": content.langcode[0]['#plain_text'] ?? 'English',
-    "size": content.calculated_file_size,
-    "format": content.extra_file_extension,
-    "inlineLinks": translationLinks,
-    "description": {
-      "rteElements": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": elements['#options']['manual_description'],
-          }
-        }
-      }]
-    }
-  }
-} %}
+    language: content.langcode[0]['#plain_text'] ?? 'English',
+    size: content.calculated_file_size,
+    format: content.extra_file_extension,
+    inlineLinks: translationLinks,
+    description: {
+      rteElements: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: elements['#options']['manual_description'],
+          },
+        },
+      }],
+    },
+  },
+}) }}
 {{ content|without('field_title', 'calculated_file_size', 'extra_file_extension', 'extra_file_icon', 'langcode') }}

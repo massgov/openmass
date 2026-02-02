@@ -40,12 +40,12 @@
 {# Set top heading level for the component. #}
 {% set level = 4 %}
 
-{% embed "@molecules/contact/contact-group.twig" with {
-  "contactGroup": {
-    "name": "Login to"|t ~ "...",
-    "icon": "login",
-    "level": level,
-  }
+{% embed '@molecules/contact/contact-group.twig' with {
+  contactGroup: {
+    name: 'Login to'|t ~ '...',
+    icon: 'login',
+    level: level,
+  },
 } %}
   {% block groupItems %}
     {% for item in items %}

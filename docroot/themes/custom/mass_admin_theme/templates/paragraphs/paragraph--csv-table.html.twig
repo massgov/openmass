@@ -41,7 +41,7 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
@@ -54,33 +54,33 @@
       } %}
 
       {% set figure = {
-        'align': '',
-        'wrap': FALSE,
-        'size': paragraph.field_csvtable_display_size.value,
-        'class': 'ma__csvtable',
-        'ariaLive': 'polite',
-        'caption': caption|render|striptags|trim ? caption : '',
-        'skiplink': {
-          'add': false,
-          'text': "embedded content"
+        align: '',
+        wrap: FALSE,
+        size: paragraph.field_csvtable_display_size.value,
+        class: 'ma__csvtable',
+        ariaLive: 'polite',
+        caption: caption|render|striptags|trim ? caption : '',
+        skiplink: {
+          add: false,
+          text: 'embedded content',
         },
-        'content': content.field_csv_file
+        content: content.field_csv_file,
       } %}
 
       {% set figure_title_value = paragraph.field_csvtable_title.value|render|striptags|trim %}
 
       {% if figure_title_value is not empty %}
         {% set figure_title = {
-          'title': {
-            'text': figure_title_value,
-            'visible': true,
-            'level': 3
+          title: {
+            text: figure_title_value,
+            visible: true,
+            level: 3,
           },
         } %}
         {% set figure = figure|merge(figure_title) %}
       {% endif %}
 
-      {% include "@atoms/09-media/figure.twig" with figure %}
+      {{ include('@atoms/09-media/figure.twig', figure) }}
     {% endblock %}
   </div>
 {% endblock paragraph %}

@@ -42,8 +42,8 @@
 #}
 {# Locations are still preprocessed in and are available for all types. #}
 {% for stackedRowSection in stackedRowSections %}
-  {% set stackedRowSection = stackedRowSection|merge({'level': level}) %}
-  {% include "@organisms/by-author/stacked-row-section.twig" %}
+  {% set stackedRowSection = stackedRowSection|merge({level: level}) %}
+  {{ include('@organisms/by-author/stacked-row-section.twig') }}
   {# Add Google Maps API only when a map is included in the page. #}
   {% if stackedRowSection.pageContent[0].path == '@organisms/by-author/mapped-locations.twig' %}
     {{ attach_library('mass_map/google-map-api') }}

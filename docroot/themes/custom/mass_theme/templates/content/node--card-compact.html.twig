@@ -78,18 +78,18 @@
   {% set level = elements['#level'] %}
 {% endif %}
 {# TODO: Implement 'compact' variable in the pl component. #}
-{% embed "@molecules/section-links.twig" with {
-  "sectionLinks": {
-    "id": node.id,
-    "title": {
-      "href": url,
-      "text": node.title.value,
-      "info": ""
+{% embed '@molecules/section-links.twig' with {
+  sectionLinks: {
+    id: node.id,
+    title: {
+      href: url,
+      text: node.title.value,
+      info: '',
     },
-    "level": level,
-    "description": "",
-    "compact": true
-  }
+    level: level,
+    description: '',
+    compact: true,
+  },
 } %}
 
 {% endembed %}

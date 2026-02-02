@@ -17,12 +17,12 @@
  * @ingroup themeable
  */
 #}
-{% include "@atoms/09-media/image.twig" with {
-  "image": {
-    "alt": image['#alt'],
-    "src": image['#uri'],
-    "height": "250",
-    "width": "250",
-    "shape": "circular"
-  }
-} %}
+{{ include('@atoms/09-media/image.twig', {
+  image: {
+    alt: image['#alt'],
+    src: image['#uri'],
+    height: '250',
+    width: '250',
+    shape: 'circular',
+  },
+}) }}

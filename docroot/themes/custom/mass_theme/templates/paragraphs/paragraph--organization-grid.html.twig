@@ -36,23 +36,23 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-author/image-link-list.twig" with {
-    "imageLinkList": {
-      "blocks": true,
-      "itemPluralName": "organizations",
-      "description": {
-        "rteElements": [{
-          "path": "@atoms/11-text/paragraph.twig",
-          "data": {
-            "paragraph": {
-              "text": content.field_summary
-            }
-          }
-        }]
+{% embed '@organisms/by-author/image-link-list.twig' with {
+    imageLinkList: {
+      blocks: true,
+      itemPluralName: 'organizations',
+      description: {
+        rteElements: [{
+          path: '@atoms/11-text/paragraph.twig',
+          data: {
+            paragraph: {
+              text: content.field_summary,
+            },
+          },
+        }],
       },
-      "totalLinks": paragraph.field_org_grid_org|length,
-      "sectionClass": 'ma__our-organizations',
-    }
+      totalLinks: paragraph.field_org_grid_org|length,
+      sectionClass: 'ma__our-organizations',
+    },
   } %}
 
   {% block imageListBlock %}

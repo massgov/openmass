@@ -10,15 +10,15 @@
 #}
 {%
 set videoComponent = {
-  "campaignVideo": {
-    "id": componentId,
-    "isHeader": isHeader,
-    "backgroundColor": backgroundColor,
-    "textColor": "",
-    "title": content.field_main_heading,
-    "description": content.field_campaign_description,
-    "video": videoData
-  }
+  campaignVideo: {
+    id: componentId,
+    isHeader: isHeader,
+    backgroundColor: backgroundColor,
+    textColor: '',
+    title: content.field_main_heading,
+    description: content.field_campaign_description,
+    video: videoData,
+  },
 }
 %}
-{% include '@organisms/by-template/campaign-video.twig' with videoComponent %}
+{{ include('@organisms/by-template/campaign-video.twig', videoComponent) }}

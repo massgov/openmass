@@ -44,13 +44,13 @@
 
 {% if paragraph.field_section_body is not empty or paragraph.field_section_title is not empty %}
 
-  {% embed "@organisms/by-author/rich-text.twig" with {
-    "richText": {
-      "compHeading": {
-        "title": content.field_section_title|render,
-        "sub": false
-      }
-    }
+  {% embed '@organisms/by-author/rich-text.twig' with {
+    richText: {
+      compHeading: {
+        title: content.field_section_title|render,
+        sub: false,
+      },
+    },
   } %}
     {% block rteElements %}
       {{ content.field_section_body }}
@@ -61,16 +61,16 @@
 
 {% if (paragraph.field_section_downloads is not empty) or (paragraph.field_section_links is not empty) %}
   {# See mass_fields.module for the calculation of content.more below. #}
-  {% embed "@organisms/by-author/form-downloads.twig" with {
-    "formDownloads": {
-      "compHeading": {
-        "title": "Additional Resources",
-        "level": level,
-        "titleContext": "for " ~ node.title.value,
-        "sub": true,
+  {% embed '@organisms/by-author/form-downloads.twig' with {
+    formDownloads: {
+      compHeading: {
+        title: 'Additional Resources',
+        level: level,
+        titleContext: 'for ' ~ node.title.value,
+        sub: true,
       },
-      "more": content.more ? content.more : false,
-    }
+      more: content.more ? content.more : false,
+    },
   } %}
     {% block formDownloadLinks %}
       {{ content.field_section_links }}
