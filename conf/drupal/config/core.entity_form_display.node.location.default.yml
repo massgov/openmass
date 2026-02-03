@@ -244,6 +244,38 @@ content:
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
     third_party_settings: {  }
+  field_customize_header_text:
+    type: boolean_checkbox
+    weight: 6
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_facilities_header:
+    type: string_textfield
+    weight: 7
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        a1b2c3d4-e5f6-7890-abcd-ef1234567890:
+          entity_type: node
+          bundle: location
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_glossaries:
     type: entity_reference_autocomplete
     weight: 19
@@ -350,38 +382,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_customize_header_text:
-    type: boolean_checkbox
-    weight: 6
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
-  field_facilities_header:
-    type: string_textfield
-    weight: 7
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        a1b2c3d4-e5f6-7890-abcd-ef1234567890:
-          entity_type: node
-          bundle: location
-          dependee: field_customize_header_text
-          settings:
-            state: visible
-            condition: checked
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              value: false
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_location_facilities:
     type: text_textarea
     weight: 8
@@ -437,6 +437,20 @@ content:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_location_subtitle:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_location_type:
+    type: options_select
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_more_info_header:
     type: string_textfield
     weight: 17
@@ -462,20 +476,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_location_subtitle:
-    type: string_textfield
-    weight: 6
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_location_type:
-    type: options_select
-    weight: 7
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
     weight: 15
