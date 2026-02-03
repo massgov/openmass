@@ -396,7 +396,38 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     $args_to_pass = array_merge($nids_empty, $nids_unpublished);
     $query->addWhere(0, 'node_field_data.nid', $args_to_pass, 'IN');
   }
+
+  if ($view->id() == 'all_documents_latest_rev' && in_array($view->getDisplay()->display['id'], ['page_1', 'data_export_1'])) {
+    // Fix the organization filter to work with organizations that don't have
+    // child organizations. The issue is that the view creates an INNER JOIN
+    // to node__field_organizations which requires the org to have children.
+    // We need to change this to a LEFT JOIN.
+
+    // Use reflection to access the protected tableQueue property
+    try {
+      $reflection = new \ReflectionObject($query);
+      $property = $reflection->getProperty('tableQueue');
+      $property->setAccessible(TRUE);
+      $table_queue = $property->getValue($query);
+
+      // Find and modify the node__field_organizations join
+      foreach ($table_queue as $table_def) {
+        if (isset($table_def['table']) && $table_def['table'] == 'node__field_organizations') {
+          // Change join type from INNER to LEFT
+          $table_def['join']->type = 'LEFT';
+        }
+      }
+
+      $property->setValue($query, $table_queue);
+    }
+    catch (\Exception $e) {
+      // Silently continue if reflection fails
+    }
+
+  }
 }
+
+
 
 /**
  * Implements hook_entity_update().
