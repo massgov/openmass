@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   module:
-    - ace_editor
     - editor
     - entity_embed
     - filter_empty_tags
@@ -17,21 +16,6 @@ name: 'Basic HTML'
 format: basic_html
 weight: 0
 filters:
-  ace_filter:
-    id: ace_filter
-    provider: ace_editor
-    status: false
-    weight: 0
-    settings:
-      theme: cobalt
-      syntax: html
-      height: 500px
-      width: 700px
-      font_size: 12pt
-      line_numbers: true
-      show_invisibles: false
-      print_margins: true
-      use_wrap_mode: true
   auto_heading_id:
     id: auto_heading_id
     provider: mass_fields
@@ -115,6 +99,7 @@ filters:
       local_settings:
         protocol_style: full
         local_paths: ''
+        keep_language_prefix: false
   filter_richtext:
     id: filter_richtext
     provider: mass_fields
