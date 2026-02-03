@@ -21,6 +21,7 @@ dependencies:
     - taxonomy.vocabulary.label
     - taxonomy.vocabulary.language
   module:
+    - better_exposed_filters
     - content_moderation
     - csv_serialization
     - file
@@ -902,7 +903,7 @@ display:
           hide_alter_empty: true
           destination: false
       pager:
-        type: mini
+        type: full
         options:
           offset: 0
           pagination_heading_level: h4
@@ -912,6 +913,8 @@ display:
           tags:
             next: ››
             previous: ‹‹
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -920,6 +923,7 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
+          quantity: 9
       exposed_form:
         type: basic
         options:
@@ -1203,45 +1207,6 @@ display:
               mmg_editor: '0'
               viewer: '0'
             reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        latest_revision:
-          id: latest_revision
-          table: media_revision
-          field: latest_revision
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: media
-          plugin_id: latest_revision
-          operator: '='
-          value: ''
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
           is_grouped: false
           group_info:
             label: ''
@@ -2304,6 +2269,7 @@ display:
           admin_label: 'field_organizations: Content'
           plugin_id: standard
           required: false
+      group_by: false
       header:
         area:
           id: area
@@ -5144,17 +5110,143 @@ display:
           hide_alter_empty: true
           destination: false
       exposed_form:
-        type: input_required_on_request
+        type: bef
         options:
           submit_button: Filter
-          reset_button: 1
+          reset_button: true
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
-          expose_sort_order: 1
+          expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
           text_input_required: 'Select any filter and click on Filter to see results'
           text_input_required_format: basic_html
+          bef:
+            general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
+              autosubmit_hide: false
+              input_required: true
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+              secondary_open: false
+              reset_button_always_show: false
+            filter:
+              field_title_value:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              mid:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  collapsible: false
+                  is_secondary: false
+              status:
+                plugin_id: default
+                advanced:
+                  sort_options: false
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              moderation_state:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              name:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              node_org_filter:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              node_parent_org_top_filter:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              uid:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              changed:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              search:
+                plugin_id: default
+                advanced:
+                  sort_options: false
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              uid_1:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              field_document_label_target_id:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              field_collections_target_id:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              filesize:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              field_language_target_id_1:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              field_category_target_id:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              filemime:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
       defaults:
         exposed_form: false
         fields: false
