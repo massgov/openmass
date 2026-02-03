@@ -73,7 +73,7 @@ interface MassEntityUsageInterface extends EntityUsageInterface {
    *    ]
    *  ]
    *
-   * @param \Drupal\Core\Database\StatementWrapper $results
+   * @param \Drupal\Core\Database\StatementWrapperIterator $results
    *   Query results to be prepared into an array.
    * @param bool $nest_results
    *   Whether the results should be returned in a nested structure.
