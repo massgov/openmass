@@ -1,5 +1,19 @@
 
 
+## [0.465.0] - February 3, 2026
+
+### Security
+  - DP-44147: Address issues flagged by nightly_pending_security workflow.
+  
+### Fixed
+  - DP-44415: Remove redundant directions link context to prevent duplicate title attributes on address contact items.
+  - DP-44561: Filter out login links that reference deleted or unpublished nodes. The LogInLinksBuilder now validates that target nodes exist and are published before including them in the login links list.
+  
+### Changed
+  - DP-44729: Updated help text for microsite banner image size.
+  
+
+
 ## [0.464.0] - January 27, 2026
 
 ### Changed
