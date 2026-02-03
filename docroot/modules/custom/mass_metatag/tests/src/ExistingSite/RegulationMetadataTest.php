@@ -35,6 +35,7 @@ class RegulationMetadataTest extends MetadataTestCase {
       'field_organizations' => [$org_node],
       'moderation_state' => 'published',
     ]);
+    $node->save();
     return $node;
   }
 
