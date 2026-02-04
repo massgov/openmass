@@ -24,7 +24,8 @@ class SchemaNewsArticlePublisher extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
     $element = parent::output();
     if (!empty($element)) {
       $element['#attributes']['content'] = [];

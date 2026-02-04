@@ -25,7 +25,8 @@ class MassMetatagAddress extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
     $element = parent::output();
 
     $node = \Drupal::routeMatch()->getParameter('node');

@@ -26,7 +26,8 @@ class MassMetatagTime extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
     $element = parent::output();
     if (empty($element)) {
       $element = [

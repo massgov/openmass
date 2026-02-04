@@ -29,7 +29,8 @@ class SchemaSpecialAnnouncementAnnouncementLocation extends SchemaNameBase {
   /**
    * Add AnnouncementLocation property options.
    */
-  public function form($element = []) {
+  public function form($element = []): array
+  {
     $form = parent::form($element);
     $form['@type']['#options'] = [
       'CivicStructure' => $this->t('CivicStructure'),

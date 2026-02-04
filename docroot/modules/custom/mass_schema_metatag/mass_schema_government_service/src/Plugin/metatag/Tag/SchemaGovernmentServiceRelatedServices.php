@@ -29,7 +29,8 @@ class SchemaGovernmentServiceRelatedServices extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array
+  {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:title]';
     return $form;
@@ -38,19 +39,44 @@ class SchemaGovernmentServiceRelatedServices extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function setValue($value) {
-    $this->value = $value;
+  public function setValue($value): void
+  {
+    // Metatag can provide NULL (no defaults yet) or an array when `multiple=TRUE`.
+    // Normalize to a string so ::value() never returns NULL (strict typing in D11).
+    if ($value === NULL) {
+      $this->value = '';
+      return;
+    }
+
+    if (is_array($value)) {
+      // Join multiple values into a single comma-separated string.
+      $value = array_values(array_filter($value, static fn($v) => $v !== NULL && $v !== ''));
+      $this->value = $value ? implode(', ', array_map('strval', $value)) : '';
+      return;
+    }
+
+    $this->value = (string) $value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
     $element = parent::output();
 
-    // Explode the values, which are target ids of the service page entities
-    // referenced on the field.
-    $content = explode(', ', $this->value());
+    // Ensure we always have a string to work with.
+    $value = $this->value();
+    if (is_array($value)) {
+      $value = implode(', ', $value);
+    }
+    $value = trim((string) $value);
+
+    if ($value === '') {
+      return $element;
+    }
+
+    $content = array_map('trim', explode(',', $value));
 
     if (!empty($element) && is_array($content)) {
       $element['#attributes']['content'] = [];
@@ -58,6 +84,10 @@ class SchemaGovernmentServiceRelatedServices extends SchemaNameBase {
       // Iterate through each target id and get the url of each node to
       // reference as a related service.
       foreach ($content as $target_id) {
+        $target_id = (int) $target_id;
+        if ($target_id <= 0) {
+          continue;
+        }
         $node = Node::load($target_id);
         if (!$node) {
           continue;

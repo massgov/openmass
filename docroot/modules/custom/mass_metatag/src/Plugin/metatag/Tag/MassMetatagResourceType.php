@@ -28,7 +28,8 @@ class MassMetatagResourceType extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
     $element = parent::output();
     $node = \Drupal::routeMatch()->getParameter('node');
     if ($node->get('field_binder_data_type')) {
@@ -39,7 +40,6 @@ class MassMetatagResourceType extends MetaNameBase {
 
           $data_resources = $node->get('field_data_resource_type');
           $types = [];
-          $outputValue = '';
 
           // field_data_resource_type has a value + data type = Data resource.
           if (!$data_resources->isEmpty()) {

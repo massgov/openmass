@@ -28,7 +28,8 @@ class SchemaWebPageReleasedEvent extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array
+  {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:field_date_published]';
     return $form;

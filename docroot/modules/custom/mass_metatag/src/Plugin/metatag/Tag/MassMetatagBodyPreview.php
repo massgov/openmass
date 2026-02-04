@@ -26,7 +26,8 @@ class MassMetatagBodyPreview extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
     $element = parent::output();
 
     if (empty($element)) {
@@ -72,7 +73,7 @@ class MassMetatagBodyPreview extends MetaNameBase {
     $element['#attributes']['content'] = $trimmed_preview;
     // Don't print anything if the content is empty and fallback is empty.
     if (empty($element['#attributes']['content'])) {
-      return '';
+      return [];
     }
     return $element;
   }

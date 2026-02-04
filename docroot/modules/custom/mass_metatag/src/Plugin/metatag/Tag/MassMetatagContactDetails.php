@@ -25,7 +25,8 @@ class MassMetatagContactDetails extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
 
     $element = parent::output();
 

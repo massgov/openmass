@@ -28,7 +28,8 @@ class SchemaCollectionPageType extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array
+  {
     $form = [
       '#type' => 'select',
       '#title' => $this->label(),

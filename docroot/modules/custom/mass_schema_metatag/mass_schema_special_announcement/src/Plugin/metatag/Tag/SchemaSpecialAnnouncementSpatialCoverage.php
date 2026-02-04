@@ -29,7 +29,8 @@ class SchemaSpecialAnnouncementSpatialCoverage extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array
+  {
     $form = parent::form($element);
 
     $form['@type']['#options']['State'] = $this->t('State');

@@ -28,7 +28,8 @@ class SchemaApplyActionPotentialAction extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array
+  {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:title]';
     return $form;
@@ -37,18 +38,46 @@ class SchemaApplyActionPotentialAction extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function setValue($value) {
-    $this->value = $value;
+  public function setValue($value): void
+  {
+    // Metatag can provide NULL (no defaults yet) or an array when `multiple=TRUE`.
+    // Normalize to a string so ::value() never returns NULL (strict typing in D11).
+    if ($value === NULL) {
+      $this->value = '';
+      return;
+    }
+
+    if (is_array($value)) {
+      // Join multiple values into a single comma-separated string.
+      $value = array_values(array_filter($value, static fn($v) => $v !== NULL && $v !== ''));
+      $this->value = $value ? implode(', ', array_map('strval', $value)) : '';
+      return;
+    }
+
+    $this->value = (string) $value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array
+  {
     $element = parent::output();
 
-    // Since there could be multiple values, explode the string value.
-    $content = explode(', ', $this->value());
+    // Ensure we always have a string to work with.
+    $value = $this->value();
+    if (is_array($value)) {
+      $value = implode(', ', $value);
+    }
+    $value = trim((string) $value);
+
+    // No configured values.
+    if ($value === '') {
+      return $element;
+    }
+
+    // Since there could be multiple values, split on commas and trim whitespace.
+    $content = array_map('trim', explode(',', $value));
 
     $element['#attributes']['content'] = [];
     foreach ($content as $link_values) {
