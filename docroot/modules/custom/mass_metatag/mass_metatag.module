@@ -148,7 +148,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
       switch ($name) {
         case 'dm_organizations':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
@@ -168,7 +168,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'dm_services':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()
@@ -190,7 +190,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'dm_topics':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()
@@ -212,7 +212,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'dm_locations':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()
