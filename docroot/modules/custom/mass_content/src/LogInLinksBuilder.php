@@ -3,8 +3,8 @@
 namespace Drupal\mass_content;
 
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
-use Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle;
 use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
 use Drupal\mass_content\Entity\Bundle\node\ServicePageBundle;
 use Drupal\node\NodeInterface;
@@ -15,6 +15,23 @@ use Drupal\node\NodeInterface;
 class LogInLinksBuilder {
 
   public const MAX_ANCESTORS = 6;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a LogInLinksBuilder object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
+  }
 
   /**
    * Searches for contextual login links on current node and its ancestors.
@@ -133,15 +150,30 @@ class LogInLinksBuilder {
 
         if ($uri = $link->uri) {
           $is_external = UrlHelper::isExternal($uri);
+
+          // For internal node links, validate that the node exists and is published.
+          if (!$is_external && str_contains($uri, 'entity:node')) {
+            $node_id = preg_replace('/\D/', '', $uri);
+
+            // Load the node to verify it exists and is published.
+            $target_node = $this->entityTypeManager->getStorage('node')->load($node_id);
+
+            // Skip this link if the node doesn't exist or is not published.
+            if (!$target_node || !$target_node->isPublished()) {
+              continue;
+            }
+
+            // Add cache tag for the valid node.
+            $cache_tags[] = 'node:' . $node_id;
+          }
+
+          // Add the validated link to the array.
           $links[] = [
             'type' => $is_external ? 'external' : 'internal',
             'text' => $link->computed_title,
             'href' => Url::fromUri($uri),
             'source' => $source,
           ];
-          if (!$is_external && strpos($uri, 'entity:node') !== FALSE) {
-            $cache_tags[] = 'node:' . preg_replace('/\D/', '', $uri);
-          }
         }
       }
     }
