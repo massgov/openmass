@@ -24,8 +24,7 @@ class SchemaWebPageIsBasedOn extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []): array
-  {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:field_decision_sources]';
     return $form;
@@ -34,8 +33,7 @@ class SchemaWebPageIsBasedOn extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
 
     $links = json_decode($this->value(), TRUE);

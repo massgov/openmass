@@ -33,8 +33,7 @@ class SchemaSpecialAnnouncementType extends SchemaNameBase {
   /**
    * Add SpecialAnnouncement property option.
    */
-  public function form($element = []): array
-  {
+  public function form($element = []): array {
     $form = parent::form($element);
     $form['#options'] = [
       'SpecialAnnouncement' => $this->t('SpecialAnnouncement'),

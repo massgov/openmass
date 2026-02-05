@@ -28,8 +28,7 @@ class SchemaApplyActionInstrument extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []): array
-  {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:field_how_to_methods_5]';
     return $form;
@@ -38,8 +37,7 @@ class SchemaApplyActionInstrument extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function setValue($value): void
-  {
+  public function setValue($value): void {
     // Metatag can provide NULL when no defaults are set yet.
     // Normalize to a string and collapse excess whitespace/newlines for JSON-LD.
     if ($value === NULL) {
@@ -75,8 +73,7 @@ class SchemaApplyActionInstrument extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     // Ensure the normalized value is used.
     $element = parent::output();
 

@@ -32,8 +32,7 @@ class SchemaGovernmentServiceAreaServed extends SchemaNameBase {
    * We need multiple values, so create a tree of values and
    * stored the serialized value as a string.
    */
-  public function form(array $element = []): array
-  {
+  public function form(array $element = []): array {
     $value = SchemaMetatagManager::unserialize($this->value());
     $form['#type'] = 'details';
     $form['#description'] = $this->description();
@@ -70,8 +69,7 @@ class SchemaGovernmentServiceAreaServed extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
     if (!empty($element)) {
       $content = SchemaMetatagManager::unserialize($this->value());

@@ -24,8 +24,7 @@ class SchemaEventType extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []): array
-  {
+  public function form(array $element = []): array {
     $form = [
       '#type' => 'select',
       '#title' => $this->label(),

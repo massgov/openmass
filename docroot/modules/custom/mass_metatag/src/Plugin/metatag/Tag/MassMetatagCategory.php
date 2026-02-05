@@ -29,8 +29,7 @@ class MassMetatagCategory extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     // @todo This should replace category in mass_theme_preprocess_html.
     $element = parent::output();
     $node = \Drupal::routeMatch()->getParameter('node');

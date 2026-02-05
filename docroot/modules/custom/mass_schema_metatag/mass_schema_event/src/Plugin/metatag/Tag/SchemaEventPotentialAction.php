@@ -24,8 +24,7 @@ class SchemaEventPotentialAction extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []): array
-  {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:title]';
     return $form;
@@ -34,8 +33,7 @@ class SchemaEventPotentialAction extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function setValue($value): void
-  {
+  public function setValue($value): void {
     // Metatag can provide NULL (no defaults yet) or an array when `multiple=TRUE`.
     // Normalize to a string so ::value() never returns NULL (strict typing in D11).
     if ($value === NULL) {
@@ -56,8 +54,7 @@ class SchemaEventPotentialAction extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
 
     // Ensure we always have a string to work with.

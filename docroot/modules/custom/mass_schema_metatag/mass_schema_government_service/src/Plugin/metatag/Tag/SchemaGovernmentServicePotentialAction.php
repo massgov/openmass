@@ -29,8 +29,7 @@ class SchemaGovernmentServicePotentialAction extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []): array
-  {
+  public function form(array $element = []): array {
     $value = SchemaMetatagManager::unserialize($this->value());
 
     $form['#type'] = 'details';
@@ -81,8 +80,7 @@ class SchemaGovernmentServicePotentialAction extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
     $values = SchemaMetatagManager::unserialize($this->value());
     $link_content = [];

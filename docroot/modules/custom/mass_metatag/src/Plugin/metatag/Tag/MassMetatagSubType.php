@@ -28,8 +28,7 @@ class MassMetatagSubType extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
     if (!empty($element['#attributes']['content'])) {
       $element['#attributes']['content'] =

@@ -24,8 +24,7 @@ class MassMetatagLocation extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
     // Decode the value because it was encoded by hook_tokens().
     $addresses = json_decode($this->value(), TRUE);

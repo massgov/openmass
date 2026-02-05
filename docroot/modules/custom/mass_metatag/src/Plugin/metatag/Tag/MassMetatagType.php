@@ -29,8 +29,7 @@ class MassMetatagType extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
     $node = \Drupal::routeMatch()->getParameter('node');
     if (!empty($element['#attributes']['content'])) {

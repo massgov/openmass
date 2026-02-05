@@ -28,8 +28,7 @@ class SchemaCollectionPageRelatedLink extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []): array
-  {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:field_guide_page_related_guides]';
     return $form;
@@ -38,8 +37,7 @@ class SchemaCollectionPageRelatedLink extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output(): array
-  {
+  public function output(): array {
     $element = parent::output();
 
     // Get the links.
