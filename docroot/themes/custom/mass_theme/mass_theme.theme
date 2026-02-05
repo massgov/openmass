@@ -735,6 +735,9 @@ function mass_theme_preprocess_node_location(&$variables) {
     // Get the page title for title context.
     $page_title = $node->getTitle();
 
+    // Get the value of field_customize_header_text or set to FALSE by default.
+    $field_customize_header_text = ($node->hasField('field_customize_header_text') && intval($node->field_customize_header_text->value) == 1) ? TRUE : FALSE;
+
     if (Helper::isFieldPopulated($node, 'field_location_type')) {
       $locationType = $node->field_location_type->value;
     }
@@ -983,7 +986,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $facilities_title = t('Facilities');
+      $facilities_title = ($field_customize_header_text && $node->hasField('field_facilities_header') && !$node->field_facilities_header->isEmpty()) ? $node->field_facilities_header->value : t('Facilities');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1011,7 +1014,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $services_title = t('Services');
+      $services_title = ($field_customize_header_text && $node->hasField('field_services_header') && !$node->field_services_header->isEmpty()) ? $node->field_services_header->value : t('Services');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1038,7 +1041,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $accessibility_title = t('Accessibility');
+      $accessibility_title = ($field_customize_header_text && $node->hasField('field_accessibility_header') && !$node->field_accessibility_header->isEmpty()) ? $node->field_accessibility_header->value : t('Accessibility');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1065,7 +1068,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $restrictions_title = t('Restrictions');
+      $restrictions_title = ($field_customize_header_text && $node->hasField('field_restrictions_header') && !$node->field_restrictions_header->isEmpty()) ? $node->field_restrictions_header->value : t('Restrictions');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1092,7 +1095,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $moreInfo_title = t('More info');
+      $moreInfo_title = ($field_customize_header_text && $node->hasField('field_more_info_header') && !$node->field_more_info_header->isEmpty()) ? $node->field_more_info_header->value : t('More info');
 
       // Set up heading for what you need.
       $compHeading_options = [

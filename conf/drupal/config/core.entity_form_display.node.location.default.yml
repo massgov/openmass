@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.location.field_accessibility
+    - field.field.node.location.field_accessibility_header
     - field.field.node.location.field_bg_narrow
     - field.field.node.location.field_bg_wide
     - field.field.node.location.field_collections
@@ -14,12 +15,15 @@ dependencies:
     - field.field.node.location.field_links
     - field.field.node.location.field_location_activity_detail
     - field.field.node.location.field_location_all_activities
+    - field.field.node.location.field_customize_header_text
+    - field.field.node.location.field_facilities_header
     - field.field.node.location.field_location_facilities
     - field.field.node.location.field_location_icons
     - field.field.node.location.field_location_icons_park
     - field.field.node.location.field_location_metatags
     - field.field.node.location.field_location_more_information
     - field.field.node.location.field_location_subtitle
+    - field.field.node.location.field_more_info_header
     - field.field.node.location.field_location_type
     - field.field.node.location.field_organizations
     - field.field.node.location.field_overview
@@ -29,8 +33,10 @@ dependencies:
     - field.field.node.location.field_ref_contact_info_1
     - field.field.node.location.field_related_locations
     - field.field.node.location.field_restrictions
+    - field.field.node.location.field_restrictions_header
     - field.field.node.location.field_reusable_label
     - field.field.node.location.field_services
+    - field.field.node.location.field_services_header
     - field.field.node.location.field_short_title
     - image.style.large
     - node.type.location
@@ -112,13 +118,19 @@ third_party_settings:
         required_fields: true
     group_optional_details:
       children:
+        - field_customize_header_text
         - field_location_facilities
+        - field_facilities_header
         - field_location_activity_detail
         - field_location_all_activities
         - field_services
+        - field_services_header
         - field_accessibility
+        - field_accessibility_header
         - field_restrictions
+        - field_restrictions_header
         - field_location_more_information
+        - field_more_info_header
         - field_related_locations
       label: 'Optional Details'
       region: content
@@ -173,12 +185,37 @@ mode: default
 content:
   field_accessibility:
     type: text_textarea
-    weight: 11
+    weight: 12
     region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_accessibility_header:
+    type: string_textfield
+    weight: 13
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        c3d4e5f6-a7b8-9012-cdef-345678901234:
+          entity_type: node
+          bundle: location
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_bg_narrow:
     type: image_focal_point
     weight: 12
@@ -207,6 +244,38 @@ content:
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
     third_party_settings: {  }
+  field_customize_header_text:
+    type: boolean_checkbox
+    weight: 6
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_facilities_header:
+    type: string_textfield
+    weight: 7
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        a1b2c3d4-e5f6-7890-abcd-ef1234567890:
+          entity_type: node
+          bundle: location
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_glossaries:
     type: entity_reference_autocomplete
     weight: 19
@@ -315,7 +384,7 @@ content:
             selector: ''
   field_location_facilities:
     type: text_textarea
-    weight: 7
+    weight: 8
     region: content
     settings:
       rows: 5
@@ -362,7 +431,7 @@ content:
     third_party_settings: {  }
   field_location_more_information:
     type: text_textarea
-    weight: 14
+    weight: 16
     region: content
     settings:
       rows: 5
@@ -382,6 +451,31 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_more_info_header:
+    type: string_textfield
+    weight: 17
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        e5f6a7b8-c9d0-1234-ef56-567890123456:
+          entity_type: node
+          bundle: location
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_organizations:
     type: entity_reference_autocomplete
     weight: 15
@@ -451,12 +545,37 @@ content:
     third_party_settings: {  }
   field_restrictions:
     type: text_textarea
-    weight: 13
+    weight: 14
     region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_restrictions_header:
+    type: string_textfield
+    weight: 15
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        d4e5f6a7-b8c9-0123-def4-456789012345:
+          entity_type: node
+          bundle: location
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 17
@@ -490,6 +609,31 @@ content:
             value_form:
               -
                 value: general
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_services_header:
+    type: string_textfield
+    weight: 11
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        b2c3d4e5-f6a7-8901-bcde-f23456789012:
+          entity_type: node
+          bundle: location
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
             effect: show
             effect_options: {  }
             selector: ''
