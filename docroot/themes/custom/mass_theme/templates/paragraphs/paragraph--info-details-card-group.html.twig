@@ -61,25 +61,25 @@
                 {% endif %}
                 {%
                   set card = {
-                    'card': {
-                      'id': 'image-card--'|clean_unique_id,
-                      'link': card_link,
-                      'thumbnail': card_image,
-                      'title': card_title,
-                      'text': card_content,
-                      'eyebrow': card_eyebrow,
-                      'usage': 'vertical'
-                    }
+                    card: {
+                      id: 'image-card--'|clean_unique_id,
+                      link: card_link,
+                      thumbnail: card_image,
+                      title: card_title,
+                      text: card_content,
+                      eyebrow: card_eyebrow,
+                      usage: 'vertical',
+                    },
                   }
                 %}
-                {% include "@molecules/card.twig" with card %}
+                {{ include('@molecules/card.twig', card) }}
               {% endif %}
           {% endfor %}
         {% else %}
           {% block sectionLinks %}
             {% for sectionLinks in sectionThreeUp.sections %}
-              {% set sectionLinks = sectionLinks|merge({'level': linkHeading, 'id': 'section-link--'|clean_unique_id}) %}
-              {% include "@molecules/section-links.twig" with sectionLinks %}
+              {% set sectionLinks = sectionLinks|merge({level: linkHeading, id: 'section-link--'|clean_unique_id}) %}
+              {{ include('@molecules/section-links.twig', sectionLinks) }}
             {% endfor %}
           {% endblock %}
         {% endif %}

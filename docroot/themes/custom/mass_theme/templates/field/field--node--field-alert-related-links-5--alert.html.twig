@@ -7,17 +7,17 @@
 {% set relatedLinks = [] %}
 {# Use our array to wrap up our links #}
 {% for item in items %}
-  {% set relatedLinks = relatedLinks|merge([{'href': item.content['#url'], 'text': item.content['#title']}]) %}
+  {% set relatedLinks = relatedLinks|merge([{href: item.content['#url'], text: item.content['#title']}]) %}
 {% endfor %}
 
 {%
 set linkList = {
-  'sidebarHeading': {
-    'title': label,
+  sidebarHeading: {
+    title: label,
   },
-  'links': relatedLinks,
-  'stacked': true
+  links: relatedLinks,
+  stacked: true,
 }
 %}
 
-{% include '@organisms/by-author/link-list.twig' %}
+{{ include('@organisms/by-author/link-list.twig') }}

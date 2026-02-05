@@ -14,4 +14,4 @@
 #}
 
 {% set decorativeLink = fieldLink %}
-{% include '@atoms/decorative-link.twig' ignore missing with decorativeLink %}
+{{ include('@atoms/decorative-link.twig', decorativeLink, true, true) }}

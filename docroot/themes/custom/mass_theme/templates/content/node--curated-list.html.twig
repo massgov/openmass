@@ -22,18 +22,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -45,55 +45,55 @@
   {{ content.referencing_binders }}
 
   {% if translationLinks %}
-    {% include "@molecules/inline-links-language.twig" with {
-      "inlineLinks": translationLinks
-    } %}
+    {{ include('@molecules/inline-links-language.twig', {
+      inlineLinks: translationLinks,
+    }) }}
   {% endif %}
 
   {% set optionalContents = false %}
   {% if node.field_curatedlist_overview.value is not empty %}
     {% set optionalContents = [{
-      "path": "@organisms/by-author/rich-text.twig",
-      "data": {
-        "richText": {
-          "rteElements": [{
-            "path": "@atoms/11-text/raw-html.twig",
-            "data": {
-              "rawHtml": {
-                "content": content.field_curatedlist_overview
-              }
-            }
-          }]
-        }
-      }
+      path: '@organisms/by-author/rich-text.twig',
+      data: {
+        richText: {
+          rteElements: [{
+            path: '@atoms/11-text/raw-html.twig',
+            data: {
+              rawHtml: {
+                content: content.field_curatedlist_overview,
+              },
+            },
+          }],
+        },
+      },
     }] %}
   {% endif %}
 
   {% set pageHeader = {
-      "title": label,
-      "subTitle": node.field_curatedlist_lede.value,
-      "divider": false,
-      "optionalContents": optionalContents,
-      "buttons": buttons is defined ? [buttons] : null
+      title: label,
+      subTitle: node.field_curatedlist_lede.value,
+      divider: false,
+      optionalContents: optionalContents,
+      buttons: buttons is defined ? [buttons] : null,
     }
   %}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 
-  {% include "@organisms/by-template/sticky-toc.twig" with {
-    "stickyTOC": {
-      "title": "Table of Contents"|t,
-      "parent": "#main-content",
-      "sections": ".ma__stacked-row__section h2.ma__comp-heading"
-    }
-  } %}
+  {{ include('@organisms/by-template/sticky-toc.twig', {
+    stickyTOC: {
+      title: 'Table of Contents'|t,
+      parent: '#main-content',
+      sections: '.ma__stacked-row__section h2.ma__comp-heading',
+    },
+  }) }}
 {% endblock %}
 
 {# Increase heading number by 1 from the parent heading. #}
 {% set level = level + 1 %}
 
 {% block stackedRowContent %}
-  {% if node.field_list_type is not empty and node.field_list_type.value == "directory" %}
+  {% if node.field_list_type is not empty and node.field_list_type.value == 'directory' %}
     {{ content.field_list_directory_section }}
   {% else %}
     {{ content.field_curatedlist_list_section }}
@@ -101,10 +101,10 @@
 
   {% if node.field_contact is not empty %}
     {% set stackedRowSection = {
-      "title": "Contact",
-      "id": "contact"
+      title: 'Contact',
+      id: 'contact',
     } %}
-    {% embed "@organisms/by-author/stacked-row-section.twig" %}
+    {% embed '@organisms/by-author/stacked-row-section.twig' %}
       {% block stackedRowContentOverride %}
         {{ content.field_contact }}
       {% endblock %}
@@ -116,19 +116,19 @@
   {{ content.extra_sidebar_contact }}
 
   {% if node.field_related_links is not empty %}
-    {% embed "@organisms/by-author/press-listing.twig" with {
-      "pressListing": {
-        "compHeading": {
-          "title": "Related",
-          "sub": "",
-          "color": "",
-          "id": "",
-          "centered": "",
-          "sidebar": true,
-          "level": level
+    {% embed '@organisms/by-author/press-listing.twig' with {
+      pressListing: {
+        compHeading: {
+          title: 'Related',
+          sub: '',
+          color: '',
+          id: '',
+          centered: '',
+          sidebar: true,
+          level: level,
         },
-        "items": node.field_related_links
-      }
+        items: node.field_related_links,
+      },
     } %}
       {% block featuredItems %}
         {# Pass through the level setting with Drupal render array values. #}

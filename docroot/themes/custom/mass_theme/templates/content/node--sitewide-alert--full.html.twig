@@ -76,11 +76,11 @@
 {% block preContent %}
   {%
     set pageHeader = {
-        "title": node.label,
+        title: node.label,
       }
   %}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block main %}
@@ -100,11 +100,11 @@
 
                 {% if linkList %}
                   {% set compHeading = linkList.compHeading|merge({
-                    'level': level,
-                    'title': linkList.compHeading.title,
+                    level: level,
+                    title: linkList.compHeading.title,
                   }) %}
-                  {% set linkList = linkList|merge({'sidebarHeading': linkList.compHeading}) %}
-                  {% include "@organisms/by-author/link-list.twig" %}
+                  {% set linkList = linkList|merge({sidebarHeading: linkList.compHeading}) %}
+                  {{ include('@organisms/by-author/link-list.twig') }}
                 {% endif %}
             {% endblock %}
         </div>

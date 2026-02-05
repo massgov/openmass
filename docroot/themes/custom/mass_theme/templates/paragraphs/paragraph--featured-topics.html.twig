@@ -40,17 +40,17 @@
  * @ingroup themeable
  */
 #}
- {% embed "@organisms/by-author/stacked-row-section.twig" with {
-   "stackedRowSection": {
-     "title": "",
-     "id": ""
-   }
+ {% embed '@organisms/by-author/stacked-row-section.twig' with {
+   stackedRowSection: {
+     title: '',
+     id: '',
+   },
  } %}
    {% block stackedRowContentOverride %}
-     {% embed "@organisms/by-author/sections-three-up.twig" with {
-       "sectionThreeUp": {
-         "compact": content.field_topic_name_only|field_value|render == "True" ? true : false
-       }
+     {% embed '@organisms/by-author/sections-three-up.twig' with {
+       sectionThreeUp: {
+         compact: content.field_topic_name_only|field_value|render == 'True' ? true : false,
+       },
      } %}
        {% block sectionLinks %}
          {{ content.field_featured_topics_topics|merge({'#level': level + 1}) }}

@@ -73,11 +73,11 @@
 #}
 
 <li class="ma__link-list__item">
-  {% include '@atoms/decorative-link.twig' with {
+  {{ include('@atoms/decorative-link.twig', {
     decorativeLink: {
       href: url,
       text: node.label,
       info: null,
     },
-  } %}
+  }) }}
 </li>

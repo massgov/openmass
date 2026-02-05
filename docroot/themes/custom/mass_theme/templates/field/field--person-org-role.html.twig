@@ -50,18 +50,18 @@
 
   {% set org_page_item = {
     text: title,
-    href: path('entity.node.canonical', {'node': node.id}),
+    href: path('entity.node.canonical', {node: node.id}),
   } %}
   {% set board_roles = board_roles|merge([org_page_item]) %}
 {% endfor %}
 
-{% include "@organisms/by-author/link-list.twig" with {
+{{ include('@organisms/by-author/link-list.twig', {
   linkList: {
     compHeading: {
-      title: "Roles"|t,
+      title: 'Roles'|t,
     },
     stacked: true,
     hideBullets: true,
     links: board_roles,
   },
-} %}
+}) }}

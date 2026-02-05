@@ -12,25 +12,25 @@
 {% set org_title = FALSE %}
 {% if node.field_person_ref_org is not empty %}
   {% set org_title = {
-    "text": content.field_person_ref_org[0]['#title']
+    text: content.field_person_ref_org[0]['#title'],
   } %}
 {% endif %}
-{% embed "@organisms/by-author/curated-person.twig" with {
-  "curatedPerson": {
-    "name": {
-      "text": node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value,
-      "href": node.field_publish_bio_page.value ? url,
-      "info": "",
-      "level": ""
+{% embed '@organisms/by-author/curated-person.twig' with {
+  curatedPerson: {
+    name: {
+      text: node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value,
+      href: node.field_publish_bio_page.value ? url,
+      info: '',
+      level: '',
     },
-    "title": {
-      "text": content.field_person_role_title
+    title: {
+      text: content.field_person_role_title,
     },
-    "org": org_title,
-    "desc": {
-      "text": content.field_plain_description
-    }
-  }
+    org: org_title,
+    desc: {
+      text: content.field_plain_description,
+    },
+  },
 } %}
   {% block curatedPersonGroups %}
     {# Increase heading number by 1 from the parent heading. #}
@@ -41,12 +41,12 @@
       {{ content.field_ref_single_address }}
 
       {% if (node.field_ref_phone is not empty) or (node.field_ref_fax is not empty) %}
-        {% embed "@molecules/contact/contact-group.twig" with {
-          "contactGroup": {
-            "name": "Phone",
-            "icon": "phone",
-            "level": level
-          }
+        {% embed '@molecules/contact/contact-group.twig' with {
+          contactGroup: {
+            name: 'Phone',
+            icon: 'phone',
+            level: level,
+          },
         } %}
           {% block groupItems %}
             {{ content.field_ref_phone }}
@@ -56,12 +56,12 @@
       {% endif %}
 
       {% if node.field_ref_links is not empty %}
-        {% embed "@molecules/contact/contact-group.twig" with {
-          "contactGroup": {
-            "name": "Online",
-            "icon": "laptop",
-            "level": level
-          }
+        {% embed '@molecules/contact/contact-group.twig' with {
+          contactGroup: {
+            name: 'Online',
+            icon: 'laptop',
+            level: level,
+          },
         } %}
           {% block groupItems %}
             {# Pass through the level setting with Drupal render array values. #}

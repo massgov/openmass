@@ -11,17 +11,17 @@
  */
 #}
 
-{% embed "@molecules/download-link.twig" with {
-  "downloadLink": {
-    "iconSize": "",
-    "icon": download.iconName|lower,
-    "decorativeLink": {
-      "text": download.linktext,
-      "href": download.link,
-      "info": ""
+{% embed '@molecules/download-link.twig' with {
+  downloadLink: {
+    iconSize: '',
+    icon: download.iconName|lower,
+    decorativeLink: {
+      text: download.linktext,
+      href: download.link,
+      info: '',
     },
-    "size": download.size,
-    "format": download.filetype|upper
-  }
+    size: download.size,
+    format: download.filetype|upper,
+  },
 } %}
 {% endembed %}

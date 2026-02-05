@@ -19,14 +19,14 @@
 {% endif %}
 {% if paragraph.field_rich_text_description is not empty %}
   {% set description = {
-    "rteElements": [{
-      "path": "@atoms/11-text/raw-html.twig",
-      "data": {
-        "rawHtml": {
-          "content": content.field_rich_text_description
-        }
-      }
-    }]
+    rteElements: [{
+      path: '@atoms/11-text/raw-html.twig',
+      data: {
+        rawHtml: {
+          content: content.field_rich_text_description,
+        },
+      },
+    }],
   }
   %}
 {% endif %}
@@ -35,21 +35,21 @@
 {% endif %}
 {%
 set keyMessage = {
-  "keyMessage": {
-    "id": componentId,
-    "positionTop": positionTop,
-    "compHeading": {
-      "title": paragraph.field_main_heading.value,
-      "level": level
+  keyMessage: {
+    id: componentId,
+    positionTop: positionTop,
+    compHeading: {
+      title: paragraph.field_main_heading.value,
+      level: level,
     },
-    "backgroundColor": textOverlaySection,
-    "bgImage": content.field_image,
-    "mobileBgImage": "",
-    "subtitle": subtitle,
-    "eyebrow": eyebrow,
-    "description": description,
-    "button": button
-  }
+    backgroundColor: textOverlaySection,
+    bgImage: content.field_image,
+    mobileBgImage: '',
+    subtitle: subtitle,
+    eyebrow: eyebrow,
+    description: description,
+    button: button,
+  },
 }
 %}
-{% include '@organisms/by-template/key-message.twig' with keyMessage %}
+{{ include('@organisms/by-template/key-message.twig', keyMessage) }}

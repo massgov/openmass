@@ -47,18 +47,18 @@
   {% set linkIcon = ('/forms/' in item.content['#url_title']) ? 'laptop' : item.content['#icon'] %}
   {% set linkFormat = ('/forms/' in item.content['#url_title']) ? 'form' : item.content['#format'] %}
   {% set linkContext = ('/forms/' in item.content['#url_title']) ? 'Link to an online form' %}
-  {% include "@molecules/download-link.twig" with {
-    "downloadLink": {
-      "iconSize": item.content['#icon_size'],
-      "icon": linkIcon,
-      "decorativeLink": {
-        "text": linkText,
-        "href": item.content['#url_title'],
-        "info": "",
-        "labelContext": linkContext
+  {{ include('@molecules/download-link.twig', {
+    downloadLink: {
+      iconSize: item.content['#icon_size'],
+      icon: linkIcon,
+      decorativeLink: {
+        text: linkText,
+        href: item.content['#url_title'],
+        info: '',
+        labelContext: linkContext,
       },
-      "size": item.content['#size'],
-      "format": linkFormat
-    }
-  } %}
+      size: item.content['#size'],
+      format: linkFormat,
+    },
+  }) }}
 {% endfor %}

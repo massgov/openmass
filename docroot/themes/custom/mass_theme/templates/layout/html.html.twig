@@ -30,8 +30,8 @@
 <html{{ html_attributes }} >
   <head>
 
-    {% include directory ~ "/templates/alerts/polyfills.html.twig" %}
-    {% include directory ~ "/templates/alerts/fetch.html.twig" %}
+    {{ include(directory ~ '/templates/alerts/polyfills.html.twig') }}
+    {{ include(directory ~ '/templates/alerts/fetch.html.twig') }}
 
     {# New Relic loader setup #}
     {% verbatim %}
@@ -107,7 +107,7 @@
     <title>{{ head_title|safe_join(' | ') }}</title>
     <css-placeholder token="{{ placeholder_token|raw }}">
     <js-placeholder token="{{ placeholder_token|raw }}">
-    {% include directory ~ "/templates/includes/page-meta.html.twig" %}
+    {{ include(directory ~ '/templates/includes/page-meta.html.twig') }}
     {# Update the version '?version=1' when changes occurs to the font files for caching. #}
     <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSans-VF-subset.woff2?version=1') }}" as="font" crossorigin/>
 
@@ -122,17 +122,17 @@
 
     {% if _context['#attached'].drupalSettings.glossaries %}
       {% set popoverContext = {
-          "tooltip": {
-            "controlId": "uniqueID",
-            "openText": "Term",
-            "closeText": "Close",
-            "title": "Definition",
-            "level": "2",
-            "message": "definition here."
-          }
+          tooltip: {
+            controlId: 'uniqueID',
+            openText: 'Term',
+            closeText: 'Close',
+            title: 'Definition',
+            level: '2',
+            message: 'definition here.',
+          },
         }
       %}
-      <template id="glossary-popup-template">{% include '@molecules/popover.twig' with popoverContext %}</template>
+      <template id="glossary-popup-template">{{ include('@molecules/popover.twig', popoverContext) }}</template>
     {% endif %}
 
     {# Google Translate JS #}

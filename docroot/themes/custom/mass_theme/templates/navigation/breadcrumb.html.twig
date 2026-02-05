@@ -9,12 +9,12 @@
 #}
 
 {% if breadcrumb %}
-  {% include "@organisms/by-template/breadcrumbs.twig" with {
-    "breadcrumbs": {
-      "light": true,
-      "currentPage": current_page,
-      "links": breadcrumb,
-      "noBottomBorder": borderless
-    }
-  } %}
+  {{ include('@organisms/by-template/breadcrumbs.twig', {
+    breadcrumbs: {
+      light: true,
+      currentPage: current_page,
+      links: breadcrumb,
+      noBottomBorder: borderless,
+    },
+  }) }}
 {% endif %}

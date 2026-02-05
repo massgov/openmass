@@ -38,15 +38,15 @@
  * @ingroup themeable
  */
 #}
-{% include "@molecules/contact/contact-item.twig" with {
-  "item": {
-    "type": "email",
-    "label": paragraph.field_label.value,
-    "address": "",
-    "link": {
-      "href": paragraph.field_email.value,
-      "text": paragraph.field_email.value,
-      "info": "",
-    }
-  }
-} %}
+{{ include('@molecules/contact/contact-item.twig', {
+  item: {
+    type: 'email',
+    label: paragraph.field_label.value,
+    address: '',
+    link: {
+      href: paragraph.field_email.value,
+      text: paragraph.field_email.value,
+      info: '',
+    },
+  },
+}) }}

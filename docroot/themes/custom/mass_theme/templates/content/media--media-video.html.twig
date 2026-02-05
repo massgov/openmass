@@ -14,23 +14,23 @@
 #}
 {% block preContent %}
   {# {% include "@organisms/by-template/breadcrumbs.twig" %} #}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 {% block main %}
   <div class="main-content main-content--two">
     <div class="page-content">
       {% block pageContent %}
-        {% include "@organisms/by-author/rich-text.twig" %}
+        {{ include('@organisms/by-author/rich-text.twig') }}
         {% if backButton %}
-          {% include "@molecules/back-button.twig" %}
+          {{ include('@molecules/back-button.twig') }}
         {% endif %}
         {# Determine parent heading level: video appears after page header (H1), so parent is H1, video should be H2 #}
         {% set parent_heading_level = 1 %}
-        {% set video = video|merge({"headingLevel": parent_heading_level + 1}) %}
-        {% include "@atoms/09-media/video.twig" %}
+        {% set video = video|merge({headingLevel: parent_heading_level + 1}) %}
+        {{ include('@atoms/09-media/video.twig') }}
         {% if backButton %}
-          {% include "@molecules/back-button.twig" %}
+          {{ include('@molecules/back-button.twig') }}
         {% endif %}
       {% endblock %}
     </div>

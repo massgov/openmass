@@ -24,7 +24,7 @@ class SchemaCollectionPageMainEntity extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:field_guide_page_related_guides]';
     return $form;
@@ -33,18 +33,42 @@ class SchemaCollectionPageMainEntity extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function setValue($value) {
-    $this->value = $value;
+  public function setValue($value): void {
+    // Metatag can provide NULL when no defaults are set yet.
+    // Normalize to a string so ::value() never returns NULL (strict typing in D11).
+    if ($value === NULL) {
+      $this->value = '';
+      return;
+    }
+
+    // For safety, normalize arrays to a JSON string (should be rare for multiple=FALSE).
+    if (is_array($value)) {
+      $this->value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?: '';
+      return;
+    }
+
+    $this->value = (string) $value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array {
     $element = parent::output();
 
     // Get the links.
-    $links = json_decode($this->value(), TRUE);
+    $value = $this->value();
+    if (is_array($value)) {
+      // Defensive: multiple=FALSE should not yield arrays, but handle it anyway.
+      $value = json_encode($value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    }
+    $value = trim((string) $value);
+
+    if ($value === '') {
+      return $element;
+    }
+
+    $links = json_decode($value, TRUE);
 
     // Assign the links array to the element for output.
     if (!empty($element) && is_array($links)) {

@@ -28,7 +28,7 @@ class SchemaPlaceAddress extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:summary]';
     return $form;
@@ -37,7 +37,7 @@ class SchemaPlaceAddress extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array {
     $element = parent::output();
     // Decode the value because it was encoded by hook_tokens().
     $addresses = json_decode($this->value(), TRUE);

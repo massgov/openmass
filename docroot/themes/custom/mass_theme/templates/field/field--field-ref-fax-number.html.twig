@@ -45,12 +45,12 @@
   {% set level = element['#level'] %}
 {% endif %}
 
-{% embed "@molecules/contact/contact-group.twig" with {
-  "contactGroup": {
-    "name": "Fax",
-    "icon": "fax",
-    "level": level
-  }
+{% embed '@molecules/contact/contact-group.twig' with {
+  contactGroup: {
+    name: 'Fax',
+    icon: 'fax',
+    level: level,
+  },
 } %}
   {% block groupItems %}
     {% for item in items %}

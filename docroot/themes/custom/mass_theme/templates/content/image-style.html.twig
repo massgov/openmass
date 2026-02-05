@@ -17,9 +17,9 @@
  * @ingroup themeable
  */
 #}
-{% include "@atoms/09-media/image.twig" with {
-  "image": {
-    "alt": image['#alt'],
-    "src": image['#uri']
-  }
-} %}
+{{ include('@atoms/09-media/image.twig', {
+  image: {
+    alt: image['#alt'],
+    src: image['#uri'],
+  },
+}) }}

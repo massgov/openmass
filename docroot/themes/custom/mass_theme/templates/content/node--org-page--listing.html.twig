@@ -69,24 +69,24 @@
 {% set teaser_text = (node.field_show_custom_collection_des.value and node.field_collection_description.value is not empty)
   ? node.field_collection_description.value
   : node.field_sub_title.value %}
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "level": "",
-    "emphasizedText": "",
-    "tags": "",
-    "contents": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph": {
-          "text": teaser_text
-        }
-      }
-    }]
-  }
-} %}
+    level: '',
+    emphasizedText: '',
+    tags: '',
+    contents: [{
+      path: '@atoms/11-text/paragraph.twig',
+      data: {
+        paragraph: {
+          text: teaser_text,
+        },
+      },
+    }],
+  },
+}) }}

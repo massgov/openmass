@@ -45,35 +45,35 @@
 {% set readMore = false %}
 {% if paragraph.field_read_more_page is not empty %}
   {% set readMore = {
-    "href": content.field_read_more_page[0]['#url'],
-    "text": content.field_read_more_page[0]['#title']
+    href: content.field_read_more_page[0]['#url'],
+    text: content.field_read_more_page[0]['#title'],
   } %}
 {% endif %}
 
-{% embed "@organisms/by-author/about-section.twig" with {
-  "about": {
-    "content": {
-      "rteElements": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": paragraph.field_summary.value
-          }
-        }
-      }]
+{% embed '@organisms/by-author/about-section.twig' with {
+  about: {
+    content: {
+      rteElements: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: paragraph.field_summary.value,
+          },
+        },
+      }],
     },
-    "link": readMore,
-    "social": {
-      "compHeading": {
-        "title": "Social:",
-        "sub": "",
-        "color": "green",
-        "id": "",
-        "centered": ""
+    link: readMore,
+    social: {
+      compHeading: {
+        title: 'Social:',
+        sub: '',
+        color: 'green',
+        id: '',
+        centered: '',
       },
     },
-    "secondary_person": paragraph.computed_secondary_bio_page is not empty
-  }
+    secondary_person: paragraph.computed_secondary_bio_page is not empty,
+  },
 } %}
   {% block primaryPersonCard %}
     {{ content.computed_bio_page }}
@@ -89,10 +89,10 @@
 {% endembed %}
 {{ content|without ('computed_bio_page', 'computed_secondary_bio_page', 'computed_social_links', 'field_read_more_page', 'field_component_add_separator') }}
 
-{% if content.field_component_add_separator|field_value|render == "True" %}
-  {% include "@atoms/divider.twig" with {
-    "divider": {
-      "thin": true
-    }
-  } %}
+{% if content.field_component_add_separator|field_value|render == 'True' %}
+  {{ include('@atoms/divider.twig', {
+    divider: {
+      thin: true,
+    },
+  }) }}
 {% endif %}

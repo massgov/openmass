@@ -39,24 +39,24 @@
 {% for key, item in items %}
   {% set versions = [] %}
   {% for key, version in item.content %}
-    {% if key != "#cache" %}
+    {% if key != '#cache' %}
       {% set versions = versions|merge([
         {
-          "url": version,
-          "width": key
+          url: version,
+          width: key,
         },
       ]) %}
     {% endif %}
   {% endfor %}
   {% set src = versions|last %}
-  {% include "@atoms/09-media/figure--image.twig" with {
-    "figure": {
-      "image": {
-        "alt": element['#items'][key].alt,
-        "src": src.url,
-        "versions": versions,
-        "sizes": "(min-width: 910px) 820px, 100vw"
-      }
-    }
-  } %}
+  {{ include('@atoms/09-media/figure--image.twig', {
+    figure: {
+      image: {
+        alt: element['#items'][key].alt,
+        src: src.url,
+        versions: versions,
+        sizes: '(min-width: 910px) 820px, 100vw',
+      },
+    },
+  }) }}
 {% endfor %}

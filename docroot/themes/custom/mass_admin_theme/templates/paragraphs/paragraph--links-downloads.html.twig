@@ -3,7 +3,7 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
@@ -12,13 +12,13 @@
       {% if paragraph.field_links_downloads_link.uri or paragraph.field_links_downloads_down.target_id or paragraph.field_links_downloads_header.value %}
 
         {% if paragraph.field_links_downloads_header.value %}
-          {% embed "@organisms/by-author/form-downloads.twig" with {
-            "formDownloads": {
-              "compHeading": {
-                "title": paragraph.field_links_downloads_header.value,
-                "sub": true
-              }
-            }
+          {% embed '@organisms/by-author/form-downloads.twig' with {
+            formDownloads: {
+              compHeading: {
+                title: paragraph.field_links_downloads_header.value,
+                sub: true,
+              },
+            },
           } %}
             {% block formDownloadLinks %}
               {{ content.field_links_downloads_link }}
@@ -26,7 +26,7 @@
             {% endblock %}
           {% endembed %}
         {% else %}
-          {% embed "@organisms/by-author/form-downloads.twig" %}
+          {% embed '@organisms/by-author/form-downloads.twig' %}
             {% block formDownloadLinks %}
               {{ content.field_links_downloads_link }}
               {{ content.field_links_downloads_down }}

@@ -42,22 +42,22 @@
 
 {% set links_array = [] %}
 {% for item in items %}
-  {% set links_array = links_array|merge([{"href": item.content['#url'], "text": item.content['#title']}]) %}
+  {% set links_array = links_array|merge([{href: item.content['#url'], text: item.content['#title']}]) %}
 {% endfor %}
 
 {% if links_array|length > 0 %}
   <div class="ma__related-orgs-and-topics__column">
-    {% include "@organisms/by-author/link-list.twig" with {
-      "linkList": {
-        "compHeading": {
-          "title": "Organizations",
-          "sidebar": true,
-          "level": level
+    {{ include('@organisms/by-author/link-list.twig', {
+      linkList: {
+        compHeading: {
+          title: 'Organizations',
+          sidebar: true,
+          level: level,
         },
-        "stacked": true,
-        "links": links_array
-      }
-    } %}
+        stacked: true,
+        links: links_array,
+      },
+    }) }}
 
     {% if links_array|length > 3 %}
       <button type="button" class="ma__related-orgs-and-topics--toggle js-ma__related-orgs-and-topics--toggle">

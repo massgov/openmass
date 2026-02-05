@@ -41,25 +41,25 @@
 {% for item in items %}
   {% set link_group = item.content['#paragraph'] %}
   {% set accordionElements = accordionElements|merge([{
-    "expanded": link_group.field_group_expanded.value,
-    "collapsibleHeader": {
-      "title": link_group.field_section_title.value
+    expanded: link_group.field_group_expanded.value,
+    collapsibleHeader: {
+      title: link_group.field_section_title.value,
     },
-    "includes": [{
-      "path": "@atoms/11-text/raw-html.twig",
-      "data": {
-        "rawHtml": {
-          "content": '<ul>' ~ link_group.field_links_documents|view|render ~ '</ul>'
-        }
-      }
-    }]
+    includes: [{
+      path: '@atoms/11-text/raw-html.twig',
+      data: {
+        rawHtml: {
+          content: '<ul>' ~ link_group.field_links_documents|view|render ~ '</ul>',
+        },
+      },
+    }],
   }]) %}
 {% endfor %}
 
-{% embed "@organisms/by-author/collapsible-content.twig" with {
-  "collapsibleContent": {
-    "extended": true,
-    "items": accordionElements
-  }
+{% embed '@organisms/by-author/collapsible-content.twig' with {
+  collapsibleContent: {
+    extended: true,
+    items: accordionElements,
+  },
 } %}
 {% endembed %}

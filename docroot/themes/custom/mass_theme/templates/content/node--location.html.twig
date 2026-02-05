@@ -12,7 +12,7 @@
 {% block preContent %}
 
   {% for headerAlert in headerAlerts %}
-    {% include "@organisms/by-template/header-alert.twig" %}
+    {{ include('@organisms/by-template/header-alert.twig') }}
   {% endfor %}
 
   {# Check if primary indicator content exists. #}
@@ -27,18 +27,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -47,15 +47,15 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
-  {% include "@organisms/by-author/key-actions.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
+  {{ include('@organisms/by-author/key-actions.twig') }}
   {# {% include "@organisms/by-author/location-banner.twig" %} #}
-  {% embed "@organisms/by-author/location-banner.twig" with {
-    "locationBanner": {
-      "bgTitle": "",
-      "bgNarrow": content.field_bg_narrow
-    }
+  {% embed '@organisms/by-author/location-banner.twig' with {
+    locationBanner: {
+      bgTitle: '',
+      bgNarrow: content.field_bg_narrow,
+    },
   } %}
     {% block map %}
       {{ content.extra_contact_info_static_map }}
@@ -68,126 +68,126 @@
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
   {% set coloredHeading = {
-  "text": "Details",
-  "titleContext": details.titleContext,
-  "color": "green",
-  "level": level,
+  text: 'Details',
+  titleContext: details.titleContext,
+  color: 'green',
+  level: level,
   } %}
-  {% include "@atoms/04-headings/colored-heading.twig" %}
+  {{ include('@atoms/04-headings/colored-heading.twig') }}
 
   <div class="ma__details__container">
   <div class="ma__details__sticky-nav">
-    {% include "@molecules/sticky-nav.twig" %}
+    {{ include('@molecules/sticky-nav.twig') }}
   </div>
   <div class="ma__details__content">
     {# Increase heading number by 1 from the parent heading. #}
     {% set level = level + 1 %}
     {% if pageContent.pageOverview %}
       {% set pageOverview = pageContent.pageOverview %}
-      {% set pageOverview = pageOverview|merge({'compHeading': {
-                'title': pageOverview.compHeading.title,
-                'titleContext': pageOverview.compHeading.titleContext,
-                'level': level,
-                'id': pageOverview.compHeading.id
+      {% set pageOverview = pageOverview|merge({compHeading: {
+                title: pageOverview.compHeading.title,
+                titleContext: pageOverview.compHeading.titleContext,
+                level: level,
+                id: pageOverview.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/page-overview.twig" %}
+      {{ include('@organisms/by-author/page-overview.twig') }}
     {% endif %}
     {% if pageContent.pageHours %}
       {% set richText = pageContent.pageHours %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if pageContent.pageParking %}
       {% set richText = pageContent.pageParking %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if pageContent.pageActivities %}
       {% set imagePromos = pageContent.pageActivities %}
-      {% set imagePromos = imagePromos|merge({'compHeading': {
-                'title': imagePromos.compHeading.title,
-                'titleContext': imagePromos.compHeading.titleContext,
-                'level': level,
-                'id': imagePromos.compHeading.id
+      {% set imagePromos = imagePromos|merge({compHeading: {
+                title: imagePromos.compHeading.title,
+                titleContext: imagePromos.compHeading.titleContext,
+                level: level,
+                id: imagePromos.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/image-promos.twig" %}
+      {{ include('@organisms/by-author/image-promos.twig') }}
     {% endif %}
     {% if pageContent.pageAllActivities %}
       {% set richText = pageContent.pageAllActivities %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if pageContent.pageFacilities %}
       {% set richText = pageContent.pageFacilities %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if pageContent.pageServices %}
       {% set richText = pageContent.pageServices %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if pageContent.pageAccessibility %}
       {% set richText = pageContent.pageAccessibility %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if pageContent.pageRestrictions %}
       {% set richText = pageContent.pageRestrictions %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if pageContent.pageMoreInfo %}
       {% set richText = pageContent.pageMoreInfo %}
-      {% set richText = richText|merge({'compHeading': {
-                'title': richText.compHeading.title,
-                'titleContext': richText.compHeading.titleContext,
-                'level': level,
-                'id': richText.compHeading.id
+      {% set richText = richText|merge({compHeading: {
+                title: richText.compHeading.title,
+                titleContext: richText.compHeading.titleContext,
+                level: level,
+                id: richText.compHeading.id,
               }}) %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      {{ include('@organisms/by-author/rich-text.twig') }}
     {% endif %}
     {% if suggestedPages %}
-      {% set suggestedPages = suggestedPages|merge({'compHeading': {
-                'title': suggestedPages.compHeading.title,
-                'titleContext': suggestedPages.compHeading.titleContext,
-                'level': level,
-                'id': suggestedPages.compHeading.id
+      {% set suggestedPages = suggestedPages|merge({compHeading: {
+                title: suggestedPages.compHeading.title,
+                titleContext: suggestedPages.compHeading.titleContext,
+                level: level,
+                id: suggestedPages.compHeading.id,
               }}) %}
     {% endif %}
   </div>
@@ -199,14 +199,14 @@
   {% set level = level + 1 %}
   <aside class="sidebar sidebar--colored">
     {% if sidebarContact %}
-      {% set coloredHeading = sidebarContact.coloredHeading|merge({'level': level}) %}
-      {% set sidebarContact = sidebarContact|merge({'coloredHeading': coloredHeading}) %}
-      {% include "@organisms/by-author/sidebar-contact.twig" %}
+      {% set coloredHeading = sidebarContact.coloredHeading|merge({level: level}) %}
+      {% set sidebarContact = sidebarContact|merge({coloredHeading: coloredHeading}) %}
+      {{ include('@organisms/by-author/sidebar-contact.twig') }}
     {% endif %}
     {% if eventListing %}
-      {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level}) %}
-      {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading}) %}
-      {% include "@organisms/by-author/event-listing.twig" %}
+      {% set sidebarHeading = eventListing.sidebarHeading|merge({level: level}) %}
+      {% set eventListing = eventListing|merge({sidebarHeading: sidebarHeading}) %}
+      {{ include('@organisms/by-author/event-listing.twig') }}
     {% endif %}
     {# include "@organisms/by-author/sidebar-widget.twig" #}
   </aside>
@@ -220,7 +220,7 @@
   {% endif %}
   {% if suggestedPages %}
     <div id="{{ suggestedPages.compHeading.id }}" class="ma-suggested-locations">
-      {% include "@organisms/by-author/suggested-pages.twig" %}
+      {{ include('@organisms/by-author/suggested-pages.twig') }}
     </div>
   {% endif %}
   {# {% include "@organisms/by-template/breadcrumbs.twig" %} #}
