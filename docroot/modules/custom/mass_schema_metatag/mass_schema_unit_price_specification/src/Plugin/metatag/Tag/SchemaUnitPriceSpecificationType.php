@@ -5,7 +5,7 @@ namespace Drupal\mass_schema_unit_price_specification\Plugin\metatag\Tag;
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
- * Provides a plugin for the '@type' meta tag.
+ * Provides a plugin for the 'type' meta tag.
  *
  * @MetatagTag(
  *   id = "schema_unit_price_specification_type",
@@ -24,7 +24,7 @@ class SchemaUnitPriceSpecificationType extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array {
     $form = [
       '#type' => 'select',
       '#title' => $this->label(),

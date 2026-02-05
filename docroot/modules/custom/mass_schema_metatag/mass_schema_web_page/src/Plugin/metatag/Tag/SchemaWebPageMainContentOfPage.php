@@ -24,7 +24,7 @@ class SchemaWebPageMainContentOfPage extends SchemaNameBase {
   /**
    * Generate a form element for this meta tag.
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['#attributes']['placeholder'] = '[node:title]';
     return $form;
@@ -33,7 +33,7 @@ class SchemaWebPageMainContentOfPage extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array {
     $element = parent::output();
     $value = json_decode($this->value(), TRUE);
     if (!empty($element)) {
