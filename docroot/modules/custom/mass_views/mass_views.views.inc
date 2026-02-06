@@ -155,6 +155,15 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  $data['node_field_data']['mass_views_org_top_parent_field'] = [
+    'title' => t('Top-level organization'),
+    'field' => [
+      'title' => t('Top-level organization'),
+      'help' => t('Displays the top-level org_page (walks field_parent to the root).'),
+      'id' => 'mass_views_org_top_parent_field',
+    ],
+  ];
+
   // Adds an org filter for media.
   $data['media_field_data']['media_org_filter'] = [
     'title' => 'Organization Filter',
@@ -256,6 +265,15 @@ function mass_views_views_data_alter(array &$data) {
     'help' => t('Displays the redirect Source that is pointing to this media item.'),
     'field' => [
       'id' => 'media_redirect_field',
+    ],
+  ];
+
+  $data['media_field_data']['mass_views_media_org_top_parent_field'] = [
+    'title' => t('Top-level organization'),
+    'field' => [
+      'title' => t('Top-level organization'),
+      'help' => t('Displays the top-level org_page (walks field_parent to the root).'),
+      'id' => 'mass_views_media_org_top_parent_field',
     ],
   ];
 }
