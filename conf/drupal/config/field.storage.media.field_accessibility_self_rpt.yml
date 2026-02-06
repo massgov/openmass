@@ -1,0 +1,30 @@
+uuid: 7fbaa67a-839d-4018-ae19-fe613bf87c82
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_fields
+    - media
+id: media.field_accessibility_self_rpt
+field_name: field_accessibility_self_rpt
+entity_type: media
+type: list_long_label
+settings:
+  allowed_values:
+    -
+      value: verified_accessible
+      label: '<small><strong>Verified accessible:</strong><br>My organization or a third-party vendor has checked the document and it passes automated and manual <a href="https://www.mass.gov/info-details/creating-accessible-electronic-documents-and-communications#accessibility-testing-checklists">accessibility checks</a>.</small>'
+    -
+      value: not_tested
+      label: '<small><strong>Unverified or not accessible yet:</strong><br> The document is not accessible or hasn’t been <a href="https://www.mass.gov/info-details/creating-accessible-electronic-documents-and-communications#accessibility-testing-checklists">checked for accessibility</a> yet. I understand that my organization needs to replace this document with an accessible version as soon as possible.</small>'
+    -
+      value: exception
+      label: '<small><strong>Exception:</strong><br>I went through the <a href="https://www.mass.gov/info-details/enterprise-digital-accessibility-policy-exception-request">Exception Request Process</a> and this document has been approved as an exception. I understand that my organization must provide this document in an accessible format upon request.</small>'
+  allowed_values_function: ''
+module: mass_fields
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
