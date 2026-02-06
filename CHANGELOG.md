@@ -1,5 +1,33 @@
 
 
+## [0.465.0] - February 3, 2026
+
+### Security
+  - DP-44147: Address issues flagged by nightly_pending_security workflow.
+  
+### Fixed
+  - DP-44415: Remove redundant directions link context to prevent duplicate title attributes on address contact items.
+  - DP-44561: Filter out login links that reference deleted or unpublished nodes. The LogInLinksBuilder now validates that target nodes exist and are published before including them in the login links list.
+  
+### Changed
+  - DP-44729: Updated help text for microsite banner image size.
+  
+
+
+## [0.464.0] - January 27, 2026
+
+### Changed
+  - DP-39285: Update all icons on the site to use the new icon set with updated sizes and weight options.
+  - DP-44560: Updated Mayflower artifacts to dev-patternlab/DP-44560-A11Y-dont-put-link-to-person-if-they-have-no-page branch for testing purposes.
+  
+### Added
+  - DP-42935: Pass data on referring pages to form pages.
+  
+### Fixed
+  - DP-44414: Fix duplicate HTML IDs on featured content cards in campaign features paragraphs. Each card now uses its own unique paragraph entity ID instead of sharing the parent paragraph's ID or having empty IDs. Added null checks and refactored small card processing logic.
+  
+
+
 ## [0.463.0] - January 20, 2026
 
 ### Changed
