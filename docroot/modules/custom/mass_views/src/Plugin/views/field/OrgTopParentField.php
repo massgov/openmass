@@ -113,8 +113,10 @@ class OrgTopParentField extends FieldPluginBase {
     $current = $org;
     $seen = [];
 
-    // Traverse upwards; stop if no parent, missing field, broken ref, or cycle.
-    while (TRUE) {
+    // Hard safety limit: prevents infinite traversal even if data is cyclic.
+    $maxDepth = 50;
+
+    for ($i = 0; $i < $maxDepth; $i++) {
       $current_id = (int) $current->id();
       if ($current_id > 0) {
         if (isset($seen[$current_id])) {
@@ -140,6 +142,9 @@ class OrgTopParentField extends FieldPluginBase {
 
       $current = $parent;
     }
+
+    // If we hit the depth limit, return the last org we could resolve.
+    return $current;
   }
 
 }
