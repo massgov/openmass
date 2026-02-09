@@ -66,19 +66,20 @@ org_chain AS (
    AND fp2.deleted = 0
   WHERE oc.parent_nid IS NOT NULL
     AND oc.depth < 50
-),
-roots AS (
-  SELECT
-    content_nid,
-    org_nid,
-    ROW_NUMBER() OVER (PARTITION BY content_nid ORDER BY depth DESC) AS rn
-  FROM org_chain
-  WHERE parent_nid IS NULL
 )
 SELECT
   content_nid,
   org_nid AS top_org_nid
-FROM roots
+FROM (
+  SELECT
+    content_nid,
+    org_nid,
+    parent_nid,
+    depth,
+    ROW_NUMBER() OVER (PARTITION BY content_nid ORDER BY depth DESC) AS rn
+  FROM org_chain
+  WHERE parent_nid IS NULL
+) roots
 WHERE rn = 1;
 SQL;
 
@@ -127,19 +128,20 @@ org_chain AS (
    AND fp2.deleted = 0
   WHERE oc.parent_nid IS NOT NULL
     AND oc.depth < 50
-),
-roots AS (
-  SELECT
-    media_mid,
-    org_nid,
-    ROW_NUMBER() OVER (PARTITION BY media_mid ORDER BY depth DESC) AS rn
-  FROM org_chain
-  WHERE parent_nid IS NULL
 )
 SELECT
   media_mid,
   org_nid AS top_org_nid
-FROM roots
+FROM (
+  SELECT
+    media_mid,
+    org_nid,
+    parent_nid,
+    depth,
+    ROW_NUMBER() OVER (PARTITION BY media_mid ORDER BY depth DESC) AS rn
+  FROM org_chain
+  WHERE parent_nid IS NULL
+) roots
 WHERE rn = 1;
 SQL;
 
