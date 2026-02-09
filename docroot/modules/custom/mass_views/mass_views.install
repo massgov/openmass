@@ -1,0 +1,149 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Install/update hooks for the mass_views module.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Create/replace the MySQL 8 recursive CTE views used for top-org relationships.
+ */
+function mass_views_update_9001(): void {
+  $connection = Database::getConnection();
+
+  // Only supported for MySQL 8+ in this implementation.
+  // (If you ever add MariaDB/Postgres support, branch here.)
+  if ($connection->databaseType() !== 'mysql') {
+    return;
+  }
+
+  // 1) Node mapping: node nid -> top org nid (seeded from first field_organizations delta).
+  $sql_node_view = <<<'SQL'
+CREATE OR REPLACE VIEW mass_views_node_top_org_map AS
+WITH RECURSIVE
+seed AS (
+  SELECT
+    c.nid AS content_nid,
+    orgref.field_organizations_target_id AS org_nid
+  FROM node_field_data c
+  JOIN node__field_organizations orgref
+    ON orgref.entity_id = c.nid
+   AND orgref.deleted = 0
+  JOIN (
+    SELECT entity_id, MIN(delta) AS min_delta
+    FROM node__field_organizations
+    WHERE deleted = 0
+    GROUP BY entity_id
+  ) first_org
+    ON first_org.entity_id = orgref.entity_id
+   AND first_org.min_delta = orgref.delta
+),
+org_chain AS (
+  SELECT
+    seed.content_nid,
+    seed.org_nid,
+    fp.field_parent_target_id AS parent_nid,
+    0 AS depth
+  FROM seed
+  LEFT JOIN node__field_parent fp
+    ON fp.entity_id = seed.org_nid
+   AND fp.deleted = 0
+
+  UNION ALL
+
+  SELECT
+    oc.content_nid,
+    oc.parent_nid AS org_nid,
+    fp2.field_parent_target_id AS parent_nid,
+    oc.depth + 1 AS depth
+  FROM org_chain oc
+  LEFT JOIN node__field_parent fp2
+    ON fp2.entity_id = oc.parent_nid
+   AND fp2.deleted = 0
+  WHERE oc.parent_nid IS NOT NULL
+    AND oc.depth < 50
+),
+roots AS (
+  SELECT
+    content_nid,
+    org_nid,
+    ROW_NUMBER() OVER (PARTITION BY content_nid ORDER BY depth DESC) AS rn
+  FROM org_chain
+  WHERE parent_nid IS NULL
+)
+SELECT
+  content_nid,
+  org_nid AS top_org_nid
+FROM roots
+WHERE rn = 1;
+SQL;
+
+  // 2) Media mapping: media mid -> top org nid (seeded from first field_organizations delta).
+  $sql_media_view = <<<'SQL'
+CREATE OR REPLACE VIEW mass_views_media_top_org_map AS
+WITH RECURSIVE
+seed AS (
+  SELECT
+    m.mid AS media_mid,
+    orgref.field_organizations_target_id AS org_nid
+  FROM media_field_data m
+  JOIN media__field_organizations orgref
+    ON orgref.entity_id = m.mid
+   AND orgref.deleted = 0
+  JOIN (
+    SELECT entity_id, MIN(delta) AS min_delta
+    FROM media__field_organizations
+    WHERE deleted = 0
+    GROUP BY entity_id
+  ) first_org
+    ON first_org.entity_id = orgref.entity_id
+   AND first_org.min_delta = orgref.delta
+),
+org_chain AS (
+  SELECT
+    seed.media_mid,
+    seed.org_nid,
+    fp.field_parent_target_id AS parent_nid,
+    0 AS depth
+  FROM seed
+  LEFT JOIN node__field_parent fp
+    ON fp.entity_id = seed.org_nid
+   AND fp.deleted = 0
+
+  UNION ALL
+
+  SELECT
+    oc.media_mid,
+    oc.parent_nid AS org_nid,
+    fp2.field_parent_target_id AS parent_nid,
+    oc.depth + 1 AS depth
+  FROM org_chain oc
+  LEFT JOIN node__field_parent fp2
+    ON fp2.entity_id = oc.parent_nid
+   AND fp2.deleted = 0
+  WHERE oc.parent_nid IS NOT NULL
+    AND oc.depth < 50
+),
+roots AS (
+  SELECT
+    media_mid,
+    org_nid,
+    ROW_NUMBER() OVER (PARTITION BY media_mid ORDER BY depth DESC) AS rn
+  FROM org_chain
+  WHERE parent_nid IS NULL
+)
+SELECT
+  media_mid,
+  org_nid AS top_org_nid
+FROM roots
+WHERE rn = 1;
+SQL;
+
+  // Execute both statements.
+  $connection->query($sql_node_view);
+  $connection->query($sql_media_view);
+}
