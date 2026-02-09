@@ -99,6 +99,9 @@ function mass_views_views_data() {
       'base field' => 'nid',
       'field' => 'top_org_nid',
     ],
+    'argument' => [
+      'id' => 'standard',
+    ]
   ];
 
   // --- CTE-backed mapping table: media mid -> top org nid.
@@ -145,6 +148,9 @@ function mass_views_views_data() {
       'base field' => 'nid',
       'field' => 'top_org_nid',
     ],
+    'argument' => [
+      'id' => 'standard',
+    ]
   ];
 
   return $data;
