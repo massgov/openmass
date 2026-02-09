@@ -51,6 +51,102 @@ function mass_views_views_data() {
       'id' => 'cl_manual_lists_downloads',
     ],
   ];
+
+  // --- CTE-backed mapping table: node nid -> top org nid.
+  $data['mass_views_node_top_org_map']['table'] = [
+    'group' => t('Mass Views (computed)'),
+    'base' => [
+      'field' => 'content_nid',
+      'title' => t('Computed top org map (nodes)'),
+      'help' => t('Mapping of content node nid to its computed top-level org nid (MySQL 8 recursive CTE view).'),
+    ],
+  ];
+
+  // Relationship: Content view (node_field_data) -> mapping table.
+  // This is what makes the relationship appear in a Content view UI.
+  $data['node_field_data']['mass_views_node_top_org_map_rel'] = [
+    'title' => t('Computed top org mapping'),
+    'help' => t('Join to computed mapping (node nid → top-level org nid).'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Computed top org map'),
+      'base' => 'mass_views_node_top_org_map',
+      'base field' => 'content_nid',
+      'field' => 'nid',
+    ],
+  ];
+
+  $data['mass_views_node_top_org_map']['content_nid'] = [
+    'title' => t('Content nid'),
+    'help' => t('Node nid of the content row.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+  ];
+
+  // Relationship: mapping table -> top org node.
+  // You will add this relationship AFTER adding "Computed top org map".
+  $data['mass_views_node_top_org_map']['top_org_nid'] = [
+    'title' => t('Top org nid'),
+    'help' => t('Computed top-level org nid.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Top-level organization (computed)'),
+      'base' => 'node_field_data',
+      'base field' => 'nid',
+      'field' => 'top_org_nid',
+    ],
+  ];
+
+  // --- CTE-backed mapping table: media mid -> top org nid.
+  $data['mass_views_media_top_org_map']['table'] = [
+    'group' => t('Mass Views (computed)'),
+    'base' => [
+      'field' => 'media_mid',
+      'title' => t('Computed top org map (media)'),
+      'help' => t('Mapping of media mid to its computed top-level org nid (MySQL 8 recursive CTE view).'),
+    ],
+  ];
+
+  // Relationship: Media view (media_field_data) -> mapping table.
+  $data['media_field_data']['mass_views_media_top_org_map_rel'] = [
+    'title' => t('Computed top org mapping'),
+    'help' => t('Join to computed mapping (media mid → top-level org nid).'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Computed top org map'),
+      'base' => 'mass_views_media_top_org_map',
+      'base field' => 'media_mid',
+      'field' => 'mid',
+    ],
+  ];
+
+  $data['mass_views_media_top_org_map']['media_mid'] = [
+    'title' => t('Media mid'),
+    'help' => t('Media id of the media row.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+  ];
+
+  $data['mass_views_media_top_org_map']['top_org_nid'] = [
+    'title' => t('Top org nid'),
+    'help' => t('Computed top-level org nid.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Top-level organization (computed)'),
+      'base' => 'node_field_data',
+      'base field' => 'nid',
+      'field' => 'top_org_nid',
+    ],
+  ];
+
   return $data;
 }
 
@@ -265,15 +361,6 @@ function mass_views_views_data_alter(array &$data) {
     'help' => t('Displays the redirect Source that is pointing to this media item.'),
     'field' => [
       'id' => 'media_redirect_field',
-    ],
-  ];
-
-  $data['media_field_data']['mass_views_media_org_top_parent_field'] = [
-    'title' => t('Top-level organization'),
-    'field' => [
-      'title' => t('Top-level organization'),
-      'help' => t('Displays the top-level org_page (walks field_parent to the root).'),
-      'id' => 'mass_views_media_org_top_parent_field',
     ],
   ];
 }
