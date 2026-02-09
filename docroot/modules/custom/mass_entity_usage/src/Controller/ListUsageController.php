@@ -99,7 +99,7 @@ class ListUsageController extends ControllerBase {
    * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
    *   The pager manager.
    * @param \Drupal\trash\TrashManagerInterface|null $trash_manager
-   *    The trash manager.
+   *   The trash manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, MassEntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory, PagerManagerInterface $pager_manager, ?TrashManagerInterface $trash_manager,) {
     $this->entityTypeManager = $entity_type_manager;
