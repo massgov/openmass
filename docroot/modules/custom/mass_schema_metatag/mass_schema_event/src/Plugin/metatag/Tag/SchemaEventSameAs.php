@@ -41,7 +41,7 @@ class SchemaEventSameAs extends SchemaNameBase {
 
     // Assign the links array to the element for output.
     if (!empty($element) && is_array($links)) {
-      $element['#attributes']['content'] = array_column($links, 'url');
+      $element['#attributes']['content'] = $links;
     }
 
     return $element;
