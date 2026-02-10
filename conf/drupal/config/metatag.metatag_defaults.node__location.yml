@@ -16,8 +16,22 @@ tags:
   mass_metatag_phone_number: '[node:field_ref_contact_info_1:entity:field_ref_phone_number:0:entity:field_phone]'
   mass_metatag_body_preview: '[node:field_overview]'
   mass_metatag_contact_details: '[node:field_ref_contact_info_1:entity:field_ref_hours]'
-  schema_place_photo: 'a:3:{s:3:"url";s:20:"[node:field_bg_wide]";s:5:"width";s:0:"";s:6:"height";s:0:"";}'
-  schema_place_address: '[node:field_ref_contact_info_1]'
+  schema_place_photo: 'a:3:{s:3:"url";s:35:"["[node:field_bg_wide:entity:url]"]";s:5:"width";s:0:"";s:6:"height";s:0:"";}'
+  schema_place_address:
+    '[{"langcode":"en",
+      "country_code":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:country_code]",
+      "administrative_area":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:administrative_area]",
+      "locality":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:locality]",
+      "dependent_locality":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:dependent_locality]",
+      "postal_code":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:postal_code]",
+      "sorting_code":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:sorting_code]",
+      "address_line1":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:address_line1]",
+      "address_line2":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:address_line2]",
+      "address_line3":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:address_line3]",
+      "organization":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:organization]",
+      "given_name":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:given_name]",
+      "additional_name":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:additional_name]",
+      "family_name":"[node:field_ref_contact_info_1:entity:field_ref_address:entity:field_address_address:family_name]"}]'
   schema_place_type: Place
   schema_place_description: '[node:field_overview]'
   schema_place_id: '[node:url]#location'

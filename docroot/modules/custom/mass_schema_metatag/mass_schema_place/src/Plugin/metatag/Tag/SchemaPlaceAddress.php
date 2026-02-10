@@ -40,6 +40,7 @@ class SchemaPlaceAddress extends SchemaNameBase {
   public function output(): array {
     $element = parent::output();
     // Decode the value because it was encoded by hook_tokens().
+    dump($this->value());
     $addresses = json_decode($this->value(), TRUE);
 
     $element['#attributes']['content'] = [];

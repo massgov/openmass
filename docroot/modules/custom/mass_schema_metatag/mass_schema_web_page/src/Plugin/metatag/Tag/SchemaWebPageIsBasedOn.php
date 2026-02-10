@@ -3,6 +3,7 @@
 namespace Drupal\mass_schema_web_page\Plugin\metatag\Tag;
 
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
+use Drupal\Core\Url;
 
 /**
  * Provides a plugin for the 'schema_web_page_is_based_on' meta tag.
@@ -36,20 +37,77 @@ class SchemaWebPageIsBasedOn extends SchemaNameBase {
   public function output(): array {
     $element = parent::output();
 
-    $links = json_decode($this->value(), TRUE);
+    if (empty($element)) {
+      return $element;
+    }
 
-    if (!empty($element) && is_array($links)) {
-      $element['#attributes']['content'] = [];
+    $raw = $this->value();
 
-      // Iterate through each link to get the url.
-      foreach ($links as $link) {
-        if (empty($link['url'])) {
-          continue;
-        }
-        $element['#attributes']['content'][] = $link['url'];
+    // The config is often stored as a JSON string (e.g. ["entity:node/123"]) but
+    // may also be a plain string. Support both.
+    $decoded = is_string($raw) ? json_decode($raw, TRUE) : NULL;
+
+    $items = [];
+    if (is_array($decoded)) {
+      $items = $decoded;
+    }
+    elseif (is_string($raw) && trim($raw) !== '') {
+      $items = [trim($raw)];
+    }
+
+    if (empty($items)) {
+      return $element;
+    }
+
+    $urls = [];
+    foreach ($items as $item) {
+      // Historically we stored arrays like [{"url":"..."}] or [{"uri":"..."}].
+      if (is_array($item)) {
+        $candidate = $item['url'] ?? $item['uri'] ?? '';
+      }
+      else {
+        $candidate = (string) $item;
+      }
+
+      $candidate = trim($candidate);
+      if ($candidate === '') {
+        continue;
+      }
+
+      $absolute = $this->toAbsoluteUrl($candidate);
+      if ($absolute !== '') {
+        $urls[] = $absolute;
       }
     }
+
+    if (!empty($urls)) {
+      // Even though the tag is marked multiple = FALSE, schema_metatag accepts
+      // an array and will output JSON-LD arrays when appropriate.
+      $element['#attributes']['content'] = $urls;
+    }
+
     return $element;
+  }
+
+  /**
+   * Convert an entity/internal URI or URL string to an absolute URL.
+   */
+  private function toAbsoluteUrl(string $value): string {
+    // Already an absolute URL.
+    if (preg_match('/^https?:\/\//i', $value)) {
+      return $value;
+    }
+
+    // Handle Drupal URIs like entity:node/123 and internal:/path.
+    try {
+      return Url::fromUri($value, ['absolute' => TRUE])->toString();
+    }
+    catch (\Throwable $e) {
+      // Fall through.
+    }
+
+    // As a last resort, return empty so we skip invalid values.
+    return '';
   }
 
 }
