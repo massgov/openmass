@@ -26,8 +26,8 @@ final class LinkAbsoluteUrlsFormatter extends FormatterBase {
    */
   public static function defaultSettings(): array {
     return [
-        'absolute' => TRUE,
-      ] + parent::defaultSettings();
+      'absolute' => TRUE,
+    ] + parent::defaultSettings();
   }
 
   /**

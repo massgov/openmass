@@ -26,9 +26,9 @@ final class EntityReferenceAbsoluteUrlsFormatter extends FormatterBase {
    */
   public static function defaultSettings(): array {
     return [
-        'link_template' => 'canonical',
-        'absolute' => TRUE,
-      ] + parent::defaultSettings();
+      'link_template' => 'canonical',
+      'absolute' => TRUE,
+    ] + parent::defaultSettings();
   }
 
   /**
