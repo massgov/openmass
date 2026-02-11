@@ -6,9 +6,9 @@ table.dataTable {
   border: 2px solid #dcdcdc;
 }
 
-table.dataTable tbody {
-  vertical-align: top;
-}
+/*table.dataTable tbody {*/
+/*  vertical-align: top;*/
+/*}*/
 
 table.dataTable thead,
 table.dataTable thead tr>.dtfc-fixed-start {
@@ -31,31 +31,8 @@ table.dataTable thead .sorting_asc {
   background-image: url(../../icons/333333/sort-asc.svg) !important;
 }
 
-
-table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
-table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
-  top: 50%;
-  left: 5px;
-  height: 1em;
-  width: 1em;
-  margin-top: -9px;
-  position: absolute;
-  content: "+";
-  font-size: 1.6em;
-  font-weight: 700;
-  line-height: .75em;
-  color: #388557;
-  border-radius: 0;
-  box-shadow: none;
-  border: none;
-  background: none;
-  font-family: "Noto Sans VF","Noto Sans","Helvetica","Arial",sans-serif;
-}
-
-table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before,
-table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
-  content: "᠆"; /* small hyphen-minus */
-  background: none;
+table.dataTable.collapsed>tbody>tr>td.dtr-control {
+  position: relative;
 }
 
 table.dataTable.collapsed>tbody>tr.child ul.dtr-details>li {
