@@ -131,7 +131,7 @@ final class LinkNameUrlObjectsFormatter extends FormatterBase {
       ];
     }
 
-    $json = json_encode($out, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $json = json_encode($out);
 
     $build = [
       [
