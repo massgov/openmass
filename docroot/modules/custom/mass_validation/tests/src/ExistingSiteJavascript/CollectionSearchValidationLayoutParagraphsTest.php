@@ -136,7 +136,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     // Inside the new Service Section: open “Add section” and choose “Custom Search”
     $this->getSession()->wait(4000, "document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*=\"choose-component?parent_uuid\"]') !== null");
 
-    $regionAddBtn = $page->find('css', '.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*="choose-component?parent_uuid"]');
+    $regionAddBtn = $page->find('css', '.layout--onecol-mass-service-section a.lpb-btn--add');
     $this->assertNotNull($regionAddBtn, 'Region Add section button is present.');
     // Scroll into view and click via JS to avoid overlay interception.
     $this->getSession()->executeScript(
