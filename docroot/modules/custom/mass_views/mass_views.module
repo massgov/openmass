@@ -281,7 +281,7 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
-  
+
   // Debug: Log when all_documents_latest_rev view is being altered
   if ($view->id() == 'all_documents_latest_rev') {
     \Drupal::logger('mass_views')->notice('Hook called for view: @id, display: @display', [
@@ -411,7 +411,7 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     //
     // Access the table queue to find and modify the organizations join
     $table_queue = &$query->getTableQueue();
-    
+
     foreach ($table_queue as $alias => &$table_info) {
       if (isset($table_info['table']) && $table_info['table'] == 'media_revision__field_organizations') {
         // Add a condition to the join to only include the first organization (delta = 0)
