@@ -281,6 +281,14 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  
+  // Debug: Log when all_documents_latest_rev view is being altered
+  if ($view->id() == 'all_documents_latest_rev') {
+    \Drupal::logger('mass_views')->notice('Hook called for view: @id, display: @display', [
+      '@id' => $view->id(),
+      '@display' => $view->getDisplay()->display['id'],
+    ]);
+  }
 
   if ($view->id() == 'report_orphaned_documents') {
 
@@ -398,6 +406,27 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
   }
 
   if ($view->id() == 'all_documents_latest_rev' && in_array($view->getDisplay()->display['id'], ['page_1', 'data_export_1'])) {
+    // Fix duplicate rows caused by LEFT JOINs to multi-value fields (organizations, etc.).
+    // When a media has multiple organizations, the LEFT JOIN creates multiple rows.
+    //
+    // Access the table queue to find and modify the organizations join
+    $table_queue = &$query->getTableQueue();
+    
+    foreach ($table_queue as $alias => &$table_info) {
+      if (isset($table_info['table']) && $table_info['table'] == 'media_revision__field_organizations') {
+        // Add a condition to the join to only include the first organization (delta = 0)
+        // This prevents duplicates when a media has multiple organizations
+        if (!isset($table_info['join']->extra)) {
+          $table_info['join']->extra = [];
+        }
+        $table_info['join']->extra[] = [
+          'field' => 'delta',
+          'value' => 0,
+          'operator' => '=',
+        ];
+      }
+    }
+
     // Fix the organization filter to work with organizations that don't have
     // child organizations. The issue is that the view creates an INNER JOIN
     // to node__field_organizations which requires the org to have children.
