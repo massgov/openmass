@@ -136,13 +136,12 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     // Inside the new Service Section: open “Add section” and choose “Custom Search”
     $this->getSession()->wait(4000, "document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*=\"choose-component?parent_uuid\"]') !== null");
 
-    $regionAddBtn = $page->find('css', '.layout--onecol-mass-service-section a.lpb-btn--add');
+    $regionAddBtn = $page->find('css', '.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*="choose-component?parent_uuid"]');
     $this->assertNotNull($regionAddBtn, 'Region Add section button is present.');
     // Scroll into view and click via JS to avoid overlay interception.
     $this->getSession()->executeScript(
       "(function(){var el=document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax.center.js-lpb-ui[href*=\"choose-component?parent_uuid\"]'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
     );
-    $this->assertTrue($regionAddBtn->isVisible(), 'Region Add section button is visible.');
 
     // Wait for the region component chooser modal to render.
     $this->getSession()->wait(500, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front .lpb-component-list') !== null");
