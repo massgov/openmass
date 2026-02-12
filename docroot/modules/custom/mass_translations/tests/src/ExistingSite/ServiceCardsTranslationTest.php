@@ -148,7 +148,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
    * @return array
    *   An array of roles and bundles to test.
    */
-  public function canTranslateContentDataProvider(): array {
+  public static function canTranslateContentDataProvider(): array {
     return [
       ['api_service_card', ['administrator', 'mmg_editor']],
     ];

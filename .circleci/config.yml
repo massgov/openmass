@@ -321,7 +321,7 @@ jobs:
                 # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
                 name: Run functional tests
                 command: |
-                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
+                  TESTS_TO_RUN=$(vendor/bin/phpunit -c phpunit.xml.dist --list-tests --colors=never | sed -n 's/^ - //p')
                   echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
