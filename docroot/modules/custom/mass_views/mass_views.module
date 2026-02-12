@@ -282,14 +282,6 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
 
-  // Debug: Log when all_documents_latest_rev view is being altered
-  if ($view->id() == 'all_documents_latest_rev') {
-    \Drupal::logger('mass_views')->notice('Hook called for view: @id, display: @display', [
-      '@id' => $view->id(),
-      '@display' => $view->getDisplay()->display['id'],
-    ]);
-  }
-
   if ($view->id() == 'report_orphaned_documents') {
 
     // Get the numeric media IDs that need to be excluded.
