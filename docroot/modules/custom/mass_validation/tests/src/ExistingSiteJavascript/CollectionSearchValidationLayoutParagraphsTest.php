@@ -145,7 +145,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertTrue($regionAddBtn->isVisible(), 'Region Add section button is visible.');
 
     // Wait for the region component chooser modal to render.
-    $this->getSession()->wait(500c0, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front .lpb-component-list') !== null");
+    $this->getSession()->wait(500, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front .lpb-component-list') !== null");
 
     // Assert the "Custom Search" option exists.
     $customSearch = $page->find('css', '.ui-dialog .lpb-component-list__item.type-collection_search a.use-ajax');
