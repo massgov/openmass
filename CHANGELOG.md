@@ -1,5 +1,12 @@
 
 
+## [0.466.0] - February 10, 2026
+
+### Changed
+  - DP-44710: Fix campaign video heading level skip accessibility issue on promo page section videos without titles by using H2 instead of H3 to maintain proper heading hierarchy
+  
+
+
 ## [0.465.0] - February 3, 2026
 
 ### Security
