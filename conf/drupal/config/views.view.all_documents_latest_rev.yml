@@ -35,7 +35,6 @@ dependencies:
     - user
     - views_bulk_operations
     - views_data_export
-    - views_data_export
 id: all_documents_latest_rev
 label: 'Advanced search - documents'
 module: views
@@ -1416,28 +1415,28 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        node_org_filter:
-          id: node_org_filter
-          table: node_field_data
-          field: node_org_filter
-          relationship: field_organizations
+        media_org_filter:
+          id: media_org_filter
+          table: media_field_data
+          field: media_org_filter
+          relationship: mid
           group_type: group
           admin_label: ''
-          entity_type: node
-          plugin_id: mass_views_node_org_filter
+          entity_type: media
+          plugin_id: mass_views_media_org_filter
           operator: '='
           value: null
           group: 1
           exposed: true
           expose:
-            operator_id: node_org_filter_op
+            operator_id: ''
             label: 'Organization (direct match)'
             description: ''
             use_operator: false
-            operator: node_org_filter_op
+            operator: media_org_filter_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: node_org_filter
+            identifier: media_org_filter
             required: false
             remember: false
             multiple: false
@@ -1460,6 +1459,7 @@ display:
               prototype_design_access: '0'
               mmg_editor: '0'
               viewer: '0'
+              bulk_edit: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2416,7 +2416,7 @@ display:
           metatags: {  }
           tokenize: false
     cache_metadata:
-      max-age: -1
+      max-age: 0
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
@@ -5462,7 +5462,7 @@ display:
           tokenize: false
       path: admin/ma-dash/documents-advanced-search
     cache_metadata:
-      max-age: -1
+      max-age: 0
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
