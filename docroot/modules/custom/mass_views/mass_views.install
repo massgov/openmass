@@ -28,20 +28,15 @@ WITH RECURSIVE
 seed AS (
   SELECT
     nfd.nid AS content_nid,
-    orgref.field_organizations_target_id AS org_nid,
-    orgref.delta AS org_field_delta,
-    nfd.langcode
+    orgref.field_organizations_target_id AS org_nid
   FROM node_field_data AS nfd
-  LEFT JOIN node__field_organizations AS orgref
+  INNER JOIN node__field_organizations AS orgref
     ON nfd.nid = orgref.entity_id
-    AND orgref.deleted = 0
-    AND (orgref.langcode = nfd.langcode OR orgref.bundle IN ( 'advisory', 'glossary' ))
 ),
 org_chain AS (
   SELECT
     seed.content_nid,
     seed.org_nid,
-    seed.org_field_delta,
     fp.field_parent_target_id AS parent_nid,
     0 AS depth
   FROM seed
@@ -53,7 +48,6 @@ org_chain AS (
   SELECT
     oc.content_nid,
     oc.parent_nid AS org_nid,
-    oc.org_field_delta,
     fp2.field_parent_target_id AS parent_nid,
     oc.depth + 1 AS depth
   FROM org_chain AS oc
@@ -64,19 +58,19 @@ org_chain AS (
 )
 SELECT
   content_nid,
-  org_nid AS top_org_nid,
-  org_field_delta
+  org_nid AS top_org_nid
 FROM (
   SELECT
     content_nid,
     org_nid,
     parent_nid,
     depth,
-    org_field_delta,
     ROW_NUMBER() OVER (PARTITION BY content_nid ORDER BY depth DESC) AS rn
   FROM org_chain
   WHERE parent_nid IS NULL
-) AS roots;
+  GROUP BY content_nid, org_nid
+) AS roots
+WHERE rn < 50;
 SQL;
 
   // 2) Media mapping: media mid -> top org nid (seeded from first field_organizations delta).
