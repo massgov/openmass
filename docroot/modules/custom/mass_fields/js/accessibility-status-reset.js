@@ -11,13 +11,23 @@
    *
    * The _none (TBD) radio is kept in the DOM but hidden. When a file is
    * uploaded or removed, JS selects the hidden _none radio — effectively
-   * resetting the field to "no selection". The require_on_publish constraint
-   * will then block publishing until the author picks a real option.
+   * resetting the field to the empty state. An aria-live region announces
+   * the reset to screen reader users. The require_on_publish constraint
+   * blocks publishing until the author picks a real option.
    */
   Drupal.behaviors.accessibilityStatusReset = {
     attach: function (context, settings) {
       const fidsSelector = 'input[data-drupal-selector="edit-field-upload-file-0-fids"]';
       const noneSelector = 'input[data-drupal-selector="edit-field-accessibility-self-rpt-none"]';
+      const liveRegionId = 'accessibility-status-reset-announcement';
+
+      // Inject an aria-live region once (for screen reader announcements).
+      once('accessibility-status-live-region', 'body').forEach(function (body) {
+        $(body).append(
+          '<div id="' + liveRegionId + '" aria-live="polite" aria-atomic="true" ' +
+          'class="visually-hidden"></div>'
+        );
+      });
 
       // Hide the _none (TBD) radio and its wrapper on every attach
       // (including after AJAX re-renders).
@@ -38,8 +48,6 @@
           if (currentFids !== lastFids) {
             lastFids = currentFids;
 
-            // Reset to _none: set both attribute and property so the hidden
-            // radio is checked, and the visible ones are unchecked.
             const $form = $fidsField.closest('form');
             const $noneRadio = $form.find(noneSelector);
             const $otherRadios = $form.find('input[name="field_accessibility_self_rpt"]').not(noneSelector);
@@ -47,8 +55,13 @@
             // Uncheck visible radios (attribute + property).
             $otherRadios.removeAttr('checked').prop('checked', false);
 
-            // Check the hidden _none radio.
+            // Check the hidden _none radio to reset the field to an empty state.
             $noneRadio.attr('checked', 'checked').prop('checked', true);
+
+            // Announce the reset to screen reader users.
+            $('#' + liveRegionId).text(
+              Drupal.t('File accessibility status has been reset. Please make a new selection.')
+            );
           }
 
           // Re-hide _none after every AJAX update (Drupal may re-render it).
