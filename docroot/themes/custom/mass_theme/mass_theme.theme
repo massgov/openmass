@@ -4598,6 +4598,70 @@ function mass_theme_preprocess_page(&$variables) {
   }
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
 
+  if ($route_name === 'view.collection_all.page_all') {
+    $cache_tags = [];
+    $route_match = \Drupal::routeMatch();
+    $collection = $route_match->getParameter('collection');
+
+    // Load the collection term from the slug used in the view path.
+    $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $terms = $storage->loadByProperties([
+      'vid' => 'collections',
+      'field_url_name' => $collection,
+    ]);
+    /** @var \Drupal\taxonomy\TermInterface|null $term */
+    $term = $terms ? reset($terms) : NULL;
+
+    if ($term) {
+      // Gather entities from both fields on the same term.
+      $org_entities = !$term->get('field_organizations')->isEmpty()
+        ? $term->get('field_organizations')->referencedEntities()
+        : [];
+
+      // Build one headerSearch array and merge suggested scopes from all entities.
+      $header_search = NULL;
+      $merged_scopes = [];
+
+      foreach ($org_entities as $orgs) {
+        $hs = Molecules::prepareHeaderSearch($orgs, $cache_tags);
+
+        // Use the first built headerSearch as the base.
+        if ($header_search === NULL) {
+          $header_search = $hs;
+        }
+
+        // Merge suggested scopes.
+        if (!empty($hs['suggestedScopes']) && is_array($hs['suggestedScopes'])) {
+          foreach ($hs['suggestedScopes'] as $scope) {
+            $type = $scope['type'] ?? '';
+            $value = $scope['value'] ?? '';
+            if ($type === '' || $value === '') {
+              continue;
+            }
+            $merged_scopes[$type . ':' . $value] = $scope;
+          }
+        }
+      }
+
+      // Fall back to default header search if nothing was built.
+      if ($header_search === NULL) {
+        $header_search = Molecules::prepareHeaderSearch();
+      }
+
+      // Apply merged scopes back onto the single headerSearch array.
+      $header_search['suggestedScopes'] = array_values($merged_scopes);
+      $header_search['hasSuggestions'] = !empty($header_search['suggestedScopes']);
+
+      $variables['headerSearch'] = $header_search;
+
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
+        ->applyTo($variables);
+    }
+  }
+
   if ($node = \Drupal::routeMatch()->getParameter('node')) {
     $node = $variables['node'];
 
