@@ -153,6 +153,14 @@ function mass_views_views_data() {
     ]
   ];
 
+  $data['ed11y_action']['pid_count'] = [
+    'title' => t('PID count'),
+    'help' => t('Count of grouped PIDs'),
+    'field' => [
+      'id' => 'numeric',
+    ]
+  ];
+
   $data['ed11y_page']['ed11y_action_pid_count'] = [
     'title' => t('Grouped PID'),
     'help' => t('Join ed11y_action with ed11y_page table and count grouped PIDs.'),
