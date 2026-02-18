@@ -154,12 +154,12 @@ function mass_views_views_data() {
   ];
 
   // Add the ed11y_page_pid_count_join relationship.
-  $data['ed11y_page']['pid_count'] = [
-    'title' => t('PID Count'),
-    'help' => t('Join with ed11y_page table and count PIDs.'),
+  $data['ed11y_page']['ed11y_action_pid_count'] = [
+    'title' => t('Grouped PID'),
+    'help' => t('Join ed11y_action with ed11y_page table and count grouped PIDs.'),
     'relationship' => [
       'id' => 'standard',
-      'label' => t('PID Count'),
+      'label' => t('Grouped PID'),
       'base' => 'ed11y_action',
       'base field' => 'pid',
       'field' => 'pid',
