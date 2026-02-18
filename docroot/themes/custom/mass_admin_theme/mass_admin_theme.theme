@@ -185,7 +185,7 @@ function mass_admin_theme_preprocess_layout_paragraphs_builder(&$variables) {
   }
 
   // Case 2: Add form
-  elseif (str_starts_with($route_name, 'node.add')) {
+  elseif (str_starts_with($route_name, 'entity.node.add')) {
     $node_type = $route_match->getParameter('node_type');
     if (!empty($node_type)) {
       $variables['node_type'] = $node_type->id();
@@ -265,7 +265,7 @@ function mass_admin_theme_preprocess_html(&$variables) {
 
   $allowed_routes = [
     'entity.node.edit_form',
-    'node.add',
+    'entity.node.add',
   ];
 
   if (in_array($route_name, $allowed_routes, TRUE)) {
