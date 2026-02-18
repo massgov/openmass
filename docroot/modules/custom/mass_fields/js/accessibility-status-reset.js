@@ -23,8 +23,14 @@
             const $form = $fidsField.closest('form');
             const $accessibilityRadios = $form.find('input[name="field_accessibility_self_rpt"]');
 
-            // Uncheck all radios (reset to no selection).
-            $accessibilityRadios.prop('checked', false).trigger('change');
+            // Uncheck all radios.
+            $accessibilityRadios.prop('checked', false);
+
+            // Check the _none radio button.
+            const $noneRadio = $form.find('input[name="field_accessibility_self_rpt"][value="_none"]');
+            if ($noneRadio.length) {
+              $noneRadio.prop('checked', true).trigger('change');
+            }
           }
         }, 100);
       });

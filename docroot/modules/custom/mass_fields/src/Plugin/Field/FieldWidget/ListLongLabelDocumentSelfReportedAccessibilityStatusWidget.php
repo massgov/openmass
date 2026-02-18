@@ -41,16 +41,13 @@ class ListLongLabelDocumentSelfReportedAccessibilityStatusWidget extends ListLon
       $selected = [array_key_first($options)];
     }
 
-    // If there's a "_none" option, move it to the bottom.
-    if (isset($options['_none'])) {
-      $none = $options['_none'];
-      unset($options['_none']);
-      $options['_none'] = $none;
-    }
+    // Move "_none" item to the bottom.
+    $none = array_shift($options);
+    $options['_none'] = $none;
 
     $element['#type'] = 'radios';
     $element['#options'] = $options;
-    $element['#default_value'] = $selected ? reset($selected) : ($this->required ? NULL : '_none');
+    $element['#default_value'] = $selected ? reset($selected) : '_none';
 
     // Attach JavaScript library to reset accessibility status when file is removed.
     $element['#attached']['library'][] = 'mass_fields/accessibility_status_reset';
