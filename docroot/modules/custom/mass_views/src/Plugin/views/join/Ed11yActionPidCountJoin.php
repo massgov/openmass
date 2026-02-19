@@ -5,7 +5,7 @@ namespace Drupal\mass_views\Plugin\views\join;
 use Drupal\views\Plugin\views\join\JoinPluginBase;
 
 /**
- * Joins ed11y_action table with pid count.
+ * Joins ed11y_action table and groups by pid.
  *
  * @ingroup views_join_handlers
  *

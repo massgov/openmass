@@ -21,7 +21,7 @@ function mass_views_update_10001(): void {
     return;
   }
 
-  // 1) Node mapping: node nid -> top org nid (seeded from first field_organizations delta).
+  // 1) Node mapping: node nid -> top org nid (seeded from field_organizations).
   $sql_node_view = <<<'SQL'
 CREATE OR REPLACE VIEW mass_views_node_top_org_map AS
 WITH RECURSIVE
@@ -67,7 +67,7 @@ FROM (
 ) AS roots
 SQL;
 
-  // 2) Media mapping: media mid -> top org nid (seeded from first field_organizations delta).
+  // 2) Media mapping: media mid -> top org nid (seeded from field_organizations).
   $sql_media_view = <<<'SQL'
 CREATE OR REPLACE VIEW mass_views_media_top_org_map AS
 WITH RECURSIVE
