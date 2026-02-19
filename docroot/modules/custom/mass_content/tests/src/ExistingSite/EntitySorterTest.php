@@ -101,9 +101,6 @@ class EntitySorterTest extends MassExistingSiteBase {
 
   /**
    * Creates a media with a specified field_start_date value.
-   *
-   * Note: field_start_date is deprecated/hidden on the document form (DP-42778),
-   * but it still exists and is used here to verify EntitySorter behavior.
    */
   private function createMediaWithFieldStartDate($start_date) {
 
