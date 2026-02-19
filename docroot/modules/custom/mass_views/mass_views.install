@@ -37,7 +37,8 @@ org_chain AS (
   SELECT
     seed.content_nid,
     seed.org_nid,
-    fp.field_parent_target_id AS parent_nid
+    fp.field_parent_target_id AS parent_nid,
+    CAST(seed.org_nid AS CHAR(2000)) AS path
   FROM seed
   LEFT JOIN node__field_parent AS fp
     ON seed.org_nid = fp.entity_id
@@ -47,19 +48,19 @@ org_chain AS (
   SELECT
     oc.content_nid,
     oc.parent_nid AS org_nid,
-    fp2.field_parent_target_id AS parent_nid
+    fp2.field_parent_target_id AS parent_nid,
+    CONCAT(oc.path, ',', oc.parent_nid) AS path
   FROM org_chain AS oc
   LEFT JOIN node__field_parent AS fp2
     ON oc.parent_nid = fp2.entity_id
   WHERE oc.parent_nid IS NOT NULL
+    AND FIND_IN_SET(oc.parent_nid, oc.path) = 0
 )
 SELECT
   content_nid,
   org_nid AS top_org_nid
 FROM (
-  SELECT
-    content_nid,
-    org_nid
+  SELECT content_nid, org_nid
   FROM org_chain
   WHERE parent_nid IS NULL
   GROUP BY content_nid, org_nid
@@ -82,7 +83,8 @@ org_chain AS (
   SELECT
     seed.media_mid,
     seed.org_nid,
-    fp.field_parent_target_id AS parent_nid
+    fp.field_parent_target_id AS parent_nid,
+    CAST(seed.org_nid AS CHAR(2000)) AS path
   FROM seed
   LEFT JOIN node__field_parent AS fp
     ON fp.entity_id = seed.org_nid
@@ -92,19 +94,19 @@ org_chain AS (
   SELECT
     oc.media_mid,
     oc.parent_nid AS org_nid,
-    fp2.field_parent_target_id AS parent_nid
+    fp2.field_parent_target_id AS parent_nid,
+    CONCAT(oc.path, ',', oc.parent_nid) AS path
   FROM org_chain AS oc
   LEFT JOIN node__field_parent AS fp2
     ON oc.parent_nid = fp2.entity_id
   WHERE oc.parent_nid IS NOT NULL
+    AND FIND_IN_SET(oc.parent_nid, oc.path) = 0
 )
 SELECT
   media_mid,
   org_nid AS top_org_nid
 FROM (
-  SELECT
-    media_mid,
-    org_nid
+  SELECT media_mid, org_nid
   FROM org_chain
   WHERE parent_nid IS NULL
   GROUP BY media_mid, org_nid
