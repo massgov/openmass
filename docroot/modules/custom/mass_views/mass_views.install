@@ -37,8 +37,7 @@ org_chain AS (
   SELECT
     seed.content_nid,
     seed.org_nid,
-    fp.field_parent_target_id AS parent_nid,
-    0 AS depth
+    fp.field_parent_target_id AS parent_nid
   FROM seed
   LEFT JOIN node__field_parent AS fp
     ON seed.org_nid = fp.entity_id
@@ -48,13 +47,11 @@ org_chain AS (
   SELECT
     oc.content_nid,
     oc.parent_nid AS org_nid,
-    fp2.field_parent_target_id AS parent_nid,
-    oc.depth + 1 AS depth
+    fp2.field_parent_target_id AS parent_nid
   FROM org_chain AS oc
   LEFT JOIN node__field_parent AS fp2
     ON oc.parent_nid = fp2.entity_id
   WHERE oc.parent_nid IS NOT NULL
-    AND oc.depth < 50
 )
 SELECT
   content_nid,
@@ -62,15 +59,11 @@ SELECT
 FROM (
   SELECT
     content_nid,
-    org_nid,
-    parent_nid,
-    depth,
-    ROW_NUMBER() OVER (PARTITION BY content_nid ORDER BY depth DESC) AS rn
+    org_nid
   FROM org_chain
   WHERE parent_nid IS NULL
   GROUP BY content_nid, org_nid
 ) AS roots
-WHERE rn < 50;
 SQL;
 
   // 2) Media mapping: media mid -> top org nid (seeded from first field_organizations delta).
@@ -82,15 +75,14 @@ seed AS (
     m.mid AS media_mid,
     orgref.field_organizations_target_id AS org_nid
   FROM media_field_data AS m
-  INNER JOIN media__field_organizations orgref
+  INNER JOIN media__field_organizations AS orgref
     ON m.mid = orgref.entity_id
 ),
 org_chain AS (
   SELECT
     seed.media_mid,
     seed.org_nid,
-    fp.field_parent_target_id AS parent_nid,
-    0 AS depth
+    fp.field_parent_target_id AS parent_nid
   FROM seed
   LEFT JOIN node__field_parent AS fp
     ON fp.entity_id = seed.org_nid
@@ -100,13 +92,11 @@ org_chain AS (
   SELECT
     oc.media_mid,
     oc.parent_nid AS org_nid,
-    fp2.field_parent_target_id AS parent_nid,
-    oc.depth + 1 AS depth
+    fp2.field_parent_target_id AS parent_nid
   FROM org_chain AS oc
-  LEFT JOIN node__field_parent fp2
+  LEFT JOIN node__field_parent AS fp2
     ON oc.parent_nid = fp2.entity_id
   WHERE oc.parent_nid IS NOT NULL
-    AND oc.depth < 50
 )
 SELECT
   media_mid,
@@ -114,15 +104,11 @@ SELECT
 FROM (
   SELECT
     media_mid,
-    org_nid,
-    parent_nid,
-    depth,
-    ROW_NUMBER() OVER (PARTITION BY media_mid ORDER BY depth DESC) AS rn
+    org_nid
   FROM org_chain
   WHERE parent_nid IS NULL
   GROUP BY media_mid, org_nid
 ) AS roots
-WHERE rn < 50;
 SQL;
 
   // Execute both statements.
