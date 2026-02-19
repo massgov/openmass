@@ -4,8 +4,7 @@ namespace Drupal\mass_views\Plugin\views\filter;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
-use Drupal\views\Plugin\views\display\DisplayPluginBase;
-use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
 
 /**
  * Filters by a TOP-LEVEL Organization and includes all of its descendants.
@@ -58,13 +57,24 @@ class OrgTopParentFilterMedia extends FilterPluginBase {
       $org_ids[] = (int) $top_id;
     }
 
-    // 2) Create the INNER JOIN to the org reference field table.
-    $relationship = $this->relationship ? $this->relationship : $this->view->storage->get('base_table');
-    $join = $this->query->getJoinData('media__field_organizations', $relationship);
-    $join->type = 'INNER';
-    $org_table_alias = $this->query->ensureTable('media__field_organizations', $this->relationship, $join);
+    // 2) Create an INNER JOIN to media__field_organizations via the Views join
+    //    plugin. getJoinData() can return NULL when the table is not yet
+    //    registered in the query, so we build the join object directly.
+    $configuration = [
+      'type'       => 'INNER',
+      'table'      => 'media__field_organizations',
+      'field'      => 'entity_id',
+      'left_table' => 'media_field_data',
+      'left_field' => 'mid',
+      'extra'      => [
+        ['field' => 'deleted', 'value' => '0'],
+      ],
+      'operator'   => '=',
+    ];
+    $join = Views::pluginManager('join')->createInstance('standard', $configuration);
+    $org_table_alias = $this->query->addTable('media__field_organizations', $this->relationship, $join);
 
-    // 3) Build an OR where-group: (nid IN org_ids) OR (field_organizations_target_id IN org_ids)
+    // 3) Filter to only rows where the tagged org is in our computed subtree.
     $this->query->addWhere($this->options['group'], "$org_table_alias.field_organizations_target_id", $org_ids, 'IN');
   }
 
