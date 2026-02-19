@@ -37,7 +37,7 @@ display:
           id: entity_id_1
           table: ed11y_page
           field: entity_id
-          relationship: editoria11y_page_to_node
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -94,7 +94,7 @@ display:
           id: title
           table: node_field_data
           field: title
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -159,7 +159,7 @@ display:
           id: entity_type_1
           table: ed11y_page
           field: entity_type
-          relationship: editoria11y_page_to_node
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: standard
@@ -208,7 +208,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -275,7 +275,7 @@ display:
           id: created
           table: node_field_data
           field: created
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -352,7 +352,7 @@ display:
           id: changed
           table: node_field_data
           field: changed
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -429,7 +429,7 @@ display:
           id: uid
           table: node_field_data
           field: uid
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -494,7 +494,7 @@ display:
           id: content_count
           table: ed11y_result
           field: content_count
-          relationship: editoria11y_page_to_results
+          relationship: none
           group_type: sum
           admin_label: ''
           plugin_id: numeric
@@ -551,7 +551,7 @@ display:
           id: pageviews
           table: mass_bigquery_data
           field: pageviews
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -658,7 +658,7 @@ display:
           id: content_count
           table: ed11y_result
           field: content_count
-          relationship: editoria11y_page_to_results
+          relationship: none
           group_type: sum
           admin_label: ''
           plugin_id: standard
@@ -673,7 +673,7 @@ display:
           id: route_name_1
           table: ed11y_page
           field: route_name
-          relationship: editoria11y_page_to_node
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: string
@@ -721,7 +721,7 @@ display:
           id: entity_type_1
           table: ed11y_page
           field: entity_type
-          relationship: editoria11y_page_to_node
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: in_operator
@@ -765,7 +765,7 @@ display:
           id: node_org_filter
           table: node_field_data
           field: node_org_filter
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -805,6 +805,7 @@ display:
               prototype_design_access: '0'
               mmg_editor: '0'
               viewer: '0'
+              bulk_edit: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -821,7 +822,7 @@ display:
           id: node_parent_org_top_filter
           table: node_field_data
           field: node_parent_org_top_filter
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -861,6 +862,7 @@ display:
               prototype_design_access: '0'
               mmg_editor: '0'
               viewer: '0'
+              bulk_edit: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -877,7 +879,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -915,6 +917,10 @@ display:
               d2d_redirect_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+              bulk_edit: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -931,7 +937,7 @@ display:
           id: uid
           table: node_field_data
           field: uid
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -972,6 +978,7 @@ display:
               prototype_design_access: '0'
               mmg_editor: '0'
               viewer: '0'
+              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -989,7 +996,7 @@ display:
           id: field_reusable_label_target_id
           table: node__field_reusable_label
           field: field_reusable_label_target_id
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           plugin_id: taxonomy_index_tid
@@ -1025,6 +1032,10 @@ display:
               d2d_redirect_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1048,7 +1059,7 @@ display:
           id: result_key
           table: ed11y_result
           field: result_key
-          relationship: editoria11y_page_to_results
+          relationship: none
           group_type: group
           admin_label: ''
           plugin_id: in_operator
@@ -1105,7 +1116,7 @@ display:
           id: changed
           table: node_field_data
           field: changed
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1154,6 +1165,7 @@ display:
               prototype_design_access: '0'
               mmg_editor: '0'
               viewer: '0'
+              bulk_edit: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1173,7 +1185,7 @@ display:
           id: created
           table: node_field_data
           field: created
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1222,6 +1234,7 @@ display:
               prototype_design_access: '0'
               mmg_editor: '0'
               viewer: '0'
+              bulk_edit: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1345,43 +1358,33 @@ display:
           replica: false
           query_tags: {  }
       relationships:
-        entity_id:
-          id: entity_id
+        editoria11y_result_to_page:
+          id: editoria11y_result_to_page
           table: ed11y_result
-          field: entity_id
+          field: editoria11y_result_to_page
           relationship: none
           group_type: group
-          admin_label: 'Entity ID'
+          admin_label: 'Editoria11y result to page'
+          plugin_id: standard
+          required: false
+        editoria11y_node_to_page:
+          id: editoria11y_node_to_page
+          table: ed11y_page
+          field: editoria11y_node_to_page
+          relationship: editoria11y_result_to_page
+          group_type: group
+          admin_label: 'Editoria11y page to node'
           plugin_id: standard
           required: true
         uid:
           id: uid
           table: node_field_data
           field: uid
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: User
           entity_type: node
           entity_field: uid
-          plugin_id: standard
-          required: false
-        editoria11y_page_to_node:
-          id: editoria11y_page_to_node
-          table: node_field_data
-          field: editoria11y_page_to_node
-          relationship: entity_id
-          group_type: group
-          admin_label: Editoria11y
-          entity_type: node
-          plugin_id: standard
-          required: false
-        editoria11y_page_to_results:
-          id: editoria11y_page_to_results
-          table: ed11y_page
-          field: editoria11y_page_to_results
-          relationship: editoria11y_page_to_node
-          group_type: group
-          admin_label: 'Editoria11y results'
           plugin_id: standard
           required: false
       use_ajax: false
@@ -1428,7 +1431,7 @@ display:
           id: entity_id_1
           table: ed11y_page
           field: entity_id
-          relationship: editoria11y_page_to_node
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -1485,7 +1488,7 @@ display:
           id: title
           table: node_field_data
           field: title
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1550,7 +1553,7 @@ display:
           id: entity_type_1
           table: ed11y_page
           field: entity_type
-          relationship: editoria11y_page_to_node
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: standard
@@ -1599,7 +1602,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1666,7 +1669,7 @@ display:
           id: content_count
           table: ed11y_result
           field: content_count
-          relationship: editoria11y_page_to_results
+          relationship: none
           group_type: sum
           admin_label: ''
           plugin_id: numeric
@@ -1723,7 +1726,7 @@ display:
           id: pageviews
           table: mass_bigquery_data
           field: pageviews
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -1780,7 +1783,7 @@ display:
           id: view_node
           table: node
           field: view_node
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1833,7 +1836,7 @@ display:
           id: uid
           table: node_field_data
           field: uid
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1898,7 +1901,7 @@ display:
           id: created
           table: node_field_data
           field: created
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1975,7 +1978,7 @@ display:
           id: changed
           table: node_field_data
           field: changed
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
