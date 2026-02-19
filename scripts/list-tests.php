@@ -341,9 +341,10 @@ function normalize_path(string $file): string {
     return '';
   }
   // Prefer repo-relative-ish paths for readability.
-  $prefix = '/var/www/html/';
-  if (str_starts_with($file, $prefix)) {
-    return substr($file, strlen($prefix));
+  foreach (['/var/www/html/', '/var/www/code/'] as $prefix) {
+    if (str_starts_with($file, $prefix)) {
+      return substr($file, strlen($prefix));
+    }
   }
   return $file;
 }
@@ -416,7 +417,8 @@ foreach ($byClass as $class => $classTests) {
   // Optional class doc.
   $classDoc = ['summary' => '', 'description' => '', 'testdox' => '', 'groups' => []];
   if (!$noDocs && $fileForHeader) {
-    $classDocRaw = extract_class_docblock_from_file('/var/www/html/' . $fileForHeader, $class);
+    $classFileAbs = str_starts_with($fileForHeader, '/') ? $fileForHeader : ($root . '/' . $fileForHeader);
+    $classDocRaw = extract_class_docblock_from_file($classFileAbs, $class);
     $classDoc = parse_docblock($classDocRaw);
   }
 
@@ -436,7 +438,8 @@ foreach ($byClass as $class => $classTests) {
 
     $methodDoc = ['summary' => '', 'description' => '', 'testdox' => '', 'groups' => []];
     if (!$noDocs && $file) {
-      $methodDocRaw = extract_method_docblock_from_file('/var/www/html/' . $file, $method);
+      $methodFileAbs = str_starts_with($file, '/') ? $file : ($root . '/' . $file);
+      $methodDocRaw = extract_method_docblock_from_file($methodFileAbs, $method);
       $methodDoc = parse_docblock($methodDocRaw);
     }
 
