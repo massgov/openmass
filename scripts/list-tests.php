@@ -18,8 +18,8 @@ $noDocs = false;
 
 
 // 1) Get all discovered tests (no execution)
-// If this script is executed *inside* the ddev container, don't call `ddev exec` again.
-$in_ddev_container = (bool) getenv('DDEV_PROJECT') || (bool) getenv('IS_DDEV_PROJECT') || file_exists('/etc/ddev/ddev-php-base');
+// Run PHPUnit directly (CI environments typically do not have `ddev`).
+$phpunitBin = is_file($root . '/vendor/bin/phpunit') ? ($root . '/vendor/bin/phpunit') : 'phpunit';
 
 $lines = [];
 $code = 1;
@@ -29,8 +29,11 @@ $xmlFile = sys_get_temp_dir() . '/phpunit-test-list.xml';
 if (file_exists($xmlFile)) {
   unlink($xmlFile);
 }
-$phpunit_cmd = './vendor/bin/phpunit -c phpunit.xml.dist --list-tests-xml ' . escapeshellarg($xmlFile);
-$cmd = $in_ddev_container ?  $phpunit_cmd: ('ddev exec ' . $phpunit_cmd);
+ $phpunit_cmd = escapeshellcmd($phpunitBin)
+   . ' -c ' . escapeshellarg($root . '/phpunit.xml.dist')
+   . ' --list-tests-xml ' . escapeshellarg($xmlFile);
+// Ensure we run from the repo root for consistent relative paths.
+$cmd = 'cd ' . escapeshellarg($root) . ' && ' . $phpunit_cmd;
 
 // Capture STDERR too (phpunit sometimes prints to STDERR).
 $lines = [];
