@@ -2,6 +2,13 @@ uuid: a2bc9953-33d6-4a1c-924c-ae499d5ea851
 langcode: en
 status: true
 dependencies:
+  config:
+    - node.type.action
+    - node.type.alert
+    - node.type.contact_information
+    - node.type.fee
+    - node.type.glossary
+    - node.type.sitewide_alert
   module:
     - editoria11y
     - mass_views
@@ -544,6 +551,53 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: 'not in'
+          value:
+            alert: alert
+            sitewide_alert: sitewide_alert
+            contact_information: contact_information
+            fee: fee
+            glossary: glossary
+            action: action
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
           is_grouped: false
           group_info:
             label: ''
