@@ -1,5 +1,21 @@
 
 
+## [0.467.0] - February 17, 2026
+
+### Changed
+  - DP-41803: A11Y datatable uses duplicate table tag.
+  - DP-44176: Change MySQL version in Tugboat and CircleCI to match Acquia db version
+  - DP-44947: Disable jQuery modules used by better exposed filters.
+  
+
+
+## [0.466.0] - February 10, 2026
+
+### Changed
+  - DP-44710: Fix campaign video heading level skip accessibility issue on promo page section videos without titles by using H2 instead of H3 to maintain proper heading hierarchy
+  
+
+
 ## [0.465.0] - February 3, 2026
 
 ### Security
