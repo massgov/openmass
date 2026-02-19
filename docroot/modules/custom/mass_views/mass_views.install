@@ -81,16 +81,9 @@ seed AS (
   SELECT
     m.mid AS media_mid,
     orgref.field_organizations_target_id AS org_nid
-  FROM media_field_data m
+  FROM media_field_data AS m
   INNER JOIN media__field_organizations orgref
-    ON orgref.entity_id = m.mid
-  INNER JOIN (
-    SELECT entity_id, MIN(delta) AS min_delta
-    FROM media__field_organizations
-    GROUP BY entity_id
-  ) first_org
-    ON first_org.entity_id = orgref.entity_id
-   AND first_org.min_delta = orgref.delta
+    ON m.mid = orgref.entity_id
 ),
 org_chain AS (
   SELECT
@@ -99,7 +92,7 @@ org_chain AS (
     fp.field_parent_target_id AS parent_nid,
     0 AS depth
   FROM seed
-  LEFT JOIN node__field_parent fp
+  LEFT JOIN node__field_parent AS fp
     ON fp.entity_id = seed.org_nid
 
   UNION ALL
@@ -109,9 +102,9 @@ org_chain AS (
     oc.parent_nid AS org_nid,
     fp2.field_parent_target_id AS parent_nid,
     oc.depth + 1 AS depth
-  FROM org_chain oc
+  FROM org_chain AS oc
   LEFT JOIN node__field_parent fp2
-    ON fp2.entity_id = oc.parent_nid
+    ON oc.parent_nid = fp2.entity_id
   WHERE oc.parent_nid IS NOT NULL
     AND oc.depth < 50
 )
@@ -127,8 +120,9 @@ FROM (
     ROW_NUMBER() OVER (PARTITION BY media_mid ORDER BY depth DESC) AS rn
   FROM org_chain
   WHERE parent_nid IS NULL
-) roots
-WHERE rn = 1;
+  GROUP BY media_mid, org_nid
+) AS roots
+WHERE rn < 50;
 SQL;
 
   // Execute both statements.
