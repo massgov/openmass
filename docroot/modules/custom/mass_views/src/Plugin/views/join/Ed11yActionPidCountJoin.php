@@ -23,7 +23,7 @@ class Ed11yActionPidCountJoin extends JoinPluginBase {
     $subQuery = \Drupal::database()->select($this->table, $pseudoTableAlias);
     $subQuery->addField($pseudoTableAlias, 'pid', 'pid');
     $subQuery->addExpression('COUNT(' . $pseudoTableAlias . '.pid)', 'pid_count');
-    $subQuery->groupBy($pseudoTableAlias. '.pid');
+    $subQuery->groupBy($pseudoTableAlias . '.pid');
 
     $right_table = $subQuery;
     $condition = $this->leftTable . '.pid = ' . $table['alias'] . '.pid';
