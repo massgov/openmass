@@ -52,7 +52,7 @@ function mass_views_views_data() {
     ],
   ];
 
-  // --- CTE-backed mapping table: node nid -> top org nid.
+  // Adds a CTE-backed mapping table: node nid -> top org nid.
   $data['mass_views_node_top_org_map']['table'] = [
     'group' => t('Mass Views (computed)'),
     'base' => [
@@ -62,8 +62,7 @@ function mass_views_views_data() {
     ],
   ];
 
-  // Relationship: Content view (node_field_data) -> mapping table.
-  // This is what makes the relationship appear in a Content view UI.
+  // Adds relationship: node_field_data -> node mapping table.
   $data['node_field_data']['mass_views_node_top_org_map_rel'] = [
     'title' => t('Computed top org mapping'),
     'help' => t('Join to computed mapping (node nid → top-level org nid).'),
@@ -76,16 +75,7 @@ function mass_views_views_data() {
     ],
   ];
 
-  $data['mass_views_node_top_org_map']['content_nid'] = [
-    'title' => t('Content nid'),
-    'help' => t('Node nid of the content row.'),
-    'field' => [
-      'id' => 'numeric',
-    ],
-  ];
-
-  // Relationship: mapping table -> top org node.
-  // You will add this relationship AFTER adding "Computed top org map".
+  // Adds relationship: node mapping table -> top org node.
   $data['mass_views_node_top_org_map']['top_org_nid'] = [
     'title' => t('Top org nid'),
     'help' => t('Computed top-level org nid.'),
@@ -104,7 +94,7 @@ function mass_views_views_data() {
     ]
   ];
 
-  // --- CTE-backed mapping table: media mid -> top org nid.
+  // Adds a CTE-backed mapping table: media mid -> top org nid.
   $data['mass_views_media_top_org_map']['table'] = [
     'group' => t('Mass Views (computed)'),
     'base' => [
@@ -114,7 +104,7 @@ function mass_views_views_data() {
     ],
   ];
 
-  // Relationship: Media view (media_field_data) -> mapping table.
+  // Adds relationship: media_field_data -> media mapping table.
   $data['media_field_data']['mass_views_media_top_org_map_rel'] = [
     'title' => t('Computed top org mapping'),
     'help' => t('Join to computed mapping (media mid → top-level org nid).'),
@@ -127,14 +117,7 @@ function mass_views_views_data() {
     ],
   ];
 
-  $data['mass_views_media_top_org_map']['media_mid'] = [
-    'title' => t('Media mid'),
-    'help' => t('Media id of the media row.'),
-    'field' => [
-      'id' => 'numeric',
-    ],
-  ];
-
+  // Adds relationship: media mapping table -> top org node.
   $data['mass_views_media_top_org_map']['top_org_nid'] = [
     'title' => t('Top org nid'),
     'help' => t('Computed top-level org nid.'),
@@ -153,6 +136,7 @@ function mass_views_views_data() {
     ]
   ];
 
+  // Adds a field for grouped count of PIDs from the ed11y_action table.
   $data['ed11y_action']['pid_count'] = [
     'title' => t('PID count'),
     'help' => t('Count of grouped PIDs'),
@@ -161,6 +145,7 @@ function mass_views_views_data() {
     ]
   ];
 
+  // Adds relationship: ed11y_page -> ed11y_action table grouped by pid.
   $data['ed11y_page']['ed11y_action_pid_count'] = [
     'title' => t('Grouped PID'),
     'help' => t('Join ed11y_action with ed11y_page table and count grouped PIDs.'),
