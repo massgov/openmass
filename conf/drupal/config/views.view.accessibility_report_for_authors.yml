@@ -22,7 +22,7 @@ label: 'Accessibility report for authors'
 module: views
 description: ''
 tag: ''
-base_table: editoria11y_results
+base_table: ed11y_result
 base_field: id
 display:
   default:
@@ -33,11 +33,11 @@ display:
     display_options:
       title: 'Accessibility report for authors'
       fields:
-        entity_id:
-          id: entity_id
-          table: editoria11y_results
+        entity_id_1:
+          id: entity_id_1
+          table: ed11y_page
           field: entity_id
-          relationship: none
+          relationship: editoria11y_page_to_node
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -155,11 +155,11 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        entity_type:
-          id: entity_type
-          table: editoria11y_results
+        entity_type_1:
+          id: entity_type_1
+          table: ed11y_page
           field: entity_type
-          relationship: none
+          relationship: editoria11y_page_to_node
           group_type: group
           admin_label: ''
           plugin_id: standard
@@ -490,14 +490,14 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        result_name_count:
-          id: result_name_count
-          table: editoria11y_results
-          field: result_name_count
-          relationship: none
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
+          relationship: editoria11y_page_to_results
           group_type: sum
           admin_label: ''
-          plugin_id: editoria11y_issues_by_page_link
+          plugin_id: numeric
           label: 'Issue count'
           exclude: false
           alter:
@@ -543,7 +543,7 @@ display:
           precision: 0
           decimal: .
           separator: ','
-          format_plural: 0
+          format_plural: false
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
@@ -654,11 +654,11 @@ display:
           empty: true
           title: 'No known issues at this url'
       sorts:
-        result_name_count:
-          id: result_name_count
-          table: editoria11y_results
-          field: result_name_count
-          relationship: none
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
+          relationship: editoria11y_page_to_results
           group_type: sum
           admin_label: ''
           plugin_id: standard
@@ -669,14 +669,14 @@ display:
           exposed: false
       arguments: {  }
       filters:
-        route_name:
-          id: route_name
-          table: editoria11y_results
+        route_name_1:
+          id: route_name_1
+          table: ed11y_page
           field: route_name
-          relationship: none
+          relationship: editoria11y_page_to_node
           group_type: group
           admin_label: ''
-          plugin_id: views_porter_stemmer_autocomplete_string
+          plugin_id: string
           operator: '='
           value: entity.node.canonical
           group: 1
@@ -697,12 +697,14 @@ display:
               authenticated: authenticated
             placeholder: ''
             autocomplete_filter: 0
-            autocomplete_min_chars: 0
-            autocomplete_items: 10
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
             autocomplete_field: ''
-            autocomplete_raw_suggestion: true
-            autocomplete_raw_dropdown: true
-            autocomplete_dependent: false
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+            autocomplete_contextual: 0
+            autocomplete_autosubmit: 0
           is_grouped: false
           group_info:
             label: ''
@@ -715,11 +717,11 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        entity_type:
-          id: entity_type
-          table: editoria11y_results
+        entity_type_1:
+          id: entity_type_1
+          table: ed11y_page
           field: entity_type
-          relationship: none
+          relationship: editoria11y_page_to_node
           group_type: group
           admin_label: ''
           plugin_id: in_operator
@@ -1042,11 +1044,11 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        result_name:
-          id: result_name
-          table: editoria11y_results
-          field: result_name
-          relationship: none
+        result_key:
+          id: result_key
+          table: ed11y_result
+          field: result_key
+          relationship: editoria11y_page_to_results
           group_type: group
           admin_label: ''
           plugin_id: in_operator
@@ -1055,16 +1057,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: result_name_op
-            label: 'Issue type'
+            operator_id: result_key_op
+            label: 'Alert type, linked'
             description: ''
-            use_operator: true
-            operator: result_name_op
-            operator_limit_selection: true
-            operator_list:
-              in: in
-              'not in': 'not in'
-            identifier: result_name
+            use_operator: false
+            operator: result_key_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: result_key
             required: false
             remember: true
             multiple: true
@@ -1084,6 +1084,10 @@ display:
               d2d_redirect_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1244,18 +1248,18 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            entity_id: entity_id
+            entity_id_1: entity_id_1
             title: title
-            entity_type: entity_type
+            entity_type_1: entity_type_1
             status: status
             created: created
             changed: changed
             uid: uid
-            result_name_count: result_name_count
+            content_count: content_count
             pageviews: pageviews
           default: pageviews
           info:
-            entity_id:
+            entity_id_1:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -1269,7 +1273,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            entity_type:
+            entity_type_1:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -1304,7 +1308,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            result_name_count:
+            content_count:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -1343,7 +1347,7 @@ display:
       relationships:
         entity_id:
           id: entity_id
-          table: editoria11y_results
+          table: ed11y_result
           field: entity_id
           relationship: none
           group_type: group
@@ -1359,6 +1363,25 @@ display:
           admin_label: User
           entity_type: node
           entity_field: uid
+          plugin_id: standard
+          required: false
+        editoria11y_page_to_node:
+          id: editoria11y_page_to_node
+          table: node_field_data
+          field: editoria11y_page_to_node
+          relationship: entity_id
+          group_type: group
+          admin_label: Editoria11y
+          entity_type: node
+          plugin_id: standard
+          required: false
+        editoria11y_page_to_results:
+          id: editoria11y_page_to_results
+          table: ed11y_page
+          field: editoria11y_page_to_results
+          relationship: editoria11y_page_to_node
+          group_type: group
+          admin_label: 'Editoria11y results'
           plugin_id: standard
           required: false
       use_ajax: false
@@ -1401,11 +1424,11 @@ display:
     position: 2
     display_options:
       fields:
-        entity_id:
-          id: entity_id
-          table: editoria11y_results
+        entity_id_1:
+          id: entity_id_1
+          table: ed11y_page
           field: entity_id
-          relationship: none
+          relationship: editoria11y_page_to_node
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -1523,11 +1546,11 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        entity_type:
-          id: entity_type
-          table: editoria11y_results
+        entity_type_1:
+          id: entity_type_1
+          table: ed11y_page
           field: entity_type
-          relationship: none
+          relationship: editoria11y_page_to_node
           group_type: group
           admin_label: ''
           plugin_id: standard
@@ -1639,14 +1662,14 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        result_name_count:
-          id: result_name_count
-          table: editoria11y_results
-          field: result_name_count
-          relationship: none
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
+          relationship: editoria11y_page_to_results
           group_type: sum
           admin_label: ''
-          plugin_id: editoria11y_issues_by_page_link
+          plugin_id: numeric
           label: 'Issue count'
           exclude: false
           alter:
@@ -1692,7 +1715,7 @@ display:
           precision: 0
           decimal: .
           separator: ','
-          format_plural: 0
+          format_plural: false
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
