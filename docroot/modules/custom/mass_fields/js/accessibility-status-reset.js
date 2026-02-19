@@ -18,7 +18,7 @@
   Drupal.behaviors.accessibilityStatusReset = {
     attach: function (context, settings) {
       const fidsSelector = 'input[data-drupal-selector="edit-field-upload-file-0-fids"]';
-      const noneSelector = 'input[data-drupal-selector="edit-field-accessibility-self-rpt-none"]';
+      const noneSelector = 'input[name="field_accessibility_self_rpt"][value="_none"], input[name="media[document][field_accessibility_self_rpt]"][value="_none"]';
       const liveRegionId = 'accessibility-status-reset-announcement';
 
       // Inject an aria-live region once (for screen reader announcements).
