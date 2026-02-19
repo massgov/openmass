@@ -9,12 +9,12 @@ if (!class_exists('DOMDocument')) {
 
 $root = dirname(__DIR__);
 
-// CLI flags.
-$opts = getopt('', ['full', 'one-line', 'groups-only', 'no-docs']);
-$full = isset($opts['full']);
-$oneLine = isset($opts['one-line']);
-$groupsOnly = isset($opts['groups-only']);
-$noDocs = isset($opts['no-docs']);
+// No CLI flags – always use default grouped output.
+$full = false;
+$oneLine = false;
+$outputTable = false;
+$groupsOnly = false;
+$noDocs = false;
 
 
 // 1) Get all discovered tests (no execution)
@@ -43,24 +43,6 @@ if (isset($xmlFile) && file_exists($xmlFile)) {
     $lines = explode("\n", $xmlContent);
   }
 }
-// DEBUG: show what phpunit returned.
-fwrite(STDERR, "\n[DEBUG] PHPUnit list command: {$cmd}\n");
-fwrite(STDERR, "[DEBUG] Exit code: {$code}\n");
-
-$debug_preview = array_slice($lines, 0, 40);
-fwrite(STDERR, "[DEBUG] First 40 lines of raw output:\n");
-foreach ($debug_preview as $i => $pl) {
-  fwrite(STDERR, sprintf("[DEBUG] %02d: %s\n", $i + 1, $pl));
-}
-
-// Count lines that look like tests.
-$debug_coloncolon = 0;
-foreach ($lines as $l) {
-  if (strpos($l, '::') !== false) {
-    $debug_coloncolon++;
-  }
-}
-fwrite(STDERR, "[DEBUG] Lines containing '::': {$debug_coloncolon}\n\n");
 // At this point `$lines` contains the raw output from `--list-tests`.
 
 if ($code !== 0) {
@@ -319,8 +301,7 @@ function parse_docblock(?string $doc): array {
   ];
 }
 
-echo "\n================ PHPUnit Test Inventory ================\n";
-echo "Flags: " . ($full ? 'full ' : '') . ($oneLine ? 'one-line ' : '') . ($groupsOnly ? 'groups-only ' : '') . ($noDocs ? 'no-docs ' : '') . "\n\n";
+echo "\n================ PHPUnit Test Inventory ================\n\n";
 
 // Try to parse XML first.
 $raw = implode("\n", $lines);
@@ -340,13 +321,12 @@ if (!$tests) {
   }
 }
 
-fwrite(STDERR, "[DEBUG] Parsed tests: " . count($tests) . "\n");
-
-// If we don't have file paths from XML, attempt to re-run in plain mode so at least we can print the list.
 if (!$tests) {
   fwrite(STDERR, "[DEBUG] Could not parse any tests from phpunit output.\n");
   exit(1);
 }
+
+echo "Found " . count($tests) . " tests.\n\n";
 
 function shorten_class(string $fqcn): string {
   $pos = strrpos($fqcn, '\\');
@@ -365,6 +345,53 @@ function normalize_path(string $file): string {
   return $file;
 }
 
+function truncate_cell(string $s, int $max): string {
+  $s = trim($s);
+  if ($max <= 0) {
+    return '';
+  }
+  if (mb_strlen($s) <= $max) {
+    return $s;
+  }
+  // Leave room for ellipsis.
+  $cut = max(0, $max - 1);
+  return rtrim(mb_substr($s, 0, $cut)) . '…';
+}
+
+function pad_cell(string $s, int $width): string {
+  $len = mb_strlen($s);
+  if ($len >= $width) {
+    return $s;
+  }
+  return $s . str_repeat(' ', $width - $len);
+}
+
+function render_table(array $rows, array $headers, array $widths): void {
+  // Build separators.
+  $sepParts = [];
+  foreach ($headers as $key => $_label) {
+    $w = $widths[$key] ?? 10;
+    $sepParts[] = str_repeat('-', $w);
+  }
+
+  // Header.
+  $lineParts = [];
+  foreach ($headers as $key => $label) {
+    $lineParts[] = pad_cell($label, $widths[$key]);
+  }
+  echo implode(' | ', $lineParts) . "\n";
+  echo implode('-+-', $sepParts) . "\n";
+
+  // Rows.
+  foreach ($rows as $r) {
+    $out = [];
+    foreach ($headers as $key => $_label) {
+      $out[] = pad_cell($r[$key] ?? '', $widths[$key]);
+    }
+    echo implode(' | ', $out) . "\n";
+  }
+}
+
 // Group tests by class for readability.
 $byClass = [];
 foreach ($tests as $t) {
@@ -372,6 +399,7 @@ foreach ($tests as $t) {
 }
 ksort($byClass);
 
+// Default (non-table) output mode.
 foreach ($byClass as $class => $classTests) {
   $classShort = shorten_class($class);
   $fileForHeader = '';
