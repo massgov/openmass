@@ -1487,7 +1487,7 @@ display:
           expose:
             operator_id: media_parent_org_top_filter_op
             label: 'Organization (including all suborganizations)'
-            description: 'using the parent organization field for each organization'
+            description: ''
             use_operator: false
             operator: media_parent_org_top_filter_op
             operator_limit_selection: false
@@ -5367,7 +5367,7 @@ display:
           hide_alter_empty: true
           destination: false
       exposed_form:
-        type: basic
+        type: input_required
         options:
           submit_button: Filter
           reset_button: true
@@ -5376,6 +5376,8 @@ display:
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
       defaults:
         exposed_form: false
         fields: false
