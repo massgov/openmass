@@ -9,9 +9,9 @@ use Drupal\views\Plugin\views\join\JoinPluginBase;
  *
  * @ingroup views_join_handlers
  *
- * @ViewsJoin("ed11y_action_pid_count_join")
+ * @ViewsJoin("ed11y_pid_count_join")
  */
-class Ed11yActionPidCountJoin extends JoinPluginBase {
+class Ed11YPidCountJoin extends JoinPluginBase {
 
   /**
    * {@inheritdoc}

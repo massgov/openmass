@@ -138,24 +138,47 @@ function mass_views_views_data() {
 
   // Adds a field for grouped count of PIDs from the ed11y_action table.
   $data['ed11y_action']['pid_count'] = [
-    'title' => t('PID count'),
-    'help' => t('Count of grouped PIDs'),
+    'title' => t('PID action count'),
+    'help' => t('Count of grouped PIDs from the ed11y_action table.'),
     'field' => [
       'id' => 'numeric',
     ]
   ];
 
   // Adds relationship: ed11y_page -> ed11y_action table grouped by pid.
-  $data['ed11y_page']['ed11y_action_pid_count'] = [
-    'title' => t('Grouped PID'),
+  $data['ed11y_page']['ed11y_action_pid_grouped'] = [
+    'title' => t('Grouped Action PID'),
     'help' => t('Join ed11y_action with ed11y_page table and count grouped PIDs.'),
     'relationship' => [
       'id' => 'standard',
-      'label' => t('Grouped PID'),
+      'label' => t('Grouped Action PID'),
       'base' => 'ed11y_action',
       'base field' => 'pid',
       'field' => 'pid',
-      'join_id' => 'ed11y_action_pid_count_join',
+      'join_id' => 'ed11y_pid_count_join',
+    ],
+  ];
+
+  // Adds a field for grouped count of PIDs from the ed11y_result table.
+  $data['ed11y_result']['pid_count'] = [
+    'title' => t('PID result count'),
+    'help' => t('Count of grouped PIDs from the ed11y_result table.'),
+    'field' => [
+      'id' => 'numeric',
+    ]
+  ];
+
+  // Adds relationship: ed11y_page -> ed11y_action table grouped by pid.
+  $data['ed11y_page']['ed11y_result_pid_grouped'] = [
+    'title' => t('Grouped Result PID'),
+    'help' => t('Join ed11y_result with ed11y_page table and count grouped PIDs.'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Grouped Result PID'),
+      'base' => 'ed11y_result',
+      'base field' => 'pid',
+      'field' => 'pid',
+      'join_id' => 'ed11y_pid_count_join',
     ],
   ];
 
