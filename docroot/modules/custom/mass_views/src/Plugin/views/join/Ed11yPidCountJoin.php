@@ -11,7 +11,7 @@ use Drupal\views\Plugin\views\join\JoinPluginBase;
  *
  * @ViewsJoin("ed11y_pid_count_join")
  */
-class Ed11YPidCountJoin extends JoinPluginBase {
+class Ed11yPidCountJoin extends JoinPluginBase {
 
   /**
    * {@inheritdoc}
