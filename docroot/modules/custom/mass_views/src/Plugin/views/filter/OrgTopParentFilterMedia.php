@@ -58,8 +58,8 @@ class OrgTopParentFilterMedia extends FilterPluginBase {
     }
 
     // 2) Create an INNER JOIN to media__field_organizations via the Views join
-    //    plugin. getJoinData() can return NULL when the table is not yet
-    //    registered in the query, so we build the join object directly.
+    // plugin. getJoinData() can return NULL when the table is not yet
+    // registered in the query, so we build the join object directly.
     $configuration = [
       'type'       => 'INNER',
       'table'      => 'media__field_organizations',
