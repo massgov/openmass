@@ -21,6 +21,7 @@ dependencies:
     - node.type.external_data_resource
     - node.type.fee
     - node.type.form_page
+    - node.type.glossary
     - node.type.guide_page
     - node.type.how_to_page
     - node.type.info_details
@@ -988,6 +989,7 @@ display:
             external_data_resource: external_data_resource
             fee: fee
             form_page: form_page
+            glossary: glossary
             guide_page: guide_page
             how_to_page: how_to_page
             info_details: info_details
@@ -1578,10 +1580,12 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:workflow_list'
+        - flag.flag.watch_content
   block_1:
     id: block_1
     display_title: Block
@@ -2116,10 +2120,12 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:workflow_list'
+        - flag.flag.watch_content
   page_1:
     id: page_1
     display_title: Page
@@ -3771,7 +3777,9 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
         - 'config:workflow_list'
+        - flag.flag.watch_content

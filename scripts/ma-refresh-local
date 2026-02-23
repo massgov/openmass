@@ -32,11 +32,20 @@ SCRIPT_LOG_RETENTION_DAYS=15          # How long the script keeps its logs.
 SCRIPT_NAME=`basename $0`             # Script's name.
 LOGFILE_HOME=/tmp                     # Script's logs location.
 LOGFILE_NAME=${LOGFILE_HOME}/${SCRIPT_NAME%\.*}_${TIMESTAMP}.log      # Logfile.
-OK_MSG=`tput setaf 2`                 # Green.
-WARN_MSG=`tput setaf 3`               # Yellow.
-ERR_MSG=`tput setaf 9`                # Red.
-HEADING=`tput setaf 6`                # Blue.
-TEXTRESET=`tput sgr0`                 # Reset text to original color.
+ # Terminal colors (optional). In minimal shells/CI containers `tput` may be missing.
+if command -v tput >/dev/null 2>&1 && [[ -n "${TERM:-}" ]] && [[ "${TERM}" != "dumb" ]] && [[ -t 1 ]]; then
+  OK_MSG=$(tput setaf 2)
+  WARN_MSG=$(tput setaf 3)
+  ERR_MSG=$(tput setaf 9)
+  HEADING=$(tput setaf 6)
+  TEXTRESET=$(tput sgr0)
+else
+  OK_MSG=""
+  WARN_MSG=""
+  ERR_MSG=""
+  HEADING=""
+  TEXTRESET=""
+fi
 START_COUNTER=`date +%s`              # Start time in seconds.
 
 

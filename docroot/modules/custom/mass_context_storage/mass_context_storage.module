@@ -1,0 +1,53 @@
+<?php
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_entity_view().
+ */
+function mass_context_storage_entity_view(
+  array &$build,
+  EntityInterface $entity,
+  EntityViewDisplayInterface $display,
+  string $view_mode,
+): void {
+  if (!$entity instanceof NodeInterface) {
+    return;
+  }
+
+  // Only act on the route node (avoid nested node renders).
+  $route_node = \Drupal::routeMatch()->getParameter('node');
+  if ($route_node instanceof NodeInterface && $route_node->id() !== $entity->id()) {
+    return;
+  }
+
+  $bundle = $entity->bundle();
+
+  // Provide ignoreKeys to JS (config-driven list; no hardcoding).
+  // Adjust this to wherever you store it (config, settings.php, etc).
+  // For now, keep it empty unless you already wire it up.
+  $build['#attached']['drupalSettings']['massContextStorage']['ignoreKeys'] = [
+    // Ad click ids / common analytics.
+    'gclid',
+    'gbraid',
+    'wbraid',
+    'dclid',
+    'fbclid',
+    'msclkid',
+
+    // Common GA-ish keys.
+    '_ga',
+    '_gid',
+    '_gl',
+  ];
+
+  // Flag used by page_context.js to handle form pages.
+  $is_form_page = ($bundle === 'form_page');
+  $build['#attached']['drupalSettings']['massContextStorage']['isFormPage'] = $is_form_page;
+  // Always attach page_context so journey/history is recorded even when iframe is not used.
+  $build['#attached']['library'][] = 'mass_context_storage/page_context';
+}
