@@ -10,6 +10,7 @@ dependencies:
     - node.type.stacked_layout
     - taxonomy.vocabulary.label
   module:
+    - csv_serialization
     - editoria11y
     - mass_bigquery
     - mass_views
@@ -1379,6 +1380,20 @@ display:
         options:
           offset: 0
           items_per_page: 0
+      style:
+        type: data_export
+        options:
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+            use_serializer_encode_only: false
       display_extenders:
         metatag_display_extender:
           metatags: {  }

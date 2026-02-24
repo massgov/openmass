@@ -99,7 +99,6 @@ class OrgTopParentFilter extends FilterPluginBase {
         ->accessCheck(FALSE)
         ->condition('type', 'org_page')
         ->condition('field_parent', $batch, 'IN')
-        ->condition('status', 1, '=')
         ->execute();
 
       if ($child_ids) {
