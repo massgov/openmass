@@ -1,13 +1,10 @@
-uuid: 9c1e0041-3f8f-46f6-be2f-f6ad2d4985cd
+uuid: c8e401a5-df65-4276-a9db-38524f16f3fa
 langcode: en
 status: true
 dependencies:
   config:
     - taxonomy.vocabulary.label
   module:
-    - csv_serialization
-    - editoria11y
-    - mass_bigquery
     - mass_views
     - node
     - rest
@@ -15,15 +12,13 @@ dependencies:
     - taxonomy
     - user
     - views_data_export
-_core:
-  default_config_hash: JrHvNmgcbiQ4SSPwNfLlIwoML0Ug8o1Da8gElwFjNG8
 id: accessibility_report_for_authors
-label: 'Accessibility report for authors'
+label: 'Accessibility report for authors (Editoria11y - Test results)'
 module: views
 description: ''
 tag: ''
-base_table: ed11y_result
-base_field: id
+base_table: node_field_data
+base_field: nid
 display:
   default:
     id: default
@@ -33,68 +28,11 @@ display:
     display_options:
       title: 'Accessibility report for authors'
       fields:
-        entity_id_1:
-          id: entity_id_1
-          table: ed11y_page
-          field: entity_id
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: ID
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
         title:
           id: title
           table: node_field_data
           field: title
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -104,30 +42,12 @@ display:
           exclude: false
           alter:
             alter_text: false
-            text: ''
             make_link: false
-            path: ''
             absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
+            word_boundary: false
+            ellipsis: false
             strip_tags: false
             trim: false
-            preserve_tags: ''
             html: false
           element_type: ''
           element_class: ''
@@ -155,60 +75,11 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        entity_type_1:
-          id: entity_type_1
-          table: ed11y_page
-          field: entity_type
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Content type'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
         status:
           id: status
           table: node_field_data
           field: status
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -275,7 +146,7 @@ display:
           id: created
           table: node_field_data
           field: created
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -352,7 +223,7 @@ display:
           id: changed
           table: node_field_data
           field: changed
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -429,7 +300,7 @@ display:
           id: uid
           table: node_field_data
           field: uid
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -479,7 +350,7 @@ display:
           click_sort_column: target_id
           type: entity_reference_label
           settings:
-            link: false
+            link: true
           group_column: target_id
           group_columns: {  }
           group_rows: true
@@ -490,120 +361,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        content_count:
-          id: content_count
-          table: ed11y_result
-          field: content_count
-          relationship: none
-          group_type: sum
-          admin_label: ''
-          plugin_id: numeric
-          label: 'Issue count'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-        pageviews:
-          id: pageviews
-          table: mass_bigquery_data
-          field: pageviews
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: 'Page views'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
       pager:
         type: mini
         options:
@@ -627,14 +384,14 @@ display:
         type: input_required_on_request
         options:
           submit_button: Apply
-          reset_button: false
+          reset_button: 0
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
+          expose_sort_order: 1
           sort_asc_label: Asc
           sort_desc_label: Desc
           text_input_required: 'Select any filter and click on Apply to see results'
-          text_input_required_format: null
+          text_input_required_format: basic_html
       access:
         type: perm
         options:
@@ -652,120 +409,31 @@ display:
           admin_label: ''
           plugin_id: title
           empty: true
-          title: 'No known issues at this url'
+          title: 'No known issues at this URL'
       sorts:
-        content_count:
-          id: content_count
-          table: ed11y_result
-          field: content_count
+        created:
+          id: created
+          table: node_field_data
+          field: created
           relationship: none
-          group_type: sum
+          group_type: group
           admin_label: ''
-          plugin_id: standard
+          entity_type: node
+          entity_field: created
+          plugin_id: date
           order: DESC
           expose:
             label: ''
             field_identifier: ''
           exposed: false
+          granularity: second
       arguments: {  }
       filters:
-        route_name_1:
-          id: route_name_1
-          table: ed11y_page
-          field: route_name
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: string
-          operator: '='
-          value: entity.node.canonical
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: ''
-            autocomplete_filter: 0
-            autocomplete_min_chars: '0'
-            autocomplete_items: '10'
-            autocomplete_field: ''
-            autocomplete_raw_suggestion: 1
-            autocomplete_raw_dropdown: 1
-            autocomplete_dependent: 0
-            autocomplete_contextual: 0
-            autocomplete_autosubmit: 0
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        entity_type_1:
-          id: entity_type_1
-          table: ed11y_page
-          field: entity_type
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: in_operator
-          operator: 'not in'
-          value:
-            'Contact Information': 'Contact Information'
-            Error: Error
-            'External link for Collections': 'External link for Collections'
-            Person: Person
-            'Stacked layout - prototype': 'Stacked layout - prototype'
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         node_org_filter:
           id: node_org_filter
           table: node_field_data
           field: node_org_filter
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -822,7 +490,7 @@ display:
           id: node_parent_org_top_filter
           table: node_field_data
           field: node_parent_org_top_filter
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -879,7 +547,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -937,7 +605,7 @@ display:
           id: uid
           table: node_field_data
           field: uid
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -996,7 +664,7 @@ display:
           id: field_reusable_label_target_id
           table: node__field_reusable_label
           field: field_reusable_label_target_id
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           plugin_id: taxonomy_index_tid
@@ -1055,68 +723,11 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        result_key:
-          id: result_key
-          table: ed11y_result
-          field: result_key
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: in_operator
-          operator: in
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: result_key_op
-            label: 'Alert type, linked'
-            description: ''
-            use_operator: false
-            operator: result_key_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: result_key
-            required: false
-            remember: true
-            multiple: true
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         changed:
           id: changed
           table: node_field_data
           field: changed
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1185,7 +796,7 @@ display:
           id: created
           table: node_field_data
           field: created
-          relationship: editoria11y_node_to_page
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1256,98 +867,8 @@ display:
           1: AND
       style:
         type: table
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          columns:
-            entity_id_1: entity_id_1
-            title: title
-            entity_type_1: entity_type_1
-            status: status
-            created: created
-            changed: changed
-            uid: uid
-            content_count: content_count
-            pageviews: pageviews
-          default: pageviews
-          info:
-            entity_id_1:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            title:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            entity_type_1:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            status:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            created:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            changed:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            uid:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            content_count:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            pageviews:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          override: true
-          sticky: false
-          summary: ''
-          empty_table: false
-          caption: ''
-          description: ''
       row:
         type: fields
-        options:
-          default_field_elements: true
-          inline: {  }
-          separator: ''
-          hide_empty: false
       query:
         type: views_query
         options:
@@ -1357,43 +878,9 @@ display:
           disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
-      relationships:
-        editoria11y_result_to_page:
-          id: editoria11y_result_to_page
-          table: ed11y_result
-          field: editoria11y_result_to_page
-          relationship: none
-          group_type: group
-          admin_label: 'Editoria11y result to page'
-          plugin_id: standard
-          required: false
-        editoria11y_node_to_page:
-          id: editoria11y_node_to_page
-          table: ed11y_page
-          field: editoria11y_node_to_page
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: 'Editoria11y page to node'
-          plugin_id: standard
-          required: true
-        uid:
-          id: uid
-          table: node_field_data
-          field: uid
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: User
-          entity_type: node
-          entity_field: uid
-          plugin_id: standard
-          required: false
-      use_ajax: false
-      group_by: true
+      relationships: {  }
       show_admin_links: false
-      use_more: false
-      use_more_always: true
-      use_more_text: 'All pages with issues'
-      link_display: pages__page
+      link_display: data_export_1
       link_url: ''
       header: {  }
       footer:
@@ -1418,6 +905,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - 'user.node_grants:view'
         - user.permissions
       tags: {  }
   data_export_1:
@@ -1426,653 +914,11 @@ display:
     display_plugin: data_export
     position: 2
     display_options:
-      fields:
-        entity_id_1:
-          id: entity_id_1
-          table: ed11y_page
-          field: entity_id
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: ID
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: title
-          plugin_id: field
-          label: Title
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: true
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        entity_type_1:
-          id: entity_type_1
-          table: ed11y_page
-          field: entity_type
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Content type'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-        status:
-          id: status
-          table: node_field_data
-          field: status
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: status
-          plugin_id: field
-          label: Published
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: boolean
-          settings:
-            format: yes-no
-            format_custom_false: ''
-            format_custom_true: ''
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        content_count:
-          id: content_count
-          table: ed11y_result
-          field: content_count
-          relationship: none
-          group_type: sum
-          admin_label: ''
-          plugin_id: numeric
-          label: 'Issue count'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-        pageviews:
-          id: pageviews
-          table: mass_bigquery_data
-          field: pageviews
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: 'Page views'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-        view_node:
-          id: view_node
-          table: node
-          field: view_node
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          plugin_id: entity_link
-          label: 'Link to Content'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          text: view
-          output_url_as_text: true
-          absolute: true
-        uid:
-          id: uid
-          table: node_field_data
-          field: uid
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: uid
-          plugin_id: field
-          label: 'Authored by'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
-          settings:
-            link: true
-          group_column: target_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        created:
-          id: created
-          table: node_field_data
-          field: created
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: created
-          plugin_id: field
-          label: 'Authored on'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: timestamp
-          settings:
-            date_format: short_date_only
-            custom_date_format: ''
-            timezone: ''
-            tooltip:
-              date_format: long
-              custom_date_format: ''
-            time_diff:
-              enabled: false
-              future_format: '@interval hence'
-              past_format: '@interval ago'
-              granularity: 2
-              refresh: 60
-              description: ''
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        changed:
-          id: changed
-          table: node_field_data
-          field: changed
-          relationship: editoria11y_node_to_page
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: changed
-          plugin_id: field
-          label: Changed
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: timestamp
-          settings:
-            date_format: short_date_only
-            custom_date_format: ''
-            timezone: ''
-            tooltip:
-              date_format: long
-              custom_date_format: ''
-            time_diff:
-              enabled: false
-              future_format: '@interval hence'
-              past_format: '@interval ago'
-              granularity: 2
-              refresh: 60
-              description: ''
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
       pager:
         type: some
         options:
           offset: 0
           items_per_page: 0
-      style:
-        type: data_export
-        options:
-          formats:
-            csv: csv
-          csv_settings:
-            delimiter: ','
-            enclosure: '"'
-            escape_char: \
-            strip_tags: true
-            trim: true
-            encoding: utf8
-            utf8_bom: '0'
-            use_serializer_encode_only: false
-      defaults:
-        group_by: true
-        fields: false
       display_extenders:
         metatag_display_extender:
           metatags: {  }
@@ -2083,9 +929,6 @@ display:
         default: '0'
       filename: 'massgov-accesibility-report-export-[date:html_datetime].csv'
       automatic_download: false
-      export_method: batch
-      export_batch_size: 100
-      export_limit: 0
       store_in_public_file_directory: false
       custom_redirect_path: false
       redirect_to_display: page_1
@@ -2097,34 +940,16 @@ display:
         - 'languages:language_interface'
         - request_format
         - url
+        - 'user.node_grants:view'
         - user.permissions
       tags: {  }
   page_1:
     id: page_1
     display_title: Page
     display_plugin: page
-    position: 9
+    position: 1
     display_options:
-      defaults:
-        header: false
-      header:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: text
-          empty: true
-          content:
-            value: "<p>Caution: this data is based on real-time scans done when authors view pages while editing on edit.mass.gov. It should not be considered a complete report for the following reasons.</p>\r\n<ul>\r\n<li>Authors are able edit pages in a way that they never view the page after the edit. If they don't view it, it isn't checked.</li>\r\n<li>If Editoria11y finds no issue on a page, it stores nothing. In the data model, there is no way to tell the difference between a page that has no issues and a page that was never checked.</li>\r\n<li>If a page was not viewed by a logged-in author on edit.mass.gov after the Editoria11y feature was released 2/5/2024, it will not appear on the report.</li>\r\n</ul>\r\n<p>Consider using SiteImprove data for reports. It crawls all author created pages that are not hidden from search with the exception of news and events.</p>"
-            format: basic_html
-          tokenize: false
-      display_extenders:
-        metatag_display_extender:
-          metatags: {  }
-          tokenize: false
+      display_extenders: {  }
       path: admin/ma-dash/report/accessibility-report-for-authors
     cache_metadata:
       max-age: -1
@@ -2133,5 +958,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - 'user.node_grants:view'
         - user.permissions
       tags: {  }
