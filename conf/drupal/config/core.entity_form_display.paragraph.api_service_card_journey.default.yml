@@ -1,0 +1,116 @@
+uuid: ea819a01-2a80-4f2c-b9a6-7c49866e2fa2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.api_service_card_journey.field_api_service_card_j_feature
+    - field.field.paragraph.api_service_card_journey.field_api_service_card_j_mc_name
+    - field.field.paragraph.api_service_card_journey.field_api_service_card_j_steps
+    - field.field.paragraph.api_service_card_journey.field_api_service_card_j_title
+    - paragraphs.paragraphs_type.api_service_card_journey
+  module:
+    - field_group
+third_party_settings:
+  field_group:
+    group_tabs:
+      children:
+        - group_name
+        - group_steps
+        - group_features
+      label: Tabs
+      region: content
+      parent_name: ''
+      weight: 4
+      format_type: tabs
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: false
+        direction: horizontal
+        width_breakpoint: 640
+    group_name:
+      children:
+        - field_api_service_card_j_title
+        - field_api_service_card_j_mc_name
+      label: Name
+      region: content
+      parent_name: group_tabs
+      weight: 1
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_steps:
+      children:
+        - field_api_service_card_j_steps
+      label: Steps
+      region: content
+      parent_name: group_tabs
+      weight: 2
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
+    group_features:
+      children:
+        - field_api_service_card_j_feature
+      label: Features
+      region: content
+      parent_name: group_tabs
+      weight: 3
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
+id: paragraph.api_service_card_journey.default
+targetEntityType: paragraph
+bundle: api_service_card_journey
+mode: default
+content:
+  field_api_service_card_j_feature:
+    type: options_buttons
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_api_service_card_j_mc_name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_api_service_card_j_steps:
+    type: options_buttons
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_api_service_card_j_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

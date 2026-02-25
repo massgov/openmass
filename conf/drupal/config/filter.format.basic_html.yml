@@ -3,8 +3,11 @@ langcode: en
 status: true
 dependencies:
   module:
+    - ace_editor
     - editor
     - entity_embed
+    - filter_empty_tags
+    - highlightjs_input_filter
     - linkit
     - mass_fields
     - pathologic
@@ -14,6 +17,21 @@ name: 'Basic HTML'
 format: basic_html
 weight: 0
 filters:
+  ace_filter:
+    id: ace_filter
+    provider: ace_editor
+    status: false
+    weight: 0
+    settings:
+      theme: cobalt
+      syntax: html
+      height: 500px
+      width: 700px
+      font_size: 12pt
+      line_numbers: true
+      show_invisibles: false
+      print_margins: true
+      use_wrap_mode: true
   auto_heading_id:
     id: auto_heading_id
     provider: mass_fields
@@ -44,13 +62,29 @@ filters:
     status: true
     weight: 11
     settings: {  }
+  filter_empty_tags:
+    id: filter_empty_tags
+    provider: filter_empty_tags
+    status: true
+    weight: 0
+    settings:
+      do_not_consider_empty: 'button canvas drupal-media drupal-entity iframe object script svg textarea td th p span'
+      filter_spaces: true
+      filter_nbsp: true
+      filter_br: false
+  filter_highlightjs:
+    id: filter_highlightjs
+    provider: highlightjs_input_filter
+    status: true
+    weight: 0
+    settings: {  }
   filter_html:
     id: filter_html
     provider: filter
     status: true
     weight: 0
     settings:
-      allowed_html: '<br> <p> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <ul class="list-style-none list-style-disc list-style-circle list-style-square" start> <ol class="list-style-decimal list-style-decimal-leading-zero list-style-upper-roman list-style-lower-roman list-style-upper-alpha list-style-lower-alpha" start> <cite> <dl> <dt> <dd> <span> <img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <a hreflang href data-entity-type data-entity-uuid data-entity-substitution> <blockquote cite> <drupal-entity data-entity-type data-entity-substitution data-embed-button alt title data-align data-caption data-entity-embed-display data-entity-embed-display-settings data-view-mode data-entity-uuid data-langcode> <strong> <em> <sub> <sup> <li> <table> <tr> <td rowspan colspan> <th rowspan colspan> <thead> <tbody> <tfoot> <caption>'
+      allowed_html: '<br> <p> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <ul class="list-style-none list-style-disc list-style-circle list-style-square" start> <ol class="list-style-decimal list-style-decimal-leading-zero list-style-upper-roman list-style-lower-roman list-style-upper-alpha list-style-lower-alpha" start> <cite> <dl> <dt> <dd> <span> <img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption> <a hreflang href data-entity-type data-entity-uuid data-entity-substitution> <blockquote cite> <drupal-entity data-entity-type data-entity-substitution data-embed-button alt title data-align data-caption data-entity-embed-display data-entity-embed-display-settings data-view-mode data-entity-uuid data-langcode> <kbd> <samp> <strong> <em> <pre> <code class="language-*"> <sub> <sup> <li> <table> <tr> <td rowspan colspan> <th rowspan colspan> <thead> <tbody> <tfoot> <caption>'
       filter_html_help: false
       filter_html_nofollow: false
   filter_html_escape:
@@ -100,3 +134,4 @@ filters:
     weight: -10
     settings:
       title: false
+      media_substitution: metadata

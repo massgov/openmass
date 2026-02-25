@@ -99,6 +99,32 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
     $node = \is_string($param_node) && intval($param_node) ? Node::load($param_node) : $param_node;
     $type = $node && is_a($node, 'Drupal\node\Entity\Node') ? $node->getType() : '';
 
+    // Hide the block if current node is or belongs to excluded organizations.
+    $config = \Drupal::config('mass_alerts.settings');
+    $excluded_org_ids = array_map('intval', (array) ($config->get('excluded_org_ids') ?? []));
+    $org_ids = [];
+    if ($node instanceof NodeInterface) {
+      if ($node->bundle() === 'org_page') {
+        $org_ids[] = (int) $node->id();
+      }
+      if ($node->hasField('field_organizations')) {
+        foreach ($node->get('field_organizations')->getValue() as $org) {
+          $org_ids[] = (int) $org['target_id'];
+        }
+      }
+    }
+
+    if (!empty(array_intersect($org_ids, $excluded_org_ids)) && strpos($path, 'sitewide') !== FALSE) {
+      return [
+        '#markup' => '',
+        '#path' => $path,
+        '#cache' => [
+          'contexts' => ['url'],
+          'tags' => ['config:mass_alerts.settings'],
+        ],
+      ];
+    }
+
     return [
       '#theme' => 'mass_alerts_block',
       '#path' => $path,
@@ -106,6 +132,7 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
       '#type' => $type,
       '#cache' => [
         'contexts' => ['url'],
+        'tags' => ['config:mass_alerts.settings'],
       ],
     ];
   }

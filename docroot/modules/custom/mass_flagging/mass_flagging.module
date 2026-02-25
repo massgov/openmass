@@ -5,6 +5,7 @@
  * Contains mass_flagging.module.
  */
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -154,7 +155,12 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
       }
 
       // Checks for Image paragraph change.
-      $image_change = \Drupal::service('mass_flagging.entity_comparison')->checkRevisionforImageSectionChanges($current_revision, $previous_revision);
+      $image_change = FALSE;
+      if ($current_revision instanceof ContentEntityInterface
+        && $previous_revision instanceof ContentEntityInterface) {
+        $image_change = \Drupal::service('mass_flagging.entity_comparison')
+          ->checkRevisionforImageSectionChanges($current_revision, $previous_revision);
+      }
       // Escape from the function if the change
       // happened in the image section only.
       if ($image_change) {

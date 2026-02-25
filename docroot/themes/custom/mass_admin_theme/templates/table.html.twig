@@ -68,7 +68,7 @@
               cell.active_table_sort ? 'is-active',
             ]
           %}
-          {% if cell.content is empty %}
+          {% if cell.content is empty and 'select-all' not in cell.attributes.class %}
             <{{ cell.tag }}{{ cell.attributes.addClass(cell_classes).addClass('visually-hidden') }} aria-hidden="true">Hidden placeholder</{{ cell.tag }}>
           {% else %}
             <{{ cell.tag }}{{ cell.attributes.addClass(cell_classes) }}>

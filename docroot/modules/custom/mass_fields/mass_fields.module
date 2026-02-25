@@ -279,7 +279,7 @@ function mass_fields_entity_base_field_info(EntityTypeInterface $entity_type) {
     ->setTranslatable(FALSE)
     ->setDisplayConfigurable('form', TRUE)
     ->setDisplayOptions('form', $options)
-    ->setDescription('If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
+    ->setDescription('Content can only be hidden from search if this option is selected <strong>before</strong> the content is first published and if no links point to it. If you later uncheck this option, it may take several days for the page to appear in search results. Selecting this option after the content has already been published will not work.');
   $nosnippet = BaseFieldDefinition::create('boolean')
     ->setLabel(t('Omit snippet in search results'))
     ->setDefaultValue(FALSE)
@@ -974,7 +974,7 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
  */
 function _mass_fields_microsite_key_message_image_process($element, &$form_state, $form) {
   // Modify the help text
-  $element['#description'] = t("Recommended image size is 2560x600, with a files size that doesn't exceed 5MB. Allowed types: png, gif, jpg, jpeg. Choose a high quality, decorative image that does not need text explanation. No ALT text is provided for visitors using a screenreader. If there is any text in the image, it should be repeated within the Key Message row.");
+  $element['#description'] = t("Recommended image size is 2560x1280, with a files size that doesn't exceed 5MB. Allowed types: png, gif, jpg, jpeg. Choose a high quality, decorative image that does not need text explanation. No ALT text is provided for visitors using a screenreader. If there is any text in the image, it should be repeated within the Key Message row.");
   return $element;
 }
 

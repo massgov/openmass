@@ -37,5 +37,9 @@
  */
 #}
 {% if video %}
+  {# Set video heading level based on parent heading level determined in preprocess #}
+  {% if video_heading_level is defined %}
+    {% set video = video|merge({"headingLevel": video_heading_level}) %}
+  {% endif %}
   {% include "@atoms/09-media/video.twig" with video %}
 {% endif %}
