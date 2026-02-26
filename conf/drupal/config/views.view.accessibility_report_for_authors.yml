@@ -4,8 +4,12 @@ status: true
 dependencies:
   config:
     - node.type.contact_information
+    - node.type.decision_tree_branch
+    - node.type.decision_tree_conclusion
     - node.type.error_page
     - node.type.external_data_resource
+    - node.type.fee
+    - node.type.glossary
     - node.type.person
     - node.type.stacked_layout
     - taxonomy.vocabulary.label
@@ -752,8 +756,12 @@ display:
           operator: 'not in'
           value:
             contact_information: contact_information
+            decision_tree_branch: decision_tree_branch
+            decision_tree_conclusion: decision_tree_conclusion
             error_page: error_page
             external_data_resource: external_data_resource
+            fee: fee
+            glossary: glossary
             person: person
             stacked_layout: stacked_layout
           group: 1
@@ -1038,10 +1046,12 @@ display:
             operator_id: result_key_op
             label: 'Alert type, linked'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: result_key_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
             identifier: result_key
             required: false
             remember: true
