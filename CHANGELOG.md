@@ -1,5 +1,23 @@
 
 
+## [0.468.0] - February 24, 2026
+
+### Changed
+  - DP-44722: For collection pages, include the org search in the top search bar.
+  - DP-44755: Upgrade ClamAv module to latest 2.1.x branch and enable debug mode.
+  - DP-45085: Revert DP-42778 and restore the document start date field. The field is now visible in the document form and the help text indicates it is used only for sorting automatic curated lists.
+  
+
+
+## [0.467.0] - February 17, 2026
+
+### Changed
+  - DP-41803: A11Y datatable uses duplicate table tag.
+  - DP-44176: Change MySQL version in Tugboat and CircleCI to match Acquia db version
+  - DP-44947: Disable jQuery modules used by better exposed filters.
+  
+
+
 ## [0.466.0] - February 10, 2026
 
 ### Changed
