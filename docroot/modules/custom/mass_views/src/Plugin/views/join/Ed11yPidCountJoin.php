@@ -22,6 +22,12 @@ class Ed11yPidCountJoin extends JoinPluginBase {
     /** @var \Drupal\mysql\Driver\Database\mysql\Select $subQuery */
     $subQuery = \Drupal::database()->select($this->table, $pseudoTableAlias);
     $subQuery->addField($pseudoTableAlias, 'pid', 'pid');
+
+    // Only filter dismissals (ed11y_action), not results (ed11y_result).
+    if ($this->table === 'ed11y_action') {
+      $subQuery->condition($pseudoTableAlias . '.action_type', 'ok');
+    }
+ 
     $subQuery->addExpression('COUNT(' . $pseudoTableAlias . '.pid)', 'pid_count');
     $subQuery->groupBy($pseudoTableAlias . '.pid');
 
