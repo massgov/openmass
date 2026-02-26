@@ -536,7 +536,7 @@ display:
           group_type: sum
           admin_label: ''
           plugin_id: editoria11y_issues_by_page_link
-          label: '# of Active Alerts (not dismissed)'
+          label: '# of Active Alerts'
           exclude: false
           alter:
             alter_text: false
@@ -593,7 +593,7 @@ display:
           group_type: sum
           admin_label: ''
           plugin_id: numeric
-          label: '# of Dismissed Alerts'
+          label: '# of Alerts marked as OK'
           exclude: false
           alter:
             alter_text: false
@@ -1047,7 +1047,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: "<p>Data is from <a href=\"https://massgov.sharepoint.com/sites/TSS-MassGov-Knowledge-Base/SitePages/Live-accessibility-checking--Using-Editoria11y-on-your-Mass.gov-pages.aspx\">Editoria11y</a> and includes only published pages. Data for each page is refreshed when that page is viewed by an author on edit.mass.gov. All child organizations are included in data (defined on organization pages with the Parent Organization field). See a <a href=\"/admin/content/org-parent-reports\">report of the parent hierarchy</a> and our <a href=\"/admin/ma-dash/report/accessibility-report-for-authors\">Report of Accessibility Issues</a>. </p>\r\n<p>Definitions:</p>\r\n<p><ul>\r\n<li><strong># of Total Pages Published</strong>: Content types that don't render as pages aren't included in counts. </li>\r\n<li><strong># of Pages with Active Alerts</strong>: These pages have at least one undismissed accessibility alert. </li>\r\n<li><strong>% of Pages with Active Alerts</strong>: Basic percentage calculated using first two columns.</li>\r\n<li><strong># of Active Alerts (not dismissed)</strong>: This is a total count of undismissed alerts. This is higher than the number of pages with issues since a page can have multiple alerts.</li>\r\n<li><strong># of Dismissed Alerts</strong>: This is a total count of dismissed alerts. There can be multiple dismissed alerts on a page. A page can also have both dismissed and undismissed alerts. This is not a count of alerts and not pages.</li>\r\n</ul><br></p>\r\n"
+            value: "<p>Data is from <a href=\"https://massgov.sharepoint.com/sites/TSS-MassGov-Knowledge-Base/SitePages/Live-accessibility-checking--Using-Editoria11y-on-your-Mass.gov-pages.aspx\">Editoria11y</a> and includes only published pages. Data for each page is refreshed when that page is viewed by an author on edit.mass.gov. All child organizations are included in data (defined on organization pages with the Parent Organization field). See a <a href=\"/admin/content/org-parent-reports\">report of the parent hierarchy</a> and our <a href=\"/admin/ma-dash/report/accessibility-report-for-authors\">Report of Accessibility Issues</a>. </p>\r\n<p>Definitions:</p>\r\n<p><ul>\r\n<li><strong># of Total Pages Published</strong>: Content types that don't render as pages aren't included in counts. </li>\r\n<li><strong># of Pages with Active Alerts</strong>: These pages have at least one alert that has not been marked as OK.</li>\r\n<li><strong>% of Pages with Active Alerts</strong>: Basic percentage calculated using first two columns.</li>\r\n<li><strong># of Active Alerts</strong>: This is a total count of alerts that have not been marked as OK. This is higher than the number of pages with issues since a page can have multiple alerts.</li>\r\n<li><strong># of Alerts marked as OK</strong>: This is a total count of alerts that an author has reviewed and marked as OK meaning that they are not really an issue. There can be multiple alerts marked as OK on a page. A page can also have both active alerts and alerts marked as OK. This is a count of alerts and not pages.</li>\r\n</ul><br></p>\r\n"
             format: basic_html
           tokenize: false
       footer: {  }
