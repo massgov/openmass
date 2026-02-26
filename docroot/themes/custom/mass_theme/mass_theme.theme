@@ -4594,6 +4594,7 @@ function mass_theme_preprocess_page(&$variables) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealBlackImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-black.png');
 
   if ($route_name === 'view.collection_all.page_all') {
     $cache_tags = [];
