@@ -10,12 +10,14 @@ dependencies:
     - node.type.external_data_resource
     - node.type.fee
     - node.type.glossary
+    - node.type.org_page
     - node.type.person
   module:
     - editoria11y
     - mass_views
     - node
     - user
+    - views_simple_math_field
 id: a11y_summary_by_top_level_org
 label: 'Accessibility summary by top-level org'
 module: views
@@ -30,7 +32,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Accessibility summary by top-level org'
+      title: 'Accessibility Summary by Top-Level Organization'
       fields:
         nid:
           id: nid
@@ -109,7 +111,7 @@ display:
           entity_field: type
           plugin_id: field
           label: 'Content type'
-          exclude: false
+          exclude: true
           alter:
             alter_text: false
             text: ''
@@ -173,7 +175,7 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-          label: Org
+          label: 'Top-Level Organization'
           exclude: false
           alter:
             alter_text: false
@@ -236,7 +238,7 @@ display:
           group_type: count
           admin_label: ''
           plugin_id: numeric
-          label: '# of pages'
+          label: '# of Total Published Pages'
           exclude: false
           alter:
             alter_text: false
@@ -293,7 +295,7 @@ display:
           group_type: count
           admin_label: ''
           plugin_id: numeric
-          label: '# of pages with active alerts'
+          label: '# of Pages with Active Alerts'
           exclude: false
           alter:
             alter_text: false
@@ -342,6 +344,76 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
+        field_views_simple_math_field:
+          id: field_views_simple_math_field
+          table: views_simple_math_field
+          field: field_views_simple_math_field
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field_views_simple_math_field
+          label: '% of Pages with Active Alerts'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          fieldset_one:
+            data_field:
+              top_org_nid: top_org_nid
+              pid_count: pid_count
+              nid: 0
+              type: 0
+              title: 0
+              content_results: 0
+              pid: 0
+              content_results_1: 0
+              pid_count_1: 0
+            formula: '@pid_count / @top_org_nid * 100'
+          mute_logs: false
+          set_precision: 1
+          precision: '0'
+          decimal: .
+          separator: ','
+          format_plural: 0
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: '%'
         content_results:
           id: content_results
           table: ed11y_page
@@ -350,8 +422,8 @@ display:
           group_type: count
           admin_label: ''
           plugin_id: editoria11y_issues_by_page_link
-          label: '# of pages with content alerts'
-          exclude: false
+          label: '# of pages with content alerts (including dismissed)'
+          exclude: true
           alter:
             alter_text: false
             text: ''
@@ -407,8 +479,8 @@ display:
           group_type: count
           admin_label: ''
           plugin_id: numeric
-          label: '# of pages with dismissals'
-          exclude: false
+          label: '# of pages with dismissed alerts'
+          exclude: true
           alter:
             alter_text: false
             text: ''
@@ -464,7 +536,7 @@ display:
           group_type: sum
           admin_label: ''
           plugin_id: editoria11y_issues_by_page_link
-          label: '# of content alerts'
+          label: '# of Active Alerts (not dismissed)'
           exclude: false
           alter:
             alter_text: false
@@ -521,7 +593,7 @@ display:
           group_type: sum
           admin_label: ''
           plugin_id: numeric
-          label: '# of dismissals'
+          label: '# of Dismissed Alerts'
           exclude: false
           alter:
             alter_text: false
@@ -758,6 +830,48 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        type_1:
+          id: type_1
+          table: node_field_data
+          field: type
+          relationship: top_org_nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          operator: in
+          value:
+            org_page: org_page
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -769,17 +883,26 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            top_org_nid_1: top_org_nid_1
+            nid: nid
+            type: type
             title: title
             top_org_nid: top_org_nid
-            content_results_1: content_results_1
-            pid: pid
-            content_results: content_results
             pid_count: pid_count
-            type: type
+            field_views_simple_math_field: field_views_simple_math_field
+            content_results: content_results
+            pid: pid
+            content_results_1: content_results_1
+            pid_count_1: pid_count_1
           default: top_org_nid
           info:
-            top_org_nid_1:
+            nid:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            type:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -800,14 +923,14 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            content_results_1:
+            pid_count:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            pid:
+            field_views_simple_math_field:
               sortable: true
               default_sort_order: desc
               align: ''
@@ -821,16 +944,23 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            pid_count:
+            pid:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            type:
+            content_results_1:
               sortable: true
-              default_sort_order: asc
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            pid_count_1:
+              sortable: true
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
@@ -906,7 +1036,20 @@ display:
           plugin_id: standard
           required: false
       group_by: true
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: "<p>Data is from <a href=\"https://massgov.sharepoint.com/sites/TSS-MassGov-Knowledge-Base/SitePages/Live-accessibility-checking--Using-Editoria11y-on-your-Mass.gov-pages.aspx\">Editoria11y</a> and includes only published pages. Data for each page is refreshed when that page is viewed by an author on edit.mass.gov. All child organizations are included in data (defined on organization pages with the Parent Organization field). See a <a href=\"/admin/content/org-parent-reports\">report of the parent hierarchy</a> and our <a href=\"/admin/ma-dash/report/accessibility-report-for-authors\">Report of Accessibility Issues</a>. </p>\r\n<p>Definitions:</p>\r\n<p><ul>\r\n<li><strong># of Total Pages Published</strong>: Content types that don't render as pages aren't included in counts. </li>\r\n<li><strong># of Pages with Active Alerts</strong>: These pages have at least one undismissed accessibility alert. </li>\r\n<li><strong>% of Pages with Active Alerts</strong>: Basic percentage calculated using first two columns.</li>\r\n<li><strong># of Active Alerts (not dismissed)</strong>: This is a total count of undismissed alerts. This is higher than the number of pages with issues since a page can have multiple alerts.</li>\r\n<li><strong># of Dismissed Alerts</strong>: This is a total count of dismissed alerts. There can be multiple dismissed alerts on a page. A page can also have both dismissed and undismissed alerts. This is not a count of alerts and not pages.</li>\r\n</ul><br></p>\r\n"
+            format: basic_html
+          tokenize: false
       footer: {  }
       display_extenders:
         metatag_display_extender:
