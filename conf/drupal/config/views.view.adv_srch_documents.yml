@@ -709,7 +709,7 @@ display:
           id: moderation_state
           table: media_field_revision
           field: moderation_state
-          relationship: none
+          relationship: media_latest_revision
           group_type: group
           admin_label: ''
           entity_type: media
@@ -1585,9 +1585,9 @@ display:
             group_items: {  }
         moderation_state_1:
           id: moderation_state_1
-          table: media_field_data
+          table: media_field_revision
           field: moderation_state
-          relationship: none
+          relationship: media_latest_revision
           group_type: group
           admin_label: 'Publication Status'
           entity_type: media
@@ -2207,7 +2207,8 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
+          disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
       relationships:
@@ -2231,7 +2232,17 @@ display:
           admin_label: 'file from field_upload_file'
           plugin_id: standard
           required: false
+        media_latest_revision:
+          id: media_latest_revision
+          table: media_field_data
+          field: media_latest_revision
+          relationship: none
+          group_type: group
+          admin_label: 'Media latest revision'
+          plugin_id: standard
+          required: false
       use_ajax: false
+      group_by: false
       header:
         area:
           id: area
@@ -2815,7 +2826,7 @@ display:
           id: moderation_state
           table: media_field_revision
           field: moderation_state
-          relationship: none
+          relationship: media_latest_revision
           group_type: group
           admin_label: ''
           entity_type: media
@@ -2945,7 +2956,7 @@ display:
           id: moderation_state_1
           table: media_field_revision
           field: moderation_state
-          relationship: none
+          relationship: media_latest_revision
           group_type: group
           admin_label: ''
           entity_type: media
@@ -4022,13 +4033,13 @@ display:
     position: 1
     display_options:
       exposed_form:
-        type: input_required_on_request
+        type: input_required
         options:
           submit_button: Filter
-          reset_button: 1
+          reset_button: true
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
-          expose_sort_order: 1
+          expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
           text_input_required: 'Select any filter and click on Apply to see results'
