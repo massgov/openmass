@@ -68,11 +68,11 @@
 #}
 {%
 set illustratedLink = {
-  'text': label|field_value,
-  'type': content.field_label|field_value,
-  'href': url,
-  'image': image_url_teaser_simple,
-  'label': content.field_label|field_raw('value')|trim == 'Guide' ? 'Guide:' : ''
+  text: label|field_value,
+  type: content.field_label|field_value,
+  href: url,
+  image: image_url_teaser_simple,
+  label: content.field_label|field_raw('value')|trim == 'Guide' ? 'Guide:' : '',
 }
 %}
-{% include "@molecules/illustrated-link.twig" %}
+{{ include('@molecules/illustrated-link.twig') }}

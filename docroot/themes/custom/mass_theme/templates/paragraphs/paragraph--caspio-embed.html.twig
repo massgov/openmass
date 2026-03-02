@@ -40,13 +40,13 @@
  * @ingroup themeable
  */
 #}
-{% include "@atoms/09-media/figure--caspio.twig" with {
-  "figure": {
-    "caspio": {
-      "dataId": content.field_caspio_data_identifier[0]['#context'].value
+{{ include('@atoms/09-media/figure--caspio.twig', {
+  figure: {
+    caspio: {
+      dataId: content.field_caspio_data_identifier[0]['#context'].value,
     },
-    "title": {
-      "text": content.field_caspio_admin_title[0]['#context'].value
-    }
-  }
-} %}
+    title: {
+      text: content.field_caspio_admin_title[0]['#context'].value,
+    },
+  },
+}) }}

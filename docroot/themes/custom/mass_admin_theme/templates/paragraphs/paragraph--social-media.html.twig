@@ -50,32 +50,32 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
       {% if social_links|render is not empty %}
-        {% embed "@organisms/by-author/social-links-bar.twig" with {
-          "socialLinksBar": {
-            "level": level
-          }
+        {% embed '@organisms/by-author/social-links-bar.twig' with {
+          socialLinksBar: {
+            level: level,
+          },
         } %}
           {% block sectionContent %}
             {{ social_links }}
           {% endblock %}
         {% endembed %}
 
-        {% if content.field_component_add_separator|field_value|render == "True" %}
-          {% include "@atoms/divider.twig" with {
-            "divider": {
-              "thin": true
-            }
-          } %}
+        {% if content.field_component_add_separator|field_value|render == 'True' %}
+          {{ include('@atoms/divider.twig', {
+            divider: {
+              thin: true,
+            },
+          }) }}
         {% endif %}
       {% else %}
-        {% embed "@organisms/by-author/rich-text.twig" %}
+        {% embed '@organisms/by-author/rich-text.twig' %}
           {% block rteElements %}
             <p>There is nothing to show here, or the page has not been published yet.</p>
             <p>Note: This text will not be visible on the view page.</p>

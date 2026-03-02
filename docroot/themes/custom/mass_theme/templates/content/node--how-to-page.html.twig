@@ -25,18 +25,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -47,13 +47,13 @@
   {% endembed %}
   {{ content.referencing_binders }}
   {% if translationLinks %}
-    {% include "@molecules/inline-links-language.twig" with {
-      "inlineLinks": translationLinks
-    } %}
+    {{ include('@molecules/inline-links-language.twig', {
+      inlineLinks: translationLinks,
+    }) }}
   {% endif %}
-  {% set pageHeader = pageHeader|merge({'level': level}) %}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {% set pageHeader = pageHeader|merge({level: level}) %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block main %}
@@ -64,36 +64,36 @@
       <div class="page-content">
         {% if sidebar.contactList %}
           {% set contactList = sidebar.contactList %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
         {% set coloredHeading = {
-            "text": details.contentTitle,
-            "titleContext": details.titleContext,
-            "color": "green",
-            "level": level
+            text: details.contentTitle,
+            titleContext: details.titleContext,
+            color: 'green',
+            level: level,
           } %}
-        {% include "@atoms/04-headings/colored-heading.twig" %}
+        {{ include('@atoms/04-headings/colored-heading.twig') }}
 
         {# Increase heading number by 1 from the parent heading. #}
         {% set level = level + 1 %}
 
         <div class="ma__details__container">
           <div class="ma__details__sticky-nav">
-            {% include "@molecules/sticky-nav.twig" %}
+            {{ include('@molecules/sticky-nav.twig') }}
           </div>
           <div class="ma__details__content">
             {% block pageContent %}
               {# Below is the section for What you need. #}
               {% if node.field_how_to_what_you_need is not empty %}
-                {% embed "@organisms/by-author/rich-text.twig" with {
-                  "richText": {
-                    "compHeading": {
-                      "title": (field_customize_header_text and node.field_what_you_need_header is not empty) ? node.field_what_you_need_header.value : "What you need",
-                      "id": (field_customize_header_text and node.field_what_you_need_header is not empty) ? stickyNav['anchorIDs'][node.field_what_you_need_header.value] : "what-you-need",
-                      "level": level,
-                      "titleContext": "for " ~ node.title.value
-                    }
-                  }
+                {% embed '@organisms/by-author/rich-text.twig' with {
+                  richText: {
+                    compHeading: {
+                      title: (field_customize_header_text and node.field_what_you_need_header is not empty) ? node.field_what_you_need_header.value : 'What you need',
+                      id: (field_customize_header_text and node.field_what_you_need_header is not empty) ? stickyNav['anchorIDs'][node.field_what_you_need_header.value] : 'what-you-need',
+                      level: level,
+                      titleContext: 'for ' ~ node.title.value,
+                    },
+                  },
                 } %}
                   {% block rteElements %}
                     {{ content.field_how_to_what_you_need }}
@@ -102,35 +102,35 @@
               {% endif %}
               {% if pageContent.tabularData %}
                 {% set tabularData = pageContent.tabularData %}
-                {% set tabularData = tabularData|merge({'compHeading': {
-                  'title': tabularData.compHeading.title,
-                  'titleContext': tabularData.compHeading.titleContext,
-                  'level': level,
-                  'id': tabularData.compHeading.id
+                {% set tabularData = tabularData|merge({compHeading: {
+                  title: tabularData.compHeading.title,
+                  titleContext: tabularData.compHeading.titleContext,
+                  level: level,
+                  id: tabularData.compHeading.id,
                 }}) %}
-                {% include "@organisms/by-author/tabular-data.twig" %}
+                {{ include('@organisms/by-author/tabular-data.twig') }}
               {% endif %}
               {% if pageContent.stepsUnordered %}
                 {% set stepsUnordered = pageContent.stepsUnordered %}
-                {% set stepsUnordered = stepsUnordered|merge({'compHeading': {
-                  'title': stepsUnordered.compHeading.title,
-                  'titleContext': stepsUnordered.compHeading.titleContext,
-                  'level': level,
-                  'id': stepsUnordered.compHeading.id
+                {% set stepsUnordered = stepsUnordered|merge({compHeading: {
+                  title: stepsUnordered.compHeading.title,
+                  titleContext: stepsUnordered.compHeading.titleContext,
+                  level: level,
+                  id: stepsUnordered.compHeading.id,
                 }}) %}
-                {% include "@organisms/by-author/steps-unordered.twig" %}
+                {{ include('@organisms/by-author/steps-unordered.twig') }}
               {% endif %}
               {# Below is the Next steps section which is using the following twigs: field--field-how-to-next-steps.html.twig and paragraph--next-step.html.twig. #}
               {% if content.field_how_to_next_steps|render is not empty %}
-                {% embed "@organisms/by-author/steps-ordered.twig" with {
-                  "stepsOrdered": {
-                    "compHeading": {
-                      "title": (field_customize_header_text and node.field_next_steps_header is not empty) ? node.field_next_steps_header.value : "Next steps",
-                      "id": (field_customize_header_text and node.field_next_steps_header is not empty) ? stickyNav['anchorIDs'][node.field_next_steps_header.value] : "next-steps",
-                      "level": level,
-                      "titleContext": "for " ~ node.title.value
-                    }
-                  }
+                {% embed '@organisms/by-author/steps-ordered.twig' with {
+                  stepsOrdered: {
+                    compHeading: {
+                      title: (field_customize_header_text and node.field_next_steps_header is not empty) ? node.field_next_steps_header.value : 'Next steps',
+                      id: (field_customize_header_text and node.field_next_steps_header is not empty) ? stickyNav['anchorIDs'][node.field_next_steps_header.value] : 'next-steps',
+                      level: level,
+                      titleContext: 'for ' ~ node.title.value,
+                    },
+                  },
                 } %}
                   {% block actionSteps %}
                     {{ content.field_how_to_next_steps }}
@@ -139,15 +139,15 @@
               {% endif %}
               {# Below is the section for More info. #}
               {% if content.field_how_to_more_info|render is not empty %}
-                {% embed "@organisms/by-author/rich-text.twig" with {
-                  "richText": {
-                    "compHeading": {
-                      "title": (field_customize_header_text and node.field_more_info_header is not empty) ? node.field_more_info_header.value : "More info",
-                      "id": (field_customize_header_text and node.field_more_info_header is not empty) ? stickyNav['anchorIDs'][node.field_more_info_header.value] : "more-info",
-                      "level": level,
-                      "titleContext": "for " ~ node.title.value
-                    }
-                  }
+                {% embed '@organisms/by-author/rich-text.twig' with {
+                  richText: {
+                    compHeading: {
+                      title: (field_customize_header_text and node.field_more_info_header is not empty) ? node.field_more_info_header.value : 'More info',
+                      id: (field_customize_header_text and node.field_more_info_header is not empty) ? stickyNav['anchorIDs'][node.field_more_info_header.value] : 'more-info',
+                      level: level,
+                      titleContext: 'for ' ~ node.title.value,
+                    },
+                  },
                 } %}
                   {% block rteElements %}
                     {{ content.field_how_to_more_info }}
@@ -156,15 +156,15 @@
               {% endif %}
               {# Below is the section for Manage your account. #}
               {% if content.field_manage_your_account|render is not empty %}
-                {% embed "@organisms/by-author/descriptive-links-wrapper.twig" with {
-                  "descriptiveLinks": {
-                    "compHeading": {
-                      "title": (field_customize_header_text and node.field_manage_your_account_header is not empty) ? node.field_manage_your_account_header.value : "Manage your account",
-                      "id": (field_customize_header_text and node.field_manage_your_account_header is not empty) ? stickyNav['anchorIDs'][node.field_manage_your_account_header.value] : "manage-your-account",
-                      "level": level,
-                      "titleContext": "for " ~ node.title.value
-                    }
-                  }
+                {% embed '@organisms/by-author/descriptive-links-wrapper.twig' with {
+                  descriptiveLinks: {
+                    compHeading: {
+                      title: (field_customize_header_text and node.field_manage_your_account_header is not empty) ? node.field_manage_your_account_header.value : 'Manage your account',
+                      id: (field_customize_header_text and node.field_manage_your_account_header is not empty) ? stickyNav['anchorIDs'][node.field_manage_your_account_header.value] : 'manage-your-account',
+                      level: level,
+                      titleContext: 'for ' ~ node.title.value,
+                    },
+                  },
                 } %}
                   {% block descriptiveLinks %}
                     {{ content.field_manage_your_account }}
@@ -174,15 +174,15 @@
               {# Below is the section for Downloads. #}
               {% if content.field_how_to_files|render is not empty %}
                 {# Using the field_how_to_files view mode to display the URL for doucments in this section. #}
-                {% embed "@organisms/by-author/form-downloads.twig" with {
-                  "formDownloads": {
-                    "compHeading": {
-                      "title": (field_customize_header_text and node.field_downloads_header is not empty) ? node.field_downloads_header.value : "Downloads",
-                      "id": (field_customize_header_text and node.field_downloads_header is not empty) ? stickyNav['anchorIDs'][node.field_downloads_header.value] : "downloads",
-                      "level": level,
-                      "titleContext": "for " ~ node.title.value
-                    }
-                  }
+                {% embed '@organisms/by-author/form-downloads.twig' with {
+                  formDownloads: {
+                    compHeading: {
+                      title: (field_customize_header_text and node.field_downloads_header is not empty) ? node.field_downloads_header.value : 'Downloads',
+                      id: (field_customize_header_text and node.field_downloads_header is not empty) ? stickyNav['anchorIDs'][node.field_downloads_header.value] : 'downloads',
+                      level: level,
+                      titleContext: 'for ' ~ node.title.value,
+                    },
+                  },
                 } %}
                   {% block formDownloadLinks %}
                     {{ content.field_how_to_files }}
@@ -191,18 +191,18 @@
               {% endif %}
               {% if pageContent.contactList %}
                 {% set contactList = pageContent.contactList %}
-                {% set contactList = contactList|merge({'compHeading': {
-                  'title': contactList.compHeading.title,
-                  'titleContext': contactList.compHeading.titleContext,
-                  'level': level,
-                  'id': contactList.compHeading.id
+                {% set contactList = contactList|merge({compHeading: {
+                  title: contactList.compHeading.title,
+                  titleContext: contactList.compHeading.titleContext,
+                  level: level,
+                  id: contactList.compHeading.id,
                 }}) %}
-                {% include "@organisms/contact/contact-list.twig" %}
+                {{ include('@organisms/contact/contact-list.twig') }}
               {% endif %}
               {% if sidebar.linkList %}
                 {% set linkList = sidebar.linkList %}
-                {% set linkList = linkList|merge({'sidebarHeading': {"title": "Related"}}) %}
-                {% include "@organisms/by-author/link-list.twig" %}
+                {% set linkList = linkList|merge({sidebarHeading: {title: 'Related'}}) %}
+                {{ include('@organisms/by-author/link-list.twig') }}
               {% endif %}
             {% endblock %}
           </div>
@@ -215,14 +215,14 @@
         {% if sidebar.contactList.contacts %}
           <div class="ma__details__sidebar-contact">
             {% set contactList = sidebar.contactList %}
-            {% set contactList = contactList|merge({'compHeading': {
-              'title': contactList.compHeading.title,
-              'titleContext': contactList.compHeading.titleContext,
-              'level': level,
-              'id': contactList.compHeading.id,
-              'sub': false
+            {% set contactList = contactList|merge({compHeading: {
+              title: contactList.compHeading.title,
+              titleContext: contactList.compHeading.titleContext,
+              level: level,
+              id: contactList.compHeading.id,
+              sub: false,
             }}) %}
-            {% include "@organisms/contact/contact-list.twig" %}
+            {{ include('@organisms/contact/contact-list.twig') }}
           </div>
         {% endif %}
         {% if sidebar %}
@@ -230,9 +230,9 @@
             {% block sidebar %}
               {% if sidebar.linkList %}
                 {% set linkList = sidebar.linkList %}
-                {% set compHeading = linkList.compHeading|merge({'level': level}) %}
-                {% set linkList = linkList|merge({'compHeading': compHeading}) %}
-                {% include "@organisms/by-author/link-list.twig" %}
+                {% set compHeading = linkList.compHeading|merge({level: level}) %}
+                {% set linkList = linkList|merge({compHeading: compHeading}) %}
+                {{ include('@organisms/by-author/link-list.twig') }}
               {% endif %}
             {% endblock %}
           </div>

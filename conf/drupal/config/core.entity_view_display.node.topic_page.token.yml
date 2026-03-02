@@ -22,7 +22,7 @@ dependencies:
     - node.type.topic_page
   module:
     - entity_reference_revisions
-    - mass_map
+    - mass_schema_metatag
     - user
 id: node.topic_page.token
 targetEntityType: node
@@ -47,9 +47,11 @@ content:
     weight: 1
     region: content
   field_topic_ref_related_topics:
-    type: map_row_formatter
+    type: mass_entity_reference_absolute_urls
     label: above
-    settings: {  }
+    settings:
+      link_template: canonical
+      absolute: '1'
     third_party_settings: {  }
     weight: 3
     region: content

@@ -26,18 +26,18 @@
     {% set secondaryIndicators = false %}
     {% if content.field_organizations is not empty %}
         {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
     {% endif %}
 
-    {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+    {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
         {% block primaryRelationship %}
             {{ primaryRelationshipContent }}
@@ -46,24 +46,24 @@
             {{ content.field_organizations }}
         {% endblock %}
     {% endembed %}
-  {% include "@organisms/page-banner/page-banner.twig" with {
-    "pageBanner": {
-      "image": content.field_guide_page_bg_wide[0],
-      "bgPositionX": 'center',
-      "theme": "c-white",
-      "pageHeader": {
-        "title": node.title.value,
-        "description": content.field_guide_page_lede ?? '',
-      }
-    }
-  } %}
-    {% include "@organisms/by-template/sticky-toc.twig" with {
-    "stickyTOC": {
-      "title": "Table of Contents"|t,
-      "parent": "#main-content",
-      "sections": ".ma__stacked-row__title h2"
+  {{ include('@organisms/page-banner/page-banner.twig', {
+    pageBanner: {
+      image: content.field_guide_page_bg_wide[0],
+      bgPositionX: 'center',
+      theme: 'c-white',
+      pageHeader: {
+        title: node.title.value,
+        description: content.field_guide_page_lede ?? '',
+      },
     },
-  } %}
+  }) }}
+    {{ include('@organisms/by-template/sticky-toc.twig', {
+    stickyTOC: {
+      title: 'Table of Contents'|t,
+      parent: '#main-content',
+      sections: '.ma__stacked-row__title h2',
+    },
+  }) }}
 {% endblock %}
 
 {% block stackedRowContent %}
@@ -77,7 +77,7 @@
         {{ content.field_image_credit }}
     {% endif %}
     {% if suggestedPages %}
-        {% include "@organisms/by-author/suggested-pages.twig" %}
+        {{ include('@organisms/by-author/suggested-pages.twig') }}
     {% endif %}
     {{ content.extra_org_feedback_form }}
 {% endblock %}

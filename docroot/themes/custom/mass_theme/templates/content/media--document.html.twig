@@ -17,20 +17,20 @@
     set pageHeader = {
       title: content.field_title|field_value,
       optionalContents: [{
-        path: "@molecules/download-link.twig",
+        path: '@molecules/download-link.twig',
         data: {
-          downloadLink: downloadLink
-        }
+          downloadLink: downloadLink,
+        },
       }, {
-        path: "@molecules/listing-table.twig",
+        path: '@molecules/listing-table.twig',
         data: {
           listingTable: {
-            rows: curated_rows
-          }
-        }
-      }]
+            rows: curated_rows,
+          },
+        },
+      }],
     }
   %}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}

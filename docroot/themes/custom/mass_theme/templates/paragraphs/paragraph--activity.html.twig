@@ -39,12 +39,12 @@
 #}
 {%
 set actionActivities = [{
-  'image': file_url(content.field_image['#items'].entity.uri.value ?? ''),
-  'alt': content.field_image['#items'].alt,
-  'title': content.field_title|field_value,
-  'description': content.field_teaser|field_value,
-  'linkTitle': content.field_link[0]['#title'],
-  'href': content.field_link[0]['#url'],
+  image: file_url(content.field_image['#items'].entity.uri.value ?? ''),
+  alt: content.field_image['#items'].alt,
+  title: content.field_title|field_value,
+  description: content.field_teaser|field_value,
+  linkTitle: content.field_link[0]['#title'],
+  href: content.field_link[0]['#url'],
 }]
 %}
-{% include "@molecules/action-activities.twig" with actionActivities %}
+{{ include('@molecules/action-activities.twig', actionActivities) }}

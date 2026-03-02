@@ -43,14 +43,14 @@
     {# Do nothing with NULL OR UNPUBLISHED items. #}
   {% else %}
     {% if item.content['#node'] is empty %}
-      {% include "@molecules/image-promo.twig" with {
+      {{ include('@molecules/image-promo.twig', {
         imagePromo: {
           title: {
             href: item.content['#url_title'],
             text: item.content['#title'],
           },
-        }
-      } %}
+        },
+      }) }}
     {% else %}
       {{ item.content }}
     {% endif %}
