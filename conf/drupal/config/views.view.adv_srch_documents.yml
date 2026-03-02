@@ -974,7 +974,7 @@ display:
           exposed: true
           expose:
             operator_id: field_title_value_op
-            label: 'Title (field_title)'
+            label: Title
             description: ''
             use_operator: true
             operator: field_title_value_op
@@ -1112,7 +1112,7 @@ display:
               authenticated: authenticated
           is_grouped: true
           group_info:
-            label: Published
+            label: 'Publication Status'
             description: ''
             identifier: status_1
             optional: true
@@ -1123,17 +1123,13 @@ display:
             default_group_multiple: {  }
             group_items:
               1:
-                title: 'Yes'
+                title: Published
                 operator: '='
                 value: '1'
               2:
-                title: 'No'
+                title: Unpublished
                 operator: '='
-                value: '1'
-              3:
-                title: ''
-                operator: '='
-                value: ''
+                value: '0'
         media_org_filter:
           id: media_org_filter
           table: media_field_data
@@ -1330,7 +1326,7 @@ display:
           expose:
             operator_id: changed_op
             label: Changed
-            description: ''
+            description: 'CCYY-MM-DD HH:MM:SS'
             use_operator: true
             operator: changed_op
             operator_limit_selection: true
@@ -1365,7 +1361,7 @@ display:
               bulk_edit: '0'
             min_placeholder: ''
             max_placeholder: ''
-            placeholder: 'CCYY-MM-DD HH:MM:SS'
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -1452,8 +1448,10 @@ display:
             description: ''
             use_operator: true
             operator: revision_user_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
             identifier: revision_user
             required: false
             remember: false
@@ -1522,10 +1520,23 @@ display:
             operator_id: filename_op
             label: 'Filename contains'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: filename_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              '=': '='
+              contains: contains
+              word: word
+              allwords: allwords
+              starts: starts
+              not_starts: not_starts
+              ends: ends
+              not_ends: not_ends
+              not: not
+              shorterthan: shorterthan
+              longerthan: longerthan
+              regular_expression: regular_expression
+              not_regular_expression: not_regular_expression
             identifier: filename
             required: false
             remember: false
@@ -1802,6 +1813,7 @@ display:
             hmn: hmn
             it: it
             ja: ja
+            quc: quc
             rw: rw
             km: km
             ko: ko
@@ -1812,7 +1824,6 @@ display:
             pl: pl
             pt-br: pt-br
             pt-pt: pt-pt
-            quc: quc
             ro: ro
             ru: ru
             so: so
@@ -1830,14 +1841,17 @@ display:
             operator_id: langcode_op
             label: Language
             description: ''
-            use_operator: false
+            use_operator: true
             operator: langcode_op
             operator_limit_selection: false
-            operator_list: {  }
+            operator_list:
+              in: in
+              'not in': 'not in'
+              empty: empty
             identifier: langcode
             required: false
             remember: false
-            multiple: false
+            multiple: true
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
@@ -1854,6 +1868,10 @@ display:
               d2d_redirect_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+              prototype_design_access: '0'
+              mmg_editor: '0'
+              viewer: '0'
+              bulk_edit: '0'
             reduce: true
           is_grouped: false
           group_info:
