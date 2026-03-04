@@ -1,5 +1,15 @@
 
 
+## [0.469.0] - March 3, 2026
+
+### Fixed
+  - DP-43651: Fix accessibility issue where sitewide alerts were not in an aria landmark.
+  - DP-44544: Fix bug in advanced search for documents view.
+  - DP-45168: LANG attribute not rendering on P tags in rich text editor.
+  - DP-45325: Fixes Tugboat CLI download URL used in ddev web image.
+  
+
+
 ## [0.468.0] - February 24, 2026
 
 ### Changed
