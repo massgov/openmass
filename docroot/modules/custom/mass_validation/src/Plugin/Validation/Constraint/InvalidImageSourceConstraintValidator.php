@@ -75,4 +75,3 @@ class InvalidImageSourceConstraintValidator extends ConstraintValidator {
   }
 
 }
-

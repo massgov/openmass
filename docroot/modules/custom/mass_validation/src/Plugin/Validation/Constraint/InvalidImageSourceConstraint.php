@@ -22,4 +22,3 @@ class InvalidImageSourceConstraint extends Constraint {
   public $message = 'One or more images in this field use an unsupported format. Please remove those images or re-add them using the Insert Image button.';
 
 }
-
