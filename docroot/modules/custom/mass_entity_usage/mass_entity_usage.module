@@ -83,6 +83,7 @@ function mass_entity_usage_entity_usage_queue_tracking_should_remove_usage($enti
   foreach (_mass_entity_usage_get_paragraph_ids_from_node($entity) as $paragraph_id) {
     $usage->deleteBySourceEntity($paragraph_id, 'paragraph');
   }
+  \Drupal::service('cache_tags.invalidator')->invalidateTags(['config:views.view.report_orphaned_documents']);
   return TRUE;
 }
 
