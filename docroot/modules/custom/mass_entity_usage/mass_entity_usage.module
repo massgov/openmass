@@ -51,50 +51,39 @@ function mass_entity_usage_queue_info_alter(&$queues) {
 /**
  * Implements hook_entity_usage_queue_tracking_should_remove_usage().
  *
- * When a node is in a non-trackable state (unpublished, trash, draft, etc.),
- * tell the queue to remove its usage. We also remove usage for its paragraphs
- * here. The queue worker then deletes the node's usage rows.
+ * When a node is in unpublished or trash moderation state, remove all
+ * entity_usage records for that node and for its paragraphs. The queue worker
+ * deletes the node's usage; we delete usage where a paragraph on this node is
+ * the source. No usage is kept when the source has no published version (the
+ * default revision is unpublished).
+ *
+ * @see \Drupal\entity_usage_queue_tracking\Plugin\QueueWorker\EntityUsageTracker::processItem()
  */
 function mass_entity_usage_entity_usage_queue_tracking_should_remove_usage($entity) {
   if ($entity->getEntityTypeId() !== 'node') {
     return FALSE;
   }
 
-  // Use the same entity we were given to read moderation state (correct
-  // revision). Explicitly treat unpublished and trash as "remove usage".
   $content_moderation_state = \Drupal\content_moderation\Entity\ContentModerationState::loadFromModeratedEntity($entity);
-  if ($content_moderation_state instanceof \Drupal\content_moderation\Entity\ContentModerationStateInterface
-    && !$content_moderation_state->get('moderation_state')->isEmpty()) {
-    $state = $content_moderation_state->get('moderation_state')->value;
-    $remove_usage_states = [
-      \Drupal\mass_content_moderation\MassModeration::UNPUBLISHED,
-      \Drupal\mass_content_moderation\MassModeration::TRASH,
-    ];
-    if (in_array($state, $remove_usage_states, TRUE)) {
-      _mass_entity_usage_remove_usage_for_node_and_paragraphs($entity);
-      return TRUE;
-    }
-  }
-
-  // For any other state, use the same rule as the tracking blocker: if this
-  // revision is not trackable (draft, needs_review, etc.), remove usage.
-  $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
-  if ($tracking_blocker->check('node', $entity->getRevisionId())) {
+  if (!$content_moderation_state instanceof \Drupal\content_moderation\Entity\ContentModerationStateInterface
+    || $content_moderation_state->get('moderation_state')->isEmpty()) {
     return FALSE;
   }
 
-  _mass_entity_usage_remove_usage_for_node_and_paragraphs($entity);
-  return TRUE;
-}
+  $state = $content_moderation_state->get('moderation_state')->value;
+  $remove_states = [
+    \Drupal\mass_content_moderation\MassModeration::UNPUBLISHED,
+    \Drupal\mass_content_moderation\MassModeration::TRASH,
+  ];
+  if (!in_array($state, $remove_states, TRUE)) {
+    return FALSE;
+  }
 
-/**
- * Deletes entity_usage rows for a node's paragraphs (node's usage is deleted by the queue worker).
- */
-function _mass_entity_usage_remove_usage_for_node_and_paragraphs($node) {
   $usage = \Drupal::service('entity_usage.usage');
-  foreach (_mass_entity_usage_get_paragraph_ids_from_node($node) as $paragraph_id) {
+  foreach (_mass_entity_usage_get_paragraph_ids_from_node($entity) as $paragraph_id) {
     $usage->deleteBySourceEntity($paragraph_id, 'paragraph');
   }
+  return TRUE;
 }
 
 /**
@@ -104,10 +93,10 @@ function _mass_entity_usage_remove_usage_for_node_and_paragraphs($node) {
  *   The node entity.
  *
  * @return int[]
- *   Unique paragraph entity IDs.
+ *   Unique paragraph entity IDs (including nested child paragraphs).
  */
 function _mass_entity_usage_get_paragraph_ids_from_node($node) {
-  $ids = [];
+  $root_ids = [];
   foreach ($node->getFieldDefinitions() as $name => $definition) {
     if ($definition->getType() !== 'entity_reference_revisions') {
       continue;
@@ -117,11 +106,64 @@ function _mass_entity_usage_get_paragraph_ids_from_node($node) {
     }
     foreach ($node->get($name) as $item) {
       if ($item->target_id) {
-        $ids[$item->target_id] = TRUE;
+        $root_ids[$item->target_id] = TRUE;
       }
     }
   }
-  return array_keys($ids);
+
+  if (!$root_ids) {
+    return [];
+  }
+
+  return _mass_entity_usage_get_nested_paragraph_ids(array_keys($root_ids));
+}
+
+/**
+ * Expands a list of paragraph IDs to include all nested child paragraphs.
+ *
+ * This walks paragraph -> paragraph references (entity_reference_revisions with
+ * target_type = 'paragraph') starting from the given IDs.
+ *
+ * @param int[] $paragraph_ids
+ *   Root paragraph entity IDs.
+ *
+ * @return int[]
+ *   All unique paragraph IDs reachable from the roots (including roots).
+ */
+function _mass_entity_usage_get_nested_paragraph_ids(array $paragraph_ids) {
+  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+  $seen = [];
+  $queue = $paragraph_ids;
+
+  while ($queue) {
+    $id = array_pop($queue);
+    if (isset($seen[$id])) {
+      continue;
+    }
+    $seen[$id] = TRUE;
+
+    /** @var \Drupal\paragraphs\Entity\ParagraphInterface|null $paragraph */
+    $paragraph = $storage->load($id);
+    if (!$paragraph) {
+      continue;
+    }
+
+    foreach ($paragraph->getFieldDefinitions() as $name => $definition) {
+      if ($definition->getType() !== 'entity_reference_revisions') {
+        continue;
+      }
+      if ($definition->getSetting('target_type') !== 'paragraph') {
+        continue;
+      }
+      foreach ($paragraph->get($name) as $item) {
+        if ($item->target_id && !isset($seen[$item->target_id])) {
+          $queue[] = $item->target_id;
+        }
+      }
+    }
+  }
+
+  return array_keys($seen);
 }
 
 /**
