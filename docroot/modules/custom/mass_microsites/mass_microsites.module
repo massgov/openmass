@@ -370,7 +370,8 @@ function _mass_microsites_get_node() {
     return $cachedNode;
   }
 
-  $params = \Drupal::routeMatch()->getParameters();
+  $route_match = \Drupal::routeMatch();
+  $params = $route_match->getParameters();
 
   $node_full_view_routes = [
     'entity.node.canonical',
@@ -378,11 +379,26 @@ function _mass_microsites_get_node() {
     'entity.node.preview',
   ];
 
-  $route_name = \Drupal::routeMatch()->getRouteName();
+  $route_name = $route_match->getRouteName();
 
   if (in_array($route_name, $node_full_view_routes, TRUE)) {
     $node = $route_name === 'entity.node.preview' ? $params->get('node_preview') : $params->get('node');
     $cachedNode = $node ?: FALSE;
+  }
+  elseif ($params->has('node')) {
+    // Support views and other routes with a node parameter in the path
+    // (e.g. node/%node/locations).
+    $node = $params->get('node');
+    if ($node instanceof NodeInterface) {
+      $cachedNode = $node;
+    }
+    elseif (is_numeric($node)) {
+      $cachedNode = \Drupal::entityTypeManager()->getStorage('node')->load($node);
+      $cachedNode = $cachedNode ?: FALSE;
+    }
+    else {
+      $cachedNode = FALSE;
+    }
   }
   else {
     $cachedNode = FALSE;

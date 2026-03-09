@@ -1,5 +1,24 @@
 
 
+## [0.469.0] - March 3, 2026
+
+### Fixed
+  - DP-43651: Fix accessibility issue where sitewide alerts were not in an aria landmark.
+  - DP-44544: Fix bug in advanced search for documents view.
+  - DP-45168: LANG attribute not rendering on P tags in rich text editor.
+  - DP-45325: Fixes Tugboat CLI download URL used in ddev web image.
+  
+
+
+## [0.468.0] - February 24, 2026
+
+### Changed
+  - DP-44722: For collection pages, include the org search in the top search bar.
+  - DP-44755: Upgrade ClamAv module to latest 2.1.x branch and enable debug mode.
+  - DP-45085: Revert DP-42778 and restore the document start date field. The field is now visible in the document form and the help text indicates it is used only for sorting automatic curated lists.
+  
+
+
 ## [0.467.0] - February 17, 2026
 
 ### Changed

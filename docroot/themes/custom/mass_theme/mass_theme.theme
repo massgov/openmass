@@ -3503,8 +3503,14 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   if (Helper::isFieldPopulated($node, $field['body'])) {
     $body = Helper::fieldFullView($node, $field['body']);
     $body_string = \Drupal::service('renderer')->renderRoot($body);
-    // Remove attributes on <p> markup.
-    $body_string = preg_replace("/<\s*p.*?>/", '<p>', $body_string);
+    // Remove attributes on <p> markup except lang (for accessibility/translations).
+    $body_string = preg_replace_callback('/<\s*p([^>]*)>/', function (array $m) {
+      $attrs = $m[1];
+      if (preg_match('/\s+lang=(["\'])([^"\']*)\1/', $attrs, $lang_match)) {
+        return '<p lang="' . $lang_match[2] . '">';
+      }
+      return '<p>';
+    }, $body_string);
     if (Helper::isFieldPopulated($node, $field['location'])) {
       $location = Helper::fieldFullView($node, $field['location']);
       $location_string = \Drupal::service('renderer')->renderRoot($location);
