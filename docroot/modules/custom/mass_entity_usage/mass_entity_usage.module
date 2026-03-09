@@ -60,18 +60,13 @@ function mass_entity_usage_entity_usage_queue_tracking_should_remove_usage($enti
     return FALSE;
   }
 
-  $content_moderation_state = \Drupal\content_moderation\Entity\ContentModerationState::loadFromModeratedEntity($entity);
-  if (!$content_moderation_state instanceof \Drupal\content_moderation\Entity\ContentModerationStateInterface
-    || $content_moderation_state->get('moderation_state')->isEmpty()) {
-    return FALSE;
-  }
-
-  $state = $content_moderation_state->get('moderation_state')->value;
-  $remove_usage_states = [
-    \Drupal\mass_content_moderation\MassModeration::UNPUBLISHED,
-    \Drupal\mass_content_moderation\MassModeration::TRASH,
-  ];
-  if (!in_array($state, $remove_usage_states, TRUE)) {
+  // Reuse the same logic the tracking blocker uses: if this revision is not
+  // trackable (because of its moderation state), we should remove existing
+  // usage rows instead of keeping them.
+  $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
+  // For nodes, the source_vid in entity_usage is the revision ID.
+  if ($tracking_blocker->check('node', $entity->getRevisionId())) {
+    // Trackable states (e.g. published) should keep their usage.
     return FALSE;
   }
 
