@@ -51,30 +51,50 @@ function mass_entity_usage_queue_info_alter(&$queues) {
 /**
  * Implements hook_entity_usage_queue_tracking_should_remove_usage().
  *
- * When a node is unpublished or trashed, tell the queue to remove its usage
- * (and remove usage for its paragraphs here). The queue worker will delete
- * the node's usage; we delete paragraph usage so the table stays consistent.
+ * When a node is in a non-trackable state (unpublished, trash, draft, etc.),
+ * tell the queue to remove its usage. We also remove usage for its paragraphs
+ * here. The queue worker then deletes the node's usage rows.
  */
 function mass_entity_usage_entity_usage_queue_tracking_should_remove_usage($entity) {
   if ($entity->getEntityTypeId() !== 'node') {
     return FALSE;
   }
 
-  // Reuse the same logic the tracking blocker uses: if this revision is not
-  // trackable (because of its moderation state), we should remove existing
-  // usage rows instead of keeping them.
+  // Use the same entity we were given to read moderation state (correct
+  // revision). Explicitly treat unpublished and trash as "remove usage".
+  $content_moderation_state = \Drupal\content_moderation\Entity\ContentModerationState::loadFromModeratedEntity($entity);
+  if ($content_moderation_state instanceof \Drupal\content_moderation\Entity\ContentModerationStateInterface
+    && !$content_moderation_state->get('moderation_state')->isEmpty()) {
+    $state = $content_moderation_state->get('moderation_state')->value;
+    $remove_usage_states = [
+      \Drupal\mass_content_moderation\MassModeration::UNPUBLISHED,
+      \Drupal\mass_content_moderation\MassModeration::TRASH,
+    ];
+    if (in_array($state, $remove_usage_states, TRUE)) {
+      _mass_entity_usage_remove_usage_for_node_and_paragraphs($entity);
+      return TRUE;
+    }
+  }
+
+  // For any other state, use the same rule as the tracking blocker: if this
+  // revision is not trackable (draft, needs_review, etc.), remove usage.
   $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
-  // For nodes, the source_vid in entity_usage is the revision ID.
   if ($tracking_blocker->check('node', $entity->getRevisionId())) {
-    // Trackable states (e.g. published) should keep their usage.
     return FALSE;
   }
 
+  _mass_entity_usage_remove_usage_for_node_and_paragraphs($entity);
+  return TRUE;
+}
+
+/**
+ * Deletes entity_usage rows for a node's paragraphs (node's usage is deleted by the queue worker).
+ */
+function _mass_entity_usage_remove_usage_for_node_and_paragraphs($node) {
   $usage = \Drupal::service('entity_usage.usage');
-  foreach (_mass_entity_usage_get_paragraph_ids_from_node($entity) as $paragraph_id) {
+  foreach (_mass_entity_usage_get_paragraph_ids_from_node($node) as $paragraph_id) {
     $usage->deleteBySourceEntity($paragraph_id, 'paragraph');
   }
-  return TRUE;
 }
 
 /**
