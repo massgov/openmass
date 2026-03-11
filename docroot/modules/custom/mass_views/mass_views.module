@@ -268,6 +268,11 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
   // Only process URIs that start with 'internal:/media/'.
   $query->condition('redirect_redirect__uri', 'internal:/media/%', 'LIKE');
 
+  // Ignore legacy/system-generated document redirects whose source path starts
+  // with "doc/". These are typically old download URLs and should not prevent a
+  // document from showing up as orphaned when it has no usage.
+  $query->condition('redirect_source__path', 'doc/%', 'NOT LIKE');
+
   // Execute the query and fetch the results.
   $media_ids = $query->execute()->fetchCol();
 
