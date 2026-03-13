@@ -121,7 +121,10 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
     ];
 
     if ($field instanceof FieldConfig && in_array($field->getType(), $table_header_constraint_field_types)) {
-      $field->addPropertyConstraints('value', ['TableHeaderConstraint' => []]);
+      $field->addPropertyConstraints('value', [
+        'TableHeaderConstraint' => [],
+        'InvalidImageSourceConstraint' => [],
+      ]);
 
     }
   }
