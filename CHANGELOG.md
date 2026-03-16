@@ -1,5 +1,20 @@
 
 
+## [0.470.0] - March 10, 2026
+
+### Changed
+  - DP-45250: Don't render Contact twice on mobile view of how-to pages.
+  - DP-45428: Advanced search for docs - fixed file type filter, added authored by filter, reordered some fields and filters.
+  
+### Fixed
+  - DP-45259: Fix microsite detection on node listing pages (e.g. locations, events) so microsite menu, styles, and page templates are applied correctly.
+  - DP-45363: Social media icons on org pages and allow threads.com and tiktok.com in validation. Add TikTok to social links help text.
+  
+### Added
+  - DP-45377: Add bulk edit to advanced search for documents view
+  
+
+
 ## [0.469.0] - March 3, 2026
 
 ### Fixed
