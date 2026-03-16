@@ -299,12 +299,12 @@ If any filenames do not match, you will be redirected to a review screen to conf
       $media->setChangedTime($now);
       $media->setRevisionLogMessage("File has been replaced using bulk replace tool by $username.");
       $media->set('field_upload_file', $old_file);
-      
+
       // Set accessibility status if provided.
       if (!empty($accessibility_status)) {
         $media->set('field_accessibility_self_rpt', $accessibility_status);
       }
-      
+
       $media->save();
 
       return;
