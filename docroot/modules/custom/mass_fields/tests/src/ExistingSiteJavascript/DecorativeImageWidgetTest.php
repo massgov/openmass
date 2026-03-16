@@ -70,4 +70,3 @@ class DecorativeImageWidgetTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
 }
-
