@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.node.field_organizations
     - taxonomy.vocabulary.label
   module:
     - csv_serialization
@@ -402,7 +403,7 @@ display:
           click_sort_column: value
           type: timestamp
           settings:
-            date_format: short_date_only
+            date_format: short
             custom_date_format: ''
             timezone: ''
             tooltip:
@@ -604,6 +605,69 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
+        field_organizations:
+          id: field_organizations
+          table: node__field_organizations
+          field: field_organizations
+          relationship: entity_id
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Organization(s)
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       pager:
         type: mini
         options:
@@ -654,15 +718,17 @@ display:
           empty: true
           title: 'No known issues at this url'
       sorts:
-        result_name_count:
-          id: result_name_count
-          table: editoria11y_results
-          field: result_name_count
-          relationship: none
-          group_type: sum
+        nid:
+          id: nid
+          table: node_field_data
+          field: nid
+          relationship: entity_id
+          group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
           plugin_id: standard
-          order: DESC
+          order: ASC
           expose:
             label: ''
             field_identifier: ''
@@ -1102,7 +1168,7 @@ display:
           table: node_field_data
           field: changed
           relationship: entity_id
-          group_type: group
+          group_type: max
           admin_label: ''
           entity_type: node
           entity_field: changed
@@ -1369,7 +1435,20 @@ display:
       use_more_text: 'All pages with issues'
       link_display: pages__page
       link_url: ''
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: "<p>Caution: this data is based on real-time scans done when authors view pages while editing on edit.mass.gov. It should not be considered a complete report for the following reasons.</p>\r\n<ul>\r\n<li>Authors are able edit pages in a way that they never view the page after the edit. If they don't view it, it isn't checked. </li>\r\n<li>If Editoria11y finds no issue on a page, it stores nothing. In the data model, there is no way to tell the difference between a page that has no issues and a page that was never checked. </li>\r\n<li>If a page was not viewed by a logged-in author on edit.mass.gov after the Editoria11y feature was released 2/5/2024, it will not appear on the report.</li>\r\n</ul>\r\n<p>Consider using SiteImprove data for reports. It crawls all author created pages that are not hidden from search with the exception of news and events.</p>\r\n"
+            format: basic_html
+          tokenize: false
       footer:
         result:
           id: result
@@ -1393,7 +1472,8 @@ display:
         - url
         - url.query_args
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.node.field_organizations'
   data_export_1:
     id: data_export_1
     display_title: 'Data export'
@@ -2108,4 +2188,5 @@ display:
         - url
         - url.query_args
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.node.field_organizations'
