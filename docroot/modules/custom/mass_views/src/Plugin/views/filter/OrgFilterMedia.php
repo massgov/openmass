@@ -3,7 +3,10 @@
 namespace Drupal\mass_views\Plugin\views\filter;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
+use Drupal\views\Plugin\ViewsHandlerManager;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Filters by media's organization.
@@ -14,7 +17,34 @@ use Drupal\views\Plugin\views\filter\FilterPluginBase;
  *
  * @ViewsFilter("mass_views_media_org_filter")
  */
-class OrgFilterMedia extends FilterPluginBase {
+class OrgFilterMedia extends FilterPluginBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The views join plugin manager.
+   *
+   * @var \Drupal\views\Plugin\ViewsHandlerManager
+   */
+  protected $joinManager;
+
+  /**
+   * Constructs a new OrgFilterMedia object.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->joinManager = $join_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('plugin.manager.views.join')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -37,10 +67,25 @@ class OrgFilterMedia extends FilterPluginBase {
   public function query() {
     // ONLY add the relationships if we have a value to filter on.
     if ($value = $this->getValue()) {
-      // Pre-create the join we need, but convert it to an INNER JOIN for
-      // performance.
+      // Build the join to media__field_organizations.
+      // Use getJoinData if the table is already joined, otherwise create
+      // a new join definition manually.
       $relationship = $this->relationship ? $this->relationship : $this->view->storage->get('base_table');
       $join = $this->query->getJoinData('media__field_organizations', $relationship);
+      if (!$join) {
+        $join = $this->joinManager->createInstance('standard', [
+          'table' => 'media__field_organizations',
+          'field' => 'entity_id',
+          'left_table' => $relationship,
+          'left_field' => 'mid',
+          'extra' => [
+            [
+              'field' => 'deleted',
+              'value' => '0',
+            ],
+          ],
+        ]);
+      }
       $join->type = 'INNER';
 
       // Ensure we have the tables we need.

@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -267,6 +268,11 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
   // Only process URIs that start with 'internal:/media/'.
   $query->condition('redirect_redirect__uri', 'internal:/media/%', 'LIKE');
 
+  // Ignore legacy/system-generated document redirects whose source path starts
+  // with "doc/". These are typically old download URLs and should not prevent a
+  // document from showing up as orphaned when it has no usage.
+  $query->condition('redirect_source__path', 'doc/%', 'NOT LIKE');
+
   // Execute the query and fetch the results.
   $media_ids = $query->execute()->fetchCol();
 
@@ -395,6 +401,24 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     $nids_empty = array_diff(array_values($nids_empty), $nids_unpublished);
     $args_to_pass = array_merge($nids_empty, $nids_unpublished);
     $query->addWhere(0, 'node_field_data.nid', $args_to_pass, 'IN');
+  }
+
+}
+
+/**
+ * Implements hook_query_TAGNAME_alter() for the all_documents_latest_rev view.
+ *
+ * The field_organizations relationship LEFT JOINs media_revision__field_organizations,
+ * which stores one row per delta (0, 1, 2…). A media item with N orgs produces
+ * N duplicate rows in the result. DISTINCT can't collapse them because each row
+ * has a different org NID in the SELECT, and GROUP BY fails because MySQL runs
+ * with ONLY_FULL_GROUP_BY. Restricting the JOIN to delta = 0 limits it to the
+ * first org per revision, eliminating the fan-out at the SQL level.
+ */
+function mass_views_query_views_all_documents_latest_rev_alter(AlterableInterface $query) {
+  $tables = &$query->getTables();
+  if (isset($tables['media_revision__field_organizations'])) {
+    $tables['media_revision__field_organizations']['condition'] .= ' AND media_revision__field_organizations.delta = 0';
   }
 }
 

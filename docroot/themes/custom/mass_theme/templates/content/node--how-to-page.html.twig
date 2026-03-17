@@ -63,7 +63,7 @@
     <div class="main-content main-content--two">
       <div class="page-content">
         {% if sidebar.contactList %}
-          {% set contactList = sidebar.contactList %}
+          {% set contactList = sidebar.contactList|merge({'hideMobile': true}) %}
           {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
         {% set coloredHeading = {

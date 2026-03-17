@@ -155,6 +155,26 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds a "Latest Revision" relationship for media entities.
+  // This allows fields to access data from the latest revision
+  // rather than the default (current/published) revision.
+  $data['media_field_data']['media_latest_revision'] = [
+    'title' => t('Media Latest Revision'),
+    'help' => t('Relates a media entity to its latest revision data.'),
+    'relationship' => [
+      'id' => 'standard',
+      'base' => 'media_field_revision',
+      'base field' => 'mid',
+      'relationship field' => 'mid',
+      'label' => t('Media latest revision'),
+      'join_id' => 'latest_revision_join',
+      'revision_table' => 'media_revision',
+      'entity_id_field' => 'mid',
+      'revision_id_field' => 'vid',
+      'langcode_field' => 'langcode',
+    ],
+  ];
+
   // Adds an org filter for media.
   $data['media_field_data']['media_org_filter'] = [
     'title' => 'Organization Filter',
