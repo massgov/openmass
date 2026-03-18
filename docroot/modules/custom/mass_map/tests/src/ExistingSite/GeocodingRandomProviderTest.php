@@ -69,4 +69,3 @@ class GeocodingRandomProviderTest extends MassExistingSiteBase {
   }
 
 }
-
