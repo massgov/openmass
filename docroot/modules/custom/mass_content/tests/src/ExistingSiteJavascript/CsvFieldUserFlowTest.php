@@ -400,6 +400,7 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $control = $this->getSession()->getPage()->find('css', 'table.dataTable tbody tr td.dtr-control');
     $this->assertNotNull($control, 'Responsive control column should be visible at narrow width.');
     $control->click();
+    $this->getSession()->wait(3000);
     $assert->waitForElement('css', 'table.dataTable tbody tr.child');
     $assert->elementExists('css', 'table.dataTable tbody tr.child');
   }
