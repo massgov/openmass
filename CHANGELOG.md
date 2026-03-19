@@ -1,5 +1,23 @@
 
 
+## [0.471.0] - March 17, 2026
+
+### Fixed
+  - DP-39767: A11y - Mass.gov main navigation ARIA cleanup.
+  - DP-44764: Issue with orphan document view.
+  
+### Added
+  - DP-41606: Allow custom section headers on location pages for Facilities, Services, Accessibility, Restrictions, and More Info sections.
+  - DP-44225: Field to Document media entity for authors to select accessibility state designation.
+  
+### Changed
+  - DP-45371: Prevent authors from saving pages with broken pasted image tags in rich text.
+  
+### Security
+  - DP-45618: Update Drupal AI module.
+  
+
+
 ## [0.470.0] - March 10, 2026
 
 ### Changed
