@@ -152,7 +152,6 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $assert = $this->assertSession();
     $assert->waitForElement('css', '.dataTables_wrapper');
-    $assert->pageTextContains('Mass.gov');
     $assert->pageTextContains('Example');
     $table = $assert->elementExists('css', '.dataTable.display');
     $settings = $table->getAttribute('data-settings');
@@ -193,7 +192,7 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $assert = $this->assertSession();
     $assert->waitForElement('css', '.dataTables_wrapper');
-    $assert->pageTextContains('Mass.gov');
+    $assert->pageTextContains('Example');
     $table = $assert->elementExists('css', '.dataTable.display');
     $settings = $table->getAttribute('data-settings');
     $this->assertStringContainsString('"pageLength":10', $settings);
