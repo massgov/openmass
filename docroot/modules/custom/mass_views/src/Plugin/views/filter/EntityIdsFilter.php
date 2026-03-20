@@ -93,7 +93,8 @@ class EntityIdsFilter extends FilterPluginBase {
    * Provide simple equality operator.
    */
   public function operatorOptions($which = 'title') {
-    return [
+    $options = [];
+    $operators = [
       'in' => [
         'title' => $this->t('Is one of'),
         'method' => 'opSimple',
@@ -101,6 +102,10 @@ class EntityIdsFilter extends FilterPluginBase {
         'values' => 1,
       ],
     ];
+    foreach ($operators as $id => $info) {
+      $options[$id] = $info[$which];
+    }
+    return $options;
   }
 
 }

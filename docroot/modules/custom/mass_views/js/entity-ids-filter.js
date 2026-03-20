@@ -86,15 +86,17 @@
     title.textContent = label;
     popup.appendChild(title);
 
+    var descriptionId = 'entity-ids-popup-description-' + Math.random().toString(36).slice(2, 8);
     var description = document.createElement('p');
     description.className = 'entity-ids-popup-description';
-    description.textContent = Drupal.t('Enter one ID per line.');
+    description.id = descriptionId;
+    description.textContent = Drupal.t('Enter one ID per line. You can also use commas or spaces as separators.');
     popup.appendChild(description);
 
     var textarea = document.createElement('textarea');
     textarea.className = 'entity-ids-popup-textarea';
     textarea.rows = 12;
-    textarea.placeholder = Drupal.t('Enter IDs, one per line...');
+    textarea.setAttribute('aria-describedby', descriptionId);
     popup.appendChild(textarea);
 
     var actions = document.createElement('div');
