@@ -37,6 +37,13 @@ class ListUsageController extends ControllerBase {
   protected $entityFieldManager;
 
   /**
+   * The trash manager.
+   *
+   * @var \Drupal\trash\TrashManagerInterface|null
+   */
+  protected ?TrashManagerInterface $trashManager;
+
+  /**
    * The EntityUsage service.
    *
    * @var \Drupal\mass_entity_usage\MassEntityUsageInterface
@@ -91,14 +98,17 @@ class ListUsageController extends ControllerBase {
    *   The config factory service.
    * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
    *   The pager manager.
+   * @param \Drupal\trash\TrashManagerInterface|null $trash_manager
+   *   The trash manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, MassEntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory, PagerManagerInterface $pager_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, MassEntityUsageInterface $entity_usage, ConfigFactoryInterface $config_factory, PagerManagerInterface $pager_manager, ?TrashManagerInterface $trash_manager,) {
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->entityUsage = $entity_usage;
     $this->entityUsageConfig = $config_factory->get('entity_usage.settings');
     $this->itemsPerPage = $this->entityUsageConfig->get('usage_controller_items_per_page') ?: self::ITEMS_PER_PAGE_DEFAULT;
     $this->pagerManager = $pager_manager;
+    $this->trashManager = $trash_manager;
   }
 
   /**
@@ -110,7 +120,8 @@ class ListUsageController extends ControllerBase {
       $container->get('entity_field.manager'),
       $container->get('mass_entity_usage.usage'),
       $container->get('config.factory'),
-      $container->get('pager.manager')
+      $container->get('pager.manager'),
+      $container->get('trash.manager', ContainerInterface::NULL_ON_INVALID_REFERENCE)
     );
   }
 

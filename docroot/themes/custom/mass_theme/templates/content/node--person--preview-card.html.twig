@@ -108,27 +108,27 @@
 {% endif %}
 
 {% set generalTeaser = {
-  "layout": layout,
-  "eyebrow": eyebrow,
-  "image": show_image,
-  "level": level,
-  "title": {
-    "href": '',
-    "text": name,
-    "info": "",
-    "property": "",
+  layout: layout,
+  eyebrow: eyebrow,
+  image: show_image,
+  level: level,
+  title: {
+    href: '',
+    text: name,
+    info: '',
+    property: '',
   },
-  "emphasizedText": [
+  emphasizedText: [
     role,
   ],
-  "contents": [{
-    "path": "@atoms/11-text/paragraph.twig",
-    "data": {
-      "paragraph": {
-        "text": short_bio,
-      }
+  contents: [{
+    path: '@atoms/11-text/paragraph.twig',
+    data: {
+      paragraph: {
+        text: short_bio,
+      },
     },
-  }]
+  }],
 } %}
 
 {% if node.field_publish_bio_page.value and not position_is_vacant %}
@@ -140,7 +140,7 @@
   {% set generalTeaser = generalTeaser|merge({contents: generalTeaserContents}) %}
 {% endif %}
 
-{% embed "@molecules/general-teaser.twig" with {
+{% embed '@molecules/general-teaser.twig' with {
   generalTeaser: generalTeaser,
 } %}
 
@@ -152,10 +152,10 @@
           {% set image = {
             src: file_url(node.field_medium_image.entity.fileuri ?? ''),
             alt: node.field_medium_image.alt,
-            width: "172",
-            height: "228",
+            width: '172',
+            height: '228',
           } %}
-          {% include "@atoms/09-media/image.twig" %}
+          {{ include('@atoms/09-media/image.twig') }}
         </span>
       {% else %}
         {{ content.field_medium_image }}

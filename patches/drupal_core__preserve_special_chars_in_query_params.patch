@@ -1,7 +1,8 @@
-diff --git a/lib/Drupal/Component/Utility/UrlHelper.php b/lib/Drupal/Component/Utility/UrlHelper.php
---- a/lib/Drupal/Component/Utility/UrlHelper.php
-+++ b/lib/Drupal/Component/Utility/UrlHelper.php	(date 1759788880140)
-@@ -217,18 +217,23 @@
+diff --git a/core/lib/Drupal/Component/Utility/UrlHelper.php b/core/lib/Drupal/Component/Utility/UrlHelper.php
+index 726fbe88e64..7069591a7c5 100644
+--- a/core/lib/Drupal/Component/Utility/UrlHelper.php
++++ b/core/lib/Drupal/Component/Utility/UrlHelper.php
+@@ -210,18 +210,23 @@ public static function parse($url) {
        }
        // If there is a query string, transform it into keyed query parameters.
        if (isset($parts[1])) {
@@ -17,7 +18,7 @@ diff --git a/lib/Drupal/Component/Utility/UrlHelper.php b/lib/Drupal/Component/U
 -      // parse_url() does not support relative URLs, so make it absolute. For
 -      // instance, the relative URL "foo/bar:1" isn't properly parsed.
 +      // parse_url() does not support relative URLs, so make it absolute.
-       $parts = parse_url('http://example.com/' . $url);
+       $parts = parse_url('https://example.com/' . $url);
        // Strip the leading slash that was just added.
        $options['path'] = substr($parts['path'], 1);
        if (isset($parts['query'])) {
@@ -29,10 +30,10 @@ diff --git a/lib/Drupal/Component/Utility/UrlHelper.php b/lib/Drupal/Component/U
        }
        if (isset($parts['fragment'])) {
          $options['fragment'] = $parts['fragment'];
-@@ -238,6 +243,81 @@
+@@ -231,6 +236,82 @@ public static function parse($url) {
      return $options;
    }
-
+ 
 +  /**
 +   * Preprocesses a query string to preserve special characters.
 +   *
@@ -70,12 +71,12 @@ diff --git a/lib/Drupal/Component/Utility/UrlHelper.php b/lib/Drupal/Component/U
 +        [$key, $value] = explode('=', $param, 2);
 +        $key = str_replace(array_keys($placeholder_map), array_values($placeholder_map), $key);
 +        $processed_params[] = $key . '=' . $value;
-+      } else {
++      }
++      else {
 +        // No value: encode the entire parameter (it becomes a key)
 +        $processed_params[] = str_replace(array_keys($placeholder_map), array_values($placeholder_map), $param);
 +      }
 +    }
-+
 +    return implode('&', $processed_params);
 +  }
 +
@@ -107,6 +108,7 @@ diff --git a/lib/Drupal/Component/Utility/UrlHelper.php b/lib/Drupal/Component/U
 +
 +    return $processed;
 +  }
++
 +
    /**
     * Encodes a Drupal path for use in a URL.

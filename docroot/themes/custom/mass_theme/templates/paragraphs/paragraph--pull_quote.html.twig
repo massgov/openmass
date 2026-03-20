@@ -37,20 +37,20 @@
  */
 #}
 
-{% set author = "" %}
+{% set author = '' %}
 {% if content.field_name|field_value %}
   {% set author = content.field_name %}
 {% else %}
-  {% set author = "" %}
+  {% set author = '' %}
 {% endif %}
 
 {%
   set callOut = {
-    "text": content.field_quote|field_value,
-    "author": author,
-    "title": content.field_title
+    text: content.field_quote|field_value,
+    author: author,
+    title: content.field_title,
 }
 
 %}
 
-{% include "@organisms/by-author/callout.twig" %}
+{{ include('@organisms/by-author/callout.twig') }}

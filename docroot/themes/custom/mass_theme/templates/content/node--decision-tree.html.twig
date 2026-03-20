@@ -23,18 +23,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -44,13 +44,13 @@
     {% endblock %}
   {% endembed %}
 
-  {% include "@organisms/page-header/page-header.twig" with {
-    "pageHeader": {
-      "divider": false,
-      "title": label,
-      "widgets": null
+  {{ include('@organisms/page-header/page-header.twig', {
+    pageHeader: {
+      divider: false,
+      title: label,
+      widgets: null,
     },
-  } %}
+  }) }}
 {% endblock %}
 
 {% block main %}

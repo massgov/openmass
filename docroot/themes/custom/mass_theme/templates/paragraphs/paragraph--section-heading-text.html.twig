@@ -1,16 +1,16 @@
-{% include "@organisms/by-author/rich-text.twig" with {
-  "richText": {
-    "compHeading": {
-    "title": content.field_section_heading_text_head,
-    "sub": false
+{{ include('@organisms/by-author/rich-text.twig', {
+  richText: {
+    compHeading: {
+    title: content.field_section_heading_text_head,
+    sub: false,
     },
-    "rteElements": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph": {
-          "text": content.field_section_heading_text_body
-        }
-      }
-    }]
-  }
-} %}
+    rteElements: [{
+      path: '@atoms/11-text/paragraph.twig',
+      data: {
+        paragraph: {
+          text: content.field_section_heading_text_body,
+        },
+      },
+    }],
+  },
+}) }}

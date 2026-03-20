@@ -7328,7 +7328,24 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
+    // Avoid duplicating subsequent links if preprocessing runs multiple times
+    // on the same paragraph object within a request.
+    $first_paragraph = $variables[$component_name][$first][0] ?? NULL;
+    $next_paragraph = $link_group[0] ?? NULL;
+    if ($first_paragraph && $next_paragraph) {
+      $existing_ids = [];
+      if (!empty($first_paragraph->subsequent_links) && is_array($first_paragraph->subsequent_links)) {
+        foreach ($first_paragraph->subsequent_links as $existing) {
+          if (is_object($existing) && method_exists($existing, 'id')) {
+            $existing_ids[(int) $existing->id()] = TRUE;
+          }
+        }
+      }
+      $next_id = method_exists($next_paragraph, 'id') ? (int) $next_paragraph->id() : NULL;
+      if ($next_id && empty($existing_ids[$next_id])) {
+        $first_paragraph->subsequent_links[] = $next_paragraph;
+      }
+    }
 
     // Empty elements included previously.
     $variables[$component_name][$key] = FALSE;

@@ -6,56 +6,56 @@
 
 <div class="referencing-binders" data-id="{{ parent.entity.nid.value }}">
 {% if next %}
-  {% set ariaLabel = "Next page, " ~ next['title'] %}
+  {% set ariaLabel = 'Next page, ' ~ next['title'] %}
   {% set next_button = {
-    "arrowButton": {
-      "href": next['url'],
-      "info": ariaLabel,
-      "direction": "right",
-      "ariaHidden": true
+    arrowButton: {
+      href: next['url'],
+      info: ariaLabel,
+      direction: 'right',
+      ariaHidden: true,
     },
-    "label": "Next",
-    "title": "",
-    "link": {
-      "href": next['url'],
-      "text": next['title'],
-      "info": "",
-      "ariaLabel": ariaLabel
-    }
+    label: 'Next',
+    title: '',
+    link: {
+      href: next['url'],
+      text: next['title'],
+      info: '',
+      ariaLabel: ariaLabel,
+    },
   } %}
 {% endif %}
 {% if previous %}
-  {% set ariaLabel = "Previous page, " ~ previous['title'] %}
+  {% set ariaLabel = 'Previous page, ' ~ previous['title'] %}
   {% set prev_button = {
-    "arrowButton": {
-      "href": previous['url'],
-      "info": ariaLabel,
-      "direction": "left",
-      "ariaHidden": true
+    arrowButton: {
+      href: previous['url'],
+      info: ariaLabel,
+      direction: 'left',
+      ariaHidden: true,
     },
-    "label": "Previous",
-    "title": "",
-    "link": {
-      "href": previous['url'],
-      "text": previous['title'],
-      "info": "",
-      "ariaLabel": ariaLabel
-    }
+    label: 'Previous',
+    title: '',
+    link: {
+      href: previous['url'],
+      text: previous['title'],
+      info: '',
+      ariaLabel: ariaLabel,
+    },
   } %}
 {% endif %}
-{% set ariaLabel = "This page is part of " ~ parent.entity.title.value ~ " category." %}
-{% include "@organisms/by-author/page-flipper.twig" with {
-  "pageFlipper": {
-    "context": {
-      "label": "This is part of:",
-      "link": {
-        "href": path('entity.node.canonical', {'node': parent.entity.nid.value}),
-        "ariaLabel": ariaLabel,
-        "text": parent.entity.title.value,
-      }
+{% set ariaLabel = 'This page is part of ' ~ parent.entity.title.value ~ ' category.' %}
+{{ include('@organisms/by-author/page-flipper.twig', {
+  pageFlipper: {
+    context: {
+      label: 'This is part of:',
+      link: {
+        href: path('entity.node.canonical', {node: parent.entity.nid.value}),
+        ariaLabel: ariaLabel,
+        text: parent.entity.title.value,
+      },
     },
-    "prev": prev_button,
-    "next": next_button
-  }
-} %}
+    prev: prev_button,
+    next: next_button,
+  },
+}) }}
 </div>
