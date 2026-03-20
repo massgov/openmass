@@ -1034,32 +1034,27 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        mid:
-          id: mid
+        media_entity_ids_filter:
+          id: media_entity_ids_filter
           table: media_field_data
-          field: mid
+          field: media_entity_ids_filter
           relationship: none
           group_type: group
-          admin_label: ''
-          entity_type: media
-          entity_field: mid
-          plugin_id: numeric
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
+          admin_label: 'Entity IDs'
+          plugin_id: mass_views_entity_ids_filter
+          operator: in
+          value: ''
           group: 1
           exposed: true
           expose:
-            operator_id: mid_op
-            label: ID
+            operator_id: ''
+            label: 'Entity IDs'
             description: ''
             use_operator: false
-            operator: mid_op
+            operator: ''
             operator_limit_selection: false
             operator_list: {  }
-            identifier: mid
+            identifier: entity_ids
             required: false
             remember: false
             multiple: false
@@ -1075,9 +1070,6 @@ display:
               developer: '0'
               administrator: '0'
               tester: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
