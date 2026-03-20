@@ -5,7 +5,7 @@ namespace Drupal\mass_content\Field;
 use Drupal\mayflower\Helper;
 
 /**
- * Recent news field for organizations.
+ * Recent news field for organization and service pages.
  */
 class RecentNews extends QueryGeneratedEntityReferenceList {
 
@@ -26,15 +26,24 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
 
     $query = \Drupal::entityQuery('node');
     $query->condition('type', 'news');
-    $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
+    if ($node->bundle() === 'service_page') {
+      $query->condition('field_related_service.target_id', $node->id());
+    }
+    else {
+      $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
+    }
     $query->condition('field_news_type', 'blog_post', '<>');
     $query->condition('langcode', 'en');
     $query->condition('status', 1);
     $query->sort('field_date_published', 'DESC');
 
     // Exclude any featured items.
-    if ($entity->hasField('field_org_featured_news_items')) {
-      $field = $entity->get('field_org_featured_news_items');
+    foreach (['field_org_featured_news_items', 'field_service_featured_news_items'] as $featured_field) {
+      if (!$entity->hasField($featured_field)) {
+        continue;
+      }
+
+      $field = $entity->get($featured_field);
       $exclude = array_column($field->getValue(), 'target_id');
       if ($exclude) {
         $query->condition('nid', $exclude, 'NOT IN');
