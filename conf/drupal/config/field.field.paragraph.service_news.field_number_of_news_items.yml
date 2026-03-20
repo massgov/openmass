@@ -1,0 +1,23 @@
+uuid: 3401ed3e-9a72-4337-aee2-b4c8bbe0f965
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_number_of_news_items
+    - paragraphs.paragraphs_type.service_news
+  module:
+    - options
+id: paragraph.service_news.field_number_of_news_items
+field_name: field_number_of_news_items
+entity_type: paragraph
+bundle: service_news
+label: 'Automatic news items'
+description: 'Choose the number of automatic news items to appear on this page. The automatic list is populated with the news items related to this service.'
+required: false
+translatable: false
+default_value:
+  -
+    value: '3'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

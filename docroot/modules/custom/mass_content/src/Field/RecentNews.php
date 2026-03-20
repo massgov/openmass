@@ -5,7 +5,7 @@ namespace Drupal\mass_content\Field;
 use Drupal\mayflower\Helper;
 
 /**
- * Recent news field for organizations.
+ * Recent news field for organization and service pages.
  */
 class RecentNews extends QueryGeneratedEntityReferenceList {
 
@@ -26,7 +26,9 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
 
     $query = \Drupal::entityQuery('node');
     $query->condition('type', 'news');
-    $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
+    if ($node->bundle() === 'service_page') {
+      $query->condition('field_related_service.target_id', $node->id());
+    }
     $query->condition('field_news_type', 'blog_post', '<>');
     $query->condition('langcode', 'en');
     $query->condition('status', 1);
