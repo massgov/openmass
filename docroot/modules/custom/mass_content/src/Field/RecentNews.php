@@ -35,7 +35,7 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
     $query->sort('field_date_published', 'DESC');
 
     // Exclude any featured items.
-    if (!$entity->hasField('field_org_featured_news_items')) {
+    if ($entity->hasField('field_org_featured_news_items')) {
       $field = $entity->get('field_org_featured_news_items');
       $exclude = array_column($field->getValue(), 'target_id');
       if ($exclude) {
