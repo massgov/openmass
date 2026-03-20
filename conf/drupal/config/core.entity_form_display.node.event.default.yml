@@ -46,6 +46,7 @@ dependencies:
     - content_moderation
     - datetime
     - datetime_range
+    - decorative_image_widget
     - entity_browser_entity_form
     - entity_hierarchy
     - entity_reference_tree
@@ -335,7 +336,9 @@ content:
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
-    third_party_settings: {  }
+    third_party_settings:
+      decorative_image_widget:
+        use_decorative_checkbox: true
   field_event_lede:
     type: string_textfield
     weight: 121
@@ -371,7 +374,9 @@ content:
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
-    third_party_settings: {  }
+    third_party_settings:
+      decorative_image_widget:
+        use_decorative_checkbox: true
   field_event_meeting_agenda_sect:
     type: entity_reference_paragraphs
     weight: 59
