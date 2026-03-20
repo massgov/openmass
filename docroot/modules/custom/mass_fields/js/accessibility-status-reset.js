@@ -38,12 +38,13 @@
       once('accessibility-status-reset', '.js-accessibility-status-field', context).forEach(function (wrapper) {
         const $wrapper = $(wrapper);
         const $form = $wrapper.closest('form');
-        // Find the file fids input within the same IEF/form group.
-        const $entityForm = $wrapper.closest('.ief-form, .media-form, [data-drupal-selector]').first();
-        let $fidsField = $entityForm.find('input[name*="[fids]"]');
-        if (!$fidsField.length) {
-          $fidsField = $form.find('input[data-drupal-selector*="fids"]');
-        }
+        // Find the file fids input within the same entity form context.
+        // For IEF: .ief-form contains both the file widget and this field.
+        // For standalone media: .media-form or the form itself.
+        const $entityForm = $wrapper.closest('.ief-form, .media-form');
+        let $fidsField = $entityForm.length
+          ? $entityForm.find('input[name*="[fids]"]')
+          : $form.find('input[data-drupal-selector*="fids"]');
 
         if (!$fidsField.length) {
           return;
@@ -64,10 +65,9 @@
    */
   function handleAjaxSuccess($wrapper, $entityForm, $form, state, liveRegionId) {
     // Re-find the fids field after AJAX (it may have been re-rendered).
-    let $currentFids = $entityForm.find('input[name*="[fids]"]');
-    if (!$currentFids.length) {
-      $currentFids = $form.find('input[data-drupal-selector*="fids"]');
-    }
+    let $currentFids = $entityForm.length
+      ? $entityForm.find('input[name*="[fids]"]')
+      : $form.find('input[data-drupal-selector*="fids"]');
     if (!$currentFids.length) {
       return;
     }
