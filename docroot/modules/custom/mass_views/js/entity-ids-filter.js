@@ -55,7 +55,7 @@
       removeBtn.type = 'button';
       removeBtn.className = 'entity-ids-tag-remove';
       removeBtn.textContent = '\u00d7';
-      removeBtn.setAttribute('aria-label', Drupal.t('Remove @id', { '@id': ids[i] }));
+      removeBtn.setAttribute('aria-label', Drupal.t('Remove @id', {'@id': ids[i]}));
       removeBtn.dataset.id = ids[i];
 
       tag.appendChild(removeBtn);
@@ -139,7 +139,7 @@
           // Clear all button.
           var clearAllBtn = document.createElement('button');
           clearAllBtn.type = 'button';
-          clearAllBtn.className = 'entity-ids-clear-all button button--small button--danger';
+          clearAllBtn.className = 'entity-ids-clear-all button';
           clearAllBtn.textContent = Drupal.t('Clear all');
           clearAllBtn.style.display = 'none';
           wrapper.appendChild(clearAllBtn);
