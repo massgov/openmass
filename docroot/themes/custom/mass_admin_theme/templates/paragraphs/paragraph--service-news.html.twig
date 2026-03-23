@@ -19,6 +19,10 @@
         {% include "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": news
         } %}
+      {% else %}
+        <div class="messages messages--warning">
+          No news items currently reference this service.
+        </div>
       {% endif %}
     {% endblock %}
     {% if content.field_component_add_separator|field_value|render == "True" %}
