@@ -101,4 +101,3 @@ class EntityEmbedDialogAjaxBridgeTest extends ExistingSiteSelenium2DriverTestBas
   }
 
 }
-
