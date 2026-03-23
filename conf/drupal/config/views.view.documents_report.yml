@@ -6,6 +6,7 @@ dependencies:
     - field.storage.media.field_organizations
     - media.type.document
   module:
+    - file
     - media
     - user
 id: documents_report
@@ -502,13 +503,15 @@ display:
           expose:
             operator_limit_selection: false
             operator_list: {  }
-        field_upload_file_target_id:
-          id: field_upload_file_target_id
-          table: media__field_upload_file
-          field: field_upload_file_target_id
-          relationship: none
+        fid:
+          id: fid
+          table: file_managed
+          field: fid
+          relationship: field_upload_file_target_id
           group_type: group
           admin_label: ''
+          entity_type: file
+          entity_field: fid
           plugin_id: numeric
           operator: empty
           value:
@@ -621,9 +624,41 @@ display:
           distinct: false
           replica: false
           query_tags: {  }
-      relationships: {  }
-      header: {  }
-      footer: {  }
+      relationships:
+        field_upload_file_target_id:
+          id: field_upload_file_target_id
+          table: media__field_upload_file
+          field: field_upload_file_target_id
+          relationship: none
+          group_type: group
+          admin_label: 'file from field_upload_file'
+          plugin_id: standard
+          required: false
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: '<p>These documents have a missing file and are published. They should likely just be unpublished but if they are needed, the file needs to be found and added.</p>'
+            format: basic_html
+          tokenize: false
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders: {  }
     cache_metadata:
       max-age: -1
