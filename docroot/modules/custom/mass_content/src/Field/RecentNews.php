@@ -29,7 +29,7 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
       $query->range($this->start, $this->length);
       $delta = 0;
       foreach ($query->accessCheck(FALSE)->execute() as $nid) {
-        $this->list[] = $this->createItem($delta, ['target_id' => $nid]);
+        $this->list[$delta] = $this->createItem($delta, ['target_id' => $nid]);
         $delta++;
       }
     }
