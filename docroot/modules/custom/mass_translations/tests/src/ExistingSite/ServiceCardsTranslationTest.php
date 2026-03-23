@@ -34,6 +34,8 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
    * {@inheritdoc}
    */
   private function getContent($bundle = 'api_service_card'): ContentEntityInterface {
+    // Use a URL-safe token to avoid malformed hostnames in CI.
+    $safe_host_token = strtolower($this->randomMachineName(6));
     $node = $this->createNode([
       'type' => $bundle,
       'title' => 'Test ' . $bundle,
@@ -41,7 +43,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
       'field_api_serv_card_machine_name' => $this->getRandomGenerator()->string(5),
       'field_api_srv_card_tenant' => 'personal',
       'field_environment' => 'production',
-      'field_api_serv_card_link' => 'https://' . $this->getRandomGenerator()->string(3) . '.com',
+      'field_api_serv_card_link' => 'https://' . $safe_host_token . '.com',
       'field_api_srv_card_status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
