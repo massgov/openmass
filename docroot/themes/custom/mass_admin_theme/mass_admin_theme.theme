@@ -8,7 +8,6 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Molecules;
 use Drupal\mayflower\Prepare\Organisms;
@@ -93,11 +92,10 @@ function mass_admin_theme_preprocess_paragraph__iframe(&$variables) {
 }
 
 /**
- * Preprocess logic for news paragraphs in the admin Layout Paragraphs preview.
+ * Implements hook_preprocess_paragraph() for service_news.
  */
-function _mass_admin_theme_preprocess_news_paragraph(array &$variables) {
+function mass_admin_theme_preprocess_paragraph__service_news(array &$variables) {
   $paragraph = $variables['paragraph'];
-  $cache_tags = [];
 
   if (Helper::isFieldPopulated($paragraph, 'field_org_featured_news_items') || Helper::isFieldPopulated($paragraph, 'field_number_of_news_items')) {
     $numItems = (int) Helper::fieldValue($paragraph, 'field_number_of_news_items');
@@ -107,7 +105,7 @@ function _mass_admin_theme_preprocess_news_paragraph(array &$variables) {
       'level' => 3,
     ];
     $secondaryItems = $paragraph->recent_news->range(0, $numItems + 1)->referencedEntities();
-    $press_listing = Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $press_listing_options, $secondaryItems, $cache_tags);
+    $press_listing = Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $press_listing_options, $secondaryItems);
 
     if (!empty($press_listing)) {
       $variables['news'] = [
@@ -120,19 +118,8 @@ function _mass_admin_theme_preprocess_news_paragraph(array &$variables) {
           ],
         ],
       ];
-
-      CacheableMetadata::createFromRenderArray($variables)
-        ->addCacheTags($cache_tags)
-        ->applyTo($variables);
     }
   }
-}
-
-/**
- * Implements hook_preprocess_paragraph() for service_news.
- */
-function mass_admin_theme_preprocess_paragraph__service_news(array &$variables) {
-  _mass_admin_theme_preprocess_news_paragraph($variables);
 }
 
 /**
