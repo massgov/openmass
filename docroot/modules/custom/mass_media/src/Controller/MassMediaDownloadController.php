@@ -3,8 +3,11 @@
 namespace Drupal\mass_media\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\media\MediaInterface;
+use Drupal\stage_file_proxy\DownloadManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -33,11 +36,34 @@ class MassMediaDownloadController extends ControllerBase {
   private StreamWrapperManagerInterface $streamWrapperManager;
 
   /**
+   * Drupal filesystem service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  private FileSystemInterface $fileSystem;
+
+  /**
+   * Stage File Proxy download manager.
+   *
+   * @var \Drupal\stage_file_proxy\DownloadManagerInterface
+   */
+  private DownloadManagerInterface $stageFileProxyDownloadManager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(RequestStack $request_stack, StreamWrapperManagerInterface $stream_wrapper_manager) {
+  public function __construct(
+    RequestStack $request_stack,
+    StreamWrapperManagerInterface $stream_wrapper_manager,
+    FileSystemInterface $file_system,
+    DownloadManagerInterface $stage_file_proxy_download_manager,
+    ConfigFactoryInterface $config_factory,
+  ) {
     $this->requestStack = $request_stack;
     $this->streamWrapperManager = $stream_wrapper_manager;
+    $this->fileSystem = $file_system;
+    $this->stageFileProxyDownloadManager = $stage_file_proxy_download_manager;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -46,7 +72,10 @@ class MassMediaDownloadController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('request_stack'),
-      $container->get('stream_wrapper_manager')
+      $container->get('stream_wrapper_manager'),
+      $container->get('file_system'),
+      $container->get('stage_file_proxy.download_manager'),
+      $container->get('config.factory')
     );
   }
 
@@ -108,8 +137,39 @@ class MassMediaDownloadController extends ControllerBase {
     $uri = $file->getFileUri();
     $scheme = $this->streamWrapperManager->getScheme($uri);
 
-    // Or item does not exist on disk.
-    if (!$this->streamWrapperManager->isValidScheme($scheme) || !file_exists($uri)) {
+    // If the file doesn't exist locally on non-production environments,
+    // try fetching it from the configured Stage File Proxy origin.
+    if (!$this->streamWrapperManager->isValidScheme($scheme)) {
+      throw new NotFoundHttpException("The file {$uri} does not exist.");
+    }
+
+    if (!file_exists($uri)) {
+      // Stage File Proxy is intended for public assets; private files should
+      // remain non-public and must not be fetched from origin.
+      if ($scheme === 'public') {
+        $stageConfig = $this->configFactory->get('stage_file_proxy.settings');
+        $origin = (string) $stageConfig->get('origin');
+        $originHost = (string) parse_url($origin, PHP_URL_HOST);
+        $requestHost = $this->requestStack->getCurrentRequest()->getHost();
+
+        // Only fetch when we are not on mass.gov production host.
+        if (!empty($originHost) && strcasecmp($requestHost, $originHost) !== 0) {
+          $originDir = trim((string) ($stageConfig->get('origin_dir') ?? 'files'));
+          $relativePath = str_replace('public://', '', $uri);
+          $options = ['verify' => (bool) $stageConfig->get('verify')];
+
+          $this->stageFileProxyDownloadManager->fetch(
+            $origin,
+            $originDir,
+            $relativePath,
+            $options
+          );
+        }
+      }
+    }
+
+    // Still missing on disk: return 404.
+    if (!file_exists($uri)) {
       throw new NotFoundHttpException("The file {$uri} does not exist.");
     }
 
