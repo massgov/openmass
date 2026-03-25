@@ -54,6 +54,8 @@ class MediaDownloadTest extends MassExistingSiteBase {
   }
 
   /**
+   * Test file replacement.
+   *
    * If the underlying media file is replaced, /download should serve
    * the new bytes (not a stale cached response).
    */
