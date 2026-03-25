@@ -17,7 +17,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
   use MediaCreationTrait;
 
   /**
-   * Ensure that a request to media/$ID/download redirects to the file.
+   * Ensure that a request to media/$ID/download serves the file.
    */
   public function testMediaDownload() {
     // Create a file to upload.
@@ -45,8 +45,12 @@ class MediaDownloadTest extends MassExistingSiteBase {
     ]);
 
     $this->visit($media->toUrl()->toString() . '/download');
-    $this->assertEquals(\Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri()), $this->getSession()->getCurrentUrl());
-    $this->assertEquals('text/plain', $this->getSession()->getResponseHeader('Content-Type'), 'url.site cache context is added to the response.');
+    $expected_path = $media->toUrl()->toString() . '/download';
+    $this->assertStringContainsString($expected_path, $this->getSession()->getCurrentUrl());
+
+    $content_type = $this->getSession()->getResponseHeader('Content-Type');
+    $this->assertNotEmpty($content_type);
+    $this->assertStringContainsString('text/plain', $content_type);
   }
 
 }
