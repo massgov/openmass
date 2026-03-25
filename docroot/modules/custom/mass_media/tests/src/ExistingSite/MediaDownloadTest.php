@@ -110,4 +110,80 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $this->assertStringNotContainsString('Version 1', $content_v2);
   }
 
+  /**
+   * Unpublished documents move their file to private storage.
+   *
+   * Anonymous users must not be able to download those bytes.
+   */
+  public function testMediaDownloadPrivateFileDeniedForUnpublishedDocument(): void {
+    $destination = 'public://llama-download-private-unpublished.txt';
+    file_put_contents($destination, 'UNPUBLISHED PRIVATE BYTES');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    // Create an unpublished document; mass_media_presave should move the
+    // uploaded file to private://.
+    $media = $this->createMedia([
+      'title' => 'Unpublished document download',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 0,
+      'moderation_state' => 'unpublished',
+    ]);
+
+    $unpublished_file = File::load($media->field_upload_file->target_id);
+    $this->assertNotNull($unpublished_file);
+    $this->assertEquals('private', \Drupal\Core\StreamWrapper\StreamWrapperManager::getScheme($unpublished_file->getFileUri()));
+
+    $this->visit($media->toUrl()->toString() . '/download');
+
+    $this->assertNotEquals(200, $this->getSession()->getStatusCode());
+    $this->assertStringNotContainsString('UNPUBLISHED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
+  }
+
+  /**
+   * Restricted documents should be viewable only by their owner.
+   *
+   * Anonymous users must not be able to download private files for those
+   * documents.
+   */
+  public function testMediaDownloadPrivateFileDeniedForRestrictedDocument(): void {
+    // Login as author so we can create a restricted media owned by them.
+    $admin = $this->createUser();
+    $admin->addRole('administrator');
+    $admin->activate();
+    $admin->save();
+    $this->drupalLogin($admin);
+
+    $destination = 'private://llama-download-private-restricted.txt';
+    file_put_contents($destination, 'RESTRICTED PRIVATE BYTES');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Restricted document download',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => 'restricted',
+    ]);
+
+    $this->drupalLogout();
+
+    $this->visit($media->toUrl()->toString() . '/download');
+
+    $this->assertNotEquals(200, $this->getSession()->getStatusCode());
+    $this->assertStringNotContainsString('RESTRICTED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
+  }
+
 }
