@@ -1,5 +1,22 @@
 
 
+## [0.472.0] - March 24, 2026
+
+### Fixed
+  - DP-39488: Improved print styles with better spacing and left alignment.
+  - DP-45563: Fixing report of documents without files
+  - DP-45715: Edit page header problem on pages in microsite.
+  - DP-45783: Fix TBD option visibility and file change reset for accessibility status field on inline entity forms.
+  
+### Changed
+  - DP-44787: Updated footer to align with latest design iteration.
+  - DP-45720: Removed character limit on rich text component in service section on service page
+  
+### Removed
+  - DP-45679: Removed unused field on info details page to pass params to querystring.
+  
+
+
 ## [0.471.0] - March 17, 2026
 
 ### Fixed
