@@ -85,8 +85,8 @@ class MassMediaDownloadController extends ControllerBase {
    * @param \Drupal\media\MediaInterface $media
    *   A valid media object.
    *
-   * @return \Drupal\mass_media\Response\CacheableBinaryFileResponse
-   *   File response that supports Drupal cache metadata.
+   * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+   *   File response that serves the media bytes directly.
    *
    * @throws \Exception
    * @throws NotFoundHttpException

@@ -53,4 +53,59 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $this->assertStringContainsString('text/plain', $content_type);
   }
 
+  /**
+   * If the underlying media file is replaced, /download should serve
+   * the new bytes (not a stale cached response).
+   */
+  public function testMediaDownloadServesUpdatedFileAfterReplacement() {
+    // v1 file.
+    $destination1 = 'public://llama-download-v1.txt';
+    file_put_contents($destination1, 'Version 1');
+    $file1 = File::create([
+      'uri' => $destination1,
+    ]);
+    $file1->setPermanent();
+    $file1->save();
+
+    // v2 file.
+    $destination2 = 'public://llama-download-v2.txt';
+    file_put_contents($destination2, 'Version 2');
+    $file2 = File::create([
+      'uri' => $destination2,
+    ]);
+    $file2->setPermanent();
+    $file2->save();
+
+    // Create a published document media entity pointing to v1.
+    $media = $this->createMedia([
+      'title' => 'Llama Download Cache',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file1->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $download_path = ltrim($media->toUrl()->toString() . '/download', '/');
+
+    // First request should return v1 bytes.
+    $content_v1 = $this->drupalGet($download_path);
+    $this->assertStringContainsString('Version 1', $content_v1);
+
+    // Replace the file reference and create a new revision while staying
+    // published. The controller should serve the new file bytes and Drupal
+    // cache should not keep serving the old response body.
+    $media->set('field_upload_file', [
+      'target_id' => $file2->id(),
+    ]);
+    $media->setNewRevision();
+    $media->set('moderation_state', MassModeration::PUBLISHED);
+    $media->save();
+
+    $content_v2 = $this->drupalGet($download_path);
+    $this->assertStringContainsString('Version 2', $content_v2);
+    $this->assertStringNotContainsString('Version 1', $content_v2);
+  }
+
 }
