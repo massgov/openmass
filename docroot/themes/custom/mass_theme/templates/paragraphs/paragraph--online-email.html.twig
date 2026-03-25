@@ -38,15 +38,17 @@
  * @ingroup themeable
  */
 #}
-{% include "@molecules/contact/contact-item.twig" with {
-  "item": {
-    "type": "email",
-    "label": paragraph.field_label.value,
-    "address": "",
-    "link": {
-      "href": paragraph.field_email.value,
-      "text": paragraph.field_email.value,
-      "info": "",
+{% if paragraph.field_email is defined and not paragraph.field_email.isEmpty %}
+  {% include "@molecules/contact/contact-item.twig" with {
+    "item": {
+      "type": "email",
+      "label": paragraph.field_label.value,
+      "address": "",
+      "link": {
+        "href": paragraph.field_email.value,
+        "text": paragraph.field_email.value,
+        "info": "",
+      }
     }
-  }
-} %}
+  } %}
+{% endif %}
