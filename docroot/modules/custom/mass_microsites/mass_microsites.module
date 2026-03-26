@@ -313,7 +313,7 @@ function mass_microsites_theme_suggestions_block_alter(array &$suggestions, arra
  * Implements hook_theme_suggestions_HOOK_alter().
  */
 function mass_microsites_theme_suggestions_page_alter(array &$suggestions, array &$variables) {
-  if (\Drupal::routeMatch()->getRouteName() !== 'entity.node.canonical') {
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.node.edit_form') {
     return;
   }
 
