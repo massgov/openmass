@@ -54,8 +54,11 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
 
     $query = \Drupal::entityQuery('node');
     $query->condition('type', 'news');
-    if ($node->bundle() === 'service_page') {
+    if ($node->bundle() == 'service_page') {
       $query->condition('field_related_service.target_id', $node->id());
+    }
+    else {
+      $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
     }
     $query->condition('field_news_type', 'blog_post', '<>');
     $query->condition('langcode', 'en');
