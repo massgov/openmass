@@ -1,0 +1,134 @@
+/**
+ * @file
+ * Styles for the Entity IDs popup filter widget.
+ */
+
+/* Wrapper layout */
+.entity-ids-filter-wrapper {
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* Tags container */
+.entity-ids-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 100%;
+}
+
+/* Individual tag chip */
+.entity-ids-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background-color: #e0e0e0;
+  border: 1px solid #bbb;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Tag remove button */
+.entity-ids-tag-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 50%;
+  background: #999;
+  color: #fff;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.entity-ids-tag-remove:hover {
+  background: #d32f2f;
+}
+
+/* Open popup button */
+.entity-ids-open-popup {
+  white-space: nowrap;
+}
+
+/* Clear all button */
+.entity-ids-clear-all {
+  white-space: nowrap;
+}
+
+/* Popup overlay */
+.entity-ids-popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Popup panel */
+.entity-ids-popup {
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Popup title */
+.entity-ids-popup-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+/* Popup description */
+.entity-ids-popup-description {
+  margin: 0 0 12px;
+  color: #555;
+  font-size: 14px;
+}
+
+/* Popup textarea */
+.entity-ids-popup-textarea {
+  display: block;
+  width: 100%;
+  min-height: 200px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.entity-ids-popup-textarea:focus {
+  border-color: #003366;
+  outline: 2px solid #003366;
+  outline-offset: -2px;
+}
+
+/* Popup actions */
+.entity-ids-popup-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  justify-content: flex-end;
+}
