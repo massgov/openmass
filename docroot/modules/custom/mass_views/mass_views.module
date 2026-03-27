@@ -284,9 +284,45 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
 }
 
 /**
+ * Implements hook_views_pre_view().
+ */
+function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'news_curated_list' && !empty($args[0]) && is_numeric($args[0])) {
+    $view->mass_related_content_id = (int) $args[0];
+    $args[0] = 'all';
+  }
+}
+
+/**
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+
+  if ($view->id() == 'news_curated_list' && !empty($view->mass_related_content_id)) {
+    $content_id = (int) $view->mass_related_content_id;
+    $connection = $query->getConnection();
+
+    $org_exists = $connection->select('node__field_news_signees', 'news_signees');
+    $org_exists->addExpression('1');
+    $org_exists->join(
+      'paragraph__field_state_org_ref_org',
+      'org',
+      'org.entity_id = news_signees.field_news_signees_target_id'
+    );
+    $org_exists->where('news_signees.entity_id = node_field_data.nid');
+    $org_exists->condition('org.field_state_org_ref_org_target_id', $content_id);
+
+    $service_exists = $connection->select('node__field_related_service', 'related_service');
+    $service_exists->addExpression('1');
+    $service_exists->where('related_service.entity_id = node_field_data.nid');
+    $service_exists->condition('related_service.field_related_service_target_id', $content_id);
+
+    $or = $connection->condition('OR')
+      ->exists($org_exists)
+      ->exists($service_exists);
+
+    $query->addWhere(0, $or);
+  }
 
   if ($view->id() == 'report_orphaned_documents') {
 
@@ -460,6 +496,16 @@ function mass_views_do_invalidate($entity): void {
  * Unset the collections_all view field rendering if we are dealing with media entity.
  */
 function mass_views_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'news_curated_list' && !empty($view->mass_related_content_id)) {
+    $content_id = $view->mass_related_content_id;
+    $view->args[0] = $content_id;
+
+    if (!empty($view->argument['nid'])) {
+      $view->argument['nid']->argument = $content_id;
+      $view->argument['nid']->value = [$content_id];
+    }
+  }
+
   if ($view->id() == 'collection_all') {
     foreach ($view->result as $row) {
       // Check if the row entity is a media entity
