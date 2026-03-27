@@ -16,9 +16,7 @@
    * blocks publishing until the author picks a real option.
    */
   Drupal.behaviors.accessibilityStatusReset = {
-    attach: function (context, settings) {
-      const fidsSelector = 'input[data-drupal-selector="edit-field-upload-file-0-fids"]';
-      const noneSelector = 'input[name="field_accessibility_self_rpt"][value="_none"], input[name="media[document][field_accessibility_self_rpt]"][value="_none"]';
+    attach: function (context) {
       const liveRegionId = 'accessibility-status-reset-announcement';
 
       // Inject an aria-live region once (for screen reader announcements).
@@ -29,46 +27,73 @@
         );
       });
 
-      // Hide the _none (TBD) radio and its wrapper on every attach
-      // (including after AJAX re-renders).
-      $(noneSelector, context).closest('.js-form-item').hide();
+      // Find all accessibility status field wrappers (works on standalone
+      // media forms and on inline entity forms embedded in node forms).
+      const $fieldWrappers = $('.js-accessibility-status-field', context);
 
-      // Track fids to detect file changes.
-      let lastFids = $(fidsSelector).val() || '';
+      // Hide the _none (TBD) radio and its label in every wrapper.
+      $fieldWrappers.find('input[value="_none"]').closest('.js-form-item').hide();
 
-      $(document).on('ajaxSuccess', function (event, xhr, ajaxSettings) {
-        setTimeout(function () {
-          const $fidsField = $(fidsSelector);
-          if (!$fidsField.length) {
-            return;
-          }
+      // For each wrapper, track file changes and reset on upload/remove.
+      once('accessibility-status-reset', '.js-accessibility-status-field', context).forEach(function (wrapper) {
+        const $wrapper = $(wrapper);
+        const $form = $wrapper.closest('form');
+        // Find the file fids input within the same entity form context.
+        // For IEF: .ief-form contains both the file widget and this field.
+        // For standalone media: .media-form or the form itself.
+        const $entityForm = $wrapper.closest('.ief-form, .media-form');
+        let $fidsField = $entityForm.length
+          ? $entityForm.find('input[name*="[fids]"]')
+          : $form.find('input[data-drupal-selector*="fids"]');
 
-          const currentFids = $fidsField.val() || '';
+        if (!$fidsField.length) {
+          return;
+        }
 
-          if (currentFids !== lastFids) {
-            lastFids = currentFids;
+        // Use object to track state across AJAX callbacks.
+        const state = {lastFids: $fidsField.val() || ''};
 
-            const $form = $fidsField.closest('form');
-            const $noneRadio = $form.find(noneSelector);
-            const $otherRadios = $form.find('input[name="field_accessibility_self_rpt"]').not(noneSelector);
-
-            // Uncheck visible radios (attribute + property).
-            $otherRadios.removeAttr('checked').prop('checked', false);
-
-            // Check the hidden _none radio to reset the field to an empty state.
-            $noneRadio.attr('checked', 'checked').prop('checked', true);
-
-            // Announce the reset to screen reader users.
-            $('#' + liveRegionId).text(
-              Drupal.t('File accessibility status has been reset. Please make a new selection.')
-            );
-          }
-
-          // Re-hide _none after every AJAX update (Drupal may re-render it).
-          $(noneSelector).closest('.js-form-item').hide();
-        }, 100);
+        $(document).on('ajaxSuccess', function () {
+          setTimeout(handleAjaxSuccess.bind(null, $wrapper, $entityForm, $form, state, liveRegionId), 100);
+        });
       });
     }
   };
+
+  /**
+   * Handles AJAX success to detect file changes and reset the field.
+   */
+  function handleAjaxSuccess($wrapper, $entityForm, $form, state, liveRegionId) {
+    // Re-find the fids field after AJAX (it may have been re-rendered).
+    let $currentFids = $entityForm.length
+      ? $entityForm.find('input[name*="[fids]"]')
+      : $form.find('input[data-drupal-selector*="fids"]');
+    if (!$currentFids.length) {
+      return;
+    }
+
+    const currentFids = $currentFids.val() || '';
+
+    if (currentFids !== state.lastFids) {
+      state.lastFids = currentFids;
+
+      const $noneRadio = $wrapper.find('input[value="_none"]');
+      const $otherRadios = $wrapper.find('input[type="radio"]').not($noneRadio);
+
+      // Uncheck visible radios.
+      $otherRadios.removeAttr('checked').prop('checked', false);
+
+      // Check the hidden _none radio to reset the field.
+      $noneRadio.attr('checked', 'checked').prop('checked', true);
+
+      // Announce the reset to screen reader users.
+      $('#' + liveRegionId).text(
+        Drupal.t('File accessibility status has been reset. Please make a new selection.')
+      );
+    }
+
+    // Re-hide _none after every AJAX update (Drupal may re-render it).
+    $wrapper.find('input[value="_none"]').closest('.js-form-item').hide();
+  }
 
 })(jQuery, Drupal, once);
