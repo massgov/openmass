@@ -3893,6 +3893,7 @@ function mass_theme_preprocess_menu(&$variables) {
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'utility') {
     // Get Theme settings languages if available.
     if (theme_get_setting('languages', 'mass_theme')) {
+      $variables['availableLanguages'] = mass_theme_googletranslate_options_languages();
       $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
     }
     foreach ($variables['items'] as &$item) {
@@ -6670,6 +6671,7 @@ function mass_theme_googletranslate_options_languages() {
     'de' => 'German',
     'dz' => 'Bhutani',
     'el' => 'Greek',
+    'en' => 'English',
     'eo' => 'Esperanto',
     'es' => 'Spanish',
     'et' => 'Estonian',
