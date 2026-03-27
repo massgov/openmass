@@ -12,7 +12,6 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
 
   private DocumentElement $page;
 
-
   /**
    * {@inheritdoc}
    */
