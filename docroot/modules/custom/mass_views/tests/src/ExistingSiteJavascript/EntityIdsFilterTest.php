@@ -98,6 +98,18 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
     // Verify the view shows results (the table should exist).
     $session->elementExists('css', '.view-content');
 
+    // Verify the filtered results contain the expected node titles.
+    $expectedTitles = [
+      'QAG test form with Gravity input parameters',
+      '_QAG Information Details_2',
+      'QAG_Campaign landing with solid color key message header',
+      'QAG Info Details Table samples',
+    ];
+    $resultsText = $this->page->find('css', '.view-content')->getText();
+    foreach ($expectedTitles as $title) {
+      $this->assertStringContainsString($title, $resultsText, "Result contains node title: $title");
+    }
+
     // Remove one tag - this triggers form.submit().
     $removeBtn = $this->page->find('css', '.entity-ids-tag-remove');
     $this->assertNotNull($removeBtn, 'Remove button exists on a tag.');
@@ -164,6 +176,18 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Verify the view shows results.
     $session->elementExists('css', '.view-content');
+
+    // Verify the filtered results contain the expected document titles.
+    $expectedTitles = [
+      'qag test doc - Chinese Simplified',
+      'qag test doc - Portuguese, Brazil',
+      '_QAG Document_pdf',
+      'qag Test spanish version of document',
+    ];
+    $resultsText = $this->page->find('css', '.view-content')->getText();
+    foreach ($expectedTitles as $title) {
+      $this->assertStringContainsString($title, $resultsText, "Result contains document title: $title");
+    }
 
     // Test cancel button closes popup without applying.
     $button = $this->page->find('css', 'button.entity-ids-open-popup');
