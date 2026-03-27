@@ -2634,27 +2634,10 @@ function mass_theme_preprocess_node_rules(&$variables) {
     'links' => ['field_rules_related'],
     'updates' => ['field_rules_updates'],
     'subheading' => ['field_rules_subheading'],
-    'related_to' => ['computed_related_to'],
   ];
 
   // Determines which field names to use from the map.
   $fields = Helper::getMappedFields($node, $map);
-
-  // Add any related content as determined by relationship indicators into the
-  // list of "Related to" links on the Rules of Court content type. Manually
-  // set links will be listed first followed by any links added through the
-  // Related To computed field.
-  if (!empty($fields['related_to']) && Helper::isFieldPopulated($node, $fields['related_to'])) {
-    if (!empty($fields['collections']) && Helper::isFieldPopulated($node, $fields['collections'])) {
-      if (isset($variables['content'][$fields['related_to']])) {
-        $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
-        $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
-      }
-    }
-    else {
-      $variables['content'][$fields['collections']] = $variables['content'][$fields['related_to']];
-    }
-  }
 
   if (!empty($fields['adopted_date']) && Helper::isFieldPopulated($node, $fields['adopted_date'])) {
     // Set up rich text elements for what you need.
