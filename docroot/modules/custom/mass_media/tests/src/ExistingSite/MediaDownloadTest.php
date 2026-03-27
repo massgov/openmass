@@ -17,7 +17,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
   use MediaCreationTrait;
 
   /**
-   * Ensure that a request to media/$ID/download redirects to the file.
+   * Ensure that a request to media/$ID/download serves the file.
    */
   public function testMediaDownload() {
     // Create a file to upload.
@@ -45,8 +45,145 @@ class MediaDownloadTest extends MassExistingSiteBase {
     ]);
 
     $this->visit($media->toUrl()->toString() . '/download');
-    $this->assertEquals(\Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri()), $this->getSession()->getCurrentUrl());
-    $this->assertEquals('text/plain', $this->getSession()->getResponseHeader('Content-Type'), 'url.site cache context is added to the response.');
+    $expected_path = $media->toUrl()->toString() . '/download';
+    $this->assertStringContainsString($expected_path, $this->getSession()->getCurrentUrl());
+
+    $content_type = $this->getSession()->getResponseHeader('Content-Type');
+    $this->assertNotEmpty($content_type);
+    $this->assertStringContainsString('text/plain', $content_type);
+  }
+
+  /**
+   * Test file replacement.
+   *
+   * If the underlying media file is replaced, /download should serve
+   * the new bytes (not a stale cached response).
+   */
+  public function testMediaDownloadServesUpdatedFileAfterReplacement() {
+    // v1 file.
+    $destination1 = 'public://llama-download-v1.txt';
+    file_put_contents($destination1, 'Version 1');
+    $file1 = File::create([
+      'uri' => $destination1,
+    ]);
+    $file1->setPermanent();
+    $file1->save();
+
+    // v2 file.
+    $destination2 = 'public://llama-download-v2.txt';
+    file_put_contents($destination2, 'Version 2');
+    $file2 = File::create([
+      'uri' => $destination2,
+    ]);
+    $file2->setPermanent();
+    $file2->save();
+
+    // Create a published document media entity pointing to v1.
+    $media = $this->createMedia([
+      'title' => 'Llama Download Cache',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file1->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $download_path = ltrim($media->toUrl()->toString() . '/download', '/');
+
+    // First request should return v1 bytes.
+    $content_v1 = $this->drupalGet($download_path);
+    $this->assertStringContainsString('Version 1', $content_v1);
+
+    // Replace the file reference and create a new revision while staying
+    // published. The controller should serve the new file bytes and Drupal
+    // cache should not keep serving the old response body.
+    $media->set('field_upload_file', [
+      'target_id' => $file2->id(),
+    ]);
+    $media->setNewRevision();
+    $media->set('moderation_state', MassModeration::PUBLISHED);
+    $media->save();
+
+    $content_v2 = $this->drupalGet($download_path);
+    $this->assertStringContainsString('Version 2', $content_v2);
+    $this->assertStringNotContainsString('Version 1', $content_v2);
+  }
+
+  /**
+   * Unpublished documents move their file to private storage.
+   *
+   * Anonymous users must not be able to download those bytes.
+   */
+  public function testMediaDownloadPrivateFileDeniedForUnpublishedDocument(): void {
+    $destination = 'public://llama-download-private-unpublished.txt';
+    file_put_contents($destination, 'UNPUBLISHED PRIVATE BYTES');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    // Create an unpublished document; mass_media_presave should move the
+    // uploaded file to private://.
+    $media = $this->createMedia([
+      'title' => 'Unpublished document download',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 0,
+      'moderation_state' => 'unpublished',
+    ]);
+
+    $unpublished_file = File::load($media->field_upload_file->target_id);
+    $this->assertNotNull($unpublished_file);
+    $this->assertEquals('private', \Drupal\Core\StreamWrapper\StreamWrapperManager::getScheme($unpublished_file->getFileUri()));
+
+    $this->visit($media->toUrl()->toString() . '/download');
+
+    $this->assertNotEquals(200, $this->getSession()->getStatusCode());
+    $this->assertStringNotContainsString('UNPUBLISHED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
+  }
+
+  /**
+   * Restricted documents should be viewable only by their owner.
+   *
+   * Anonymous users must not be able to download private files for those
+   * documents.
+   */
+  public function testMediaDownloadPrivateFileDeniedForRestrictedDocument(): void {
+    // Login as author so we can create a restricted media owned by them.
+    $admin = $this->createUser();
+    $admin->addRole('administrator');
+    $admin->activate();
+    $admin->save();
+    $this->drupalLogin($admin);
+
+    $destination = 'private://llama-download-private-restricted.txt';
+    file_put_contents($destination, 'RESTRICTED PRIVATE BYTES');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Restricted document download',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => 'restricted',
+    ]);
+
+    $this->drupalLogout();
+
+    $this->visit($media->toUrl()->toString() . '/download');
+
+    $this->assertNotEquals(200, $this->getSession()->getStatusCode());
+    $this->assertStringNotContainsString('RESTRICTED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
   }
 
 }
