@@ -1,0 +1,251 @@
+diff --git a/decorative_image_widget.module b/decorative_image_widget.module
+index 8b2dded80e881a7df919b7e8c93737e29b425aeb..560101e2b887a161df2fe0c58c40560d406eaf22 100644
+--- a/decorative_image_widget.module
++++ b/decorative_image_widget.module
+@@ -51,3 +51,17 @@ function decorative_image_widget_field_widget_single_element_form_alter(array &$
+     DecorativeImageWidgetHelper::alter($element, $context['widget']);
+   }
+ }
++
++/**
++ * Implements hook_entity_embed_display_plugins_alter().
++ *
++ * Swap the core image entity embed display plugin class for our decorated
++ * version that adds the Decorative checkbox and validation.
++ */
++function decorative_image_widget_entity_embed_display_plugins_alter(array &$definitions) {
++  foreach ($definitions as &$definition) {
++    if (!empty($definition['class']) && $definition['class'] === 'Drupal\\entity_embed\\Plugin\\entity_embed\\EntityEmbedDisplay\\ImageFieldFormatter') {
++      $definition['class'] = \Drupal\decorative_image_widget\Plugin\entity_embed\EntityEmbedDisplay\DecorativeImageFieldFormatter::class;
++    }
++  }
++}
+diff --git a/js/decorative-image-widget.js b/js/decorative-image-widget.js
+index 55de6fd8902b83a5d986c68b89390bfb202482b8..ec7bb1133a00d740a0a9966b379878b451522ad6 100644
+--- a/js/decorative-image-widget.js
++++ b/js/decorative-image-widget.js
+@@ -43,11 +43,22 @@
+       // text field.
+       once(
+         'decorative-image-widget',
+-        '.image-widget .decorative-checkbox',
++        '.decorative-checkbox',
+         context,
+-      ).forEach(function processCheckbox(checkbox) {
+-        const widget = checkbox.closest('.image-widget');
++      ).forEach((checkbox) => {
++        // For field widgets, the checkbox lives inside .image-widget; for the
++        // entity embed dialog, it lives directly in the dialog form. Support
++        // both by looking for the nearest image widget first, then falling
++        // back to the enclosing form.
++        const widget =
++          checkbox.closest('.image-widget') || checkbox.closest('form');
++        if (!widget) {
++          return;
++        }
+         const altTextField = widget.querySelector('.alt-textfield');
++        if (!altTextField) {
++          return;
++        }
+         checkbox.addEventListener('change', (event) => {
+           enableOrDisableAltTextField(altTextField, !event.target.checked);
+         });
+diff --git a/src/DecorativeImageWidgetHelper.php b/src/DecorativeImageWidgetHelper.php
+index 6047467fd56b55338055fa5c64bed16541f335bb..224cdb0387db576ea2c61a6c9cc41d4ae7c691ac 100644
+--- a/src/DecorativeImageWidgetHelper.php
++++ b/src/DecorativeImageWidgetHelper.php
+@@ -191,4 +191,102 @@ class DecorativeImageWidgetHelper {
+     }
+   }
+ 
++  /**
++   * Alters the entity embed dialog form to add a decorative checkbox.
++   *
++   * This mirrors the UX provided for image widgets, but applied to the image
++   * embed dialog used by entity_embed.
++   *
++   * @param array $form
++   *   The form array.
++   * @param \Drupal\Core\Form\FormStateInterface $formState
++   *   The form state.
++   */
++  public static function alterEntityEmbedDialogForm(array &$form, FormStateInterface $formState) {
++    // At the time this alter runs, the image entity embed display plugin's alt
++    // element has already been moved under the "attributes" container.
++    if (empty($form['attributes']['alt']) || !is_array($form['attributes']['alt'])) {
++      return;
++    }
++
++    $alt =& $form['attributes']['alt'];
++
++    // Determine if the decorative checkbox should be checked by default. When
++    // editing an existing embed, the current alt value is in the default value.
++    $alt_default = $alt['#default_value'] ?? '';
++    $decorative_default = ($alt_default === '');
++
++    $decorative = [
++      '#type' => 'checkbox',
++      '#title' => t('Decorative'),
++      '#description' => t(
++        'This image is <a href="@url" target="_blank">decorative</a> and should be hidden from screen readers.',
++        ['@url' => 'https://www.w3.org/WAI/tutorials/images/decorative/']
++      ),
++      '#default_value' => $decorative_default,
++      '#weight' => $alt['#weight'] ?? 0,
++      '#attributes' => [
++        'class' => ['decorative-checkbox'],
++      ],
++    ];
++
++    // Place the decorative checkbox inside the attributes group as a sibling of
++    // the alt field, so it appears in the same section in the dialog.
++    $form['attributes']['decorative'] = $decorative;
++
++    // Add a class name to the alt textfield so JS can easily find it.
++    $alt['#attributes']['class'][] = 'alt-textfield';
++
++    // Add validation for the alt text that will require it have a value unless
++    // the decorative checkbox is checked.
++    $alt['#element_validate'][] = [static::class, 'validateEntityEmbedAlt'];
++
++    // Attach the same JS library used for widgets so the decorative checkbox
++    // disables/enables the alt field.
++    $form['#attached']['library'][] = 'decorative_image_widget/decorative_image_widget';
++  }
++
++  /**
++   * Validation for the entity embed dialog alt field.
++   *
++   * Requires either alt text or the decorative checkbox to be checked.
++   *
++   * @param array $element
++   *   The alt form element.
++   * @param \Drupal\Core\Form\FormStateInterface $formState
++   *   The form state.
++   */
++  public static function validateEntityEmbedAlt(array $element, FormStateInterface $formState) {
++    // In the embed dialog there is no file upload button, so we always perform
++    // validation when the form is submitted.
++    $alt_value = trim((string) ($formState->getValue($element['#parents']) ?? ''));
++
++    // Normalize two double quotes ("") to an empty alt value. This mirrors
++    // the behavior provided by MediaImageDecorator::EMPTY_STRING in the
++    // entity_embed module for the core image dialog, without introducing a
++    // hard dependency on that module.
++    if ($alt_value === '""') {
++      $alt_value = '';
++      $formState->setValue($element['#parents'], '');
++    }
++
++    $decorative_parents = $element['#parents'];
++    array_pop($decorative_parents);
++    $decorative_parents[] = 'decorative';
++    $decorative_checked = (bool) $formState->getValue($decorative_parents);
++
++    // If the decorative checkbox is checked, always store an empty alt value,
++    // regardless of what the user typed. This ensures the underlying
++    // <drupal-entity> markup and rendered <img> both end up with alt="" and
++    // allows us to infer "decorative" from the empty alt on subsequent edits.
++    if ($decorative_checked) {
++      $formState->setValue($element['#parents'], '');
++      $alt_value = '';
++    }
++
++    if ($alt_value === '' && !$decorative_checked) {
++      $formState->setErrorByName(implode('][', $element['#parents']), t('You must provide alternative text or indicate the image is decorative.'));
++    }
++  }
++
+ }
+diff --git a/src/Plugin/entity_embed/EntityEmbedDisplay/DecorativeImageFieldFormatter.php b/src/Plugin/entity_embed/EntityEmbedDisplay/DecorativeImageFieldFormatter.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..9cff9e2a6be5ade0a2feec17e802152b6efec2df
+--- /dev/null
++++ b/src/Plugin/entity_embed/EntityEmbedDisplay/DecorativeImageFieldFormatter.php
+@@ -0,0 +1,86 @@
++<?php
++
++namespace Drupal\decorative_image_widget\Plugin\entity_embed\EntityEmbedDisplay;
++
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay\ImageFieldFormatter;
++
++/**
++ * Entity embed image display with decorative checkbox support.
++ *
++ * This subclass adds the Decorative checkbox and validation to the entity
++ * embed image dialog, while reusing the core ImageFieldFormatter behavior.
++ */
++class DecorativeImageFieldFormatter extends ImageFieldFormatter {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
++    $form = parent::buildConfigurationForm($form, $form_state);
++
++    if (empty($form['alt']) || !is_array($form['alt'])) {
++      return $form;
++    }
++
++    $alt = $form['alt'];
++    $alt_value = $alt['#default_value'] ?? '';
++
++    // Alt is not strictly required when the decorative checkbox is available;
++    // validation will enforce "alt or decorative".
++    $form['alt']['#required'] = FALSE;
++    $form['alt']['#attributes']['class'][] = 'alt-textfield';
++    $form['alt']['#element_validate'][] = [static::class, 'validateAltOrDecorative'];
++
++    $form['decorative'] = [
++      '#type' => 'checkbox',
++      '#title' => $this->t('Decorative'),
++      '#description' => $this->t('This image is <a href=":url" target="_blank">decorative</a> and should be hidden from screen readers.', [
++        ':url' => 'https://www.w3.org/WAI/tutorials/images/decorative/',
++      ]),
++      '#default_value' => ($alt_value === ''),
++      '#parents' => ['decorative'],
++      '#weight' => $form['alt']['#weight'] ?? 0,
++      '#attributes' => [
++        'class' => ['decorative-checkbox'],
++      ],
++    ];
++
++    // Attach JS behavior (if the decorative_image_widget library is available)
++    // so that checking the decorative box disables the alt field.
++    try {
++      $library_discovery = \Drupal::service('library.discovery');
++      if ($library_discovery->getLibraryByName('decorative_image_widget', 'decorative_image_widget')) {
++        $form['#attached']['library'][] = 'decorative_image_widget/decorative_image_widget';
++      }
++    }
++    catch (\Exception $e) {
++      // If the library is not available, we still keep the validation behavior.
++    }
++
++    return $form;
++  }
++
++  /**
++   * Validation callback requiring either alt text or decorative checkbox.
++   */
++  public static function validateAltOrDecorative(array $element, FormStateInterface $form_state, array &$complete_form) {
++    $parents = $element['#parents'];
++    $alt_value = trim((string) ($form_state->getValue($parents) ?? ''));
++
++    $decorative_checked = (bool) $form_state->getValue(['decorative']);
++
++    // If the decorative checkbox is checked, always store an empty alt value,
++    // regardless of what the user typed.
++    if ($decorative_checked) {
++      $form_state->setValue($parents, '');
++      $alt_value = '';
++    }
++
++    if ($alt_value === '' && !$decorative_checked) {
++      $form_state->setError($element, t('You must provide alternative text or indicate the image is decorative.'));
++    }
++  }
++
++}
++
