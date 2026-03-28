@@ -109,7 +109,7 @@ class NodeTranslationTest extends MassExistingSiteBase {
    * @return array
    *   An array of roles and bundles to test.
    */
-  public function canTranslateContentDataProvider(): array {
+  public static function canTranslateContentDataProvider(): array {
     return [
       ['news', ['administrator', 'editor']],
       ['info_details', ['administrator', 'editor']],

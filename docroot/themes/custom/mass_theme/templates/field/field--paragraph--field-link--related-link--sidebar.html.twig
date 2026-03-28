@@ -38,5 +38,5 @@
 #}
 {% set relatedActions = relatedActions %}
 {% for relatedAction in relatedActions %}
-  {% include "@molecules/related-action.twig" with relatedAction %}
+  {{ include('@molecules/related-action.twig', relatedAction) }}
 {% endfor %}
