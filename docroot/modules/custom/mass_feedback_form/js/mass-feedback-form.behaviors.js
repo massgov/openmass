@@ -1,107 +1,163 @@
 /**
  * @file
  * Provides JavaScript for Mass Feedback Forms.
+ * Handles submission to the Lambda feedback API instead of Formstack.
  */
 
-/* global dataLayer */
-
-(function ($) {
+(function ($, once) {
   'use strict';
 
   /**
-   * Support a multi-step Feedback form.
+   * Support feedback form submission to Lambda API.
    */
   Drupal.behaviors.massFeedbackForm = {
     attach: function (context) {
 
-      // This field is used by the feedback manager to join the survey (second) with the first submission
-      var MG_FEEDBACK_ID = 'field68557708';
+      // Process feedback forms using Drupal's once() function
+      once('massFeedbackForm', '.ma__mass-feedback-form', context).forEach(function (element) {
+        const $self = $(element);
+        const $form = $self.find('form').not('has-error');
 
-      // This field is used to set a unique device ID to form submissions.
-      var UNIQUE_ID_FIELD = 'field68798989';
+        if (!$form.length) {
+          return;
+        }
 
-      // For certain form inputs, use a value from the data layer.
-      $('.data-layer-substitute', context).each(function (index) {
-        var $this = $(this);
-        var property = $this.val();
-        var sub = '';
+        const feedback = $self[0];
+        const $success = $self.find('#success-screen');
+        const $submitBtn = $('input[type="submit"]', $form);
+        const formAction = $form.attr('action');
+        let isSubmitting = false;
 
-        for (var i = 0; i < dataLayer.length; i++) {
-          if (typeof dataLayer[i][property] !== 'undefined') {
-            sub = dataLayer[i][property];
+        // Prevent double-click form submission
+        $submitBtn.on('click', function (e) {
+          if (isSubmitting) {
+            e.preventDefault();
+            return false;
           }
-        }
+        });
 
-        if (sub !== '' && typeof sub === 'string') {
-          $this.val(sub);
-        }
-        $this.removeClass('data-layer-substitute');
+        // Handle form submission
+        $form.on('submit', function (e) {
+          e.preventDefault();
+
+          if (isSubmitting) {
+            return false;
+          }
+
+          isSubmitting = true;
+          $submitBtn.prop('disabled', true);
+
+          // Submit feedback.
+          submitFeedback($form, formAction, $success, feedback, $submitBtn, function () {
+            isSubmitting = false;
+          });
+
+          return false;
+        });
       });
 
-      // Process the multistep form.
-      $('.ma__mass-feedback-form', context).each(function (index) {
-        var $self = $(this);
-        var feedback = $self[0];
+      /**
+       * Submit feedback to Lambda API.
+       *
+       * @param {jQuery} $form The form element.
+       * @param {string} formAction The API endpoint URL.
+       * @param {jQuery} $success The success message element.
+       * @param {Element} feedback The feedback container element.
+       * @param {jQuery} $submitBtn The submit button element.
+       * @param {Function} onComplete Callback when submission is complete.
+       */
+      function submitFeedback($form, formAction, $success, feedback, $submitBtn, onComplete) {
+        const formData = new FormData($form[0]);
 
-        var $formOriginal = $self.find('form').not('has-error');
-        // Checks to avoid bots submitting the form
-        // On the first form, the Feedback manager lambda will populate this field,
-        // so a populated field was a bot, we honey potted him/her/they
-        if ($formOriginal.find('#field68798989').length && $('#field68798989').val()) {
-          // We don't need to show the bot anything
-          return false;
-        }
-
-        var $form = $self.find('form').not('has-error');
-        var $success = $self.find('#success-screen');
-        // This is to stop a double click submitting the form twice
-        var $submitBtn = $('input[type="submit"]', $form);
-
-        // Use device ID set in docroot/themes/custom/mass_theme/overrides/js/device.js.
-        var massgovDeviceId = localStorage.getItem('massgovDeviceId') || '';
-        $form.find('input[name="' + UNIQUE_ID_FIELD + '"]').val(massgovDeviceId);
-
-        $form.submit(function () {
-          $submitBtn.prop('disabled', true);
-        });
-        $form.on('submit', function (e) {
-          $form.addClass('hidden');
-          $success.removeClass('hidden');
-          feedback.scrollIntoView();
-        });
-
-        $form.ajaxForm({
-          data: {jsonp: 1},
-          dataType: 'script'
-        });
-
-        window['form' + $form.attr('id')] = {
-          onPostSubmit: function (message) {
-            // If MG_FEEDBACK_ID is 'uniqueId', then we are submitting the first (feedback) form
-            // so we now need to set the MG_FEEDBACK_ID value with the ID returned from formstack.
-            var submissionId = message.submission;
-            if ($('#' + MG_FEEDBACK_ID).val() === 'uniqueId') {
-              $('#' + MG_FEEDBACK_ID).val(submissionId);
-            }
-            feedback.scrollIntoView();
-          },
-          onSubmitError: function (err) {
-            var message = 'Submission Failure: ' + err.error;
-            getMessaging($form).html(message);
+        // Get explain field - handle both visible and hidden textareas with same name
+        // The form has two textareas with name="explain" (positive and negative feedback)
+        // FormData.get() only returns the first one, so we need to get the visible one
+        let explainField = '';
+        const explainInputs = $form.find('textarea[name="explain"]');
+        explainInputs.each(function () {
+          const $textarea = $(this);
+          // Check if textarea is visible (not hidden by CSS display:none or parent hidden class)
+          if ($textarea.is(':visible') && !$textarea.closest('.feedback-response').hasClass('hidden')) {
+            explainField = $textarea.val() || '';
           }
+        });
+
+        // Get unique device ID from localStorage for spam detection
+        // This ID is created by device.js and persists across sessions
+        const mgFeedbackId = localStorage.getItem('massgovDeviceId') || null;
+
+        const payload = {
+          node_id: parseInt(formData.get('node_id')) || 0,
+          info_found: formData.get('info_found') === 'Yes',
+          explain: explainField,
+          url: window.location.href,
+          timestamp: new Date().toISOString(),
+          mg_feedback_id: mgFeedbackId
         };
 
-      });
-      // Handle the creation and management of the form messages.
-      function getMessaging($form) {
-        var $messages = $('.messages', $form);
-        if (!$messages.length) {
-          $form.find('input[type="submit"]').parent().prepend('<div class="messages" style="font-weight: bold; color: red"/>');
-          $messages = $('.messages', $form);
-        }
-        return $messages;
+        fetch(formAction, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Accept-Language': navigator.language || 'en-US',
+            'X-Requested-With': 'XMLHttpRequest',
+            'User-Agent': navigator.userAgent
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              return response.json().then(function (data) {
+                throw {
+                  status: response.status,
+                  data: data
+                };
+              });
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            // Show success screen and keep it visible
+            $form.addClass('hidden');
+            $success.removeClass('hidden');
+            feedback.scrollIntoView({behavior: 'smooth'});
+          })
+          .catch(function (error) {
+            console.error('Feedback submission failed:', error);
+
+            var errorMessage = 'Unable to submit your feedback. Please try again later.';
+            if (error.status === 400 && error.data && error.data.errors) {
+              errorMessage = 'Submission error: ' + error.data.errors.join(', ');
+            }
+
+            showErrorMessage($form, errorMessage);
+            $submitBtn.prop('disabled', false);
+          })
+          .finally(function () {
+            onComplete();
+          });
       }
 
+      /**
+       * Display error message in the form.
+       *
+       * @param {jQuery} $form The form element.
+       * @param {string} message The error message to display.
+       */
+      function showErrorMessage($form, message) {
+        let $messages = $form.find('.messages');
+        if (!$messages.length) {
+          $form.prepend('<div class="messages" style="font-weight: bold; color: #d73d32; margin-bottom: 20px;"/>');
+          $messages = $form.find('.messages');
+        }
+        $messages.html(message).show();
+
+        // Auto-hide after 5 seconds
+        setTimeout(function () {
+          $messages.fadeOut();
+        }, 5000);
+      }
     }
   };
-})(jQuery);
+})(jQuery, once);
