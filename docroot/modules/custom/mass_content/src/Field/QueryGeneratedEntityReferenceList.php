@@ -21,7 +21,7 @@ abstract class QueryGeneratedEntityReferenceList extends EntityReferenceFieldIte
    *
    * @var int
    */
-  private $start = 0;
+  protected $start = 0;
 
   /**
    * The number of results.
