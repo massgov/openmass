@@ -90,7 +90,7 @@
     var description = document.createElement('p');
     description.className = 'entity-ids-popup-description';
     description.id = descriptionId;
-    description.textContent = Drupal.t('Enter one ID per line. You can also use commas or spaces as separators.');
+    description.textContent = Drupal.t('Enter one ID per line. You can also use commas or spaces as separators. Limit batch to 300 IDs or less.');
     popup.appendChild(description);
 
     var textarea = document.createElement('textarea');
