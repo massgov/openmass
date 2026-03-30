@@ -10,7 +10,6 @@ dependencies:
     - mass_styles
     - node
     - options
-    - paragraphs
     - user
     - views_custom_cache_tag
 id: news_curated_list
@@ -215,7 +214,7 @@ display:
           id: nid
           table: node_field_data
           field: nid
-          relationship: field_state_org_ref_org
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -361,27 +360,10 @@ display:
           query_comment: ''
           disable_sql_rewrite: false
           distinct: false
+          disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
-      relationships:
-        field_news_signees:
-          id: field_news_signees
-          table: node__field_news_signees
-          field: field_news_signees
-          relationship: none
-          group_type: group
-          admin_label: 'field_news_signees: Paragraph'
-          plugin_id: standard
-          required: true
-        field_state_org_ref_org:
-          id: field_state_org_ref_org
-          table: paragraph__field_state_org_ref_org
-          field: field_state_org_ref_org
-          relationship: field_news_signees
-          group_type: group
-          admin_label: 'field_state_org_ref_org: Content'
-          plugin_id: standard
-          required: true
+      relationships: {  }
       header: {  }
       footer: {  }
       display_extenders: {  }
