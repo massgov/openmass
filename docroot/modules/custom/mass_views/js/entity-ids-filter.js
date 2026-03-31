@@ -127,11 +127,27 @@
       for (var idx = 0; idx < elements.length; idx++) {
         (function (hiddenInput) {
           var label = hiddenInput.getAttribute('data-entity-ids-label') || Drupal.t('Entity IDs');
+          var filterDescription = hiddenInput.getAttribute('data-entity-ids-description') || '';
           var form = hiddenInput.closest('form');
 
           // Build wrapper.
           var wrapper = document.createElement('div');
           wrapper.className = 'entity-ids-filter-wrapper';
+
+          // Description text.
+          if (filterDescription) {
+            var descriptionText = document.createElement('span');
+            descriptionText.className = 'entity-ids-description';
+            descriptionText.textContent = filterDescription;
+            wrapper.appendChild(descriptionText);
+          }
+
+          // Open popup button.
+          var openBtn = document.createElement('button');
+          openBtn.type = 'button';
+          openBtn.className = 'entity-ids-open-popup button';
+          openBtn.textContent = Drupal.t('Paste Document IDs');
+          wrapper.appendChild(openBtn);
 
           // Tags container.
           var tagsContainer = document.createElement('div');
@@ -146,15 +162,13 @@
           clearAllBtn.style.display = 'none';
           wrapper.appendChild(clearAllBtn);
 
-          // Open popup button.
-          var openBtn = document.createElement('button');
-          openBtn.type = 'button';
-          openBtn.className = 'entity-ids-open-popup button';
-          openBtn.textContent = label;
-          wrapper.appendChild(openBtn);
-
-          // Insert wrapper after the hidden input.
-          hiddenInput.parentNode.insertBefore(wrapper, hiddenInput.nextSibling);
+          // Insert wrapper at the top of the views exposed form.
+          if (form) {
+            form.insertBefore(wrapper, form.firstChild);
+          }
+          else {
+            hiddenInput.parentNode.insertBefore(wrapper, hiddenInput.nextSibling);
+          }
 
           // Initial render of tags from current value.
           var currentIds = parseIds(hiddenInput.value);

@@ -25,7 +25,22 @@ class EntityIdsFilter extends FilterPluginBase {
   protected function defineOptions() {
     $options = parent::defineOptions();
     $options['expose']['contains']['identifier']['default'] = 'entity_ids';
+    $options['filter_description'] = ['default' => 'Paste in up to 300 Document IDs to filter for those documents only.'];
     return $options;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+    parent::buildOptionsForm($form, $form_state);
+    $form['filter_description'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Filter description'),
+      '#description' => $this->t('Description text displayed next to the filter button on the exposed form.'),
+      '#default_value' => $this->options['filter_description'],
+      '#maxlength' => 255,
+    ];
   }
 
   /**
@@ -38,6 +53,7 @@ class EntityIdsFilter extends FilterPluginBase {
       '#attributes' => [
         'class' => ['mass-views-entity-ids-value'],
         'data-entity-ids-label' => $this->options['expose']['label'] ?? $this->t('Entity IDs'),
+        'data-entity-ids-description' => $this->options['filter_description'] ?? '',
       ],
       '#attached' => [
         'library' => ['mass_views/entity_ids_filter'],
