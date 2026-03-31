@@ -21,7 +21,8 @@
       }
 
       try {
-        iframe.focus({ preventScroll: true }); // For JAWS to switch from the parent document into the iframe document
+        // For JAWS to switch from the parent document into the iframe document
+        iframe.focus({preventScroll: true});
       }
       catch (e) {
         iframe.focus();
