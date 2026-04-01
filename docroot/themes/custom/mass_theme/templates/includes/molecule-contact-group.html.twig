@@ -20,9 +20,9 @@
         <a href="tel:{{ item.link }}" class="ma__content-link ma__content-link--phone">{{ item.value }}</a>
       {% elseif item.type == 'fax' %}
         {{ item.value }}
-      {% elseif item.type == "email" and item.link and item.value %}
+      {% elseif item.type == 'email' and item.link and item.value %}
         <a href="mailto:{{ item.link }}" class="ma__content-link">{{ item.value }}</a>
-      {% elseif item.type == "online" and item.link and item.value %}
+      {% elseif item.type == 'online' and item.link and item.value %}
         <a href="{{ item.link }}" class="ma__content-link">{{ item.value }}</a>
       {% elseif item.type == 'address' %}
         <div class="ma__contact-group__address">
