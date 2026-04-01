@@ -62,10 +62,10 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('admin/advsearch/page');
     $session = $this->assertSession();
 
-    // The "Content IDs" button should exist.
+    // The "Paste Page IDs" button should exist.
     $button = $this->page->find('css', 'button.entity-ids-open-popup');
-    $this->assertNotNull($button, 'Content IDs button exists on the page.');
-    $this->assertEqualsIgnoringCase('Content IDs', $button->getText());
+    $this->assertNotNull($button, 'Paste Page IDs button exists on the page.');
+    $this->assertEqualsIgnoringCase('Paste Page IDs', $button->getText());
 
     // Click the button to open the popup.
     $button->click();
@@ -142,10 +142,10 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('admin/ma-dash/documents-advanced-search');
     $session = $this->assertSession();
 
-    // The "Document IDs" button should exist.
+    // The "Paste Document IDs" button should exist.
     $button = $this->page->find('css', 'button.entity-ids-open-popup');
-    $this->assertNotNull($button, 'Document IDs button exists on the page.');
-    $this->assertEqualsIgnoringCase('Document IDs', $button->getText());
+    $this->assertNotNull($button, 'Paste Document IDs button exists on the page.');
+    $this->assertEqualsIgnoringCase('Paste Document IDs', $button->getText());
 
     // Click the button to open the popup.
     $button->click();

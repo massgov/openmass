@@ -146,7 +146,7 @@
           var openBtn = document.createElement('button');
           openBtn.type = 'button';
           openBtn.className = 'entity-ids-open-popup button';
-          openBtn.textContent = Drupal.t('Paste Document IDs');
+          openBtn.textContent = label;
           wrapper.appendChild(openBtn);
 
           // Tags container.
