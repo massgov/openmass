@@ -198,9 +198,6 @@
             hiddenInput.value = ids.join(',');
             renderTags(tagsContainer, ids, hiddenInput, clearAllBtn);
             closePopup();
-            if (form) {
-              form.submit();
-            }
           }
 
           // Event: open popup.
@@ -238,18 +235,12 @@
             });
             hiddenInput.value = ids.join(',');
             renderTags(tagsContainer, ids, hiddenInput, clearAllBtn);
-            if (form) {
-              form.submit();
-            }
           });
 
           // Event: clear all.
           clearAllBtn.addEventListener('click', function () {
             hiddenInput.value = '';
             renderTags(tagsContainer, [], hiddenInput, clearAllBtn);
-            if (form) {
-              form.submit();
-            }
           });
         })(elements[idx]);
       }

@@ -53,6 +53,17 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Submits the views exposed form and waits for the page to reload.
+   */
+  private function submitExposedForm(): void {
+    $submitBtn = $this->page->find('css', '.views-exposed-form input[type="submit"], .views-exposed-form button[type="submit"]');
+    $this->assertNotNull($submitBtn, 'Views exposed form submit button exists.');
+    $this->waitForPageReload();
+    $submitBtn->click();
+    $this->awaitNewPage();
+  }
+
+  /**
    * Tests Content IDs filter on /admin/advsearch/page.
    */
   public function testContentIdsFilterOnPageSearch() {
@@ -80,16 +91,18 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
     // Enter node IDs (newline-separated).
     $textarea->setValue(implode("\n", $nodeIds));
 
-    // Click Apply inside the popup - this triggers form.submit().
+    // Click Apply inside the popup - values are saved but form is not submitted.
     $applyBtn = $overlay->find('css', '.entity-ids-popup-apply');
     $this->assertNotNull($applyBtn, 'Apply button is present in the popup.');
-    $this->waitForPageReload();
     $applyBtn->click();
-    $this->awaitNewPage();
 
-    // Verify tags are rendered for all IDs (re-query from fresh DOM).
+    // Popup should close and tags should appear without page reload.
+    $this->assertFalse($overlay->isVisible(), 'Popup is hidden after clicking Apply.');
     $tags = $this->page->findAll('css', '.entity-ids-tags .entity-ids-tag');
-    $this->assertCount(4, $tags, 'Four ID tags are displayed after applying the filter.');
+    $this->assertCount(4, $tags, 'Four ID tags are displayed after applying the popup.');
+
+    // Now submit the form explicitly.
+    $this->submitExposedForm();
 
     // Verify the entity_ids query parameter is present in the URL.
     $this->assertStringContainsString('entity_ids=', $this->getSession()->getCurrentUrl());
@@ -109,25 +122,21 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
       $this->assertStringContainsString($title, $resultsText, "Result contains node title: $title");
     }
 
-    // Remove one tag - this triggers form.submit().
+    // Remove one tag - no form submission, just updates the tags in the DOM.
     $removeBtn = $this->page->find('css', '.entity-ids-tag-remove');
     $this->assertNotNull($removeBtn, 'Remove button exists on a tag.');
-    $this->waitForPageReload();
     $removeBtn->click();
-    $this->awaitNewPage();
 
-    // Verify only three tags remain (re-query from fresh DOM).
+    // Verify only three tags remain (no page reload).
     $tags = $this->page->findAll('css', '.entity-ids-tags .entity-ids-tag');
     $this->assertCount(3, $tags, 'Three ID tags remain after removing one.');
 
-    // Clear all tags - this triggers form.submit().
+    // Clear all tags - no form submission, just clears the tags.
     $clearAllBtn = $this->page->find('css', '.entity-ids-clear-all');
     $this->assertNotNull($clearAllBtn, 'Clear all button exists.');
-    $this->waitForPageReload();
     $clearAllBtn->click();
-    $this->awaitNewPage();
 
-    // Verify no tags remain (re-query from fresh DOM).
+    // Verify no tags remain (no page reload).
     $tags = $this->page->findAll('css', '.entity-ids-tags .entity-ids-tag');
     $this->assertCount(0, $tags, 'No tags remain after clearing all.');
   }
@@ -160,15 +169,17 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
     // Enter document IDs (comma-separated to test that format).
     $textarea->setValue(implode(', ', $documentIds));
 
-    // Click Apply - this triggers form.submit().
+    // Click Apply - values are saved but form is not submitted.
     $applyBtn = $overlay->find('css', '.entity-ids-popup-apply');
-    $this->waitForPageReload();
     $applyBtn->click();
-    $this->awaitNewPage();
 
-    // Verify four tags are rendered (re-query from fresh DOM).
+    // Popup should close and tags should appear without page reload.
+    $this->assertFalse($overlay->isVisible(), 'Popup is hidden after clicking Apply.');
     $tags = $this->page->findAll('css', '.entity-ids-tags .entity-ids-tag');
-    $this->assertCount(4, $tags, 'Four ID tags are displayed after applying the filter.');
+    $this->assertCount(4, $tags, 'Four ID tags are displayed after applying the popup.');
+
+    // Now submit the form explicitly.
+    $this->submitExposedForm();
 
     // Verify URL contains the filter parameter.
     $this->assertStringContainsString('entity_ids=', $this->getSession()->getCurrentUrl());
