@@ -4,18 +4,11 @@ namespace Drupal\mass_content\Drush\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Database\Database;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\Entity\RevisionableStorageInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\layout_paragraphs\LayoutParagraphsComponent;
 use Drupal\layout_paragraphs\LayoutParagraphsLayout;
-use Drupal\layout_paragraphs\LayoutParagraphsSection;
 use Drupal\mayflower\Helper;
-use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
