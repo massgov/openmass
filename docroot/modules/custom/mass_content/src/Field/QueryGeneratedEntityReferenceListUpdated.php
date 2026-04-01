@@ -20,7 +20,7 @@ abstract class QueryGeneratedEntityReferenceListUpdated extends EntityReferenceF
    *
    * @var int
    */
-  private $start = 0;
+  protected $start = 0;
 
   /**
    * The number of results.

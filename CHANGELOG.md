@@ -1,5 +1,39 @@
 
 
+## [0.473.0] - March 31, 2026
+
+### Changed
+  - DP-45201: API Service Card changes per request
+  - DP-45633: Update datatables libraries used with CSV tables module.
+  
+### Fixed
+  - DP-45454: Prevented empty contact email/online links from rendering and required the online email field in contact information.
+  - DP-45686: A11Y Fix form validation errors for screen reader.
+  - DP-45780: Related links on News pages now show up even if no media contact is added.
+  - DP-45855: Fixed footer link to eliminate redirect for A11Y link.
+  
+### Added
+  - DP-45721: Added news component to service pages.
+  
+
+
+## [0.472.0] - March 24, 2026
+
+### Fixed
+  - DP-39488: Improved print styles with better spacing and left alignment.
+  - DP-45563: Fixing report of documents without files
+  - DP-45715: Edit page header problem on pages in microsite.
+  - DP-45783: Fix TBD option visibility and file change reset for accessibility status field on inline entity forms.
+  
+### Changed
+  - DP-44787: Updated footer to align with latest design iteration.
+  - DP-45720: Removed character limit on rich text component in service section on service page
+  
+### Removed
+  - DP-45679: Removed unused field on info details page to pass params to querystring.
+  
+
+
 ## [0.471.0] - March 17, 2026
 
 ### Fixed
