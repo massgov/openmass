@@ -2,6 +2,13 @@
  * @file
  * Entity embed dialog alter
  *
+ * Why this exists:
+ * On Drupal 11, entity-embed dialog action buttons can lose Ajax bindings
+ * after dialog rebuilds, which can trigger full-page submit/redirect instead
+ * of staying in the modal flow. This script forces those actions through
+ * Drupal Ajax consistently for Next/Embed/Back interactions.
+ * Covered by: mass_content EntityEmbedDialogAjaxBridgeTest.
+ *
  * This also supports collapsible navigable is the 'is-collapsible' class is
  * added to the main element, and a target element is included.
  */
