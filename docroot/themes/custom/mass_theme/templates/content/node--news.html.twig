@@ -126,6 +126,8 @@
 
     {% set aside_has_content =
       (not is_blog_post and sidebar.contactList) or
+      sidebar.pressListing or
+      sidebar.eventListing or
       show_blogpost_author or is_news
     %}
 
