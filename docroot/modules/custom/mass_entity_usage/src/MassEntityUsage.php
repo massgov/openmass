@@ -4,7 +4,7 @@ namespace Drupal\mass_entity_usage;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\entity_usage\EntityUsage;
-use Drupal\mass_entity_usage\Controller\LocalTaskUsageController;
+use Drupal\mass_entity_usage\Controller\ListUsageController;
 
 /**
  * Extends the entity usage base class.
@@ -46,7 +46,8 @@ class MassEntityUsage extends EntityUsage implements MassEntityUsageInterface {
     ]);
 
     // Set a range and restrict usage records to unique sources.
-    $items_per_page = Controller\ListUsageController::ITEMS_PER_PAGE_DEFAULT;
+    $items_per_page = $this->configFactory->get('entity_usage.settings')
+      ->get('usage_controller_items_per_page') ?: ListUsageController::ITEMS_PER_PAGE_DEFAULT;
     $sub_query->range($offset, $items_per_page);
     $sub_query_results = $sub_query->execute()->fetchAllAssoc('type_id_key');
     $sub_query_keys = array_keys($sub_query_results);
