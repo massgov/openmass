@@ -324,7 +324,7 @@ jobs:
                 name: Run functional tests
                 command: |
                   TESTS_TO_RUN=$(phpunit -c /var/www/code/phpunit.xml.dist --list-test-files --colors=never | sed -n 's/^ - //p')
-                  echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -n1 -I{} sh -c 'f=\"\$1\"; phpunit \"\$f\" --log-junit \"/tmp/test-results/dtt/\${f##*/}.xml\"' _ {}" --verbose --split-by=timings
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -I{} sh -c 'f=\"\$1\"; phpunit \"\$f\" --log-junit \"/tmp/test-results/dtt/\${f##*/}.xml\"' _ {}" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
