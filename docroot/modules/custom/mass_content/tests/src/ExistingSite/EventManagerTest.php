@@ -26,7 +26,8 @@ class EventManagerTest extends MassExistingSiteBase {
       'type' => 'org_page',
     ]);
     $upcoming = new DrupalDateTime('now +1 day');
-    $upcoming = $upcoming->setTimeZone(new \DateTimeZone('UTC'));
+    $tz = new \DateTimeZone(date_default_timezone_get());
+    $upcoming = $upcoming->setTimeZone($tz);
     $past = new DrupalDateTime('now -1 day');
     $this->event1 = $this->createNode([
       'type' => 'event',
@@ -48,7 +49,8 @@ class EventManagerTest extends MassExistingSiteBase {
       'moderation_state' => 'published',
     ]);
     $upcomingSoon = new DrupalDateTime('now +2 hours');
-    $upcomingSoon = $upcomingSoon->setTimeZone(new \DateTimeZone('UTC'));
+    $tz = new \DateTimeZone(date_default_timezone_get());
+    $upcomingSoon = $upcomingSoon->setTimeZone($tz);
     $this->event3 = $this->createNode([
       'type' => 'event',
       'field_event_ref_parents' => [$this->org],

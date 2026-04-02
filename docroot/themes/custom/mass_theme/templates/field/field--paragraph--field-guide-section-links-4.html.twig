@@ -37,11 +37,11 @@
  */
 #}
 {% for item in items %}
-    {% include "@molecules/callout-link.twig" with {
-      "calloutLink": {
-        "text": item.content['#title'],
-        "href": item.content['#url_title'],
-        "info": ""
-      }
-    } %}
+    {{ include('@molecules/callout-link.twig', {
+      calloutLink: {
+        text: item.content['#title'],
+        href: item.content['#url_title'],
+        info: '',
+      },
+    }) }}
 {% endfor %}

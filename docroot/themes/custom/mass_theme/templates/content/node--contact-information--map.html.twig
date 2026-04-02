@@ -71,38 +71,38 @@
  *
  */
 #}
-{% include "@molecules/map-leaflet.twig" with {
-  "leafletMap": {
-    "isStatic": true,
-    "hideAttribution": true,
-    "link": {
-      "href": google_directions,
-      "text": "Get Directions",
-      "info": parent_label ~ " in Google Maps",
+{{ include('@molecules/map-leaflet.twig', {
+  leafletMap: {
+    isStatic: true,
+    hideAttribution: true,
+    link: {
+      href: google_directions,
+      text: 'Get Directions',
+      info: parent_label ~ ' in Google Maps',
     },
-    "map": {
-      "center": {
-        "lat": lat,
-        "lng": lon
+    map: {
+      center: {
+        lat: lat,
+        lng: lon,
       },
-      "zoom": "13"
+      zoom: '13',
     },
-    "markers": [
+    markers: [
       {
-        "position": {
-          "lat": lat,
-          "lng": lon
+        position: {
+          lat: lat,
+          lng: lon,
         },
-        "label": "A",
-        "infoWindow": {
-          "name": display_title,
-          "phone": phone,
-          "fax": fax,
-          "email": email,
-          "address": street_address,
-          "directions": google_directions
-        }
+        label: 'A',
+        infoWindow: {
+          name: display_title,
+          phone: phone,
+          fax: fax,
+          email: email,
+          address: street_address,
+          directions: google_directions,
+        },
       },
-    ]
-  }
-} %}
+    ],
+  },
+}) }}

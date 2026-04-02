@@ -37,20 +37,20 @@
  */
 #}
 
-{% embed "@organisms/by-author/link-list.twig" with {
-  "linkList": {
-    "stacked": true
-  }
+{% embed '@organisms/by-author/link-list.twig' with {
+  linkList: {
+    stacked: true,
+  },
 } %}
   {% block linkListDecorativeLink %}
     {% for item in items %}
       <li class="ma__link-list__item">
-        {% include "@atoms/decorative-link.twig" with {
+        {{ include('@atoms/decorative-link.twig', {
           decorativeLink: {
             text: item.content['#title'],
             href: item.content['#url'],
           },
-        } %}
+        }) }}
       </li>
     {% endfor %}
   {% endblock %}

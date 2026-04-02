@@ -36,10 +36,10 @@ if (!getenv('MASS_MAILCHIMP')) {
   $config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
 }
 // Development geocoder overrides:
-// Use the dummy "random" geocoder plugin in in development environments.
-// This avoids overwhelming our production credentials for things like tests.
-// Our production account is wired to [REDACTED]@gmail.com.
-$config['field.field.paragraph.address.field_geofield']['third_party_settings']['geocoder_field']['plugins'] = ['random'];
+// Use the "random" geocoder provider in non-Acquia environments so address
+// geocoding works without GEOCODER_OPENCAGE_API_KEY and does not consume
+// OpenCage quota. Production (Acquia) uses OpenCage via settings.php.
+$config['field.field.paragraph.address.field_geofield']['third_party_settings']['geocoder_field']['providers'] = ['random'];
 
 
 if (getenv('DOCKER_ENV')) {
