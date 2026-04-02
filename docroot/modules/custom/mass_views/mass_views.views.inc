@@ -146,6 +146,40 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds an entity IDs filter for nodes.
+  $data['node_field_data']['node_entity_ids_filter'] = [
+    'title' => t('Entity IDs Filter'),
+    'filter' => [
+      'title' => t('Entity IDs Filter'),
+      'help' => t('Filter nodes by a list of node IDs entered via a popup textarea.'),
+      'field' => 'nid',
+      'id' => 'mass_views_entity_ids_filter',
+    ],
+  ];
+
+  // Adds an entity IDs filter for node revisions (for views using
+  // node_field_revision as base table).
+  $data['node_field_revision']['node_revision_entity_ids_filter'] = [
+    'title' => t('Entity IDs Filter'),
+    'filter' => [
+      'title' => t('Entity IDs Filter'),
+      'help' => t('Filter node revisions by a list of node IDs entered via a popup textarea.'),
+      'field' => 'nid',
+      'id' => 'mass_views_entity_ids_filter',
+    ],
+  ];
+
+  // Adds an entity IDs filter for media.
+  $data['media_field_data']['media_entity_ids_filter'] = [
+    'title' => t('Entity IDs Filter'),
+    'filter' => [
+      'title' => t('Entity IDs Filter'),
+      'help' => t('Filter media by a list of media IDs entered via a popup textarea.'),
+      'field' => 'mid',
+      'id' => 'mass_views_entity_ids_filter',
+    ],
+  ];
+
   // Adds a linked from Parent field.
   $data['node_field_data']['linked_from_parent'] = [
     'title' => t('Linked from parent'),
