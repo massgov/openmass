@@ -51,6 +51,137 @@ function mass_views_views_data() {
       'id' => 'cl_manual_lists_downloads',
     ],
   ];
+
+  // Adds a CTE-backed mapping table: node nid -> top org nid.
+  $data['mass_views_node_top_org_map']['table'] = [
+    'group' => t('Mass Views (computed)'),
+    'base' => [
+      'field' => 'content_nid',
+      'title' => t('Computed top org map (nodes)'),
+      'help' => t('Mapping of content node nid to its computed top-level org nid (MySQL 8 recursive CTE view).'),
+    ],
+  ];
+
+  // Adds relationship: node_field_data -> node mapping table.
+  $data['node_field_data']['mass_views_node_top_org_map_rel'] = [
+    'title' => t('Computed top org mapping'),
+    'help' => t('Join to computed mapping (node nid → top-level org nid).'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Computed top org map'),
+      'base' => 'mass_views_node_top_org_map',
+      'base field' => 'content_nid',
+      'field' => 'nid',
+    ],
+  ];
+
+  // Adds relationship: node mapping table -> top org node.
+  $data['mass_views_node_top_org_map']['top_org_nid'] = [
+    'title' => t('Top org nid'),
+    'help' => t('Computed top-level org nid.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Top-level organization (computed)'),
+      'base' => 'node_field_data',
+      'base field' => 'nid',
+      'field' => 'top_org_nid',
+    ],
+    'argument' => [
+      'id' => 'standard',
+    ]
+  ];
+
+  // Adds a CTE-backed mapping table: media mid -> top org nid.
+  $data['mass_views_media_top_org_map']['table'] = [
+    'group' => t('Mass Views (computed)'),
+    'base' => [
+      'field' => 'media_mid',
+      'title' => t('Computed top org map (media)'),
+      'help' => t('Mapping of media mid to its computed top-level org nid (MySQL 8 recursive CTE view).'),
+    ],
+  ];
+
+  // Adds relationship: media_field_data -> media mapping table.
+  $data['media_field_data']['mass_views_media_top_org_map_rel'] = [
+    'title' => t('Computed top org mapping'),
+    'help' => t('Join to computed mapping (media mid → top-level org nid).'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Computed top org map'),
+      'base' => 'mass_views_media_top_org_map',
+      'base field' => 'media_mid',
+      'field' => 'mid',
+    ],
+  ];
+
+  // Adds relationship: media mapping table -> top org node.
+  $data['mass_views_media_top_org_map']['top_org_nid'] = [
+    'title' => t('Top org nid'),
+    'help' => t('Computed top-level org nid.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Top-level organization (computed)'),
+      'base' => 'node_field_data',
+      'base field' => 'nid',
+      'field' => 'top_org_nid',
+    ],
+    'argument' => [
+      'id' => 'standard',
+    ]
+  ];
+
+  // Adds a field for grouped count of PIDs from the ed11y_action table.
+  $data['ed11y_action']['pid_count'] = [
+    'title' => t('PID action count'),
+    'help' => t('Count of grouped PIDs from the ed11y_action table.'),
+    'field' => [
+      'id' => 'numeric',
+    ]
+  ];
+
+  // Adds relationship: ed11y_page -> ed11y_action table grouped by pid.
+  $data['ed11y_page']['ed11y_action_pid_grouped'] = [
+    'title' => t('Grouped Action PID'),
+    'help' => t('Join ed11y_action with ed11y_page table and count grouped PIDs.'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Grouped Action PID'),
+      'base' => 'ed11y_action',
+      'base field' => 'pid',
+      'field' => 'pid',
+      'join_id' => 'ed11y_pid_count_join',
+    ],
+  ];
+
+  // Adds a field for grouped count of PIDs from the ed11y_result table.
+  $data['ed11y_result']['pid_count'] = [
+    'title' => t('PID result count'),
+    'help' => t('Count of grouped PIDs from the ed11y_result table.'),
+    'field' => [
+      'id' => 'numeric',
+    ]
+  ];
+
+  // Adds relationship: ed11y_page -> ed11y_action table grouped by pid.
+  $data['ed11y_page']['ed11y_result_pid_grouped'] = [
+    'title' => t('Grouped Result PID'),
+    'help' => t('Join ed11y_result with ed11y_page table and count grouped PIDs.'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Grouped Result PID'),
+      'base' => 'ed11y_result',
+      'base field' => 'pid',
+      'field' => 'pid',
+      'join_id' => 'ed11y_pid_count_join',
+    ],
+  ];
+
   return $data;
 }
 
