@@ -1,5 +1,22 @@
 
 
+## [0.473.0] - March 31, 2026
+
+### Changed
+  - DP-45201: API Service Card changes per request
+  - DP-45633: Update datatables libraries used with CSV tables module.
+  
+### Fixed
+  - DP-45454: Prevented empty contact email/online links from rendering and required the online email field in contact information.
+  - DP-45686: A11Y Fix form validation errors for screen reader.
+  - DP-45780: Related links on News pages now show up even if no media contact is added.
+  - DP-45855: Fixed footer link to eliminate redirect for A11Y link.
+  
+### Added
+  - DP-45721: Added news component to service pages.
+  
+
+
 ## [0.472.0] - March 24, 2026
 
 ### Fixed
