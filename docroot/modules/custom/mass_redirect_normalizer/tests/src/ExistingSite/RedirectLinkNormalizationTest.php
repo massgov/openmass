@@ -482,4 +482,3 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
 }
-
