@@ -4,6 +4,8 @@ namespace Drupal\mass_redirect_normalizer;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\RevisionLogInterface;
+use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
 
@@ -70,14 +72,12 @@ class RedirectLinkNormalizationManager {
       return ['changed' => $changed, 'skipped' => FALSE];
     }
 
-    if (method_exists($entity, 'setNewRevision')) {
-      call_user_func([$entity, 'setNewRevision']);
+    if ($entity instanceof RevisionableInterface) {
+      $entity->setNewRevision();
     }
-    if (method_exists($entity, 'setRevisionLogMessage')) {
-      call_user_func([$entity, 'setRevisionLogMessage'], 'Revision created to normalize redirected internal links.');
-    }
-    if (method_exists($entity, 'setRevisionCreationTime')) {
-      call_user_func([$entity, 'setRevisionCreationTime'], $this->time->getRequestTime());
+    if ($entity instanceof RevisionLogInterface) {
+      $entity->setRevisionLogMessage('Revision created to normalize redirected internal links.');
+      $entity->setRevisionCreationTime($this->time->getRequestTime());
     }
     $entity->save();
 
