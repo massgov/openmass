@@ -1,0 +1,12 @@
+services:
+  mass_redirect_normalizer.resolver:
+    class: Drupal\mass_redirect_normalizer\RedirectLinkResolver
+    arguments: ['@entity_type.manager', '@path_alias.manager', '@request_stack', '@router.request_context']
+
+  mass_redirect_normalizer.manager:
+    class: Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager
+    arguments: ['@mass_redirect_normalizer.resolver', '@datetime.time']
+
+  Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager:
+    alias: mass_redirect_normalizer.manager
+

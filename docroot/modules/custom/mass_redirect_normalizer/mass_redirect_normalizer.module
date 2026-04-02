@@ -1,0 +1,19 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\NodeInterface;
+use Drupal\paragraphs\ParagraphInterface;
+
+/**
+ * Implements hook_entity_presave().
+ */
+function mass_redirect_normalizer_entity_presave(EntityInterface $entity) {
+  if (!$entity instanceof NodeInterface && !$entity instanceof ParagraphInterface) {
+    return;
+  }
+
+  /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+  $manager = \Drupal::service('mass_redirect_normalizer.manager');
+  // In presave we mutate field values only; parent entity handles persistence.
+  $manager->normalizeEntity($entity, FALSE);
+}
