@@ -3893,12 +3893,13 @@ function mass_theme_preprocess_menu(&$variables) {
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'utility') {
     // Get Theme settings languages if available.
     if (theme_get_setting('languages', 'mass_theme')) {
-      $variables['availableLanguages'] = array_map(static function (array $language) {
+      $variables['availableLanguages'] = [];
+      foreach (mass_theme_googletranslate_options_languages() as $language_code => $language) {
         $english = $language['english'];
         $native = $language['native'] ?? $english;
 
-        return $english === $native ? $english : $english . ' - ' . $native;
-      }, mass_theme_googletranslate_options_languages());
+        $variables['availableLanguages'][$language_code] = $english === $native ? $english : $english . ' - ' . $native;
+      }
       $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
     }
     foreach ($variables['items'] as &$item) {
