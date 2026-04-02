@@ -950,6 +950,7 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
     'field_featured_item_image' => '_mass_fields_image_widget_alt_help_text_process',
     'field_event_image' => '_mass_fields_event_image_widget_alt_help_text_process',
     'field_event_logo' => '_mass_fields_event_image_widget_alt_help_text_process',
+    'field_bg_narrow' => '_mass_fields_location_image_widget_alt_help_text_process',
   ];
 
   // Handle fields that have a direct mapping
@@ -970,6 +971,23 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
 }
 
 /**
+ * Implements hook_field_widget_single_element_WIDGET_TYPE_form_alter().
+ *
+ * Handles fields using the Image (Focal Point) widget, which has a different
+ * widget type ID ('image_focal_point') than the standard Image widget
+ * ('image_image') and therefore requires its own hook implementation.
+ */
+function mass_fields_field_widget_single_element_image_focal_point_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $field_process_map = [
+    'field_bg_narrow' => '_mass_fields_event_image_widget_alt_help_text_process',
+  ];
+
+  if (isset($field_process_map[$element['#field_name']])) {
+    $element['#process'][] = $field_process_map[$element['#field_name']];
+  }
+}
+
+/**
  * Process callback for microsite key message image field.
  */
 function _mass_fields_microsite_key_message_image_process($element, &$form_state, $form) {
@@ -983,7 +1001,7 @@ function _mass_fields_microsite_key_message_image_process($element, &$form_state
  */
 function _mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
   if (isset($element['alt'])) {
-    $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
+    $text = 'If the image conveys information that is not part of the link text, describe it here. Screen readers will read the alt text first, then the link text. If the image is purely decorative, leave it blank and check the "decorative" checkbox below.';
     $element['alt']['#description'] = new TranslatableMarkup($text);
   }
   return $element;
@@ -994,18 +1012,29 @@ function _mass_fields_image_widget_alt_help_text_process($element, &$form_state,
  */
 function _mass_fields_image_paragraph_widget_alt_help_text_process($element, &$form_state, $form) {
   if (isset($element['alt'])) {
-    $text = 'Alternative Text is read by screen readers and should be a concise description of the image’s purpose. If the image is purely decorative, leave this field blank.';
+    $text = 'Alternative Text is read by screen readers and should be a concise description of the image’s purpose. If the image is purely decorative, leave this field blank and check the "decorative" checkbox below.';
     $element['alt']['#description'] = new TranslatableMarkup($text);
   }
   return $element;
 }
 
 /**
- * Helper function to change alt text.
+ * Helper function to change alt text - event page.
  */
 function _mass_fields_event_image_widget_alt_help_text_process($element, &$form_state, $form) {
   if (isset($element['alt'])) {
-    $text = 'Enter a short description of the image to be used by screen readers ONLY if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank.';
+    $text = 'Enter a short description of the image to be used by screen readers only if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank and check the "decorative" checkbox below.';
+    $element['alt']['#description'] = new TranslatableMarkup($text);
+  }
+  return $element;
+}
+
+/**
+ * Helper function to change alt text - location page banner image.
+ */
+function _mass_fields_location_image_widget_alt_help_text_process($element, &$form_state, $form) {
+  if (isset($element['alt'])) {
+    $text = 'Enter a short description of the image to be used by screen readers only if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank and check the "decorative" checkbox below.';
     $element['alt']['#description'] = new TranslatableMarkup($text);
   }
   return $element;
