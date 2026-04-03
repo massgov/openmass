@@ -66,24 +66,24 @@
  * @see template_preprocess_node()
  */
 #}
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "level": "",
-    "emphasizedText": "",
-    "tags": "",
-    "contents": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph": {
-          "text": node.field_regulation_listing_desc.value ?: ""
-        }
-      }
-    }]
-  }
-} %}
+    level: '',
+    emphasizedText: '',
+    tags: '',
+    contents: [{
+      path: '@atoms/11-text/paragraph.twig',
+      data: {
+        paragraph: {
+          text: node.field_regulation_listing_desc.value ?: '',
+        },
+      },
+    }],
+  },
+}) }}

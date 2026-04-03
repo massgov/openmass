@@ -82,14 +82,9 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
     }
     if (array_key_exists('field_form_url', $fields) && !empty($fields['field_form_url'])) {
       $field_form_url = &$fields['field_form_url'];
+      $allowed_hostnames = \Drupal::config('mass_utility.settings')->get('forms_allowed_hostnames') ?? [];
       $field_form_url->addConstraint('GravityForm', [
-        'allowedValues' => [
-          '/^mass-forms\.ddev\.site$/',
-          '/^forms\.mass\.local$/',
-          '/^forms\.mass\.gov$/',
-          '/^[a-zA-Z0-9\-]+-mass-forms\.pantheonsite\.io$/',
-          '/^[a-zA-Z0-9\-]+\.forms\.mass\.gov$/',
-        ]
+        'allowedValues' => $allowed_hostnames,
       ]);
     }
 

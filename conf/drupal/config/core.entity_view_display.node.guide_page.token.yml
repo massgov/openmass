@@ -26,6 +26,7 @@ dependencies:
   module:
     - entity_reference_revisions
     - image
+    - mass_schema_metatag
     - user
 id: node.guide_page.token
 targetEntityType: node
@@ -51,9 +52,11 @@ content:
     weight: 2
     region: content
   field_guide_page_related_guides:
-    type: entity_reference_entity_id
+    type: mass_entity_reference_absolute_urls
     label: above
-    settings: {  }
+    settings:
+      link_template: canonical
+      absolute: true
     third_party_settings: {  }
     weight: 4
     region: content

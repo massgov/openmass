@@ -1,15 +1,15 @@
 {% if paragraph.field_hide_heading is not defined or paragraph.field_hide_heading.0.value == 0 %}
   {% set heading = {
-    "richText": {
-      "compHeading": {
-        "title": (content.field_section_long_form_heading|field_value)
-      }
-    }
+    richText: {
+      compHeading: {
+        title: (content.field_section_long_form_heading|field_value),
+      },
+    },
   } %}
 {% else %}
   {% set heading = {} %}
 {% endif %}
-{% embed "@organisms/by-author/rich-text.twig" with heading %}
+{% embed '@organisms/by-author/rich-text.twig' with heading %}
   {% block rteElements %}
     {{ content.field_section_long_form_content }}
   {% endblock %}

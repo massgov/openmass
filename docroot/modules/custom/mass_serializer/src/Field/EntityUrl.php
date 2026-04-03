@@ -37,7 +37,7 @@ class EntityUrl extends FieldItemList {
   /**
    * {@inheritdoc}
    */
-  public function getIterator() {
+  public function getIterator(): \ArrayIterator {
     $this->initList();
 
     return parent::getIterator();

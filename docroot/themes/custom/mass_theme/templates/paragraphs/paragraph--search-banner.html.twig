@@ -42,30 +42,30 @@
 
 
 #}
-{% set search_id = "SECTION_" ~ paragraph.id() %}
-{% set search_input_id = search_id ~ "_searchfield" %}
-{% include "@organisms/by-author/search-banner.twig" with {
-  "searchBanner": {
-    "id": search_id,
-    "pageIntro": {
-      "pageTitle": {
-        "text": paragraph.field_main_heading.value
+{% set search_id = 'SECTION_' ~ paragraph.id() %}
+{% set search_input_id = search_id ~ '_searchfield' %}
+{{ include('@organisms/by-author/search-banner.twig', {
+  searchBanner: {
+    id: search_id,
+    pageIntro: {
+      pageTitle: {
+        text: paragraph.field_main_heading.value,
       },
-      "subTitle": paragraph.field_sub_heading.value
+      subTitle: paragraph.field_sub_heading.value,
     },
-    "searchBannerForm": {
-      "action": paragraph.field_url.uri,
-      "inputText": {
-        "labelText": "Search terms",
-        "required": false,
-        "id": search_input_id,
-        "name": paragraph.field_search_querystring.value,
-        "type": "search",
-        "placeholder": "Search Mass.gov",
-        "mode": "search",
-        "autocomplete": "off"
+    searchBannerForm: {
+      action: paragraph.field_url.uri,
+      inputText: {
+        labelText: 'Search terms',
+        required: false,
+        id: search_input_id,
+        name: paragraph.field_search_querystring.value,
+        type: 'search',
+        placeholder: 'Search Mass.gov',
+        mode: 'search',
+        autocomplete: 'off',
       },
-      "buttonText": paragraph.field_search_button_label.value
-    }
-  }
-} %}
+      buttonText: paragraph.field_search_button_label.value,
+    },
+  },
+}) }}

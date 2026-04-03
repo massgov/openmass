@@ -4,17 +4,11 @@ namespace Drupal\mass_content\Drush\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Database\Database;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\layout_paragraphs\LayoutParagraphsComponent;
 use Drupal\layout_paragraphs\LayoutParagraphsLayout;
-use Drupal\layout_paragraphs\LayoutParagraphsSection;
 use Drupal\mayflower\Helper;
-use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -767,6 +761,7 @@ class MassContentCommands extends DrushCommands {
    *   The updated entity with its service sections restructured for Layout Paragraphs.
    */
   public function serviceSectionLayoutParagraphHelper($entity) {
+    /** @var \Drupal\Core\Entity\RevisionableStorageInterface $paragraph_storage */
     $paragraph_storage = $this->entityTypeManager->getStorage('paragraph');
     $paragraph_field = $entity->get('field_service_sections');
     $layout = new LayoutParagraphsLayout($paragraph_field);

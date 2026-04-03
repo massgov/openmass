@@ -38,6 +38,7 @@ dependencies:
   module:
     - entity_reference_revisions
     - link
+    - mass_schema_metatag
     - text
     - user
 id: node.how_to_page.token
@@ -75,14 +76,12 @@ content:
     weight: 3
     region: content
   field_how_to_link_1:
-    type: link_separate
+    type: mass_link_name_url_objects
     label: above
     settings:
-      trim_length: null
-      url_only: false
-      url_plain: false
-      rel: '0'
-      target: '0'
+      absolute: true
+      name_source: title
+      skip_empty_name: false
     third_party_settings: {  }
     weight: 5
     region: content
