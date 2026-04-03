@@ -6,8 +6,8 @@
     var language = translations[selectedLanguage] || fallback;
     var title = wrapper.querySelector('.ma__modal-title');
     var disclaimer = wrapper.querySelector('#ma__translate-help p');
-    var translateButton = wrapper.querySelector('#ma__translate-apply');
-    var revertButton = wrapper.querySelector('#ma__translate-reset');
+    var translateAction = wrapper.querySelector('#ma__translate-apply');
+    var showOriginalAction = wrapper.querySelector('#ma__translate-reset');
 
     if (title && language.select_language) {
       title.textContent = language.select_language;
@@ -19,14 +19,14 @@
       disclaimer.lang = selectedLanguage;
     }
 
-    if (translateButton && language.translate_button) {
-      translateButton.textContent = language.translate_button;
-      translateButton.lang = selectedLanguage;
+    if (translateAction && language.translate_action) {
+      translateAction.textContent = language.translate_action;
+      translateAction.lang = selectedLanguage;
     }
 
-    if (revertButton && language.revert_button) {
-      revertButton.textContent = language.revert_button;
-      revertButton.lang = selectedLanguage;
+    if (showOriginalAction && language.show_original_action) {
+      showOriginalAction.textContent = language.show_original_action;
+      showOriginalAction.lang = selectedLanguage;
     }
   }
 
