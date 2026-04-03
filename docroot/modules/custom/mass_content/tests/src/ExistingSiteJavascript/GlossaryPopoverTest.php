@@ -248,4 +248,145 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertNotNull($dialog);
   }
 
+  /**
+   * Test that overlapping glossary terms prefer the longer match.
+   */
+  public function testGlossaryPopoverOverlappingTermsUseLongestMatch() {
+
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Overlap Glossary',
+      'field_terms' => [
+        [
+          'key' => 'Audit',
+          'value' => 'Short definition',
+        ],
+        [
+          'key' => 'Audit Report',
+          'value' => 'Long definition',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Overlap Test Service Page',
+      'field_service_body' => 'The audit reports were reviewed.',
+      'moderation_state' => 'published',
+    ]);
+
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+
+    $page->waitFor(10, function () use ($page) {
+      return count($page->findAll('css', '.popover__trigger')) === 1;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(1, $triggers, 'Expected only one glossary trigger for overlapping glossary terms.');
+    $this->assertSame('audit reports', $triggers[0]->getText());
+
+    $dialog = $page->find('css', '.popover__dialog');
+    $this->assertNotNull($dialog);
+
+    $triggers[0]->click();
+    $this->assertTrue($dialog->isVisible());
+    $this->assertSession()->elementTextContains('css', '.popover__dialog', 'Long definition');
+    $this->assertSession()->pageTextContains('The audit reports were reviewed.');
+    $this->assertSession()->pageTextNotContains('audit reportsaudits');
+  }
+
+  /**
+   * Test that shorter glossary terms still match elsewhere on the page.
+   */
+  public function testGlossaryPopoverSeparateTermsStillMatch() {
+
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Separate Overlap Glossary',
+      'field_terms' => [
+        [
+          'key' => 'Audit',
+          'value' => 'Short definition',
+        ],
+        [
+          'key' => 'Audit Report',
+          'value' => 'Long definition',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Separate Overlap Test Service Page',
+      'field_service_body' => 'The audit reports were reviewed. Another audit happened later.',
+      'moderation_state' => 'published',
+    ]);
+
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+
+    $page->waitFor(10, function () use ($page) {
+      return count($page->findAll('css', '.popover__trigger')) === 2;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(2, $triggers, 'Expected both glossary triggers when terms are used separately.');
+    $this->assertSame('audit reports', $triggers[0]->getText());
+    $this->assertSame('audit', $triggers[1]->getText());
+    $this->assertSession()->pageTextContains('The audit reports were reviewed. Another audit happened later.');
+  }
+
+  /**
+   * Test that each glossary term is only highlighted once per page.
+   */
+  public function testGlossaryPopoverOnlyHighlightsFirstOccurrencePerTerm() {
+
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Single Highlight Glossary',
+      'field_terms' => [
+        [
+          'key' => 'Audit',
+          'value' => 'Short definition',
+        ],
+        [
+          'key' => 'Audit Report',
+          'value' => 'Long definition',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Single Highlight Test Service Page',
+      'field_service_body' => 'The audit reports were reviewed. Another audit happened later. A final audit report was archived.',
+      'moderation_state' => 'published',
+    ]);
+
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+
+    $page->waitFor(10, function () use ($page) {
+      return count($page->findAll('css', '.popover__trigger')) === 2;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(2, $triggers, 'Expected one highlight per glossary term.');
+    $this->assertSame('audit reports', $triggers[0]->getText());
+    $this->assertSame('audit', $triggers[1]->getText());
+  }
+
 }

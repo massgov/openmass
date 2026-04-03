@@ -109,6 +109,7 @@
   function findMatches(context) {
     const matches = [];
     const mainContent = document.querySelector(mainContentSelector);
+    const foundSearchStrings = new Set();
 
     // Use cached mainContent
     if (!mainContent) {
@@ -141,25 +142,31 @@
     let node = walker.nextNode();
     while (node) {
       const text = node.textContent;
+      const nodeMatches = [];
 
-      // Quit looping over nodes if we've used all the terms.
-      if (!searchRegexes.size) {
-        break;
-      }
-
-      // Loop over unfound terms
+      // Check all glossary terms against each eligible text node.
       for (const [searchString, searchRegex] of searchRegexes) {
-        if (text.match(searchRegex)) {
-          matches.push({
-            node,
-            searchString,
-            searchRegex
-          });
-
-          // Avoid searching for this term again.
-          searchRegexes.delete(searchString);
+        if (foundSearchStrings.has(searchString)) {
+          continue;
         }
+
+        nodeMatches.push(...findMatchPositions(text, searchRegex, searchString));
       }
+
+      const nonOverlappingMatches = filterOverlappingMatches(nodeMatches);
+
+      nonOverlappingMatches.forEach(match => {
+        if (foundSearchStrings.has(match.searchString)) {
+          return;
+        }
+
+        matches.push({
+          node,
+          ...match
+        });
+        foundSearchStrings.add(match.searchString);
+      });
+
       node = walker.nextNode();
     }
 
@@ -212,8 +219,62 @@
   }
 
   /**
+   * Filter out overlapping matches, preferring the longest match.
+   * @param {Array<{start: number, end: number, matchText: string, searchString: string}>} matchPositions - Candidate matches.
+   * @return {Array<{start: number, end: number, matchText: string, searchString: string}>} Non-overlapping matches.
+   */
+  function filterOverlappingMatches(matchPositions) {
+    const sortedMatches = [...matchPositions].sort((a, b) => {
+      if (a.start !== b.start) {
+        return a.start - b.start;
+      }
+
+      return (b.end - b.start) - (a.end - a.start);
+    });
+    const filteredMatches = [];
+
+    sortedMatches.forEach(match => {
+      const overlapsExistingMatch = filteredMatches.some(filteredMatch => {
+        return match.start < filteredMatch.end && match.end > filteredMatch.start;
+      });
+
+      if (!overlapsExistingMatch) {
+        filteredMatches.push(match);
+      }
+    });
+
+    return filteredMatches;
+  }
+
+  /**
+   * Find every occurrence of a glossary term within a text node.
+   * @param {string} text - Text node content.
+   * @param {RegExp} searchRegex - Regex used to find glossary terms.
+   * @param {string} searchString - Glossary term label.
+   * @return {Array<{start: number, end: number, matchText: string, searchString: string}>} Matches in the text.
+   */
+  function findMatchPositions(text, searchRegex, searchString) {
+    const globalRegex = new RegExp(searchRegex.source, 'gi');
+    const matches = [];
+    let match = globalRegex.exec(text);
+
+    while (match) {
+      matches.push({
+        start: match.index,
+        end: match.index + match[0].length,
+        matchText: match[0],
+        searchString
+      });
+
+      match = globalRegex.exec(text);
+    }
+
+    return matches;
+  }
+
+  /**
    * Highlight matches in the text.
-   * @param {Array<{node: Node, searchRegex: RegExp, searchString: string}>} matches - Array of matches containing text nodes, search regex and search string
+   * @param {Array<{node: Node, start: number, end: number, matchText: string, searchString: string}>} matches - Array of matches containing text nodes and match positions.
    * @return {void}
    */
   function highlightMatches(matches) {
@@ -236,40 +297,11 @@
       let text = node.textContent;
       let currentNode = node;
 
-      // Create a set to track processed search strings for THIS node only
-      const processedSearchStrings = new Set();
-
-      // Find all matches and their positions first
-      const matchPositions = [];
-
-      nodeMatches.forEach(({searchRegex, searchString}) => {
-        // Skip if this search string has already been processed for this node
-        if (processedSearchStrings.has(searchString)) {
-          return;
-        }
-
-        // Reset regex lastIndex
-        searchRegex.lastIndex = 0;
-
-        const match = searchRegex.exec(text);
-        if (match) {
-          matchPositions.push({
-            start: match.index,
-            end: match.index + match[0].length,
-            matchText: match[0],
-            searchString: searchString
-          });
-
-          // Mark this search string as processed for this node only
-          processedSearchStrings.add(searchString);
-        }
-      });
-
       // Sort match positions by their start index (descending)
-      matchPositions.sort((a, b) => b.start - a.start);
+      nodeMatches.sort((a, b) => b.start - a.start);
 
       // Process matches from right to left to avoid position shifts
-      matchPositions.forEach(({start, end, matchText, searchString}) => {
+      nodeMatches.forEach(({start, end, matchText, searchString}) => {
         // Create text nodes for before and after the match
         const beforeText = document.createTextNode(text.substring(0, start));
         const afterText = document.createTextNode(text.substring(end));
