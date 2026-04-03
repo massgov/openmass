@@ -1,0 +1,473 @@
+diff --git a/media_entity_download.info.yml b/media_entity_download.info.yml
+index ad06512..069fe5b 100644
+--- a/media_entity_download.info.yml
++++ b/media_entity_download.info.yml
+@@ -3,5 +3,7 @@ type: module
+ description: This module provides a route for linking to media assets by URI for users to download without worrying about the actual file path. The result is a permanent URL that doesn't change, unlike file field URLs that do.
+ core_version_requirement: ^9 || ^10 || ^11
+ package: Media
++test_dependencies:
++  - entity_usage
+ dependencies:
+   - drupal:media
+diff --git a/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php b/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php
+new file mode 100644
+index 0000000..070c97f
+--- /dev/null
++++ b/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php
+@@ -0,0 +1,185 @@
++<?php
++
++namespace Drupal\media_entity_download\Plugin\EntityUsage\Track;
++
++use Drupal\Component\Utility\Html;
++use Drupal\Core\Url;
++use Drupal\link\LinkItemInterface;
++use Drupal\Core\Field\FieldItemInterface;
++use Drupal\entity_usage\Plugin\EntityUsage\Track\HtmlLink;
++
++/**
++ * Tracks usage of entities referenced from regular HTML Links.
++ *
++ * @EntityUsageTrack(
++ *   id = "media_entity_download_html_link",
++ *   label = @Translation("Meida Entity Download HTML links"),
++ *   description = @Translation("Tracks media relationships created with standard links inside formatted text fields."),
++ *   field_types = {"link", "text", "text_long", "text_with_summary"},
++ * )
++ */
++class MediaEntityDownloadHtmlLink extends HtmlLink {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function parseEntitiesFromText($text) {
++    $dom = Html::load($text);
++    $xpath = new \DOMXPath($dom);
++    $entities = [];
++
++    // Loop trough all the <a> elements that don't have the LinkIt attributes.
++    $xpath_query = "//a[@href != '']";
++    foreach ($xpath->query($xpath_query) as $element) {
++      /** @var \DOMElement $element */
++      try {
++        // Get the href value of the <a> element.
++        $href = $element->getAttribute('href');
++
++        $entity = $this->findEntityByUrlString($href);
++        if ($entity) {
++          if ($element->hasAttribute('data-entity-uuid')) {
++            // Normally the Linkit plugin handles when a element has this
++            // attribute, but sometimes users may change the HREF manually and
++            // leave behind the wrong UUID.
++            $data_uuid = $element->getAttribute('data-entity-uuid');
++            // If the UUID is the same as found in HREF, then skip it because
++            // it's LinkIt's job to register this usage.
++            if ($data_uuid === $entity->uuid()) {
++              continue;
++            }
++          }
++          $entities[$entity->uuid()] = $entity->getEntityTypeId();
++        }
++        else {
++          // If no direct entity was found, handle cases where the URL might be a redirect.
++          // Remove the starting slash from the href, as the redirect lookup may require
++          // a relative path without a leading slash.
++          $href = ltrim($href, '/');
++
++          // Find the final destination URL if this URL is a part of a redirect chain.
++          $final_url = $this->findFinalRedirect($href);
++
++          // If no final redirect URL is found, skip further processing for this element.
++          if ($final_url == NULL) {
++            continue;
++          }
++
++          // Convert the final URL to a Drupal URL object for easier handling of routes and parameters.
++          $url = URL::fromUri($final_url);
++
++          // If the URL was successfully converted, proceed with further checks.
++          if ($url) {
++            // Check if the final URL matches the media download route.
++            if ($url->getRouteName() == 'media_entity_download.download') {
++
++              // Attempt to retrieve the media ID from the route parameters.
++              if ($media_id = $url->getRouteParameters()['media']) {
++
++                // Load the media entity using the extracted media ID.
++                if ($entity = $this->entityTypeManager->getStorage('media')->load($media_id)) {
++
++                  // Add the media entity UUID and its type to the entities array.
++                  $entities[$entity->uuid()] = $entity->getEntityTypeId();
++                }
++              }
++            }
++          }
++        }
++      }
++      catch (\Exception $e) {
++        // Do nothing.
++      }
++    }
++    return $entities;
++  }
++
++  /**
++   * Finds the final redirect destination for a given URI.
++   *
++   * This function recursively checks for redirects to ensure it reaches
++   * the last destination in a chain of redirects, if multiple redirects
++   * exist. It queries the redirect table for each URI until a final
++   * destination (without further redirects) is found.
++   *
++   * @param string $uri
++   *   The URI path for which to find the final redirect destination.
++   *
++   * @return string|null
++   *   The final redirect URI if found, or NULL if no redirect exists.
++   * @throws \Exception
++   */
++  public function findFinalRedirect($uri) {
++    // Query the database to get the corresponding redirect source for the given URI.
++    $query = \Drupal::database()->select('redirect', 'r')
++      ->fields('r', ['redirect_redirect__uri'])
++      ->condition('r.redirect_source__path', $uri)
++      ->execute()
++      ->fetchField();
++    // If a redirect is found, check if it points to another redirect.
++    if ($query) {
++      // Recursively call the function to follow the redirect chain.
++      $next_redirect = $this->findFinalRedirect($query);
++
++      // If another redirect was found, return it. Otherwise, return the current one.
++      return $next_redirect ?: $query;
++    }
++
++    // If no further redirects are found, return null.
++    return NULL;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function getTargetEntities(FieldItemInterface $item): array {
++    if ($item instanceof  LinkItemInterface) {
++      /** @var \Drupal\link\LinkItemInterface $item */
++      if ($item->isExternal()) {
++        $url = $item->getUrl()->toString();
++        $entity = $this->findEntityByUrlString($url);
++      }
++      else {
++        $url = $item->getUrl();
++        $entity = $this->findEntityByRoutedUrl($url);
++      }
++
++      if (!$entity) {
++        return [];
++      }
++
++      return [$entity->getEntityTypeId() . '|' . $entity->id()];
++    }
++    else {
++      return parent::getTargetEntities($item);
++    }
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function findEntityByRoutedUrl($url): ?\Drupal\Core\Entity\EntityInterface {
++    if (!$url || !$url->isRouted()) {
++      return NULL;
++    }
++
++    $entity = NULL;
++
++    $target_id = NULL;
++    $target_type = 'media';
++
++    $entity_pattern = '/^media_entity_download\.download$/';
++
++    if (preg_match($entity_pattern, $url->getRouteName(), $matches)) {
++      $route_parameters = $url->getRouteParameters();
++      $target_id = $route_parameters[$target_type];
++    }
++
++    if ($target_type && $target_id) {
++      $entity = $this->entityTypeManager->getStorage($target_type)->load($target_id);
++    }
++
++    return $entity;
++  }
++
++}
+diff --git a/tests/src/Functional/MediaEntityDownloadHtmlLinkTest.php b/tests/src/Functional/MediaEntityDownloadHtmlLinkTest.php
+new file mode 100644
+index 0000000..24476ba
+--- /dev/null
++++ b/tests/src/Functional/MediaEntityDownloadHtmlLinkTest.php
+@@ -0,0 +1,264 @@
++<?php
++
++namespace Drupal\Tests\entity_media_download\FunctionalJavascript;
++
++use Drupal\node\Entity\Node;
++use Drupal\file\Entity\File;
++use Drupal\media\Entity\Media;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++use Drupal\Tests\BrowserTestBase;
++use Drupal\Tests\media\Traits\MediaTypeCreationTrait;
++use Drupal\Tests\entity_usage\Traits\EntityUsageLastEntityQueryTrait;
++
++/**
++ * Test to make sure entity_usage module can correctly track
++ * media_entity_download link.
++ *
++ * @group media_entity_download
++ */
++class MediaEntityDownloadHtmlLinkTest extends BrowserTestBase {
++
++  use MediaTypeCreationTrait;
++
++  use StringTranslationTrait;
++
++  use EntityUsageLastEntityQueryTrait;
++
++  protected static $modules = [
++    'node',
++    'field_ui',
++    'system',
++    'text',
++    'path',
++    'language',
++    'entity_usage',
++    'entity_usage_test',
++    'media',
++    'media_entity_download',
++  ];
++
++  /**
++   * {@inheritdoc}
++   */
++  protected $defaultTheme = 'stark';
++
++  /**
++   * The test media type.
++   *
++   * @var \Drupal\media\MediaTypeInterface
++   */
++  protected $testMediaType;
++
++  /**
++   * {@inheritdoc}
++   */
++  public function setUp() {
++    parent::setUp();
++
++    $this->user = $this->drupalCreateUser([
++      'access administration pages',
++      'administer languages',
++      'administer nodes',
++      'administer node fields',
++      'administer node display',
++      'bypass node access',
++      'create url aliases',
++      'use text format eu_test_text_format',
++      'view the administration theme',
++    ]);
++    $this->drupalLogin($this->user);
++
++    // Create a test media type.
++    $this->testMediaType = $this->createMediaType('image');
++  }
++
++  /**
++   * Test entity usage tracking of media entity download path
++   */
++  public function testMediaDownAliasAsDownloadLink() {
++    // Make sure current langcode is 'en'
++    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
++    $this->assertEquals($language, 'en');
++
++    /** @var \Drupal\entity_usage\EntityUsage $usage_service */
++    $usage_service = \Drupal::service('entity_usage.usage');
++
++    // Create a file to upload
++    $file = File::create([
++      'uri' => 'public://star.png',
++    ]);
++    $file->setPermanent();
++    $file->save();
++
++    // Create a test media entity
++    $media = Media::create([
++      'bundle' => $this->testMediaType->id(),
++      'field_media_image' => [
++        'target_id' => $file->id(),
++      ],
++    ]);
++
++    $media->save();
++
++    // Add a path alias for media entity download link
++    $alias_url = '/i-am-an-alias';
++    \Drupal::service('path.alias_storage')->save('/media/' . $media->id() . '/download', $alias_url, 'en');
++
++    // Use the media download alias as normal download link
++    $embedded_text = '<p>foo <a href="' . $alias_url . '">linked text</a> bar</p>';
++    $node = Node::create([
++      'type' => 'eu_test_ct',
++      'title' => 'Node',
++      'field_eu_test_rich_text' => [
++        'value' => $embedded_text,
++        'format' => 'eu_test_text_format',
++      ],
++    ]);
++    $node->save();
++
++    // Check the usage tracking as expected
++    $usage = $usage_service->listSources($media);
++    $expected = [
++      'node' => [
++        $node->id() => [
++          [
++            'source_langcode' => $node->language()->getId(),
++            'source_vid' => $node->getRevisionId(),
++            'method' => 'media_entity_download_html_link',
++            'field_name' => 'field_eu_test_rich_text',
++            'count' => 1,
++          ],
++        ],
++      ],
++    ];
++    $this->assertEquals($expected, $usage);
++  }
++
++  /**
++   * Test entity usage tracking of media entity download path with langcode prefixed
++   */
++  public function testMediaDownloadAliasWithLanguagePrefix() {
++    // Add a another language
++    $this->submitForm('admin/config/regional/language/add', ['predefined_langcode' => 'de'], $this->t('Add language'));
++
++    // In order to reflect the changes for a multilingual site in the container
++    // we have to rebuild it.
++    $this->rebuildContainer();
++
++    // Make sure current langcode is 'en'
++    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
++    $this->assertEquals($language, 'en');
++
++    // Set correct language negotiation url configuration
++    $detection = [
++      'language_interface[enabled][language-url]' => 1,
++    ];
++    $detection_url = [
++      'language_negotiation_url_part' => 'path_prefix',
++      'prefix[en]' => '',
++      'prefix[de]' => 'de',
++    ];
++    $this->submitForm('admin/config/regional/language/detection', $detection, $this->t('Save settings'));
++    $this->submitForm('admin/config/regional/language/detection/url', $detection_url, $this->t('Save configuration'));
++
++    // Make sure the language negotiation url prefixes are correct
++    $config = $this->config('language.negotiation');
++    $this->assertEquals($config->get('url.prefixes.en'), '');
++    $this->assertEquals($config->get('url.prefixes.de'), 'de');
++
++    /** @var \Drupal\entity_usage\EntityUsage $usage_service */
++    $usage_service = \Drupal::service('entity_usage.usage');
++
++    // Create a file to upload
++    $file = File::create([
++      'uri' => 'public://star.png',
++    ]);
++    $file->setPermanent();
++    $file->save();
++
++    // Create 1st test media entity
++    $media1 = Media::create([
++      'bundle' => $this->testMediaType->id(),
++      'field_media_image' => [
++        'target_id' => $file->id(),
++      ],
++    ]);
++    $media1->save();
++
++    // Add a path alias for en media entity download
++    $alias_url = '/i-am-an-alias';
++    \Drupal::service('path.alias_storage')->save('/media/' . $media1->id() . '/download', $alias_url, 'en');
++
++    // Use the media entity download alias as normal link
++    $embedded_text = '<p>foo <a href="' . $alias_url . '">linked text</a> bar</p>';
++    $node1 = Node::create([
++      'type' => 'eu_test_ct',
++      'title' => 'Node',
++      'field_eu_test_rich_text' => [
++        'value' => $embedded_text,
++        'format' => 'eu_test_text_format',
++      ],
++    ]);
++    $node1->save();
++
++    // Check the usage tracking as expected
++    $usage = $usage_service->listSources($media1);
++    $expected = [
++      'node' => [
++        $node1->id() => [
++          [
++            'source_langcode' => $node1->language()->getId(),
++            'source_vid' => $node1->getRevisionId(),
++            'method' => 'media_entity_download_html_link',
++            'field_name' => 'field_eu_test_rich_text',
++            'count' => 1,
++          ],
++        ],
++      ],
++    ];
++    $this->assertEquals($expected, $usage);
++
++    // Create 2nd test media entity
++    $media2 = Media::create([
++      'bundle' => $this->testMediaType->id(),
++      'field_media_image' => [
++        'target_id' => $file->id(),
++      ],
++    ]);
++    $media2->save();
++
++    // Add same path alias for 2nd media entity download
++    // But with a different langcode
++    $alias_url = '/i-am-an-alias';
++    \Drupal::service('path.alias_storage')->save('/media/' . $media2->id() . '/download', $alias_url, 'de');
++
++    // Use the media entity download alias as normal link
++    $embedded_text = '<p>foo <a href="/de' . $alias_url . '">linked text</a> bar</p>';
++    $node2 = Node::create([
++      'type' => 'eu_test_ct',
++      'title' => 'Node',
++      'field_eu_test_rich_text' => [
++        'value' => $embedded_text,
++        'format' => 'eu_test_text_format',
++      ],
++    ]);
++    $node2->save();
++
++    // Check the usage tracking as expected
++    $usage = $usage_service->listSources($media2);
++    $expected = [
++      'node' => [
++        $node2->id() => [
++          [
++            'source_langcode' => $node2->language()->getId(),
++            'source_vid' => $node2->getRevisionId(),
++            'method' => 'media_entity_download_html_link',
++            'field_name' => 'field_eu_test_rich_text',
++            'count' => 1,
++          ],
++        ],
++      ],
++    ];
++    $this->assertEquals($expected, $usage);
++  }
++}

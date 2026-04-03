@@ -735,6 +735,9 @@ function mass_theme_preprocess_node_location(&$variables) {
     // Get the page title for title context.
     $page_title = $node->getTitle();
 
+    // Get the value of field_customize_header_text or set to FALSE by default.
+    $field_customize_header_text = ($node->hasField('field_customize_header_text') && intval($node->field_customize_header_text->value) == 1) ? TRUE : FALSE;
+
     if (Helper::isFieldPopulated($node, 'field_location_type')) {
       $locationType = $node->field_location_type->value;
     }
@@ -983,7 +986,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $facilities_title = t('Facilities');
+      $facilities_title = ($field_customize_header_text && $node->hasField('field_facilities_header') && !$node->field_facilities_header->isEmpty()) ? $node->field_facilities_header->value : t('Facilities');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1011,7 +1014,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $services_title = t('Services');
+      $services_title = ($field_customize_header_text && $node->hasField('field_services_header') && !$node->field_services_header->isEmpty()) ? $node->field_services_header->value : t('Services');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1038,7 +1041,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $accessibility_title = t('Accessibility');
+      $accessibility_title = ($field_customize_header_text && $node->hasField('field_accessibility_header') && !$node->field_accessibility_header->isEmpty()) ? $node->field_accessibility_header->value : t('Accessibility');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1065,7 +1068,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $restrictions_title = t('Restrictions');
+      $restrictions_title = ($field_customize_header_text && $node->hasField('field_restrictions_header') && !$node->field_restrictions_header->isEmpty()) ? $node->field_restrictions_header->value : t('Restrictions');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1092,7 +1095,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $moreInfo_title = t('More info');
+      $moreInfo_title = ($field_customize_header_text && $node->hasField('field_more_info_header') && !$node->field_more_info_header->isEmpty()) ? $node->field_more_info_header->value : t('More info');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -4600,6 +4603,7 @@ function mass_theme_preprocess_page(&$variables) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealBlackImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-black.png');
 
   if ($route_name === 'view.collection_all.page_all') {
     $cache_tags = [];
@@ -5305,6 +5309,15 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
         ->applyTo($variables);
     }
   }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess logic for the service_news paragraph.
+ */
+function mass_theme_preprocess_paragraph__service_news(&$variables) {
+  mass_theme_preprocess_paragraph__org_news($variables);
 }
 
 /**
@@ -7325,7 +7338,24 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
+    // Avoid duplicating subsequent links if preprocessing runs multiple times
+    // on the same paragraph object within a request.
+    $first_paragraph = $variables[$component_name][$first][0] ?? NULL;
+    $next_paragraph = $link_group[0] ?? NULL;
+    if ($first_paragraph && $next_paragraph) {
+      $existing_ids = [];
+      if (!empty($first_paragraph->subsequent_links) && is_array($first_paragraph->subsequent_links)) {
+        foreach ($first_paragraph->subsequent_links as $existing) {
+          if (is_object($existing) && method_exists($existing, 'id')) {
+            $existing_ids[(int) $existing->id()] = TRUE;
+          }
+        }
+      }
+      $next_id = method_exists($next_paragraph, 'id') ? (int) $next_paragraph->id() : NULL;
+      if ($next_id && empty($existing_ids[$next_id])) {
+        $first_paragraph->subsequent_links[] = $next_paragraph;
+      }
+    }
 
     // Empty elements included previously.
     $variables[$component_name][$key] = FALSE;

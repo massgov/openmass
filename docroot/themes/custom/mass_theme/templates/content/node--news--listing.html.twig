@@ -72,21 +72,21 @@
 #}
 {# Initalize the contents array for the component. #}
 {% set contents = [{
-  "path": "@atoms/11-text/paragraph.twig",
-  "data": {
-    "paragraph": {
-      "text": node.field_how_to_lede.value ?: ""
-    }
-  }
+  path: '@atoms/11-text/paragraph.twig',
+  data: {
+    paragraph: {
+      text: node.field_how_to_lede.value ?: '',
+    },
+  },
 }] %}
 
 {% set news_date = {
-    "path": "@atoms/11-text/raw-html.twig",
-    "data": {
-      "rawHtml": {
-        "content": content.field_news_date|render
-      }
-    }
+    path: '@atoms/11-text/raw-html.twig',
+    data: {
+      rawHtml: {
+        content: content.field_news_date|render,
+      },
+    },
   }
 %}
 {% set contents = contents|merge([news_date]) %}
@@ -94,47 +94,47 @@
 {# Add only the links that exist to the components array. #}
 {% for item in quick_action_links %}
   {% set decorative_link = {
-    "path": "@atoms/decorative-link.twig",
-    "data": {
-      "decorativeLink": {
-        "href": item.url,
-        "text": item.text,
-        "chevron": true,
-        "label": ""
-      }
-    }
+    path: '@atoms/decorative-link.twig',
+    data: {
+      decorativeLink: {
+        href: item.url,
+        text: item.text,
+        chevron: true,
+        label: '',
+      },
+    },
   } %}
   {% set contents = contents|merge([decorative_link]) %}
 {% endfor %}
 
 {% set eyebrow = content.field_news_type[0]['#markup'] != 'Blog Post' ? content.field_news_type[0]['#markup'] : '' %}
 {% set headingLevel = 3 %}
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "imageAfter": true,
-    "image": {
-      "src": content.field_news_image[0]['565w']['#markup'],
-      "width": "400",
-      "alt": node.field_news_image.alt ?: "",
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    imageAfter: true,
+    image: {
+      src: content.field_news_image[0]['565w']['#markup'],
+      width: '400',
+      alt: node.field_news_image.alt ?: '',
     },
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "layout": "stacked",
-    "eyebrow": eyebrow,
-    "level": headingLevel,
-    "emphasizedText": [content.field_date_published[0]['#markup'], content.field_organizations[0]['#title']],
-    "tags": "",
-    "contents": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph": {
-          "text": node.field_news_lede.value ?: ""
-        }
-      }
-    }]
-  }
-} %}
+    layout: 'stacked',
+    eyebrow: eyebrow,
+    level: headingLevel,
+    emphasizedText: [content.field_date_published[0]['#markup'], content.field_organizations[0]['#title']],
+    tags: '',
+    contents: [{
+      path: '@atoms/11-text/paragraph.twig',
+      data: {
+        paragraph: {
+          text: node.field_news_lede.value ?: '',
+        },
+      },
+    }],
+  },
+}) }}

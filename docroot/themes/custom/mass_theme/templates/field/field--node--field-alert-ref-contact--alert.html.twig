@@ -9,9 +9,9 @@
 {# @TODO update the mayflower contact list organism to have the for loop inside of a twig block so we can avoid this markup and just overwrite the block contents with our for loop here. #}
   <section class="ma__contact-list">
     {% set sidebarHeading = {
-      'title': "Contact"
+      title: 'Contact',
     } %}
-    {% include "@atoms/04-headings/sidebar-heading.twig" %}
+    {{ include('@atoms/04-headings/sidebar-heading.twig') }}
     {% for item in items %}
       {{ item.content }}
     {% endfor %}

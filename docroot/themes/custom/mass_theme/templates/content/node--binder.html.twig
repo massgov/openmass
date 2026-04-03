@@ -10,37 +10,37 @@
 {% set binder_table_rows = [] %}
 {# Build organization row. #}
 {% set binder_table_rows = binder_table_rows|merge([{
-  "label": 'Organization:',
-  "items": binder_organization_items
+  label: 'Organization:',
+  items: binder_organization_items,
 }]) %}
 
 {# Build published date row. #}
 {% set binder_table_rows = binder_table_rows|merge([{
-  "label": node.field_date_published.fieldDefinition.label ~ ':',
-  "text": (content.field_date_published.0)
+  label: node.field_date_published.fieldDefinition.label ~ ':',
+  text: (content.field_date_published.0),
 }]) %}
 
 {# Build optional last update row. #}
 {% if content.field_binder_last_updated.0 %}
   {% set binder_table_rows = binder_table_rows|merge([{
-    "label": node.field_binder_last_updated.fieldDefinition.label ~ ':',
-    "text": content.field_binder_last_updated.0
+    label: node.field_binder_last_updated.fieldDefinition.label ~ ':',
+    text: content.field_binder_last_updated.0,
   }]) %}
 {% endif %}
 
 {# Build optional volume row. #}
 {% if node.field_binder_volume.value %}
   {% set binder_table_rows = binder_table_rows|merge([{
-    "label": node.field_binder_volume.fieldDefinition.label ~ ':',
-    "text": content.field_binder_volume
+    label: node.field_binder_volume.fieldDefinition.label ~ ':',
+    text: content.field_binder_volume,
   }]) %}
 {% endif %}
 
 {# Build optional serial number row. #}
 {% if node.field_binder_serial_number.value %}
   {% set binder_table_rows = binder_table_rows|merge([{
-    "label": node.field_binder_serial_number.fieldDefinition.label ~ ':',
-    "text": content.field_binder_serial_number
+    label: node.field_binder_serial_number.fieldDefinition.label ~ ':',
+    text: content.field_binder_serial_number,
   }]) %}
 {% endif %}
 
@@ -65,17 +65,17 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -88,29 +88,29 @@
     {% set bgImage = node.field_binder_banner_image.entity.fileuri|image_style('570x') %}
   {% endif %}
   {% if buttons is defined %}
-    {% set buttons = buttons|merge({'theme': 'c-white', 'usage': ''}) %}
+    {% set buttons = buttons|merge({theme: 'c-white', usage: ''}) %}
   {% endif %}
-  {% include "@organisms/page-banner/page-banner.twig" with {
-    "pageBanner": {
-      "image": bgImage,
-      "theme": "c-primary",
-      "pageHeader": {
-        "title": label,
-        "category": node.field_binder_binder_type.entity.label,
-        "description": node.field_binder_short_desc.value ?? "",
-        "buttons": buttons is defined ? [buttons] : null
-      }
-    }
-  } %}
+  {{ include('@organisms/page-banner/page-banner.twig', {
+    pageBanner: {
+      image: bgImage,
+      theme: 'c-primary',
+      pageHeader: {
+        title: label,
+        category: node.field_binder_binder_type.entity.label,
+        description: node.field_binder_short_desc.value ?? '',
+        buttons: buttons is defined ? [buttons] : null,
+      },
+    },
+  }) }}
   {{ pre_content }}
 {% endblock %}
 
 {% block listingTable %}
-  {% include "@molecules/listing-table.twig" with {
-    "listingTable": {
-      "rows": binder_table_rows
-    }
-  } %}
+  {{ include('@molecules/listing-table.twig', {
+    listingTable: {
+      rows: binder_table_rows,
+    },
+  }) }}
 {% endblock %}
 
 {# Increase heading number by 1 from the parent heading. #}
@@ -137,11 +137,11 @@
   {{ content.extra_sidebar_contact }}
   {% if sideContent.linkList.links %}
     {% set linkList = sideContent.linkList %}
-    {% set linkList = linkList|merge({'compHeading': {
-      'title': linkList.compHeading.title,
-      'level': level
+    {% set linkList = linkList|merge({compHeading: {
+      title: linkList.compHeading.title,
+      level: level,
     }}) %}
-    {% include "@organisms/by-author/link-list.twig" %}
+    {{ include('@organisms/by-author/link-list.twig') }}
   {% endif %}
 {% endblock %}
 

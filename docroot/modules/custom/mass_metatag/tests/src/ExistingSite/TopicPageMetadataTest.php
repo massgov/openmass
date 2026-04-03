@@ -60,7 +60,6 @@ class TopicPageMetadataTest extends MetadataTestCase {
    */
   public function getExpectedMetadata(ContentEntityInterface $entity) {
     $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
-    $bare = \Drupal::service('file_url_generator')->generateAbsoluteString('public://test.jpg');
     return array_merge(parent::getExpectedMetadata($entity), [
       $url . '#topic_page' => [
         '@context' => 'https://schema.org',
@@ -71,7 +70,9 @@ class TopicPageMetadataTest extends MetadataTestCase {
         'relatedLink' => [
           $entity->field_topic_ref_related_topics->entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
         ],
-        'mainEntity' => [],
+        'mainEntity' => [
+          'http://test.card'
+        ],
       ],
     ]);
   }

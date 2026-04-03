@@ -39,16 +39,16 @@
  */
 #}
 
-{% embed "@organisms/by-author/stacked-row-section.twig" with {
-  "stackedRowSection": {
-    "title": paragraph.field_title.value,
-    "id": "",
-    "borderless": true
+{% embed '@organisms/by-author/stacked-row-section.twig' with {
+  stackedRowSection: {
+    title: paragraph.field_title.value,
+    id: '',
+    borderless: true,
   },
-  "stackedRow": {
-    "borderless": true
+  stackedRow: {
+    borderless: true,
   },
-  "externalSidebar": true
+  externalSidebar: true,
 } %}
   {% block stackedRowContentOverride %}
     {{ content.field_liststatic_items }}

@@ -45,14 +45,14 @@ set actionStep = {
   title: title,
   richText: {
     rteElements: [{
-      'path': '@atoms/11-text/raw-html.twig',
-      'data': {
-        'rawHtml': {
-          'content': rich_text
-        }
+      path: '@atoms/11-text/raw-html.twig',
+      data: {
+        rawHtml: {
+          content: rich_text,
+        },
       },
-    }]
-  }
+    }],
+  },
 }
 %}
-{% include "@molecules/action-step.twig" with actionStep %}
+{{ include('@molecules/action-step.twig', actionStep) }}

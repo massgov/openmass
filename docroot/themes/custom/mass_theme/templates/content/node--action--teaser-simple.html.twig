@@ -68,15 +68,15 @@
 #}
 {%
   set decorativeLink = {
-    'type': link_type,
-    'href': link_url,
-    'text': link_title
+    type: link_type,
+    href: link_url,
+    text: link_title,
   }
 %}
 {% if decorativeLink.image %}
  {% set illustratedLink = decorativeLink %}
- {% include "@molecules/illustrated-link.twig" %}
+ {{ include('@molecules/illustrated-link.twig') }}
 {% else %}
  {% set calloutLink = decorativeLink %}
- {% include "@molecules/callout-link.twig" %}
+ {{ include('@molecules/callout-link.twig') }}
 {% endif %}

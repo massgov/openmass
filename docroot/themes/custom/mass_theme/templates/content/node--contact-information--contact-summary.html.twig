@@ -11,32 +11,32 @@
   {% set level = elements['#level'] %}
 {% endif %}
 
-{% embed "@organisms/by-author/curated-person.twig" with {
-  "curatedPerson": {
-    "name": {
-      "text": content.field_display_title,
-      "href": node.field_contact_more_info_link is empty ? "" : content.field_contact_more_info_link[0]['#url'],
-      "info": "",
-      "level": ""
+{% embed '@organisms/by-author/curated-person.twig' with {
+  curatedPerson: {
+    name: {
+      text: content.field_display_title,
+      href: node.field_contact_more_info_link is empty ? '' : content.field_contact_more_info_link[0]['#url'],
+      info: '',
+      level: '',
     },
-    "title": {
-      "text": ''
+    title: {
+      text: '',
     },
-    "desc": {
-      "text": content.field_plain_description
-    }
-  }
+    desc: {
+      text: content.field_plain_description,
+    },
+  },
 } %}
   {% block curatedPersonGroups %}
     {{ content.field_ref_address }}
 
     {% if (node.field_ref_phone_number is not empty) or (node.field_ref_fax_number is not empty) %}
-      {% embed "@molecules/contact/contact-group.twig" with {
-        "contactGroup": {
-          "name": "Phone",
-          "icon": "phone",
-          "level": level
-        }
+      {% embed '@molecules/contact/contact-group.twig' with {
+        contactGroup: {
+          name: 'Phone',
+          icon: 'phone',
+          level: level,
+        },
       } %}
         {% block groupItems %}
           {{ content.field_ref_phone_number }}
@@ -46,12 +46,12 @@
     {% endif %}
 
     {% if node.field_ref_links is not empty %}
-      {% embed "@molecules/contact/contact-group.twig" with {
-        "contactGroup": {
-          "name": "Online",
-          "icon": "laptop",
-          "level": level
-        }
+      {% embed '@molecules/contact/contact-group.twig' with {
+        contactGroup: {
+          name: 'Online',
+          icon: 'laptop',
+          level: level,
+        },
       } %}
         {% block groupItems %}
           {# Pass through the level setting with Drupal render array values. #}

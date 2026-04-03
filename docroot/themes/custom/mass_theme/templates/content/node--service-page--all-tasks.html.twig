@@ -7,48 +7,48 @@
 {% extends '@templates/two-column.twig' %}
 
 {% block preContent %}
-  {% include "@organisms/page-header/page-header.twig" with {
-    "pageHeader": {
-      "category": "",
-      "divider": false,
-      "prefix": "",
-      "title": "What would you like to do?",
-      "subTitle": {
-        "#type": 'inline_template',
-        "#template": 'For <a href="{{ url }}">{{ title }}</a>',
-        "#context": {
-          'url': url,
-          'title': node.title.value
-        }
+  {{ include('@organisms/page-header/page-header.twig', {
+    pageHeader: {
+      category: '',
+      divider: false,
+      prefix: '',
+      title: 'What would you like to do?',
+      subTitle: {
+        '#type': 'inline_template',
+        '#template': 'For <a href="{{ url }}">{{ title }}</a>',
+        '#context': {
+          url: url,
+          title: node.title.value,
+        },
       },
-      "headerTags": {
-        "label": "Related to:",
-        "taxonomyTerms": [{
-          "href": url,
-          "text": node.title.value
-        }]
-      }
-    }
-  } %}
+      headerTags: {
+        label: 'Related to:',
+        taxonomyTerms: [{
+          href: url,
+          text: node.title.value,
+        }],
+      },
+    },
+  }) }}
 {% endblock %}
 
 {% block pageContent %}
-  {% include "@molecules/results-heading.twig" %}
+  {{ include('@molecules/results-heading.twig') }}
   <div class="main-content main-content--two">
   {% for action in content.extra_node_all_actions %}
     {# Node items are sent to themes/custom/mass_theme/templates/content/node--how-to-page--title-short-desc.html.twig. #}
     {% if action['#node'] %}
       {{ action }}
     {% elseif action['title'] %}
-      {% include "@molecules/image-promo.twig" with {
-        "imagePromo": {
-          "title": {
-            "text": action.title,
-            "href": action.href,
-            "info": ""
+      {{ include('@molecules/image-promo.twig', {
+        imagePromo: {
+          title: {
+            text: action.title,
+            href: action.href,
+            info: '',
           },
         },
-      } %}
+      }) }}
     {% endif %}
   {% endfor %}
   </div>

@@ -44,14 +44,14 @@
 {# When there are more than one of these sections, the current anchor link
 solution will need a refactor. This ID is currently being used as an
 anchor link in field--extra-org-nav-featured-services.html.twig. #}
-    {% embed "@organisms/by-author/action-finder.twig" with {
-      "actionFinder": {
-        "id": "what-would-you-like-to-do",
-        "title": content.field_wwyltd_heading,
-        "featuredLinks": content.field_wwyltd_top_s_links['#items'],
-        "links": content.field_wwyltd_more_services['#items'],
-        "color": "green"
-      }
+    {% embed '@organisms/by-author/action-finder.twig' with {
+      actionFinder: {
+        id: 'what-would-you-like-to-do',
+        title: content.field_wwyltd_heading,
+        featuredLinks: content.field_wwyltd_top_s_links['#items'],
+        links: content.field_wwyltd_more_services['#items'],
+        color: 'green',
+      },
     } %}
       {% block featuredLinksList %}
           {{ content.field_wwyltd_top_s_links }}

@@ -22,15 +22,15 @@
     {% set personUrl = false %}
     {% if node.field_person_bio.entity.field_publish_bio_page.value %}
       {% set personUrl = url('entity.node.canonical', {
-        'node': node.field_person_bio.target_id
+        node: node.field_person_bio.target_id,
       }) %}
       {% set links = links|merge([
         {
-          "text": node.field_person_bio.entity.field_person_first_name.value ~ " " ~ node.field_person_bio.entity.field_person_last_name.value,
-          "href": personUrl,
-          "inverse": true,
-          "description": node.field_person_bio.entity.field_person_role_title.value,
-          "info": "",
+          text: node.field_person_bio.entity.field_person_first_name.value ~ ' ' ~ node.field_person_bio.entity.field_person_last_name.value,
+          href: personUrl,
+          inverse: true,
+          description: node.field_person_bio.entity.field_person_role_title.value,
+          info: '',
         },
       ]) %}
     {% endif %}
@@ -39,15 +39,15 @@
       {% set secondaryUrl = false %}
       {% if node.field_secondary_person_bio.entity.field_publish_bio_page.value %}
         {% set secondaryUrl = url('entity.node.canonical', {
-          'node': node.field_secondary_person_bio.target_id
+          node: node.field_secondary_person_bio.target_id,
         }) %}
       {% endif %}
       {% set secondaryPerson = {
-        "text": node.field_secondary_person_bio.entity.field_person_first_name.value ~ " " ~ node.field_secondary_person_bio.entity.field_person_last_name.value,
-        "href": secondaryUrl,
-        "inverse": true,
-        "description": node.field_secondary_person_bio.entity.field_person_role_title.value,
-        "info": ""
+        text: node.field_secondary_person_bio.entity.field_person_first_name.value ~ ' ' ~ node.field_secondary_person_bio.entity.field_person_last_name.value,
+        href: secondaryUrl,
+        inverse: true,
+        description: node.field_secondary_person_bio.entity.field_person_role_title.value,
+        info: '',
       } %}
       {% set links = links|merge([secondaryPerson]) %}
     {% endif %}
@@ -56,27 +56,27 @@
   {% if node.field_subtype.value == 'Elected Official' %}
     {% set mobileImage = true %}
   {% endif %}
-    {% include "@organisms/page-banner/page-banner.twig" with {
-      "pageBanner": {
-        "image": bannerImage,
-        "imageMobile": mobileImage ? bannerImageMobile : '',
-        "theme": "c-primary-alt",
-        "renderImageOnMobile": mobileImage,
-        "pageHeader": {
-          "title": node.title.value,
-          "titleSubText": subtext,
-          "links": links,
-          "buttons": buttons is defined ? [buttons] : null
-        }
-      }
-    } %}
+    {{ include('@organisms/page-banner/page-banner.twig', {
+      pageBanner: {
+        image: bannerImage,
+        imageMobile: mobileImage ? bannerImageMobile : '',
+        theme: 'c-primary-alt',
+        renderImageOnMobile: mobileImage,
+        pageHeader: {
+          title: node.title.value,
+          titleSubText: subtext,
+          links: links,
+          buttons: buttons is defined ? [buttons] : null,
+        },
+      },
+    }) }}
   {% if org_nav is not empty %}
     <div class="ma__details__sticky-nav">
-      {% embed "@molecules/sticky-nav.twig" with {
+      {% embed '@molecules/sticky-nav.twig' with {
         stickyNav: {
           titleContext: node.label,
           horizontalLayout: true,
-          anchorLinks: org_nav
+          anchorLinks: org_nav,
         },
       } %}
       {% endembed %}
@@ -105,17 +105,17 @@
           or node.field_public_records_link is not empty
         %}
           {% set heading = {
-            "title": node.title.value ~ ' information',
-            "id": "",
-            "borderless": true
+            title: node.title.value ~ ' information',
+            id: '',
+            borderless: true,
           } %}
-          {% embed "@organisms/by-author/stacked-row-section.twig" with {
-            "stackedRowSection": heading,
-            "stackedRow": {
-              "borderless": true,
-              "modifier": "no-sidebar"
+          {% embed '@organisms/by-author/stacked-row-section.twig' with {
+            stackedRowSection: heading,
+            stackedRow: {
+              borderless: true,
+              modifier: 'no-sidebar',
             },
-            "externalSidebar": true
+            externalSidebar: true,
           } %}
             {% block stackedRowContentOverride %}
               <section class="ma__link-list">
@@ -171,6 +171,6 @@
 {% block schemaContent %}
   {% if schema.governmentOrganization %}
     {% set governmentOrganization = schema.governmentOrganization %}
-    {% include "@meta/schema/government-organization.twig" %}
+    {{ include('@meta/schema/government-organization.twig') }}
   {% endif %}
 {% endblock %}

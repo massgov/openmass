@@ -3,50 +3,67 @@
 
   // Function to handle focus messages from iframes
   function handleFocusMessage(messageData) {
-    // Check if this is our custom focus message - handle both message structures
     const message = messageData.message || messageData;
     const iframe = messageData.iframe;
 
-    if (message && message.type === 'scrollToFocus') {
+    if (!message || !message.type) {
+      return;
+    }
 
-      if (iframe) {
-        // Check if the iframe is within a modal
-        const modal = iframe.closest('.tingle-modal-box__content');
+    if (!iframe) {
+      console.warn('No iframe found in message data');
+      return;
+    }
 
-        if (modal) {
-          // Handle focus within modal - scroll the modal content
-          const modalRect = modal.getBoundingClientRect();
-          const iframeRect = iframe.getBoundingClientRect();
-          const relativeIframeTop = iframeRect.top - modalRect.top;
-          const scrollTarget = modal.scrollTop + relativeIframeTop + (message.offset || 0);
-          const adjustment = -250; // Less adjustment needed within modal
+    if (message.type === 'focusIframeForError') {
+      if (!iframe.hasAttribute('tabindex')) {
+        iframe.setAttribute('tabindex', '-1');
+      }
 
-          const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
+      try {
+        // For JAWS to switch from the parent document into the iframe document
+        iframe.focus({preventScroll: true});
+      }
+      catch (e) {
+        iframe.focus();
+      }
 
-          modal.scrollTo({
-            top: finalScrollPosition,
-            behavior: 'smooth'
-          });
-        }
-        else {
-          // Handle focus in regular page iframe
-          const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
-          const scrollTarget = iframeTop + (message.offset || 0);
-          const adjustment = -250;
-          const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
+      return;
+    }
 
-          window.scrollTo({
-            top: finalScrollPosition,
-            behavior: 'smooth'
-          });
-        }
+    if (message.type === 'scrollToFocus' || message.type === 'scrollToValidationError') {
+      const isValidationError = message.type === 'scrollToValidationError';
+      const behavior = isValidationError ? 'auto' : 'smooth';
+
+      // Check if the iframe is within a modal
+      const modal = iframe.closest('.tingle-modal-box__content');
+
+      if (modal) {
+        // Handle focus within modal - scroll the modal content
+        const modalRect = modal.getBoundingClientRect();
+        const iframeRect = iframe.getBoundingClientRect();
+        const relativeIframeTop = iframeRect.top - modalRect.top;
+        const scrollTarget = modal.scrollTop + relativeIframeTop + (message.offset || 0);
+        const adjustment = -250;
+        const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
+
+        modal.scrollTo({
+          top: finalScrollPosition,
+          behavior: behavior
+        });
       }
       else {
-        console.warn('No iframe found in message data');
+        // Handle focus in regular page iframe
+        const iframeTop = iframe.getBoundingClientRect().top + window.scrollY;
+        const scrollTarget = iframeTop + (message.offset || 0);
+        const adjustment = -250;
+        const finalScrollPosition = Math.max(0, scrollTarget + adjustment);
+
+        window.scrollTo({
+          top: finalScrollPosition,
+          behavior: behavior
+        });
       }
-    }
-    else {
-      console.warn('Message is not a scrollToFocus type:', message);
     }
   }
 
@@ -90,4 +107,3 @@
   };
 
 })(jQuery, Drupal);
-

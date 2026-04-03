@@ -1,5 +1,72 @@
 
 
+## [0.473.0] - March 31, 2026
+
+### Changed
+  - DP-45201: API Service Card changes per request
+  - DP-45633: Update datatables libraries used with CSV tables module.
+  
+### Fixed
+  - DP-45454: Prevented empty contact email/online links from rendering and required the online email field in contact information.
+  - DP-45686: A11Y Fix form validation errors for screen reader.
+  - DP-45780: Related links on News pages now show up even if no media contact is added.
+  - DP-45855: Fixed footer link to eliminate redirect for A11Y link.
+  
+### Added
+  - DP-45721: Added news component to service pages.
+  
+
+
+## [0.472.0] - March 24, 2026
+
+### Fixed
+  - DP-39488: Improved print styles with better spacing and left alignment.
+  - DP-45563: Fixing report of documents without files
+  - DP-45715: Edit page header problem on pages in microsite.
+  - DP-45783: Fix TBD option visibility and file change reset for accessibility status field on inline entity forms.
+  
+### Changed
+  - DP-44787: Updated footer to align with latest design iteration.
+  - DP-45720: Removed character limit on rich text component in service section on service page
+  
+### Removed
+  - DP-45679: Removed unused field on info details page to pass params to querystring.
+  
+
+
+## [0.471.0] - March 17, 2026
+
+### Fixed
+  - DP-39767: A11y - Mass.gov main navigation ARIA cleanup.
+  - DP-44764: Issue with orphan document view.
+  
+### Added
+  - DP-41606: Allow custom section headers on location pages for Facilities, Services, Accessibility, Restrictions, and More Info sections.
+  - DP-44225: Field to Document media entity for authors to select accessibility state designation.
+  
+### Changed
+  - DP-45371: Prevent authors from saving pages with broken pasted image tags in rich text.
+  
+### Security
+  - DP-45618: Update Drupal AI module.
+  
+
+
+## [0.470.0] - March 10, 2026
+
+### Changed
+  - DP-45250: Don't render Contact twice on mobile view of how-to pages.
+  - DP-45428: Advanced search for docs - fixed file type filter, added authored by filter, reordered some fields and filters.
+  
+### Fixed
+  - DP-45259: Fix microsite detection on node listing pages (e.g. locations, events) so microsite menu, styles, and page templates are applied correctly.
+  - DP-45363: Social media icons on org pages and allow threads.com and tiktok.com in validation. Add TikTok to social links help text.
+  
+### Added
+  - DP-45377: Add bulk edit to advanced search for documents view
+  
+
+
 ## [0.469.0] - March 3, 2026
 
 ### Fixed
