@@ -48,6 +48,32 @@
   ];
 
   /**
+   * Reads allowed hostname patterns from drupalSettings (single source of truth
+   * defined in mass_utility.settings config). Patterns are PHP-style regexps
+   * like '/^forms\.mass\.gov$/'. We convert them to JS RegExp objects.
+   *
+   * @return {RegExp[]}
+   */
+  function getAllowedHostnamePatterns() {
+    var patterns = [];
+    try {
+      var raw = (window.drupalSettings || {}).massContextStorage || {};
+      var list = raw.allowedHostnamePatterns || [];
+      for (var i = 0; i < list.length; i++) {
+        // Strip PHP-style delimiters: '/pattern/' → 'pattern'
+        var p = String(list[i]).replace(/^\/|\/$/g, '');
+        if (p) {
+          patterns.push(new RegExp(p));
+        }
+      }
+    }
+    catch (e) {
+      // ignore
+    }
+    return patterns;
+  }
+
+  /**
    * Params we own / should never be overwritten by accumulated journey params.
    * @type {Set<string>}
    */
@@ -199,7 +225,11 @@
       return;
     }
 
-    if (url.hostname !== 'forms.mass.gov') {
+    const allowedPatterns = getAllowedHostnamePatterns();
+    const hostnameAllowed = allowedPatterns.some(function (pattern) {
+      return pattern.test(url.hostname);
+    });
+    if (!hostnameAllowed) {
       return;
     }
 

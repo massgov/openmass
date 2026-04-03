@@ -694,3 +694,20 @@ function mass_utility_update_8028() {
   $update_list[] = 'taxonomy_post_update_handle_publishing_status_addition_in_views';
   $key_value->set($key, $update_list);
 }
+
+/**
+ * DP-46079: Add forms_allowed_hostnames to mass_utility.settings.
+ */
+function mass_utility_update_10029() {
+  $config = \Drupal::configFactory()->getEditable('mass_utility.settings');
+  if ($config->get('forms_allowed_hostnames') === NULL) {
+    $config->set('forms_allowed_hostnames', [
+      '/^mass-forms\.ddev\.site$/',
+      '/^forms\.mass\.local$/',
+      '/^forms\.mass\.gov$/',
+      '/^[a-zA-Z0-9\-]+-mass-forms\.pantheonsite\.io$/',
+      '/^[a-zA-Z0-9\-]+\.forms\.mass\.gov$/',
+    ]);
+    $config->save();
+  }
+}
