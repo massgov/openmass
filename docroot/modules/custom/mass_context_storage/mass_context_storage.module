@@ -46,7 +46,7 @@ function mass_context_storage_entity_view(
   ];
 
   // Pass allowed Gravity Forms hostnames to JS (single source of truth in config).
-  $allowed_hostnames = \Drupal::config('mass_utility.settings')->get('gravity_form_allowed_hostnames') ?? [];
+  $allowed_hostnames = \Drupal::config('mass_utility.settings')->get('forms_allowed_hostnames') ?? [];
   $build['#attached']['drupalSettings']['massContextStorage']['allowedHostnamePatterns'] = $allowed_hostnames;
 
   // Flag used by page_context.js to handle form pages.

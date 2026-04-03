@@ -696,12 +696,12 @@ function mass_utility_update_8028() {
 }
 
 /**
- * DP-46079: Add gravity_form_allowed_hostnames to mass_utility.settings.
+ * DP-46079: Add forms_allowed_hostnames to mass_utility.settings.
  */
 function mass_utility_update_10029() {
   $config = \Drupal::configFactory()->getEditable('mass_utility.settings');
-  if ($config->get('gravity_form_allowed_hostnames') === NULL) {
-    $config->set('gravity_form_allowed_hostnames', [
+  if ($config->get('forms_allowed_hostnames') === NULL) {
+    $config->set('forms_allowed_hostnames', [
       '/^mass-forms\.ddev\.site$/',
       '/^forms\.mass\.local$/',
       '/^forms\.mass\.gov$/',
