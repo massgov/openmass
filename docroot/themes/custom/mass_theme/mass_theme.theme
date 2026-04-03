@@ -3892,12 +3892,17 @@ function mass_theme_preprocess_menu(&$variables) {
   // Use this formatting for Utility nav.
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'utility') {
     // Get Theme settings languages if available.
-    if ($selected_languages = theme_get_setting('languages', 'mass_theme')) {
+    $selected_languages = \Drupal::service('Drupal\Core\Extension\ThemeSettingsProvider')->getSetting('languages', 'mass_theme');
+    if ($selected_languages) {
       $selected_languages = array_filter($selected_languages);
-      $google_translate_languages = array_intersect_key(
-        mass_theme_googletranslate_options_languages(),
-        array_flip($selected_languages)
-      );
+      $google_translate_languages = [];
+      $available_languages = mass_theme_googletranslate_options_languages();
+
+      foreach ($selected_languages as $language) {
+        if (array_key_exists($language, $available_languages)) {
+          $google_translate_languages[$language] = $available_languages[$language];
+        }
+      }
 
       $variables['availableLanguages'] = [];
       foreach ($google_translate_languages as $language_code => $language) {
