@@ -78,13 +78,13 @@
   {% set level = elements['#level'] %}
 {% endif %}
 
-{% embed "@organisms/contact/contact-us.twig" with {
-  "contactUs": {
-    "subTitle": {
-      "href": "",
-      "text": node.field_display_title.value
-    }
-  }
+{% embed '@organisms/contact/contact-us.twig' with {
+  contactUs: {
+    subTitle: {
+      href: '',
+      text: node.field_display_title.value,
+    },
+  },
 } %}
   {% block contactGroups %}
     <div class="ma__contact-us__content js-accordion-content">

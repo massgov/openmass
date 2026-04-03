@@ -1,0 +1,39 @@
+--- a/js/file_browser.view.js
++++ b/js/file_browser.view.js
+@@ -41,10 +41,12 @@
+         counterElement.className = 'file-browser-file-counter';
+         counterElement.textContent = text;
+ 
+-        const gridItemInfo = document
+-          .querySelector(`[name = "entity_browser_select[file:${id}]"]`)
+-          .closest('.grid-item')
+-          .querySelector('.grid-item-info');
++        const checkbox = document
++          .querySelector(`[name = "entity_browser_select[file:${id}]"]`);
++        const gridItem = checkbox ? checkbox.closest('.grid-item') : null;
++        const gridItemInfo = gridItem
++          ? gridItem.querySelector('.grid-item-info')
++          : null;
+ 
+         if (gridItemInfo) {
+           gridItemInfo.insertAdjacentElement('afterbegin', counterElement);
+@@ -266,9 +268,16 @@
+       // If we're in a document context, search for the first available entity
+       // browser form. Otherwise, ensure that the context is itself an entity
+       // browser form.
+-      return $[context === document ? 'find' : 'filter'](
+-        'form[data-entity-browser-uuid]',
+-      );
++      const $context = $(context);
++
++      if (context === document) {
++        return $context.find('form[data-entity-browser-uuid]').get(0) || null;
++      }
++
++      return $context
++        .filter('form[data-entity-browser-uuid]')
++        .add($context.find('form[data-entity-browser-uuid]'))
++        .get(0) || null;
+     },
+ 
+     attach(context) {

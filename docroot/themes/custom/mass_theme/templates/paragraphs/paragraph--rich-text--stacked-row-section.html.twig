@@ -36,17 +36,17 @@
  * @ingroup themeable
  */
 #}
-{% embed "@organisms/by-author/stacked-row-section.twig" with {
-  "stackedRow": {
-    "borderless": true
+{% embed '@organisms/by-author/stacked-row-section.twig' with {
+  stackedRow: {
+    borderless: true,
   },
-  "stackedRowSection": {
-    "sideBar": false
+  stackedRowSection: {
+    sideBar: false,
   },
-  "externalSidebar": true
+  externalSidebar: true,
 } %}
   {% block stackedRowContentOverride %}
-    {% embed "@organisms/by-author/rich-text.twig" %}
+    {% embed '@organisms/by-author/rich-text.twig' %}
       {% block rteElements %}
         {{ content }}
       {% endblock %}

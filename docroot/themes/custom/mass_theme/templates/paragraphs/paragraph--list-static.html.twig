@@ -45,32 +45,32 @@
   {% set listTitle = '' %}
 {% endif %}
 
-{% embed "@organisms/by-author/stacked-row-section.twig" with {
-  "stackedRowSection": {
-    "title": listTitle,
-    "id": "",
-    "borderless": true
+{% embed '@organisms/by-author/stacked-row-section.twig' with {
+  stackedRowSection: {
+    title: listTitle,
+    id: '',
+    borderless: true,
   },
-  "stackedRow": {
-    "borderless": true
+  stackedRow: {
+    borderless: true,
   },
-  "externalSidebar": true
+  externalSidebar: true,
 } %}
 
   {% block stackedRowContentOverride %}
     {% if content.field_liststatic_description|render is not empty %}
-      {% include "@organisms/by-author/rich-text-description.twig" with {
-        "richText": {
-          "rteElements": [{
-            "path": "@atoms/11-text/paragraph.twig",
-            "data": {
-              "paragraph": {
-                "text": content.field_liststatic_description
-              }
-            }
-          }]
-        }
-      } %}
+      {{ include('@organisms/by-author/rich-text-description.twig', {
+        richText: {
+          rteElements: [{
+            path: '@atoms/11-text/paragraph.twig',
+            data: {
+              paragraph: {
+                text: content.field_liststatic_description,
+              },
+            },
+          }],
+        },
+      }) }}
     {% endif %}
     {{ content.field_liststatic_items }}
   {% endblock %}
