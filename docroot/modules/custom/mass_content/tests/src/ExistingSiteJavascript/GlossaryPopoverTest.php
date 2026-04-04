@@ -389,4 +389,32 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertSame('audit', $triggers[1]->getText());
   }
 
+  /**
+   * Test that trailing punctuation stays grouped with glossary terms.
+   */
+  public function testGlossaryPopoverKeepsTrailingPunctuationWithTerm() {
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Glossary Punctuation Test Service Page',
+      'field_service_body' => 'Test definition popover ' . $this->term . ', followed by more text.',
+      'moderation_state' => 'published',
+    ]);
+
+    $node->set('field_glossaries', $this->glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+
+    $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.glossary-term-group') !== NULL;
+    });
+
+    $group = $page->find('css', '.glossary-term-group');
+    $this->assertNotNull($group);
+    $this->assertStringContainsString('white-space: nowrap', $group->getAttribute('style'));
+    $this->assertStringContainsString($this->term . ',', $group->getText());
+  }
+
 }

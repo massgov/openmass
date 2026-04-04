@@ -219,6 +219,25 @@
   }
 
   /**
+   * Wrap a glossary term and trailing punctuation so they stay on the same line.
+   * @param {HTMLElement} tooltip - The glossary tooltip element.
+   * @param {string} punctuation - Punctuation that immediately follows the term.
+   * @return {HTMLSpanElement} Inline wrapper containing the tooltip and punctuation.
+   */
+  function createTooltipGroup(tooltip, punctuation) {
+    const wrapper = document.createElement('span');
+    wrapper.classList.add('glossary-term-group');
+    wrapper.style.whiteSpace = 'nowrap';
+    wrapper.appendChild(tooltip);
+
+    if (punctuation) {
+      wrapper.appendChild(document.createTextNode(punctuation));
+    }
+
+    return wrapper;
+  }
+
+  /**
    * Filter out overlapping matches, preferring the longest match.
    * @param {Array<{start: number, end: number, matchText: string, searchString: string}>} matchPositions - Candidate matches.
    * @return {Array<{start: number, end: number, matchText: string, searchString: string}>} Non-overlapping matches.
@@ -302,17 +321,22 @@
 
       // Process matches from right to left to avoid position shifts
       nodeMatches.forEach(({start, end, matchText, searchString}) => {
+        const trailingPunctuationMatch = text.substring(end).match(/^[,.;:!?]+/);
+        const trailingPunctuation = trailingPunctuationMatch ? trailingPunctuationMatch[0] : '';
+        const afterTextStart = end + trailingPunctuation.length;
+
         // Create text nodes for before and after the match
         const beforeText = document.createTextNode(text.substring(0, start));
-        const afterText = document.createTextNode(text.substring(end));
+        const afterText = document.createTextNode(text.substring(afterTextStart));
 
         // Create the tooltip
         const definition = createTooltipContent(terms[searchString]);
         const tooltip = createTooltip(matchText, definition);
+        const tooltipGroup = createTooltipGroup(tooltip, trailingPunctuation);
 
         // Replace the original text node
         parent.insertBefore(beforeText, currentNode);
-        parent.insertBefore(tooltip, currentNode);
+        parent.insertBefore(tooltipGroup, currentNode);
         parent.insertBefore(afterText, currentNode);
         parent.removeChild(currentNode);
 
