@@ -40,15 +40,15 @@
 {# Recent news & announcements #}
 {% block recentNews %}
   {% if news %}
-    {% include "@organisms/by-author/stacked-row-section.twig" with {
-      "stackedRowSection": news
-    } %}
+    {{ include('@organisms/by-author/stacked-row-section.twig', {
+      stackedRowSection: news,
+    }) }}
   {% endif %}
 {% endblock %}
-{% if content.field_component_add_separator|field_value|render == "True" %}
-  {% include "@atoms/divider.twig" with {
-    "divider": {
-      "thin": true
-    }
-  } %}
+{% if content.field_component_add_separator|field_value|render == 'True' %}
+  {{ include('@atoms/divider.twig', {
+    divider: {
+      thin: true,
+    },
+  }) }}
 {% endif %}

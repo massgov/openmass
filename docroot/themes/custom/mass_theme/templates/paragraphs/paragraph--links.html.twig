@@ -38,15 +38,15 @@
  * @ingroup themeable
  */
 #}
-{% include "@molecules/contact/contact-item.twig" with {
-  "item": {
-    "type": "online",
-    "label": paragraph.field_label.value,
-    "address": "",
-    "link": {
-      "href": content.field_link_single[0]['#url_title'],
-      "text": content.field_link_single[0]['#title'],
-      "info": ""
-    }
-  }
-} %}
+{{ include('@molecules/contact/contact-item.twig', {
+  item: {
+    type: 'online',
+    label: paragraph.field_label.value,
+    address: '',
+    link: {
+      href: content.field_link_single[0]['#url_title'],
+      text: content.field_link_single[0]['#title'],
+      info: '',
+    },
+  },
+}) }}

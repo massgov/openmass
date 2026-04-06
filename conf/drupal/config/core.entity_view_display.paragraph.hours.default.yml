@@ -41,8 +41,10 @@ content:
       time_format: g
       compress: false
       grouped: true
+      show_empty: false
       show_closed: open
       closed_format: ''
+      all_day_format: 'All day open'
       separator:
         days: '<br />'
         grouped_days: ' - '
@@ -50,11 +52,20 @@ content:
         hours_hours: '-'
         more_hours: ', '
       current_status:
-        position: hide
+        position: ''
         open_text: Open
         closed_text: Closed
+      exceptions:
+        title: 'Exception hours'
+        replace_exceptions: false
+        restrict_exceptions_to_num_days: 7
+        restrict_seasons_to_num_days: 366
+        date_format: long
+        all_day_format: 'All day open'
       timezone_field: ''
       office_hours_first_day: ''
+      schema:
+        enabled: false
     third_party_settings: {  }
     weight: 3
     region: content

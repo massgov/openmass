@@ -76,9 +76,9 @@ function mass_metatag_token_info() {
     'name' => t('urlencode a string'),
     'description' => t("Run a string through the urlencode function."),
   ];
-  $info['tokens']['paragraph']['mass_jsonify_links'] = [
+  $info['tokens']['node']['mass_online_contact_url'] = [
     'name' => t('jsonify links'),
-    'description' => t("Create a JSON representation of a set of links contained within paragraphs."),
+    'description' => t("Create a JSON representation of a set of links contained within Org Node."),
   ];
   $info['tokens']['node']['mass_related_terms'] = [
     'name' => t('Related taxonomy'),
@@ -148,7 +148,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
       switch ($name) {
         case 'dm_organizations':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
@@ -168,7 +168,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'dm_services':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()
@@ -190,7 +190,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'dm_topics':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()
@@ -212,7 +212,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'dm_locations':
           $usage = \Drupal::service('entity_usage.usage');
-          if ($result = $usage->listReferencedEntities($data['node'])) {
+          if ($result = $usage->listTargets($data['node'])) {
             if ($result['node']) {
               $nids = array_keys($result['node']);
               $nodes = \Drupal::entityTypeManager()
@@ -409,7 +409,84 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           }
           $replacements[$original] = $tag;
           break;
+        case 'mass_online_contact_url':
+          $values = [];
 
+          if (!empty($data['node']) && $data['node'] instanceof NodeInterface) {
+            $node = $data['node'];
+
+            // Traverse node -> contact info paragraph(s) -> link paragraph(s).
+            if ($node->hasField('field_ref_contact_info_1') && !$node->get('field_ref_contact_info_1')->isEmpty()) {
+              $contact_paragraphs = $node->get('field_ref_contact_info_1')->referencedEntities();
+
+              foreach ($contact_paragraphs as $contact_paragraph) {
+                if (!$contact_paragraph || !$contact_paragraph->hasField('field_ref_links') || $contact_paragraph->get('field_ref_links')->isEmpty()) {
+                  continue;
+                }
+
+                $link_paragraphs = $contact_paragraph->get('field_ref_links')->referencedEntities();
+
+                foreach ($link_paragraphs as $paragraph) {
+                  if (!$paragraph) {
+                    continue;
+                  }
+
+                  switch ($paragraph->bundle()) {
+                    case 'links':
+                      if (!$paragraph->hasField('field_link_single') || $paragraph->get('field_link_single')->isEmpty()) {
+                        break;
+                      }
+
+                      foreach ($paragraph->get('field_link_single') as $link) {
+                        if (!$link instanceof LinkItemInterface) {
+                          continue;
+                        }
+
+                        // Build an absolute URL string.
+                        try {
+                          $url = clone $link->getUrl();
+                          $url->setAbsolute();
+                        }
+                        catch (\Throwable $e) {
+                          continue;
+                        }
+
+                        $name = $link->computed_title;
+                        // Sometimes the computed_title is a render array, the output
+                        // must be a string.
+                        if (!is_string($name) && is_array($name) && isset($name['#markup'])) {
+                          $name = $name['#markup'];
+                        }
+
+                        if (empty($name) || !is_string($name)) {
+                          if ($entity = Helper::entityFromUrl($url)) {
+                            $name = $entity->label();
+                          }
+                          else {
+                            $name = $url->toString();
+                          }
+                        }
+
+                        $values[] = [
+                          'name' => $name,
+                          'url' => $url->toString(),
+                        ];
+                      }
+                      break;
+
+                    case 'online_email':
+                      if ($paragraph->hasField('field_email') && !$paragraph->get('field_email')->isEmpty()) {
+                        $email = $paragraph->field_email->value;
+                        $values[] = ['name' => $email, 'url' => $email];
+                      }
+                      break;
+                  }
+                }
+              }
+            }
+          }
+          $replacements[$tokens['mass_online_contact_url']] = json_encode($values);
+          break;
       }
     }
   }
@@ -420,53 +497,6 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
         $replacements[$tokens['mass_urlencode']] = urlencode(Helper::formatAddress($field));
       }
     }
-  }
-  if (array_key_exists('mass_jsonify_links', $tokens)) {
-    $values = [];
-    foreach ($data as $field) {
-      if ($field instanceof FieldItemList) {
-
-        // Each item should be a paragraph. The link data is stored differently
-        // for each type of paragraph.
-        foreach ($field as $item) {
-          $paragraph = $item->entity;
-          switch ($paragraph->bundle()) {
-            case 'links':
-              foreach ($paragraph->field_link_single as $link) {
-                if ($link instanceof LinkItemInterface) {
-                  $url = $link->getUrl()->setAbsolute();
-                  $name = $link->computed_title;
-                  // Sometimes the computed_title is a render array, the output
-                  // must be a string.
-                  if (!is_string($name) && isset($name['#markup'])) {
-                    $name = $name['#markup'];
-                  }
-                  if (empty($name) || !is_string($name)) {
-                    if ($entity = Helper::entityFromUrl($url)) {
-                      $name = $entity->label();
-                    }
-                    else {
-                      $name = $url->toString();
-                    }
-                  }
-                  $values[] = [
-                    'name' => $name,
-                    'url' => $url->toString(),
-                  ];
-                }
-              }
-              break;
-
-            case 'online_email':
-              $email = $paragraph->field_email->value;
-              $values[] = ['name' => $email, 'url' => $email];
-              break;
-          }
-        }
-      }
-    }
-
-    $replacements[$tokens['mass_jsonify_links']] = json_encode($values);
   }
   return $replacements;
 }
