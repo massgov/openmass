@@ -9,28 +9,28 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block recentNews %}
       {% if news %}
-        {% include "@organisms/by-author/stacked-row-section.twig" with {
-          "stackedRowSection": news
-        } %}
+        {{ include('@organisms/by-author/stacked-row-section.twig', {
+          stackedRowSection: news,
+        }) }}
       {% else %}
         <div class="messages messages--warning">
           No news items currently reference this service.
         </div>
       {% endif %}
     {% endblock %}
-    {% if content.field_component_add_separator|field_value|render == "True" %}
-      {% include "@atoms/divider.twig" with {
-        "divider": {
-          "thin": true
-        }
-      } %}
+    {% if content.field_component_add_separator|field_value|render == 'True' %}
+      {{ include('@atoms/divider.twig', {
+        divider: {
+          thin: true,
+        },
+      }) }}
     {% endif %}
   </div>
 {% endblock paragraph %}

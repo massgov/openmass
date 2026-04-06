@@ -41,9 +41,9 @@
       slides: images,
     }
   %}
-  {% include "@organisms/by-author/banner-carousel.twig" %}
+  {{ include('@organisms/by-author/banner-carousel.twig') }}
 {% elseif image_count is not empty and image_count == 1 %}
   {% set locationBanner = images.0 %}
   {% set map = map %}
-  {% include "@mass_theme/includes/organisms-location-banner.html.twig" %}
+  {{ include('@mass_theme/includes/organisms-location-banner.html.twig') }}
 {% endif %}

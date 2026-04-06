@@ -8,7 +8,7 @@ dependencies:
     - field.field.paragraph.content_card_group.field_content_card_link_cards
     - paragraphs.paragraphs_type.content_card_group
   module:
-    - link
+    - mass_schema_metatag
 id: paragraph.content_card_group.token
 targetEntityType: paragraph
 bundle: content_card_group
@@ -23,14 +23,10 @@ content:
     weight: 0
     region: content
   field_content_card_link_cards:
-    type: link_separate
+    type: mass_link_absolute_urls
     label: above
     settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
+      absolute: true
     third_party_settings: {  }
     weight: 1
     region: content

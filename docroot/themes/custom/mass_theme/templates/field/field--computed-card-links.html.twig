@@ -40,12 +40,12 @@
 <ul class="ma__section-links__items">
 {% for item in items %}
   <li class="ma__section-links__item">
-    {% include "@atoms/decorative-link.twig" with {
-      "decorativeLink": {
-        "text": item.content['#title'],
-        "href": item.content['#url']
-      }
-    } %}
+    {{ include('@atoms/decorative-link.twig', {
+      decorativeLink: {
+        text: item.content['#title'],
+        href: item.content['#url'],
+      },
+    }) }}
   </li>
 {% endfor %}
 </ul>

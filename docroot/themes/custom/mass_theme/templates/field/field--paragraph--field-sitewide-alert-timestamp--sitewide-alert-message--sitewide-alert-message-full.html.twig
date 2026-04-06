@@ -42,8 +42,8 @@
       {# Treat the individual alert timestamp with the callout time pattern #}
       {%
         set calloutTime = {
-          "text": "Updated: " ~ item.content['#markup'],
+          text: 'Updated: ' ~ item.content['#markup'],
         }
       %}
-      {% include "@organisms/by-author/callout-time.twig" %}
+      {{ include('@organisms/by-author/callout-time.twig') }}
     {% endfor %}

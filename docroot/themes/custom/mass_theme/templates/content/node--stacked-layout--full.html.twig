@@ -8,40 +8,40 @@
  #}
 {%
 set pageBanner = {
-  'bgWide': file_url(node.field_photo.entity.fileuri ?? ''),
-  'bgNarrow': file_url(node.field_photo.entity.fileuri ?? ''),
-  'size': 'large',
-  'icon': '',
-  'title': label|field_value,
-  'titleSubText': node.field_label.value ? "(" ~ node.field_label.value ~ ")" : ''
+  bgWide: file_url(node.field_photo.entity.fileuri ?? ''),
+  bgNarrow: file_url(node.field_photo.entity.fileuri ?? ''),
+  size: 'large',
+  icon: '',
+  title: label|field_value,
+  titleSubText: node.field_label.value ? '(' ~ node.field_label.value ~ ')' : '',
 }
 %}
 {%
 set illustratedHeader = {
-  'bgTitle': image_alt,
-  'bgImage': image_url,
-  'category': content.field_label|field_value,
-  'pageHeader': {
-    'title': label|field_value,
-    'subTitle': '',
-    'rteElements': [{
-      'path': '@atoms/11-text/raw-html.twig',
-      'data': {
-        'rawHtml': {
-          'content': content.field_lede|field_value
-        }
-      }
+  bgTitle: image_alt,
+  bgImage: image_url,
+  category: content.field_label|field_value,
+  pageHeader: {
+    title: label|field_value,
+    subTitle: '',
+    rteElements: [{
+      path: '@atoms/11-text/raw-html.twig',
+      data: {
+        rawHtml: {
+          content: content.field_lede|field_value,
+        },
+      },
     }],
-    'headerTags': ''
-  }
+    headerTags: '',
+  },
 }
 %}
 
 {%
 set suggestedPages = {
-  'title': 'Related Guides'|t,
-  'titleContext': titleContext,
-  'pages': related_content
+  title: 'Related Guides'|t,
+  titleContext: titleContext,
+  pages: related_content,
 }
 %}
 
@@ -56,22 +56,22 @@ set suggestedPages = {
   {% if search_band == false %}
     {# Use ORG header if checked. #}
     {% if node.field_use_alt_header.value %}
-      {% include '@organisms/legacy-page-banner/page-banner-legacy.twig' %}
+      {{ include('@organisms/legacy-page-banner/page-banner-legacy.twig') }}
       {# If extened header items are used, use action header. #}
       {% if content.field_lede|field_value is not empty or
             content.field_action_header|field_value is not empty or
             content.field_header_cta|field_value is not empty %}
-        {% set actionHeader = {'divider': true} %}
-        {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
+        {% set actionHeader = {divider: true} %}
+        {{ include('@mass_theme/includes/organisms-page-action-header.html.twig') }}
       {% endif %}
     {% else %}
       {# If extened header items are used, use action header. #}
       {% if content.field_action_header|field_value is not empty or
             content.field_header_cta|field_value is not empty %}
-        {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
+        {{ include('@mass_theme/includes/organisms-page-action-header.html.twig') }}
       {% else %}
         {# Use illustrated header as default. #}
-        {% include '@organisms/illustrated-header/illustrated-header.twig' %}
+        {{ include('@organisms/illustrated-header/illustrated-header.twig') }}
       {% endif %}
     {% endif %}
     {% if content.field_action_banner|render|trim is not empty %}
@@ -89,7 +89,7 @@ set suggestedPages = {
     {{ content.field_image_credit }}
   {% endif %}
   {% if related_content is not empty %}
-    {% include '@custom_includes/organisms-suggested-pages.html.twig' with suggestedPages %}
+    {{ include('@custom_includes/organisms-suggested-pages.html.twig', suggestedPages) }}
   {% endif %}
   {{ content.extra_org_feedback_form }}
 {% endblock %}

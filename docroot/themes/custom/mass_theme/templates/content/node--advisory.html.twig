@@ -22,19 +22,19 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
   {% if content.computed_related_to %}
-    {% embed "@molecules/relationship-indicators.twig" with {
-      "relationshipIndicators": {
-        "pageTitle": node.label,
-        "primary": primaryIndicators,
-        "secondary": secondaryIndicators
-      }
+    {% embed '@molecules/relationship-indicators.twig' with {
+      relationshipIndicators: {
+        pageTitle: node.label,
+        primary: primaryIndicators,
+        secondary: secondaryIndicators,
+      },
     } %}
       {% block primaryRelationship %}
         {{ primaryRelationshipContent }}
@@ -46,8 +46,8 @@
   {% endif %}
 
   {{ content.referencing_binders }}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block main %}
@@ -58,50 +58,50 @@
       {% block pageContent %}
         {% if sideContent.contactList %}
           {% set contactList = sideContent.contactList %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
       {% endblock %}
     </div>
   </div>
 <div class="ma__policy-advisory__content">
-  {% include "@organisms/by-template/sticky-toc.twig" with {
-    "stickyTOC": {
-      "title": "Table of Contents"|t,
-      "parent": ".ma__policy-advisory__content",
-      "sections": ".page-content h2"
-    }
-  } %}
+  {{ include('@organisms/by-template/sticky-toc.twig', {
+    stickyTOC: {
+      title: 'Table of Contents'|t,
+      parent: '.ma__policy-advisory__content',
+      sections: '.page-content h2',
+    },
+  }) }}
   <div class="main-content main-content--two">
     <div class="page-content">
       {% if numOfSections %}
          {% for i in range(1, numOfSections) %}
           {% set richText = sections[i] %}
           {% if richText.title %}
-             {% set richText = richText|merge({'compHeading': {
-              'title': richText.title.compHeading.title,
-              'titleContext': richText.title.compHeading.titleContext,
-              'level': level,
-              'sub': '',
-              'id': richText.title.compHeading.id,
-              'centered': ''}}) %}
+             {% set richText = richText|merge({compHeading: {
+              title: richText.title.compHeading.title,
+              titleContext: richText.title.compHeading.titleContext,
+              level: level,
+              sub: '',
+              id: richText.title.compHeading.id,
+              centered: ''}}) %}
           {% endif %}
           {% if richText.richTextContent %}
-              {% set richText = richText|merge({'rteElements': richText.richTextContent.rteElements}) %}
+              {% set richText = richText|merge({rteElements: richText.richTextContent.rteElements}) %}
           {% endif %}
-          {% include "@organisms/by-author/rich-text.twig" %}
+          {{ include('@organisms/by-author/rich-text.twig') }}
         {% endfor %}
       {% endif %}
         {% if content.field_advisory_download|render is not empty %}
         {# Using the field_advisory_download view mode to display the URL for doucments in this section. #}
-          {% embed "@organisms/by-author/form-downloads.twig" with {
-            "formDownloads": {
-              "compHeading": {
-                "title": "Downloads",
-                "id": "downloads",
-                "level": level,
-                "titleContext": "for " ~ node.title.value
-              }
-            }
+          {% embed '@organisms/by-author/form-downloads.twig' with {
+            formDownloads: {
+              compHeading: {
+                title: 'Downloads',
+                id: 'downloads',
+                level: level,
+                titleContext: 'for ' ~ node.title.value,
+              },
+            },
           } %}
             {% block formDownloadLinks %}
               {{ content.field_advisory_download }}
@@ -110,40 +110,40 @@
         {% endif %}
         {% if mainContent.contactList %}
           {% set contactList = mainContent.contactList %}
-          {% set contactList = contactList|merge({'compHeading': {
-            'title': contactList.compHeading.title,
-            'titleContext': contactList.compHeading.titleContext,
-            'level': level,
-            'id': contactList.compHeading.id}}) %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {% set contactList = contactList|merge({compHeading: {
+            title: contactList.compHeading.title,
+            titleContext: contactList.compHeading.titleContext,
+            level: level,
+            id: contactList.compHeading.id}}) %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
         {% if mainContent.footnoteList %}
           {% set footnoteList = mainContent.footnoteList %}
-          {% include "@organisms/by-author/footnote-list.twig" %}
+          {{ include('@organisms/by-author/footnote-list.twig') }}
         {% endif %}
         {% if mainContent.references %}
           {% set headerTags = mainContent.references %}
-          {% include "@molecules/header-tags.twig" %}
+          {{ include('@molecules/header-tags.twig') }}
         {% endif %}
     </div>
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/contact/contact-list.twig" %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({level: level}) %}
+        {% set contactList = contactList|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/contact/contact-list.twig') }}
       {% endif %}
       {% if sideContent.pressListing %}
         {% set pressListing = sideContent.pressListing %}
-        {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level}) %}
-        {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/by-author/press-listing.twig" %}
+        {% set sidebarHeading = pressListing.sidebarHeading|merge({level: level}) %}
+        {% set pressListing = pressListing|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/by-author/press-listing.twig') }}
       {% endif %}
       {% if sideContent.eventListing %}
         {% set eventListing = sideContent.eventListing %}
-        {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level}) %}
-        {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/by-author/event-listing.twig" %}
+        {% set sidebarHeading = eventListing.sidebarHeading|merge({level: level}) %}
+        {% set eventListing = eventListing|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/by-author/event-listing.twig') }}
       {% endif %}
     </aside>
   </div>
