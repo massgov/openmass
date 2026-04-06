@@ -10,14 +10,17 @@ use Drupal\mayflower\Helper;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
- * Normalizes redirected internal links on content entities.
+ * Manager class: entity processing and save flow.
+ *
+ * This class loops entity fields, calls the resolver, and decides if/when
+ * to save revisions. The resolver class only handles link rewrite logic.
  */
 class RedirectLinkNormalizationManager {
   private const REVISION_MESSAGE = 'Revision created to normalize redirected internal links.';
   private const NESTED_REVISION_MESSAGE = 'Revision created to normalize redirected internal links in nested content.';
 
   /**
-   * Constructs the manager.
+   * Creates the manager.
    */
   public function __construct(
     protected RedirectLinkResolver $resolver,
@@ -26,38 +29,44 @@ class RedirectLinkNormalizationManager {
   }
 
   /**
-   * Processes redirect-based links in an entity.
+   * Normalizes redirect-based links on one entity.
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   Node or paragraph entity.
    * @param bool $save
-   *   Whether to persist updates.
+   *   If TRUE, save changes and create revisions when possible.
+   * @param bool $dryRun
+   *   If TRUE, only collect changes and do not write values.
    *
    * @return array
-   *   Processing result.
+   *   Result with keys: changed, skipped, and changes.
    */
-  public function normalizeEntity(ContentEntityInterface $entity, bool $save = TRUE): array {
+  public function normalizeEntity(ContentEntityInterface $entity, bool $save = TRUE, bool $dryRun = FALSE): array {
     if ($entity instanceof Paragraph && Helper::isParagraphOrphan($entity)) {
-      return ['changed' => FALSE, 'skipped' => TRUE];
+      return ['changed' => FALSE, 'skipped' => TRUE, 'changes' => []];
     }
 
-    $changed = FALSE;
-    foreach ($entity->getFields() as $field) {
-      $fieldType = $field->getFieldDefinition()->getType();
-      if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'], TRUE)) {
-        foreach ($field as $item) {
-          $changed = $this->normalizeTextItem($item, $changed);
-        }
-      }
-      elseif ($fieldType === 'link') {
-        foreach ($field as $item) {
-          $changed = $this->normalizeLinkItem($item, $changed);
-        }
-      }
+    $apply = !$dryRun;
+    $result = $this->collectFieldNormalizations($entity, $apply);
+
+    if (!$result['changed']) {
+      return ['changed' => FALSE, 'skipped' => FALSE, 'changes' => []];
     }
 
-    if (!$changed || !$save) {
-      return ['changed' => $changed, 'skipped' => FALSE];
+    if ($dryRun) {
+      return [
+        'changed' => TRUE,
+        'skipped' => FALSE,
+        'changes' => $result['changes'],
+      ];
+    }
+
+    if (!$save) {
+      return [
+        'changed' => TRUE,
+        'skipped' => FALSE,
+        'changes' => $result['changes'],
+      ];
     }
 
     $this->prepareRevision($entity, self::REVISION_MESSAGE);
@@ -68,45 +77,81 @@ class RedirectLinkNormalizationManager {
       $node->save();
     }
 
-    return ['changed' => TRUE, 'skipped' => FALSE];
+    return [
+      'changed' => TRUE,
+      'skipped' => FALSE,
+      'changes' => $result['changes'],
+    ];
   }
 
   /**
-   * Normalize a text item value and return updated changed flag.
+   * Scans text and link fields and updates values when needed.
+   *
+   * @return array
+   *   An array with keys:
+   *   - changed (bool): TRUE when at least one value changed.
+   *   - changes (array): List of changed items (field, delta, kind, before,
+   *     after).
    */
-  private function normalizeTextItem(object $item, bool $changed): bool {
-    if (!isset($item->value) || $item->value === NULL || $item->value === '') {
-      return $changed;
+  private function collectFieldNormalizations(ContentEntityInterface $entity, bool $apply): array {
+    $changed = FALSE;
+    $changes = [];
+
+    foreach ($entity->getFields() as $fieldName => $field) {
+      $fieldType = $field->getFieldDefinition()->getType();
+      if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long'], TRUE)) {
+        foreach ($field as $delta => $item) {
+          if (!isset($item->value) || $item->value === NULL || $item->value === '') {
+            continue;
+          }
+          $before = (string) $item->value;
+          $processed = $this->resolver->normalizeRedirectLinksInText($before);
+          if (!$processed['changed']) {
+            continue;
+          }
+          $changed = TRUE;
+          $changes[] = [
+            'field' => (string) $fieldName,
+            'delta' => (int) $delta,
+            'kind' => 'text',
+            'before' => $before,
+            'after' => $processed['text'],
+          ];
+          if ($apply) {
+            $item->value = $processed['text'];
+          }
+        }
+      }
+      elseif ($fieldType === 'link') {
+        foreach ($field as $delta => $item) {
+          if (empty($item->uri)) {
+            continue;
+          }
+          $before = (string) $item->uri;
+          $processed = $this->resolver->normalizeRedirectLinkUri($before);
+          if (!$processed['changed']) {
+            continue;
+          }
+          $changed = TRUE;
+          $changes[] = [
+            'field' => (string) $fieldName,
+            'delta' => (int) $delta,
+            'kind' => 'link',
+            'before' => $before,
+            'after' => $processed['uri'],
+          ];
+          if ($apply) {
+            $item->uri = $processed['uri'];
+          }
+        }
+      }
     }
 
-    $processed = $this->resolver->normalizeRedirectLinksInText($item->value);
-    if ($processed['changed']) {
-      $item->value = $processed['text'];
-      return TRUE;
-    }
-
-    return $changed;
+    return ['changed' => $changed, 'changes' => $changes];
   }
 
   /**
-   * Normalize a link item URI and return updated changed flag.
-   */
-  private function normalizeLinkItem(object $item, bool $changed): bool {
-    if (empty($item->uri)) {
-      return $changed;
-    }
-
-    $processed = $this->resolver->normalizeRedirectLinkUri($item->uri);
-    if ($processed['changed']) {
-      $item->uri = $processed['uri'];
-      return TRUE;
-    }
-
-    return $changed;
-  }
-
-  /**
-   * Configure revision metadata when supported by entity type.
+   * Sets revision data if the entity supports revisions.
    */
   private function prepareRevision(ContentEntityInterface $entity, string $message): void {
     if ($entity instanceof RevisionableInterface) {

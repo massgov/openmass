@@ -49,7 +49,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => 'published',
     ]);
-    [$sourceStart, $sourceFinal] = $this->createRedirectChain($target);
+    [$sourceStart] = $this->createRedirectChain($target);
 
     $redirectStorage = \Drupal::entityTypeManager()->getStorage('redirect');
     $matching = $redirectStorage->loadByProperties([
@@ -347,6 +347,29 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       ],
     ]);
 
+    // Presave hook rewrites redirect links on first save, so the stored body no
+    // longer contains the redirect path. Put the redirect URL back in the DB so
+    // the bulk command (which loads from storage) has something to normalize.
+    $redirect_markup = '<p><a href="/' . $sourceStart . '">Node-only</a></p>';
+    $nid = (int) $page->id();
+    $vid = (int) $page->getRevisionId();
+    $connection = \Drupal::database();
+    foreach (['node__body', 'node_revision__body'] as $table) {
+      $connection->update($table)
+        ->fields(['body_value' => $redirect_markup])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    $this->assertNotNull($reloaded);
+    $dryPreview = $manager->normalizeEntity($reloaded, FALSE, TRUE);
+    $this->assertNotEmpty($dryPreview['changed'], 'Dry run should detect redirect-based link in body.');
+
     $command = new MassRedirectNormalizerCommands(
       \Drupal::entityTypeManager(),
       \Drupal::service('mass_redirect_normalizer.manager')
@@ -354,17 +377,18 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $rowsObj = $command->normalizeRedirectLinks([
       'entity-type' => 'node',
       'bundle' => 'page',
+      'entity-ids' => (string) $page->id(),
       'limit' => 0,
-      'show-unchanged' => TRUE,
+      'simulate' => TRUE,
     ]);
     $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
 
     $this->assertNotEmpty($rows);
-    $nonSummaryRows = array_filter($rows, fn($row) => ($row['status'] ?? '') !== 'summary');
-    $this->assertNotEmpty($nonSummaryRows);
-    foreach ($nonSummaryRows as $row) {
+    foreach ($rows as $row) {
       $this->assertSame('node', $row['entity_type']);
       $this->assertSame('page', $row['bundle']);
+      $this->assertSame('would_update', $row['status']);
+      $this->assertNotSame($row['before'], $row['after']);
     }
   }
 
@@ -424,6 +448,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $this->assertTrue($result['changed']);
 
     $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
     $links = $reloaded->get('field_social_links')->getValue();
 
     $this->assertStringContainsString($target->toUrl()->toString(), $links[0]['uri']);
@@ -474,6 +500,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $this->assertTrue($result['changed']);
 
     $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
     $item = $reloaded->get('field_social_links')->first();
     $this->assertNotNull($item);
     $this->assertSame('keep-title', $item->title);

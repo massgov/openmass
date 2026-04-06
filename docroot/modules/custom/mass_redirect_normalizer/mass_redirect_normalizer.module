@@ -14,6 +14,5 @@ function mass_redirect_normalizer_entity_presave(EntityInterface $entity) {
 
   /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
   $manager = \Drupal::service('mass_redirect_normalizer.manager');
-  // In presave we mutate field values only; parent entity handles persistence.
   $manager->normalizeEntity($entity, FALSE);
 }

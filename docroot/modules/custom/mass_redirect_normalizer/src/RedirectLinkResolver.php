@@ -11,12 +11,15 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RequestContext;
 
 /**
- * Resolves and rewrites redirect-based internal links.
+ * Resolver class: pure link rewrite logic.
+ *
+ * This class only answers "what should this link become?".
+ * It does not loop entity fields and does not save entities.
  */
 class RedirectLinkResolver {
 
   /**
-   * Creates a resolver instance.
+   * Creates the resolver.
    */
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
@@ -27,7 +30,7 @@ class RedirectLinkResolver {
   }
 
   /**
-   * Normalizes redirected internal links in rich text.
+   * Rewrites redirect-based links in rich text.
    */
   public function normalizeRedirectLinksInText(string $text): array {
     $dom = Html::load($text);
@@ -60,7 +63,7 @@ class RedirectLinkResolver {
   }
 
   /**
-   * Normalizes redirected internal links in link fields.
+   * Rewrites redirect-based links in link fields.
    */
   public function normalizeRedirectLinkUri(string $uri): array {
     $resolved = $this->resolveRedirectTarget($uri);
@@ -78,7 +81,7 @@ class RedirectLinkResolver {
   }
 
   /**
-   * Resolves an internal URL/path through redirect chains.
+   * Follows redirect chain and returns the final local path.
    */
   public function resolveRedirectTarget(string $url, int $maxDepth = 10): array {
     $parsed = parse_url($url) ?: [];
