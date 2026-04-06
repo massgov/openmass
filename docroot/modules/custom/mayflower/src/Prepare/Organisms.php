@@ -350,9 +350,23 @@ class Organisms {
    *      ],... ]
    *    ]
    */
-  public static function prepareLinkList($entity, $field, array $options = []) {
+  public static function prepareLinkList($entity, $field, array $options = [], array &$cache_tags = []) {
 
     $linkList = [];
+
+    if (Helper::isEntityReferenceField($entity, $field)) {
+      foreach (Helper::getReferencedEntitiesFromField($entity, $field) as $referenced_entity) {
+        $cache_tags = array_merge($cache_tags, $referenced_entity->getCacheTags());
+      }
+    }
+    else {
+      foreach ($entity->get($field) as $link) {
+        $linked_entity = Helper::entityFromUrl($link->getUrl());
+        if ($linked_entity instanceof ContentEntityInterface) {
+          $cache_tags = array_merge($cache_tags, $linked_entity->getCacheTags());
+        }
+      }
+    }
 
     // Build description, if option is set.
     if (isset($options['description'])) {
@@ -995,6 +1009,7 @@ class Organisms {
 
     $contact_ids = [];
     foreach ($locations as $location) {
+      $cache_tags = array_merge($cache_tags, $location->getCacheTags());
       foreach ($location->field_ref_contact_info_1 as $contactRef) {
         $contactId = $contactRef->target_id;
         $contact_ids[] = $contactId;
@@ -1003,6 +1018,9 @@ class Organisms {
     }
     // Batch load contact entities all at once.
     $contact_entities = Node::loadMultiple($contact_ids);
+    foreach ($contact_entities as $contact_entity) {
+      $cache_tags = array_merge($cache_tags, $contact_entity->getCacheTags());
+    }
 
     // Override the link to the map of locations if there is only a single
     // location listed and instead link directly to that single location's page.
