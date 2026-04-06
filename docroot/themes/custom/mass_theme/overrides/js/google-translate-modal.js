@@ -4,15 +4,9 @@
   function applyTranslations(wrapper, translations, selectedLanguage) {
     var fallback = translations.en || {};
     var language = translations[selectedLanguage] || fallback;
-    var title = wrapper.querySelector('.ma__modal-title');
     var disclaimer = wrapper.querySelector('#ma__translate-help p');
     var translateAction = wrapper.querySelector('#ma__translate-apply');
     var showOriginalAction = wrapper.querySelector('#ma__translate-reset');
-
-    if (title && language.select_language) {
-      title.textContent = language.select_language;
-      title.lang = selectedLanguage;
-    }
 
     if (disclaimer && language.disclaimer) {
       disclaimer.textContent = language.disclaimer;
