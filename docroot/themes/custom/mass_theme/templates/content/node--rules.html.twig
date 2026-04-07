@@ -13,12 +13,6 @@
   {# Check if primary indicator content exists. #}
   {% set primaryIndicators = null %}
   {% set primaryRelationshipContent = null %}
-  {#
-  {% if content.field_rules_related_collections %}
-    {% set primaryIndicators = { "label": "part of" } %}
-    {% set primaryRelationshipContent = content.field_rules_related_collections %}
-  {% endif %}
-  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
