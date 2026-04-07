@@ -18,7 +18,7 @@ For each **node** or **paragraph**, the code looks at:
 
 It does **not** change random text; it only rewrites values the resolver treats as redirect-based internal links (see integration tests for examples).
 
-## Mre about code
+## Why there are two classes
 
 - `RedirectLinkResolver`:
   - Only link logic.
@@ -28,7 +28,7 @@ It does **not** change random text; it only rewrites values the resolver treats 
   - Entity workflow logic.
   - It loops fields on node/paragraph, calls the resolver, handles dry-run, and saves revisions when needed.
 
-This split keeps code easier to test and easier to maintain.
+This split makes the code easier to test and maintain.
 
 ---
 
@@ -49,6 +49,13 @@ This split keeps code easier to test and easier to maintain.
 | `--bundle=...` | Only that bundle (node type or paragraph type machine name). Still checked after load. |
 | `--entity-ids=1,2,3` | Only these IDs. **Requires** `--entity-type=node` or `paragraph` (**not** `all`). Ignores `--limit`. |
 
+By default, bulk command processes only **published** content.
+
+- Nodes must be published.
+- Paragraphs are processed only when their parent node is published.
+- If a published node has a newer unpublished draft revision, that node and its
+  child paragraphs are skipped by bulk command (so we do not touch draft work).
+
 ### Default table columns
 
 | Column | Notes |
@@ -64,6 +71,8 @@ This split keeps code easier to test and easier to maintain.
 
 - **Orphan paragraphs** — paragraphs that are not attached to real host content (`Helper::isParagraphOrphan()`). They are **not** processed and **do not** appear as rows.
 - Entities with **no** redirect-based links to fix produce **no** rows (empty table is normal).
+- Unpublished/trashed content is skipped.
+- Published content with newer unpublished draft revisions is skipped.
 
 ### Simulate, then run, then verify (manual QA)
 
@@ -73,6 +82,9 @@ This split keeps code easier to test and easier to maintain.
    `ddev drush mass-redirect-normalizer:normalize-links --limit=100`
 3. **Re-check:** run **simulate** again with the same filters. Items that were fixed should **not** show `would_update` anymore (unless something else changed them back).
 
+For big runs, command prints progress notice every 100 scanned entities. This
+is expected and helps confirm it is still running.
+
 For a narrow retest after you know specific IDs:
 
 `ddev drush mass-redirect-normalizer:normalize-links --simulate --entity-type=paragraph --entity-ids=123,456`
@@ -80,6 +92,13 @@ For a narrow retest after you know specific IDs:
 ### Important detail about saved content
 
 On **first save**, `hook_entity_presave()` may already rewrite links in the stored field values. So if you create test content in the UI and then expect the bulk command to “see” the old redirect URL in the database, it might already be normalized. The automated tests handle that case where needed.
+
+Document links in entity-reference-only fields:
+
+- If the field stores only an entity reference (no URL/href string), this
+  command does not rewrite that stored reference value.
+- If a document URL appears in supported text/link fields and points through a
+  redirect, it is covered by this command.
 
 ---
 

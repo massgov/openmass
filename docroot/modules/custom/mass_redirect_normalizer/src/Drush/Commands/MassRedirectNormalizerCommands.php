@@ -8,6 +8,7 @@ use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager;
 use Drupal\mayflower\Helper;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -81,6 +82,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $processed = 0;
     $entitiesChanged = 0;
     $fieldChanges = 0;
+    $progressEvery = 100;
 
     if ($entityIdsOption !== '' && $options['entity-type'] === 'all') {
       throw new \InvalidArgumentException('The --entity-ids option requires --entity-type=node or --entity-type=paragraph.');
@@ -132,12 +134,25 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
         }
 
         // Skip orphan paragraphs.
-        if (Helper::isParagraphOrphan($entity)) {
+        if ($entityType === 'paragraph' && Helper::isParagraphOrphan($entity)) {
+          continue;
+        }
+
+        if (!$this->isEntityEligibleForNormalization($entityType, $entity)) {
           continue;
         }
 
         $result = $this->normalizerManager->normalizeEntity($entity, !$simulate, $simulate);
         $processed++;
+        if ($this->logger() && $processed % $progressEvery === 0) {
+          $this->logger()->notice((string) dt('Progress: scanned @count entities; updated @updated; field changes @diffs. Last @type:@id', [
+            '@count' => $processed,
+            '@updated' => $entitiesChanged,
+            '@diffs' => $fieldChanges,
+            '@type' => $entityType,
+            '@id' => $id,
+          ]));
+        }
         if (!empty($result['changed'])) {
           $entitiesChanged++;
           $changes = $result['changes'] ?? [];
@@ -182,6 +197,56 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     }
 
     return new RowsOfFields($rows);
+  }
+
+  /**
+   * Checks if this entity should be processed by bulk normalization.
+   *
+   * Bulk command targets published content only and skips nodes/paragraphs when
+   * the parent node has a newer unpublished draft revision.
+   */
+  private function isEntityEligibleForNormalization(string $entityType, object $entity): bool {
+    if ($entityType === 'node') {
+      if (!$entity instanceof NodeInterface) {
+        return FALSE;
+      }
+      if (!$entity->isPublished()) {
+        return FALSE;
+      }
+      return !$this->hasNewerUnpublishedDraft($entity);
+    }
+
+    if ($entityType === 'paragraph') {
+      if (!$entity instanceof Paragraph) {
+        return FALSE;
+      }
+      $parentNode = Helper::getParentNode($entity);
+      if (!$parentNode instanceof NodeInterface || !$parentNode->isPublished()) {
+        return FALSE;
+      }
+      return !$this->hasNewerUnpublishedDraft($parentNode);
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Returns TRUE when latest node revision is unpublished and newer.
+   */
+  private function hasNewerUnpublishedDraft(NodeInterface $node): bool {
+    $storage = $this->entityTypeManager->getStorage('node');
+    $latestRevisionId = $storage->getLatestRevisionId($node->id());
+    if (!$latestRevisionId || (int) $latestRevisionId === (int) $node->getRevisionId()) {
+      return FALSE;
+    }
+
+    $revisions = $storage->loadMultipleRevisions([(int) $latestRevisionId]);
+    $latest = $revisions[(int) $latestRevisionId] ?? NULL;
+    if (!$latest instanceof NodeInterface) {
+      return FALSE;
+    }
+
+    return !$latest->isPublished();
   }
 
   /**

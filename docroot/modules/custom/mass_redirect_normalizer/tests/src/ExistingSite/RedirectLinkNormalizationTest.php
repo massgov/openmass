@@ -393,6 +393,42 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests command skips unpublished nodes.
+   */
+  public function testCommandSkipsUnpublishedNode(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $unpublished = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => 'draft',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Unpublished node</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $command = new MassRedirectNormalizerCommands(
+      \Drupal::entityTypeManager(),
+      \Drupal::service('mass_redirect_normalizer.manager')
+    );
+    $rowsObj = $command->normalizeRedirectLinks([
+      'entity-type' => 'node',
+      'entity-ids' => (string) $unpublished->id(),
+      'simulate' => TRUE,
+    ]);
+    $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
+    $this->assertSame([], $rows);
+  }
+
+  /**
    * Tests absolute local URL link-field normalization.
    */
   public function testNormalizeAbsoluteLocalUrlLinkField(): void {
