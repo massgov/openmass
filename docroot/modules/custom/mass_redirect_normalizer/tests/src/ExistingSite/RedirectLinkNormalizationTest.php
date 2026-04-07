@@ -288,6 +288,56 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests redirected document links are rewritten in rich text.
+   */
+  public function testDocumentRedirectIsNormalizedInText(): void {
+    $source = 'doc-source-' . $this->randomMachineName();
+    $target = '/sites/default/files/documents/example.pdf';
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect($target);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(301);
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $text = '<p><a href="/' . $source . '?dl=1#frag">Doc link</a></p>';
+    $normalized = $service->normalizeRedirectLinksInText($text);
+
+    $this->assertTrue($normalized['changed']);
+    $this->assertStringContainsString($target . '?dl=1#frag', $normalized['text']);
+    // Document targets are not node canonical paths, so node metadata is absent.
+    $this->assertStringNotContainsString('data-entity-type="node"', $normalized['text']);
+    $this->assertStringNotContainsString('data-entity-uuid=', $normalized['text']);
+  }
+
+  /**
+   * Tests redirected document links are rewritten in link fields.
+   */
+  public function testDocumentRedirectIsNormalizedInLinkField(): void {
+    $source = 'doc-link-source-' . $this->randomMachineName();
+    $target = '/sites/default/files/documents/example-2.pdf';
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect($target);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(301);
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $normalized = $service->normalizeRedirectLinkUri('internal:/' . $source . '?download=1#part');
+
+    $this->assertTrue($normalized['changed']);
+    $this->assertSame('internal:' . $target . '?download=1#part', $normalized['uri']);
+  }
+
+  /**
    * Tests manager idempotency after first normalization.
    */
   public function testManagerIsIdempotentAfterNormalization(): void {
