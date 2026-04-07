@@ -21,6 +21,7 @@ dependencies:
     - field.field.node.rules.field_rules_ref_contact
     - field.field.node.rules.field_rules_referenced_sources
     - field.field.node.rules.field_rules_related
+    - field.field.node.rules.field_rules_related_collections
     - field.field.node.rules.field_rules_section
     - field.field.node.rules.field_rules_standing
     - field.field.node.rules.field_rules_status
@@ -97,6 +98,7 @@ third_party_settings:
       children:
         - field_rules_ref_contact
         - field_rules_related
+        - field_rules_related_collections
       label: Related
       region: content
       parent_name: group_rules_edit_form
@@ -337,6 +339,14 @@ content:
   field_rules_related:
     type: link_default
     weight: 20
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_rules_related_collections:
+    type: link_default
+    weight: 21
     region: content
     settings:
       placeholder_url: ''
