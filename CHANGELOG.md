@@ -1,5 +1,19 @@
 
 
+## [0.474.0] - April 7, 2026
+
+### Changed
+  - DP-44741: Upgrade to Drupal 11.3.x.
+  
+### Added
+  - DP-45805: Add Entity IDs filter to advanced search for pages and documents allowing bulk ID lookup via popup textarea.
+  - DP-46088: Added service news more page to backstop.
+  
+### Fixed
+  - DP-46079: Fix Gravity Forms iframe not rendering on non-production environments by replacing hardcoded hostname check with config-driven allowed hostnames list.
+  
+
+
 ## [0.473.0] - March 31, 2026
 
 ### Changed
