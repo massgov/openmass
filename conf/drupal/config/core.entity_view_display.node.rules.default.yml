@@ -21,7 +21,6 @@ dependencies:
     - field.field.node.rules.field_rules_ref_contact
     - field.field.node.rules.field_rules_referenced_sources
     - field.field.node.rules.field_rules_related
-    - field.field.node.rules.field_rules_related_collections
     - field.field.node.rules.field_rules_section
     - field.field.node.rules.field_rules_standing
     - field.field.node.rules.field_rules_status
@@ -44,14 +43,6 @@ targetEntityType: node
 bundle: rules
 mode: default
 content:
-  computed_related_to:
-    type: entity_reference_label
-    label: hidden
-    settings:
-      link: true
-    third_party_settings: {  }
-    weight: 24
-    region: content
   content_moderation_control:
     settings: {  }
     third_party_settings: {  }
@@ -181,18 +172,6 @@ content:
       target: ''
     third_party_settings: {  }
     weight: 13
-    region: content
-  field_rules_related_collections:
-    type: dynamic_link_separate
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    weight: 14
     region: content
   field_rules_section:
     type: entity_reference_revisions_entity_view
