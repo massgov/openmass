@@ -49,11 +49,10 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    *   details: Details
    * @default-fields status,entity_type,entity_id,parent_node_id,bundle,field,before,after
    * @aliases mnrl
-   * @option limit Max entities per entity type (0 = no limit).
-   * @option entity-type Entity type: node, paragraph, or all (default).
+   * @option limit Max eligible entities to process total (0 = no limit).
    * @option bundle Limit to this bundle / paragraph type.
-   * @option entity-ids Comma-separated IDs to process only (requires
-   *   --entity-type=node or paragraph, not all). Ignores --limit.
+   * @option entity-ids Comma-separated IDs to process only. IDs are checked
+   *   against both node and paragraph entities. Ignores --limit.
    * @option simulate Dry-run: show diffs only; do not save (same as global `drush --simulate`).
    * @usage mass-redirect-normalizer:normalize-links --simulate --limit=100
    *   Preview changes. Use --format=json for machine-readable output.
@@ -61,15 +60,14 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   public function normalizeRedirectLinks(
     $options = [
       'limit' => 0,
-      'entity-type' => 'all',
       'bundle' => NULL,
       'entity-ids' => NULL,
       'simulate' => FALSE,
     ],
   ): RowsOfFields {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-    $entityTypes = $options['entity-type'] === 'all' ? ['node', 'paragraph'] : [(string) $options['entity-type']];
-    $limit = max(0, (int) $options['limit']);
+    $entityTypes = ['node', 'paragraph'];
+    $limit = max(0, (int) ($options['limit'] ?? 0));
     $entityIdsOption = isset($options['entity-ids']) ? trim((string) $options['entity-ids']) : '';
     try {
       $simulate = !empty($options['simulate']) || Drush::simulate();
@@ -81,31 +79,12 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $rows = [];
     $processed = 0;
     $entitiesChanged = 0;
-    $fieldChanges = 0;
+    $valueUpdates = 0;
     $progressEvery = 100;
-
-    if ($entityIdsOption !== '' && $options['entity-type'] === 'all') {
-      throw new \InvalidArgumentException('The --entity-ids option requires --entity-type=node or --entity-type=paragraph.');
-    }
+    $nodePublishedCache = [];
+    $newerDraftCache = [];
 
     foreach ($entityTypes as $entityType) {
-      if (!in_array($entityType, ['node', 'paragraph'], TRUE)) {
-        $rows[] = [
-          'status' => 'unsupported',
-          'entity_type' => $entityType,
-          'entity_id' => 'N/A',
-          'parent_node_id' => '-',
-          'bundle' => 'N/A',
-          'field' => '-',
-          'delta' => '-',
-          'kind' => '-',
-          'before' => '-',
-          'after' => '-',
-          'details' => 'Unsupported entity type',
-        ];
-        continue;
-      }
-
       if ($entityIdsOption !== '') {
         $ids = array_values(array_filter(array_map('intval', preg_split('/\s*,\s*/', $entityIdsOption))));
       }
@@ -124,6 +103,10 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       }
 
       foreach ($ids as $id) {
+        if ($limit > 0 && $processed >= $limit) {
+          break 2;
+        }
+
         $entity = $this->entityTypeManager->getStorage($entityType)->load($id);
         if (!$entity) {
           continue;
@@ -138,17 +121,22 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
           continue;
         }
 
-        if (!$this->isEntityEligibleForNormalization($entityType, $entity)) {
+        if (!$this->isEntityEligibleForNormalization(
+          $entityType,
+          $entity,
+          $nodePublishedCache,
+          $newerDraftCache,
+        )) {
           continue;
         }
 
         $result = $this->normalizerManager->normalizeEntity($entity, !$simulate, $simulate);
         $processed++;
         if ($this->logger() && $processed % $progressEvery === 0) {
-          $this->logger()->notice((string) dt('Progress: scanned @count entities; updated @updated; field changes @diffs. Last @type:@id', [
+          $this->logger()->notice((string) dt('Progress: processed @count entities; updated @updated; value updates @diffs. Last @type:@id', [
             '@count' => $processed,
             '@updated' => $entitiesChanged,
-            '@diffs' => $fieldChanges,
+            '@diffs' => $valueUpdates,
             '@type' => $entityType,
             '@id' => $id,
           ]));
@@ -156,7 +144,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
         if (!empty($result['changed'])) {
           $entitiesChanged++;
           $changes = $result['changes'] ?? [];
-          $fieldChanges += count($changes);
+          $valueUpdates += count($changes);
           $parentNodeId = '-';
           if ($entityType === 'paragraph' && $entity instanceof Paragraph) {
             $parentNode = Helper::getParentNode($entity);
@@ -188,11 +176,13 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
 
     $mode = $simulate ? 'SIMULATION' : 'EXECUTION';
     if ($this->logger()) {
-      $this->logger()->notice((string) dt('@mode: scanned @count entities; updated: @updated; field changes: @diffs.', [
+      $limitText = $limit > 0 ? (string) $limit : 'none';
+      $this->logger()->notice((string) dt('@mode: processed @count entities (limit: @limit); updated entities: @updated; value updates: @diffs.', [
         '@mode' => $mode,
         '@count' => $processed,
+        '@limit' => $limitText,
         '@updated' => $entitiesChanged,
-        '@diffs' => $fieldChanges,
+        '@diffs' => $valueUpdates,
       ]));
     }
 
@@ -205,15 +195,23 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    * Bulk command targets published content only and skips nodes/paragraphs when
    * the parent node has a newer unpublished draft revision.
    */
-  private function isEntityEligibleForNormalization(string $entityType, object $entity): bool {
+  private function isEntityEligibleForNormalization(
+    string $entityType,
+    object $entity,
+    array &$nodePublishedCache,
+    array &$newerDraftCache,
+  ): bool {
     if ($entityType === 'node') {
       if (!$entity instanceof NodeInterface) {
         return FALSE;
       }
-      if (!$entity->isPublished()) {
+      $nodeId = (int) $entity->id();
+      $isPublished = $nodePublishedCache[$nodeId] ?? $entity->isPublished();
+      $nodePublishedCache[$nodeId] = $isPublished;
+      if (!$isPublished) {
         return FALSE;
       }
-      return !$this->hasNewerUnpublishedDraft($entity);
+      return !$this->hasNewerUnpublishedDraft($entity, $newerDraftCache);
     }
 
     if ($entityType === 'paragraph') {
@@ -221,10 +219,16 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
         return FALSE;
       }
       $parentNode = Helper::getParentNode($entity);
-      if (!$parentNode instanceof NodeInterface || !$parentNode->isPublished()) {
+      if (!$parentNode instanceof NodeInterface) {
         return FALSE;
       }
-      return !$this->hasNewerUnpublishedDraft($parentNode);
+      $parentNodeId = (int) $parentNode->id();
+      $parentPublished = $nodePublishedCache[$parentNodeId] ?? $parentNode->isPublished();
+      $nodePublishedCache[$parentNodeId] = $parentPublished;
+      if (!$parentPublished) {
+        return FALSE;
+      }
+      return !$this->hasNewerUnpublishedDraft($parentNode, $newerDraftCache);
     }
 
     return FALSE;
@@ -233,20 +237,28 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   /**
    * Returns TRUE when latest node revision is unpublished and newer.
    */
-  private function hasNewerUnpublishedDraft(NodeInterface $node): bool {
+  private function hasNewerUnpublishedDraft(NodeInterface $node, array &$cache): bool {
+    $nodeId = (int) $node->id();
+    if (array_key_exists($nodeId, $cache)) {
+      return $cache[$nodeId];
+    }
+
     $storage = $this->entityTypeManager->getStorage('node');
     $latestRevisionId = $storage->getLatestRevisionId($node->id());
     if (!$latestRevisionId || (int) $latestRevisionId === (int) $node->getRevisionId()) {
-      return FALSE;
+      $cache[$nodeId] = FALSE;
+      return $cache[$nodeId];
     }
 
     $revisions = $storage->loadMultipleRevisions([(int) $latestRevisionId]);
     $latest = $revisions[(int) $latestRevisionId] ?? NULL;
     if (!$latest instanceof NodeInterface) {
-      return FALSE;
+      $cache[$nodeId] = FALSE;
+      return $cache[$nodeId];
     }
 
-    return !$latest->isPublished();
+    $cache[$nodeId] = !$latest->isPublished();
+    return $cache[$nodeId];
   }
 
   /**

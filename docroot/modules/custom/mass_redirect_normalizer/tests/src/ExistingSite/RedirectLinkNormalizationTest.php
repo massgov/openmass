@@ -375,9 +375,9 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
-   * Tests command options constrain output by entity type and bundle.
+   * Tests command bundle filter constrains output.
    */
-  public function testCommandOptionsEntityTypeAndBundleFiltering(): void {
+  public function testCommandBundleFiltering(): void {
     $target = $this->createNode([
       'type' => 'org_page',
       'title' => $this->randomMachineName(),
@@ -425,7 +425,6 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       \Drupal::service('mass_redirect_normalizer.manager')
     );
     $rowsObj = $command->normalizeRedirectLinks([
-      'entity-type' => 'node',
       'bundle' => 'page',
       'entity-ids' => (string) $page->id(),
       'limit' => 0,
@@ -435,7 +434,6 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
 
     $this->assertNotEmpty($rows);
     foreach ($rows as $row) {
-      $this->assertSame('node', $row['entity_type']);
       $this->assertSame('page', $row['bundle']);
       $this->assertSame('would_update', $row['status']);
       $this->assertNotSame($row['before'], $row['after']);
@@ -470,7 +468,6 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       \Drupal::service('mass_redirect_normalizer.manager')
     );
     $rowsObj = $command->normalizeRedirectLinks([
-      'entity-type' => 'node',
       'entity-ids' => (string) $unpublished->id(),
       'simulate' => TRUE,
     ]);

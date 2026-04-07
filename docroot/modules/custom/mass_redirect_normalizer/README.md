@@ -44,10 +44,9 @@ This split makes the code easier to test and maintain.
 | Option | Meaning |
 |--------|---------|
 | `--simulate` | Dry run: **no** database writes. Same idea as global `ddev drush --simulate ...`. |
-| `--limit=N` | Max entities **per entity type** to load from the query. **`0` = no limit.** When `--entity-type=all`, you get up to **N nodes** and up to **N paragraphs** (two separate caps). |
-| `--entity-type=node\|paragraph\|all` | Default **`all`** (nodes and paragraphs). |
+| `--limit=N` | Max eligible entities to process **total** across node + paragraph. Command stops when it reaches `N`. **`0` = no limit. |
 | `--bundle=...` | Only that bundle (node type or paragraph type machine name). Still checked after load. |
-| `--entity-ids=1,2,3` | Only these IDs. **Requires** `--entity-type=node` or `paragraph` (**not** `all`). Ignores `--limit`. |
+| `--entity-ids=1,2,3` | Only these IDs. IDs are checked in both node and paragraph entities. Ignores `--limit`. |
 
 By default, bulk command processes only **published** content.
 
@@ -82,12 +81,12 @@ By default, bulk command processes only **published** content.
    `ddev drush mass-redirect-normalizer:normalize-links --limit=100`
 3. **Re-check:** run **simulate** again with the same filters. Items that were fixed should **not** show `would_update` anymore (unless something else changed them back).
 
-For big runs, command prints progress notice every 100 scanned entities. This
+For big runs, command prints progress notice every 100 processed entities. This
 is expected and helps confirm it is still running.
 
 For a narrow retest after you know specific IDs:
 
-`ddev drush mass-redirect-normalizer:normalize-links --simulate --entity-type=paragraph --entity-ids=123,456`
+`ddev drush mass-redirect-normalizer:normalize-links --simulate --entity-ids=123,456`
 
 ### Important detail about saved content
 
@@ -128,7 +127,7 @@ ddev exec ./vendor/bin/phpunit docroot/modules/custom/mass_redirect_normalizer/t
   - Multi-value link field handling (only redirecting values change).
   - Link item metadata preservation (`title`, `options`).
 - Drush command behavior:
-  - Entity type and bundle filters.
+  - Bundle filter.
   - Targeted runs with `--entity-ids`.
   - Simulate mode row output (`would_update`) and URL before/after columns.
 
