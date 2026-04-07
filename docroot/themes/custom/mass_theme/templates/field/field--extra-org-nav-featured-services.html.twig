@@ -73,6 +73,6 @@
   {% set linkList = linkList|merge({more: more}) %}
 {% endif %}
 
-{% include '@organisms/by-author/link-list.twig' with {
+{{ include('@organisms/by-author/link-list.twig', {
   linkList: linkList,
-} %}
+}) }}

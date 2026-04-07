@@ -42,23 +42,23 @@
 {# Set top heading level for the component. #}
 {% set level = 4 %}
 
-{% embed "@molecules/action-step.twig" with {
-  "actionStep": {
-    "accordion": false,
-    "isExpanded": true,
-    "title": content.field_next_step_title,
-    "level": level,
+{% embed '@molecules/action-step.twig' with {
+  actionStep: {
+    accordion: false,
+    isExpanded: true,
+    title: content.field_next_step_title,
+    level: level,
     richText: {
       rteElements: [{
-        "path": "@atoms/11-text/raw-html.twig",
-        "data": {
-          "rawHtml": {
-            "content": content.field_next_step_details
-          }
-        }
-      }]
-    }
-  }
+        path: '@atoms/11-text/raw-html.twig',
+        data: {
+          rawHtml: {
+            content: content.field_next_step_details,
+          },
+        },
+      }],
+    },
+  },
 } %}
   {% block formDownloads %}
     {{ content.field_next_step_downloads }}

@@ -3892,14 +3892,27 @@ function mass_theme_preprocess_menu(&$variables) {
   // Use this formatting for Utility nav.
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'utility') {
     // Get Theme settings languages if available.
-    if (theme_get_setting('languages', 'mass_theme')) {
-      $variables['availableLanguages'] = array_map(static function (array $language) {
+    $selected_languages = \Drupal::service('Drupal\Core\Extension\ThemeSettingsProvider')->getSetting('languages', 'mass_theme');
+    if ($selected_languages) {
+      $selected_languages = array_filter($selected_languages);
+      $google_translate_languages = [];
+      $available_languages = mass_theme_googletranslate_options_languages();
+
+      foreach ($selected_languages as $language) {
+        if (array_key_exists($language, $available_languages)) {
+          $google_translate_languages[$language] = $available_languages[$language];
+        }
+      }
+
+      $variables['availableLanguages'] = [];
+      foreach ($google_translate_languages as $language_code => $language) {
         $english = $language['english'];
         $native = $language['native'] ?? $english;
 
-        return $english === $native ? $english : $english . ' - ' . $native;
-      }, mass_theme_googletranslate_options_languages());
-      $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
+        $variables['availableLanguages'][$language_code] = $english === $native ? $english : $english . ' - ' . $native;
+      }
+      $variables['languages'] = implode(',', $selected_languages);
+      $variables['#attached']['drupalSettings']['massTheme']['googleTranslateLanguages'] = $google_translate_languages;
     }
     foreach ($variables['items'] as &$item) {
       if ($item['url']->isRouted()) {
@@ -6659,52 +6672,71 @@ function mass_theme_preprocess_paragraph__icon_links(&$variables) {
  * Language config for Google translate.
  */
 function mass_theme_googletranslate_options_languages() {
+  $default_language_codes = mass_theme_googletranslate_default_languages();
+  return \Drupal::service('Drupal\Core\Extension\ThemeSettingsProvider')->getSetting('googletranslate_languages', 'mass_theme') ?: $default_language_codes;
+}
+
+/**
+ * Gets the default Google Translate language configuration.
+ */
+function mass_theme_googletranslate_default_languages() {
   $language_codes = [
-    'en' => ['english' => 'English', 'native' => 'English'],
-    'af' => ['english' => 'Afrikaans', 'native' => 'Afrikaans'],
-    'sq' => ['english' => 'Albanian', 'native' => 'Shqip'],
-    'am' => ['english' => 'Amharic', 'native' => 'አማርኛ'],
-    'ar' => ['english' => 'Arabic', 'native' => 'العربية'],
-    'hy' => ['english' => 'Armenian', 'native' => 'Հայերեն'],
-    'zh-CN' => ['english' => 'Chinese (Simplified)', 'native' => '简体中文'],
-    'zh-TW' => ['english' => 'Chinese (Traditional)', 'native' => '繁體中文'],
-    'tl' => ['english' => 'Filipino', 'native' => 'Filipino'],
-    'fr' => ['english' => 'French', 'native' => 'Français'],
-    'de' => ['english' => 'German', 'native' => 'Deutsch'],
-    'el' => ['english' => 'Greek', 'native' => 'Ελληνικά'],
-    'gu' => ['english' => 'Gujarati', 'native' => 'ગુજરાતી'],
-    'ht' => ['english' => 'Haitian Creole', 'native' => 'Kreyòl Ayisyen'],
-    'iw' => ['english' => 'Hebrew', 'native' => 'עברית'],
-    'hi' => ['english' => 'Hindi', 'native' => 'हिन्दी'],
-    'hmn' => ['english' => 'Hmong', 'native' => 'Hmoob'],
-    'it' => ['english' => 'Italian', 'native' => 'Italiano'],
-    'ja' => ['english' => 'Japanese', 'native' => '日本語'],
-    'km' => ['english' => 'Khmer', 'native' => 'ភាសាខ្មែរ'],
-    'rw' => ['english' => 'Kinyarwanda', 'native' => 'Kinyarwanda'],
-    'ko' => ['english' => 'Korean', 'native' => '한국어'],
-    'lo' => ['english' => 'Lao', 'native' => 'ລາວ'],
-    'ml' => ['english' => 'Malayalam', 'native' => 'മലയാളം'],
-    'my' => ['english' => 'Myanmar (Burmese)', 'native' => 'မြန်မာ'],
-    'ne' => ['english' => 'Nepali', 'native' => 'नेपाली'],
-    'ps' => ['english' => 'Pashto', 'native' => 'پښتو'],
-    'fa' => ['english' => 'Persian', 'native' => 'فارسی'],
-    'pl' => ['english' => 'Polish', 'native' => 'Polski'],
-    'pt' => ['english' => 'Portuguese (Brazil)', 'native' => 'Português'],
-    'ro' => ['english' => 'Romanian', 'native' => 'Română'],
-    'ru' => ['english' => 'Russian', 'native' => 'Русский'],
-    'so' => ['english' => 'Somali', 'native' => 'Soomaali'],
-    'es' => ['english' => 'Spanish', 'native' => 'Español'],
-    'sw' => ['english' => 'Swahili', 'native' => 'Kiswahili'],
-    'ta' => ['english' => 'Tamil', 'native' => 'தமிழ்'],
-    'te' => ['english' => 'Telugu', 'native' => 'తెలుగు'],
-    'th' => ['english' => 'Thai', 'native' => 'ไทย'],
-    'ti' => ['english' => 'Tigrinya', 'native' => 'ትግርኛ'],
-    'tr' => ['english' => 'Turkish', 'native' => 'Türkçe'],
-    'uk' => ['english' => 'Ukrainian', 'native' => 'Українська'],
-    'ur' => ['english' => 'Urdu', 'native' => 'اردو'],
-    'vi' => ['english' => 'Vietnamese', 'native' => 'Tiếng Việt'],
+    'en' => ['english' => 'English', 'native' => 'English', 'disclaimer' => 'Disclaimer: This feature uses the Google Translate Widget. Due to the limitation of machine translation, some pages or content may not be translated accurately.', 'translate_action' => 'Translate', 'show_original_action' => 'Show original'],
+    'af' => ['english' => 'Afrikaans', 'native' => 'Afrikaans', 'disclaimer' => 'Vrywaring: Hierdie funksie gebruik die Google Translate Widget. Weens die beperking van masjienvertaling, kan sommige bladsye of inhoud dalk nie akkuraat vertaal word nie.', 'translate_action' => 'Vertaal', 'show_original_action' => 'Wys oorspronklike'],
+    'sq' => ['english' => 'Albanian', 'native' => 'Shqip', 'disclaimer' => 'Mohim përgjegjësie: Kjo veçori përdor Google Translate Widget. Për shkak të kufizimeve të përkthimit automatik, disa faqe ose përmbajtje mund të mos përkthehen saktësisht.', 'translate_action' => 'Përkthe', 'show_original_action' => 'Shfaq origjinalin'],
+    'am' => ['english' => 'Amharic', 'native' => 'አማርኛ', 'disclaimer' => 'ማስተባበያ፦ ይህ ባህሪ Google Translate Widget ይጠቀማል። በማሽን ትርጉም ገደቦች ምክንያት፣ አንዳንድ ገጾች ወይም ይዘቶች በትክክል ላይተረጎሙ ይችላሉ።', 'translate_action' => 'ተርጉም', 'show_original_action' => 'ዋናውን አሳይ'],
+    'ar' => ['english' => 'Arabic', 'native' => 'العربية', 'disclaimer' => 'إخلاء مسؤولية: تستخدم هذه الميزة أداة Google Translate. نظرًا لقيود الترجمة الآلية، قد لا تتم ترجمة بعض الصفحات أو المحتوى بدقة.', 'translate_action' => 'ترجم', 'show_original_action' => 'إظهار النص الأصلي'],
+    'hy' => ['english' => 'Armenian', 'native' => 'Հայերեն', 'disclaimer' => 'Հրաժարում պատասխանատվությունից. Այս հնարավորությունը օգտագործում է Google Translate Widget-ը։ Մեքենայական թարգմանության սահմանափակումների պատճառով որոշ էջեր կամ բովանդակություն կարող են ճշգրիտ չթարգմանվել։', 'translate_action' => 'Թարգմանել', 'show_original_action' => 'Ցույց տալ բնօրինակը'],
+    'zh-CN' => ['english' => 'Chinese (Simplified)', 'native' => '简体中文', 'disclaimer' => '免责声明：此功能使用 Google Translate Widget。由于机器翻译的局限性，某些页面或内容可能无法被准确翻译。', 'translate_action' => '翻译', 'show_original_action' => '显示原文'],
+    'zh-TW' => ['english' => 'Chinese (Traditional)', 'native' => '繁體中文', 'disclaimer' => '免責聲明：此功能使用 Google Translate Widget。由於機器翻譯的限制，某些頁面或內容可能無法被準確翻譯。', 'translate_action' => '翻譯', 'show_original_action' => '顯示原文'],
+    'tl' => ['english' => 'Filipino', 'native' => 'Filipino', 'disclaimer' => 'Paunawa: Ginagamit ng tampok na ito ang Google Translate Widget. Dahil sa limitasyon ng machine translation, maaaring may ilang pahina o nilalaman na hindi maisalin nang tumpak.', 'translate_action' => 'Isalin', 'show_original_action' => 'Ipakita ang orihinal'],
+    'fr' => ['english' => 'French', 'native' => 'Français', 'disclaimer' => 'Avertissement : Cette fonctionnalité utilise le widget Google Traduction. En raison des limites de la traduction automatique, certaines pages ou certains contenus peuvent ne pas être traduits avec exactitude.', 'translate_action' => 'Traduire', 'show_original_action' => 'Afficher l’original'],
+    'de' => ['english' => 'German', 'native' => 'Deutsch', 'disclaimer' => 'Haftungsausschluss: Diese Funktion verwendet das Google Translate Widget. Aufgrund der Einschränkungen maschineller Übersetzung werden einige Seiten oder Inhalte möglicherweise nicht korrekt übersetzt.', 'translate_action' => 'Übersetzen', 'show_original_action' => 'Original anzeigen'],
+    'el' => ['english' => 'Greek', 'native' => 'Ελληνικά', 'disclaimer' => 'Αποποίηση ευθύνης: Αυτή η λειτουργία χρησιμοποιεί το Google Translate Widget. Λόγω των περιορισμών της μηχανικής μετάφρασης, ορισμένες σελίδες ή περιεχόμενο ενδέχεται να μην μεταφραστούν με ακρίβεια.', 'translate_action' => 'Μετάφραση', 'show_original_action' => 'Εμφάνιση πρωτοτύπου'],
+    'gu' => ['english' => 'Gujarati', 'native' => 'ગુજરાતી', 'disclaimer' => 'અસ્વીકરણ: આ સુવિધા Google Translate Widget નો ઉપયોગ કરે છે. મશીન અનુવાદની મર્યાદાઓને કારણે, કેટલીક પેજો અથવા સામગ્રીનું અનુવાદ ચોક્કસ રીતે ન થઈ શકે.', 'translate_action' => 'અનુવાદ કરો', 'show_original_action' => 'મૂળ બતાવો'],
+    'ht' => ['english' => 'Haitian Creole', 'native' => 'Kreyòl Ayisyen', 'disclaimer' => 'Avètisman: Fonksyon sa a itilize Google Translate Widget. Akòz limit tradiksyon machin, kèk paj oswa kontni ka pa tradui avèk presizyon.', 'translate_action' => 'Tradui', 'show_original_action' => 'Montre orijinal la'],
+    'iw' => ['english' => 'Hebrew', 'native' => 'עברית', 'disclaimer' => 'כתב ויתור: תכונה זו משתמשת ב-Google Translate Widget. בשל המגבלות של תרגום מכונה, ייתכן שחלק מהדפים או התוכן לא יתורגמו במדויק.', 'translate_action' => 'תרגם', 'show_original_action' => 'הצג מקור'],
+    'hi' => ['english' => 'Hindi', 'native' => 'हिन्दी', 'disclaimer' => 'अस्वीकरण: यह सुविधा Google Translate Widget का उपयोग करती है। मशीन अनुवाद की सीमाओं के कारण, कुछ पृष्ठों या सामग्री का अनुवाद सटीक रूप से नहीं हो सकता है।', 'translate_action' => 'अनुवाद करें', 'show_original_action' => 'मूल दिखाएं'],
+    'hmn' => ['english' => 'Hmong', 'native' => 'Hmoob', 'disclaimer' => 'Lus ceeb toom: Qhov no siv Google Translate Widget. Vim muaj kev txwv ntawm kev txhais lus tshuab, qee nplooj ntawv lossis cov ntsiab lus yuav tsis raug txhais kom raug.', 'translate_action' => 'Txhais', 'show_original_action' => 'Qhia qhov qub'],
+    'it' => ['english' => 'Italian', 'native' => 'Italiano', 'disclaimer' => 'Avviso di esclusione di responsabilità: Questa funzionalità utilizza il widget Google Translate. A causa dei limiti della traduzione automatica, alcune pagine o contenuti potrebbero non essere tradotti accuratamente.', 'translate_action' => 'Traduci', 'show_original_action' => 'Mostra originale'],
+    'ja' => ['english' => 'Japanese', 'native' => '日本語', 'disclaimer' => '免責事項: この機能は Google Translate Widget を使用しています。機械翻訳の制限により、一部のページまたはコンテンツが正確に翻訳されない場合があります。', 'translate_action' => '翻訳', 'show_original_action' => '原文を表示'],
+    'km' => ['english' => 'Khmer', 'native' => 'ភាសាខ្មែរ', 'disclaimer' => 'ការបដិសេធ: មុខងារនេះប្រើ Google Translate Widget។ ដោយសារការកំណត់របស់ការបកប្រែដោយម៉ាស៊ីន ទំព័រមួយចំនួន ឬមាតិកាខ្លះ អាចមិនត្រូវបានបកប្រែបានត្រឹមត្រូវទេ។', 'translate_action' => 'បកប្រែ', 'show_original_action' => 'បង្ហាញអត្ថបទដើម'],
+    'rw' => ['english' => 'Kinyarwanda', 'native' => 'Kinyarwanda', 'disclaimer' => 'Icyitonderwa: Iyi mikorere ikoresha Google Translate Widget. Kubera imipaka y\'ubuhinduzi bw\'imashini, hari impapuro cyangwa ibikubiyemo bishobora kudahindurwa neza.', 'translate_action' => 'Hindura', 'show_original_action' => 'Erekana umwimerere'],
+    'ko' => ['english' => 'Korean', 'native' => '한국어', 'disclaimer' => '면책 조항: 이 기능은 Google Translate Widget을 사용합니다. 기계 번역의 한계로 인해 일부 페이지나 콘텐츠가 정확하게 번역되지 않을 수 있습니다.', 'translate_action' => '번역', 'show_original_action' => '원문 보기'],
+    'lo' => ['english' => 'Lao', 'native' => 'ລາວ', 'disclaimer' => 'ຂໍ້ປະຕິເສດ: ຄຸນສົມບັດນີ້ໃຊ້ Google Translate Widget. ເນື່ອງຈາກຂໍ້ຈຳກັດຂອງການແປພາສາດ້ວຍເຄື່ອງ ບາງໜ້າ ຫຼື ເນື້ອຫາ ອາດຈະບໍ່ຖືກແປຢ່າງຖືກຕ້ອງ.', 'translate_action' => 'ແປ', 'show_original_action' => 'ສະແດງຕົ້ນສະບັບ'],
+    'ml' => ['english' => 'Malayalam', 'native' => 'മലയാളം', 'disclaimer' => 'നിരാകരണം: ഈ സവിശേഷത Google Translate Widget ഉപയോഗിക്കുന്നു. മെഷീൻ വിവർത്തനത്തിന്റെ പരിമിതികളുടെ കാരണം, ചില പേജുകളോ ഉള്ളടക്കങ്ങളോ കൃത്യമായി വിവർത്തനം ചെയ്യപ്പെടാതിരിക്കാം.', 'translate_action' => 'പരിഭാഷപ്പെടുത്തുക', 'show_original_action' => 'മൂലം കാണിക്കുക'],
+    'my' => ['english' => 'Myanmar (Burmese)', 'native' => 'မြန်မာ', 'disclaimer' => 'ရှင်းလင်းချက်: ဤလုပ်ဆောင်ချက်သည် Google Translate Widget ကို အသုံးပြုပါသည်။ စက်ဖြင့်ဘာသာပြန်ခြင်း၏ ကန့်သတ်ချက်များကြောင့် စာမျက်နှာများ သို့မဟုတ် အကြောင်းအရာအချို့ကို တိကျစွာ ဘာသာပြန်နိုင်မည်မဟုတ်ပါ။', 'translate_action' => 'ဘာသာပြန်ရန်', 'show_original_action' => 'မူရင်းကိုပြပါ'],
+    'ne' => ['english' => 'Nepali', 'native' => 'नेपाली', 'disclaimer' => 'अस्वीकरण: यो सुविधाले Google Translate Widget प्रयोग गर्छ। मेशिन अनुवादको सीमितताका कारण केही पृष्ठ वा सामग्री सही रूपमा अनुवाद नहुन सक्छ।', 'translate_action' => 'अनुवाद गर्नुहोस्', 'show_original_action' => 'मूल देखाउनुहोस्'],
+    'ps' => ['english' => 'Pashto', 'native' => 'پښتو', 'disclaimer' => 'خبرتیا: دا ځانګړنه د Google Translate Widget کاروي. د ماشيني ژباړې د محدوديتونو له امله، ځینې پاڼې يا منځپانګه ښايي په سمه توګه ژباړل شوې نه وي.', 'translate_action' => 'ژباړه', 'show_original_action' => 'اصلي وښایئ'],
+    'fa' => ['english' => 'Persian', 'native' => 'فارسی', 'disclaimer' => 'سلب مسئولیت: این قابلیت از Google Translate Widget استفاده می‌کند. به دلیل محدودیت‌های ترجمه ماشینی، ممکن است برخی از صفحات یا محتوا به‌طور دقیق ترجمه نشوند.', 'translate_action' => 'ترجمه', 'show_original_action' => 'نمایش متن اصلی'],
+    'pl' => ['english' => 'Polish', 'native' => 'Polski', 'disclaimer' => 'Zastrzeżenie: Ta funkcja korzysta z Google Translate Widget. Ze względu na ograniczenia tłumaczenia maszynowego niektóre strony lub treści mogą nie zostać przetłumaczone dokładnie.', 'translate_action' => 'Przetłumacz', 'show_original_action' => 'Pokaż oryginał'],
+    'pt' => ['english' => 'Portuguese (Brazil)', 'native' => 'Português', 'disclaimer' => 'Aviso legal: Este recurso usa o Google Translate Widget. Devido às limitações da tradução automática, algumas páginas ou conteúdos podem não ser traduzidos com precisão.', 'translate_action' => 'Traduzir', 'show_original_action' => 'Mostrar original'],
+    'ro' => ['english' => 'Romanian', 'native' => 'Română', 'disclaimer' => 'Declinare a responsabilității: Această funcție folosește Google Translate Widget. Din cauza limitărilor traducerii automate, este posibil ca unele pagini sau conținut să nu fie traduse cu acuratețe.', 'translate_action' => 'Tradu', 'show_original_action' => 'Arată originalul'],
+    'ru' => ['english' => 'Russian', 'native' => 'Русский', 'disclaimer' => 'Отказ от ответственности: Эта функция использует Google Translate Widget. Из-за ограничений машинного перевода некоторые страницы или материалы могут быть переведены неточно.', 'translate_action' => 'Перевести', 'show_original_action' => 'Показать оригинал'],
+    'so' => ['english' => 'Somali', 'native' => 'Soomaali', 'disclaimer' => 'Afeef: Sifadan waxay isticmaashaa Google Translate Widget. Sababo la xiriira xaddidaadaha turjumaadda mashiinka, bogag ama waxyaabo qaar si sax ah looma turjumi karo.', 'translate_action' => 'Tarjum', 'show_original_action' => 'Muuji asalka'],
+    'es' => ['english' => 'Spanish', 'native' => 'Español', 'disclaimer' => 'Descargo de responsabilidad: Esta función utiliza el widget de Google Translate. Debido a las limitaciones de la traducción automática, es posible que algunas páginas o contenidos no se traduzcan con precisión.', 'translate_action' => 'Traducir', 'show_original_action' => 'Mostrar original'],
+    'sw' => ['english' => 'Swahili', 'native' => 'Kiswahili', 'disclaimer' => 'Kanusho: Kipengele hiki kinatumia Google Translate Widget. Kutokana na mipaka ya tafsiri ya mashine, baadhi ya kurasa au maudhui huenda yasitafsiriwe kwa usahihi.', 'translate_action' => 'Tafsiri', 'show_original_action' => 'Onyesha asili'],
+    'ta' => ['english' => 'Tamil', 'native' => 'தமிழ்', 'disclaimer' => 'பொறுப்புத்துறப்பு: இந்த அம்சம் Google Translate Widget-ஐ பயன்படுத்துகிறது. இயந்திர மொழிபெயர்ப்பின் வரம்புகள் காரணமாக, சில பக்கங்கள் அல்லது உள்ளடக்கம் துல்லியமாக மொழிபெயர்க்கப்படாமல் இருக்கலாம்.', 'translate_action' => 'மொழிபெயர்க்க', 'show_original_action' => 'அசலைக் காட்டு'],
+    'te' => ['english' => 'Telugu', 'native' => 'తెలుగు', 'disclaimer' => 'నిరాకరణ: ఈ ఫీచర్ Google Translate Widget ను ఉపయోగిస్తుంది. యంత్ర అనువాద పరిమితుల కారణంగా, కొన్ని పేజీలు లేదా కంటెంట్ ఖచ్చితంగా అనువదించబడకపోవచ్చు.', 'translate_action' => 'అనువదించు', 'show_original_action' => 'అసలును చూపు'],
+    'th' => ['english' => 'Thai', 'native' => 'ไทย', 'disclaimer' => 'ข้อจำกัดความรับผิดชอบ: ฟีเจอร์นี้ใช้ Google Translate Widget เนื่องจากข้อจำกัดของการแปลด้วยเครื่อง บางหน้าหรือเนื้อหาอาจไม่ได้รับการแปลอย่างถูกต้อง', 'translate_action' => 'แปล', 'show_original_action' => 'แสดงต้นฉบับ'],
+    'ti' => ['english' => 'Tigrinya', 'native' => 'ትግርኛ', 'disclaimer' => 'ሓላፍነት ምእላይ: እዚ ባህሪ Google Translate Widget ይጥቀም። ብምኽንያት ውሱንነት ማሽን ትርጉም፣ ገለ ገጻት ወይ ይዘት ብትኽክል ኣይትርጎምን ክኸውን ይኽእል።', 'translate_action' => 'ተርጉም', 'show_original_action' => 'መበቆላዊ ኣርእይ'],
+    'tr' => ['english' => 'Turkish', 'native' => 'Türkçe', 'disclaimer' => 'Sorumluluk reddi: Bu özellik Google Translate Widget kullanır. Makine çevirisinin sınırlamaları nedeniyle bazı sayfalar veya içerikler doğru şekilde çevrilmeyebilir.', 'translate_action' => 'Çevir', 'show_original_action' => 'Orijinali göster'],
+    'uk' => ['english' => 'Ukrainian', 'native' => 'Українська', 'disclaimer' => 'Застереження: Ця функція використовує Google Translate Widget. Через обмеження машинного перекладу деякі сторінки або вміст можуть бути перекладені неточно.', 'translate_action' => 'Перекласти', 'show_original_action' => 'Показати оригінал'],
+    'ur' => ['english' => 'Urdu', 'native' => 'اردو', 'disclaimer' => 'اعلانِ لاتعلقی: یہ فیچر Google Translate Widget استعمال کرتا ہے۔ مشینی ترجمے کی حدود کی وجہ سے، کچھ صفحات یا مواد درست طور پر ترجمہ نہیں ہو سکتے۔', 'translate_action' => 'ترجمہ کریں', 'show_original_action' => 'اصل دکھائیں'],
+    'vi' => ['english' => 'Vietnamese', 'native' => 'Tiếng Việt', 'disclaimer' => 'Tuyên bố miễn trừ trách nhiệm: Tính năng này sử dụng Google Translate Widget. Do hạn chế của dịch máy, một số trang hoặc nội dung có thể không được dịch chính xác.', 'translate_action' => 'Dịch', 'show_original_action' => 'Hiển thị bản gốc'],
   ];
   return $language_codes;
+}
+
+/**
+ * Gets the editable Google Translate override field labels.
+ */
+function mass_theme_googletranslate_override_fields() {
+  return [
+    'translate_action' => t('Translate'),
+    'show_original_action' => t('Show original'),
+    'disclaimer' => t('Disclaimer'),
+  ];
 }
 
 /**
@@ -6712,6 +6744,7 @@ function mass_theme_googletranslate_options_languages() {
  */
 function mass_theme_form_system_theme_settings_alter(&$form, $form_state) {
   $language_list = [];
+  $default_languages = mass_theme_googletranslate_default_languages();
   $languages = mass_theme_googletranslate_options_languages();
   foreach ($languages as $language_code => $language) {
     $language_list[$language_code] = $language['english'];
@@ -6729,6 +6762,77 @@ function mass_theme_form_system_theme_settings_alter(&$form, $form_state) {
     '#title' => t('Choose google translate languages?'),
     '#default_value' => theme_get_setting('languages', 'mass_theme'),
   ];
+
+  $form['mass_theme_settings']['googletranslate_languages'] = [
+    '#type' => 'details',
+    '#title' => t('Translated strings'),
+    '#description' => t('Update the text used for the selected Google Translate languages. Clearing a field resets it to the default value.'),
+    '#open' => FALSE,
+    '#tree' => TRUE,
+  ];
+
+  $override_fields = mass_theme_googletranslate_override_fields();
+  foreach ($languages as $language_code => $language) {
+    $form['mass_theme_settings']['googletranslate_languages'][$language_code] = [
+      '#type' => 'details',
+      '#title' => t('@language (@code)', [
+        '@language' => $language['english'],
+        '@code' => $language_code,
+      ]),
+      '#open' => FALSE,
+      '#states' => [
+        'visible' => [
+          ':input[name="languages[' . $language_code . ']"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    foreach ($override_fields as $field_name => $field_title) {
+      $field = [
+        '#type' => $field_name === 'disclaimer' ? 'textarea' : 'textfield',
+        '#title' => $field_title,
+        '#default_value' => $language[$field_name],
+        '#placeholder' => $default_languages[$language_code][$field_name],
+      ];
+
+      if ($field_name === 'disclaimer') {
+        $field['#rows'] = 3;
+      }
+
+      $form['mass_theme_settings']['googletranslate_languages'][$language_code][$field_name] = $field;
+    }
+  }
+
+  $form['#submit'][] = 'mass_theme_googletranslate_theme_settings_submit';
+}
+
+/**
+ * Merges Google Translate theme setting edits into the canonical language map.
+ */
+function mass_theme_googletranslate_theme_settings_submit($form, $form_state) {
+  $submitted_languages = $form_state->getValue('googletranslate_languages') ?: [];
+  $languages = mass_theme_googletranslate_options_languages();
+  $default_languages = mass_theme_googletranslate_default_languages();
+  $editable_fields = array_keys(mass_theme_googletranslate_override_fields());
+
+  foreach ($submitted_languages as $language_code => $updates) {
+    if (!isset($languages[$language_code]) || !is_array($updates)) {
+      continue;
+    }
+
+    foreach ($editable_fields as $field_name) {
+      if (!array_key_exists($field_name, $updates)) {
+        continue;
+      }
+
+      $value = $updates[$field_name];
+      $languages[$language_code][$field_name] = $value === '' || $value === NULL
+        ? $default_languages[$language_code][$field_name]
+        : $value;
+    }
+  }
+
+  $form_state->setValue('googletranslate_languages', $languages);
 }
 
 /**
@@ -7253,7 +7357,24 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
+    // Avoid duplicating subsequent links if preprocessing runs multiple times
+    // on the same paragraph object within a request.
+    $first_paragraph = $variables[$component_name][$first][0] ?? NULL;
+    $next_paragraph = $link_group[0] ?? NULL;
+    if ($first_paragraph && $next_paragraph) {
+      $existing_ids = [];
+      if (!empty($first_paragraph->subsequent_links) && is_array($first_paragraph->subsequent_links)) {
+        foreach ($first_paragraph->subsequent_links as $existing) {
+          if (is_object($existing) && method_exists($existing, 'id')) {
+            $existing_ids[(int) $existing->id()] = TRUE;
+          }
+        }
+      }
+      $next_id = method_exists($next_paragraph, 'id') ? (int) $next_paragraph->id() : NULL;
+      if ($next_id && empty($existing_ids[$next_id])) {
+        $first_paragraph->subsequent_links[] = $next_paragraph;
+      }
+    }
 
     // Empty elements included previously.
     $variables[$component_name][$key] = FALSE;

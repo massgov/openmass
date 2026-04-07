@@ -47,51 +47,51 @@
 {# {% if content.field_guide_ref_contacts_3|length > 2 %} #}
 {# {% set sidebarContact =  %} #}
 {# {% endif %} #}
-{% embed "@organisms/by-author/stacked-row-section.twig" with {
-  "stackedRowSection": {
-    "title": content.field_guide_section_name,
-    "id": "",
-    "pageContent": {
-      "path": "@organisms/by-author/rich-text.twig",
-      "data": {
-        "rteElements": {
-          "path": "@atoms/11-text/paragraph.twig",
-          "data": content.field_guide_section_body
-        }
-      }
+{% embed '@organisms/by-author/stacked-row-section.twig' with {
+  stackedRowSection: {
+    title: content.field_guide_section_name,
+    id: '',
+    pageContent: {
+      path: '@organisms/by-author/rich-text.twig',
+      data: {
+        rteElements: {
+          path: '@atoms/11-text/paragraph.twig',
+          data: content.field_guide_section_body,
+        },
+      },
     },
-    "sideBar": content.field_guide_ref_contacts_3|length > 2 ? content.field_guide_ref_contacts_3 : ''
-  }
+    sideBar: content.field_guide_ref_contacts_3|length > 2 ? content.field_guide_ref_contacts_3 : '',
+  },
 } %}
 
   {% block stackedRowContentOverride %}
     {# Callout Time #}
     {% if content.field_guide_section_time|render is not empty %}
-      {% include "@organisms/by-author/callout-time.twig" with {
-        "calloutTime": {
-          "text": content.field_guide_section_time
-        }
-      } %}
+      {{ include('@organisms/by-author/callout-time.twig', {
+        calloutTime: {
+          text: content.field_guide_section_time,
+        },
+      }) }}
     {% endif %}
 
     {# Place the stat and the paragaphs in @organisms/by-author/rich-text.twig. #}
-    {% embed "@organisms/by-author/rich-text.twig" with {
-      "richText": {
-        "compHeading": null,
-        "sidebarHeading": null,
-        "decorativeLink": null
-      }
+    {% embed '@organisms/by-author/rich-text.twig' with {
+      richText: {
+        compHeading: null,
+        sidebarHeading: null,
+        decorativeLink: null,
+      },
     } %}
       {% block rteElements %}
         {# Stat #}
         {% if content.field_guide_section_stat|render is not empty %}
-          {% include "@molecules/callout-stats.twig" with {
-            "statsCallout": {
-              "pull": "right",
-              "stat": content.field_guide_section_stat,
-              "content": content.field_guide_section_label
-            }
-          } %}
+          {{ include('@molecules/callout-stats.twig', {
+            statsCallout: {
+              pull: 'right',
+              stat: content.field_guide_section_stat,
+              content: content.field_guide_section_label,
+            },
+          }) }}
         {% endif %}
 
         {# Body #}
@@ -103,12 +103,12 @@
 
     {# Alert #}
     {% if content.field_guide_section_alert_text|render is not empty %}
-        {% include "@organisms/by-author/callout-alert.twig" with {
-            "calloutAlert": {
-              "text": content.field_guide_section_alert_text,
-              "href": ""
-            }
-          } %}
+        {{ include('@organisms/by-author/callout-alert.twig', {
+            calloutAlert: {
+              text: content.field_guide_section_alert_text,
+              href: '',
+            },
+          }) }}
     {% endif %}
 
     {# Key Actions #}
@@ -125,39 +125,39 @@
               : content.field_guide_section_links_4[i]['#title'] %}
             {# Array element set for key action links. #}
             {% set actionLinks = actionLinks|merge({(i): {
-              "text": linkText,
-              "type": content.field_guide_section_links_4[i]['#type'],
-              "href": content.field_guide_section_links_4[i]['#url']
-            }
+              text: linkText,
+              type: content.field_guide_section_links_4[i]['#type'],
+              href: content.field_guide_section_links_4[i]['#url'],
+            },
             }) %}
         {% endif %}
       {% endfor %}
-      {% include "@organisms/by-author/key-actions.twig" with {
-        "keyActions": {
-          "compHeading": {
-            "title": "Key Actions",
-            "titleContext": titleContext,
-            "sub": true,
-            "level": level,
-            "id": ""
+      {{ include('@organisms/by-author/key-actions.twig', {
+        keyActions: {
+          compHeading: {
+            title: 'Key Actions',
+            titleContext: titleContext,
+            sub: true,
+            level: level,
+            id: '',
           },
-          "links": actionLinks
-        }
-      } %}
+          links: actionLinks,
+        },
+      }) }}
     {% endif %}
 
     {# Downloads/Section Links #}
     {% if (content.field_guide_section_downloads|render is not empty)
         or (content.field_guide_section_link|render is not empty) %}
-      {% embed "@organisms/by-author/form-downloads.twig" with {
-          "formDownloads": {
-            "compHeading": {
-              "title": "Additional Resources",
-              "level": level,
-              "titleContext": titleContext,
-              "sub": true,
-            }
-          }
+      {% embed '@organisms/by-author/form-downloads.twig' with {
+          formDownloads: {
+            compHeading: {
+              title: 'Additional Resources',
+              level: level,
+              titleContext: titleContext,
+              sub: true,
+            },
+          },
         } %}
           {% block formDownloadLinks %}
               {% if content.field_guide_section_link|render is not empty %}
@@ -174,15 +174,15 @@
   {# Contacts #}
   {% block sidebar %}
     {% if content.field_guide_ref_contacts_3|render is not empty %}
-      {% embed "@organisms/contact/contact-list.twig" with {
-        "contactList": {
-          "viewSpecific": false,
-          "sidebarHeading": {
-            "title": "Key Organizations",
-            "titleContext": titleContext,
-            "level": level
-          }
-        }
+      {% embed '@organisms/contact/contact-list.twig' with {
+        contactList: {
+          viewSpecific: false,
+          sidebarHeading: {
+            title: 'Key Organizations',
+            titleContext: titleContext,
+            level: level,
+          },
+        },
       } %}
         {% block contactListContacts %}
           {{ content.field_guide_ref_contacts_3 }}

@@ -36,23 +36,23 @@
  * @see template_preprocess_field()
  */
 #}
-{% embed "@molecules/icon-links.twig" with {
-  "iconLinks": {
-  }
+{% embed '@molecules/icon-links.twig' with {
+  iconLinks: {
+  },
 } %}
   {% block iconLinkItems %}
     {% for key, item in items %}
       <li class="ma__icon-links__item">
-        {% include "@molecules/icon-link-item.twig" with {
-          "item": {
-            "icon": item.icon,
-            "link": {
-              "href": item.content['#url'],
-              "text": item.content['#title'],
-              "info": "",
-            }
-          }
-        } %}
+        {{ include('@molecules/icon-link-item.twig', {
+          item: {
+            icon: item.icon,
+            link: {
+              href: item.content['#url'],
+              text: item.content['#title'],
+              info: '',
+            },
+          },
+        }) }}
       </li>
     {% endfor %}
   {% endblock %}

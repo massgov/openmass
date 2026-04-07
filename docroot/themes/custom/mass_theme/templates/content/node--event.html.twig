@@ -22,18 +22,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -42,8 +42,8 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block main %}
@@ -53,27 +53,27 @@
     <div class="page-content">
       {% block pageContent %}
         {% if sideContent.contactList %}
-          {% set contactList = sideContent.contactList|merge({'compHeading': sideContent.contactList.sidebarHeading, 'sidebarHeading': null}) %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {% set contactList = sideContent.contactList|merge({compHeading: sideContent.contactList.sidebarHeading, sidebarHeading: null}) %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
 
         {% if sideContent.mediaContact %}
-          {% set contactList = sideContent.mediaContact|merge({'compHeading': sideContent.mediaContact.sidebarHeading, 'sidebarHeading': null}) %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {% set contactList = sideContent.mediaContact|merge({compHeading: sideContent.mediaContact.sidebarHeading, sidebarHeading: null}) %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
 
         {% if mainContent.pageOverview %}
           {% set pageOverview = mainContent.pageOverview %}
           {% set pageOverview = pageOverview|merge({
-            'compHeading': {
-              'title': pageOverview.compHeading.title,
-              'titleContext': pageOverview.compHeading.titleContext,
-              'level': level
+            compHeading: {
+              title: pageOverview.compHeading.title,
+              titleContext: pageOverview.compHeading.titleContext,
+              level: level,
             },
-            'image': true
+            image: true,
           }) %}
 
-          {% embed "@organisms/by-author/page-overview.twig" %}
+          {% embed '@organisms/by-author/page-overview.twig' %}
             {% block overviewImage %}
               {{ content.field_event_image }}
             {% endblock %}
@@ -82,21 +82,21 @@
 
         {% if mainContent.youWillNeed %}
           {% set richText = mainContent.youWillNeed %}
-          {% set richText = richText|merge({'compHeading': {
-            'title': richText.compHeading.title,
-            'titleContext': richText.compHeading.titleContext,
-            'level': level
+          {% set richText = richText|merge({compHeading: {
+            title: richText.compHeading.title,
+            titleContext: richText.compHeading.titleContext,
+            level: level,
           }}) %}
-          {% include "@organisms/by-author/rich-text.twig" %}
+          {{ include('@organisms/by-author/rich-text.twig') }}
         {% endif %}
 
         {# Only display event_meeting_minutes if there are populated sections. #}
         {% if content.field_event_meeting_minutes[0] %}
           {% set minutes_section = {
-          'minutes_items_count': (minutes_display_items_count),
-          'items': content.field_event_meeting_minutes|field_value
+          minutes_items_count: (minutes_display_items_count),
+          items: content.field_event_meeting_minutes|field_value,
           } %}
-          {% include "@custom_fields/field--node--field-event-meeting-minutes.html.twig" with minutes_section %}
+          {{ include('@custom_fields/field--node--field-event-meeting-minutes.html.twig', minutes_section) }}
         {% elseif content.field_event_minutes_download %}
           {{ content.field_event_minutes_download }}
         {% endif %}
@@ -104,23 +104,23 @@
         {# Only display meeting_agenda_sect if there are populated sections. #}
         {% if content.field_event_meeting_agenda_sect[0] %}
           {% set agenda_section = {
-          'agenda_items_count': (agenda_display_items_count),
-          'items': content.field_event_meeting_agenda_sect|field_value
+          agenda_items_count: (agenda_display_items_count),
+          items: content.field_event_meeting_agenda_sect|field_value,
           } %}
-          {% include "@custom_fields/field--node--field-event-meeting-agenda-sect.html.twig" with agenda_section %}
+          {{ include('@custom_fields/field--node--field-event-meeting-agenda-sect.html.twig', agenda_section) }}
         {% elseif content.field_event_agenda_download %}
           {{ content.field_event_agenda_download }}
         {% endif %}
 
         {% if content.field_event_links|render is not empty or content.field_event_ref_downloads|render is not empty %}
-          {% embed "@organisms/by-author/form-downloads.twig" with {
-            "formDownloads": {
-              "compHeading": {
-                "title": "Additional Resources",
-                "level": level,
-                "titleContext": "for " ~ node.title.value
-              }
-            }
+          {% embed '@organisms/by-author/form-downloads.twig' with {
+            formDownloads: {
+              compHeading: {
+                title: 'Additional Resources',
+                level: level,
+                titleContext: 'for ' ~ node.title.value,
+              },
+            },
           } %}
             {% block formDownloadLinks %}
               {{ content.field_event_links }}
@@ -131,32 +131,32 @@
 
         {% if mainContent.contactList %}
           {% set contactList = mainContent.contactList %}
-          {% set contactList = contactList|merge({'compHeading': {
-            'title': contactList.compHeading.title,
-            'titleContext': contactList.compHeading.titleContext,
-            'level': level
+          {% set contactList = contactList|merge({compHeading: {
+            title: contactList.compHeading.title,
+            titleContext: contactList.compHeading.titleContext,
+            level: level,
           }}) %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
 
         {% if mainContent.mediaContact %}
           {% set contactList = mainContent.mediaContact %}
-          {% set contactList = contactList|merge({'compHeading': {
-            'title': contactList.compHeading.title,
-            'titleContext': contactList.compHeading.titleContext,
-            'level': level
+          {% set contactList = contactList|merge({compHeading: {
+            title: contactList.compHeading.title,
+            titleContext: contactList.compHeading.titleContext,
+            level: level,
           }}) %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
 
         {% if mainContent.linkList %}
           {% set linkList = mainContent.linkList %}
-          {% set linkList = linkList|merge({'compHeading': {
-            'title': linkList.compHeading.title,
-            'titleContext': linkList.compHeading.titleContext,
-            'level': level
+          {% set linkList = linkList|merge({compHeading: {
+            title: linkList.compHeading.title,
+            titleContext: linkList.compHeading.titleContext,
+            level: level,
           }}) %}
-          {% include "@organisms/by-author/link-list.twig" %}
+          {{ include('@organisms/by-author/link-list.twig') }}
         {% endif %}
       {% endblock %}
     </div>
@@ -164,18 +164,18 @@
       {% block sidebarContent %}
         {% if sideContent.participatingOrgs %}
           {% set linkList = sideContent.participatingOrgs %}
-          {% include "@organisms/by-author/link-list.twig" %}
+          {{ include('@organisms/by-author/link-list.twig') }}
         {% endif %}
         {% if sideContent.contactList %}
           {% set contactList = sideContent.contactList %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
-          {% include "@organisms/contact/contact-list.twig" %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({level: level}) %}
+        {% set contactList = contactList|merge({sidebarHeading: sidebarHeading}) %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
         {% if sideContent.mediaContact %}
           {% set contactList = sideContent.mediaContact %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({level: level}) %}
+        {% set contactList = contactList|merge({sidebarHeading: sidebarHeading}) %}
         {% endif %}
       {% endblock %}
     </aside>
@@ -186,14 +186,14 @@
   {% set level = level + 1 %}
   {% if events %}
     {% set eventListing = events %}
-    {% set eventListing = eventListing|merge({'compHeading': {
-      'title': eventListing.compHeading.title,
-      'titleContext': eventListing.compHeading.titleContext,
-      'level': level,
-      'id': eventListing.compHeading.id,
-      'centered': eventListing.compHeading.centered
+    {% set eventListing = eventListing|merge({compHeading: {
+      title: eventListing.compHeading.title,
+      titleContext: eventListing.compHeading.titleContext,
+      level: level,
+      id: eventListing.compHeading.id,
+      centered: eventListing.compHeading.centered,
     }}) %}
-    {% include "@organisms/by-author/event-listing.twig" %}
+    {{ include('@organisms/by-author/event-listing.twig') }}
   {% endif %}
   {{ content.extra_org_feedback_form }}
 {% endblock %}

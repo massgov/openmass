@@ -20,7 +20,7 @@
 #}
 {# This will need to come from theme settings. #}
 {%
-set languageList = availableLanguages
+set languageList = availableLanguages|sort
 %}
 
 {%
@@ -29,17 +29,17 @@ set googleLanguages = languages
 
 {%
 set utilityNav = {
-  items: items
+  items: items,
 }
 %}
 
 {%
 set modal = {
   icon: 'translate',
-  type: 'info',
+  status: 'info',
   title: 'Select language'|t,
-  buttonText: 'Language'|t
+  buttonText: 'Language'|t,
 }
 %}
 
-{% include '@organisms/by-template/utility-nav.twig' %}
+{{ include('@organisms/by-template/utility-nav.twig') }}

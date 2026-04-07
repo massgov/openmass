@@ -41,7 +41,7 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
@@ -55,22 +55,22 @@
           '#format': paragraph.field_iframe_caption.format ?: 'basic_html',
         } %}
       {% endif %}
-      {% include "@atoms/09-media/figure--iframe.twig" with {
-        "figure": {
-          "align": paragraph.field_iframe_alignment.value,
-          "wrap": paragraph.field_iframe_wrapping.value ? TRUE : FALSE,
-          "size": paragraph.field_iframe_display_size.value,
-          "iframe": {
-            "customClass": paragraph.field_iframe_height_config.value is same as('iframe resizer') ? 'js-iframe-resizer' : '',
-            "src": paragraph.field_url.uri,
-            "title": paragraph.field_iframe_accessibility_title.value,
-            "height": paragraph.field_iframe_height_config.value is same as('ratio') ? null : iframe_height,
-            "ratio": paragraph.field_iframe_height_config.value is not same as('ratio') ? null : paragraph.field_aspect_ratio.value,
-            "position": paragraph.field_iframe_display_size.value,
-            "caption": caption
-          }
-        }
-      } %}
+      {{ include('@atoms/09-media/figure--iframe.twig', {
+        figure: {
+          align: paragraph.field_iframe_alignment.value,
+          wrap: paragraph.field_iframe_wrapping.value ? TRUE : FALSE,
+          size: paragraph.field_iframe_display_size.value,
+          iframe: {
+            customClass: paragraph.field_iframe_height_config.value is same as('iframe resizer') ? 'js-iframe-resizer' : '',
+            src: paragraph.field_url.uri,
+            title: paragraph.field_iframe_accessibility_title.value,
+            height: paragraph.field_iframe_height_config.value is same as('ratio') ? null : iframe_height,
+            ratio: paragraph.field_iframe_height_config.value is not same as('ratio') ? null : paragraph.field_aspect_ratio.value,
+            position: paragraph.field_iframe_display_size.value,
+            caption: caption,
+          },
+        },
+      }) }}
     {% endblock %}
   </div>
 {% endblock paragraph %}
