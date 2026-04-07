@@ -22,18 +22,18 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
+      icon: 'building',
+      label: 'offered by',
+      groupAfter: 3,
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
@@ -43,8 +43,8 @@
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block main %}
@@ -56,35 +56,35 @@
       {% block pageContent %}
         {% if sideContent.contactList %}
           {% set contactList = sideContent.contactList %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
       {% endblock %}
     </div>
    </div>
 <div class="ma__court-rules__content">
-  {% include "@organisms/by-template/sticky-toc.twig" with {
-    "stickyTOC": {
-      "title": "Table of Contents"|t,
-      "parent": ".ma__court-rules__content",
-      "sections": ".page-content h2"
-    }
-  } %}
+  {{ include('@organisms/by-template/sticky-toc.twig', {
+    stickyTOC: {
+      title: 'Table of Contents'|t,
+      parent: '.ma__court-rules__content',
+      sections: '.page-content h2',
+    },
+  }) }}
   <div class="main-content main-content--two">
     <div class="page-content">
         {% for richText in mainContent.contents %}
-          {% include "@organisms/by-author/rich-text.twig" %}
+          {{ include('@organisms/by-author/rich-text.twig') }}
         {% endfor %}
         {% if content.field_rules_download|render is not empty %}
           {# Using the field_rules_download view mode to display the URL for doucments in this section. #}
-          {% embed "@organisms/by-author/form-downloads.twig" with {
-            "formDownloads": {
-              "compHeading": {
-                "title": "Downloads",
-                "id": "downloads",
-                "level": level,
-                "titleContext": "for " ~ node.title.value
-             }
-            }
+          {% embed '@organisms/by-author/form-downloads.twig' with {
+            formDownloads: {
+              compHeading: {
+                title: 'Downloads',
+                id: 'downloads',
+                level: level,
+                titleContext: 'for ' ~ node.title.value,
+             },
+            },
           } %}
             {% block formDownloadLinks %}
               {{ content.field_rules_download }}
@@ -93,33 +93,33 @@
         {% endif %}
         {% if mainContent.contactList %}
           {% set contactList = mainContent.contactList %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
         {% if mainContent.footnoteList %}
           {% set footnoteList = mainContent.footnoteList %}
-          {% include "@organisms/by-author/footnote-list.twig" %}
+          {{ include('@organisms/by-author/footnote-list.twig') }}
         {% endif %}
         {% if mainContent.references %}
           {% set headerTags = mainContent.references %}
-          {% include "@molecules/header-tags.twig" %}
+          {{ include('@molecules/header-tags.twig') }}
         {% endif %}
         {% if mainContent.updates %}
           {% set listingTable = mainContent.updates %}
-          {% include "@molecules/listing-table.twig" %}
+          {{ include('@molecules/listing-table.twig') }}
         {% endif %}
     </div>
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% include "@organisms/contact/contact-list.twig" %}
+        {{ include('@organisms/contact/contact-list.twig') }}
       {% endif %}
       {% if sideContent.pressListing %}
         {% set pressListing = sideContent.pressListing %}
-        {% include "@organisms/by-author/press-listing.twig" %}
+        {{ include('@organisms/by-author/press-listing.twig') }}
       {% endif %}
       {% if sideContent.eventListing %}
         {% set eventListing = sideContent.eventListing %}
-        {% include "@organisms/by-author/event-listing.twig" %}
+        {{ include('@organisms/by-author/event-listing.twig') }}
       {% endif %}
     </aside>
   </div>

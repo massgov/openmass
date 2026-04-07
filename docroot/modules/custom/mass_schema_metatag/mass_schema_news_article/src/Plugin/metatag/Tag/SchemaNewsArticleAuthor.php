@@ -35,7 +35,7 @@ class SchemaNewsArticleAuthor extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function form(array $element = []) {
+  public function form(array $element = []): array {
     $form = parent::form($element);
     $form['name']['#attribute']['placeholder'] = '[node:author:display-name]';
     $form['url']['#attributes']['placeholder'] = '[node:author:url]';
@@ -49,7 +49,7 @@ class SchemaNewsArticleAuthor extends SchemaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array {
     $element = parent::output();
 
     if (!empty($element)) {

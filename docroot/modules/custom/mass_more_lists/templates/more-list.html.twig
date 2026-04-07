@@ -6,20 +6,20 @@
 #}
 
 {% set stackedRowSections = [{
-  "pageContent": [
+  pageContent: [
     {
-      "path": "@molecules/results-heading.twig",
-      "data": {
-        "resultsHeading": resultsHeading
-      }
+      path: '@molecules/results-heading.twig',
+      data: {
+        resultsHeading: resultsHeading,
+      },
     },
     {
-      "path": "@organisms/by-author/form-downloads.twig",
-      "data": {
-        "formDownloads": formDownloads
-      }
-    }
-  ]
+      path: '@organisms/by-author/form-downloads.twig',
+      data: {
+        formDownloads: formDownloads,
+      },
+    },
+  ],
 }] %}
 
 {% extends 'node.html.twig' %}
@@ -28,29 +28,30 @@
   {# {% include "@organisms/by-template/content-eyebrow.twig" %} #}
   {# DP-18237: Output the content eyebrow data with @molecules/relationship-indicators.twig. #}
   {% if contentEyebrow %}
-    {% set pagetitle = pageHeader.title ~ " for " ~ contentEyebrow.headerTags.taxonomyTerms[0].text %}
-    {% embed "@molecules/relationship-indicators.twig" with {
-        "relationshipIndicators": {
-          "pageTitle": pagetitle,
-          "primary": {
-            "label": "part of"
+    {% set pagetitle = pageHeader.title ~ ' for ' ~ contentEyebrow.headerTags.taxonomyTerms[0].text %}
+    {% embed '@molecules/relationship-indicators.twig' with {
+        relationshipIndicators: {
+          pageTitle: pagetitle,
+          primary: {
+            label: 'part of',
           },
-          "secondary": null
-        }
+          secondary: null,
+        },
       } %}
       {% block primaryRelationship %}
         {% for item in contentEyebrow.headerTags.taxonomyTerms %}
-          {% include "@atoms/item-link.twig" with {
-            "itemLink": {
-              "title": item.text,
-              "href": item.href
-            }
-          } %}
+          {{ include('@atoms/item-link.twig', {
+            itemLink: {
+              title: item.text,
+              href: item.href,
+            },
+          })
+          }}
         {% endfor %}
       {% endblock %}
     {% endembed %}
   {% endif %}
-  {% include "@organisms/page-header/page-header.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
 {% endblock %}
 {% block main %}
   <section class="ma__stacked-row-section">
@@ -58,7 +59,7 @@
       <div class="page-content">
         {% block pageContent %}
           {% for stackedRowSection in stackedRowSections %}
-            {% include "@organisms/by-author/stacked-row-section.twig" %}
+            {{ include('@organisms/by-author/stacked-row-section.twig') }}
           {% endfor %}
           {{ pager }}
         {% endblock %}

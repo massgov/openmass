@@ -1,0 +1,84 @@
+diff --git a/js/entity_reference_tree.js b/js/entity_reference_tree.js
+index b36c25e..6872896 100644
+--- a/js/entity_reference_tree.js
++++ b/js/entity_reference_tree.js
+@@ -173,4 +173,55 @@
+       $("#" + fieldEditID).val(selectedEntites).trigger('change');
+     }
+   };
++  // Capture-phase click handler for the modal "Save" buttons (both the hidden
++  // original submit input and the visible dialog button). This runs before any
++  // Drupal.ajax handlers that might otherwise submit the form and redirect.
++  document.addEventListener('click', function (event) {
++    var target = event.target;
++    if (!(target instanceof HTMLElement)) {
++      return;
++    }
++
++    if (!target.classList.contains('entity-reference-tree-save')) {
++      return;
++    }
++
++    var form = target.closest('form');
++    if (!form || !form.id || form.id.indexOf('entity-reference-tree-search-form') !== 0) {
++      return;
++    }
++
++    event.preventDefault();
++    event.stopImmediatePropagation();
++    event.stopPropagation();
++
++    var $ = window.jQuery || window.$;
++    if (!$) {
++      return;
++    }
++
++    var fieldEditID = $('#entity-reference-tree-widget-field').val();
++    var selectedEntities = $('#entity-reference-tree-selected-node').val();
++
++    if (fieldEditID) {
++      $.fn.entitySearchDialogAjaxCallback(fieldEditID, selectedEntities);
++    }
++
++    // Close the dialog hosting the tree widget.
++    try {
++      var $dialogContent = $(target).closest('.ui-dialog-content');
++      if (!$dialogContent.length) {
++        $dialogContent = $('#entity-reference-tree-modal');
++      }
++      if (!$dialogContent.length) {
++        $dialogContent = $('.ui-dialog-content:visible').last();
++      }
++      if ($dialogContent.length) {
++        $dialogContent.dialog('close');
++      }
++    }
++    catch (err) {
++      // Swallow errors; worst case the dialog stays open.
++    }
++  }, true);
+ })(jQuery);
+diff --git a/src/Form/SearchForm.php b/src/Form/SearchForm.php
+index 3751095..7799fd7 100644
+--- a/src/Form/SearchForm.php
++++ b/src/Form/SearchForm.php
+@@ -107,16 +107,11 @@ class SearchForm extends FormBase {
+     // Submit button.
+     $form['actions'] = ['#type' => 'actions'];
+     $form['actions']['send'] = [
+-      '#type' => 'submit',
++      '#type' => 'button',
+       '#value' => $this->t('Save'),
+       '#attributes' => [
+-        'class' => [
+-          'use-ajax',
+-        ],
+-      ],
+-      '#ajax' => [
+-        'callback' => [$this, 'submitForm'],
+-        'event' => 'click',
++        'class' => ['entity-reference-tree-save'],
++        'type' => 'button',
+       ],
+     ];
+ 

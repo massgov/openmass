@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_bulk_file_replace\Form;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -215,7 +216,7 @@ class ReplaceMismatchForm extends FormBase {
           $directory = $fs->dirname($current_uri);
           $new_uri_same_dir = $directory . '/' . $cleaned_filename;
           // Rename within the same directory first.
-          $moved_same_dir = \Drupal::service('file.repository')->move($file, $new_uri_same_dir, FileSystemInterface::EXISTS_RENAME);
+          $moved_same_dir = \Drupal::service('file.repository')->move($file, $new_uri_same_dir, FileExists::Rename);
           if ($moved_same_dir) {
             $file = $moved_same_dir;
             $filename = $cleaned_filename;

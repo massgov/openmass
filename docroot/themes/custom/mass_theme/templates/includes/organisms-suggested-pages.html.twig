@@ -10,19 +10,19 @@
     <div class="ma__suggested-pages__items">
       {% for page in suggestedPages.pages %}
         {% set illustratedLink = {
-        "text": page.link.text,
-        "type": page.link.type,
-        "href": page.link.href,
-        "image": page.link.image,
-        "label": page.link.label} %}
+        text: page.link.text,
+        type: page.link.type,
+        href: page.link.href,
+        image: page.link.image,
+        label: page.link.label} %}
         <div class="ma__suggested-pages__item ma__suggested-pages__item--guide">
-          {% include "@molecules/illustrated-link.twig" %}
+          {{ include('@molecules/illustrated-link.twig') }}
         </div>
       {% endfor %}
     </div>
     {% set buttonMinor = suggestedPages.buttonMinor %}
     {% if buttonMinor.href %}
-      {% include "@atoms/01-buttons/button-link2-sm.twig" %}
+      {{ include('@atoms/01-buttons/button-link2-sm.twig') }}
     {% endif %}
   </div>
 </section>

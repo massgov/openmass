@@ -21,20 +21,20 @@
   #}
   {% set secondaryIndicators = false %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": primaryIndicators,
-      "secondary": secondaryIndicators
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: node.label,
+      primary: primaryIndicators,
+      secondary: secondaryIndicators,
+    },
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 {% endblock %}
 
 {% block main %}
@@ -45,34 +45,34 @@
       {% block pageContent %}
         {% if mainContent.listingTable %}
           {% set listingTable = mainContent.listingTable %}
-          {% include "@molecules/listing-table.twig" %}
+          {{ include('@molecules/listing-table.twig') }}
         {% endif %}
-        {% include "@organisms/by-template/sticky-toc.twig" with {
-          "stickyTOC": {
-            "title": "Table of Contents"|t,
-            "parent": ".page-content",
-            "sections": "h2"
-          }
-        } %}
+        {{ include('@organisms/by-template/sticky-toc.twig', {
+          stickyTOC: {
+            title: 'Table of Contents'|t,
+            parent: '.page-content',
+            sections: 'h2',
+          },
+        }) }}
         {% if mainContent.personalMessage %}
           {% set personalMessage = mainContent.personalMessage %}
-          {% include "@organisms/by-author/personal-message.twig" %}
+          {{ include('@organisms/by-author/personal-message.twig') }}
         {% endif %}
         {% if mainContent.richText %}
           {% set richText = mainContent.richText %}
-          {% include "@organisms/by-author/rich-text.twig" %}
+          {{ include('@organisms/by-author/rich-text.twig') }}
         {% endif %}
         {% if content.field_executive_order_downloads|render is not empty %}
           {# Using the field_executive_order_downloads view mode to display the URL for doucments in this section. #}
-          {% embed "@organisms/by-author/form-downloads.twig" with {
-            "formDownloads": {
-              "compHeading": {
-                "title": "Downloads",
-                "id": "downloads",
-                "level": level,
-                "titleContext": "for " ~ node.title.value
-              }
-            }
+          {% embed '@organisms/by-author/form-downloads.twig' with {
+            formDownloads: {
+              compHeading: {
+                title: 'Downloads',
+                id: 'downloads',
+                level: level,
+                titleContext: 'for ' ~ node.title.value,
+              },
+            },
           } %}
             {% block formDownloadLinks %}
               {{ content.field_executive_order_downloads }}
@@ -81,33 +81,33 @@
         {% endif %}
         {% if mainContent.contactList %}
           {% set contactList = mainContent.contactList %}
-          {% set contactList = contactList|merge({'compHeading': {
-            'title': contactList.compHeading.title,
-            'titleContext': contactList.compHeading.titleContext,
-            'level': level,
-            'id': contactList.compHeading.id}}) %}
-          {% include "@organisms/contact/contact-list.twig" %}
+          {% set contactList = contactList|merge({compHeading: {
+            title: contactList.compHeading.title,
+            titleContext: contactList.compHeading.titleContext,
+            level: level,
+            id: contactList.compHeading.id}}) %}
+          {{ include('@organisms/contact/contact-list.twig') }}
         {% endif %}
       {% endblock %}
     </div>
     <aside class="sidebar">
       {% if sideContent.contactList %}
         {% set contactList = sideContent.contactList %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level}) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/contact/contact-list.twig" %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({level: level}) %}
+        {% set contactList = contactList|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/contact/contact-list.twig') }}
       {% endif %}
       {% if sideContent.pressListing %}
         {% set pressListing = sideContent.pressListing %}
-        {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level}) %}
-        {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/by-author/press-listing.twig" %}
+        {% set sidebarHeading = pressListing.sidebarHeading|merge({level: level}) %}
+        {% set pressListing = pressListing|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/by-author/press-listing.twig') }}
       {% endif %}
       {% if sideContent.eventListing %}
         {% set eventListing = sideContent.eventListing %}
-        {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level}) %}
-        {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading}) %}
-        {% include "@organisms/by-author/event-listing.twig" %}
+        {% set sidebarHeading = eventListing.sidebarHeading|merge({level: level}) %}
+        {% set eventListing = eventListing|merge({sidebarHeading: sidebarHeading}) %}
+        {{ include('@organisms/by-author/event-listing.twig') }}
       {% endif %}
     </aside>
   </div>
@@ -117,14 +117,14 @@
   {% set level = level + 1 %}
   {% if bottomContent.eventListing %}
     {% set eventListing = bottomContent.eventListing %}
-    {% set eventListing = eventListing|merge({'compHeading': {
-      'title': eventListing.compHeading.title,
-      'titleContext': eventListing.compHeading.titleContext,
-      'level': level,
-      'id': eventListing.compHeading.id,
-      'centered': eventListing.compHeading.centered
+    {% set eventListing = eventListing|merge({compHeading: {
+      title: eventListing.compHeading.title,
+      titleContext: eventListing.compHeading.titleContext,
+      level: level,
+      id: eventListing.compHeading.id,
+      centered: eventListing.compHeading.centered,
     }}) %}
-    {% include "@organisms/by-author/event-listing.twig" %}
+    {{ include('@organisms/by-author/event-listing.twig') }}
   {% endif %}
   {{ content.extra_node_pager }}
   {{ content.extra_org_feedback_form }}

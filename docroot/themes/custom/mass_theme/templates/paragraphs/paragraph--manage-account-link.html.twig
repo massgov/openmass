@@ -39,21 +39,21 @@
  */
 #}
 
-{% include "@molecules/descriptive-link.twig" with {
-  "richText": {
-    "rteElements": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph": {
-          "text": content.field_manage_account_link_body|field_value
-        }
-      }
-    }]
+{{ include('@molecules/descriptive-link.twig', {
+  richText: {
+    rteElements: [{
+      path: '@atoms/11-text/paragraph.twig',
+      data: {
+        paragraph: {
+          text: content.field_manage_account_link_body|field_value,
+        },
+      },
+    }],
   },
-  "link": {
-    "href": content.field_manage_account_link[0]['#url'],
-    "text": content.field_manage_account_link[0]['#title']
-  }
-} %}
+  link: {
+    href: content.field_manage_account_link[0]['#url'],
+    text: content.field_manage_account_link[0]['#title'],
+  },
+}) }}
 
 {{ content|without('field_manage_account_link', 'field_manage_account_link_body') }}

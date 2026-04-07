@@ -1,0 +1,21 @@
+diff --git a/src/EntityUsage.php b/src/EntityUsage.php
+index 1a8a371..a2731f6 100644
+--- a/src/EntityUsage.php
++++ b/src/EntityUsage.php
+@@ -38,11 +38,11 @@ class EntityUsage implements EntityUsageBulkInterface {
+    * Construct the EntityUsage service.
+    */
+   final public function __construct(
+-    private Connection $connection,
+-    private EventDispatcherInterface $eventDispatcher,
+-    private ConfigFactoryInterface $configFactory,
+-    private ModuleHandlerInterface $moduleHandler,
+-    private string $tableName,
++    protected Connection $connection,
++    protected EventDispatcherInterface $eventDispatcher,
++    protected ConfigFactoryInterface $configFactory,
++    protected ModuleHandlerInterface $moduleHandler,
++    protected string $tableName,
+   ) {
+   }
+ 
