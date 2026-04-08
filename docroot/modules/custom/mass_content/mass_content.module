@@ -771,17 +771,14 @@ function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables
     $variables[$base][$key]['title'] = $flexible_lg->field_links_downloads_header->value;
 
     $links = &$variables[$base][$key]['links'];
-    foreach ($flexible_lg->field_link_group as $index => $item) {
-      if (empty($item->entity)) {
-        continue;
-      }
-      switch ($item->entity->bundle()) {
+    foreach ($flexible_lg->field_link_group->referencedEntities() as $index => $item_entity) {
+      switch ($item_entity->bundle()) {
         case 'link_group_link':
-          if (empty($item->entity->field_link_group_link)) {
+          if (empty($item_entity->field_link_group_link)) {
             break;
           }
           /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
-          $link = $item->entity->field_link_group_link[0];
+          $link = $item_entity->field_link_group_link[0];
           if (empty($link->get('computed_title'))) {
             break;
           }
@@ -791,16 +788,18 @@ function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables
           break;
 
         case 'link_group_document':
-          if (empty($item->entity->field_file_download_single)) {
+          if (empty($item_entity->field_file_download_single)) {
             break;
           }
           /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
-          $media = $item->entity->field_file_download_single[0]->entity;
+          $media_entities = $item_entity->field_file_download_single->referencedEntities();
+          $media = $media_entities[0] ?? NULL;
           if ($media) {
 
             // Check if the media entity has the 'field_upload_file' field and it's not empty.
             if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
-              $file_media = $media->get('field_upload_file')->entity;
+              $file_entities = $media->get('field_upload_file')->referencedEntities();
+              $file_media = $file_entities[0] ?? NULL;
 
               if ($file_media) {
                 // Initialize the render array.

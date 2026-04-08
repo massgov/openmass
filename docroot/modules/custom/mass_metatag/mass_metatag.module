@@ -260,13 +260,15 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
               // If the field targets 'external_organization' paragraphs, get
               // the name value.
               if (!empty($handler_settings['target_bundles']['external_organization'])) {
-                foreach ($data['node']->get($field_name) as $item) {
-                  if ($item->entity) {
-                    if ($item->entity->hasField('field_external_org_name')) {
-                      $values[] = $item->entity->field_external_org_name->value;
-                      $replacements[$original] = json_encode($values);
-                    }
+                // Avoid lazy loading through $item->entity in Fiber-sensitive
+                // contexts.
+                $paragraphs = $data['node']->get($field_name)->referencedEntities();
+                foreach ($paragraphs as $paragraph) {
+                  if (!$paragraph || !$paragraph->hasField('field_external_org_name')) {
+                    continue;
                   }
+                  $values[] = $paragraph->field_external_org_name->value;
+                  $replacements[$original] = json_encode($values);
                 }
               }
             }
@@ -660,7 +662,8 @@ function mass_metatag_datalayer_alter(&$data_layer) {
     $first_org = $ids[0];
     if ($node = Node::load($first_org)) {
       if ($node->hasField('field_billing_organization') && !$node->get('field_billing_organization')->isEmpty()) {
-        $bill_org_term = $node->get('field_billing_organization')->entity;
+        $bill_org_terms = $node->get('field_billing_organization')->referencedEntities();
+        $bill_org_term = $bill_org_terms[0] ?? NULL;
         if ($bill_org_term instanceof Term) {
           if ($bill_org_term->hasField('field_billing_account_number') && !$bill_org_term->get('field_billing_account_number')->isEmpty()) {
             $data_layer['bill'] = $bill_org_term->field_billing_account_number->value;
@@ -758,7 +761,8 @@ function _mass_metatag_addresses(NodeInterface $node) {
     switch ($node->getAddressType()->getString()) {
       // Unique entered address in the address paragraph.
       case 'unique':
-        $ref = $node->get('field_event_ref_unique_address')->entity;
+        $unique_addresses = $node->get('field_event_ref_unique_address')->referencedEntities();
+        $ref = $unique_addresses[0] ?? NULL;
         if ($ref) {
           $field_ref = $ref->get('field_address_address');
         }
@@ -767,9 +771,11 @@ function _mass_metatag_addresses(NodeInterface $node) {
       // Address is a Contact Info entity, which has an address paragraph.
       case 'contact info':
         // Get contact info reference.
-        $contact_ref = $node->get('field_event_ref_contact')->entity;
+        $contact_refs = $node->get('field_event_ref_contact')->referencedEntities();
+        $contact_ref = $contact_refs[0] ?? NULL;
         if ($contact_ref) {
-          $address_ref = $contact_ref->get('field_ref_address')->entity;
+          $address_refs = $contact_ref->get('field_ref_address')->referencedEntities();
+          $address_ref = $address_refs[0] ?? NULL;
           if ($address_ref) {
             $field_ref = $address_ref->get('field_address_address');
           }

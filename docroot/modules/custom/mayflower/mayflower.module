@@ -491,17 +491,14 @@ function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
     $variables[$base][$key]['expanded'] = (bool) intval($flexible_lg->field_group_expanded->value);
 
     $links = &$variables[$base][$key]['links'];
-    foreach ($flexible_lg->field_link_group as $index => $item) {
-      if (empty($item->entity)) {
-        continue;
-      }
-      switch ($item->entity->bundle()) {
+    foreach ($flexible_lg->field_link_group->referencedEntities() as $index => $item_entity) {
+      switch ($item_entity->bundle()) {
         case 'link_group_link':
-          if (empty($item->entity->field_link_group_link)) {
+          if (empty($item_entity->field_link_group_link)) {
             break;
           }
           /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
-          $link = $item->entity->field_link_group_link[0];
+          $link = $item_entity->field_link_group_link[0];
           if (empty($link->get('computed_title'))) {
             break;
           }
@@ -511,15 +508,20 @@ function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
           break;
 
         case 'link_group_document':
-          if (empty($item->entity->field_file_download_single)) {
+          if (empty($item_entity->field_file_download_single)) {
             break;
           }
           /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
-          $media = $item->entity->field_file_download_single[0]->entity;
+          $media_entities = $item_entity->field_file_download_single->referencedEntities();
+          $media = $media_entities[0] ?? NULL;
           if ($media) {
 
             if ($variables['display_type'] == "buttons") {
-              $original_file = $media->field_upload_file->entity;
+              $original_files = $media->field_upload_file->referencedEntities();
+              $original_file = $original_files[0] ?? NULL;
+              if (!$original_file) {
+                break;
+              }
               $links[$index]['file_size'] = strtoupper(ByteSizeMarkup::create($original_file->getSize())->render());
               $file_info = new \SplFileInfo($original_file->getFilename());
               $file_extension = strtoupper($file_info->getExtension());
@@ -542,7 +544,8 @@ function mayflower_preprocess_paragraph__flexible_link_group(&$variables) {
             else {
               // Check if the media entity has the 'field_upload_file' field and it's not empty.
               if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
-                $file_media = $media->get('field_upload_file')->entity;
+                $file_entities = $media->get('field_upload_file')->referencedEntities();
+                $file_media = $file_entities[0] ?? NULL;
 
                 if ($file_media) {
                   // Initialize the render array.
