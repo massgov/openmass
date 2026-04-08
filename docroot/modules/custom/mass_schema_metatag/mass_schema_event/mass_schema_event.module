@@ -53,9 +53,15 @@ function mass_schema_event_tokens($type, $tokens, array $data, array $options, B
 
         // Handle [entity:field_name:entity].
         $filtered_tokens = $token_service->findWithPrefix($tokens, $field_name);
-        if (!empty(array_keys($filtered_tokens)[0])) {
+        if (!empty($filtered_tokens)) {
           // Handle [entity:field_name].
-          $property_name = array_keys($token_service->findWithPrefix($filtered_tokens, $delta))[0];
+          $property_tokens = array_keys($token_service->findWithPrefix($filtered_tokens, $delta));
+          if (!empty($property_tokens)) {
+            $property_name = $property_tokens[0];
+          }
+          else {
+            continue;
+          }
         }
 
         $name = $field_name;
