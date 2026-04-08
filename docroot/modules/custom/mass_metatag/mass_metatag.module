@@ -862,6 +862,72 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
 }
 
 /**
+ * Implements hook_form_alter().
+ */
+function mass_metatag_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id !== 'views_bulk_operations_configure_action') {
+    return;
+  }
+
+  $form_data = $form_state->get('views_bulk_operations');
+  if (empty($form_data['action_id']) || $form_data['action_id'] !== 'views_bulk_edit') {
+    return;
+  }
+
+  $terms = [
+    'robots',
+    'noindex',
+    'nofollow',
+    'nosnippet',
+    'max-snippet',
+    'max-image-preview',
+    'max-video-preview',
+  ];
+  mass_metatag_hide_elements_by_terms($form, $terms);
+}
+
+/**
+ * Hide elements whose key/title contains any of the given terms.
+ *
+ * @param array $elements
+ *   Form element tree to inspect and alter.
+ * @param array $hide_terms
+ *   Terms matched against each element key/title.
+ */
+function mass_metatag_hide_elements_by_terms(array &$elements, array $hide_terms) {
+  foreach ($elements as $key => &$element) {
+    if (!is_array($element)) {
+      continue;
+    }
+
+    $matches = FALSE;
+    $key_string = strtolower((string) $key);
+    foreach ($hide_terms as $term) {
+      if (str_contains($key_string, $term)) {
+        $matches = TRUE;
+        break;
+      }
+    }
+
+    if (!$matches && isset($element['#title'])) {
+      $title = strtolower(strip_tags((string) $element['#title']));
+      foreach ($hide_terms as $term) {
+        if (str_contains($title, $term)) {
+          $matches = TRUE;
+          break;
+        }
+      }
+    }
+
+    if ($matches) {
+      $element['#access'] = FALSE;
+    }
+
+    mass_metatag_hide_elements_by_terms($element, $hide_terms);
+  }
+}
+
+/**
  * Implements hook_metatags_attachments_alter().
  */
 function mass_metatag_metatags_attachments_alter(array &$metatag_attachments) {
