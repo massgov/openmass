@@ -3,25 +3,23 @@
 namespace Drupal\mass_media\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Render\RenderContext;
-use Drupal\Core\Render\Renderer;
-use Drupal\Core\Routing\TrustedRedirectResponse;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\media\MediaInterface;
+use Drupal\stage_file_proxy\DownloadManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class MassMediaRouteController.
  */
 class MassMediaDownloadController extends ControllerBase {
-
-  /**
-   * Renderer service object.
-   *
-   * @var \Drupal\Core\Render\Renderer
-   */
-  private $renderer;
 
   /**
    * Request stack.
@@ -31,11 +29,41 @@ class MassMediaDownloadController extends ControllerBase {
   private $requestStack;
 
   /**
+   * The stream wrapper manager.
+   *
+   * @var \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface
+   */
+  private StreamWrapperManagerInterface $streamWrapperManager;
+
+  /**
+   * Drupal filesystem service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  private FileSystemInterface $fileSystem;
+
+  /**
+   * Stage File Proxy download manager.
+   *
+   * @var \Drupal\stage_file_proxy\DownloadManagerInterface
+   */
+  private DownloadManagerInterface $stageFileProxyDownloadManager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(RequestStack $request_stack, Renderer $renderer) {
+  public function __construct(
+    RequestStack $request_stack,
+    StreamWrapperManagerInterface $stream_wrapper_manager,
+    FileSystemInterface $file_system,
+    DownloadManagerInterface $stage_file_proxy_download_manager,
+    ConfigFactoryInterface $config_factory,
+  ) {
     $this->requestStack = $request_stack;
-    $this->renderer = $renderer;
+    $this->streamWrapperManager = $stream_wrapper_manager;
+    $this->fileSystem = $file_system;
+    $this->stageFileProxyDownloadManager = $stage_file_proxy_download_manager;
+    $this->configFactory = $config_factory;
   }
 
   /**
@@ -44,7 +72,10 @@ class MassMediaDownloadController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('request_stack'),
-      $container->get('renderer')
+      $container->get('stream_wrapper_manager'),
+      $container->get('file_system'),
+      $container->get('stage_file_proxy.download_manager'),
+      $container->get('config.factory')
     );
   }
 
@@ -54,8 +85,8 @@ class MassMediaDownloadController extends ControllerBase {
    * @param \Drupal\media\MediaInterface $media
    *   A valid media object.
    *
-   * @return \Drupal\Core\Routing\TrustedRedirectResponse
-   *   TrustedRedirectResponse object.
+   * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+   *   File response that serves the media bytes directly.
    *
    * @throws \Exception
    * @throws NotFoundHttpException
@@ -71,8 +102,10 @@ class MassMediaDownloadController extends ControllerBase {
       throw new \Exception("No source field configured for the {$bundle} media type.");
     }
 
+    $request_query = $this->requestStack->getCurrentRequest()->query;
+
     // If a delta was provided, use that.
-    $delta = $this->requestStack->getCurrentRequest()->query->get('delta');
+    $delta = $request_query->get('delta');
 
     // Get the ID of the requested file by its field delta.
     if (is_numeric($delta)) {
@@ -102,23 +135,68 @@ class MassMediaDownloadController extends ControllerBase {
     }
 
     $uri = $file->getFileUri();
+    $scheme = $this->streamWrapperManager->getScheme($uri);
 
-    // Catches stray metadata not handled properly by file_create_url().
-    // @see https://www.drupal.org/project/drupal/issues/2867355
-    $context = new RenderContext();
-    $uri = $this->renderer->executeInRenderContext($context, function () use ($uri) {
-      return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
-    });
-
-    // Returns a 301 Moved Permanently redirect response.
-    $response = new TrustedRedirectResponse($uri, 301);
-    // Adds cache metadata.
-    $response->getCacheableMetadata()->addCacheContexts(['url.site']);
-    $response->addCacheableDependency($media);
-    $response->addCacheableDependency($file);
-    if (!$context->isEmpty()) {
-      $response->addCacheableDependency($context->pop());
+    // If the file doesn't exist locally on non-production environments,
+    // try fetching it from the configured Stage File Proxy origin.
+    if (!$this->streamWrapperManager->isValidScheme($scheme)) {
+      throw new NotFoundHttpException("The file {$uri} does not exist.");
     }
+
+    if (!file_exists($uri)) {
+      // Stage File Proxy is intended for public assets; private files should
+      // remain non-public and must not be fetched from origin.
+      if ($scheme === 'public') {
+        $stageConfig = $this->configFactory->get('stage_file_proxy.settings');
+        $origin = (string) $stageConfig->get('origin');
+        $originHost = (string) parse_url($origin, PHP_URL_HOST);
+        $requestHost = $this->requestStack->getCurrentRequest()->getHost();
+
+        // Only fetch when we are not on mass.gov production host.
+        if (!empty($originHost) && strcasecmp($requestHost, $originHost) !== 0) {
+          $originDir = trim((string) ($stageConfig->get('origin_dir') ?? 'files'));
+          $relativePath = str_replace('public://', '', $uri);
+          $options = ['verify' => (bool) $stageConfig->get('verify')];
+
+          $this->stageFileProxyDownloadManager->fetch(
+            $origin,
+            $originDir,
+            $relativePath,
+            $options
+          );
+        }
+      }
+    }
+
+    // Still missing on disk: return 404.
+    if (!file_exists($uri)) {
+      throw new NotFoundHttpException("The file {$uri} does not exist.");
+    }
+
+    // Let other modules provide headers and controls access to the file.
+    $headers = $this->moduleHandler()->invokeAll('file_download', [$uri]);
+    foreach ($headers as $result) {
+      if ($result == -1) {
+        throw new AccessDeniedHttpException();
+      }
+    }
+
+    $response = new BinaryFileResponse($uri, Response::HTTP_OK, $headers, $scheme !== 'private');
+
+    if (empty($headers['Content-Disposition'])) {
+      if ($request_query->has(ResponseHeaderBag::DISPOSITION_INLINE)) {
+        $disposition = ResponseHeaderBag::DISPOSITION_INLINE;
+      }
+      else {
+        $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT;
+      }
+      $response->setContentDisposition($disposition, $file->getFilename());
+    }
+
+    if (!$response->headers->has('Content-Type')) {
+      $response->headers->set('Content-Type', $file->getMimeType() ?: 'application/octet-stream');
+    }
+
     return $response;
   }
 
