@@ -4124,9 +4124,10 @@ function mass_theme_preprocess_node(&$variables) {
       if ($microsite->hasField('field_microsites_key_message') && !$microsite->get('field_microsites_key_message')->isEmpty()) {
         $rendered_paragraphs = [];
         $paragraph_view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
-        $key_message_paragraphs = $microsite->get('field_microsites_key_message')->referencedEntities();
-        foreach ($key_message_paragraphs as $paragraph) {
-          $rendered_paragraphs[] = $paragraph_view_builder->view($paragraph);
+        foreach ($microsite->get('field_microsites_key_message') as $item) {
+          if ($item->entity) {
+            $rendered_paragraphs[] = $paragraph_view_builder->view($item->entity);
+          }
         }
         $variables['microsite_key_message'] = $rendered_paragraphs;
       }

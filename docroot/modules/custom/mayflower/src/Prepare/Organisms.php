@@ -419,18 +419,14 @@ class Organisms {
 
     // Get field values.
     $field_values = $entity->get($field);
-    $field_referenced_entities = method_exists($field_values, 'referencedEntities')
-      ? $field_values->referencedEntities()
-      : [];
 
-    foreach ($field_values as $delta => $field_value) {
+    foreach ($field_values as $field_value) {
       // If this is an entity, it is processed differently.
-      $referenced_entity = $field_referenced_entities[$delta] ?? NULL;
-      if (!empty($referenced_entity)) {
-        if ($referenced_entity->isPublished() === TRUE) {
+      if (!empty($field_value->entity)) {
+        if ($field_value->entity->isPublished() === TRUE) {
           // Get entity cache tags.
-          $cache_tags = array_merge($cache_tags, $referenced_entity->getCacheTags());
-          $items[] = Molecules::preparePressTeaser($referenced_entity, $options);
+          $cache_tags = array_merge($cache_tags, $field_value->entity->getCacheTags());
+          $items[] = Molecules::preparePressTeaser($field_value->entity, $options);
         }
       }
       // On an internal link item, load the referenced node title.
@@ -594,13 +590,9 @@ class Organisms {
     ];
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
-    $related_list = $entity->{$fields['items']};
-    $related_entities = method_exists($related_list, 'referencedEntities')
-      ? $related_list->referencedEntities()
-      : [];
     // Get related locations.
-    foreach ($entity->{$fields['items']} as $delta => $item) {
-      $ref_entity = $related_entities[$delta] ?? NULL;
+    foreach ($entity->{$fields['items']} as $item) {
+      $ref_entity = $item->entity;
       // Creates a map of fields that are on the entity.
       if ($ref_entity) {
         if (method_exists($entity, 'isPublished') && !$ref_entity->isPublished()) {
