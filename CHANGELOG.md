@@ -2,7 +2,7 @@
 ## [0.474.1] - April 8, 2026
 
 ### Fixed:
-- DP-44741: Hotfix to Drupal 11.3.x.
+- DP-44741: Hotfix to address Fiber-related issues.
 
 ## [0.474.0] - April 7, 2026
 
