@@ -35,7 +35,7 @@ class MassMetatagContactDetails extends MetaNameBase {
       if ($node instanceof NodeInterface && $node->bundle() == 'location') {
         $info_nodes = $node->get('field_ref_contact_info_1')->referencedEntities();
         $info_node = $info_nodes[0] ?? NULL;
-        // If node is not published, get hours details anyway.
+        // If node is not published,get hours details anyway.
         // If node is published, the token settings will display information.
         if ($info_node && !$info_node->isPublished()) {
           $hours_entities = $info_node->get('field_ref_hours')->referencedEntities();
