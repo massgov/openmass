@@ -33,15 +33,14 @@ class MassMetatagContactDetails extends MetaNameBase {
       $node = \Drupal::routeMatch()->getParameter('node');
       // For Location nodes, get contact info address, even if not published.
       if ($node instanceof NodeInterface && $node->bundle() == 'location') {
-        $info_node = $node->get('field_ref_contact_info_1')->entity;
+        $info_nodes = $node->get('field_ref_contact_info_1')->referencedEntities();
+        $info_node = $info_nodes[0] ?? NULL;
         // If node is not published, get hours details anyway.
         // If node is published, the token settings will display information.
         if ($info_node && !$info_node->isPublished()) {
-          $hours = $info_node
-            ->get('field_ref_hours')
-            ->entity
-            ->get('field_hours_description')
-            ->value;
+          $hours_entities = $info_node->get('field_ref_hours')->referencedEntities();
+          $hours_entity = $hours_entities[0] ?? NULL;
+          $hours = $hours_entity ? $hours_entity->get('field_hours_description')->value : NULL;
           if ($hours) {
             $element = [
               '#tag' => 'meta',
