@@ -341,12 +341,21 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
     // Set the default value the same as the current user's org.
     $user = User::load(\Drupal::currentUser()->id());
     if (isset($user->field_user_org)) {
-      $user_orgs = $user->field_user_org->referencedEntities();
-      foreach ($user_orgs as $term) {
-        if (isset($term->field_state_organization)) {
-          $org_node = $term->field_state_organization->entity;
-          if (!empty($org_node)) {
-            $form['field_organizations']['widget'][0]['target_id']['#default_value'] = $org_node;
+      $term_ids = array_column($user->get('field_user_org')->getValue(), 'target_id');
+      $term_ids = array_values(array_filter($term_ids));
+      if ($term_ids) {
+        $terms = \Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadMultiple($term_ids);
+        foreach ($terms as $term) {
+          $org_node_id = $term->get('field_state_organization')->target_id;
+          if ($org_node_id) {
+            $org_node = \Drupal::entityTypeManager()
+              ->getStorage('node')
+              ->load($org_node_id);
+            if (!empty($org_node)) {
+              $form['field_organizations']['widget'][0]['target_id']['#default_value'] = $org_node;
+            }
           }
         }
       }
@@ -378,7 +387,11 @@ function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterfa
     if (isset($row['select_column_one']['#return_value'])) {
       $vid = $row['select_column_one']['#return_value'];
       if ($revision = $nodeStorage->loadRevision($vid)) {
-        if ($revisionAuthor = $revision->get('revision_uid')->entity) {
+        $revision_author_id = $revision->get('revision_uid')->target_id;
+        $revisionAuthor = $revision_author_id ? \Drupal::entityTypeManager()
+          ->getStorage('user')
+          ->load($revision_author_id) : NULL;
+        if ($revisionAuthor) {
           $title = $revision->getTitle();
           $nid = $revision->id();
           $title_nid = "Outreach about Mass.gov revision \"$title\" ($nid)";
@@ -857,8 +870,9 @@ function mass_utility_get_issuer_advisory_ajax_callback(array &$form, FormStateI
     $node = $storage->load($nid);
     $name_and_title = $node->getTitle();
 
-    if (!empty($node->field_person_ref_org->entity)) {
-      $personOrg = $node->field_person_ref_org->entity;
+    $person_org_id = $node->get('field_person_ref_org')->target_id;
+    if ($person_org_id) {
+      $personOrg = $storage->load($person_org_id);
       // Add ORG if exists.
       $name_and_title .= ', ' . $personOrg->getTitle();
       $nid = $personOrg->nid->value;
@@ -901,8 +915,9 @@ function mass_utility_get_issuer_executive_ajax_callback(array &$form, FormState
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $node = $storage->load($nid);
 
-    if (!empty($node->field_person_ref_org->entity)) {
-      $personOrg = $node->field_person_ref_org->entity;
+    $person_org_id = $node->get('field_person_ref_org')->target_id;
+    if ($person_org_id) {
+      $personOrg = $storage->load($person_org_id);
       // Add ORG if exists.
       $nid = $personOrg->nid->value;
     }
@@ -970,8 +985,12 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
     if ($node = $storage->load($nid)) {
       $name = $node->getTitle();
       $description = $node->field_sub_title->value;
-      if (!empty($node->field_sub_brand->entity->uri->value)) {
-        $image_path = $node->field_sub_brand->entity->uri->value;
+      $sub_brand_id = $node->get('field_sub_brand')->target_id;
+      $sub_brand = $sub_brand_id ? \Drupal::entityTypeManager()
+        ->getStorage('file')
+        ->load($sub_brand_id) : NULL;
+      if ($sub_brand && !empty($sub_brand->uri->value)) {
+        $image_path = $sub_brand->uri->value;
         $image = '<img src="' . \Drupal::service('file_url_generator')->generateAbsoluteString($image_path) . '"/>';
         $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"]', 'val', [$image_path]));
         $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
@@ -1017,26 +1036,53 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
     $phone = '';
     $email = '';
     if ($node->field_contact_source->value === 'node') {
-      if ($node->field_ref_phone->count() > 0) {
-        $phone = $node->field_ref_phone->entity->field_phone->value;
+      $phone_id = $node->get('field_ref_phone')->target_id;
+      if ($phone_id) {
+        $phone_entity = \Drupal::entityTypeManager()
+          ->getStorage('paragraph')
+          ->load($phone_id);
+        if ($phone_entity) {
+          $phone = $phone_entity->field_phone->value;
+        }
       }
-      foreach ($node->field_ref_links->referencedEntities() as $entity) {
-        if ($entity->bundle() === 'online_email') {
-          $email = $entity->field_email->value;
-          break;
+      $link_ids = array_column($node->get('field_ref_links')->getValue(), 'target_id');
+      $link_ids = array_values(array_filter($link_ids));
+      if ($link_ids) {
+        $link_entities = \Drupal::entityTypeManager()
+          ->getStorage('paragraph')
+          ->loadMultiple($link_ids);
+        foreach ($link_entities as $entity) {
+          if ($entity->bundle() === 'online_email') {
+            $email = $entity->field_email->value;
+            break;
+          }
         }
       }
     }
     else {
-      $contact = $node->field_contact->entity;
+      $contact_id = $node->get('field_contact')->target_id;
+      $contact = $contact_id ? $storage->load($contact_id) : NULL;
       if (!empty($contact)) {
-        if ($contact->field_ref_phone_number->count() > 0) {
-          $phone = $contact->field_ref_phone_number->entity->field_phone->value;
+        $phone_id = $contact->get('field_ref_phone_number')->target_id;
+        if ($phone_id) {
+          $phone_entity = \Drupal::entityTypeManager()
+            ->getStorage('paragraph')
+            ->load($phone_id);
+          if ($phone_entity) {
+            $phone = $phone_entity->field_phone->value;
+          }
         }
-        foreach ($contact->field_ref_links->referencedEntities() as $entity) {
-          if ($entity->bundle() === 'online_email') {
-            $email = $entity->field_email->value;
-            break;
+        $link_ids = array_column($contact->get('field_ref_links')->getValue(), 'target_id');
+        $link_ids = array_values(array_filter($link_ids));
+        if ($link_ids) {
+          $link_entities = \Drupal::entityTypeManager()
+            ->getStorage('paragraph')
+            ->loadMultiple($link_ids);
+          foreach ($link_entities as $entity) {
+            if ($entity->bundle() === 'online_email') {
+              $email = $entity->field_email->value;
+              break;
+            }
           }
         }
       }

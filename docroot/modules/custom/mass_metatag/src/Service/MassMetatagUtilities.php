@@ -114,7 +114,11 @@ class MassMetatagUtilities {
 
     if (!empty($entity)) {
       if ($entity->hasField('field_reusable_label')) {
-        $labels = $entity->field_reusable_label->referencedEntities();
+        $label_ids = array_column($entity->get('field_reusable_label')->getValue(), 'target_id');
+        $label_ids = array_values(array_filter($label_ids));
+        $labels = $label_ids ? \Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadMultiple($label_ids) : [];
         foreach ($labels as $label) {
           $result[] = $this->slugify(trim($label->label()));
         }

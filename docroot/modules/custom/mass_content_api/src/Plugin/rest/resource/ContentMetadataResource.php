@@ -127,7 +127,11 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
 
       $labels = [];
       if ($item->hasField('field_reusable_label')) {
-        $l_refs = $item->field_reusable_label->referencedEntities();
+        $label_ids = array_column($item->get('field_reusable_label')->getValue(), 'target_id');
+        $label_ids = array_values(array_filter($label_ids));
+        $l_refs = $label_ids ? \Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadMultiple($label_ids) : [];
         if (!empty($l_refs)) {
           foreach ($l_refs as $l_ref) {
             $labels[] = [

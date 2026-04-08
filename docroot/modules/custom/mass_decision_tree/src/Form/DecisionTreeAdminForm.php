@@ -123,7 +123,11 @@ class DecisionTreeAdminForm extends FormBase {
       ],
     ];
 
-    if ($paragraph = $node->get('field_start_button')->entity) {
+    $start_button_id = $node->get('field_start_button')->target_id;
+    $paragraph = $start_button_id ? $this->entityTypeManager
+      ->getStorage('paragraph')
+      ->load($start_button_id) : NULL;
+    if ($paragraph) {
       if ($start_branch = $paragraph->field_start_button_branch->target_id) {
         $info = [
           'child' => $start_branch,
@@ -235,7 +239,13 @@ class DecisionTreeAdminForm extends FormBase {
       // Check for children and pass them in recursively.
       if ($child_node->bundle() === 'decision_tree_branch') {
         foreach ($child_node->field_multiple_answers as $answers) {
-          $answer = $answers->entity;
+          $answer_id = $answers->target_id;
+          $answer = $answer_id ? $this->entityTypeManager
+            ->getStorage('paragraph')
+            ->load($answer_id) : NULL;
+          if (!$answer) {
+            continue;
+          }
 
           // Use now the entity to get the values you need.
           $answer_path = $answer->field_answer_path->target_id;
