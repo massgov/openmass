@@ -419,7 +419,9 @@ class Organisms {
 
     // Get field values.
     $field_values = $entity->get($field);
-    $field_referenced_entities = $entity->get($field)->referencedEntities();
+    $field_referenced_entities = method_exists($field_values, 'referencedEntities')
+      ? $field_values->referencedEntities()
+      : [];
 
     foreach ($field_values as $delta => $field_value) {
       // If this is an entity, it is processed differently.
@@ -592,7 +594,10 @@ class Organisms {
     ];
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
-    $related_entities = $entity->{$fields['items']}->referencedEntities();
+    $related_list = $entity->{$fields['items']};
+    $related_entities = method_exists($related_list, 'referencedEntities')
+      ? $related_list->referencedEntities()
+      : [];
     // Get related locations.
     foreach ($entity->{$fields['items']} as $delta => $item) {
       $ref_entity = $related_entities[$delta] ?? NULL;
