@@ -456,7 +456,8 @@
                 "Form required class missing from horizontal field groups in Claro (https://www.drupal.org/project/field_group/issues/3160987)": "patches/field_group_claro_theme_tabs_required.patch"
             },
             "drupal/field_tokens": {
-                "Fatal errors in entities that does not declare getFieldDefinitions method (https://www.drupal.org/project/field_tokens/issues/2835032)": "https://www.drupal.org/files/issues/2835032-config-entity-support-9.patch"
+                "Fatal errors in entities that does not declare getFieldDefinitions method (https://www.drupal.org/project/field_tokens/issues/2835032)": "https://www.drupal.org/files/issues/2835032-config-entity-support-9.patch",
+                "Avoid nested Fiber crash when rendering formatted field tokens": "patches/field_tokens/field_tokens-avoid-nested-fiber-on-formatted-render.patch"
             },
             "drupal/file_browser": {
                 "Drupal 11/jQuery 4: fix file browser AJAX context selection and null-safe counter rendering": "patches/file_browser/file_browser-d11-jquery4-ajax-context-fix.patch"
@@ -501,6 +502,12 @@
                 "Add an intermediate redirect (https://www.drupal.org/project/redirect/issues/3162696#comment-15085388)": "https://www.drupal.org/files/issues/2023-05-31/tmp.diff",
                 "Filter by redirect destination does not work with URL alias (https://www.drupal.org/project/redirect/issues/2981544) (See DP-31078 before replacing)": "https://www.drupal.org/files/issues/2024-08-13/2981544-45.patch",
                 "Redirect loop wrong detection (service unavailable: RedirectLoopException) (https://www.drupal.org/project/redirect/issues/3401916)": "https://www.drupal.org/files/issues/2024-04-25/3401916-8.x-1.9.patch"
+            },
+            "drupal/token": {
+                "Add Fiber fallback for token renderInIsolation callsites (combined)": "patches/token/token-fiber-fallbacks-combined.patch"
+            },
+            "drupal/schema_metatag": {
+                "Add Fiber fallback for breadcrumb text renderInIsolation": "patches/schema_metatag/schema-metatag-fiber-fallback-for-breadcrumb-rendering.patch"
             },
             "drupal/type_tray": {
                 "Fix css selectors to not apply list styles to the user input (https://www.drupal.org/project/type_tray/issues/3531986)": "https://www.drupal.org/files/issues/2025-06-24/3531986_type_tray.patch",
