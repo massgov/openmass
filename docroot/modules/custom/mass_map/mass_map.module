@@ -101,9 +101,11 @@ function mass_map_entity_extra_field_info() {
 function mass_map_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   $entityTypeManager = \Drupal::entityTypeManager();
 
-  if ($display->getComponent('extra_contact_info_static_map') && !empty($entity->field_ref_contact_info_1->entity)) {
+  $contact_info_nodes = $entity->get('field_ref_contact_info_1')->referencedEntities();
+  $contact_info_node = $contact_info_nodes[0] ?? NULL;
+  if ($display->getComponent('extra_contact_info_static_map') && $contact_info_node) {
     $builder = $entityTypeManager->getViewBuilder('node');
-    $item = $builder->view($entity->field_ref_contact_info_1->entity, 'map');
+    $item = $builder->view($contact_info_node, 'map');
     $item['#field_name'] = 'extra_contact_info_static_map';
     $build['extra_contact_info_static_map'][] = $item;
   }
@@ -118,8 +120,12 @@ function mass_map_preprocess_node(&$variables) {
     if ($current_page = \Drupal::routeMatch()->getParameter('node')) {
       $variables['parent_label'] = $current_page->label();
     }
-    /** @var \Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle $address */
-    $address = $node->field_ref_address->entity;
+    /** @var \Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle|null $address */
+    $addresses = $node->get('field_ref_address')->referencedEntities();
+    $address = $addresses[0] ?? NULL;
+    if (!$address) {
+      return;
+    }
     $massMap = \Drupal::service('mass_map');
     $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);
     $variables['lat'] = $address->field_geofield->lat;
@@ -128,9 +134,12 @@ function mass_map_preprocess_node(&$variables) {
     $variables['street_address'] = $street_address;
     $variables['google_directions'] = $address->getDirectionsUrl();
     $variables['display_title'] = $node->field_display_title->value;
-    $phone = $node->field_ref_phone_number->entity;
-    $fax = $node->field_ref_fax_number->entity;
-    $links = $node->field_ref_links->entity;
+    $phones = $node->get('field_ref_phone_number')->referencedEntities();
+    $faxes = $node->get('field_ref_fax_number')->referencedEntities();
+    $links_entities = $node->get('field_ref_links')->referencedEntities();
+    $phone = $phones[0] ?? NULL;
+    $fax = $faxes[0] ?? NULL;
+    $links = $links_entities[0] ?? NULL;
     $contacts = [
       'phone' => $phone && $phone->field_phone ? $phone->field_phone->value : NULL,
       'fax' => $fax && $fax->field_fax ? $fax->field_fax->value : NULL,
@@ -211,8 +220,9 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
         if (!empty($location_nodes)) {
           foreach ($location_nodes as $location_node) {
             // Verify and only display locations that have addresses.
-            $contact_info_node = $location_node->field_ref_contact_info_1->entity;
-            if (!$contact_info_node->field_ref_address->isEmpty()) {
+            $contact_info_nodes = $location_node->get('field_ref_contact_info_1')->referencedEntities();
+            $contact_info_node = $contact_info_nodes[0] ?? NULL;
+            if ($contact_info_node && !$contact_info_node->get('field_ref_address')->isEmpty()) {
               $nids[] = $location_node->id();
             }
           }
