@@ -1037,27 +1037,36 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
 
   if ($nid) {
     $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
     $node = $storage->load($nid);
     $name = $node->getTitle();
     $phone = '';
     $email = '';
     if ($node->field_contact_source->value === 'node') {
-      $phone_id = $node->get('field_ref_phone')->target_id;
-      if ($phone_id) {
-        $phone_entity = \Drupal::entityTypeManager()
-          ->getStorage('paragraph')
-          ->load($phone_id);
-        if ($phone_entity) {
-          $phone = $phone_entity->field_phone->value;
+      $phone_item = $node->get('field_ref_phone')->first();
+      $phone_entity = NULL;
+      if ($phone_item) {
+        $phone_revision_id = $phone_item->target_revision_id ?? NULL;
+        $phone_id = $phone_item->target_id ?? NULL;
+        $phone_entity = $phone_revision_id ? $paragraph_storage->loadRevision($phone_revision_id) : NULL;
+        if (!$phone_entity && $phone_id) {
+          $phone_entity = $paragraph_storage->load($phone_id);
         }
       }
-      $link_ids = array_column($node->get('field_ref_links')->getValue(), 'target_id');
-      $link_ids = array_values(array_filter($link_ids));
-      if ($link_ids) {
-        $link_entities = \Drupal::entityTypeManager()
-          ->getStorage('paragraph')
-          ->loadMultiple($link_ids);
-        foreach ($link_entities as $entity) {
+      if ($phone_entity) {
+        $phone = $phone_entity->field_phone->value;
+      }
+      foreach ($node->get('field_ref_links') as $link_item) {
+        $entity = NULL;
+        $link_revision_id = $link_item->target_revision_id ?? NULL;
+        $link_id = $link_item->target_id ?? NULL;
+        if ($link_revision_id) {
+          $entity = $paragraph_storage->loadRevision($link_revision_id);
+        }
+        if (!$entity && $link_id) {
+          $entity = $paragraph_storage->load($link_id);
+        }
+        if ($entity) {
           if ($entity->bundle() === 'online_email') {
             $email = $entity->field_email->value;
             break;
@@ -1069,22 +1078,30 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
       $contact_id = $node->get('field_contact')->target_id;
       $contact = $contact_id ? $storage->load($contact_id) : NULL;
       if (!empty($contact)) {
-        $phone_id = $contact->get('field_ref_phone_number')->target_id;
-        if ($phone_id) {
-          $phone_entity = \Drupal::entityTypeManager()
-            ->getStorage('paragraph')
-            ->load($phone_id);
-          if ($phone_entity) {
-            $phone = $phone_entity->field_phone->value;
+        $phone_item = $contact->get('field_ref_phone_number')->first();
+        $phone_entity = NULL;
+        if ($phone_item) {
+          $phone_revision_id = $phone_item->target_revision_id ?? NULL;
+          $phone_id = $phone_item->target_id ?? NULL;
+          $phone_entity = $phone_revision_id ? $paragraph_storage->loadRevision($phone_revision_id) : NULL;
+          if (!$phone_entity && $phone_id) {
+            $phone_entity = $paragraph_storage->load($phone_id);
           }
         }
-        $link_ids = array_column($contact->get('field_ref_links')->getValue(), 'target_id');
-        $link_ids = array_values(array_filter($link_ids));
-        if ($link_ids) {
-          $link_entities = \Drupal::entityTypeManager()
-            ->getStorage('paragraph')
-            ->loadMultiple($link_ids);
-          foreach ($link_entities as $entity) {
+        if ($phone_entity) {
+          $phone = $phone_entity->field_phone->value;
+        }
+        foreach ($contact->get('field_ref_links') as $link_item) {
+          $entity = NULL;
+          $link_revision_id = $link_item->target_revision_id ?? NULL;
+          $link_id = $link_item->target_id ?? NULL;
+          if ($link_revision_id) {
+            $entity = $paragraph_storage->loadRevision($link_revision_id);
+          }
+          if (!$entity && $link_id) {
+            $entity = $paragraph_storage->load($link_id);
+          }
+          if ($entity) {
             if ($entity->bundle() === 'online_email') {
               $email = $entity->field_email->value;
               break;

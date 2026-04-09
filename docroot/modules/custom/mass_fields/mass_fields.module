@@ -338,8 +338,12 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
   // Loop through the sections.
   foreach ($field_organization_sections as $section_key => $section_value) {
     // Get the section entity.
+    $section_revision_id = $section_value['target_revision_id'] ?? NULL;
     $section_id = $section_value['target_id'] ?? NULL;
-    $section_entity = $section_id ? $paragraph_storage->load($section_id) : NULL;
+    $section_entity = $section_revision_id ? $paragraph_storage->loadRevision($section_revision_id) : NULL;
+    if (!$section_entity && $section_id) {
+      $section_entity = $paragraph_storage->load($section_id);
+    }
     if (!$section_entity) {
       continue;
     }
@@ -352,8 +356,12 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
     // Loop through the section content paragraphs.
     foreach ($field_section_long_form_content as $content_key => $content_value) {
       // Get the content paragraph entity.
+      $content_revision_id = $content_value['target_revision_id'] ?? NULL;
       $content_id = $content_value['target_id'] ?? NULL;
-      $content_entity = $content_id ? $paragraph_storage->load($content_id) : NULL;
+      $content_entity = $content_revision_id ? $paragraph_storage->loadRevision($content_revision_id) : NULL;
+      if (!$content_entity && $content_id) {
+        $content_entity = $paragraph_storage->load($content_id);
+      }
       // Get the paragraph type.
       if ($content_entity) {
         $paragraph_type = $content_entity->bundle();

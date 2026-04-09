@@ -330,13 +330,18 @@ function mass_validation_entity_presave(EntityInterface $entity) {
       $values = [];
       if ($type === 'executive_order') {
         $issuer_items = $entity->get($fields['executive_order'])->getValue();
-        $issuer_ids = array_column($issuer_items, 'target_id');
-        $issuer_ids = array_values(array_filter($issuer_ids));
-        if ($issuer_ids) {
-          $issuers = \Drupal::entityTypeManager()
-            ->getStorage('paragraph')
-            ->loadMultiple($issuer_ids);
-          foreach ($issuers as $issuer) {
+        $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+        foreach ($issuer_items as $issuer_item) {
+          $issuer = NULL;
+          $issuer_revision_id = $issuer_item['target_revision_id'] ?? NULL;
+          $issuer_id = $issuer_item['target_id'] ?? NULL;
+          if ($issuer_revision_id) {
+            $issuer = $paragraph_storage->loadRevision($issuer_revision_id);
+          }
+          if (!$issuer && $issuer_id) {
+            $issuer = $paragraph_storage->load($issuer_id);
+          }
+          if ($issuer) {
             $org_page_id = $issuer->get('field_issuer_issuers')->target_id;
             if ($org_page_id) {
               $values[] = $org_page_id;

@@ -123,10 +123,7 @@ class DecisionTreeAdminForm extends FormBase {
       ],
     ];
 
-    $start_button_id = $node->get('field_start_button')->target_id;
-    $paragraph = $start_button_id ? $this->entityTypeManager
-      ->getStorage('paragraph')
-      ->load($start_button_id) : NULL;
+    $paragraph = $this->loadParagraphFromFieldItem($node->get('field_start_button')->first());
     if ($paragraph) {
       if ($start_branch = $paragraph->field_start_button_branch->target_id) {
         $info = [
@@ -239,10 +236,7 @@ class DecisionTreeAdminForm extends FormBase {
       // Check for children and pass them in recursively.
       if ($child_node->bundle() === 'decision_tree_branch') {
         foreach ($child_node->field_multiple_answers as $answers) {
-          $answer_id = $answers->target_id;
-          $answer = $answer_id ? $this->entityTypeManager
-            ->getStorage('paragraph')
-            ->load($answer_id) : NULL;
+          $answer = $this->loadParagraphFromFieldItem($answers);
           if (!$answer) {
             continue;
           }
@@ -316,6 +310,30 @@ class DecisionTreeAdminForm extends FormBase {
       }
     }
     \Drupal::messenger()->addMessage($this->t('Your changes have been saved successfully!'), 'status');
+  }
+
+  /**
+   * Loads a paragraph by revision when available on the field item.
+   *
+   * @param \Drupal\Core\Field\FieldItemInterface|null $item
+   *   The field item from an entity_reference_revisions field.
+   *
+   * @return \Drupal\paragraphs\ParagraphInterface|null
+   *   The loaded paragraph entity, or NULL when unavailable.
+   */
+  protected function loadParagraphFromFieldItem($item) {
+    if (!$item) {
+      return NULL;
+    }
+    $revision_id = $item->target_revision_id ?? NULL;
+    if ($revision_id) {
+      $paragraph = $this->entityTypeManager->getStorage('paragraph')->loadRevision($revision_id);
+      if ($paragraph) {
+        return $paragraph;
+      }
+    }
+    $target_id = $item->target_id ?? NULL;
+    return $target_id ? $this->entityTypeManager->getStorage('paragraph')->load($target_id) : NULL;
   }
 
 }
