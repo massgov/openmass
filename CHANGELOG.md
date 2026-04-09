@@ -1,14 +1,24 @@
 
 
+## [0.474.5] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
 ## [0.474.4] - April 9, 2026
 
 ### Fixed:
 - DP-44741: Hotfix to address Fiber-related issues.
 
+
+
 ## [0.474.3] - April 8, 2026
 
 ### Fixed:
 - DP-44741: Hotfix to address Fiber-related issues.
+
 
 
 ## [0.474.2] - April 8, 2026
