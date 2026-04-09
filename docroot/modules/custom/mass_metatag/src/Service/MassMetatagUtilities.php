@@ -65,17 +65,19 @@ class MassMetatagUtilities {
         }
         else {
           // If there is a parent org, add it to the array to check.
-          if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
-            $orgs[] = $node->field_parent->entity;
+          $parents = $node->get('field_parent')->referencedEntities();
+          $parent = $parents[0] ?? NULL;
+          if ($parent && !in_array($parent->id(), $checked_orgs)) {
+            $orgs[] = $parent;
             if ($parent_meta) {
-              $result[$node->field_parent->entity->id()] = [
-                'title' => $node->field_parent->entity->getTitle(),
-                'uuid' => $node->field_parent->entity->uuid(),
-                'slug' => str_replace("-", "", $this->slugify(trim($node->field_parent->entity->label()))),
+              $result[$parent->id()] = [
+                'title' => $parent->getTitle(),
+                'uuid' => $parent->uuid(),
+                'slug' => str_replace("-", "", $this->slugify(trim($parent->label()))),
               ];
             }
             else {
-              $result[] = $this->slugify(trim($node->field_parent->entity->label()));
+              $result[] = $this->slugify(trim($parent->label()));
             }
           }
         }
@@ -114,7 +116,11 @@ class MassMetatagUtilities {
 
     if (!empty($entity)) {
       if ($entity->hasField('field_reusable_label')) {
-        $labels = $entity->field_reusable_label->referencedEntities();
+        $label_ids = array_column($entity->get('field_reusable_label')->getValue(), 'target_id');
+        $label_ids = array_values(array_filter($label_ids));
+        $labels = $label_ids ? \Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadMultiple($label_ids) : [];
         foreach ($labels as $label) {
           $result[] = $this->slugify(trim($label->label()));
         }

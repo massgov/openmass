@@ -28,6 +28,9 @@ class MassMetatagLocation extends MetaNameBase {
     $element = parent::output();
     // Decode the value because it was encoded by hook_tokens().
     $addresses = json_decode($this->value(), TRUE);
+    if (!is_array($addresses)) {
+      $addresses = [];
+    }
 
     $element['#attributes']['content'] = [];
 
