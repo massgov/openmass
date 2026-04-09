@@ -53,7 +53,7 @@ class MassMetatagContactDetails extends MetaNameBase {
         }
       }
     }
-    catch (\Exception $e) {
+    catch (\Throwable $e) {
       // If there is an error, just return default element.
     }
 
