@@ -108,6 +108,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'mass_term_labels':
+          $term = NULL;
           $metatag_utils = \Drupal::service('mass_metatag.utilities');
           if (isset($data['term'])) {
             if ($data['term'] instanceof ContentEntityInterface) {

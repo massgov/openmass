@@ -74,11 +74,7 @@ final class EntityReferenceAbsoluteUrlsFormatter extends FormatterBase {
     $template = $this->getSetting('link_template');
     $absolute = (bool) $this->getSetting('absolute');
 
-    foreach ($items as $item) {
-      $entity = $item->entity ?? NULL;
-      if (!$entity) {
-        continue;
-      }
+    foreach ($items->referencedEntities() as $entity) {
 
       try {
         if ($template && $entity->hasLinkTemplate($template)) {
