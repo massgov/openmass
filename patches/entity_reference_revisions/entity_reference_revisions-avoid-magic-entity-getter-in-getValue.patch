@@ -1,9 +1,8 @@
-diff --git a/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php b/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php
 --- a/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php
 +++ b/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php
-@@ -211,7 +211,11 @@ class EntityReferenceRevisionsItem extends EntityReferenceItem implements Option
-   */
-  public function getValue() {
+@@ -212,8 +212,11 @@
+    */
+   public function getValue() {
      $values = parent::getValue();
 -    if ($this->entity instanceof EntityNeedsSaveInterface && $this->entity->needsSave()) {
 -      $values['entity'] = $this->entity;
@@ -12,6 +11,6 @@ diff --git a/src/Plugin/Field/FieldType/EntityReferenceRevisionsItem.php b/src/P
 +      if ($entity instanceof EntityNeedsSaveInterface && $entity->needsSave()) {
 +        $values['entity'] = $entity;
 +      }
-+    }
+     }
      return $values;
    }
