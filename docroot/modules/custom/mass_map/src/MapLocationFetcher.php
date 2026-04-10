@@ -235,10 +235,17 @@ class MapLocationFetcher {
       ];
 
       if (isset($node->field_ref_contact_info_1) && !$node->field_ref_contact_info_1->isEmpty()) {
-        $contact_information_entity = $node->field_ref_contact_info_1->entity;
+        $contact_information_entities = $node->get('field_ref_contact_info_1')->referencedEntities();
+        $contact_information_entity = $contact_information_entities[0] ?? NULL;
+        if (!$contact_information_entity) {
+          $key++;
+          continue;
+        }
         // Get phone number from the referenced contact info node.
-        if (!empty($contact_information_entity->field_ref_phone_number->entity->field_phone->value)) {
-          $phone = $contact_information_entity->field_ref_phone_number->entity->field_phone->value;
+        $phone_entities = $contact_information_entity->get('field_ref_phone_number')->referencedEntities();
+        $phone_entity = $phone_entities[0] ?? NULL;
+        if ($phone_entity && !empty($phone_entity->field_phone->value)) {
+          $phone = $phone_entity->field_phone->value;
 
           // Add the phone number to the listing item imagePromo.
           $locations['imagePromos']['items'][$key]['phone'] = [
@@ -248,8 +255,9 @@ class MapLocationFetcher {
         }
 
         // Get hours from the referenced contact info node.
-        if (!$contact_information_entity->field_ref_hours->isEmpty()) {
-          $hours_paragraph = $contact_information_entity->field_ref_hours->entity;
+        if (!$contact_information_entity->get('field_ref_hours')->isEmpty()) {
+          $hours_entities = $contact_information_entity->get('field_ref_hours')->referencedEntities();
+          $hours_paragraph = $hours_entities[0] ?? NULL;
           if (!is_null($hours_paragraph) && !isset($hours_paragraph->field_hours_structured->entity)) {
             $hours = $hours_paragraph->field_hours_structured->view('default');
             if ($hours) {
@@ -349,11 +357,13 @@ class MapLocationFetcher {
     }
 
     if (!empty($node->field_ref_contact_info_1)) {
-      $contactField = $node->field_ref_contact_info_1;
-      if (!empty($contactField->entity->field_ref_address)) {
-        $addressData = $contactField->entity->field_ref_address;
-        $location['lat'] = !is_null($addressData->entity) ? $addressData->entity->field_geofield->lat : '';
-        $location['lon'] = !is_null($addressData->entity) ? $addressData->entity->field_geofield->lon : '';
+      $contact_entities = $node->get('field_ref_contact_info_1')->referencedEntities();
+      $contact_entity = $contact_entities[0] ?? NULL;
+      if ($contact_entity && !$contact_entity->get('field_ref_address')->isEmpty()) {
+        $address_entities = $contact_entity->get('field_ref_address')->referencedEntities();
+        $address_entity = $address_entities[0] ?? NULL;
+        $location['lat'] = $address_entity ? $address_entity->field_geofield->lat : '';
+        $location['lon'] = $address_entity ? $address_entity->field_geofield->lon : '';
       }
     }
 
@@ -381,17 +391,22 @@ class MapLocationFetcher {
       foreach ($node->field_ref_contact_info_1 as $entity) {
         $node = Node::load($entity->target_id);
         $address = '';
-        if (!empty($node->field_ref_address->entity->field_address_address)) {
-          $addressEntity = $node->field_ref_address->entity->field_address_address;
+        $address_refs = $node->get('field_ref_address')->referencedEntities();
+        $address_ref = $address_refs[0] ?? NULL;
+        if ($address_ref && !empty($address_ref->field_address_address)) {
+          $addressEntity = $address_ref->field_address_address;
           $address = !empty($addressEntity[0]->address_line1) ? $addressEntity[0]->address_line1 . ', ' : '';
           $address .= !empty($addressEntity[0]->address_line2) ? $addressEntity[0]->address_line2 . ', ' : '';
           $address .= !empty($addressEntity[0]->locality) ? $addressEntity[0]->locality : '';
           $address .= !empty($addressEntity[0]->administrative_area) ? ', ' . $addressEntity[0]->administrative_area : '';
           $address .= !empty($addressEntity[0]->postal_code) ? ' ' . $addressEntity[0]->postal_code : '';
         }
-        $phone = $node->field_ref_phone_number->entity;
-        $fax = $node->field_ref_fax_number->entity;
-        $links = $node->field_ref_links->entity;
+        $phones = $node->get('field_ref_phone_number')->referencedEntities();
+        $faxes = $node->get('field_ref_fax_number')->referencedEntities();
+        $links_entities = $node->get('field_ref_links')->referencedEntities();
+        $phone = $phones[0] ?? NULL;
+        $fax = $faxes[0] ?? NULL;
+        $links = $links_entities[0] ?? NULL;
         $contacts = [
           'field_phone' => $phone && $phone->field_phone ? $phone->field_phone->value : NULL,
           'field_fax' => $fax && $fax->field_fax ? $fax->field_fax->value : NULL,

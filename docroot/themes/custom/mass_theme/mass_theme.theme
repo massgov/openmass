@@ -7062,7 +7062,7 @@ function mass_theme_preprocess_paragraph__video_with_header(array &$variables) {
   $bg_color = $paragraph->get('field_video_header_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**
@@ -7074,7 +7074,7 @@ function mass_theme_preprocess_paragraph__video_with_section(array &$variables) 
   $bg_color = $paragraph->get('field_video_section_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**

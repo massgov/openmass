@@ -28,8 +28,13 @@ class PublishChildWithUnpublishedParentConstraintValidator extends ConstraintVal
       return;
     }
 
-    $refs = $parentList->referencedEntities();
-    $parent = $refs[0] ?? FALSE;
+    $parent_id = $parentList->target_id;
+    if (!$parent_id) {
+      return;
+    }
+    $parent = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->load($parent_id);
 
     // If we can load the parent successfully.
     if (!$parent) {

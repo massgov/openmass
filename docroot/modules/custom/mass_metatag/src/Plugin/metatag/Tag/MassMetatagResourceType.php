@@ -31,12 +31,19 @@ class MassMetatagResourceType extends MetaNameBase {
   public function output(): array {
     $element = parent::output();
     $node = \Drupal::routeMatch()->getParameter('node');
+    if (!$node || !$node->hasField('field_binder_data_type')) {
+      return $element;
+    }
+
     if ($node->get('field_binder_data_type')) {
       $items = $node->get('field_binder_data_type')->referencedEntities();
       if (!empty($items)) {
         // Check Binder data type, field_binder_data_type to determin if mg_resource_type is neccessary or not.
         if ($items[0]->get('name')->getString() === 'Data resource') {
 
+          if (!$node->hasField('field_data_resource_type')) {
+            return $element;
+          }
           $data_resources = $node->get('field_data_resource_type');
           $types = [];
 

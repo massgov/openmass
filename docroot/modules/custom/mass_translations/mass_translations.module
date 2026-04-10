@@ -50,7 +50,12 @@ function _mass_translations_media_helper(array &$variables) {
   // Generate unique document ID for accessibility
   $document_id = 'doc-' . $media->id();
 
-  $document_title = !empty($media->field_title->value) ? $media->field_title->value : $media->field_upload_file->entity->getFilename();
+  $document_title = $media->field_title->value ?? '';
+  if ($document_title === '') {
+    $files = $media->get('field_upload_file')->referencedEntities();
+    $file = $files[0] ?? NULL;
+    $document_title = $file ? $file->getFilename() : '';
+  }
 
   // Get all the translations for this media.
   $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
