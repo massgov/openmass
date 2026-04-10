@@ -1,0 +1,25 @@
+--- a/modules/text/src/TextProcessed.php	2026-04-10 12:06:12
++++ b/modules/text/src/TextProcessed.php	2026-04-10 12:06:12
+@@ -61,7 +61,21 @@
+         '#langcode' => $item->getLangcode(),
+       ];
+       // Capture the cacheability metadata associated with the processed text.
+-      $processed_text = $this->getRenderer()->renderInIsolation($build);
++      if (\Fiber::getCurrent() !== NULL) {
++        $processed_text = $this->getRenderer()->render($build);
++      }
++      else {
++        try {
++          $processed_text = $this->getRenderer()->renderInIsolation($build);
++        }
++        catch (\FiberError) {
++          // Drupal 10.3+ renderInIsolation() starts a nested Fiber via
++          // executeInRenderContext(). In unsafe contexts, such as save-time
++          // entity serialization during deferred cache writes, fall back to
++          // rendering in the current context.
++          $processed_text = $this->getRenderer()->render($build);
++        }
++      }
+       $this->processed = FilterProcessResult::createFromRenderArray($build)->setProcessedText((string) $processed_text);
+     }
+     return FilteredMarkup::create($this->processed->getProcessedText());

@@ -62,8 +62,29 @@ class EntityUrl extends FieldItemList {
     $entity = $this->getEntity();
     if (!$entity->isNew()) {
       $this->list = [
-        $this->createItem(0, $this->getEntity()->toUrl()->toString()),
+        $this->createItem(0, $this->buildEntityUrl()),
       ];
+    }
+  }
+
+  /**
+   * Builds the entity URL, avoiding alias processing in unsafe Fiber contexts.
+   */
+  protected function buildEntityUrl(): string {
+    $entity = $this->getEntity();
+
+    // Alias lookups may suspend the current Fiber in Drupal 10.3+.
+    // During entity serialization for deferred cache writes, that can be
+    // illegal. Fall back to the canonical internal path in those contexts.
+    if (\Fiber::getCurrent() !== NULL) {
+      return $entity->toUrl('canonical', ['path_processing' => FALSE])->toString();
+    }
+
+    try {
+      return $entity->toUrl()->toString();
+    }
+    catch (\FiberError) {
+      return $entity->toUrl('canonical', ['path_processing' => FALSE])->toString();
     }
   }
 
