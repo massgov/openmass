@@ -14,6 +14,7 @@ dependencies:
     - image.style.thumbnail
     - paragraphs.paragraphs_type.image
   module:
+    - decorative_image_widget
     - image
     - text
 id: paragraph.image.default
@@ -28,7 +29,9 @@ content:
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
-    third_party_settings: {  }
+    third_party_settings:
+      decorative_image_widget:
+        use_decorative_checkbox: true
   field_image_administrative_title:
     type: string_textfield
     weight: 2
