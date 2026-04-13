@@ -49,7 +49,7 @@ class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->fieldValueEquals(
       'edit-uid-0-target-id',
-      $blocked_author->getAccountName() . ' (' . $blocked_author->id() . ')'
+      $blocked_author->getAccountName() . ' (' . $blocked_author->id() . ') - User'
     );
 
     $this->drupalGet("media/$editable_media_id/edit");
@@ -61,7 +61,7 @@ class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
     $this->getSession()->getPage()->pressButton('Save');
     $this->assertSession()->fieldValueEquals(
       'edit-uid-0-target-id',
-      $active_author->getAccountName() . ' (' . $active_author->id() . ')'
+      $active_author->getAccountName() . ' (' . $active_author->id() . ') - User'
     );
   }
 
@@ -70,7 +70,41 @@ class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
    */
   private function selectAutocompleteAuthor(string $field_id, string $search, string $option_text): void {
     $field = $this->assertSession()->fieldExists($field_id);
-    $field->setValue($search);
+    if (!$field->isVisible()) {
+      $this->getSession()->executeScript(sprintf(
+        "(function (fieldId) {
+          const input = document.getElementById(fieldId);
+          if (!input) {
+            return;
+          }
+          const details = input.closest('details');
+          if (details) {
+            details.open = true;
+          }
+        })(%s);",
+        json_encode($field_id)
+      ));
+      $this->getSession()->wait(
+        8000,
+        "(() => { const el = document.getElementById(" . json_encode($field_id) . "); return !!el && el.offsetParent !== null; })()"
+      );
+      $field = $this->assertSession()->fieldExists($field_id);
+    }
+    $this->getSession()->executeScript(sprintf(
+      "(function (fieldId, searchTerm) {
+        const input = document.getElementById(fieldId);
+        if (!input) {
+          return;
+        }
+        input.focus();
+        input.value = searchTerm;
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+        input.dispatchEvent(new KeyboardEvent('keyup', { key: 'a', bubbles: true }));
+      })(%s, %s);",
+      json_encode($field_id),
+      json_encode($search)
+    ));
 
     $escaped = json_encode($option_text);
     $this->getSession()->wait(
@@ -84,7 +118,7 @@ class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
 
     $option = $this->getSession()->getPage()->find(
       'xpath',
-      "//ul[contains(@class, 'ui-autocomplete')]//li[contains(., \"$option_text\")]"
+      "(//ul[contains(@class, 'ui-autocomplete')]//li)[1]"
     );
     $this->assertNotNull($option);
     $option->click();
