@@ -242,7 +242,7 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     $item_alt_description = $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-image-0-alt--description')->getHtml();
     $item_alt_description = trim($item_alt_description);
     $this->assertEquals(
-      'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.',
+      'If the image conveys information that is not part of the link text, describe it here. Screen readers will read the alt text first, then the link text. If the image is purely decorative, leave it blank and check the "decorative" checkbox below.',
       $item_alt_description,
       'Alt text description for field_featured_item_image is correct.'
     );
@@ -277,7 +277,7 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     // Trim the HTML content to remove extra whitespace.
     $event_image_alt_description = trim($event_image_alt_description);
     $this->assertEquals(
-      'Enter a short description of the image to be used by screen readers ONLY if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank.',
+      'Enter a short description of the image to be used by screen readers only if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank and check the "decorative" checkbox below.',
       $event_image_alt_description,
       'Alt text description for field_event_image is correct.'
     );
@@ -286,7 +286,7 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     $event_logo_alt_description = $page->find('css', '#edit-field-event-logo-0-alt--description')->getHtml();
     $event_logo_alt_description = trim($event_logo_alt_description);
     $this->assertEquals(
-      'Enter a short description of the image to be used by screen readers ONLY if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank.',
+      'Enter a short description of the image to be used by screen readers only if the image is not decorative. If the image is decorative (only adds visual decoration to the page, rather than to convey information that is important to understanding the page) leave this field blank and check the "decorative" checkbox below.',
       $event_logo_alt_description,
       'Alt text description for field_event_logo is correct.'
     );
