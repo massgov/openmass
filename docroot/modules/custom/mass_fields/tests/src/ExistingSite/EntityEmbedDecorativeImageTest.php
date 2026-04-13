@@ -35,7 +35,7 @@ class EntityEmbedDecorativeImageTest extends MassExistingSiteBase {
   public function testEmptyAltWithoutDecorativeFailsValidation(): void {
     $form_state = new FormState();
     $form_state->setValue(['attributes', 'alt'], '');
-    $form_state->setValue(['decorative'], FALSE);
+    $form_state->setValue(['attributes', 'decorative'], FALSE);
 
     $element = $this->buildAltElement();
 
@@ -73,6 +73,29 @@ class EntityEmbedDecorativeImageTest extends MassExistingSiteBase {
     DecorativeImageWidgetHelper::validateEntityEmbedAlt($element, $form_state);
 
     $this->assertSame('', $form_state->getValue(['attributes', 'alt']), 'Alt is cleared when decorative is checked.');
+  }
+
+  /**
+   * Decorative defaults to unchecked for new entity embed images.
+   */
+  public function testEntityEmbedDecorativeDefaultsUnchecked(): void {
+    $form_state = new FormState();
+    $form = [
+      'attributes' => [
+        'alt' => [
+          '#default_value' => '',
+          '#weight' => 0,
+          '#attributes' => [],
+          '#element_validate' => [],
+        ],
+      ],
+      '#attached' => [],
+    ];
+
+    DecorativeImageWidgetHelper::alterEntityEmbedDialogForm($form, $form_state);
+
+    $this->assertArrayHasKey('decorative', $form['attributes'], 'Decorative checkbox is added to entity embed form.');
+    $this->assertFalse((bool) $form['attributes']['decorative']['#default_value'], 'Decorative checkbox defaults to unchecked for new embeds.');
   }
 
 }
