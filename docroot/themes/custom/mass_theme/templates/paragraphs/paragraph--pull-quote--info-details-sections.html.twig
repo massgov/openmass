@@ -36,8 +36,8 @@
  * @ingroup themeable
  */
 #}
-{% include "@organisms/by-author/pullquote.twig" with {
-  "pullquoteCallout": {
-    "content": paragraph.field_quote.value
-  }
-} %}
+{{ include('@organisms/by-author/pullquote.twig', {
+  pullquoteCallout: {
+    content: paragraph.field_quote.value,
+  },
+}) }}

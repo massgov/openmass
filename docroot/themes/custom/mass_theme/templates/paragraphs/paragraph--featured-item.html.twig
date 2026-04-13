@@ -38,10 +38,10 @@
  * @ingroup themeable
  */
 #}
-{% include "@molecules/featured-item.twig" with {
-  "featuredItem": {
-    "content": content.field_featured_item_image,
-    "href": content.field_featured_item_link[0]['#url_title'],
-    "text": content.field_featured_item_link[0]['#title']
-  }
-} %}
+{{ include('@molecules/featured-item.twig', {
+  featuredItem: {
+    content: content.field_featured_item_image,
+    href: content.field_featured_item_link[0]['#url_title'],
+    text: content.field_featured_item_link[0]['#title'],
+  },
+}) }}

@@ -71,17 +71,17 @@
  */
 #}
 
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "level": "",
-    "emphasizedText": "",
-    "tags": "",
-    "contents": ""
-  }
-} %}
+    level: '',
+    emphasizedText: '',
+    tags: '',
+    contents: '',
+  },
+}) }}

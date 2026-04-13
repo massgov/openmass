@@ -4,6 +4,7 @@ namespace Drupal\mass_translations;
 
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\language\ConfigurableLanguageManager;
+use Drupal\media\MediaInterface;
 
 class MassLanguageManager extends ConfigurableLanguageManager {
 
@@ -30,7 +31,10 @@ class MassLanguageManager extends ConfigurableLanguageManager {
   public function getCurrentLanguage($type = LanguageInterface::TYPE_INTERFACE) {
     if ($type == LanguageInterface::TYPE_CONTENT) {
       $media = \Drupal::routeMatch()->getParameter('media');
-      if ($media) {
+      if (is_numeric($media)) {
+        $media = \Drupal::entityTypeManager()->getStorage('media')->load((int) $media);
+      }
+      if ($media instanceof MediaInterface) {
         return $media->language();
       }
     }

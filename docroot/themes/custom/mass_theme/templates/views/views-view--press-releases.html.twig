@@ -37,21 +37,21 @@
 {{ attach_library('mass_theme/views-view--press-releases') }}
 
 {% set primaryRelationshipContent = content.field_primary_parent %}
-{% set primaryIndicators = {"label": "part of"} %}
+{% set primaryIndicators = {label: 'part of'} %}
 {% set secondaryIndicators = banner_style ? {} : {
-  "label": term.field_organizations is not empty ? "offered by" : "",
-  "icon": "building",
-  "groupAfter": 3
+  label: term.field_organizations is not empty ? 'offered by' : '',
+  icon: 'building',
+  groupAfter: 3,
 }
 %}
 
 {% if term.field_organizations is not empty %}
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": title,
-      "secondary": secondaryIndicators,
-      "borderless": true
-    }
+  {% embed '@molecules/relationship-indicators.twig' with {
+    relationshipIndicators: {
+      pageTitle: title,
+      secondary: secondaryIndicators,
+      borderless: true,
+    },
   } %}
 
     {% block primaryRelationship %}
@@ -68,7 +68,7 @@
   dom_id ? 'js-view-dom-id-' ~ dom_id,
   'main-content',
   'main-content--full',
-  'press-releases-wrapper'
+  'press-releases-wrapper',
 ]
 %}
 

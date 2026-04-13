@@ -1,0 +1,33 @@
+diff --git a/lib/Drupal/Core/Field/Plugin/Field/FieldType/EntityReferenceItemBase.php b/lib/Drupal/Core/Field/Plugin/Field/FieldType/EntityReferenceItemBase.php
+--- a/lib/Drupal/Core/Field/Plugin/Field/FieldType/EntityReferenceItemBase.php
++++ b/lib/Drupal/Core/Field/Plugin/Field/FieldType/EntityReferenceItemBase.php
+@@ -24,13 +24,21 @@ public function __get($property_name) {
+     if ($property_name === 'entity' && \Fiber::getCurrent()) {
+-      $fiber = new \Fiber(fn() => parent::__get($property_name));
+-      $fiber->start();
+-      while (!$fiber->isTerminated()) {
+-        if ($fiber->isSuspended()) {
+-          $resume_type = $fiber->resume();
+-          if (!$fiber->isTerminated() && $resume_type !== FiberResumeType::Immediate) {
+-            usleep(500);
++      try {
++        $fiber = new \Fiber(fn() => parent::__get($property_name));
++        $fiber->start();
++        while (!$fiber->isTerminated()) {
++          if ($fiber->isSuspended()) {
++            $resume_type = $fiber->resume();
++            if (!$fiber->isTerminated() && $resume_type !== FiberResumeType::Immediate) {
++              usleep(500);
++            }
+           }
+         }
++        return $fiber->getReturn();
++      }
++      catch (\FiberError) {
++        // In some execution contexts (for example nested rendering and
++        // transaction teardown callbacks), switching fibers is disallowed.
++        // Fall back to direct resolution to avoid hard-failing requests.
++        return parent::__get($property_name);
+       }
+-      return $fiber->getReturn();
+     }

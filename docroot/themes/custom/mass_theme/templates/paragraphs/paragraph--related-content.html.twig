@@ -41,19 +41,19 @@
   {% for item in items %}
     {%
     set sectionLinks = {
-      'catIcon': {
-        'icon': item.icon,
-        'small': 'true'
+      catIcon: {
+        icon: item.icon,
+        small: 'true',
       },
-      'title': {
-      'href': item.node_path,
-      'text': item.label
+      title: {
+      href: item.node_path,
+      text: item.label,
       },
-      'description': item.field_lede.value,
-      'links': item.links,
+      description: item.field_lede.value,
+      links: item.links,
     }
     %}
-    {% include '@molecules/section-links.twig' with sectionLinks %}
+    {{ include('@molecules/section-links.twig', sectionLinks) }}
   {% endfor %}
   </div>
 {% endif %}
@@ -66,23 +66,23 @@
           {% if item.getType() == 'stacked_layout' %}
             {%
             set illustratedLink = {
-              'text': item.label,
-              'type': item.field_label,
-              'href': item.node_path,
-              'image': file_url(item.field_photo.entity.fileuri ?? ''),
-              'label': item.label_text
+              text: item.label,
+              type: item.field_label,
+              href: item.node_path,
+              image: file_url(item.field_photo.entity.fileuri ?? ''),
+              label: item.label_text,
             }
             %}
-            {% include "@molecules/illustrated-link.twig" with illustratedLink %}
+            {{ include('@molecules/illustrated-link.twig', illustratedLink) }}
           {% else %}
             {%
               set calloutLink = {
-                'text': item.label,
-                'type': '',
-                'href': item.node_path
+                text: item.label,
+                type: '',
+                href: item.node_path,
               }
             %}
-            {% include '@molecules/callout-link.twig' with calloutLink %}
+            {{ include('@molecules/callout-link.twig', calloutLink) }}
           {% endif %}
         {% endfor %}
       </div>

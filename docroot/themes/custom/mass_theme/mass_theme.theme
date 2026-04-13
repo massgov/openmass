@@ -2624,7 +2624,6 @@ function mass_theme_preprocess_node_rules(&$variables) {
     'effective_date' => ['field_date_published'],
     'publish_state' => ['field_rules_status'],
     'courts' => ['field_rules_courts'],
-    'collections' => ['field_rules_related_collections'],
     'meta_tags' => ['field_rules_metatags'],
     'overview' => ['field_rules_overview'],
     'sources' => ['field_rules_referenced_sources'],
@@ -2634,27 +2633,10 @@ function mass_theme_preprocess_node_rules(&$variables) {
     'links' => ['field_rules_related'],
     'updates' => ['field_rules_updates'],
     'subheading' => ['field_rules_subheading'],
-    'related_to' => ['computed_related_to'],
   ];
 
   // Determines which field names to use from the map.
   $fields = Helper::getMappedFields($node, $map);
-
-  // Add any related content as determined by relationship indicators into the
-  // list of "Related to" links on the Rules of Court content type. Manually
-  // set links will be listed first followed by any links added through the
-  // Related To computed field.
-  if (!empty($fields['related_to']) && Helper::isFieldPopulated($node, $fields['related_to'])) {
-    if (!empty($fields['collections']) && Helper::isFieldPopulated($node, $fields['collections'])) {
-      if (isset($variables['content'][$fields['related_to']])) {
-        $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
-        $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
-      }
-    }
-    else {
-      $variables['content'][$fields['collections']] = $variables['content'][$fields['related_to']];
-    }
-  }
 
   if (!empty($fields['adopted_date']) && Helper::isFieldPopulated($node, $fields['adopted_date'])) {
     // Set up rich text elements for what you need.
@@ -4603,6 +4585,7 @@ function mass_theme_preprocess_page(&$variables) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealBlackImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-black.png');
 
   if ($route_name === 'view.collection_all.page_all') {
     $cache_tags = [];
@@ -5308,6 +5291,15 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
         ->applyTo($variables);
     }
   }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess logic for the service_news paragraph.
+ */
+function mass_theme_preprocess_paragraph__service_news(&$variables) {
+  mass_theme_preprocess_paragraph__org_news($variables);
 }
 
 /**
@@ -7070,7 +7062,7 @@ function mass_theme_preprocess_paragraph__video_with_header(array &$variables) {
   $bg_color = $paragraph->get('field_video_header_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**
@@ -7082,7 +7074,7 @@ function mass_theme_preprocess_paragraph__video_with_section(array &$variables) 
   $bg_color = $paragraph->get('field_video_section_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**
@@ -7328,7 +7320,24 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
+    // Avoid duplicating subsequent links if preprocessing runs multiple times
+    // on the same paragraph object within a request.
+    $first_paragraph = $variables[$component_name][$first][0] ?? NULL;
+    $next_paragraph = $link_group[0] ?? NULL;
+    if ($first_paragraph && $next_paragraph) {
+      $existing_ids = [];
+      if (!empty($first_paragraph->subsequent_links) && is_array($first_paragraph->subsequent_links)) {
+        foreach ($first_paragraph->subsequent_links as $existing) {
+          if (is_object($existing) && method_exists($existing, 'id')) {
+            $existing_ids[(int) $existing->id()] = TRUE;
+          }
+        }
+      }
+      $next_id = method_exists($next_paragraph, 'id') ? (int) $next_paragraph->id() : NULL;
+      if ($next_id && empty($existing_ids[$next_id])) {
+        $first_paragraph->subsequent_links[] = $next_paragraph;
+      }
+    }
 
     // Empty elements included previously.
     $variables[$component_name][$key] = FALSE;

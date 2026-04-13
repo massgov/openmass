@@ -41,13 +41,13 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
-      {% embed "@organisms/by-author/rich-text.twig" %}
+      {% embed '@organisms/by-author/rich-text.twig' %}
         {% block rteElements %}
           {{ content }}
         {% endblock %}

@@ -38,22 +38,22 @@
 {% if pageHeader is not defined %}
 {%
   set pageHeader = {
-    'category': '',
-    'divider': false,
-    'prefix': '',
-    'title': title,
-    'subTitle': subTitle,
-    'nested': nested,
-    'headerTags': headerTags,
-    'optionalContents': null,
-    'widgets': null,
+    category: '',
+    divider: false,
+    prefix: '',
+    title: title,
+    subTitle: subTitle,
+    nested: nested,
+    headerTags: headerTags,
+    optionalContents: null,
+    widgets: null,
   }
 %}
 {% endif %}
 
 <div class="main-content main-content--two">
-  {% include "@organisms/page-header/page-header.twig" %}
-  {% include "@organisms/page-header/page-header-addons.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
+  {{ include('@organisms/page-header/page-header-addons.twig') }}
 
   {{ header }}
 
@@ -61,7 +61,7 @@
   {{ attachment_before }}
 
   <div class="page-content">
-    {% include "@molecules/results-heading.twig" %}
+    {{ include('@molecules/results-heading.twig') }}
     {{ rows }}
     {{ empty }}
     {{ pager }}
