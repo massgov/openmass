@@ -419,7 +419,9 @@
                 "Fix query parameter names with special characters being converted to underscores": "patches/drupal_core__preserve_special_chars_in_query_params.patch",
                 "TypeError: Drupal\\Component\\Utility\\Html::escape(): Argument #1 ($text) must be of type string, null given (https://www.drupal.org/project/drupal/issues/3523317)": "https://www.drupal.org/files/issues/2025-07-11/fix-type-error-null-text-3523317-21.patch",
                 "CKEditor 5 balloons invisible when CKEditor 5 is used inside a modal (https://www.drupal.org/project/drupal/issues/3328425)": "https://www.drupal.org/files/issues/2026-02-12/3328425-drupal-core-11.3.3-ckeditor5-ballon.patch",
-                "Twig debug: avoid missing directory var warnings": "patches/drupal_core__twig_theme_engine_directory_undefined.patch"
+                "Twig debug: avoid missing directory var warnings": "patches/drupal_core__twig_theme_engine_directory_undefined.patch",
+                "Entity reference lazy load: fall back when fiber switching is disallowed": "patches/core/drupal-core-entity-reference-item-base-fibererror-fallback.patch",
+                "Access policy processor: fall back when fiber switching is disallowed": "patches/core/drupal-core-access-policy-processor-fibererror-inline-fallback.patch"
             },
             "drupal/conditional_fields": {
                 "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch"
@@ -447,7 +449,7 @@
                 "Limit the depth used by findAncestors recursion": "patches/entity_hierarchy/entity_hierarchy-limit_findancestors_depth.patch"
             },
             "drupal/entity_reference_revisions": {
-                "3572357 - EntityReferenceRevisionsItem prematurely loads referenced entities": "https://git.drupalcode.org/project/entity_reference_revisions/-/merge_requests/86.diff"
+                "Avoid magic entity getter during getValue() serialization under Fiber/memcache": "patches/entity_reference_revisions/entity_reference_revisions-avoid-magic-entity-getter-in-getValue.patch"
             },
             "drupal/entity_reference_tree": {
                 "3285499 - Options to automatically select/deselect ancestors/descendants when node is checked/unchecked.": "patches/issue-3285499--automatic-selection-options--9.patch",
@@ -457,7 +459,8 @@
                 "Form required class missing from horizontal field groups in Claro (https://www.drupal.org/project/field_group/issues/3160987)": "patches/field_group_claro_theme_tabs_required.patch"
             },
             "drupal/field_tokens": {
-                "Fatal errors in entities that does not declare getFieldDefinitions method (https://www.drupal.org/project/field_tokens/issues/2835032)": "https://www.drupal.org/files/issues/2835032-config-entity-support-9.patch"
+                "Fatal errors in entities that does not declare getFieldDefinitions method (https://www.drupal.org/project/field_tokens/issues/2835032)": "https://www.drupal.org/files/issues/2835032-config-entity-support-9.patch",
+                "Avoid nested Fiber crash when rendering formatted field tokens": "patches/field_tokens/field_tokens-avoid-nested-fiber-on-formatted-render.patch"
             },
             "drupal/file_browser": {
                 "Drupal 11/jQuery 4: fix file browser AJAX context selection and null-safe counter rendering": "patches/file_browser/file_browser-d11-jquery4-ajax-context-fix.patch"
@@ -502,6 +505,12 @@
                 "Add an intermediate redirect (https://www.drupal.org/project/redirect/issues/3162696#comment-15085388)": "https://www.drupal.org/files/issues/2023-05-31/tmp.diff",
                 "Filter by redirect destination does not work with URL alias (https://www.drupal.org/project/redirect/issues/2981544) (See DP-31078 before replacing)": "https://www.drupal.org/files/issues/2024-08-13/2981544-45.patch",
                 "Redirect loop wrong detection (service unavailable: RedirectLoopException) (https://www.drupal.org/project/redirect/issues/3401916)": "https://www.drupal.org/files/issues/2024-04-25/3401916-8.x-1.9.patch"
+            },
+            "drupal/token": {
+                "Add Fiber fallback for token renderInIsolation callsites (combined)": "patches/token/token-fiber-fallbacks-combined.patch"
+            },
+            "drupal/schema_metatag": {
+                "Add Fiber fallback for breadcrumb text renderInIsolation": "patches/schema_metatag/schema-metatag-fiber-fallback-for-breadcrumb-rendering.patch"
             },
             "drupal/type_tray": {
                 "Fix css selectors to not apply list styles to the user input (https://www.drupal.org/project/type_tray/issues/3531986)": "https://www.drupal.org/files/issues/2025-06-24/3531986_type_tray.patch",

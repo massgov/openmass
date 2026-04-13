@@ -25,8 +25,9 @@ class BinderDownloadsOrPagesConstraintValidator extends ConstraintValidator {
         $field_is_populated = TRUE;
       }
 
-      $pages = $entity->field_binder_pages->referencedEntities();
-      if (!empty($pages)) {
+      $page_ids = array_column($entity->get('field_binder_pages')->getValue(), 'target_id');
+      $page_ids = array_filter($page_ids);
+      if (!empty($page_ids)) {
         $field_is_populated = TRUE;
       }
 
