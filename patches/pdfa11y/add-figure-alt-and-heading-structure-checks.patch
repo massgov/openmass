@@ -1,0 +1,285 @@
+diff --git a/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php b/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php
+new file mode 100644
+index 0000000..84b728a
+--- /dev/null
++++ b/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php
+@@ -0,0 +1,146 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\pdfa11y\Plugin\AccessibilityCheck;
++
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\pdfa11y\AccessibilityCheckBase;
++use Drupal\pdfa11y\AccessibilityCheckResult;
++use Drupal\pdfa11y\Attribute\AccessibilityCheck;
++use Smalot\PdfParser\Document;
++use Smalot\PdfParser\Element\ElementMissing;
++use Smalot\PdfParser\Element\ElementString;
++
++/**
++ * Checks that figure elements include alternative text.
++ */
++#[AccessibilityCheck(
++  id: 'figure_alt_text',
++  label: new TranslatableMarkup('Figure ALT text'),
++  description: new TranslatableMarkup('Checks Figure elements in tagged PDFs and verifies they include ALT text.'),
++  category: 'structure',
++  weight: 30,
++)]
++class FigureAltTextCheck extends AccessibilityCheckBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function check(Document $document, string $fileUri): AccessibilityCheckResult {
++    $catalogs = $document->getObjectsByType('Catalog');
++    if (empty($catalogs)) {
++      return $this->fail(
++        (string) $this->t('Could not locate the document catalog to inspect figure ALT text.'),
++        AccessibilityCheckResult::SEVERITY_ERROR,
++      );
++    }
++
++    $catalog = reset($catalogs);
++    $structTreeRoot = $catalog->get('StructTreeRoot');
++    if ($structTreeRoot instanceof ElementMissing || $structTreeRoot === NULL) {
++      return $this->notApplicable(
++        (string) $this->t('No structure tree found. Figure ALT text can only be validated for tagged PDFs.'),
++      );
++    }
++
++    $figuresWithoutAlt = 0;
++    $totalFigures = 0;
++    $this->inspectNode($structTreeRoot, $totalFigures, $figuresWithoutAlt);
++
++    if ($totalFigures === 0) {
++      return $this->notApplicable(
++        (string) $this->t('No Figure elements were found in the structure tree.'),
++      );
++    }
++
++    if ($figuresWithoutAlt === 0) {
++      return $this->pass(
++        (string) $this->t('All @count Figure elements include ALT text.', ['@count' => (string) $totalFigures]),
++      );
++    }
++
++    return $this->fail(
++      (string) $this->t('@missing of @total Figure elements are missing ALT text.', [
++        '@missing' => (string) $figuresWithoutAlt,
++        '@total' => (string) $totalFigures,
++      ]),
++    );
++  }
++
++  /**
++   * Recursively inspects structure tree nodes for Figure elements.
++   *
++   * @param mixed $node
++   *   Current node.
++   * @param int $totalFigures
++   *   Total Figure count.
++   * @param int $figuresWithoutAlt
++   *   Figure count missing ALT text.
++   */
++  protected function inspectNode(mixed $node, int &$totalFigures, int &$figuresWithoutAlt): void {
++    if (is_array($node)) {
++      foreach ($node as $child) {
++        $this->inspectNode($child, $totalFigures, $figuresWithoutAlt);
++      }
++      return;
++    }
++
++    if (!is_object($node)) {
++      return;
++    }
++
++    if (method_exists($node, 'get')) {
++      $s = $node->get('S');
++      if ((string) $s === 'Figure') {
++        $totalFigures++;
++        if (!$this->hasAltText($node)) {
++          $figuresWithoutAlt++;
++        }
++      }
++
++      $children = $node->get('K');
++      if (!($children instanceof ElementMissing) && $children !== NULL) {
++        $this->inspectNode($children, $totalFigures, $figuresWithoutAlt);
++      }
++    }
++
++    if (method_exists($node, 'getDetails')) {
++      $details = $node->getDetails(FALSE);
++      if (is_array($details) && isset($details['K'])) {
++        $this->inspectNode($details['K'], $totalFigures, $figuresWithoutAlt);
++      }
++    }
++  }
++
++  /**
++   * Checks whether a structure element contains non-empty ALT text.
++   *
++   * @param object $node
++   *   Structure element object.
++   *
++   * @return bool
++   *   TRUE when ALT text exists and is non-empty.
++   */
++  protected function hasAltText(object $node): bool {
++    if (method_exists($node, 'get')) {
++      $alt = $node->get('Alt');
++      if ($alt instanceof ElementString) {
++        return trim((string) $alt) !== '';
++      }
++      if (!($alt instanceof ElementMissing) && trim((string) $alt) !== '') {
++        return TRUE;
++      }
++    }
++
++    if (method_exists($node, 'getDetails')) {
++      $details = $node->getDetails(FALSE);
++      if (is_array($details) && isset($details['Alt']) && trim((string) $details['Alt']) !== '') {
++        return TRUE;
++      }
++    }
++
++    return FALSE;
++  }
++
++}
+diff --git a/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php b/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php
+new file mode 100644
+index 0000000..799678c
+--- /dev/null
++++ b/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php
+@@ -0,0 +1,127 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\pdfa11y\Plugin\AccessibilityCheck;
++
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\pdfa11y\AccessibilityCheckBase;
++use Drupal\pdfa11y\AccessibilityCheckResult;
++use Drupal\pdfa11y\Attribute\AccessibilityCheck;
++use Smalot\PdfParser\Document;
++use Smalot\PdfParser\Element\ElementMissing;
++
++/**
++ * Checks heading structure for common accessibility hierarchy issues.
++ */
++#[AccessibilityCheck(
++  id: 'heading_structure',
++  label: new TranslatableMarkup('Heading structure'),
++  description: new TranslatableMarkup('Checks heading order and reports skipped heading levels.'),
++  category: 'structure',
++  weight: 40,
++)]
++class HeadingStructureCheck extends AccessibilityCheckBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function check(Document $document, string $fileUri): AccessibilityCheckResult {
++    $catalogs = $document->getObjectsByType('Catalog');
++    if (empty($catalogs)) {
++      return $this->fail(
++        (string) $this->t('Could not locate the document catalog to inspect heading structure.'),
++        AccessibilityCheckResult::SEVERITY_ERROR,
++      );
++    }
++
++    $catalog = reset($catalogs);
++    $structTreeRoot = $catalog->get('StructTreeRoot');
++    if ($structTreeRoot instanceof ElementMissing || $structTreeRoot === NULL) {
++      return $this->notApplicable(
++        (string) $this->t('No structure tree found. Heading structure can only be validated for tagged PDFs.'),
++      );
++    }
++
++    $headings = [];
++    $this->collectHeadings($structTreeRoot, $headings);
++
++    if (empty($headings)) {
++      return $this->notApplicable(
++        (string) $this->t('No heading elements (H1-H6) were found in the structure tree.'),
++      );
++    }
++
++    $firstHeading = $headings[0];
++    if ($firstHeading !== 1) {
++      return $this->fail(
++        (string) $this->t('First heading should be H1, but found H@level.', ['@level' => (string) $firstHeading]),
++      );
++    }
++
++    $skips = [];
++    for ($i = 1; $i < count($headings); $i++) {
++      $previous = $headings[$i - 1];
++      $current = $headings[$i];
++      if ($current > ($previous + 1)) {
++        $skips[] = 'H' . $previous . ' -> H' . $current;
++      }
++    }
++
++    if (!empty($skips)) {
++      return $this->fail(
++        (string) $this->t('Skipped heading levels detected: @skips.', ['@skips' => implode(', ', $skips)]),
++      );
++    }
++
++    return $this->pass(
++      (string) $this->t('Heading structure passed: first heading is H1 and no skipped downward levels were found.'),
++    );
++  }
++
++  /**
++   * Recursively collects heading levels from structure tree.
++   *
++   * @param mixed $node
++   *   Current node.
++   * @param int[] $headings
++   *   Collected heading levels in discovered order.
++   */
++  protected function collectHeadings(mixed $node, array &$headings): void {
++    if (is_array($node)) {
++      foreach ($node as $child) {
++        $this->collectHeadings($child, $headings);
++      }
++      return;
++    }
++
++    if (!is_object($node)) {
++      return;
++    }
++
++    if (method_exists($node, 'get')) {
++      $structureType = (string) $node->get('S');
++      if (preg_match('/^H([1-6])$/', $structureType, $matches)) {
++        $headings[] = (int) $matches[1];
++      }
++
++      $children = $node->get('K');
++      if (!($children instanceof ElementMissing) && $children !== NULL) {
++        $this->collectHeadings($children, $headings);
++      }
++    }
++
++    if (method_exists($node, 'getDetails')) {
++      $details = $node->getDetails(FALSE);
++      if (is_array($details)) {
++        if (isset($details['S']) && is_string($details['S']) && preg_match('/^H([1-6])$/', $details['S'], $matches)) {
++          $headings[] = (int) $matches[1];
++        }
++        if (isset($details['K'])) {
++          $this->collectHeadings($details['K'], $headings);
++        }
++      }
++    }
++  }
++
++}
