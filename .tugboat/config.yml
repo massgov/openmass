@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
 services:
   # What to call the service hosting the site.
   php:
@@ -118,6 +119,8 @@ services:
         - composer install --no-interaction --optimize-autoloader --no-cache
         - yarn install
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
+        # Set release for env indicator module (also in update step, but build runs alone for PR previews from base).
+        - drush sset environment_indicator.current_release ${TUGBOAT_GITHUB_HEAD} || true
 
   # This 'mysql' key acts as the hostname to access the service by from the php service.
   mysql:
