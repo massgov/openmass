@@ -99,6 +99,7 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 }
 
 // Now that secrets file was included, perform config overrides.
+$config['mass_analytics.settings']['dashboard_embed_url'] = getenv('POWER_BI_EMBED_URL') ?: 'https://app.powerbigov.us/reportEmbed?reportId=5180080b-8681-424d-a679-c45fe3037bf6&autoAuth=true&ctid=3e861d16-48b7-4a0e-9806-8c04d81b7b2a&filter=aggregated_node_analytics%2FnodeId+eq+__NODE_ID__&filterPaneEnabled=false';
 $config['mass_analytics.settings']['looker_studio_url'] = getenv('LOOKER_STUDIO_URL');
 $config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] = getenv('MANDRILL_API_KEY');
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');

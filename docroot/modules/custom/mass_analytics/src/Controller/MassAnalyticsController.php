@@ -41,8 +41,15 @@ class MassAnalyticsController extends ControllerBase {
    */
   public function build(NodeInterface $node): array {
     $config = $this->config('mass_analytics.settings');
-    if (!empty($config->get('looker_studio_url'))) {
-      $iframe_url = $config->get('looker_studio_url') . '?params=%7B"nodeId":' . $node->id() . ',"nodeId2":' . $node->id() . '%7D';
+    $embed_url = $config->get('dashboard_embed_url') ?: $config->get('looker_studio_url');
+
+    if (!empty($embed_url)) {
+      if (str_contains($embed_url, '__NODE_ID__')) {
+        $iframe_url = str_replace('__NODE_ID__', (string) $node->id(), $embed_url);
+      }
+      else {
+        $iframe_url = $embed_url . '?params=%7B"nodeId":' . $node->id() . ',"nodeId2":' . $node->id() . '%7D';
+      }
       return [
         '#theme' => 'mass_analytics_iframe',
         '#config' => $iframe_url,
