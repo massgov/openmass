@@ -1,16 +1,21 @@
 
+## [0.475.1] - April 15, 2026
+
+### Fixed:
+- DP-46328: Restore asset_cache_bust module.
+
 
 ## [0.475.0] - April 14, 2026
 
 ### Removed
   - DP-35638: Removed code and field storage related to Computed Related To fields.
-  
+
 ### Added
   - DP-46226: Adds ExistingSite test after a bug where news releases could not be created due to a validation error about missing state organization.
-  
+
 ### Fixed
   - DP-46263: Fix cell alignment when a CSV table has row headings.
-  
+
 
 
 ## [0.474.6] - April 13, 2026
