@@ -314,7 +314,12 @@ function mass_content_field_info_alter(&$info) {
 function mass_content_paragraph_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   // Attach taxonomy term cache tags to dynamic lists.
   if ($entity->bundle() === 'list_dynamic') {
-    foreach ($entity->field_listdynamic_label->referencedEntities() as $term) {
+    $term_ids = array_column($entity->get('field_listdynamic_label')->getValue(), 'target_id');
+    $term_ids = array_values(array_filter($term_ids));
+    $terms = $term_ids ? \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadMultiple($term_ids) : [];
+    foreach ($terms as $term) {
       $cache_tags[] = sprintf('taxonomy_term:%d', $term->id());
     }
     $fields = [
