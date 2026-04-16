@@ -2624,7 +2624,6 @@ function mass_theme_preprocess_node_rules(&$variables) {
     'effective_date' => ['field_date_published'],
     'publish_state' => ['field_rules_status'],
     'courts' => ['field_rules_courts'],
-    'collections' => ['field_rules_related_collections'],
     'meta_tags' => ['field_rules_metatags'],
     'overview' => ['field_rules_overview'],
     'sources' => ['field_rules_referenced_sources'],
@@ -2634,27 +2633,10 @@ function mass_theme_preprocess_node_rules(&$variables) {
     'links' => ['field_rules_related'],
     'updates' => ['field_rules_updates'],
     'subheading' => ['field_rules_subheading'],
-    'related_to' => ['computed_related_to'],
   ];
 
   // Determines which field names to use from the map.
   $fields = Helper::getMappedFields($node, $map);
-
-  // Add any related content as determined by relationship indicators into the
-  // list of "Related to" links on the Rules of Court content type. Manually
-  // set links will be listed first followed by any links added through the
-  // Related To computed field.
-  if (!empty($fields['related_to']) && Helper::isFieldPopulated($node, $fields['related_to'])) {
-    if (!empty($fields['collections']) && Helper::isFieldPopulated($node, $fields['collections'])) {
-      if (isset($variables['content'][$fields['related_to']])) {
-        $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
-        $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
-      }
-    }
-    else {
-      $variables['content'][$fields['collections']] = $variables['content'][$fields['related_to']];
-    }
-  }
 
   if (!empty($fields['adopted_date']) && Helper::isFieldPopulated($node, $fields['adopted_date'])) {
     // Set up rich text elements for what you need.
@@ -7080,7 +7062,7 @@ function mass_theme_preprocess_paragraph__video_with_header(array &$variables) {
   $bg_color = $paragraph->get('field_video_header_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**
@@ -7092,7 +7074,7 @@ function mass_theme_preprocess_paragraph__video_with_section(array &$variables) 
   $bg_color = $paragraph->get('field_video_section_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**
