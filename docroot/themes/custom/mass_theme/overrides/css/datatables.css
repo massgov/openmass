@@ -132,15 +132,20 @@ button.dt-paging-button.next {
 
 
 
-/* sort icons */
+/* sort icons: inactive arrows use #8C8C8C for contrast on #f2f2f2 header */
 table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:after {
   line-height: 12px;
-  opacity: 0.25;
+  color: #555555;
+  opacity: 1;
 }
 
+/* Active sort arrow: dark color, slightly larger */
 table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before,
 table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after {
+  color: #141414;
   opacity: 1;
+  display: inline-block;
+  transform: scale(1.3);
 }
 
 table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order,
