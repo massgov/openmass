@@ -132,20 +132,10 @@ button.dt-paging-button.next {
 
 
 
-/* sort icons: inactive arrows use #8C8C8C for contrast on #f2f2f2 header */
-table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:after {
-  line-height: 12px;
-  color: #555555;
-  opacity: 1;
-}
-
-/* Active sort arrow: dark color, slightly larger */
-table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before,
-table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after {
-  color: #141414;
-  opacity: 1;
-  display: inline-block;
-  transform: scale(1.3);
+/* Sort icon SVGs — handled in csv_field/css/csv-table.css */
+/* Hide default DataTables pseudo-element arrows */
+table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:before, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:before, table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>th.dt-ordering-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-orderable-desc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-asc span.dt-column-order:after, table.dataTable thead>tr>td.dt-ordering-desc span.dt-column-order:after {
+  display: none;
 }
 
 table.dataTable thead>tr>th.dt-orderable-asc span.dt-column-order,
