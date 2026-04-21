@@ -879,16 +879,9 @@ function mass_metatag_form_alter(&$form, FormStateInterface $form_state, $form_i
     return;
   }
 
-  $terms = [
-    'robots',
-    'noindex',
-    'nofollow',
-    'nosnippet',
-    'max-snippet',
-    'max-image-preview',
-    'max-video-preview',
-  ];
-  mass_metatag_hide_elements_by_terms($form, $terms);
+  // Metatag editing is not allowed in standard author flows, so remove it
+  // from bulk edit forms as well.
+  mass_metatag_hide_elements_by_terms($form, ['metatag']);
 }
 
 /**
