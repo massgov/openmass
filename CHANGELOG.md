@@ -1,4 +1,17 @@
 
+
+## [0.476.0] - April 21, 2026
+
+### Changed
+  - DP-45228: CSV Table / Datatables changes
+  
+### Fixed
+  - DP-46272: Fix missing tag number in environment indicator after D11 upgrade.
+  
+### Security
+  - DP-46359: Updates Drupal core to 11.3.7 to address security advisories.
+  
+
 ## [0.475.1] - April 15, 2026
 
 ### Fixed:
