@@ -5,22 +5,22 @@
     {% for link in flexible_link.links %}
       {% set content = link.download_link ?
         {
-          "iconSize": "",
-          "icon": link.download_link.extra_file_icon['#markup'],
-          "decorativeLink": {
-            "text": link.download_link.file_title,
-            "href": url('media_entity_download.download', {'media': link.download_link.mid}),
-            "info": ""
+          iconSize: '',
+          icon: link.download_link.extra_file_icon['#markup'],
+          decorativeLink: {
+            text: link.download_link.file_title,
+            href: url('media_entity_download.download', {media: link.download_link.mid}),
+            info: '',
           },
-          "size": link.download_link.calculated_file_size,
-          "format": link.download_link.extra_file_extension,
-          "language": link.download_link.language,
-          "inlineLinks": link.download_link.translationLinks
+          size: link.download_link.calculated_file_size,
+          format: link.download_link.extra_file_extension,
+          language: link.download_link.language,
+          inlineLinks: link.download_link.translationLinks,
         }
       :
         {
-          "text": link.text,
-          "href": link.href
+          text: link.text,
+          href: link.href,
         }
       %}
 
@@ -28,33 +28,33 @@
     {% endfor %}
 
     {% set item = {
-        "collapsibleHeader": {
-           "title": flexible_link.title,
-           "description": flexible_link.description,
-           "headingLevel": 3
+        collapsibleHeader: {
+           title: flexible_link.title,
+           description: flexible_link.description,
+           headingLevel: 3,
          },
-         "expanded": flexible_link.expanded,
-         "includes": [{
-           "path": "@organisms/by-author/link-list.twig",
-           "data": {
-             "linkList": {
-               "stacked": true,
-               "hideBullets": false,
-               "links": links
-             }
-           }
-         }]
+         expanded: flexible_link.expanded,
+         includes: [{
+           path: '@organisms/by-author/link-list.twig',
+           data: {
+             linkList: {
+               stacked: true,
+               hideBullets: false,
+               links: links,
+             },
+           },
+         }],
     } %}
 
     {% set items = items|merge([item]) %}
   {% endfor %}
 
-  {% include "@organisms/by-author/collapsible-content.twig" with {
-    "collapsibleContent": {
-      "extended": true,
-      "items": items
-    }
-  } %}
+  {{ include('@organisms/by-author/collapsible-content.twig', {
+    collapsibleContent: {
+      extended: true,
+      items: items,
+    },
+  }) }}
 {% endif %}
 
 {% if (display_type == 'buttons') %}
@@ -66,21 +66,21 @@
 
     {% set calloutLink = item.downloadable_file ?
       {
-        "download": true,
-        "iconSize": "small",
-        "icon": item.file_icon,
-        "size": item.file_size,
-        "format": item.file_extension,
-        "text": item.file_title,
-        "href": url('media_entity_download.download', {'media': item.mid}),
-        "info": "",
-        "theme": flexible_links_group.0.theme
+        download: true,
+        iconSize: 'small',
+        icon: item.file_icon,
+        size: item.file_size,
+        format: item.file_extension,
+        text: item.file_title,
+        href: url('media_entity_download.download', {media: item.mid}),
+        info: '',
+        theme: flexible_links_group.0.theme,
       }
       :
       {
-        "text": item.text,
-        "href": item.href,
-        "theme": flexible_links_group.0.theme
+        text: item.text,
+        href: item.href,
+        theme: flexible_links_group.0.theme,
       }
 
     %}
@@ -88,16 +88,16 @@
   {% endfor %}
 
   {% set calloutLinksThreeUp = {
-    'calloutLinksThreeUp': {
-      "headingText": flexible_links_group.0.title,
-      "headingDescription": flexible_links_group.0.description,
-      "headingLevel": level ?? "3",
-      'calloutLinks': calloutLinks
-    }
+    calloutLinksThreeUp: {
+      headingText: flexible_links_group.0.title,
+      headingDescription: flexible_links_group.0.description,
+      headingLevel: level ?? '3',
+      calloutLinks: calloutLinks,
+    },
   } %}
 
   <div class="ma__stacked-row__container">
-    {% include "@organisms/by-author/callout-links-three-up.twig" with calloutLinksThreeUp %}
+    {{ include('@organisms/by-author/callout-links-three-up.twig', calloutLinksThreeUp) }}
   </div>
 
 {% endif %}

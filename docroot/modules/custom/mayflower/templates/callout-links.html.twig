@@ -4,12 +4,12 @@
  # specific behavior for a Mayflower template.
  #}
 {% if useWrapper %}
-  {% include "@organisms/by-author/action-finder.twig" with {
-    "actionFinder": {
-      "featuredLinks": calloutLinks,
-      "noBgClass": "ma__action-finder--clear-background"
-    }
-  } %}
+  {{ include('@organisms/by-author/action-finder.twig', {
+    actionFinder: {
+      featuredLinks: calloutLinks,
+      noBgClass: 'ma__action-finder--clear-background',
+    },
+  }) }}
 {% else %}
-  {% include '@organisms/by-author/callout-links.twig' %}
+  {{ include('@organisms/by-author/callout-links.twig') }}
 {% endif %}

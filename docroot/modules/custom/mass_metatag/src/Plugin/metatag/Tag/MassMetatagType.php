@@ -29,7 +29,7 @@ class MassMetatagType extends MetaNameBase {
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output(): array {
     $element = parent::output();
     $node = \Drupal::routeMatch()->getParameter('node');
     if (!empty($element['#attributes']['content'])) {
@@ -42,13 +42,19 @@ class MassMetatagType extends MetaNameBase {
         if ($node->hasField($term_ref_name) && $data_type = $node->get($term_ref_name)) {
           $items = $data_type->referencedEntities();
           if (!empty($items)) {
-            $type_name = $items[0]->get('name')->getString();
+            $first_item = $items[0];
+            if (!$first_item->hasField('name')) {
+              return $element;
+            }
+            $type_name = $first_item->get('name')->getString();
             if ($type_name === 'Data resource') {
               $element['#attributes']['content'] = 'data-resource';
             }
             else {
               // Anything but 'Data resource'.
-              $element['#attributes']['content'] = $items[0]->get('field_details_datatype_metatag')->getString();
+              if ($first_item->hasField('field_details_datatype_metatag')) {
+                $element['#attributes']['content'] = $first_item->get('field_details_datatype_metatag')->getString();
+              }
             }
           }
           else {

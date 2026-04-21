@@ -73,25 +73,25 @@
 {% set headingLevel = 3 %}
 {# Initalize the contents array for the component. #}
 {% set contents = [{
-  "path": "@atoms/11-text/paragraph.twig",
-  "data": {
-    "paragraph": {
-      "text": content.field_topic_lede ?: ""
-    }
-  }
+  path: '@atoms/11-text/paragraph.twig',
+  data: {
+    paragraph: {
+      text: content.field_topic_lede ?: '',
+    },
+  },
 }] %}
 
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "level": headingLevel,
-    "emphasizedText": "",
-    "tags": "",
-    "contents": contents
-  }
-} %}
+    level: headingLevel,
+    emphasizedText: '',
+    tags: '',
+    contents: contents,
+  },
+}) }}

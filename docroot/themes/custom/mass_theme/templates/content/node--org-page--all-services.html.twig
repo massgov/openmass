@@ -12,32 +12,32 @@
     <div class="ma__page-header__tags">
       {% if pageHeader.socialLinks.items %}
         {% set socialLinks = pageHeader.socialLinks %}
-        {% include "@molecules/social-links.twig" %}
+        {{ include('@molecules/social-links.twig') }}
       {% endif %}
     </div>
   {% endif %}
 
-  {% include "@organisms/page-header/page-header.twig" with {
-    "pageHeader": {
-      "category": "",
-      "divider": false,
-      "prefix": "",
-      "title": "What would you like to do?",
-      "subTitle": {
-        "#type": 'inline_template',
-        "#template": 'For <a href="{{ url }}">{{ title }}</a>',
-        "#context": {
-          'url': url,
-          'title': node.title.value
-        }
-      }
-    }
-  } %}
+  {{ include('@organisms/page-header/page-header.twig', {
+    pageHeader: {
+      category: '',
+      divider: false,
+      prefix: '',
+      title: 'What would you like to do?',
+      subTitle: {
+        '#type': 'inline_template',
+        '#template': 'For <a href="{{ url }}">{{ title }}</a>',
+        '#context': {
+          url: url,
+          title: node.title.value,
+        },
+      },
+    },
+  }) }}
 {% endblock %}
 
 {% block pageContent %}
-  {% include "@molecules/results-heading.twig" %}
-  {% embed "@organisms/by-author/image-promos.twig" %}
+  {{ include('@molecules/results-heading.twig') }}
+  {% embed '@organisms/by-author/image-promos.twig' %}
     {% block imagePromos %}
       {{ content.extra_node_all_actions }}
     {% endblock %}

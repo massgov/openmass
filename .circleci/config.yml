@@ -21,12 +21,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v16-{{ checksum "composer.lock" }}
+        - site-composer-v19-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v16-{{ checksum "composer.lock" }}
+      key: site-composer-v19-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -297,6 +297,9 @@ jobs:
       - run:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Ensure files and DTT directories are writable by www-data
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run drush updatedb and cim.
       - run: drush deploy
       # Get an overview
@@ -308,21 +311,20 @@ jobs:
           name: Ensure no differences between between config on disk and config in Drupal.
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
-      # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run:
+          name: Generate PHPUnit test inventory
+          command: php scripts/list-tests.php
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
             - run:
                 # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
                 name: Run functional tests
                 command: |
-                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
-                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
+                  TESTS_TO_RUN=$(phpunit -c /var/www/code/phpunit.xml.dist --list-test-files --colors=never | sed -n 's/^ - //p')
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -I{} sh -c 'f=\"\$1\"; phpunit \"\$f\" --log-junit \"/tmp/test-results/dtt/\${f##*/}.xml\"' _ {}" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
