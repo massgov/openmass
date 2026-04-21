@@ -1,0 +1,28 @@
+uuid: 2425694f-bc71-4c8a-a363-b28941bee944
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_content_organization
+    - node.type.service_page
+    - taxonomy.vocabulary.user_organization
+id: node.service_page.field_content_organization
+field_name: field_content_organization
+entity_type: node
+bundle: service_page
+label: 'Content organization (auto)'
+description: 'Automatically populated from Organization(s). Used for organization-based permissions. Do not edit directly.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      user_organization: user_organization
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

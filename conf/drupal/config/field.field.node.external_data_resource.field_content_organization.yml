@@ -1,0 +1,28 @@
+uuid: c8d9ec5a-277b-48f4-8e67-70425ffdbf49
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_content_organization
+    - node.type.external_data_resource
+    - taxonomy.vocabulary.user_organization
+id: node.external_data_resource.field_content_organization
+field_name: field_content_organization
+entity_type: node
+bundle: external_data_resource
+label: 'Content organization (auto)'
+description: 'Automatically populated from Organization(s). Used for organization-based permissions. Do not edit directly.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      user_organization: user_organization
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
