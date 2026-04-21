@@ -43,8 +43,11 @@ class EntityReferenceEditLinkAutocompleteWidget extends EntityReferenceAutocompl
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    $referencedEntities = $items->referencedEntities();
-    $referencedEntity = $referencedEntities[$delta] ?? NULL;
+    $target_id = $items[$delta]->target_id ?? NULL;
+    $target_type = $items->getFieldDefinition()->getSetting('target_type');
+    $referencedEntity = ($target_id && $target_type) ? \Drupal::entityTypeManager()
+      ->getStorage($target_type)
+      ->load($target_id) : NULL;
 
     if (!$referencedEntity) {
       return parent::formElement($items, $delta, $element, $form, $form_state);

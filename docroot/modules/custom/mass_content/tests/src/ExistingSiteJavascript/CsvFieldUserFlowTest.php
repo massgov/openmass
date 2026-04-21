@@ -402,6 +402,59 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Ensures hidden responsive column headers are not keyboard focusable.
+   */
+  public function testCsvFlowHiddenResponsiveHeadersNotFocusable(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createWideCsvFile('csv-responsive-hidden-headers.csv');
+    $csv_table = $this->createCsvTableParagraph($file, [
+      'searching' => 1,
+      'pageLength' => 5,
+      'lengthChange' => 1,
+      'responsive' => 'childRow',
+      'download' => 1,
+      'urls' => [
+        'autolink' => 0,
+      ],
+    ], 'CSV Responsive Header Focus');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow Hidden Responsive Headers');
+
+    $this->drupalGet('node/' . $node->id());
+
+    $assert = $this->assertSession();
+    $assert->waitForElement('css', '.dataTables_wrapper');
+    $this->getSession()->resizeWindow(480, 900, 'current');
+    $this->getSession()->wait(3000);
+
+    $non_focusable_hidden_header_violations = $this->getSession()->evaluateScript(
+      "(function() {
+        var headers = document.querySelectorAll('.dataTables_wrapper thead th');
+        var violations = 0;
+        headers.forEach(function(th) {
+          var rect = th.getBoundingClientRect();
+          var style = window.getComputedStyle(th);
+          var isResponsiveHidden = th.classList.contains('dtr-hidden') ||
+            (style.position === 'absolute' && rect.width <= 1 && rect.height <= 1);
+
+          if (!isResponsiveHidden) {
+            return;
+          }
+
+          var headerTabIndex = th.getAttribute('tabindex');
+          var hasFocusableDescendant = th.querySelector('a[href], button, input, select, textarea, [tabindex]:not([tabindex=\"-1\"])') !== null;
+          if (headerTabIndex !== '-1' || hasFocusableDescendant) {
+            violations++;
+          }
+        });
+        return violations;
+      })();"
+    );
+    $this->assertSame(0, (int) $non_focusable_hidden_header_violations, 'Hidden responsive headers must not be keyboard focusable.');
+  }
+
+  /**
    * Ensures first column is rendered as table row headers.
    */
   public function testCsvFlowFirstColumnRowHeaderInteraction(): void {
@@ -426,7 +479,42 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $assert = $this->assertSession();
     $assert->waitForElement('css', '.dataTables_wrapper');
+    $table = $assert->elementExists('css', '.dataTable.display');
+    $settings = $table->getAttribute('data-settings');
+    $this->assertStringContainsString('"firstColumnRowHeader":1', $settings);
     $assert->elementExists('css', 'table.dataTable tbody tr th');
+    $assert->pageTextContains('Alpha Office');
+  }
+
+  /**
+   * Ensures first column defaults to regular data cells when unchecked.
+   */
+  public function testCsvFlowFirstColumnRowHeaderDefaultsUnchecked(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-row-header-default-unchecked.csv');
+    $csv_table = $this->createCsvTableParagraph($file, [
+      'searching' => 1,
+      'pageLength' => 5,
+      'lengthChange' => 1,
+      'responsive' => 'childRow',
+      'download' => 1,
+      'urls' => [
+        'autolink' => 0,
+      ],
+    ], 'CSV Row Header Default Unchecked');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow First Column Row Header Default Unchecked');
+
+    $this->drupalGet('node/' . $node->id());
+
+    $assert = $this->assertSession();
+    $assert->waitForElement('css', '.dataTables_wrapper');
+    $table = $assert->elementExists('css', '.dataTable.display');
+    $settings = $table->getAttribute('data-settings');
+    $this->assertStringNotContainsString('"firstColumnRowHeader":1', $settings);
+    $assert->elementNotExists('css', 'table.dataTable tbody tr th');
+    $assert->elementExists('css', 'table.dataTable tbody tr td');
     $assert->pageTextContains('Alpha Office');
   }
 

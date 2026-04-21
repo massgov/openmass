@@ -1,0 +1,16 @@
+--- a/src/Plugin/schema_metatag/PropertyType/BreadcrumbList.php
++++ b/src/Plugin/schema_metatag/PropertyType/BreadcrumbList.php
+@@ -127,7 +127,12 @@
+             $text = $this->renderer->renderPlain($text);
+           }
+           else {
+-            $text = $this->renderer->renderInIsolation($text);
++            try {
++              $text = $this->renderer->renderInIsolation($text);
++            }
++            catch (\FiberError) {
++              $text = $this->renderer->render($text);
++            }
+           }
+         }
+ 

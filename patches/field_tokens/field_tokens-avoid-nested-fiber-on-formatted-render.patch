@@ -1,0 +1,24 @@
+diff --git a/field_tokens.tokens.inc b/field_tokens.tokens.inc
+--- a/field_tokens.tokens.inc
++++ b/field_tokens.tokens.inc
+@@ -292,8 +292,18 @@ function field_tokens_tokens($type, $tokens, array $data, array $options, Bubbl
+         $element = $cloned_entity->{$field->get('field_name')}->view($display);
+         if ($element) {
+           foreach (Element::children($element) as $delta) {
+-            $output .= \Drupal::service('renderer')
+-              ->renderInIsolation($element[$delta]);
++            try {
++              $output .= \Drupal::service('renderer')
++                ->renderInIsolation($element[$delta]);
++            }
++            catch (\FiberError) {
++              // renderInIsolation() starts a nested Fiber in Drupal 10.3+.
++              // In unsafe contexts (for example token generation during save
++              // when post-transaction cache writes serialize entities), this
++              // can fail. Fall back to rendering in the current context.
++              $output .= \Drupal::service('renderer')
++                ->render($element[$delta]);
++            }
+           }
+         }
+         if (!empty($output)) {
