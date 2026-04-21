@@ -7,7 +7,7 @@
 
 ### Fixed
   - DP-46272: Fix missing tag number in environment indicator after D11 upgrade.
-  - DP-46444: After regenerate entity usage,many documents not showing actual relationships.
+  - DP-46444: After regenerate entity usage, many documents not showing actual relationships.
 
 ### Security
   - DP-46359: Updates Drupal core to 11.3.7 to address security advisories.
