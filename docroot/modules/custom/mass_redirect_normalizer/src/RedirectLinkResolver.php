@@ -74,6 +74,15 @@ class RedirectLinkResolver {
       ];
     }
 
+    $query = (string) parse_url((string) $resolved['target_path'], PHP_URL_QUERY);
+    $fragment = (string) parse_url((string) $resolved['target_path'], PHP_URL_FRAGMENT);
+    if (!empty($resolved['node']) && $query === '' && $fragment === '') {
+      return [
+        'changed' => TRUE,
+        'uri' => 'entity:node/' . $resolved['node']->id(),
+      ];
+    }
+
     return [
       'changed' => TRUE,
       'uri' => 'internal:' . $resolved['target_path'],

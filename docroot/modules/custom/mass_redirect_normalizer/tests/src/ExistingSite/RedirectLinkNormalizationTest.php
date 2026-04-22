@@ -309,7 +309,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
 
     $this->assertTrue($normalized['changed']);
     $this->assertStringContainsString($target . '?dl=1#frag', $normalized['text']);
-    // Document targets are not node canonical paths, so node metadata is absent.
+    // Document targets are not node canonical paths,
+    // so node metadata is absent.
     $this->assertStringNotContainsString('data-entity-type="node"', $normalized['text']);
     $this->assertStringNotContainsString('data-entity-uuid=', $normalized['text']);
   }
@@ -476,6 +477,68 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests command writes CSV report rows for parseable output.
+   */
+  public function testCommandWritesCsvReport(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $page = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">CSV candidate</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    // Ensure source URL still exists in storage for the bulk command.
+    $redirectMarkup = '<p><a href="/' . $sourceStart . '">CSV candidate</a></p>';
+    $nid = (int) $page->id();
+    $vid = (int) $page->getRevisionId();
+    $connection = \Drupal::database();
+    foreach (['node__body', 'node_revision__body'] as $table) {
+      $connection->update($table)
+        ->fields(['body_value' => $redirectMarkup])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+
+    $csvPath = sys_get_temp_dir() . '/mass-redirect-normalizer-' . $this->randomMachineName() . '.csv';
+    if (file_exists($csvPath)) {
+      @unlink($csvPath);
+    }
+
+    $command = new MassRedirectNormalizerCommands(
+      \Drupal::entityTypeManager(),
+      \Drupal::service('mass_redirect_normalizer.manager')
+    );
+    $command->normalizeRedirectLinks([
+      'entity-ids' => (string) $page->id(),
+      'simulate' => TRUE,
+      'csv-path' => $csvPath,
+    ]);
+
+    $this->assertFileExists($csvPath);
+    $csv = (string) file_get_contents($csvPath);
+    $this->assertStringContainsString('status,entity_type,entity_id', $csv);
+    $this->assertStringContainsString('would_update,node,' . $page->id(), $csv);
+    $this->assertStringContainsString('/' . $sourceStart, $csv);
+    $this->assertStringContainsString($target->toUrl()->toString(), $csv);
+
+    @unlink($csvPath);
+  }
+
+  /**
    * Tests absolute local URL link-field normalization.
    */
   public function testNormalizeAbsoluteLocalUrlLinkField(): void {
@@ -535,7 +598,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     /** @var \Drupal\node\NodeInterface $reloaded */
     $links = $reloaded->get('field_social_links')->getValue();
 
-    $this->assertStringContainsString($target->toUrl()->toString(), $links[0]['uri']);
+    $this->assertSame('entity:node/' . $target->id(), $links[0]['uri']);
     $this->assertSame('internal:/no-redirect-here', $links[1]['uri']);
     $this->assertSame('https://example.com/external', $links[2]['uri']);
   }
@@ -589,7 +652,76 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $this->assertNotNull($item);
     $this->assertSame('keep-title', $item->title);
     $this->assertSame('my-link-class', $item->options['attributes']['class'][0]);
-    $this->assertStringContainsString($target->toUrl()->toString(), $item->uri);
+    $this->assertSame('entity:node/' . $target->id(), $item->uri);
+  }
+
+  /**
+   * Tests node redirect link field uses entity URI for Linkit UX.
+   */
+  public function testNormalizeRedirectLinkUriUsesEntitySchemeForNodes(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $normalized = $service->normalizeRedirectLinkUri('internal:/' . $sourceStart);
+    $this->assertTrue($normalized['changed']);
+    $this->assertSame('entity:node/' . $target->id(), $normalized['uri']);
+  }
+
+  /**
+   * Tests automated URL-fix revisions are attributed to admin user.
+   */
+  public function testAutomatedRevisionUsesAdminAsRevisionAuthor(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $editor = $this->createUser();
+    $editor->addRole('editor');
+    $editor->activate();
+    $editor->save();
+
+    $node = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'uid' => $editor->id(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Needs normalization</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    // Presave normalization may have already rewritten this during creation;
+    // put redirect source back so this test exercises manager save behavior.
+    $node->set('body', [
+      'value' => '<p><a href="/' . $sourceStart . '">Needs normalization</a></p>',
+      'format' => 'full_html',
+    ]);
+
+    $beforeRevisionId = (int) $node->getRevisionId();
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($node, TRUE);
+    $this->assertTrue($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertGreaterThan($beforeRevisionId, (int) $reloaded->getRevisionId());
+    $this->assertSame(1, (int) $reloaded->getRevisionUserId());
   }
 
 }

@@ -54,6 +54,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    * @option entity-ids Comma-separated IDs to process only. IDs are checked
    *   against both node and paragraph entities. Ignores --limit.
    * @option simulate Dry-run: show diffs only; do not save (same as global `drush --simulate`).
+   * @option csv-path Optional absolute path to write a CSV report file.
    * @usage mass-redirect-normalizer:normalize-links --simulate --limit=100
    *   Preview changes. Use --format=json for machine-readable output.
    */
@@ -63,6 +64,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       'bundle' => NULL,
       'entity-ids' => NULL,
       'simulate' => FALSE,
+      'csv-path' => NULL,
     ],
   ): RowsOfFields {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
@@ -77,6 +79,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       $simulate = !empty($options['simulate']);
     }
     $rows = [];
+    $csvRows = [];
     $processed = 0;
     $entitiesChanged = 0;
     $valueUpdates = 0;
@@ -155,8 +158,15 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
               (string) $change['kind'],
               (string) $change['before'],
               (string) $change['after'],
+              TRUE,
             );
-            $rows[] = [
+            [$beforeRaw, $afterRaw] = $this->buildUrlBeforeAfter(
+              (string) $change['kind'],
+              (string) $change['before'],
+              (string) $change['after'],
+              FALSE,
+            );
+            $row = [
               'status' => $simulate ? 'would_update' : 'updated',
               'entity_type' => $entityType,
               'entity_id' => $id,
@@ -168,6 +178,20 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
               'before' => $beforePreview,
               'after' => $afterPreview,
               'details' => $simulate ? 'dry-run' : 'saved',
+            ];
+            $rows[] = $row;
+            $csvRows[] = [
+              'status' => $row['status'],
+              'entity_type' => $row['entity_type'],
+              'entity_id' => $row['entity_id'],
+              'parent_node_id' => $row['parent_node_id'],
+              'bundle' => $row['bundle'],
+              'field' => $row['field'],
+              'delta' => $row['delta'],
+              'kind' => $row['kind'],
+              'before' => $beforeRaw,
+              'after' => $afterRaw,
+              'details' => $row['details'],
             ];
           }
         }
@@ -184,6 +208,17 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
         '@updated' => $entitiesChanged,
         '@diffs' => $valueUpdates,
       ]));
+    }
+
+    $csvPath = isset($options['csv-path']) ? trim((string) $options['csv-path']) : '';
+    if ($csvPath !== '') {
+      $this->writeCsvReport($csvPath, $csvRows);
+      if ($this->logger()) {
+        $this->logger()->notice((string) dt('CSV report written to @path with @count row(s).', [
+          '@path' => $csvPath,
+          '@count' => count($csvRows),
+        ]));
+      }
     }
 
     return new RowsOfFields($rows);
@@ -243,6 +278,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       return $cache[$nodeId];
     }
 
+    /** @var \Drupal\Core\Entity\RevisionableStorageInterface $storage */
     $storage = $this->entityTypeManager->getStorage('node');
     $latestRevisionId = $storage->getLatestRevisionId($node->id());
     if (!$latestRevisionId || (int) $latestRevisionId === (int) $node->getRevisionId()) {
@@ -267,12 +303,17 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    * Link fields show a readable URI/path.
    * Text fields show changed href values in document order.
    */
-  private function buildUrlBeforeAfter(string $kind, string $before, string $after): array {
+  private function buildUrlBeforeAfter(string $kind, string $before, string $after, bool $truncate = TRUE): array {
     $max = 120;
     if ($kind === 'link') {
+      $beforeText = $this->formatUriForDisplay($before);
+      $afterText = $this->formatUriForDisplay($after);
+      if (!$truncate) {
+        return [$beforeText, $afterText];
+      }
       return [
-        $this->truncateForTable($this->formatUriForDisplay($before), $max),
-        $this->truncateForTable($this->formatUriForDisplay($after), $max),
+        $this->truncateForTable($beforeText, $max),
+        $this->truncateForTable($afterText, $max),
       ];
     }
 
@@ -290,6 +331,9 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
 
     if ($pairs === []) {
       if ($beforeHrefs !== [] || $afterHrefs !== []) {
+        if (!$truncate) {
+          return [$beforeHrefs[0] ?? '-', $afterHrefs[0] ?? '-'];
+        }
         return [
           $this->truncateForTable($beforeHrefs[0] ?? '-', $max),
           $this->truncateForTable($afterHrefs[0] ?? '-', $max),
@@ -300,10 +344,59 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
 
     $beforeUrls = implode('; ', array_column($pairs, 0));
     $afterUrls = implode('; ', array_column($pairs, 1));
+    if (!$truncate) {
+      return [$beforeUrls, $afterUrls];
+    }
     return [
       $this->truncateForTable($beforeUrls, $max),
       $this->truncateForTable($afterUrls, $max),
     ];
+  }
+
+  /**
+   * Writes full report rows to a CSV file path.
+   */
+  private function writeCsvReport(string $path, array $rows): void {
+    $directory = dirname($path);
+    if (!is_dir($directory) && !@mkdir($directory, 0775, TRUE) && !is_dir($directory)) {
+      throw new \RuntimeException(sprintf('Could not create CSV directory: %s', $directory));
+    }
+
+    $handle = @fopen($path, 'wb');
+    if ($handle === FALSE) {
+      throw new \RuntimeException(sprintf('Could not open CSV path for writing: %s', $path));
+    }
+
+    $header = [
+      'status',
+      'entity_type',
+      'entity_id',
+      'parent_node_id',
+      'bundle',
+      'field',
+      'delta',
+      'kind',
+      'before',
+      'after',
+      'details',
+    ];
+    fputcsv($handle, $header);
+    foreach ($rows as $row) {
+      fputcsv($handle, [
+        $row['status'] ?? '',
+        $row['entity_type'] ?? '',
+        $row['entity_id'] ?? '',
+        $row['parent_node_id'] ?? '',
+        $row['bundle'] ?? '',
+        $row['field'] ?? '',
+        $row['delta'] ?? '',
+        $row['kind'] ?? '',
+        $row['before'] ?? '',
+        $row['after'] ?? '',
+        $row['details'] ?? '',
+      ]);
+    }
+    fclose($handle);
   }
 
   /**
