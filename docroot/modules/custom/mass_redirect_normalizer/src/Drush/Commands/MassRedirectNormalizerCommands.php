@@ -136,7 +136,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
         $result = $this->normalizerManager->normalizeEntity($entity, !$simulate, $simulate);
         $processed++;
         if ($this->logger() && $processed % $progressEvery === 0) {
-          $this->logger()->notice((string) dt('Progress: processed @count entities; updated @updated; value updates @diffs. Last @type:@id', [
+          $this->logger()->notice((string) dt('Progress: processed @count entities; updated entities @updated; changed field values @diffs. Last @type:@id', [
             '@count' => $processed,
             '@updated' => $entitiesChanged,
             '@diffs' => $valueUpdates,
@@ -201,7 +201,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $mode = $simulate ? 'SIMULATION' : 'EXECUTION';
     if ($this->logger()) {
       $limitText = $limit > 0 ? (string) $limit : 'none';
-      $this->logger()->notice((string) dt('@mode: processed @count entities (limit: @limit); updated entities: @updated; value updates: @diffs.', [
+      $this->logger()->notice((string) dt('@mode: processed @count entities (limit: @limit); updated entities: @updated; changed field values: @diffs.', [
         '@mode' => $mode,
         '@count' => $processed,
         '@limit' => $limitText,
@@ -305,6 +305,15 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    */
   private function buildUrlBeforeAfter(string $kind, string $before, string $after, bool $truncate = TRUE): array {
     $max = 120;
+    if ($kind === 'entity_reference') {
+      if (!$truncate) {
+        return [$before, $after];
+      }
+      return [
+        $this->truncateForTable($before, $max),
+        $this->truncateForTable($after, $max),
+      ];
+    }
     if ($kind === 'link') {
       $beforeText = $this->formatUriForDisplay($before);
       $afterText = $this->formatUriForDisplay($after);

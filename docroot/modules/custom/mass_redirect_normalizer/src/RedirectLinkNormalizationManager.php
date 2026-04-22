@@ -145,6 +145,34 @@ class RedirectLinkNormalizationManager {
           }
         }
       }
+      elseif ($fieldType === 'entity_reference') {
+        $targetType = (string) $field->getFieldDefinition()->getSetting('target_type');
+        if (!in_array($targetType, ['node', 'media'], TRUE)) {
+          continue;
+        }
+        foreach ($field as $delta => $item) {
+          $beforeId = (int) ($item->target_id ?? 0);
+          if ($beforeId <= 0) {
+            continue;
+          }
+          $processed = $this->resolver->normalizeEntityReferenceTarget($targetType, $beforeId);
+          if (!$processed['changed']) {
+            continue;
+          }
+          $afterId = (int) $processed['target_entity_id'];
+          $changed = TRUE;
+          $changes[] = [
+            'field' => (string) $fieldName,
+            'delta' => (int) $delta,
+            'kind' => 'entity_reference',
+            'before' => $targetType . ':' . $beforeId,
+            'after' => $targetType . ':' . $afterId,
+          ];
+          if ($apply) {
+            $item->target_id = $afterId;
+          }
+        }
+      }
     }
 
     return ['changed' => $changed, 'changes' => $changes];

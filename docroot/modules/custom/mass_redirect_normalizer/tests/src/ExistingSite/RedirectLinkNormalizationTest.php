@@ -4,7 +4,10 @@ namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 
 use Drupal\mass_redirect_normalizer\Drush\Commands\MassRedirectNormalizerCommands;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\file\Entity\File;
+use Drupal\path_alias\Entity\PathAlias;
 use MassGov\Dtt\MassExistingSiteBase;
+use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 
 /**
  * Tests redirect link normalization service behavior (integration).
@@ -12,6 +15,8 @@ use MassGov\Dtt\MassExistingSiteBase;
  * @group existing-site
  */
 class RedirectLinkNormalizationTest extends MassExistingSiteBase {
+
+  use MediaCreationTrait;
 
   /**
    * Creates a simple two-hop redirect chain to target node.
@@ -37,6 +42,40 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $this->cleanupEntities[] = $firstHop;
 
     return [$sourceStart, $sourceFinal];
+  }
+
+  /**
+   * Creates one redirect from source path to target local path.
+   */
+  private function createRedirect(string $sourcePath, string $targetPath): Redirect {
+    $redirect = Redirect::create();
+    $redirect->setSource(ltrim($sourcePath, '/'));
+    $redirect->setRedirect($targetPath);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+    return $redirect;
+  }
+
+  /**
+   * Creates a published document media entity for tests.
+   */
+  private function createDocumentMedia(string $suffix) {
+    $destination = 'public://redirect-normalizer-' . $suffix . '.txt';
+    $file = File::create(['uri' => $destination]);
+    $file->setPermanent();
+    $file->save();
+    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
+    \Drupal::service('file_system')->copy($src, $destination, TRUE);
+
+    return $this->createMedia([
+      'title' => 'Doc ' . $suffix,
+      'bundle' => 'document',
+      'field_upload_file' => ['target_id' => $file->id()],
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
   }
 
   /**
@@ -539,6 +578,201 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests node entity reference is normalized via deterministic redirect.
+   */
+  public function testManagerNormalizesNodeEntityReferenceField(): void {
+    $sourcePerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $targetPerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect('/node/' . $sourcePerson->id(), '/node/' . $targetPerson->id());
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $org->set('field_person_bio', ['target_id' => $sourcePerson->id()]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($org, TRUE);
+    $this->assertTrue($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($org->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertSame((int) $targetPerson->id(), (int) $reloaded->get('field_person_bio')->target_id);
+  }
+
+  /**
+   * Tests media entity reference is normalized via deterministic redirect.
+   */
+  public function testManagerNormalizesMediaEntityReferenceField(): void {
+    $sourceMedia = $this->createDocumentMedia('source-' . $this->randomMachineName());
+    $targetMedia = $this->createDocumentMedia('target-' . $this->randomMachineName());
+    $this->createRedirect('/media/' . $sourceMedia->id(), '/media/' . $targetMedia->id());
+
+    $binder = $this->createNode([
+      'type' => 'binder',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_downloads' => [
+        ['target_id' => $targetMedia->id()],
+      ],
+    ]);
+    $binder->set('field_downloads', [
+      ['target_id' => $sourceMedia->id()],
+    ]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($binder, TRUE);
+    $this->assertTrue($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($binder->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertSame((int) $targetMedia->id(), (int) $reloaded->get('field_downloads')->target_id);
+  }
+
+  /**
+   * Tests strict-safe entity reference rewrite skips unresolved targets.
+   */
+  public function testEntityReferenceRewriteSkipsUnresolvedTarget(): void {
+    $sourcePerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect('/node/' . $sourcePerson->id(), '/node/99999999');
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_person_bio' => [
+        ['target_id' => $sourcePerson->id()],
+      ],
+    ]);
+    $org->set('field_person_bio', ['target_id' => $sourcePerson->id()]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($org, TRUE);
+    $this->assertFalse($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($org->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertSame((int) $sourcePerson->id(), (int) $reloaded->get('field_person_bio')->target_id);
+  }
+
+  /**
+   * Tests entity ref rewrite skips alias path that resolves to same media.
+   */
+  public function testEntityReferenceRewriteSkipsActiveAliasConflict(): void {
+    $sourceMedia = $this->createDocumentMedia('alias-source-' . $this->randomMachineName());
+    $targetMedia = $this->createDocumentMedia('alias-target-' . $this->randomMachineName());
+
+    $aliasPath = '/doc/alias-conflict-' . $this->randomMachineName();
+    $alias = PathAlias::create([
+      'path' => '/media/' . $sourceMedia->id(),
+      'alias' => $aliasPath,
+      'langcode' => 'en',
+      'status' => 1,
+    ]);
+    $alias->save();
+    $this->cleanupEntities[] = $alias;
+
+    // This redirect conflicts with an active alias that still resolves to
+    // source media, so strict-safe entity-ref rewrite must skip it.
+    $this->createRedirect($aliasPath, '/media/' . $targetMedia->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $normalized = $service->normalizeEntityReferenceTarget('media', (int) $sourceMedia->id());
+    $this->assertFalse($normalized['changed']);
+  }
+
+  /**
+   * Tests CSV report includes entity-reference change rows.
+   */
+  public function testCommandCsvIncludesEntityReferenceRows(): void {
+    $sourcePerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $targetPerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect('/node/' . $sourcePerson->id(), '/node/' . $targetPerson->id());
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_person_bio' => [
+        ['target_id' => $targetPerson->id()],
+      ],
+    ]);
+
+    // Force pre-normalized reference back to source for command DB read.
+    $nid = (int) $org->id();
+    $vid = (int) $org->getRevisionId();
+    $connection = \Drupal::database();
+    foreach (['node__field_person_bio', 'node_revision__field_person_bio'] as $table) {
+      $connection->update($table)
+        ->fields(['field_person_bio_target_id' => (int) $sourcePerson->id()])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+
+    $csvPath = sys_get_temp_dir() . '/mass-redirect-normalizer-entity-ref-' . $this->randomMachineName() . '.csv';
+    if (file_exists($csvPath)) {
+      @unlink($csvPath);
+    }
+
+    $command = new MassRedirectNormalizerCommands(
+      \Drupal::entityTypeManager(),
+      \Drupal::service('mass_redirect_normalizer.manager')
+    );
+    $command->normalizeRedirectLinks([
+      'entity-ids' => (string) $org->id(),
+      'simulate' => TRUE,
+      'csv-path' => $csvPath,
+    ]);
+
+    $this->assertFileExists($csvPath);
+    $csv = (string) file_get_contents($csvPath);
+    $this->assertStringContainsString(',entity_reference,', $csv);
+    $this->assertStringContainsString('node:' . $sourcePerson->id(), $csv);
+    $this->assertStringContainsString('node:' . $targetPerson->id(), $csv);
+
+    @unlink($csvPath);
+  }
+
+  /**
    * Tests absolute local URL link-field normalization.
    */
   public function testNormalizeAbsoluteLocalUrlLinkField(): void {
@@ -672,6 +906,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $normalized = $service->normalizeRedirectLinkUri('internal:/' . $sourceStart);
     $this->assertTrue($normalized['changed']);
     $this->assertSame('entity:node/' . $target->id(), $normalized['uri']);
+    $this->assertStringNotContainsString('internal:/', $normalized['uri']);
   }
 
   /**
