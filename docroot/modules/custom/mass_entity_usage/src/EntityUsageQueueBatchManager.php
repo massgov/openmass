@@ -5,6 +5,7 @@ namespace Drupal\mass_entity_usage;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -25,6 +26,7 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
    * The default size of the batch for the revision queries.
    */
   const BATCH_SIZE = 100;
+  const PROGRESS_STATE_PREFIX = 'mass_entity_usage.queue_progress.';
 
   /**
    * The entity type manager.
@@ -41,6 +43,13 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
   protected $config;
 
   /**
+   * State storage.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
    * Creates a EntityUsageQueueBatchManager object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -49,11 +58,14 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
    *   The string translation service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
+   * @param \Drupal\Core\State\StateInterface $state
+   *   State storage.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation, ConfigFactoryInterface $config_factory) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, TranslationInterface $string_translation, ConfigFactoryInterface $config_factory, ?StateInterface $state = NULL) {
     $this->entityTypeManager = $entity_type_manager;
     $this->stringTranslation = $string_translation;
     $this->config = $config_factory->get('entity_usage.settings');
+    $this->state = $state ?? \Drupal::state();
   }
 
   /**
@@ -63,7 +75,8 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('string_translation'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('state')
     );
   }
 
@@ -128,6 +141,62 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
   }
 
   /**
+   * Gets tracked source entity type IDs.
+   *
+   * @return string[]
+   *   Tracked source entity type IDs.
+   */
+  public function getTrackedSourceEntityTypes() {
+    $tracked_types = [];
+    $to_track = $this->config->get('track_enabled_source_entity_types');
+    foreach ($this->entityTypeManager->getDefinitions() as $entity_type_id => $entity_type) {
+      // Only look for entities enabled for tracking on the settings form.
+      $track_this_entity_type = FALSE;
+      if (!is_array($to_track) && ($entity_type->entityClassImplements('\Drupal\Core\Entity\ContentEntityInterface'))) {
+        // When no settings are defined, track all content entities by default,
+        // except for Files and Users.
+        if (!in_array($entity_type_id, ['file', 'user'], TRUE)) {
+          $track_this_entity_type = TRUE;
+        }
+      }
+      elseif (is_array($to_track) && in_array($entity_type_id, $to_track, TRUE)) {
+        $track_this_entity_type = TRUE;
+      }
+      if ($track_this_entity_type) {
+        $tracked_types[] = $entity_type_id;
+      }
+    }
+
+    return $tracked_types;
+  }
+
+  /**
+   * Determines whether there is an interrupted enqueue operation to resume.
+   *
+   * @return bool
+   *   TRUE when at least one tracked type has unfinished progress.
+   */
+  public function hasInterruptedProgress() {
+    foreach ($this->getTrackedSourceEntityTypes() as $entity_type_id) {
+      $progress_state = $this->getProgressState($entity_type_id);
+      if ($progress_state !== NULL && empty($progress_state['completed'])) {
+        return TRUE;
+      }
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Clears saved progress for all tracked source entity types.
+   */
+  public function clearTrackedProgress() {
+    foreach ($this->getTrackedSourceEntityTypes() as $entity_type_id) {
+      $this->state->delete(static::getProgressStateKey($entity_type_id));
+    }
+  }
+
+  /**
    * Batch operation worker for populating the queue to regenerate statistics.
    *
    * @param string $entity_type_id
@@ -140,32 +209,57 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
    */
   public static function queueSourcesBatchWorker($entity_type_id, $batch_size, &$context) {
     $queue = \Drupal::queue('entity_usage_tracker');
+    $state = \Drupal::state();
 
     $entity_storage = \Drupal::entityTypeManager()->getStorage($entity_type_id);
     $entity_type = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
     $entity_type_key = $entity_type->getKey('id');
+    $progress_state = $state->get(static::getProgressStateKey($entity_type_id));
 
     // First pass, populate the sandbox.
     if (empty($context['sandbox']['total'])) {
       // Log the start of the batch for this entity type.
       \Drupal::logger('entity_usage.batch')->info('Starting batch process for entity type: @entity_type.', ['@entity_type' => $entity_type_id]);
 
-      // Delete current usage statistics for these entities.
-      \Drupal::service('entity_usage.usage')
-        ->bulkDeleteSources($entity_type_id);
+      if (is_array($progress_state) && !empty($progress_state['completed'])) {
+        $context['sandbox']['progress'] = (int) ($progress_state['total'] ?? 0);
+        $context['sandbox']['total'] = (int) ($progress_state['total'] ?? 0);
+        $context['sandbox']['current_item'] = (int) ($progress_state['current_item'] ?? 0);
+        $context['finished'] = 1;
+        $context['results'][] = $entity_type_id;
+        return;
+      }
 
-      $context['sandbox']['progress'] = 0;
-      // Set the total to the number of entities.
-      $context['sandbox']['total'] = (int) $entity_storage->getQuery()
-        ->accessCheck(FALSE)
-        ->count()
-        ->execute();
-      $context['sandbox']['current_item'] = 0;
+      if (is_array($progress_state) && !empty($progress_state['total']) && empty($progress_state['completed'])) {
+        $context['sandbox']['progress'] = (int) ($progress_state['progress'] ?? 0);
+        $context['sandbox']['total'] = (int) $progress_state['total'];
+        $context['sandbox']['current_item'] = (int) ($progress_state['current_item'] ?? 0);
+      }
+      else {
+        // Delete current usage statistics only on a fresh start.
+        \Drupal::service('entity_usage.usage')
+          ->bulkDeleteSources($entity_type_id);
+
+        $context['sandbox']['progress'] = 0;
+        // Set the total to the number of entities.
+        $context['sandbox']['total'] = (int) $entity_storage->getQuery()
+          ->accessCheck(FALSE)
+          ->count()
+          ->execute();
+        $context['sandbox']['current_item'] = 0;
+      }
 
       // Log the total number of entities found.
       \Drupal::logger('entity_usage.batch')->info('Total entities to process for @entity_type: @total', [
         '@entity_type' => $entity_type_id,
         '@total' => $context['sandbox']['total'],
+      ]);
+
+      $state->set(static::getProgressStateKey($entity_type_id), [
+        'progress' => (int) $context['sandbox']['progress'],
+        'total' => (int) $context['sandbox']['total'],
+        'current_item' => (int) $context['sandbox']['current_item'],
+        'completed' => FALSE,
       ]);
 
       $context['finished'] = 0;
@@ -209,6 +303,13 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
         ]);
       }
 
+      $state->set(static::getProgressStateKey($entity_type_id), [
+        'progress' => (int) $context['sandbox']['progress'],
+        'total' => (int) $context['sandbox']['total'],
+        'current_item' => (int) $context['sandbox']['current_item'],
+        'completed' => FALSE,
+      ]);
+
       $context['results'][] = $entity_type_id;
     }
 
@@ -217,6 +318,12 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
     }
     else {
       $context['finished'] = 1;
+      $state->set(static::getProgressStateKey($entity_type_id), [
+        'progress' => (int) $context['sandbox']['total'],
+        'total' => (int) $context['sandbox']['total'],
+        'current_item' => (int) $context['sandbox']['current_item'],
+        'completed' => TRUE,
+      ]);
       // Log the successful completion of the entity type.
       \Drupal::logger('entity_usage.batch')->info('Completed batch process for entity type: @entity_type.', ['@entity_type' => $entity_type_id]);
     }
@@ -226,6 +333,32 @@ class EntityUsageQueueBatchManager implements ContainerInjectionInterface {
       '@current' => $context['sandbox']['progress'],
       '@total' => $context['sandbox']['total'],
     ]);
+  }
+
+  /**
+   * Returns the queue progress state key for an entity type.
+   *
+   * @param string $entity_type_id
+   *   Entity type ID.
+   *
+   * @return string
+   *   State key.
+   */
+  protected static function getProgressStateKey($entity_type_id) {
+    return static::PROGRESS_STATE_PREFIX . $entity_type_id;
+  }
+
+  /**
+   * Returns progress state for an entity type.
+   *
+   * @param string $entity_type_id
+   *   Entity type ID.
+   *
+   * @return array|null
+   *   State data or NULL.
+   */
+  protected function getProgressState($entity_type_id) {
+    return $this->state->get(static::getProgressStateKey($entity_type_id));
   }
 
   /**
