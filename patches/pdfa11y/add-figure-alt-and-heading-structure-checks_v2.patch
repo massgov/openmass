@@ -1,0 +1,487 @@
+diff --git a/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php b/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php
+new file mode 100644
+index 0000000..b69c322
+--- /dev/null
++++ b/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php
+@@ -0,0 +1,238 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\pdfa11y\Plugin\AccessibilityCheck;
++
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\pdfa11y\AccessibilityCheckBase;
++use Drupal\pdfa11y\AccessibilityCheckResult;
++use Drupal\pdfa11y\Attribute\AccessibilityCheck;
++use Smalot\PdfParser\Document;
++use Smalot\PdfParser\Element\Element;
++use Smalot\PdfParser\Element\ElementArray;
++use Smalot\PdfParser\Element\ElementMissing;
++use Smalot\PdfParser\Element\ElementString;
++
++/**
++ * Checks that figure elements include alternative text.
++ */
++#[AccessibilityCheck(
++  id: 'figure_alt_text',
++  label: new TranslatableMarkup('Figure ALT text'),
++  description: new TranslatableMarkup('Checks Figure elements in tagged PDFs and verifies they include ALT text.'),
++  category: 'structure',
++  weight: 30,
++)]
++class FigureAltTextCheck extends AccessibilityCheckBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function check(Document $document, string $fileUri): AccessibilityCheckResult {
++    $catalogs = $document->getObjectsByType('Catalog');
++    if (empty($catalogs)) {
++      return $this->fail(
++        (string) $this->t('Could not locate the document catalog to inspect figure ALT text.'),
++        AccessibilityCheckResult::SEVERITY_ERROR,
++      );
++    }
++
++    $catalog = reset($catalogs);
++    $structTreeRoot = $catalog->get('StructTreeRoot');
++    if ($structTreeRoot instanceof ElementMissing || $structTreeRoot === NULL) {
++      return $this->notApplicable(
++        (string) $this->t('Figure ALT text could not be evaluated because the document has no structure tree.'),
++      );
++    }
++
++    $roleMap = $this->extractRoleMap($structTreeRoot);
++    $figuresWithoutAlt = 0;
++    $totalFigures = 0;
++    $this->inspectNode($structTreeRoot, $roleMap, $totalFigures, $figuresWithoutAlt);
++
++    if ($totalFigures === 0) {
++      return $this->notApplicable(
++        (string) $this->t('No Figure elements were found in the structure tree.'),
++      );
++    }
++
++    if ($figuresWithoutAlt === 0) {
++      return $this->pass(
++        (string) $this->t('All @count Figure elements include ALT text.', ['@count' => (string) $totalFigures]),
++      );
++    }
++
++    return $this->fail(
++      (string) $this->t('@missing of @total Figure elements are missing ALT text.', [
++        '@missing' => (string) $figuresWithoutAlt,
++        '@total' => (string) $totalFigures,
++      ]),
++    );
++  }
++
++  /**
++   * Recursively inspects structure tree nodes for Figure elements.
++   *
++   * @param mixed $node
++   *   Current node.
++   * @param array<string, string> $roleMap
++   *   Role map used to normalize custom structure tags.
++   * @param int $totalFigures
++   *   Total Figure count.
++   * @param int $figuresWithoutAlt
++   *   Figure count missing ALT text.
++   */
++  protected function inspectNode(mixed $node, array $roleMap, int &$totalFigures, int &$figuresWithoutAlt): void {
++    if ($node instanceof ElementArray) {
++      $content = $node->getContent();
++      if (is_array($content)) {
++        foreach ($content as $child) {
++          $this->inspectNode($child, $roleMap, $totalFigures, $figuresWithoutAlt);
++        }
++      }
++      return;
++    }
++
++    if (is_array($node)) {
++      foreach ($node as $child) {
++        $this->inspectNode($child, $roleMap, $totalFigures, $figuresWithoutAlt);
++      }
++      return;
++    }
++
++    if (!is_object($node)) {
++      return;
++    }
++
++    if (method_exists($node, 'get')) {
++      $normalizedType = $this->normalizeStructureType((string) $node->get('S'), $roleMap);
++      if ($normalizedType === 'Figure') {
++        $totalFigures++;
++        if (!$this->hasAltText($node)) {
++          $figuresWithoutAlt++;
++        }
++      }
++
++      $children = $node->get('K');
++      if (!($children instanceof ElementMissing) && $children !== NULL) {
++        $this->inspectNode($children, $roleMap, $totalFigures, $figuresWithoutAlt);
++      }
++    }
++
++    if (method_exists($node, 'getDetails')) {
++      $details = $node->getDetails(FALSE);
++      if (is_array($details) && isset($details['K'])) {
++        $this->inspectNode($details['K'], $roleMap, $totalFigures, $figuresWithoutAlt);
++      }
++    }
++  }
++
++  /**
++   * Checks whether a structure element contains non-empty ALT text.
++   *
++   * @param object $node
++   *   Structure element object.
++   *
++   * @return bool
++   *   TRUE when ALT text exists and is non-empty.
++   */
++  protected function hasAltText(object $node): bool {
++    if (method_exists($node, 'get')) {
++      $alt = $node->get('Alt');
++      if ($alt instanceof ElementString) {
++        return trim((string) $alt) !== '';
++      }
++      if (!($alt instanceof ElementMissing) && trim((string) $alt) !== '') {
++        return TRUE;
++      }
++    }
++
++    if (method_exists($node, 'getDetails')) {
++      $details = $node->getDetails(FALSE);
++      if (is_array($details) && isset($details['Alt']) && trim((string) $details['Alt']) !== '') {
++        return TRUE;
++      }
++    }
++
++    return FALSE;
++  }
++
++  /**
++   * Extracts role mapping (custom tag -> standard tag) from structure tree.
++   *
++   * @param mixed $structTreeRoot
++   *   StructTreeRoot element.
++   *
++   * @return array<string, string>
++   *   Mapping of source role to normalized role.
++   */
++  protected function extractRoleMap(mixed $structTreeRoot): array {
++    if (!is_object($structTreeRoot) || !method_exists($structTreeRoot, 'get')) {
++      return [];
++    }
++
++    $roleMap = $structTreeRoot->get('RoleMap');
++    if ($roleMap instanceof ElementMissing || $roleMap === NULL || !method_exists($roleMap, 'getDetails')) {
++      return [];
++    }
++
++    $details = $roleMap->getDetails(FALSE);
++    if (!is_array($details)) {
++      return [];
++    }
++
++    $mapping = [];
++    foreach ($details as $from => $to) {
++      $mapping[(string) $from] = trim($this->elementToString($to));
++    }
++
++    return $mapping;
++  }
++
++  /**
++   * Resolves a structure type through role-map aliases.
++   *
++   * @param string $type
++   *   Raw structure type.
++   * @param array<string, string> $roleMap
++   *   Role map.
++   *
++   * @return string
++   *   Normalized structure type.
++   */
++  protected function normalizeStructureType(string $type, array $roleMap): string {
++    $resolved = trim($type);
++    if ($resolved === '') {
++      return '';
++    }
++
++    $seen = [];
++    while (isset($roleMap[$resolved]) && !isset($seen[$resolved])) {
++      $seen[$resolved] = TRUE;
++      $resolved = trim($roleMap[$resolved]);
++    }
++
++    return $resolved;
++  }
++
++  /**
++   * Converts parsed values to strings.
++   *
++   * @param mixed $value
++   *   Parsed value.
++   *
++   * @return string
++   *   Scalar string representation.
++   */
++  protected function elementToString(mixed $value): string {
++    if ($value instanceof Element) {
++      return (string) $value;
++    }
++    if (is_scalar($value)) {
++      return (string) $value;
++    }
++    return '';
++  }
++
++}
+diff --git a/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php b/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php
+new file mode 100644
+index 0000000..0a495bb
+--- /dev/null
++++ b/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php
+@@ -0,0 +1,237 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\pdfa11y\Plugin\AccessibilityCheck;
++
++use Drupal\Core\StringTranslation\TranslatableMarkup;
++use Drupal\pdfa11y\AccessibilityCheckBase;
++use Drupal\pdfa11y\AccessibilityCheckResult;
++use Drupal\pdfa11y\Attribute\AccessibilityCheck;
++use Smalot\PdfParser\Document;
++use Smalot\PdfParser\Element\Element;
++use Smalot\PdfParser\Element\ElementArray;
++use Smalot\PdfParser\Element\ElementMissing;
++
++/**
++ * Checks heading structure for common accessibility hierarchy issues.
++ */
++#[AccessibilityCheck(
++  id: 'heading_structure',
++  label: new TranslatableMarkup('Heading structure'),
++  description: new TranslatableMarkup('Checks heading order and reports skipped heading levels.'),
++  category: 'structure',
++  weight: 40,
++)]
++class HeadingStructureCheck extends AccessibilityCheckBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function check(Document $document, string $fileUri): AccessibilityCheckResult {
++    $catalogs = $document->getObjectsByType('Catalog');
++    if (empty($catalogs)) {
++      return $this->fail(
++        (string) $this->t('Could not locate the document catalog to inspect heading structure.'),
++        AccessibilityCheckResult::SEVERITY_ERROR,
++      );
++    }
++
++    $catalog = reset($catalogs);
++    $structTreeRoot = $catalog->get('StructTreeRoot');
++    if ($structTreeRoot instanceof ElementMissing || $structTreeRoot === NULL) {
++      return $this->notApplicable(
++        (string) $this->t('Heading structure could not be evaluated because the document has no structure tree.'),
++      );
++    }
++
++    $roleMap = $this->extractRoleMap($structTreeRoot);
++    $headings = [];
++    $this->collectHeadings($structTreeRoot, $roleMap, $headings);
++
++    if (empty($headings)) {
++      return $this->fail(
++        (string) $this->t('The document contains no headings.'),
++      );
++    }
++
++    $leveledHeadings = array_values(array_filter($headings, static fn(int $level): bool => $level > 0));
++    if (empty($leveledHeadings)) {
++      return $this->pass(
++        (string) $this->t('Headings were found, but levels are not explicit. Skipped-level checks were not applied.'),
++      );
++    }
++
++    if ($leveledHeadings[0] !== 1) {
++      return $this->fail(
++        (string) $this->t('First heading should be H1, but found H@level.', ['@level' => (string) $leveledHeadings[0]]),
++      );
++    }
++
++    $skips = [];
++    for ($i = 1; $i < count($leveledHeadings); $i++) {
++      $previous = $leveledHeadings[$i - 1];
++      $current = $leveledHeadings[$i];
++      if ($current > ($previous + 1)) {
++        $skips[] = 'H' . $previous . ' -> H' . $current;
++      }
++    }
++
++    if (!empty($skips)) {
++      return $this->fail(
++        (string) $this->t('Skipped heading levels detected: @skips.', ['@skips' => implode(', ', $skips)]),
++      );
++    }
++
++    return $this->pass(
++      (string) $this->t('Heading structure passed: first heading is H1 and no skipped downward levels were found.'),
++    );
++  }
++
++  /**
++   * Recursively collects heading levels from structure tree.
++   *
++   * @param mixed $node
++   *   Current node.
++   * @param array<string, string> $roleMap
++   *   Role map used to normalize custom structure tags.
++   * @param int[] $headings
++   *   Collected heading levels in discovered order.
++   */
++  protected function collectHeadings(mixed $node, array $roleMap, array &$headings): void {
++    if ($node instanceof ElementArray) {
++      $content = $node->getContent();
++      if (is_array($content)) {
++        foreach ($content as $child) {
++          $this->collectHeadings($child, $roleMap, $headings);
++        }
++      }
++      return;
++    }
++
++    if (is_array($node)) {
++      foreach ($node as $child) {
++        $this->collectHeadings($child, $roleMap, $headings);
++      }
++      return;
++    }
++
++    if (!is_object($node)) {
++      return;
++    }
++
++    if (method_exists($node, 'get')) {
++      $normalizedType = $this->normalizeStructureType((string) $node->get('S'), $roleMap);
++      $this->addHeadingLevel($normalizedType, $headings);
++
++      $children = $node->get('K');
++      if (!($children instanceof ElementMissing) && $children !== NULL) {
++        $this->collectHeadings($children, $roleMap, $headings);
++      }
++    }
++
++    if (method_exists($node, 'getDetails')) {
++      $details = $node->getDetails(FALSE);
++      if (is_array($details) && isset($details['K'])) {
++        $this->collectHeadings($details['K'], $roleMap, $headings);
++      }
++    }
++  }
++
++  /**
++   * Adds a heading level to the list when tag type is a heading.
++   *
++   * Uses level 0 for generic H tags with no explicit level.
++   *
++   * @param string $type
++   *   Normalized structure type.
++   * @param int[] $headings
++   *   Heading levels list.
++   */
++  protected function addHeadingLevel(string $type, array &$headings): void {
++    if (preg_match('/^H([1-6])$/', $type, $matches)) {
++      $headings[] = (int) $matches[1];
++    }
++    elseif ($type === 'H') {
++      $headings[] = 0;
++    }
++  }
++
++  /**
++   * Extracts role mapping (custom tag -> standard tag) from structure tree.
++   *
++   * @param mixed $structTreeRoot
++   *   StructTreeRoot element.
++   *
++   * @return array<string, string>
++   *   Mapping of source role to normalized role.
++   */
++  protected function extractRoleMap(mixed $structTreeRoot): array {
++    if (!is_object($structTreeRoot) || !method_exists($structTreeRoot, 'get')) {
++      return [];
++    }
++
++    $roleMap = $structTreeRoot->get('RoleMap');
++    if ($roleMap instanceof ElementMissing || $roleMap === NULL || !method_exists($roleMap, 'getDetails')) {
++      return [];
++    }
++
++    $details = $roleMap->getDetails(FALSE);
++    if (!is_array($details)) {
++      return [];
++    }
++
++    $mapping = [];
++    foreach ($details as $from => $to) {
++      $mapping[(string) $from] = trim($this->elementToString($to));
++    }
++
++    return $mapping;
++  }
++
++  /**
++   * Resolves a structure type through role-map aliases.
++   *
++   * @param string $type
++   *   Raw structure type.
++   * @param array<string, string> $roleMap
++   *   Role map.
++   *
++   * @return string
++   *   Normalized structure type.
++   */
++  protected function normalizeStructureType(string $type, array $roleMap): string {
++    $resolved = trim($type);
++    if ($resolved === '') {
++      return '';
++    }
++
++    $seen = [];
++    while (isset($roleMap[$resolved]) && !isset($seen[$resolved])) {
++      $seen[$resolved] = TRUE;
++      $resolved = trim($roleMap[$resolved]);
++    }
++
++    return $resolved;
++  }
++
++  /**
++   * Converts parsed values to strings.
++   *
++   * @param mixed $value
++   *   Parsed value.
++   *
++   * @return string
++   *   Scalar string representation.
++   */
++  protected function elementToString(mixed $value): string {
++    if ($value instanceof Element) {
++      return (string) $value;
++    }
++    if (is_scalar($value)) {
++      return (string) $value;
++    }
++    return '';
++  }
++
++}
