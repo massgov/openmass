@@ -6,7 +6,7 @@ services:
       - { name: event_subscriber }
   mass_entity_usage.queue_batch_manager:
     class: Drupal\mass_entity_usage\EntityUsageQueueBatchManager
-    arguments: [ '@entity_type.manager', '@string_translation', '@config.factory' ]
+    arguments: [ '@entity_type.manager', '@string_translation', '@config.factory', '@state' ]
   mass_entity_usage.usage:
     class: Drupal\mass_entity_usage\MassEntityUsage
     arguments: [ '@database', '@event_dispatcher', '@config.factory', '@module_handler' , 'entity_usage']
