@@ -3497,11 +3497,8 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       $location = Helper::fieldFullView($node, $field['location']);
       $location_string = \Drupal::service('renderer')->renderRoot($location);
       $location = '<span class="ma__rich-text__flame">' . $location_string . '</span> &mdash; ';
-      $body_array = explode('<p>', $body_string);
-      if (count($body_array) > 1) {
-        $body_array[1] = $location . $body_array[1];
-      }
-      $body_string = implode('<p>', $body_array);
+      // Prefix the first paragraph content, regardless of attributes like lang.
+      $body_string = preg_replace('/(<\s*p\b[^>]*>)/i', '$1' . $location, $body_string, 1);
     }
     if (Helper::fieldValue($node, $field['news_type']) == 'press_release') {
       $ap_conformity = TRUE;

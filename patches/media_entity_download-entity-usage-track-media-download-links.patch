@@ -1,0 +1,169 @@
+diff --git a/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php b/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php
+new file mode 100644
+index 0000000..f0d1e11
+--- /dev/null
++++ b/src/Plugin/EntityUsage/Track/MediaEntityDownloadHtmlLink.php
+@@ -0,0 +1,163 @@
++<?php
++
++namespace Drupal\media_entity_download\Plugin\EntityUsage\Track;
++
++use Drupal\Component\Utility\Html;
++use Drupal\Component\Utility\UrlHelper;
++use Drupal\Core\Field\FieldItemInterface;
++use Drupal\Core\Url;
++use Drupal\entity_usage\Plugin\EntityUsage\Track\HtmlLink;
++use Drupal\link\LinkItemInterface;
++
++/**
++ * Tracks usage of entities referenced from regular HTML links.
++ *
++ * @EntityUsageTrack(
++ *   id = "media_entity_download_html_link",
++ *   label = @Translation("Meida Entity Download HTML links"),
++ *   description = @Translation("Tracks media relationships created with standard links inside formatted text fields."),
++ *   field_types = {"link", "text", "text_long", "text_with_summary"},
++ * )
++ */
++class MediaEntityDownloadHtmlLink extends HtmlLink {
++
++  /**
++   * {@inheritdoc}
++   */
++  public function parseEntitiesFromText($text) {
++    $dom = Html::load($text);
++    $xpath = new \DOMXPath($dom);
++    $entities = [];
++
++    // Loop through all <a> elements that contain an href attribute.
++    foreach ($xpath->query("//a[@href != '']") as $element) {
++      /** @var \DOMElement $element */
++      try {
++        $href = $element->getAttribute('href');
++        $entity = $this->resolveMediaEntityFromHref($href);
++        if (!$entity) {
++          continue;
++        }
++
++        if ($element->hasAttribute('data-entity-uuid')) {
++          // If UUID matches what href resolves to, let LinkIt plugin own it.
++          if ($element->getAttribute('data-entity-uuid') === $entity->uuid()) {
++            continue;
++          }
++        }
++
++        $entities[$entity->uuid()] = $entity->getEntityTypeId();
++      }
++      catch (\Exception $e) {
++        // Ignore malformed links and continue processing remaining anchors.
++      }
++    }
++
++    return $entities;
++  }
++
++  /**
++   * Finds the final redirect destination for a given URI path.
++   *
++   * @param string $uri
++   *   Relative URI path without leading slash.
++   *
++   * @return string|null
++   *   Final redirect URI if found, otherwise NULL.
++   */
++  public function findFinalRedirect($uri) {
++    $query = \Drupal::database()->select('redirect', 'r')
++      ->fields('r', ['redirect_redirect__uri'])
++      ->condition('r.redirect_source__path', $uri)
++      ->execute()
++      ->fetchField();
++
++    if ($query) {
++      $next_redirect = $this->findFinalRedirect($query);
++      return $next_redirect ?: $query;
++    }
++
++    return NULL;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function getTargetEntities(FieldItemInterface $item): array {
++    if ($item instanceof LinkItemInterface) {
++      $entity = $this->resolveMediaEntityFromHref($item->getUrl()->toString());
++      if (!$entity) {
++        return [];
++      }
++      return [$entity->getEntityTypeId() . '|' . $entity->id()];
++    }
++
++    return parent::getTargetEntities($item);
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function findEntityByRoutedUrl($url): ?\Drupal\Core\Entity\EntityInterface {
++    if (!$url || !$url->isRouted()) {
++      return NULL;
++    }
++
++    $target_id = NULL;
++    $target_type = 'media';
++
++    if (preg_match('/^media_entity_download\.download$/', $url->getRouteName())) {
++      $route_parameters = $url->getRouteParameters();
++      $target_id = $route_parameters[$target_type] ?? NULL;
++    }
++
++    if ($target_id) {
++      return $this->entityTypeManager->getStorage($target_type)->load($target_id);
++    }
++
++    return NULL;
++  }
++
++  /**
++   * Resolves a media entity from a download URL or alias.
++   *
++   * @param string $href
++   *   Relative or absolute URL found in content.
++   *
++   * @return \Drupal\Core\Entity\EntityInterface|null
++   *   Resolved media entity or NULL when unresolved.
++   */
++  protected function resolveMediaEntityFromHref(string $href): ?\Drupal\Core\Entity\EntityInterface {
++    try {
++      $path = $href;
++      if (UrlHelper::isExternal($href)) {
++        $path = parse_url($href, PHP_URL_PATH) ?: '';
++      }
++      if ($path === '') {
++        return NULL;
++      }
++      if (!str_starts_with($path, '/')) {
++        $path = '/' . $path;
++      }
++
++      $url = Url::fromUserInput($path);
++      $entity = $this->findEntityByRoutedUrl($url);
++      if ($entity) {
++        return $entity;
++      }
++
++      // Fallback for redirect chains resolving to media download routes.
++      $final_url = $this->findFinalRedirect(ltrim($path, '/'));
++      if ($final_url !== NULL) {
++        $redirect_url = Url::fromUri($final_url);
++        return $this->findEntityByRoutedUrl($redirect_url);
++      }
++    }
++    catch (\Exception $e) {
++      // Ignore malformed URLs.
++    }
++
++    return NULL;
++  }
++
++}
