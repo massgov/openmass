@@ -40,7 +40,7 @@ class MassAnalyticsController extends ControllerBase {
    *   The iframe render array or a no match message render array.
    */
   public function build(NodeInterface $node): array {
-    $iframe_url = 'https://app.powerbigov.us/reportEmbed?reportId=5180080b-8681-424d-a679-c45fe3037bf6&autoAuth=true&ctid=3e861d16-48b7-4a0e-9806-8c04d81b7b2a&filter=aggregated_node_analytics%2FnodeId+eq+' . $node->id() . '&filterPaneEnabled=false';
+    $iframe_url = 'https://app.powerbigov.us/reportEmbed?reportId=5180080b-8681-424d-a679-c45fe3037bf6&autoAuth=true&ctid=3e861d16-48b7-4a0e-9806-8c04d81b7b2a&filter=aggregated_node_analytics%2FnodeId+eq+' . $node->id() . '&filterPaneEnabled=false&navContentPaneEnabled=false';
 
     return [
       '#theme' => 'mass_analytics_iframe',
