@@ -55,6 +55,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    *   against both node and paragraph entities. Ignores --limit.
    * @option simulate Dry-run: show diffs only; do not save (same as global `drush --simulate`).
    * @option csv-path Optional absolute path to write a CSV report file.
+   * @option kinds Comma-separated change kinds to include: text,link,entity_reference.
    * @usage mass-redirect-normalizer:normalize-links --simulate --limit=100
    *   Preview changes. Use --format=json for machine-readable output.
    */
@@ -65,6 +66,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       'entity-ids' => NULL,
       'simulate' => FALSE,
       'csv-path' => NULL,
+      'kinds' => NULL,
     ],
   ): RowsOfFields {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
@@ -86,6 +88,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $progressEvery = 100;
     $nodePublishedCache = [];
     $newerDraftCache = [];
+    $kindsFilter = $this->parseKindsFilter(isset($options['kinds']) ? (string) $options['kinds'] : '');
 
     foreach ($entityTypes as $entityType) {
       if ($entityIdsOption !== '') {
@@ -145,8 +148,16 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
           ]));
         }
         if (!empty($result['changed'])) {
-          $entitiesChanged++;
           $changes = $result['changes'] ?? [];
+          if ($kindsFilter !== []) {
+            $changes = array_values(array_filter($changes, function (array $change) use ($kindsFilter): bool {
+              return in_array((string) ($change['kind'] ?? ''), $kindsFilter, TRUE);
+            }));
+          }
+          if ($changes === []) {
+            continue;
+          }
+          $entitiesChanged++;
           $valueUpdates += count($changes);
           $parentNodeId = '-';
           if ($entityType === 'paragraph' && $entity instanceof Paragraph) {
@@ -456,6 +467,26 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       return $text;
     }
     return Unicode::truncate($text, $max, FALSE, TRUE);
+  }
+
+  /**
+   * Parses and validates optional change-kind filter option.
+   *
+   * @return string[]
+   *   Normalized allowed kinds, or empty array for no filter.
+   */
+  private function parseKindsFilter(string $kindsOption): array {
+    $kindsOption = trim($kindsOption);
+    if ($kindsOption === '') {
+      return [];
+    }
+    $allowed = ['text', 'link', 'entity_reference'];
+    $parts = array_values(array_filter(array_map(static fn(string $value): string => trim(strtolower($value)), explode(',', $kindsOption))));
+    $filtered = array_values(array_unique(array_intersect($parts, $allowed)));
+    if ($filtered === []) {
+      throw new \InvalidArgumentException('Invalid --kinds value. Allowed: text,link,entity_reference');
+    }
+    return $filtered;
   }
 
 }

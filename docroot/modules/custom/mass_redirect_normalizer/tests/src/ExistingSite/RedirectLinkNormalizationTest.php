@@ -773,6 +773,82 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests command kinds filter returns only selected change types.
+   */
+  public function testCommandKindsFilterReturnsOnlyEntityReferences(): void {
+    $sourcePerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $targetPerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect('/node/' . $sourcePerson->id(), '/node/' . $targetPerson->id());
+
+    $targetText = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($targetText);
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p>No redirect yet</p>',
+        'format' => 'full_html',
+      ],
+      'field_person_bio' => [
+        ['target_id' => $targetPerson->id()],
+      ],
+    ]);
+
+    // Force both text + entity_reference changes for this entity in storage.
+    $nid = (int) $org->id();
+    $vid = (int) $org->getRevisionId();
+    $connection = \Drupal::database();
+    foreach (['node__body', 'node_revision__body'] as $table) {
+      $connection->update($table)
+        ->fields(['body_value' => '<p><a href="/' . $sourceStart . '">Text change</a></p>'])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    foreach (['node__field_person_bio', 'node_revision__field_person_bio'] as $table) {
+      $connection->update($table)
+        ->fields(['field_person_bio_target_id' => (int) $sourcePerson->id()])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+
+    $command = new MassRedirectNormalizerCommands(
+      \Drupal::entityTypeManager(),
+      \Drupal::service('mass_redirect_normalizer.manager')
+    );
+    $rowsObj = $command->normalizeRedirectLinks([
+      'entity-ids' => (string) $org->id(),
+      'simulate' => TRUE,
+      'kinds' => 'entity_reference',
+    ]);
+    $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
+    $this->assertNotEmpty($rows);
+    foreach ($rows as $row) {
+      $this->assertSame('entity_reference', $row['kind']);
+    }
+  }
+
+  /**
    * Tests absolute local URL link-field normalization.
    */
   public function testNormalizeAbsoluteLocalUrlLinkField(): void {
