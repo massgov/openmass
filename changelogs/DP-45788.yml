@@ -1,5 +1,5 @@
 Added:
-  - description: Install and enable the Permissions by Term contrib module to support future per-organization access controls for authors and editors.
+  - description: Add hidden field_content_organization (entity_reference to user_organization taxonomy) to 31 node bundles and media.document. Auto-populated from field_organizations by mass_org_access presave hook with full ancestor TID denormalization.
     issue: DP-45788
-  - description: Add hidden field_content_organization (entity_reference to user_organization taxonomy) to 31 node bundles and media.document. Field will be auto-populated from field_organizations by a follow-up sync hook and drives Permissions by Term grants.
+  - description: Create mass_org_access module — restricts node/media UPDATE and DELETE to users within their assigned organization via hook_node_access/hook_media_access. VIEW is always unrestricted. Includes presave sync of field_content_organization and form validation with a human-readable error message.
     issue: DP-45788
