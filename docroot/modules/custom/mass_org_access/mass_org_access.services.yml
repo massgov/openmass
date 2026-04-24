@@ -7,6 +7,14 @@ services:
   Drupal\mass_org_access\OrgAccessChecker:
     alias: mass_org_access.org_access_checker
 
+  mass_org_access.backfill_batch_manager:
+    class: Drupal\mass_org_access\BackfillBatchManager
+    arguments:
+      - '@entity_type.manager'
+
+  Drupal\mass_org_access\BackfillBatchManager:
+    alias: mass_org_access.backfill_batch_manager
+
   mass_org_access.hooks:
     class: Drupal\mass_org_access\Hook\MassOrgAccessHooks
     arguments:
