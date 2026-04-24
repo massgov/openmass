@@ -28,7 +28,7 @@ class MassOrgAccessHooks {
     if (!in_array($operation, ['update', 'delete'], TRUE)) {
       return AccessResult::neutral();
     }
-    if ($account->hasPermission('bypass node access')) {
+    if ($account->hasPermission('bypass org access')) {
       return AccessResult::neutral();
     }
     $entity_tids = $this->orgAccessChecker->getEntityOrgTids($node);
@@ -51,7 +51,7 @@ class MassOrgAccessHooks {
     if (!in_array($operation, ['update', 'delete'], TRUE)) {
       return AccessResult::neutral();
     }
-    if ($account->hasPermission('bypass node access')) {
+    if ($account->hasPermission('bypass org access')) {
       return AccessResult::neutral();
     }
     $entity_tids = $this->orgAccessChecker->getEntityOrgTids($media);
@@ -91,7 +91,7 @@ class MassOrgAccessHooks {
     $checker = $this->orgAccessChecker;
     $form['#validate'][] = static function (array &$form, FormStateInterface $form_state) use ($checker, $entity): void {
       $account = \Drupal::currentUser();
-      if ($account->hasPermission('bypass node access')) {
+      if ($account->hasPermission('bypass org access')) {
         return;
       }
       $entity_tids = $checker->getEntityOrgTids($entity);
