@@ -1,3 +1,99 @@
+diff --git a/pdfa11y.module b/pdfa11y.module
+index 1e55266..cee7e65 100644
+--- a/pdfa11y.module
++++ b/pdfa11y.module
+@@ -15,6 +15,8 @@
+ declare(strict_types=1);
+ 
+ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\media\Entity\MediaType;
+ use Drupal\media\MediaInterface;
+ 
+ /**
+@@ -57,3 +59,82 @@ function pdfa11y_media_update(MediaInterface $media): void {
+ function pdfa11y_media_view(array &$build, MediaInterface $media, EntityViewDisplayInterface $display): void {
+   \Drupal::service('pdfa11y.entity_hooks')->mediaView($build, $media, $display);
+ }
++
++/**
++ * Implements hook_form_alter().
++ */
++function pdfa11y_form_alter(array &$form, FormStateInterface $form_state, string $form_id): void {
++  $form_object = $form_state->getFormObject();
++  if (!$form_object || !method_exists($form_object, 'getEntity')) {
++    return;
++  }
++
++  $entity = $form_object->getEntity();
++  if (!$entity instanceof MediaInterface) {
++    return;
++  }
++
++  $media_type = MediaType::load($entity->bundle());
++  if (!$media_type) {
++    return;
++  }
++
++  $source = $entity->getSource();
++  $source_field = $source->getSourceFieldDefinition($media_type);
++  if (!$source_field) {
++    return;
++  }
++
++  $source_field_name = $source_field->getName();
++  if (!isset($form[$source_field_name]) || !is_array($form[$source_field_name])) {
++    return;
++  }
++
++  $messenger = \Drupal::messenger();
++  $warning_messages = $messenger->messagesByType('warning');
++  if (empty($warning_messages)) {
++    return;
++  }
++
++  $pdfa11y_messages = [];
++  $other_warnings = [];
++  foreach ($warning_messages as $message) {
++    $text = trim(strip_tags((string) $message));
++    if (str_contains($text, 'The uploaded PDF has accessibility issues')) {
++      $pdfa11y_messages[] = $message;
++    }
++    else {
++      $other_warnings[] = $message;
++    }
++  }
++
++  if (empty($pdfa11y_messages)) {
++    return;
++  }
++
++  // Remove warning messages from the global messages region and re-add any
++  // warnings that are unrelated to PDFa11y.
++  $messenger->deleteByType('warning');
++  foreach ($other_warnings as $message) {
++    $messenger->addWarning($message);
++  }
++
++  $target = &$form[$source_field_name];
++  if (isset($form[$source_field_name]['widget']) && is_array($form[$source_field_name]['widget'])) {
++    $target = &$form[$source_field_name]['widget'];
++  }
++
++  $target['pdfa11y_inline_warnings'] = [
++    '#type' => 'container',
++    '#attributes' => [
++      'class' => ['messages', 'messages--warning', 'pdfa11y-inline-warning'],
++      'role' => 'contentinfo',
++      'aria-label' => t('Warning message'),
++    ],
++    'message' => [
++      '#theme' => 'item_list',
++      '#items' => $pdfa11y_messages,
++    ],
++    '#weight' => 100,
++  ];
++}
 diff --git a/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php b/src/Plugin/AccessibilityCheck/FigureAltTextCheck.php
 new file mode 100644
 index 0000000..b69c322
@@ -244,10 +340,10 @@ index 0000000..b69c322
 +}
 diff --git a/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php b/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php
 new file mode 100644
-index 0000000..0a495bb
+index 0000000..6883950
 --- /dev/null
 +++ b/src/Plugin/AccessibilityCheck/HeadingStructureCheck.php
-@@ -0,0 +1,237 @@
+@@ -0,0 +1,388 @@
 +<?php
 +
 +declare(strict_types=1);
@@ -296,8 +392,10 @@ index 0000000..0a495bb
 +    }
 +
 +    $roleMap = $this->extractRoleMap($structTreeRoot);
-+    $headings = [];
-+    $this->collectHeadings($structTreeRoot, $roleMap, $headings);
++    $structuredHeadings = [];
++    $this->collectHeadings($structTreeRoot, $roleMap, $structuredHeadings);
++    $rawStreamHeadings = $this->extractHeadingsFromRawStreams($fileUri);
++    $headings = $this->mergeWithRawStreamHeadings($structuredHeadings, $rawStreamHeadings);
 +
 +    if (empty($headings)) {
 +      return $this->fail(
@@ -308,14 +406,22 @@ index 0000000..0a495bb
 +    $leveledHeadings = array_values(array_filter($headings, static fn(int $level): bool => $level > 0));
 +    if (empty($leveledHeadings)) {
 +      return $this->pass(
-+        (string) $this->t('Headings were found, but levels are not explicit. Skipped-level checks were not applied.'),
++        (string) $this->t('Headings were found, but none are explicitly tagged as H1-H6.'),
 +      );
 +    }
 +
++    $issues = [];
 +    if ($leveledHeadings[0] !== 1) {
-+      return $this->fail(
-+        (string) $this->t('First heading should be H1, but found H@level.', ['@level' => (string) $leveledHeadings[0]]),
-+      );
++      $issues[] = (string) $this->t('first heading is H@level (expected H1)', [
++        '@level' => (string) $leveledHeadings[0],
++      ]);
++    }
++
++    $h1Count = count(array_filter($leveledHeadings, static fn(int $level): bool => $level === 1));
++    if ($h1Count > 1) {
++      $issues[] = (string) $this->t('multiple H1 headings found (@count)', [
++        '@count' => (string) $h1Count,
++      ]);
 +    }
 +
 +    $skips = [];
@@ -328,13 +434,28 @@ index 0000000..0a495bb
 +    }
 +
 +    if (!empty($skips)) {
++      $issues[] = (string) $this->t('out-of-order headings (skipped levels): @skips', [
++        '@skips' => implode(', ', $skips),
++      ]);
++    }
++
++    if ($this->hasRawOutOfOrderSignal($structuredHeadings, $rawStreamHeadings)) {
++      $issues[] = (string) $this->t('out-of-order headings detected in compressed structure tags');
++    }
++
++    if (!empty($issues)) {
 +      return $this->fail(
-+        (string) $this->t('Skipped heading levels detected: @skips.', ['@skips' => implode(', ', $skips)]),
++        (string) $this->t('Heading issues: @issues.', [
++          '@issues' => implode('; ', $issues),
++        ]),
 +      );
 +    }
 +
 +    return $this->pass(
-+      (string) $this->t('Heading structure passed: first heading is H1 and no skipped downward levels were found.'),
++      (string) $this->t(
++        'Heading structure passed: @count headings analyzed, with no ordering issues.',
++        ['@count' => (string) count($headings)],
++      ),
 +    );
 +  }
 +
@@ -405,6 +526,132 @@ index 0000000..0a495bb
 +    elseif ($type === 'H') {
 +      $headings[] = 0;
 +    }
++  }
++
++  /**
++   * Merges headings with a conservative raw-stream extractor fallback.
++   *
++   * Smalot can miss heading tags embedded in compressed object streams in some
++   * PDFs. We only trust raw-stream extraction when it clearly extends the same
++   * base heading order already found by the structured traversal.
++   *
++   * @param int[] $headings
++   *   Headings from structure traversal.
++   * @param string $fileUri
++   *   File URI/path.
++   *
++   * @return int[]
++   *   Merged headings.
++   */
++  protected function mergeWithRawStreamHeadings(array $headings, array $rawHeadings): array {
++    if (empty($rawHeadings)) {
++      return $headings;
++    }
++
++    if (empty($headings)) {
++      return $rawHeadings;
++    }
++
++    if (count($rawHeadings) <= count($headings)) {
++      return $headings;
++    }
++
++    $prefix = array_slice($rawHeadings, 0, count($headings));
++    if ($prefix === $headings) {
++      return $rawHeadings;
++    }
++
++    return $headings;
++  }
++
++  /**
++   * Detects strong out-of-order evidence from raw stream headings.
++   *
++   * Smalot can flatten heading levels in object streams. If raw stream parsing
++   * reveals deeper heading levels than the structured traversal ever sees, we
++   * treat that as additional out-of-order evidence.
++   *
++   * @param int[] $structuredHeadings
++   *   Headings from structured traversal.
++   * @param int[] $rawHeadings
++   *   Headings from raw stream scan.
++   *
++   * @return bool
++   *   TRUE when raw stream data shows likely hidden ordering problems.
++   */
++  protected function hasRawOutOfOrderSignal(array $structuredHeadings, array $rawHeadings): bool {
++    if (empty($structuredHeadings) || empty($rawHeadings)) {
++      return FALSE;
++    }
++
++    $structuredLevels = array_values(array_filter($structuredHeadings, static fn(int $level): bool => $level > 0));
++    $rawLevels = array_values(array_filter($rawHeadings, static fn(int $level): bool => $level > 0));
++    if (empty($structuredLevels) || empty($rawLevels)) {
++      return FALSE;
++    }
++
++    return max($rawLevels) > max($structuredLevels);
++  }
++
++  /**
++   * Extracts heading tags from raw/decompressed PDF streams.
++   *
++   * @param string $fileUri
++   *   File URI/path.
++   *
++   * @return int[]
++   *   Heading levels in discovered order.
++   */
++  protected function extractHeadingsFromRawStreams(string $fileUri): array {
++    $content = @file_get_contents($fileUri);
++    if ($content === FALSE || $content === '') {
++      return [];
++    }
++
++    $matches = [];
++    preg_match_all('/<<(.*?)>>\\s*stream\\s*(.*?)\\s*endstream/s', $content, $matches, PREG_SET_ORDER);
++    if (empty($matches)) {
++      return [];
++    }
++
++    $headings = [];
++    foreach ($matches as $match) {
++      $dict = $match[1] ?? '';
++      $stream = $match[2] ?? '';
++      if ($stream === '') {
++        continue;
++      }
++
++      $data = $stream;
++      if (strpos($dict, '/FlateDecode') !== FALSE) {
++        $decoded = @gzuncompress($stream);
++        if ($decoded === FALSE) {
++          $decoded = @gzinflate($stream);
++        }
++        if ($decoded === FALSE) {
++          $decoded = @gzdecode($stream);
++        }
++        if ($decoded !== FALSE && is_string($decoded) && $decoded !== '') {
++          $data = $decoded;
++        }
++      }
++
++      if (preg_match_all('/\\/S\\s*\\/(H[1-6]|Title|H)\\b/', $data, $tagMatches) && !empty($tagMatches[1])) {
++        foreach ($tagMatches[1] as $tag) {
++          if ($tag === 'Title') {
++            $headings[] = 1;
++          }
++          elseif ($tag === 'H') {
++            $headings[] = 0;
++          }
++          elseif (preg_match('/^H([1-6])$/', $tag, $level)) {
++            $headings[] = (int) $level[1];
++          }
++        }
++      }
++    }
++
++    return $headings;
 +  }
 +
 +  /**
@@ -482,6 +729,121 @@ index 0000000..0a495bb
 +      return (string) $value;
 +    }
 +    return '';
++  }
++
++}
+diff --git a/tests/src/Functional/Pdfa11yWarningPlacementTest.php b/tests/src/Functional/Pdfa11yWarningPlacementTest.php
+new file mode 100644
+index 0000000..613e2bb
+--- /dev/null
++++ b/tests/src/Functional/Pdfa11yWarningPlacementTest.php
+@@ -0,0 +1,109 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\pdfa11y\Functional;
++
++use Drupal\field\Entity\FieldConfig;
++use Drupal\field\Entity\FieldStorageConfig;
++use Drupal\media\Entity\MediaType;
++use Drupal\Tests\BrowserTestBase;
++use Drupal\Core\Entity\Display\EntityFormDisplay;
++
++/**
++ * Tests inline placement of PDFa11y upload warnings on media forms.
++ *
++ * @group pdfa11y
++ * @runTestsInSeparateProcesses
++ */
++class Pdfa11yWarningPlacementTest extends BrowserTestBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  protected static $modules = [
++    'system',
++    'user',
++    'field',
++    'file',
++    'media',
++    'pdfa11y',
++  ];
++
++  /**
++   * {@inheritdoc}
++   */
++  protected $defaultTheme = 'stark';
++
++  /**
++   * Sets up a document media type with file source field.
++   */
++  protected function setUp(): void {
++    parent::setUp();
++
++    MediaType::create([
++      'id' => 'document',
++      'label' => 'Document',
++      'source' => 'file',
++      'source_configuration' => [
++        'source_field' => 'field_media_file',
++      ],
++    ])->save();
++
++    FieldStorageConfig::create([
++      'field_name' => 'field_media_file',
++      'entity_type' => 'media',
++      'type' => 'file',
++      'cardinality' => 1,
++      'settings' => [
++        'uri_scheme' => 'public',
++      ],
++    ])->save();
++
++    FieldConfig::create([
++      'field_name' => 'field_media_file',
++      'entity_type' => 'media',
++      'bundle' => 'document',
++      'label' => 'File',
++      'settings' => [
++        'file_extensions' => 'pdf',
++      ],
++      'required' => TRUE,
++    ])->save();
++
++    EntityFormDisplay::create([
++      'targetEntityType' => 'media',
++      'bundle' => 'document',
++      'mode' => 'default',
++      'status' => TRUE,
++    ])->setComponent('field_media_file', [
++      'type' => 'file_generic',
++      'weight' => 5,
++      'settings' => [],
++    ])->save();
++  }
++
++  /**
++   * Tests that PDFa11y warning is rendered inline in file field widget.
++   */
++  public function testWarningAppearsInlineUnderFileWidget(): void {
++    $user = $this->createUser([
++      'access content',
++      'create document media',
++    ]);
++    $this->drupalLogin($user);
++
++    // Seed a warning message similar to Pdfa11yConstraintValidator output.
++    \Drupal::messenger()->addWarning('The uploaded PDF has accessibility issues: Example warning.');
++    \Drupal::messenger()->addWarning('Another unrelated warning.');
++
++    $this->drupalGet('media/add/document');
++
++    $this->assertSession()->pageTextContains('The uploaded PDF has accessibility issues: Example warning.');
++    $this->assertSession()->elementExists('css', '.pdfa11y-inline-warning');
++    $this->assertSession()->elementExists('css', '#edit-field-media-file-wrapper .pdfa11y-inline-warning');
++    // Unrelated warning should stay in global messages.
++    $this->assertSession()->pageTextContains('Another unrelated warning.');
 +  }
 +
 +}
