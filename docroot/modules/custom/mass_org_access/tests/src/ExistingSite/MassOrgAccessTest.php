@@ -2,10 +2,12 @@
 
 namespace Drupal\Tests\mass_org_access\ExistingSite;
 
+use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -44,6 +46,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
 
   private NodeInterface $orgPageA;
   private NodeInterface $orgPageB;
+  private TermInterface $termA;
   private UserInterface $userA;
   private UserInterface $userB;
 
@@ -68,7 +71,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ]);
 
     $vocab = Vocabulary::load('user_organization');
-    $termA = $this->createTerm($vocab, [
+    $this->termA = $this->createTerm($vocab, [
       'name' => 'Test Term A ' . $this->randomMachineName(),
       'field_state_organization' => $this->orgPageA->id(),
     ]);
@@ -79,7 +82,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
 
     $this->userA = $this->createUser();
     $this->userA->addRole('editor');
-    $this->userA->set('field_user_org', $termA->id());
+    $this->userA->set('field_user_org', $this->termA->id());
     $this->userA->activate();
     $this->userA->save();
 
@@ -102,6 +105,23 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       self::MEDIA_BUNDLES,
       array_map(fn(string $b) => [$b], self::MEDIA_BUNDLES)
     );
+  }
+
+  /**
+   * Roles that must NOT be blocked by mass_org_access from viewing content
+   * outside their organization.
+   */
+  public static function viewRoleProvider(): array {
+    return [
+      'anonymous' => ['anonymous'],
+      'authenticated' => ['authenticated'],
+      'editor' => ['editor'],
+      'author' => ['author'],
+      'viewer' => ['viewer'],
+      'mmg_editor' => ['mmg_editor'],
+      'content_team' => ['content_team'],
+      'bulk_edit' => ['bulk_edit'],
+    ];
   }
 
   /**
@@ -166,6 +186,38 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       $media->access('delete', $this->userB),
       sprintf('User B should not be able to delete a %s media in a different organization.', $bundle)
     );
+  }
+
+  /**
+   * Test 5: VIEW must never be blocked by mass_org_access. Verified across
+   * anonymous, authenticated and every editorial role. The user is set to
+   * Org A; the node is tagged with Org B — a strict cross-org scenario.
+   *
+   * @dataProvider viewRoleProvider
+   */
+  public function testViewAccessNotBlockedByOrg(string $role): void {
+    $node = $this->createTestNode('info_details', $this->orgPageB);
+    $user = $this->createUserForRole($role);
+    $this->assertTrue(
+      $node->access('view', $user),
+      sprintf('Role "%s" should be able to view a node in a different organization.', $role)
+    );
+  }
+
+  private function createUserForRole(string $role) {
+    if ($role === 'anonymous') {
+      return new AnonymousUserSession();
+    }
+    $user = $this->createUser();
+    if ($role !== 'authenticated') {
+      $user->addRole($role);
+    }
+    if ($user->hasField('field_user_org')) {
+      $user->set('field_user_org', $this->termA->id());
+    }
+    $user->activate();
+    $user->save();
+    return $user;
   }
 
   private function createTestNode(string $bundle, NodeInterface $orgPage): NodeInterface {
