@@ -64,7 +64,7 @@ class MassOrgAccessHooks {
       ->addCacheableDependency($entity)
       ->addCacheTags(['user:' . $account->id()]);
 
-    if (!$this->orgAccessChecker->getUserOrgTid($account)) {
+    if (empty($this->orgAccessChecker->getUserOrgTids($account))) {
       return $forbidden;
     }
 
@@ -125,7 +125,7 @@ class MassOrgAccessHooks {
     /** @var \Drupal\mass_org_access\OrgAccessChecker $checker */
     $checker = \Drupal::service('mass_org_access.org_access_checker');
 
-    if (!$checker->getUserOrgTid($account)) {
+    if (empty($checker->getUserOrgTids($account))) {
       $form_state->setErrorByName('', t(
         'Your account is not associated with any organization. Please contact your site administrator to assign an organization before saving content.'
       ));

@@ -303,6 +303,92 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * A user assigned to multiple orgs can edit content tagged with any of them.
+   *
+   * field_user_org is multi-valued; a user with org A and org B should
+   * pass the access check on a node tagged with either org.
+   */
+  public function testMultiOrgUserCanUpdateAnyOfTheirOrgs(): void {
+    $vocab = Vocabulary::load('user_organization');
+    $termA = $this->getUserTermForOrg($this->orgPageA);
+    $termB = $this->getUserTermForOrg($this->orgPageB);
+
+    $multi_org_user = $this->createUser();
+    $multi_org_user->addRole('editor');
+    $multi_org_user->set('field_user_org', [
+      ['target_id' => $termA->id()],
+      ['target_id' => $termB->id()],
+    ]);
+    $multi_org_user->activate();
+    $multi_org_user->save();
+
+    $node_a = $this->createTestNode('info_details', $this->orgPageA);
+    $node_b = $this->createTestNode('info_details', $this->orgPageB);
+
+    $this->assertTrue(
+      $node_a->access('update', $multi_org_user),
+      'Multi-org user must update content tagged with their first org.'
+    );
+    $this->assertTrue(
+      $node_b->access('update', $multi_org_user),
+      'Multi-org user must update content tagged with their second org.'
+    );
+  }
+
+  /**
+   * A user with multiple orgs cannot edit content tagged with a third, unrelated org.
+   *
+   * Sanity check that adding orgs widens access only for those orgs, not blanket.
+   */
+  public function testMultiOrgUserStillBlockedFromUnrelatedOrg(): void {
+    $third_org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Org C ' . $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $vocab = Vocabulary::load('user_organization');
+    $this->createTerm($vocab, [
+      'name' => 'Test Term C ' . $this->randomMachineName(),
+      'field_state_organization' => $third_org->id(),
+    ]);
+    $termA = $this->getUserTermForOrg($this->orgPageA);
+    $termB = $this->getUserTermForOrg($this->orgPageB);
+
+    $multi_org_user = $this->createUser();
+    $multi_org_user->addRole('editor');
+    $multi_org_user->set('field_user_org', [
+      ['target_id' => $termA->id()],
+      ['target_id' => $termB->id()],
+    ]);
+    $multi_org_user->activate();
+    $multi_org_user->save();
+
+    $third_node = $this->createTestNode('info_details', $third_org);
+
+    $this->assertFalse(
+      $third_node->access('update', $multi_org_user),
+      'Multi-org user must not update content from an org they are not a member of.'
+    );
+  }
+
+  /**
+   * Helper: returns the user_organization term whose field_state_organization
+   * points to the given org_page node, by querying — not by class properties.
+   * Used in multi-org tests where termA / termB might be needed by reference.
+   */
+  private function getUserTermForOrg(NodeInterface $orgPage) {
+    $tids = \Drupal::entityQuery('taxonomy_term')
+      ->accessCheck(FALSE)
+      ->condition('vid', 'user_organization')
+      ->condition('field_state_organization', $orgPage->id())
+      ->range(0, 1)
+      ->execute();
+    return \Drupal\taxonomy\Entity\Term::load(reset($tids));
+  }
+
+  /**
    * Multi-org content is editable by users from any of the listed orgs.
    *
    * field_organizations is multi-valued; an editor from any one of those

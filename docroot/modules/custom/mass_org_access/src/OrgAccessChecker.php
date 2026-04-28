@@ -17,14 +17,19 @@ class OrgAccessChecker {
   ) {}
 
   /**
-   * Returns the user's org taxonomy term ID, or 0 if none assigned.
+   * Returns the user's org taxonomy term IDs (empty array if none assigned).
+   *
+   * field_user_org is multi-valued, so a single user may belong to several
+   * organizations. Cached per request via drupal_static().
    */
-  public function getUserOrgTid(AccountInterface $account): int {
+  public function getUserOrgTids(AccountInterface $account): array {
     $cache = &drupal_static(__METHOD__);
     $uid = $account->id();
     if (!isset($cache[$uid])) {
       $user = $this->entityTypeManager->getStorage('user')->load($uid);
-      $cache[$uid] = (int) ($user?->get('field_user_org')?->target_id ?? 0);
+      $cache[$uid] = $user
+        ? array_map('intval', array_column($user->get('field_user_org')->getValue(), 'target_id'))
+        : [];
     }
     return $cache[$uid];
   }
@@ -47,15 +52,18 @@ class OrgAccessChecker {
    * - Entity has no org TIDs populated yet (e.g. during backfill rollout)
    */
   public function userHasOrgAccess(AccountInterface $account, EntityInterface $entity): bool {
-    $user_tid = $this->getUserOrgTid($account);
-    if (!$user_tid) {
+    $user_tids = $this->getUserOrgTids($account);
+    if (empty($user_tids)) {
       return TRUE;
     }
     $entity_tids = $this->getEntityOrgTids($entity);
     if (empty($entity_tids)) {
       return TRUE;
     }
-    return in_array((string) $user_tid, array_map('strval', $entity_tids), TRUE);
+    return !empty(array_intersect(
+      array_map('intval', $user_tids),
+      array_map('intval', $entity_tids)
+    ));
   }
 
   /**
