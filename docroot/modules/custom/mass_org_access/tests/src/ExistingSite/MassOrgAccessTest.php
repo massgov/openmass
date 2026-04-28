@@ -14,9 +14,11 @@ use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
 
 /**
- * Verifies that mass_org_access blocks update/delete on content outside the
- * user's organization while leaving same-org content editable, across every
- * supported node bundle and media.document.
+ * Verifies mass_org_access enforcement across every supported bundle.
+ *
+ * Blocks update/delete on content outside the user's organization while
+ * leaving same-org content editable, across every supported node bundle and
+ * media.document.
  *
  * @group mass_org_access
  */
@@ -26,11 +28,12 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   use TaxonomyCreationTrait;
 
   /**
-   * Node bundles to exercise: every bundle that has
-   * field_content_organization AND that the editor role can edit.
+   * Node bundles exercised by this test.
    *
-   * Excluded: action, sitewide_alert, stacked_layout — the editor role has no
-   * edit permission for these bundles, so our hook never matters for them.
+   * Every bundle that has field_content_organization AND that the editor
+   * role can edit. Excluded: action, sitewide_alert, stacked_layout — the
+   * editor role has no edit permission for these bundles, so our hook never
+   * matters for them.
    */
   private const NODE_BUNDLES = [
     'advisory', 'alert', 'binder', 'campaign_landing',
