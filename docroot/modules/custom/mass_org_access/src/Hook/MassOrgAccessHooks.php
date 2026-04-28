@@ -21,6 +21,7 @@ class MassOrgAccessHooks {
 
   /**
    * Restricts node UPDATE/DELETE to users within the node's organization.
+   *
    * VIEW is always neutral — editors may view and clone any content.
    */
   #[Hook('node_access')]
@@ -68,6 +69,7 @@ class MassOrgAccessHooks {
 
   /**
    * Syncs field_content_organization on every node/media save.
+   *
    * This keeps the denormalized org TIDs (including ancestors) up to date.
    */
   #[Hook('entity_presave')]
@@ -78,9 +80,11 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Adds a form validation callback that shows a clear error when an editor
-   * tries to save a node outside their organization.
-   * The edit form itself remains accessible for viewing and cloning.
+   * Adds a validation callback for cross-organization save attempts.
+   *
+   * Shows a clear error when an editor tries to save a node outside their
+   * organization. The edit form itself remains accessible for viewing and
+   * cloning.
    */
   #[Hook('form_node_form_alter')]
   public function formNodeFormAlter(array &$form, FormStateInterface $form_state, string $form_id): void {

@@ -40,8 +40,10 @@ class MassOrgAccessCommands extends DrushCommands {
   }
 
   /**
-   * Dev helper: sync field_content_organization on first 100 nodes and 100
-   * media.document entities and print IDs with resulting term assignments.
+   * Dev helper to sync the first 100 nodes and 100 media.document entities.
+   *
+   * Prints entity IDs with the resulting field_content_organization term
+   * assignments.
    *
    * @command mass-org-access:backfill-dev
    * @aliases moab-dev

@@ -59,8 +59,10 @@ class OrgAccessChecker {
   }
 
   /**
-   * Syncs field_organizations (org_page refs) → field_content_organization
-   * (user_organization term refs), including all ancestor org TIDs.
+   * Syncs field_organizations to field_content_organization on the entity.
+   *
+   * Resolves org_page references to user_organization term references,
+   * including all ancestor org TIDs.
    */
   public function syncContentOrganization(EntityInterface $entity): void {
     if (!$entity->hasField('field_content_organization')) {
@@ -121,8 +123,9 @@ class OrgAccessChecker {
   }
 
   /**
-   * Returns user_organization term IDs whose field_state_organization matches
-   * any of the given org_page NIDs.
+   * Returns user_organization term IDs for the given org_page NIDs.
+   *
+   * Matches terms whose field_state_organization references any of the NIDs.
    */
   private function getTermIdsByOrgNids(array $nids): array {
     if (empty($nids)) {
