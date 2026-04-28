@@ -32,6 +32,39 @@ $settings['config_sync_directory'] = '../conf/drupal/config';
 $settings['state_cache'] = TRUE;
 
 /**
+ * Restrict accepted HTTP host headers to trusted site domains.
+ *
+ * Additional PCRE patterns can be appended with DRUPAL_TRUSTED_HOST_PATTERNS
+ * as a comma-separated list.
+ */
+$settings['trusted_host_patterns'] = [
+  '^localhost$',
+  '^127\.0\.0\.1$',
+  '^web$',
+  '^mass-web$',
+  '^mass\.local$',
+  '^.+\.mass\.local$',
+  '^mass\.gov$',
+  '^.+\.mass\.gov$',
+  '^.+\.digital\.mass\.gov$',
+  '^.+\.acquia-sites\.com$',
+  '^.+\.prod\.hosting\.acquia\.com$',
+  '^.+\.stg\.hosting\.acquia\.com$',
+  '^.+\.dev\.hosting\.acquia\.com$',
+  '^.+\.tugboatqa\.com$',
+];
+
+$trusted_host_patterns = getenv('DRUPAL_TRUSTED_HOST_PATTERNS');
+if ($trusted_host_patterns) {
+  foreach (explode(',', $trusted_host_patterns) as $trusted_host_pattern) {
+    $trusted_host_pattern = trim($trusted_host_pattern);
+    if ($trusted_host_pattern !== '') {
+      $settings['trusted_host_patterns'][] = $trusted_host_pattern;
+    }
+  }
+}
+
+/**
  * Page caching:
  *
  * By default, Drupal sends a "Vary: Cookie" HTTP header for anonymous page
