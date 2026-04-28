@@ -19,5 +19,6 @@ services:
     class: Drupal\mass_org_access\Hook\MassOrgAccessHooks
     arguments:
       - '@mass_org_access.org_access_checker'
+      - '@messenger'
     tags:
       - { name: drupal.hook }

@@ -226,6 +226,108 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     return $user;
   }
 
+  /**
+   * Editor without field_user_org cannot update or delete any content.
+   *
+   * Even on entities tagged with their (would-be) org, an unassigned editor
+   * is denied — the gate is "must have an org" before "must match the org".
+   */
+  public function testUserWithoutOrgIsDenied(): void {
+    $no_org_user = $this->createUser();
+    $no_org_user->addRole('editor');
+    $no_org_user->activate();
+    $no_org_user->save();
+
+    $node = $this->createTestNode('info_details', $this->orgPageA);
+    $this->assertFalse(
+      $node->access('update', $no_org_user),
+      'Editor without field_user_org must not update any node.'
+    );
+    $this->assertFalse(
+      $node->access('delete', $no_org_user),
+      'Editor without field_user_org must not delete any node.'
+    );
+    $this->assertTrue(
+      $node->access('view', $no_org_user),
+      'Editor without field_user_org may still view content.'
+    );
+  }
+
+  /**
+   * Users with bypass org access permission can edit any content.
+   *
+   * Validates the content_team escape hatch — the bundle-specific delete
+   * permission is independent and not the concern of this test.
+   */
+  public function testBypassOrgAccessGrantsAllUpdates(): void {
+    $bypass_user = $this->createUser();
+    $bypass_user->addRole('content_team');
+    $bypass_user->addRole('editor');
+    $bypass_user->activate();
+    $bypass_user->save();
+
+    $cross_org_node = $this->createTestNode('info_details', $this->orgPageB);
+    $this->assertTrue(
+      $cross_org_node->access('update', $bypass_user),
+      'content_team must update content from any organization.'
+    );
+  }
+
+  /**
+   * A user whose org is an ancestor of the content org may edit the content.
+   *
+   * The presave sync writes ancestor TIDs into field_content_organization, so
+   * a parent-org user matches a child-org node via simple intersection.
+   */
+  public function testAncestorOrgUserCanUpdateChildOrgContent(): void {
+    $child_org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Child Org ' . $this->randomMachineName(),
+      'field_parent' => ['target_id' => $this->orgPageA->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Test child-org node ' . $this->randomMachineName(),
+      'field_organizations' => [$child_org->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->assertTrue(
+      $node->access('update', $this->userA),
+      'User A (parent-org term) must update content tagged with their child org.'
+    );
+  }
+
+  /**
+   * Multi-org content is editable by users from any of the listed orgs.
+   *
+   * field_organizations is multi-valued; an editor from any one of those
+   * orgs should see access('update') = TRUE because their term intersects
+   * the denormalized list.
+   */
+  public function testMultiOrgContentAllowsAnyMatchingOrgUser(): void {
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Multi-org node ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id(), $this->orgPageB->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->assertTrue(
+      $node->access('update', $this->userA),
+      'User A must update a node tagged with both Org A and Org B.'
+    );
+    $this->assertTrue(
+      $node->access('update', $this->userB),
+      'User B must update a node tagged with both Org A and Org B.'
+    );
+  }
+
   private function createTestNode(string $bundle, NodeInterface $orgPage): NodeInterface {
     return $this->createNode([
       'type' => $bundle,
