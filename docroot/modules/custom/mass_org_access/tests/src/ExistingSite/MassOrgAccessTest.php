@@ -113,7 +113,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * Roles that must not be blocked from cross-org view access.
    *
-   * mass_org_access leaves view neutral for every role.
+   * The mass_org_access module leaves view neutral for every role.
    */
   public static function viewRoleProvider(): array {
     return [
