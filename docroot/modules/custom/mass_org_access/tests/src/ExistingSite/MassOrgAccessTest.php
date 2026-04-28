@@ -111,8 +111,9 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Roles that must NOT be blocked by mass_org_access from viewing content
-   * outside their organization.
+   * Roles that must not be blocked from cross-org view access.
+   *
+   * mass_org_access leaves view neutral for every role.
    */
   public static function viewRoleProvider(): array {
     return [
@@ -192,9 +193,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Test 5: VIEW must never be blocked by mass_org_access. Verified across
-   * anonymous, authenticated and every editorial role. The user is set to
-   * Org A; the node is tagged with Org B — a strict cross-org scenario.
+   * Test 5: VIEW must never be blocked by mass_org_access.
+   *
+   * Verified across anonymous, authenticated and every editorial role. The
+   * user is set to Org A; the node is tagged with Org B — a strict cross-org
+   * scenario.
    *
    * @dataProvider viewRoleProvider
    */
