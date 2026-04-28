@@ -9,6 +9,7 @@ use Composer\InstalledVersions as ComposerInstalledVersions;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Asset\AttachedAssetsInterface;
 use Drupal\block\Entity\Block;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
@@ -629,6 +630,7 @@ function mayflower_preprocess_paragraph__social_media(&$variables) {
 function mayflower_preprocess_paragraph__org_locations(&$variables) {
   $paragraph = $variables['paragraph'];
   $node = Helper::getParentNode($paragraph);
+  $cache_tags = [];
 
   if (Helper::isFieldPopulated($paragraph, 'field_org_ref_locations')) {
     $mappedLocations_options = [
@@ -652,13 +654,16 @@ function mayflower_preprocess_paragraph__org_locations(&$variables) {
         [
           'path' => '@organisms/by-author/mapped-locations.twig',
           'data' => [
-            'mappedLocations' => Organisms::prepareMappedLocations($paragraph->field_org_ref_locations->referencedEntities(), $mappedLocations_options),
+            'mappedLocations' => Organisms::prepareMappedLocations($paragraph->field_org_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags),
           ],
         ],
       ],
     ];
 
     $variables['stackedRowSections'] = $sections;
+    if (!empty($cache_tags)) {
+      $variables['#cache']['tags'] = Cache::mergeTags($variables['#cache']['tags'] ?? [], $cache_tags);
+    }
   }
 }
 

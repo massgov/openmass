@@ -1148,12 +1148,13 @@ class Helper {
    *       ],
    *     ], ... ]
    */
-  public static function buildPageHeaderOptionalContentsContactUsAddress($entity, $field, array $options = []) {
+  public static function buildPageHeaderOptionalContentsContactUsAddress($entity, $field, array $options = [], array &$cache_tags = []) {
     $optionalContentsContactUs = [];
     $contactUs = [];
     $contact_items = Helper::getReferencedEntitiesFromField($entity, $field);
     if (!empty($contact_items)) {
       foreach ($contact_items as $contact_item) {
+        $cache_tags = array_merge($cache_tags, $contact_item->getCacheTags());
         $contactUs = Molecules::prepareAddress($contact_item, $options);
       }
 

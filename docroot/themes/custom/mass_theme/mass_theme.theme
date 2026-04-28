@@ -1467,7 +1467,7 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
       ],
     ];
 
-    $variables['linkList'] = Organisms::prepareLinkList($node, 'field_topic_ref_related_topics', $linkList_options);
+    $variables['linkList'] = Organisms::prepareLinkList($node, 'field_topic_ref_related_topics', $linkList_options, $cache_tags);
 
     if (!empty($cache_tags)) {
       // Merge arrays of existing and new cache tags and removes duplicates.
@@ -1509,7 +1509,7 @@ function mass_theme_preprocess_node_binder(&$variables) {
       ],
       'stacked' => TRUE,
     ];
-    $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_binder_related', $linkList_options);
+    $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_binder_related', $linkList_options, $cache_tags);
     $variables['sideContent'] = $sideContent;
 
     if (!empty($cache_tags)) {
@@ -1573,7 +1573,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
         ],
         'stacked' => TRUE,
       ];
-      $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_info_details_related', $linkList_options);
+      $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_info_details_related', $linkList_options, $cache_tags);
       $variables['sideContent'] = $sideContent;
     }
 
@@ -2971,7 +2971,7 @@ function mass_theme_preprocess_node_event(&$variables) {
     $optionalContents = array_merge($optionalContents, Helper::buildPageHeaderOptionalContentsContactUs($node, 'field_event_ref_contact', $headerContact_options, $cache_tags));
   }
   if (Helper::isFieldPopulated($node, 'field_event_ref_unique_address') && ($address_type == 'unique')) {
-    $optionalContents = array_merge($optionalContents, Helper::buildPageHeaderOptionalContentsContactUsAddress($node, 'field_event_ref_unique_address'));
+    $optionalContents = array_merge($optionalContents, Helper::buildPageHeaderOptionalContentsContactUsAddress($node, 'field_event_ref_unique_address', [], $cache_tags));
   }
 
   // Build call out time.
@@ -3309,7 +3309,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
     $split_columns['columns'][]['items'][] = [
       'path' => '@organisms/by-author/link-list.twig',
       'data' => [
-        'linkList' => Organisms::prepareLinkList($node, 'field_service_ref_services_6', $linkList_options),
+        'linkList' => Organisms::prepareLinkList($node, 'field_service_ref_services_6', $linkList_options, $cache_tags),
       ],
     ];
   }
@@ -5454,6 +5454,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
  */
 function mass_theme_preprocess_paragraph__org_related_orgs(&$variables) {
   $paragraph = $variables['paragraph'];
+  $cache_tags = [];
 
   // Add related orgs stack row section.
   if (Helper::isFieldPopulated($paragraph, 'field_ref_orgs')) {
@@ -5466,12 +5467,15 @@ function mass_theme_preprocess_paragraph__org_related_orgs(&$variables) {
         [
           'path' => '@organisms/by-author/link-list.twig',
           'data' => [
-            'linkList' => Organisms::prepareLinkList($paragraph, 'field_ref_orgs', $linkList_options),
+            'linkList' => Organisms::prepareLinkList($paragraph, 'field_ref_orgs', $linkList_options, $cache_tags),
           ],
         ],
       ],
     ];
     $variables['stackedRowSections'] = $sections;
+    if (!empty($cache_tags)) {
+      $variables['#cache']['tags'] = Cache::mergeTags($variables['#cache']['tags'] ?? [], $cache_tags);
+    }
   }
 }
 
