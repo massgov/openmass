@@ -182,9 +182,9 @@
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_ignore": "^3.3",
         "drupal/content_language_no_outbound": "1.0.0-rc1",
-        "drupal/core-composer-scaffold": "~11.3.3",
-        "drupal/core-project-message": "~11.3.3",
-        "drupal/core-recommended": "~11.3.3",
+        "drupal/core-composer-scaffold": "~11.3.7",
+        "drupal/core-project-message": "~11.3.7",
+        "drupal/core-recommended": "~11.3.7",
         "drupal/csv_field": "^3.0",
         "drupal/csv_serialization": "^4.0",
         "drupal/datalayer": "^2",
@@ -307,7 +307,7 @@
         "typhonius/acquia-php-sdk-v2": "^3.7.3"
     },
     "require-dev": {
-        "drupal/core-dev": "~11.3.3",
+        "drupal/core-dev": "~11.3.7",
         "drupaltest/queue-runner-trait": "dev-master",
         "kint-php/kint": "^5",
         "palantirnet/drupal-rector": "^0.21.1",
@@ -424,7 +424,8 @@
                 "Access policy processor: fall back when fiber switching is disallowed": "patches/core/drupal-core-access-policy-processor-fibererror-inline-fallback.patch"
             },
             "drupal/conditional_fields": {
-                "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch"
+                "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch",
+                "Errors after update to alpha6 (https://www.drupal.org/project/conditional_fields/issues/3501575)": "https://www.drupal.org/files/issues/2025-05-27/3501575-13.patch"
             },
             "drupal/entity_usage": {
                 "Change methods to be protected": "patches/entity_usage/change_methods_to_be_protected.patch"
@@ -493,7 +494,7 @@
             },
             "drupal/media_entity_download": {
                 "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2025-07-22/media_entity_download-ckeditor5_plugin-drupal_10_5_2928318-41.patch",
-                "Track the usage of Media entity through media_entity_download route with entity_usage (https://www.drupal.org/project/media_entity_download/issues/3106062)": "patches/3106062-15.patch"
+                "Track media download links in entity_usage (https://www.drupal.org/project/media_entity_download/issues/3106062)": "patches/media_entity_download-entity-usage-track-media-download-links.patch"
             },
             "drupal/pathologic": {
                 "Dynamic routes like image styles break under pathologic (https://www.drupal.org/project/pathologic/issues/2718473)": "https://www.drupal.org/files/issues/2020-01-29/2718473-dynamic-image-style-lookup-20.patch"
@@ -541,6 +542,9 @@
             },
             "drupal/editoria11y": {
                 "Fix result name options to use editoria11y_results table instead of editoria11y_dismissals (DP-42700)": "patches/editoria11y--result-name-options-results.patch"
+            },
+            "drupal/environment_indicator": {
+                "Fix getVersionIdentifier() to return NULL instead of empty string (https://www.drupal.org/project/environment_indicator/issues/3535382)": "patches/environment_indicator_getVersionIdentifier_return_null_3535382.patch"
             }
         },
         "composer-exit-on-patch-failure": true,

@@ -1,14 +1,70 @@
 
 
+## [0.476.0] - April 21, 2026
+
+### Changed
+  - DP-45228: CSV Table / Datatables changes
+
+### Fixed
+  - DP-46272: Fix missing tag number in environment indicator after D11 upgrade.
+  - DP-46444: After regenerate entity usage, many documents not showing actual relationships.
+
+### Security
+  - DP-46359: Updates Drupal core to 11.3.7 to address security advisories.
+
+
+## [0.475.1] - April 15, 2026
+
+### Fixed:
+- DP-46328: Restore asset_cache_bust module.
+
+
+## [0.475.0] - April 14, 2026
+
+### Removed
+  - DP-35638: Removed code and field storage related to Computed Related To fields.
+
+### Added
+  - DP-46226: Adds ExistingSite test after a bug where news releases could not be created due to a validation error about missing state organization.
+
+### Fixed
+  - DP-46263: Fix cell alignment when a CSV table has row headings.
+
+
+
+## [0.474.6] - April 13, 2026
+
+### Fixed:
+- DP-46254: Conditional fields fix.
+
+
+
+## [0.474.5] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.5] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
 ## [0.474.4] - April 9, 2026
 
 ### Fixed:
 - DP-44741: Hotfix to address Fiber-related issues.
 
+
+
 ## [0.474.3] - April 8, 2026
 
 ### Fixed:
 - DP-44741: Hotfix to address Fiber-related issues.
+
 
 
 ## [0.474.2] - April 8, 2026
