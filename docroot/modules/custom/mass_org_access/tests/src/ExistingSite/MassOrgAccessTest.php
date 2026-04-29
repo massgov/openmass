@@ -305,7 +305,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * A user assigned to multiple orgs can edit content tagged with any of them.
    *
-   * field_user_org is multi-valued; a user with org A and org B should
+   * The field_user_org is multi-valued; a user with org A and org B should
    * pass the access check on a node tagged with either org.
    */
   public function testMultiOrgUserCanUpdateAnyOfTheirOrgs(): void {
@@ -417,9 +417,10 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Helper: returns the user_organization term whose field_state_organization
-   * points to the given org_page node, by querying — not by class properties.
-   * Used in multi-org tests where termA / termB might be needed by reference.
+   * Loads the user_organization term that maps to a given org_page node.
+   *
+   * Used in multi-org tests where termA / termB might be needed by reference,
+   * by querying instead of relying on class properties.
    */
   private function getUserTermForOrg(NodeInterface $orgPage) {
     $tids = \Drupal::entityQuery('taxonomy_term')
@@ -434,7 +435,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * Multi-org content is editable by users from any of the listed orgs.
    *
-   * field_organizations is multi-valued; an editor from any one of those
+   * The field_organizations is multi-valued; an editor from any one of those
    * orgs should see access('update') = TRUE because their term intersects
    * the denormalized list.
    */

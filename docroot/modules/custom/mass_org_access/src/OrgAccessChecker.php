@@ -19,8 +19,8 @@ class OrgAccessChecker {
   /**
    * Returns the user's org taxonomy term IDs (empty array if none assigned).
    *
-   * field_user_org is multi-valued, so a single user may belong to several
-   * organizations. Cached per request via drupal_static().
+   * The field_user_org is multi-valued, so a single user may belong to
+   * several organizations. Cached per request via drupal_static().
    */
   public function getUserOrgTids(AccountInterface $account): array {
     $cache = &drupal_static(__METHOD__);
