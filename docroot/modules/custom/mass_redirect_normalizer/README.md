@@ -50,6 +50,11 @@ This split makes the code easier to test and maintain.
 | `--entity-ids=1,2,3` | Only these IDs. IDs are checked in both node and paragraph entities. Ignores `--limit`. |
 | `--kinds=text,link,entity_reference` | Include only these change kinds in table output, CSV output, and updated/value counters. |
 | `--csv-path=./redirect-normalizer-report.csv` | Write a full CSV report in the current directory (or other relative/absolute path). |
+| `--entity-type=node|paragraph|all` | Restrict scans to one entity type, or both (`all`/default). |
+| `--start-id=N` | Start scanning from this ID (inclusive). Useful for manual resume windows. |
+| `--resume` | Continue from saved progress checkpoint (last processed ID per entity type). |
+| `--show-progress` | Print saved progress checkpoint and exit without scanning. |
+| `--reset-progress` | Clear saved progress checkpoint before run. |
 
 By default, bulk command processes only **published** content.
 
@@ -110,6 +115,32 @@ is expected and helps confirm it is still running.
 For a narrow retest after you know specific IDs:
 
 `ddev drush mass-redirect-normalizer:normalize-links --simulate --entity-ids=123,456`
+
+### Long-run recovery and resume
+
+For long/background runs (for example Acquia SSH), use checkpoint options so you
+can return later, inspect state, and safely continue.
+
+```bash
+# 1) Start a long run and save report in current directory.
+ddev drush mnrl --entity-type=paragraph --limit=50000 --csv-path=./mnrl-paragraph-run.csv
+
+# 2) Later, check saved checkpoint only (no scan).
+ddev drush mnrl --show-progress
+
+# 3) Resume from last checkpoint.
+ddev drush mnrl --entity-type=paragraph --resume --csv-path=./mnrl-paragraph-resume.csv
+
+# 4) If you need a clean restart, clear checkpoint then run.
+ddev drush mnrl --reset-progress --entity-type=paragraph --start-id=1 --csv-path=./mnrl-paragraph-fresh.csv
+```
+
+Notes:
+- Checkpoint stores last processed ID per entity type (`node` / `paragraph`),
+  processed count, updated entity count, changed field values, mode, and
+  timestamp.
+- When `--resume` and `--start-id` are both set, the command uses the higher
+  effective start position.
 
 ### Important detail about saved content
 

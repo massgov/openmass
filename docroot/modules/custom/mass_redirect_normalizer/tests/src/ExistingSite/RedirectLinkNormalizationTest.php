@@ -462,7 +462,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
 
     $command = new MassRedirectNormalizerCommands(
       \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager')
+      \Drupal::service('mass_redirect_normalizer.manager'),
+      \Drupal::state()
     );
     $rowsObj = $command->normalizeRedirectLinks([
       'bundle' => 'page',
@@ -505,7 +506,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
 
     $command = new MassRedirectNormalizerCommands(
       \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager')
+      \Drupal::service('mass_redirect_normalizer.manager'),
+      \Drupal::state()
     );
     $rowsObj = $command->normalizeRedirectLinks([
       'entity-ids' => (string) $unpublished->id(),
@@ -559,7 +561,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
 
     $command = new MassRedirectNormalizerCommands(
       \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager')
+      \Drupal::service('mass_redirect_normalizer.manager'),
+      \Drupal::state()
     );
     $command->normalizeRedirectLinks([
       'entity-ids' => (string) $page->id(),
@@ -755,7 +758,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
 
     $command = new MassRedirectNormalizerCommands(
       \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager')
+      \Drupal::service('mass_redirect_normalizer.manager'),
+      \Drupal::state()
     );
     $command->normalizeRedirectLinks([
       'entity-ids' => (string) $org->id(),
@@ -834,7 +838,8 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
 
     $command = new MassRedirectNormalizerCommands(
       \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager')
+      \Drupal::service('mass_redirect_normalizer.manager'),
+      \Drupal::state()
     );
     $rowsObj = $command->normalizeRedirectLinks([
       'entity-ids' => (string) $org->id(),
@@ -846,6 +851,105 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     foreach ($rows as $row) {
       $this->assertSame('entity_reference', $row['kind']);
     }
+  }
+
+  /**
+   * Tests command progress checkpoint resume and show-progress behavior.
+   */
+  public function testCommandProgressResumeAndShowProgress(): void {
+    \Drupal::state()->delete('mass_redirect_normalizer.command_progress');
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $nodeA = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">A</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+    $nodeB = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">B</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    // Re-inject source URL so bulk command can detect the change.
+    foreach ([$nodeA, $nodeB] as $node) {
+      $redirectMarkup = '<p><a href="/' . $sourceStart . '">Resume test</a></p>';
+      $nid = (int) $node->id();
+      $vid = (int) $node->getRevisionId();
+      $connection = \Drupal::database();
+      foreach (['node__body', 'node_revision__body'] as $table) {
+        $connection->update($table)
+          ->fields(['body_value' => $redirectMarkup])
+          ->condition('entity_id', $nid)
+          ->condition('revision_id', $vid)
+          ->execute();
+      }
+      \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+    }
+
+    $ids = [(int) $nodeA->id(), (int) $nodeB->id()];
+    sort($ids);
+    $firstId = $ids[0];
+    $secondId = $ids[1];
+
+    $command = new MassRedirectNormalizerCommands(
+      \Drupal::entityTypeManager(),
+      \Drupal::service('mass_redirect_normalizer.manager'),
+      \Drupal::state()
+    );
+
+    // First pass with limit=1 should checkpoint first ID.
+    $rowsObj1 = $command->normalizeRedirectLinks([
+      'entity-type' => 'node',
+      'bundle' => 'page',
+      'start-id' => $firstId,
+      'limit' => 1,
+      'simulate' => TRUE,
+      'reset-progress' => TRUE,
+    ]);
+    $rows1 = method_exists($rowsObj1, 'getArrayCopy') ? $rowsObj1->getArrayCopy() : iterator_to_array($rowsObj1);
+    $this->assertNotEmpty($rows1);
+    $this->assertSame((string) $firstId, (string) $rows1[0]['entity_id']);
+
+    $checkpoint = \Drupal::state()->get('mass_redirect_normalizer.command_progress');
+    $this->assertIsArray($checkpoint);
+    $this->assertSame($firstId, (int) ($checkpoint['last_ids']['node'] ?? 0));
+
+    // Resume should continue from next node.
+    $rowsObj2 = $command->normalizeRedirectLinks([
+      'entity-type' => 'node',
+      'bundle' => 'page',
+      'limit' => 1,
+      'simulate' => TRUE,
+      'resume' => TRUE,
+    ]);
+    $rows2 = method_exists($rowsObj2, 'getArrayCopy') ? $rowsObj2->getArrayCopy() : iterator_to_array($rowsObj2);
+    $this->assertNotEmpty($rows2);
+    $this->assertSame((string) $secondId, (string) $rows2[0]['entity_id']);
+
+    // Show progress should not return data rows.
+    $rowsObj3 = $command->normalizeRedirectLinks([
+      'show-progress' => TRUE,
+    ]);
+    $rows3 = method_exists($rowsObj3, 'getArrayCopy') ? $rowsObj3->getArrayCopy() : iterator_to_array($rowsObj3);
+    $this->assertSame([], $rows3);
   }
 
   /**

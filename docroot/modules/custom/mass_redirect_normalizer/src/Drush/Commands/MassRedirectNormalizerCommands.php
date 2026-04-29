@@ -6,6 +6,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager;
 use Drupal\mayflower\Helper;
 use Drupal\node\NodeInterface;
@@ -20,10 +21,12 @@ use Drush\Drush;
 final class MassRedirectNormalizerCommands extends DrushCommands {
 
   use AutowireTrait;
+  private const PROGRESS_STATE_KEY = 'mass_redirect_normalizer.command_progress';
 
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected RedirectLinkNormalizationManager $normalizerManager,
+    protected StateInterface $state,
   ) {
     parent::__construct();
   }
@@ -56,6 +59,11 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    * @option simulate Dry-run: show diffs only; do not save (same as global `drush --simulate`).
    * @option csv-path Optional absolute path to write a CSV report file.
    * @option kinds Comma-separated change kinds to include: text,link,entity_reference.
+   * @option entity-type Limit processing to node or paragraph (default: both).
+   * @option start-id Start scanning at this numeric entity ID (inclusive).
+   * @option resume Continue from saved checkpoint.
+   * @option show-progress Print saved checkpoint and exit.
+   * @option reset-progress Clear saved checkpoint before running.
    * @usage mass-redirect-normalizer:normalize-links --simulate --limit=100
    *   Preview changes. Use --format=json for machine-readable output.
    */
@@ -67,12 +75,21 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       'simulate' => FALSE,
       'csv-path' => NULL,
       'kinds' => NULL,
+      'entity-type' => NULL,
+      'start-id' => 0,
+      'resume' => FALSE,
+      'show-progress' => FALSE,
+      'reset-progress' => FALSE,
     ],
   ): RowsOfFields {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-    $entityTypes = ['node', 'paragraph'];
+    $entityTypes = $this->parseEntityTypesOption((string) ($options['entity-type'] ?? ''));
     $limit = max(0, (int) ($options['limit'] ?? 0));
+    $startId = max(0, (int) ($options['start-id'] ?? 0));
     $entityIdsOption = isset($options['entity-ids']) ? trim((string) $options['entity-ids']) : '';
+    $resume = !empty($options['resume']);
+    $showProgress = !empty($options['show-progress']);
+    $resetProgress = !empty($options['reset-progress']);
     try {
       $simulate = !empty($options['simulate']) || Drush::simulate();
     }
@@ -89,16 +106,52 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $nodePublishedCache = [];
     $newerDraftCache = [];
     $kindsFilter = $this->parseKindsFilter(isset($options['kinds']) ? (string) $options['kinds'] : '');
+    if ($resetProgress) {
+      $this->clearProgressState();
+      if ($this->logger()) {
+        $this->logger()->notice((string) dt('Cleared saved progress checkpoint.'));
+      }
+    }
+    if ($showProgress) {
+      $this->logSavedProgress();
+      return new RowsOfFields([]);
+    }
+
+    $saved = $this->state->get(self::PROGRESS_STATE_KEY, []);
+    $lastIds = (is_array($saved) && isset($saved['last_ids']) && is_array($saved['last_ids'])) ? $saved['last_ids'] : [];
+    if ($resume && is_array($saved)) {
+      // Keep progress counters cumulative across resumed runs.
+      $processed = max(0, (int) ($saved['processed'] ?? 0));
+      $entitiesChanged = max(0, (int) ($saved['updated_entities'] ?? 0));
+      $valueUpdates = max(0, (int) ($saved['changed_field_values'] ?? 0));
+    }
+    if ($resume && $this->logger()) {
+      $this->logger()->notice((string) dt('Resume enabled: continuing from saved checkpoint.'));
+    }
 
     foreach ($entityTypes as $entityType) {
+      $effectiveStartId = $startId;
+      if (
+        $resume &&
+        $entityIdsOption === '' &&
+        isset($lastIds[$entityType]) &&
+        is_numeric($lastIds[$entityType])
+      ) {
+        $effectiveStartId = max($effectiveStartId, ((int) $lastIds[$entityType]) + 1);
+      }
       if ($entityIdsOption !== '') {
-        $ids = array_values(array_filter(array_map('intval', preg_split('/\s*,\s*/', $entityIdsOption))));
+        $ids = array_values(array_filter(array_map('intval', preg_split('/\s*,\s*/', $entityIdsOption)), function (int $id) use ($effectiveStartId): bool {
+          return $id > 0 && ($effectiveStartId === 0 || $id >= $effectiveStartId);
+        }));
       }
       else {
         $idField = $entityType === 'node' ? 'nid' : 'id';
         $query = $this->entityTypeManager->getStorage($entityType)->getQuery()
           ->accessCheck(FALSE)
           ->sort($idField);
+        if ($effectiveStartId > 0) {
+          $query->condition($idField, $effectiveStartId, '>=');
+        }
         if (!empty($options['bundle'])) {
           $query->condition('type', $options['bundle']);
         }
@@ -147,6 +200,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
             '@id' => $id,
           ]));
         }
+        $this->saveProgressState($processed, $entitiesChanged, $valueUpdates, $entityType, (int) $id, $simulate, FALSE);
         if (!empty($result['changed'])) {
           $changes = $result['changes'] ?? [];
           if ($kindsFilter !== []) {
@@ -220,6 +274,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
         '@diffs' => $valueUpdates,
       ]));
     }
+    $this->saveProgressState($processed, $entitiesChanged, $valueUpdates, NULL, NULL, $simulate, TRUE);
 
     $csvPath = isset($options['csv-path']) ? trim((string) $options['csv-path']) : '';
     if ($csvPath !== '') {
@@ -487,6 +542,92 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       throw new \InvalidArgumentException('Invalid --kinds value. Allowed: text,link,entity_reference');
     }
     return $filtered;
+  }
+
+  /**
+   * Parses entity type option to node/paragraph list.
+   *
+   * @return string[]
+   *   Entity type list to process.
+   */
+  private function parseEntityTypesOption(string $entityTypeOption): array {
+    $entityTypeOption = trim(strtolower($entityTypeOption));
+    if ($entityTypeOption === '' || $entityTypeOption === 'all') {
+      return ['node', 'paragraph'];
+    }
+    if (!in_array($entityTypeOption, ['node', 'paragraph'], TRUE)) {
+      throw new \InvalidArgumentException('Invalid --entity-type value. Allowed: node,paragraph,all');
+    }
+    return [$entityTypeOption];
+  }
+
+  /**
+   * Saves resumable checkpoint.
+   */
+  private function saveProgressState(
+    int $processed,
+    int $updatedEntities,
+    int $changedFieldValues,
+    ?string $lastEntityType,
+    ?int $lastEntityId,
+    bool $simulate,
+    bool $completed,
+  ): void {
+    $checkpoint = $this->state->get(self::PROGRESS_STATE_KEY, []);
+    if (!is_array($checkpoint)) {
+      $checkpoint = [];
+    }
+    $lastIds = isset($checkpoint['last_ids']) && is_array($checkpoint['last_ids']) ? $checkpoint['last_ids'] : [];
+    if ($lastEntityType !== NULL && $lastEntityId !== NULL) {
+      $lastIds[$lastEntityType] = $lastEntityId;
+    }
+
+    $this->state->set(self::PROGRESS_STATE_KEY, [
+      'updated_at' => time(),
+      'processed' => $processed,
+      'updated_entities' => $updatedEntities,
+      'changed_field_values' => $changedFieldValues,
+      'last_entity_type' => $lastEntityType ?? ($checkpoint['last_entity_type'] ?? NULL),
+      'last_entity_id' => $lastEntityId ?? ($checkpoint['last_entity_id'] ?? NULL),
+      'last_ids' => $lastIds,
+      'mode' => $simulate ? 'simulate' : 'execute',
+      'completed' => $completed,
+    ]);
+  }
+
+  /**
+   * Clears stored checkpoint.
+   */
+  private function clearProgressState(): void {
+    $this->state->delete(self::PROGRESS_STATE_KEY);
+  }
+
+  /**
+   * Logs stored progress details.
+   */
+  private function logSavedProgress(): void {
+    $checkpoint = $this->state->get(self::PROGRESS_STATE_KEY, []);
+    if (!is_array($checkpoint) || $checkpoint === []) {
+      if ($this->logger()) {
+        $this->logger()->notice((string) dt('No saved progress checkpoint found.'));
+      }
+      return;
+    }
+    if ($this->logger()) {
+      $this->logger()->notice((string) dt(
+        'Saved progress: processed @processed, updated entities @updated, changed field values @values, last @type:@id, mode @mode, completed @completed, updated_at @time.',
+        [
+          '@processed' => (int) ($checkpoint['processed'] ?? 0),
+          '@updated' => (int) ($checkpoint['updated_entities'] ?? 0),
+          '@values' => (int) ($checkpoint['changed_field_values'] ?? 0),
+          '@type' => (string) ($checkpoint['last_entity_type'] ?? '-'),
+          '@id' => (string) ($checkpoint['last_entity_id'] ?? '-'),
+          '@mode' => (string) ($checkpoint['mode'] ?? '-'),
+          '@completed' => !empty($checkpoint['completed']) ? 'yes' : 'no',
+          '@time' => isset($checkpoint['updated_at']) ? date('c', (int) $checkpoint['updated_at']) : '-',
+        ]
+      ));
+    }
   }
 
 }
