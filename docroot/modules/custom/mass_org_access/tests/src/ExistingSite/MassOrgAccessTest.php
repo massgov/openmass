@@ -374,6 +374,49 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Editors must not be able to change their own field_user_org.
+   *
+   * Without a field-level access guard the entire org gate is bypassable —
+   * any editor could open /user/UID/edit, append any org via autocomplete,
+   * save, and instantly gain access to that org's content.
+   */
+  public function testEditorCannotChangeOwnFieldUserOrg(): void {
+    $editor = $this->createUser();
+    $editor->addRole('editor');
+    $editor->set('field_user_org', $this->termA->id());
+    $editor->activate();
+    $editor->save();
+
+    $this->assertFalse(
+      $editor->get('field_user_org')->access('edit', $editor),
+      'An editor must not be able to change their own field_user_org.'
+    );
+    $this->assertTrue(
+      $editor->get('field_user_org')->access('view', $editor),
+      'An editor may still view their own field_user_org.'
+    );
+  }
+
+  /**
+   * Users with administer users permission can manage field_user_org.
+   *
+   * Required so admins / user managers can actually assign organizations.
+   */
+  public function testAdminCanChangeFieldUserOrg(): void {
+    $user_manager = $this->createUser(['administer users']);
+    $editor = $this->createUser();
+    $editor->addRole('editor');
+    $editor->set('field_user_org', $this->termA->id());
+    $editor->activate();
+    $editor->save();
+
+    $this->assertTrue(
+      $editor->get('field_user_org')->access('edit', $user_manager),
+      'A user with administer users must be able to assign organizations.'
+    );
+  }
+
+  /**
    * Helper: returns the user_organization term whose field_state_organization
    * points to the given org_page node, by querying — not by class properties.
    * Used in multi-org tests where termA / termB might be needed by reference.
