@@ -50,7 +50,8 @@ class ContentEditingTest extends MassExistingSiteBase {
    * Creates an editor, saves it and returns it.
    */
   private function createEditor() {
-    $editor = $this->createUser();
+    // Bypass mass_org_access — this test edits real content across orgs.
+    $editor = $this->createUser(['bypass org access']);
     $editor->addRole('editor');
     $editor->activate();
     $editor->save();

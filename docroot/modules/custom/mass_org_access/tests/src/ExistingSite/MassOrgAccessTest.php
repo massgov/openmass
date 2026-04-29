@@ -374,6 +374,35 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Editor without an organization sees a warning at login.
+   *
+   * The warning tells the user why they cannot edit content and points them
+   * to the site administrator.
+   */
+  public function testWarningDisplayedWhenEditorHasNoOrg(): void {
+    $no_org_user = $this->createUser();
+    $no_org_user->addRole('editor');
+    $no_org_user->activate();
+    $no_org_user->save();
+
+    // drupalLogin lands the user on /user/UID where any flash messages set
+    // by hook_user_login are rendered.
+    $this->drupalLogin($no_org_user);
+
+    $this->assertSession()->pageTextContains('Your account is not associated with any organization');
+    $this->assertSession()->pageTextContains('contact your site administrator');
+  }
+
+  /**
+   * Editors with at least one organization assigned do not see the warning.
+   */
+  public function testNoWarningWhenEditorHasOrg(): void {
+    $this->drupalLogin($this->userA);
+
+    $this->assertSession()->pageTextNotContains('Your account is not associated with any organization');
+  }
+
+  /**
    * Editors must not be able to change their own field_user_org.
    *
    * Without a field-level access guard the entire org gate is bypassable —
