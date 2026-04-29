@@ -919,6 +919,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $rowsObj1 = $command->normalizeRedirectLinks([
       'entity-type' => 'node',
       'bundle' => 'page',
+      'entity-ids' => $firstId . ',' . $secondId,
       'start-id' => $firstId,
       'limit' => 1,
       'simulate' => TRUE,
@@ -936,6 +937,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $rowsObj2 = $command->normalizeRedirectLinks([
       'entity-type' => 'node',
       'bundle' => 'page',
+      'entity-ids' => $firstId . ',' . $secondId,
       'limit' => 1,
       'simulate' => TRUE,
       'resume' => TRUE,

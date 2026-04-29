@@ -100,6 +100,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $rows = [];
     $csvRows = [];
     $processed = 0;
+    $runProcessed = 0;
     $entitiesChanged = 0;
     $valueUpdates = 0;
     $progressEvery = 100;
@@ -133,7 +134,6 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       $effectiveStartId = $startId;
       if (
         $resume &&
-        $entityIdsOption === '' &&
         isset($lastIds[$entityType]) &&
         is_numeric($lastIds[$entityType])
       ) {
@@ -162,7 +162,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       }
 
       foreach ($ids as $id) {
-        if ($limit > 0 && $processed >= $limit) {
+        if ($limit > 0 && $runProcessed >= $limit) {
           break 2;
         }
 
@@ -191,7 +191,8 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
 
         $result = $this->normalizerManager->normalizeEntity($entity, !$simulate, $simulate);
         $processed++;
-        if ($this->logger() && $processed % $progressEvery === 0) {
+        $runProcessed++;
+        if ($this->logger() && $runProcessed % $progressEvery === 0) {
           $this->logger()->notice((string) dt('Progress: processed @count entities; updated entities @updated; changed field values @diffs. Last @type:@id', [
             '@count' => $processed,
             '@updated' => $entitiesChanged,
