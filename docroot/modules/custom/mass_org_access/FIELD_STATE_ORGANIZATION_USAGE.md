@@ -28,13 +28,29 @@ last iteration's org becomes the pre-filled default. The field is still
 multi-valued — the editor can add the rest with "Add another item" —
 but the auto-fill is no longer comprehensive.
 
-### 2. `mass_utility/OrganizationTransfer.php` — media queue worker
+### 2. `mass_utility/OrganizationTransfer.php` — media queue worker (DEAD CODE)
 
 The queue worker reads `field_contributing_organization` from a media
 entity, resolves the referenced `user_organization` terms, then copies
 each term's `field_state_organization` (org_page reference) into the
-media's `field_organizations`. Pure bulk-import plumbing — no access
-implications.
+media's `field_organizations`.
+
+🪦 **This worker no longer functions.** `field_contributing_organization`
+does not exist anywhere in the codebase or database:
+
+- No `FieldStorageConfig` entry
+- No `FieldConfig` instance on any entity (media, node, user, term)
+- No `media__field_contributing_organization` table
+
+Calling `$media->get('field_contributing_organization')` would throw
+`InvalidArgumentException: Field field_contributing_organization is
+unknown` the moment a queue item is processed. The same field is also
+referenced (orphaned) in `views.view.documents_by_filter.yml` as a Views
+argument that resolves to nothing.
+
+This appears to be leftover from an earlier Mass.gov data model. No
+impact on `mass_org_access`. Worth a separate cleanup ticket to remove
+the worker, the queue, and the orphaned Views argument.
 
 ### 3. `mass_bigquery/TopPrioritiesForm.php` — BigQuery dashboard
 
@@ -53,11 +69,16 @@ of the user's orgs (or a deliberate "primary org" selector).
 exposes the field in the term's default view mode. Display-only, no
 functional impact.
 
-## Summary table
+## Summary
 
-| Caller | What it does | Impacted by multi-org? |
-|---|---|---|
-| `mass_utility.module` form_alter | Pre-fill org on new media form (writes to form, not user) | Partial — only last iterated org becomes pre-filled default |
-| `mass_utility` `OrganizationTransfer` worker | Copy org_page ref from term to media | No — independent of `field_user_org` |
-| `mass_bigquery` `TopPrioritiesForm` | Org-scoped BigQuery dashboard | Yes — reads only `target_id` (first value); follow-up needed |
-| `user_organization` view display config | Show field on term page | No |
+- **`mass_utility.module` form_alter** — Pre-fills org on the new-media
+  form (writes to `$form`, not the user). Partial multi-org support: only
+  the last iterated org becomes the pre-filled default; editor can add
+  the rest manually.
+- **`mass_utility` `OrganizationTransfer` worker** — 🪦 Dead code. References
+  a field (`field_contributing_organization`) that no longer exists.
+- **`mass_bigquery` `TopPrioritiesForm`** — Org-scoped BigQuery dashboard.
+  Reads only the first `field_user_org` value; multi-org users see
+  priorities for one org only. Follow-up needed.
+- **`user_organization` view display config** — Shows the field on the
+  term's view page. Display-only, no functional impact.
