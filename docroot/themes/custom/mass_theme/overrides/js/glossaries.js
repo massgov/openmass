@@ -292,15 +292,28 @@
       acceptedMatches.forEach(({start, end, matchText, searchString}) => {
         // Create text nodes for before and after the match
         const beforeText = document.createTextNode(text.substring(0, start));
-        const afterText = document.createTextNode(text.substring(end));
+        const afterRawText = text.substring(end);
 
         // Create the tooltip
         const definition = createTooltipContent(terms[searchString]);
         const tooltip = createTooltip(matchText, definition);
+        const nowrapWrapper = document.createElement('span');
+        nowrapWrapper.className = 'glossary-nowrap';
+        nowrapWrapper.style.whiteSpace = 'nowrap';
+
+        // Keep punctuation immediately after a term on the same line.
+        // This avoids a wrap point between the popover and punctuation.
+        const punctuationMatch = afterRawText.match(/^([,.;:!?'"”’)\]]+)/);
+        const trailingPunctuation = punctuationMatch ? punctuationMatch[1] : '';
+        const afterText = document.createTextNode(afterRawText.substring(trailingPunctuation.length));
+        nowrapWrapper.appendChild(tooltip);
+        if (trailingPunctuation) {
+          nowrapWrapper.appendChild(document.createTextNode(trailingPunctuation));
+        }
 
         // Replace the original text node
         parent.insertBefore(beforeText, currentNode);
-        parent.insertBefore(tooltip, currentNode);
+        parent.insertBefore(nowrapWrapper, currentNode);
         parent.insertBefore(afterText, currentNode);
         parent.removeChild(currentNode);
 
