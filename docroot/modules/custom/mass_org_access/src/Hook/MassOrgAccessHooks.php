@@ -6,6 +6,8 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -43,6 +45,26 @@ class MassOrgAccessHooks {
   #[Hook('media_access')]
   public function mediaAccess(EntityInterface $media, string $operation, AccountInterface $account): AccessResultInterface {
     return $this->checkAccess($media, $operation, $account);
+  }
+
+  /**
+   * Locks down field_user_org so users cannot self-assign organizations.
+   *
+   * Without this, any logged-in editor could open /user/UID/edit and pick
+   * any org from the autocomplete, bypassing the entire access scheme. The
+   * field is reserved for users with 'administer users' (admins / user
+   * managers); everyone else can still view it.
+   */
+  #[Hook('entity_field_access')]
+  public function entityFieldAccess(string $operation, FieldDefinitionInterface $field, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
+    if ($field->getName() !== 'field_user_org') {
+      return AccessResult::neutral();
+    }
+    if ($operation === 'view') {
+      return AccessResult::neutral();
+    }
+    return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
+      ->cachePerPermissions();
   }
 
   /**
