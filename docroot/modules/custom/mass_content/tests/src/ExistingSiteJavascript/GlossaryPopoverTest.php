@@ -248,4 +248,47 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertNotNull($dialog);
   }
 
+  /**
+   * Test that longer glossary terms win when overlaps exist.
+   */
+  public function testGlossaryPopoverOverlappingTerms() {
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Overlapping Terms Glossary',
+      'field_terms' => [
+        [
+          'key' => 'State House Notes',
+          'value' => 'Long definition',
+        ],
+        [
+          'key' => 'Note',
+          'value' => 'Short definition',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Overlapping Terms Service Page',
+      'field_service_body' => 'State House Notes are published annually.',
+      'moderation_state' => 'published',
+    ]);
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.popover__trigger') !== NULL;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(1, $triggers, 'Only the full term should be transformed.');
+    $this->assertEquals('State House Notes', $triggers[0]->getText());
+  }
+
 }

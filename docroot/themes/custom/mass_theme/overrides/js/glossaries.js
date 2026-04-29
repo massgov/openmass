@@ -2,7 +2,6 @@
   'use strict';
 
   const {terms} = drupalSettings.glossaries;
-  const searchRegexes = createSearchRegexes(Object.keys(terms));
   const UNACCEPTABLE_ELEMENTS = [
     'script',
     'style',
@@ -31,8 +30,12 @@
 
   Drupal.behaviors.glossaries = {
     attach: async (context) => {
+      // Build search regexes per behavior run because findMatches mutates the map.
+      const searchRegexes = createSearchRegexes(
+        Object.keys(terms).sort((a, b) => b.length - a.length)
+      );
       // Scan page text for glossary terms and inject tooltips.
-      const matches = findMatches(context);
+      const matches = findMatches(context, searchRegexes);
       highlightMatches(matches);
     }
   };
@@ -52,14 +55,15 @@
       // Replace regex special characters with escaped versions.
       replaced = replaced.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-      // Replace any non-escaped, non alphanumeric characters with wildcards
-      replaced = replaced.replace(/[^\w\s]/g, '.?');
+      // Replace punctuation/symbol characters with optional wildcard chars.
+      // Keep backslashes intact so escaped regex tokens are not broken.
+      replaced = replaced.replace(/[^\w\s\\]/g, '.?');
 
       return replaced;
     };
 
     searchStrings.forEach(string => {
-      const regex = new RegExp(`\\b${escapeRegex(string)}(?:es|s)?\\b`, 'i');
+      const regex = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegex(string)}(?:es|s)?(?![\\p{L}\\p{N}])`, 'iu');
       searches.set(string, regex);
     });
 
@@ -106,7 +110,7 @@
    * @param {Map<string, regex>} searchRegexes - The strings to search for.
    * @return {Object[]} A list of matches.
    */
-  function findMatches(context) {
+  function findMatches(context, searchRegexes) {
     const matches = [];
     const mainContent = document.querySelector(mainContentSelector);
 
@@ -239,8 +243,8 @@
       // Create a set to track processed search strings for THIS node only
       const processedSearchStrings = new Set();
 
-      // Find all matches and their positions first
-      const matchPositions = [];
+      // Find all matches and their positions first.
+      const matchCandidates = [];
 
       nodeMatches.forEach(({searchRegex, searchString}) => {
         // Skip if this search string has already been processed for this node
@@ -253,7 +257,7 @@
 
         const match = searchRegex.exec(text);
         if (match) {
-          matchPositions.push({
+          matchCandidates.push({
             start: match.index,
             end: match.index + match[0].length,
             matchText: match[0],
@@ -265,22 +269,51 @@
         }
       });
 
-      // Sort match positions by their start index (descending)
-      matchPositions.sort((a, b) => b.start - a.start);
+      // Prefer complete terms over partial overlaps.
+      // Example: keep "state house notes", reject overlapping "note".
+      matchCandidates.sort((a, b) => {
+        if (a.start !== b.start) {
+          return a.start - b.start;
+        }
+        return (b.end - b.start) - (a.end - a.start);
+      });
+      const acceptedMatches = [];
+      matchCandidates.forEach(candidate => {
+        const overlaps = acceptedMatches.some(existing => {
+          return candidate.start < existing.end && candidate.end > existing.start;
+        });
+        if (!overlaps) {
+          acceptedMatches.push(candidate);
+        }
+      });
+      acceptedMatches.sort((a, b) => b.start - a.start);
 
       // Process matches from right to left to avoid position shifts
-      matchPositions.forEach(({start, end, matchText, searchString}) => {
+      acceptedMatches.forEach(({start, end, matchText, searchString}) => {
         // Create text nodes for before and after the match
         const beforeText = document.createTextNode(text.substring(0, start));
-        const afterText = document.createTextNode(text.substring(end));
+        const afterRawText = text.substring(end);
 
         // Create the tooltip
         const definition = createTooltipContent(terms[searchString]);
         const tooltip = createTooltip(matchText, definition);
+        const nowrapWrapper = document.createElement('span');
+        nowrapWrapper.className = 'glossary-nowrap';
+        nowrapWrapper.style.whiteSpace = 'nowrap';
+
+        // Keep punctuation immediately after a term on the same line.
+        // This avoids a wrap point between the popover and punctuation.
+        const punctuationMatch = afterRawText.match(/^([,.;:!?'"”’)\]]+)/);
+        const trailingPunctuation = punctuationMatch ? punctuationMatch[1] : '';
+        const afterText = document.createTextNode(afterRawText.substring(trailingPunctuation.length));
+        nowrapWrapper.appendChild(tooltip);
+        if (trailingPunctuation) {
+          nowrapWrapper.appendChild(document.createTextNode(trailingPunctuation));
+        }
 
         // Replace the original text node
         parent.insertBefore(beforeText, currentNode);
-        parent.insertBefore(tooltip, currentNode);
+        parent.insertBefore(nowrapWrapper, currentNode);
         parent.insertBefore(afterText, currentNode);
         parent.removeChild(currentNode);
 
