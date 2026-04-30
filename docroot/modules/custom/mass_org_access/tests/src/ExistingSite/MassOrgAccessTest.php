@@ -277,6 +277,47 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * A user whose org is a CHILD of the content org cannot edit the content.
+   *
+   * Mirror of testAncestorOrgUserCanUpdateChildOrgContent — explicit example
+   * from the spec: page set for "EOHHS" must NOT be savable by an editor
+   * with only "Department of Public Health" assigned. Inheritance is
+   * upstream-only (parent-org users access child content), not downstream.
+   */
+  public function testChildOrgUserCannotUpdateParentOrgContent(): void {
+    $child_org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Child Org ' . $this->randomMachineName(),
+      'field_parent' => ['target_id' => $this->orgPageA->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $vocab = Vocabulary::load('user_organization');
+    $child_term = $this->createTerm($vocab, [
+      'name' => 'Child Term ' . $this->randomMachineName(),
+      'field_state_organization' => $child_org->id(),
+    ]);
+
+    $child_user = $this->createUser();
+    $child_user->addRole('editor');
+    $child_user->set('field_user_org', $child_term->id());
+    $child_user->activate();
+    $child_user->save();
+
+    // Parent-org content should remain off-limits to a child-org user.
+    $parent_node = $this->createTestNode('info_details', $this->orgPageA);
+    $this->assertFalse(
+      $parent_node->access('update', $child_user),
+      'A child-org user must NOT be able to update parent-org content.'
+    );
+    $this->assertTrue(
+      $parent_node->access('view', $child_user),
+      'View access remains neutral regardless of org direction.'
+    );
+  }
+
+  /**
    * A user whose org is an ancestor of the content org may edit the content.
    *
    * The presave sync writes ancestor TIDs into field_content_organization, so
