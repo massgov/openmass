@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.alert.field_alert_severity
     - field.field.node.alert.field_alert_title_link
     - field.field.node.alert.field_alert_title_link_target
+    - field.field.node.alert.field_content_organization
     - field.field.node.alert.field_english_version
     - field.field.node.alert.field_organizations
     - field.field.node.alert.field_reusable_label
@@ -360,6 +361,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
     weight: 14
@@ -559,7 +570,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  field_content_organization: true
   promote: true
   status: true
   sticky: true

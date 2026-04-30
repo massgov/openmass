@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.binder.field_binder_volume
     - field.field.node.binder.field_collections
     - field.field.node.binder.field_contact
+    - field.field.node.binder.field_content_organization
     - field.field.node.binder.field_data_flag
     - field.field.node.binder.field_data_format
     - field.field.node.binder.field_data_resource_type
@@ -372,6 +373,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_data_flag:
     type: options_buttons
     weight: 25
@@ -688,7 +699,6 @@ content:
 hidden:
   created: true
   field_binder_date_published: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

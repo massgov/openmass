@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.curated_list.field_application_login_links
     - field.field.node.curated_list.field_collections
     - field.field.node.curated_list.field_contact
+    - field.field.node.curated_list.field_content_organization
     - field.field.node.curated_list.field_curatedlist_lede
     - field.field.node.curated_list.field_curatedlist_list_section
     - field.field.node.curated_list.field_curatedlist_metatags
@@ -213,6 +214,16 @@ content:
   field_contact:
     type: entity_reference_autocomplete
     weight: 23
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
     region: content
     settings:
       match_operator: CONTAINS
@@ -642,7 +653,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   path: true
   promote: true
   status: true

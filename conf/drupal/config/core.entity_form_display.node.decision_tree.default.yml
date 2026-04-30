@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.decision_tree.field_content_organization
     - field.field.node.decision_tree.field_decision_tree_metatags
     - field.field.node.decision_tree.field_description
     - field.field.node.decision_tree.field_disclaimer
@@ -84,6 +85,16 @@ targetEntityType: node
 bundle: decision_tree
 mode: default
 content:
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_decision_tree_metatags:
     type: metatag_firehose
     weight: 3
@@ -252,7 +263,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.decision_tree_conclusion.field_add_video
+    - field.field.node.decision_tree_conclusion.field_content_organization
     - field.field.node.decision_tree_conclusion.field_decision_actions
     - field.field.node.decision_tree_conclusion.field_decision_root_ref
     - field.field.node.decision_tree_conclusion.field_description
@@ -88,6 +89,16 @@ content:
       add_mode: dropdown
       form_display_mode: default
       default_paragraph_type: _none
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_decision_actions:
     type: link_default
@@ -214,7 +225,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

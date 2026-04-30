@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.person.body
     - field.field.node.person.field_contact
     - field.field.node.person.field_contact_source
+    - field.field.node.person.field_content_organization
     - field.field.node.person.field_medium_image
     - field.field.node.person.field_metatags
     - field.field.node.person.field_organizations
@@ -188,6 +189,16 @@ content:
     weight: 52
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_medium_image:
     type: image_image
@@ -558,7 +569,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   field_person_email: true
   field_person_phone: true
   langcode: true

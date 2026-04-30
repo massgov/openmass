@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.decision_tree_branch.field_branch_disclaimer
+    - field.field.node.decision_tree_branch.field_content_organization
     - field.field.node.decision_tree_branch.field_decision_root_ref
     - field.field.node.decision_tree_branch.field_description
     - field.field.node.decision_tree_branch.field_more_info
@@ -84,6 +85,16 @@ content:
     region: content
     settings:
       rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
       placeholder: ''
     third_party_settings: {  }
   field_decision_root_ref:
@@ -227,7 +238,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

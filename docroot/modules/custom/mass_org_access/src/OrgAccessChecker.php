@@ -5,6 +5,7 @@ namespace Drupal\mass_org_access;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\node\NodeInterface;
 
 /**
@@ -14,6 +15,7 @@ class OrgAccessChecker {
 
   public function __construct(
     private readonly EntityTypeManagerInterface $entityTypeManager,
+    private readonly AccountProxyInterface $currentUser,
   ) {}
 
   /**
@@ -77,6 +79,16 @@ class OrgAccessChecker {
       return;
     }
 
+    // For brand-new entities with no Organization picked yet, auto-assign
+    // the creator's first user_organization → org_page so org-based access
+    // applies from day one.
+    if ($entity->isNew()
+      && $entity->hasField('field_organizations')
+      && $entity->get('field_organizations')->isEmpty()
+    ) {
+      $this->autoAssignFromCreator($entity);
+    }
+
     $org_nids = [];
 
     // org_page nodes represent an org themselves.
@@ -103,6 +115,26 @@ class OrgAccessChecker {
       'field_content_organization',
       array_map(fn($tid) => ['target_id' => $tid], $term_ids)
     );
+  }
+
+  /**
+   * Pre-fills field_organizations on a new entity from the current user's
+   * first user_organization term. Skipped if the user has no org assigned
+   * or the term has no field_state_organization mapping.
+   */
+  private function autoAssignFromCreator(EntityInterface $entity): void {
+    $tids = $this->getUserOrgTids($this->currentUser);
+    if (empty($tids)) {
+      return;
+    }
+    $first_term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tids[0]);
+    if (!$first_term || !$first_term->hasField('field_state_organization')) {
+      return;
+    }
+    $org_page_nid = (int) ($first_term->get('field_state_organization')->target_id ?? 0);
+    if ($org_page_nid) {
+      $entity->set('field_organizations', [['target_id' => $org_page_nid]]);
+    }
   }
 
   /**

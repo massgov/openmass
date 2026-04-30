@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.glossary.field_content_organization
     - field.field.node.glossary.field_organizations
     - field.field.node.glossary.field_terms
     - node.type.glossary
@@ -80,6 +81,16 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
@@ -176,6 +187,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
-  field_content_organization: true
   promote: true
   sticky: true

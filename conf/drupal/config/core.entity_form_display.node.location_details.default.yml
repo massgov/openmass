@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.location_details.field_content_organization
     - field.field.node.location_details.field_intended_audience
     - field.field.node.location_details.field_location_details_lede
     - field.field.node.location_details.field_location_details_links_5
@@ -111,6 +112,16 @@ targetEntityType: node
 bundle: location_details
 mode: default
 content:
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: -1
@@ -271,7 +282,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

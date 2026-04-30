@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.fee.field_content_organization
     - field.field.node.fee.field_fee_fee
     - field.field.node.fee.field_fee_name
     - field.field.node.fee.field_fee_unit
@@ -71,6 +72,16 @@ targetEntityType: node
 bundle: fee
 mode: default
 content:
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_fee_fee:
     type: string_textfield
     weight: 2
@@ -194,7 +205,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

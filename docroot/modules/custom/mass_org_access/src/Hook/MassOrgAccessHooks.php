@@ -48,23 +48,34 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Locks down field_user_org so users cannot self-assign organizations.
+   * Restricts who can edit org-related fields.
    *
-   * Without this, any logged-in editor could open /user/UID/edit and pick
-   * any org from the autocomplete, bypassing the entire access scheme. The
-   * field is reserved for users with 'administer users' (admins / user
-   * managers); everyone else can still view it.
+   * - field_user_org: users cannot self-assign organizations; only accounts
+   *   with 'administer users' may edit.
+   * - field_content_organization: only accounts with 'bypass org access'
+   *   (admins / content_team) see and edit it on the entity form. The
+   *   widget is therefore hidden from regular editors automatically.
+   *
+   * View access stays neutral in both cases.
    */
   #[Hook('entity_field_access')]
   public function entityFieldAccess(string $operation, FieldDefinitionInterface $field, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
-    if ($field->getName() !== 'field_user_org') {
-      return AccessResult::neutral();
+    $field_name = $field->getName();
+    if ($field_name === 'field_user_org') {
+      if ($operation === 'view') {
+        return AccessResult::neutral();
+      }
+      return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
+        ->cachePerPermissions();
     }
-    if ($operation === 'view') {
-      return AccessResult::neutral();
+    if ($field_name === 'field_content_organization') {
+      if ($operation === 'view') {
+        return AccessResult::neutral();
+      }
+      return AccessResult::forbiddenIf(!$account->hasPermission('bypass org access'))
+        ->cachePerPermissions();
     }
-    return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
-      ->cachePerPermissions();
+    return AccessResult::neutral();
   }
 
   /**

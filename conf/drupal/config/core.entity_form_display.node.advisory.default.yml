@@ -17,6 +17,7 @@ dependencies:
     - field.field.node.advisory.field_advisory_section
     - field.field.node.advisory.field_advisory_type_tax
     - field.field.node.advisory.field_collections
+    - field.field.node.advisory.field_content_organization
     - field.field.node.advisory.field_date_published
     - field.field.node.advisory.field_glossaries
     - field.field.node.advisory.field_intended_audience
@@ -291,6 +292,16 @@ content:
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
     third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_date_published:
     type: datetime_default
     weight: 15
@@ -436,7 +447,6 @@ content:
 hidden:
   created: true
   field_advisory_date: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

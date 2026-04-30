@@ -3,6 +3,7 @@ services:
     class: Drupal\mass_org_access\OrgAccessChecker
     arguments:
       - '@entity_type.manager'
+      - '@current_user'
 
   Drupal\mass_org_access\OrgAccessChecker:
     alias: mass_org_access.org_access_checker

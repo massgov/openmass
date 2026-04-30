@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.contact_information.field_contact_more_info_link
+    - field.field.node.contact_information.field_content_organization
     - field.field.node.contact_information.field_display_title
     - field.field.node.contact_information.field_organizations
     - field.field.node.contact_information.field_plain_description
@@ -145,6 +146,16 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_display_title:
     type: string_textfield
@@ -321,7 +332,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true

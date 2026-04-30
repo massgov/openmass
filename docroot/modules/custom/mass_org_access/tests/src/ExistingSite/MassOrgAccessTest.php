@@ -31,15 +31,18 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * Node bundles exercised by this test.
    *
    * Every bundle that has field_content_organization AND that the editor
-   * role can edit. Excluded: action, sitewide_alert, stacked_layout — the
-   * editor role has no edit permission for these bundles, so our hook never
-   * matters for them.
+   * role can edit.
+   *
+   * Excluded for permission reasons: action, sitewide_alert, stacked_layout
+   * (editor has no edit permission). Excluded for scope reasons:
+   * executive_order, sitewide_alert, stacked_layout (field intentionally
+   * not attached per DP-45788 scope).
    */
   private const NODE_BUNDLES = [
     'advisory', 'alert', 'binder', 'campaign_landing',
     'contact_information', 'curated_list', 'decision', 'decision_tree',
     'decision_tree_branch', 'decision_tree_conclusion', 'event',
-    'executive_order', 'external_data_resource', 'fee', 'form_page',
+    'external_data_resource', 'fee', 'form_page',
     'glossary', 'guide_page', 'how_to_page', 'info_details', 'location',
     'location_details', 'news', 'org_page', 'person', 'regulation', 'rules',
     'service_page', 'topic_page',
@@ -400,6 +403,74 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->drupalLogin($this->userA);
 
     $this->assertSession()->pageTextNotContains('Your account is not associated with any organization');
+  }
+
+  /**
+   * New entity gets the creator's first user_org auto-assigned.
+   *
+   * When an editor creates a node without picking an Organization, the
+   * presave hook should pre-fill field_organizations from their first
+   * field_user_org → field_state_organization mapping so org-based access
+   * applies from day one.
+   */
+  public function testNewEntityAutoAssignsCreatorOrg(): void {
+    \Drupal::currentUser()->setAccount($this->userA);
+
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Auto-assigned ' . $this->randomMachineName(),
+      // No field_organizations — checker should populate it.
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $org_nids = array_column($node->get('field_organizations')->getValue(), 'target_id');
+    $this->assertContains(
+      (string) $this->orgPageA->id(),
+      array_map('strval', $org_nids),
+      'New entity should be auto-tagged with creator first org_page.'
+    );
+
+    $tids = array_column($node->get('field_content_organization')->getValue(), 'target_id');
+    $this->assertContains(
+      (string) $this->termA->id(),
+      array_map('strval', $tids),
+      'Auto-assignment should propagate into field_content_organization.'
+    );
+  }
+
+  /**
+   * The Organization Owner Groups field is hidden from regular editors.
+   *
+   * Field-level access denies edit unless the user has bypass org access.
+   */
+  public function testOrgOwnerGroupsFieldHiddenFromRegularEditors(): void {
+    $node = $this->createTestNode('info_details', $this->orgPageA);
+
+    $this->assertFalse(
+      $node->get('field_content_organization')->access('edit', $this->userA),
+      'Regular editor must not be able to edit field_content_organization.'
+    );
+    $this->assertTrue(
+      $node->get('field_content_organization')->access('view', $this->userA),
+      'View access for field_content_organization stays neutral.'
+    );
+  }
+
+  /**
+   * Users with bypass org access can edit Organization Owner Groups.
+   */
+  public function testOrgOwnerGroupsFieldVisibleToBypassUsers(): void {
+    $bypass_user = $this->createUser();
+    $bypass_user->addRole('content_team');
+    $bypass_user->activate();
+    $bypass_user->save();
+
+    $node = $this->createTestNode('info_details', $this->orgPageA);
+    $this->assertTrue(
+      $node->get('field_content_organization')->access('edit', $bypass_user),
+      'content_team must be able to edit field_content_organization.'
+    );
   }
 
   /**

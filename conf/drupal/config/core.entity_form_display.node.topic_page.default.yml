@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.topic_page.field_collections
+    - field.field.node.topic_page.field_content_organization
     - field.field.node.topic_page.field_display_short_description
     - field.field.node.topic_page.field_hide_feedback_component
     - field.field.node.topic_page.field_image_credit
@@ -142,6 +143,16 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_autocomplete
+    weight: 100
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_display_short_description:
     type: boolean_checkbox
@@ -381,7 +392,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_content_organization: true
   langcode: true
   path: true
   promote: true
