@@ -1,4 +1,36 @@
 
+
+## [0.477.0] - April 28, 2026
+
+### Added
+  - DP-45023: Added accessible translation widget.
+  
+### Fixed
+  - DP-46271: Fix press release city injection to use the first paragraph even when the first p tag has attributes like lang.
+  - DP-46385: Fix icon duplicate id by cleaning up clipPath.
+  - DP-46544: Fixed issue with keyboard navigation getting trapped on global nav menu close button.
+  
+### Changed
+  - DP-46332: Updated log processing class to address issues with missing and broken logs.
+  
+### Security
+  - DP-46568: Drupal security update 11.3.8.
+  
+
+
+## [0.476.0] - April 21, 2026
+
+### Changed
+  - DP-45228: CSV Table / Datatables changes
+
+### Fixed
+  - DP-46272: Fix missing tag number in environment indicator after D11 upgrade.
+  - DP-46444: After regenerate entity usage, many documents not showing actual relationships.
+
+### Security
+  - DP-46359: Updates Drupal core to 11.3.7 to address security advisories.
+
+
 ## [0.475.1] - April 15, 2026
 
 ### Fixed:
