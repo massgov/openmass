@@ -11,6 +11,7 @@ use Drupal\mass_content\EventManager;
 use Drupal\mass_hierarchy\MassHierarchyBasedBreadcrumbBuilder;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Event pages controller.
@@ -23,13 +24,16 @@ class EventsController extends ControllerBase {
 
   protected $routeMatch;
 
+  protected $requestStack;
+
   /**
    * {@inheritdoc}
    */
-  public function __construct(EventManager $eventManager, MassHierarchyBasedBreadcrumbBuilder $breadcrumb, RouteMatchInterface $routeMatch) {
+  public function __construct(EventManager $eventManager, MassHierarchyBasedBreadcrumbBuilder $breadcrumb, RouteMatchInterface $routeMatch, RequestStack $requestStack) {
     $this->eventManager = $eventManager;
     $this->breadcrumb = $breadcrumb;
     $this->routeMatch = $routeMatch;
+    $this->requestStack = $requestStack;
   }
 
   /**
@@ -39,7 +43,8 @@ class EventsController extends ControllerBase {
     return new static(
       $container->get('mass_content.event_manager'),
       $container->get('entity_hierarchy.breadcrumb'),
-      $container->get('current_route_match')
+      $container->get('current_route_match'),
+      $container->get('request_stack')
     );
   }
 
@@ -115,6 +120,13 @@ class EventsController extends ControllerBase {
    * Build the past events page.
    */
   public function pastPage(NodeInterface $node) {
+    $page = (int) $this->requestStack->getCurrentRequest()->query->get('_page', 0);
+    if ($page < 1) {
+      return $this->redirect('mass_more_lists.events_past', ['node' => $node->id()], [
+        'query' => ['_page' => 1],
+      ]);
+    }
+
     // We only worry about cache tags for the parent node.
     // The parent node's tags should be cleared when a referencing
     // node is modified or added.

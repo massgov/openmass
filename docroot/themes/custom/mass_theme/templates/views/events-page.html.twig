@@ -82,14 +82,16 @@
     <div class="page-content">
       {% if events %}
         {% block pageContent %}
+          {% set listingMaxItems = 10 %}
+          {% set initialVisibleCount = events|length > listingMaxItems ? listingMaxItems : events|length %}
           {% set eventListingInteractive = {
-            maxItems: 10,
+            maxItems: listingMaxItems,
             resultsHeading: {
-              numResults: '1-' ~ events|length,
+              numResults: '1-' ~ initialVisibleCount,
               totalResults: events|length,
             },
             eventListing: {
-              maxItems: 10,
+              maxItems: listingMaxItems,
               events: events,
             },
             pagination: {
