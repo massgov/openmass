@@ -12,3 +12,11 @@ services:
     class: Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber
     tags:
       - {name: event_subscriber}
+  logger.channel.mass_caching:
+    parent: logger.channel_base
+    arguments: ['mass_caching']
+  mass_caching.purge_header_size_logger_subscriber:
+    class: Drupal\mass_caching\EventSubscriber\PurgeHeaderSizeLoggerSubscriber
+    arguments: ['@logger.channel.mass_caching']
+    tags:
+      - { name: event_subscriber }
