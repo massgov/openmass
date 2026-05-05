@@ -4,11 +4,9 @@ namespace Drupal\mass_fields;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Tags;
-use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Entity\EntityAutocompleteMatcher as DefaultAutocompleteMatcher;
 use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\user\UserInterface;
 
 /**
  * Matcher class to get autocompletion results for entity reference.
@@ -89,23 +87,14 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
           else {
             $key = "$label ($entity_id)";
           }
-          // Strip extra spaces, line breaks, and tags.
-          $key = preg_replace(
-            '/\s\s+/',
-            ' ',
-            str_replace("\n", '', trim(Html::decodeEntities(strip_tags($key))))
-          );
+          // Strip troublesome characters like starting/trailing white spaces, line breaks and tags.
+          $key = preg_replace('/\s\s+/', ' ', str_replace("\n", '', trim(Html::decodeEntities(strip_tags($key)))));
           // Names containing commas or quotes must be wrapped in quotes.
           $key = Tags::encode($key);
-          $entity = $this->entityTypeManager
-            ->getStorage($target_type)
-            ->load($entity_id);
+          $entity = \Drupal::entityTypeManager()->getStorage($target_type)->load($entity_id);
           if ($entity) {
-            if ($entity instanceof EntityPublishedInterface && !$entity->isPublished()) {
+            if ($entity->getEntityType()->id() == 'node' && !$entity->isPublished()) {
               $label .= " (unpublished)";
-            }
-            if ($entity instanceof UserInterface && !$entity->isActive()) {
-              $label .= " (blocked)";
             }
           }
           $matches[] = [
