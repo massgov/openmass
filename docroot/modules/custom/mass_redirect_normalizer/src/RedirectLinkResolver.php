@@ -104,9 +104,7 @@ class RedirectLinkResolver {
 
     $matches = [];
     foreach ($this->buildReferenceSourcePaths($targetType, $targetId) as $sourcePath) {
-      // Guard: if this non-canonical source path currently resolves to the same
-      // referenced entity, treat it as an active alias and do not remap refs
-      // from redirects that might be stale/inactive for route resolution.
+      // If this alias still resolves to the same entity, don't remap the ref.
       if (
         !$this->isCanonicalEntityPath($targetType, $targetId, $sourcePath) &&
         $this->pathResolvesToEntity($sourcePath, $targetType, $targetId)
@@ -366,10 +364,7 @@ class RedirectLinkResolver {
       return NULL;
     }
 
-    $candidates = [
-      ltrim($sourcePath, '/'),
-      '/' . ltrim($sourcePath, '/'),
-    ];
+    $candidates = $this->buildSourcePathCandidates($sourcePath);
 
     $storage = $this->entityTypeManager->getStorage('redirect');
     foreach ($candidates as $candidate) {
@@ -405,10 +400,7 @@ class RedirectLinkResolver {
       return [];
     }
     $limit = max(1, $limit);
-    $candidates = [
-      ltrim($sourcePath, '/'),
-      '/' . ltrim($sourcePath, '/'),
-    ];
+    $candidates = $this->buildSourcePathCandidates($sourcePath);
 
     $storage = $this->entityTypeManager->getStorage('redirect');
     foreach ($candidates as $candidate) {
@@ -432,6 +424,37 @@ class RedirectLinkResolver {
       return $results;
     }
     return [];
+  }
+
+  /**
+   * Builds normalized redirect source lookup candidates.
+   *
+   * Handles slash variants so chains don't break on "/" differences.
+   *
+   * @return string[]
+   *   De-duplicated candidate source keys.
+   */
+  private function buildSourcePathCandidates(string $sourcePath): array {
+    $path = ltrim(trim($sourcePath), '/');
+    if ($path === '') {
+      return [''];
+    }
+
+    $pathNoTrail = rtrim($path, '/');
+    if ($pathNoTrail === '') {
+      $pathNoTrail = $path;
+    }
+    $pathTrail = $pathNoTrail . '/';
+
+    $variants = [
+      $path,
+      '/' . $path,
+      $pathNoTrail,
+      '/' . $pathNoTrail,
+      $pathTrail,
+      '/' . $pathTrail,
+    ];
+    return array_values(array_unique($variants));
   }
 
 }

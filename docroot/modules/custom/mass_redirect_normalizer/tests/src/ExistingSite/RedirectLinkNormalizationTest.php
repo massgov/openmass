@@ -284,6 +284,43 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests redirect chain follows hops across trailing-slash variants.
+   */
+  public function testResolveRedirectTargetHandlesTrailingSlashHop(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+
+    $sourceStart = 'slash-hop-start-' . $this->randomMachineName();
+    $sourceMiddle = 'slash-hop-middle-' . $this->randomMachineName();
+
+    $first = Redirect::create();
+    $first->setSource($sourceStart);
+    $first->setRedirect('/' . $sourceMiddle . '/');
+    $first->setLanguage('en');
+    $first->setStatusCode(301);
+    $first->save();
+    $this->cleanupEntities[] = $first;
+
+    $second = Redirect::create();
+    $second->setSource($sourceMiddle);
+    $second->setRedirect('/node/' . $target->id());
+    $second->setLanguage('en');
+    $second->setStatusCode(301);
+    $second->save();
+    $this->cleanupEntities[] = $second;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $sourceStart);
+    $this->assertTrue($resolved['changed']);
+    $this->assertStringContainsString($target->toUrl()->toString(), $resolved['target_path']);
+  }
+
+  /**
    * Tests redirecting to external target is ignored for rewriting.
    */
   public function testRedirectToExternalTargetIsIgnored(): void {

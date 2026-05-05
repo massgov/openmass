@@ -186,7 +186,7 @@ class RedirectLinkNormalizationManager {
       $entity->setNewRevision();
     }
     if ($entity instanceof RevisionLogInterface) {
-      // Keep automated URL-fix revisions attributable to admin.
+      // These automated fixes should show as admin.
       $entity->setRevisionUserId(1);
       $entity->setRevisionLogMessage($message);
       $entity->setRevisionCreationTime($this->time->getRequestTime());

@@ -121,7 +121,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $saved = $this->state->get(self::PROGRESS_STATE_KEY, []);
     $lastIds = (is_array($saved) && isset($saved['last_ids']) && is_array($saved['last_ids'])) ? $saved['last_ids'] : [];
     if ($resume && is_array($saved)) {
-      // Keep progress counters cumulative across resumed runs.
+      // Keep counters running when we resume.
       $processed = max(0, (int) ($saved['processed'] ?? 0));
       $entitiesChanged = max(0, (int) ($saved['updated_entities'] ?? 0));
       $valueUpdates = max(0, (int) ($saved['changed_field_values'] ?? 0));
