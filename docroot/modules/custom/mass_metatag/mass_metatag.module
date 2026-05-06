@@ -830,6 +830,7 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
 
   // Hide the following metatags from the advanced section.
   $subsection_advanced = [
+    'robots',
     'geo_placename',
     'geo_position',
     'geo_region',
@@ -862,6 +863,65 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
   // We've decided to hide the whole metatag section of the node form except Admins.
   if (isset($metatags_labels[$content_type])) {
     $form[$metatags_labels[$content_type]]['#access'] = Drupal::currentUser()->hasPermission('administer meta tags');
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mass_metatag_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id !== 'views_bulk_operations_configure_action') {
+    return;
+  }
+
+  $form_data = $form_state->get('views_bulk_operations');
+  if (empty($form_data['action_id']) || $form_data['action_id'] !== 'views_bulk_edit') {
+    return;
+  }
+
+  // Metatag editing is not allowed in standard author flows, so remove it
+  // from bulk edit forms as well.
+  mass_metatag_hide_elements_by_terms($form, ['metatag']);
+}
+
+/**
+ * Hide elements whose key/title contains any of the given terms.
+ *
+ * @param array $elements
+ *   Form element tree to inspect and alter.
+ * @param array $hide_terms
+ *   Terms matched against each element key/title.
+ */
+function mass_metatag_hide_elements_by_terms(array &$elements, array $hide_terms) {
+  foreach ($elements as $key => &$element) {
+    if (!is_array($element)) {
+      continue;
+    }
+
+    $matches = FALSE;
+    $key_string = strtolower((string) $key);
+    foreach ($hide_terms as $term) {
+      if (str_contains($key_string, $term)) {
+        $matches = TRUE;
+        break;
+      }
+    }
+
+    if (!$matches && isset($element['#title'])) {
+      $title = strtolower(strip_tags((string) $element['#title']));
+      foreach ($hide_terms as $term) {
+        if (str_contains($title, $term)) {
+          $matches = TRUE;
+          break;
+        }
+      }
+    }
+
+    if ($matches) {
+      $element['#access'] = FALSE;
+    }
+
+    mass_metatag_hide_elements_by_terms($element, $hide_terms);
   }
 }
 

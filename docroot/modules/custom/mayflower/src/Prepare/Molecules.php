@@ -296,6 +296,7 @@ class Molecules {
       'x.com' => 'x-logo',
       'facebook.com' => 'facebook-logo',
       'threads.net' => 'threads-logo',
+      'threads.com' => 'threads-logo',
       'flickr.com' => 'flickr-logo',
       'linkedin.com' => 'linkedin-logo',
       'instagram.com' => 'instagram-logo',
