@@ -17,6 +17,6 @@ services:
     arguments: ['mass_caching']
   mass_caching.purge_header_size_logger_subscriber:
     class: Drupal\mass_caching\EventSubscriber\PurgeHeaderSizeLoggerSubscriber
-    arguments: ['@logger.channel.mass_caching']
+    arguments: ['@logger.channel.mass_caching', '@entity_type.manager']
     tags:
       - { name: event_subscriber }

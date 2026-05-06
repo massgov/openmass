@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_caching\EventSubscriber;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\NodeInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -21,7 +22,7 @@ final class PurgeHeaderSizeLoggerSubscriber implements EventSubscriberInterface 
   /**
    * Logs when the header line reaches or exceeds this many bytes.
    */
-  private const HEADER_SIZE_THRESHOLD = 8192;
+  private const HEADER_SIZE_THRESHOLD = 200;
 
   /**
    * The logger channel.
@@ -29,16 +30,26 @@ final class PurgeHeaderSizeLoggerSubscriber implements EventSubscriberInterface 
   private LoggerInterface $logger;
 
   /**
+   * The entity type manager.
+   */
+  private EntityTypeManagerInterface $entityTypeManager;
+
+  /**
    * Constructs a PurgeHeaderSizeLoggerSubscriber.
    */
-  public function __construct(LoggerInterface $logger) {
+  public function __construct(LoggerInterface $logger, EntityTypeManagerInterface $entity_type_manager) {
     $this->logger = $logger;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
    * Logs content context when the purge header reaches the size threshold.
    */
   public function onKernelResponse(ResponseEvent $event): void {
+    if (!$this->isEnabled()) {
+      return;
+    }
+
     if (!$event->isMainRequest()) {
       return;
     }
@@ -64,7 +75,7 @@ final class PurgeHeaderSizeLoggerSubscriber implements EventSubscriberInterface 
 
     $node = $request->attributes->get('node');
     if (is_numeric($node)) {
-      $node = \Drupal::entityTypeManager()->getStorage('node')->load((int) $node);
+      $node = $this->entityTypeManager->getStorage('node')->load((int) $node);
     }
 
     if ($node instanceof NodeInterface) {
@@ -95,6 +106,16 @@ final class PurgeHeaderSizeLoggerSubscriber implements EventSubscriberInterface 
       // Run after acquia_purge has added the final hashed header.
       KernelEvents::RESPONSE => ['onKernelResponse', -1100],
     ];
+  }
+
+  /**
+   * Determines whether oversized purge header logging is enabled.
+   */
+  private function isEnabled(): bool {
+    $enabled_var = getenv('MASS_PURGE_HEADER_SIZE_LOGGER_ENABLED');
+    $enabled = filter_var($enabled_var, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+
+    return $enabled ?? FALSE;
   }
 
 }
