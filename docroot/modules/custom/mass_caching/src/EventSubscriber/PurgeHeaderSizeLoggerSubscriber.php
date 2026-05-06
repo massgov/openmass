@@ -22,7 +22,7 @@ final class PurgeHeaderSizeLoggerSubscriber implements EventSubscriberInterface 
   /**
    * Logs when the header line reaches or exceeds this many bytes.
    */
-  private const HEADER_SIZE_THRESHOLD = 200;
+  private const HEADER_SIZE_THRESHOLD = 8192;
 
   /**
    * The logger channel.
