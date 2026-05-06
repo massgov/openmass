@@ -192,12 +192,13 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
       return $hasTemplate !== NULL;
     });
 
-    // Ensure text contains "Lorem".
+    // Ensure quoted glossary term is injected without added whitespace.
     $popover = $page->find('css', '.popover');
-    $popover_parent = $popover->getParent();
-    $popover_markup = $popover->getOuterHtml();
-    $parent_markup = $popover_parent->getOuterHtml();
-    $this->assertStringContainsString("\"" . $popover_markup . "\"", $parent_markup);
+    $nowrap_wrapper = $popover->getParent();
+    $container_markup = $nowrap_wrapper->getParent()->getOuterHtml();
+    $this->assertStringContainsString('Test definition popover "', $container_markup);
+    $this->assertStringContainsString('<span class="glossary-nowrap"', $container_markup);
+    $this->assertStringContainsString('>"</span>', $container_markup);
   }
 
   /**

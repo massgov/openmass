@@ -207,6 +207,10 @@
 
     trigger.textContent = text;
     body.innerHTML = definition;
+    // Keep tooltip content wrapping normally even if inline trigger context
+    // uses a no-wrap wrapper to prevent punctuation-only line breaks.
+    dialog.style.whiteSpace = 'normal';
+    body.style.whiteSpace = 'normal';
 
     dialog.id = dialog.id.replace('uniqueID', tooltipId);
     dialog.setAttribute('aria-labelledby', labelledby.replace('uniqueID', tooltipId));
