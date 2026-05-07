@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\Tests\mass_bulk_file_replace\ExistingSiteJavascript;
 
 use Drupal\Core\File\FileExists;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\media\MediaInterface;
@@ -153,6 +154,18 @@ JS
   }
 
   /**
+   * Ensures the temporary mismatch upload directory exists in all environments.
+   */
+  private function ensureMismatchTempDirectory(): void {
+    /** @var \Drupal\Core\File\FileSystemInterface $fs */
+    $fs = \Drupal::service('file_system');
+    $flags = FileSystemInterface::CREATE_DIRECTORY
+      | FileSystemInterface::MODIFY_PERMISSIONS;
+    $directory = 'temporary://mass_bulk_file_replace';
+    $fs->prepareDirectory($directory, $flags);
+  }
+
+  /**
    * Upload form shows accessibility radios and dropzone.
    */
   public function testUploadFormRendersAccessibilityRadios(): void {
@@ -243,6 +256,7 @@ JS
 
     /** @var \Drupal\Core\File\FileSystemInterface $fs */
     $fs = \Drupal::service('file_system');
+    $this->ensureMismatchTempDirectory();
     $uri_token = 'temporary://mass_bulk_file_replace/bulk-ui-token-' . $this->randomMachineName() . '.pdf';
     $fs->saveData('token-upload', $uri_token, FileExists::Replace);
     $file_token = File::create([
@@ -302,6 +316,7 @@ JS
 
     /** @var \Drupal\Core\File\FileSystemInterface $fs */
     $fs = \Drupal::service('file_system');
+    $this->ensureMismatchTempDirectory();
     $uri_token = 'temporary://mass_bulk_file_replace/bulk-ui-cancel-' . $this->randomMachineName() . '.pdf';
     $fs->saveData('x', $uri_token, FileExists::Replace);
     $file_token = File::create([
