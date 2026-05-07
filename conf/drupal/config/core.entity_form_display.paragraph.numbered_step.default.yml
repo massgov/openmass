@@ -1,0 +1,44 @@
+uuid: 39cd9801-6e98-4464-811c-d4ed096cd086
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.numbered_step.field_next_step_details
+    - field.field.paragraph.numbered_step.field_next_step_link
+    - field.field.paragraph.numbered_step.field_next_step_title
+    - paragraphs.paragraphs_type.numbered_step
+  module:
+    - link
+    - text
+id: paragraph.numbered_step.default
+targetEntityType: paragraph
+bundle: numbered_step
+mode: default
+content:
+  field_next_step_details:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_next_step_link:
+    type: link_default
+    weight: 3
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_next_step_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
