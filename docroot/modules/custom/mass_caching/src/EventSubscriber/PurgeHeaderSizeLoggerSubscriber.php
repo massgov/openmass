@@ -61,7 +61,9 @@ final class PurgeHeaderSizeLoggerSubscriber implements EventSubscriberInterface 
 
     $header_value = (string) $response->headers->get(self::HEADER_NAME, '');
     $header_line_size = strlen(self::HEADER_NAME . ': ' . $header_value);
-    if ($header_line_size < self::HEADER_SIZE_THRESHOLD) {
+    $threshold_var = getenv('MASS_PURGE_HEADER_SIZE_THRESHOLD');
+    $header_size_threshold = filter_var($threshold_var, FILTER_VALIDATE_INT) ?: 8192;
+    if ($header_line_size < $header_size_threshold) {
       return;
     }
 
