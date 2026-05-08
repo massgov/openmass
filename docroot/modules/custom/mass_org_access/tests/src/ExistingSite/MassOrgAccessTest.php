@@ -447,6 +447,52 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Form_alter pre-fills Organization Owner Groups on the EDIT form when
+   * field_content_organization is empty (un-backfilled existing content).
+   * Authors with bypass permission then see the derived value before save.
+   */
+  public function testFormAlterPreFillsEmptyContentOrgOnEditForm(): void {
+    \Drupal::currentUser()->setAccount($this->userA);
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Existing un-backfilled ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    // Simulate un-backfilled state — clear via DB to bypass our presave sync.
+    \Drupal::database()
+      ->delete('node__field_content_organization')
+      ->condition('entity_id', $node->id())
+      ->execute();
+    \Drupal::database()
+      ->delete('node_revision__field_content_organization')
+      ->condition('entity_id', $node->id())
+      ->execute();
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$node->id()]);
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+
+    $this->assertEmpty(
+      $node->get('field_content_organization')->getValue(),
+      'Sanity: field is empty before form load.'
+    );
+
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('node', 'default')
+      ->setEntity($node);
+    $form_state = (new \Drupal\Core\Form\FormState())->setFormObject($form_object);
+    \Drupal::formBuilder()->buildForm($form_object, $form_state);
+
+    // The form's entity (not necessarily the local $node reference) is what
+    // the widget reads from at render time.
+    $entity_in_form = $form_object->getEntity();
+    $this->assertNotEmpty(
+      $entity_in_form->get('field_content_organization')->getValue(),
+      'Form_alter pre-fills field_content_organization from existing field_organizations.'
+    );
+  }
+
+  /**
    * Form_alter pre-fills Organization Owner Groups at form load for new
    * entities — author sees the inherited org before pressing Save.
    */

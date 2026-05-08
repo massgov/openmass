@@ -6,6 +6,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -125,9 +126,13 @@ class MassOrgAccessHooks {
 
   /**
    * Pre-fills Organization Owner Groups (and Organization(s)) at form load
-   * for new content, so the editor sees the inherited values immediately
-   * instead of an empty field. The same logic runs again at presave as a
-   * safety net for non-form save paths.
+   * so the editor sees the inherited values immediately instead of an empty
+   * field. Covers two cases:
+   *  - new entity: auto-assign from the creator's first user_organization;
+   *  - existing entity with empty field_content_organization (un-backfilled):
+   *    derive from the entity's existing field_organizations.
+   * Skipped when the field already has a value — never override what the
+   * editor (or backfill) deliberately set.
    */
   #[Hook('form_alter')]
   public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
@@ -136,7 +141,13 @@ class MassOrgAccessHooks {
       return;
     }
     $entity = $form_object->getEntity();
-    if (!$entity->isNew() || !$entity->hasField('field_content_organization')) {
+    if (!$entity instanceof FieldableEntityInterface) {
+      return;
+    }
+    if (!$entity->hasField('field_content_organization')) {
+      return;
+    }
+    if (!$entity->get('field_content_organization')->isEmpty()) {
       return;
     }
     $this->orgAccessChecker->syncContentOrganization($entity);
