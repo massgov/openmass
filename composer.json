@@ -260,6 +260,7 @@
         "drupal/r4032login": "^2.2",
         "drupal/rabbit_hole": "^1.1",
         "drupal/redirect": "^1",
+        "drupal/reference_blocked_users": "^1.0",
         "drupal/require_on_publish": "^2.0",
         "drupal/scheduled_transitions": "^2.7",
         "drupal/schema_metatag": "^3.0",
@@ -421,6 +422,9 @@
                 "Twig debug: avoid missing directory var warnings": "patches/drupal_core__twig_theme_engine_directory_undefined.patch",
                 "Entity reference lazy load: fall back when fiber switching is disallowed": "patches/core/drupal-core-entity-reference-item-base-fibererror-fallback.patch",
                 "Access policy processor: fall back when fiber switching is disallowed": "patches/core/drupal-core-access-policy-processor-fibererror-inline-fallback.patch"
+            },
+            "drupal/clamav": {
+                "DP-45788: Distinguish ClamAV scan-limit overruns (Heuristics.Limits.Exceeded.*) from real virus hits": "patches/clamav/DP-45788_clamav_heuristics_limits_exceeded.patch"
             },
             "drupal/conditional_fields": {
                 "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch",

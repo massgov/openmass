@@ -1,5 +1,40 @@
 
 
+## [0.478.0] - May 5, 2026
+
+### Removed
+  - DP-44256: Removed Percy/Browserstack.
+  
+### Fixed
+  - DP-45856: Hide metadata related to robots noindex on the form.
+  - DP-46633: Ensure Threads social media icons render for both threads.com and threads.net URLs on organization pages.
+  
+### Changed
+  - DP-45941: Allow Editors to Reference Blocked Users in “Authored By” Field for all report filters.
+  
+### Security
+  - DP-46553: Document upload incorrectly flagged as virus: patch drupal/clamav to be more axplanatory why file cannot be uploaded
+  
+
+
+## [0.477.0] - April 28, 2026
+
+### Added
+  - DP-45023: Added accessible translation widget.
+  
+### Fixed
+  - DP-46271: Fix press release city injection to use the first paragraph even when the first p tag has attributes like lang.
+  - DP-46385: Fix icon duplicate id by cleaning up clipPath.
+  - DP-46544: Fixed issue with keyboard navigation getting trapped on global nav menu close button.
+  
+### Changed
+  - DP-46332: Updated log processing class to address issues with missing and broken logs.
+  
+### Security
+  - DP-46568: Drupal security update 11.3.8.
+  
+
+
 ## [0.476.0] - April 21, 2026
 
 ### Changed
