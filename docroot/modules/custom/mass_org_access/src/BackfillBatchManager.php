@@ -29,9 +29,12 @@ class BackfillBatchManager {
    * Builds the batch definition.
    */
   public function generateBatch(): array {
+    // Skip org_page bundle: those nodes are the source of truth and their
+    // Owner Groups are populated manually by the content team.
     $node_ids = array_values($this->entityTypeManager->getStorage('node')
       ->getQuery()
       ->accessCheck(FALSE)
+      ->condition('type', 'org_page', '<>')
       ->execute());
 
     $media_ids = array_values($this->entityTypeManager->getStorage('media')

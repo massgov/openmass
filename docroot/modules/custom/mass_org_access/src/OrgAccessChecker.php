@@ -69,39 +69,32 @@ class OrgAccessChecker {
   }
 
   /**
-   * Syncs field_organizations to field_content_organization on the entity.
+   * Backfill: derive field_content_organization from the entity's first
+   * field_organizations value via user_organization → field_state_organization
+   * + taxonomy term ancestors.
    *
-   * Resolves org_page references to user_organization term references,
-   * including all ancestor org TIDs. Pure read-of-Organizations →
-   * write-to-Owner-Groups; never auto-assigns the Organization itself
-   * (that is the form pre-fill's job in entity_prepare_form).
+   * Used by `drush moab` only. Org_page bundle is intentionally skipped:
+   * its Owner Groups are maintained manually by the content team and act
+   * as the source of truth for the rest of the content.
    */
   public function syncContentOrganization(EntityInterface $entity): void {
     if (!$entity->hasField('field_content_organization')) {
       return;
     }
-
-    $org_nids = [];
-
-    // org_page nodes represent an org themselves.
-    if ($entity instanceof NodeInterface && $entity->bundle() === 'org_page' && $entity->id()) {
-      $org_nids[] = (int) $entity->id();
-    }
-
-    if ($entity->hasField('field_organizations')) {
-      foreach ($entity->get('field_organizations') as $item) {
-        if ($item->target_id) {
-          $org_nids[] = (int) $item->target_id;
-        }
-      }
-    }
-
-    if (empty($org_nids)) {
+    if ($entity instanceof NodeInterface && $entity->bundle() === 'org_page') {
       return;
     }
-
-    $term_ids = $this->getTermIdsByOrgNidsWithAncestors(array_unique($org_nids));
-
+    if (!$entity->hasField('field_organizations') || $entity->get('field_organizations')->isEmpty()) {
+      return;
+    }
+    $first_org_nid = (int) ($entity->get('field_organizations')->first()->target_id ?? 0);
+    if (!$first_org_nid) {
+      return;
+    }
+    $term_ids = $this->getTermIdsByOrgNidsWithAncestors([$first_org_nid]);
+    if (empty($term_ids)) {
+      return;
+    }
     $entity->set(
       'field_content_organization',
       array_map(fn($tid) => ['target_id' => $tid], $term_ids)

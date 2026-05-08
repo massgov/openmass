@@ -39,7 +39,9 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * not attached per DP-45788 scope). Excluded for derived-org reasons:
    * binder, decision, person (mass_validation derives field_organizations
    * from a bundle-specific reference field on presave; setting
-   * field_organizations directly in tests is overwritten).
+   * field_organizations directly in tests is overwritten). Excluded as
+   * source-of-truth: org_page (Owner Groups maintained manually by the
+   * content team; backfill skips).
    */
   private const NODE_BUNDLES = [
     'advisory', 'alert', 'campaign_landing',
@@ -47,7 +49,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     'decision_tree_branch', 'decision_tree_conclusion', 'event',
     'external_data_resource', 'fee', 'form_page',
     'glossary', 'guide_page', 'how_to_page', 'info_details', 'location',
-    'location_details', 'news', 'org_page', 'regulation', 'rules',
+    'location_details', 'news', 'regulation', 'rules',
     'service_page', 'topic_page',
   ];
 
