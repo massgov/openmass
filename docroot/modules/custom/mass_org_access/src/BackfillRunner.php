@@ -151,7 +151,7 @@ class BackfillRunner {
       }
 
       foreach ($storage->loadMultiple($ids) as $entity) {
-        $this->orgAccessChecker->syncContentOrganization($entity);
+        $this->orgAccessChecker->populateOwnerGroupsFromOrgPage($entity);
         if (method_exists($entity, 'setNewRevision')) {
           $entity->setNewRevision(FALSE);
         }

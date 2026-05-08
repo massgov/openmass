@@ -91,6 +91,13 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'field_state_organization' => $this->orgPageB->id(),
     ]);
 
+    // Mimic the content team's manual population of Owner Groups on
+    // org_page nodes (REQUIREMENTS.md Section C). The drush moab backfill
+    // copies these values onto every content entity that references the
+    // org_page.
+    $this->setOrgPageOwnerGroups($this->orgPageA, [$this->termA->id()]);
+    $this->setOrgPageOwnerGroups($this->orgPageB, [$termB->id()]);
+
     $this->userA = $this->createUser();
     $this->userA->addRole('editor');
     $this->userA->set('field_user_org', $this->termA->id());
@@ -102,6 +109,23 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->userB->set('field_user_org', $termB->id());
     $this->userB->activate();
     $this->userB->save();
+  }
+
+  /**
+   * Manually sets Organization Owner Groups on an org_page.
+   *
+   * In production the content team populates this field by hand with the
+   * matching user_organization term plus all ancestor terms. The drush
+   * moab backfill then copies the value verbatim onto downstream content.
+   */
+  private function setOrgPageOwnerGroups(NodeInterface $orgPage, array $tids): void {
+    $orgPage->set(
+      'field_content_organization',
+      array_map(fn($tid) => ['target_id' => $tid], $tids)
+    );
+    $orgPage->setNewRevision(FALSE);
+    $orgPage->setSyncing(TRUE);
+    $orgPage->save();
   }
 
   public static function nodeBundleProvider(): array {
@@ -325,8 +349,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * A user whose org is an ancestor of the content org may edit the content.
    *
-   * The presave sync writes ancestor TIDs into field_content_organization, so
-   * a parent-org user matches a child-org node via simple intersection.
+   * The content team manually populates the child org_page's
+   * field_content_organization with the child term AND its ancestor terms.
+   * The drush backfill then copies that union onto child-tagged content,
+   * so a parent-org user matches via simple intersection without runtime
+   * traversal.
    */
   public function testAncestorOrgUserCanUpdateChildOrgContent(): void {
     $child_org = $this->createNode([
@@ -337,13 +364,17 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $node = $this->createNode([
-      'type' => 'info_details',
-      'title' => 'Test child-org node ' . $this->randomMachineName(),
-      'field_organizations' => [$child_org->id()],
-      'status' => 1,
-      'moderation_state' => MassModeration::PUBLISHED,
+    $vocab = Vocabulary::load('user_organization');
+    $child_term = $this->createTerm($vocab, [
+      'name' => 'Child Term ' . $this->randomMachineName(),
+      'field_state_organization' => $child_org->id(),
     ]);
+
+    // The content team puts both the child term and its parent term on
+    // the child org_page.
+    $this->setOrgPageOwnerGroups($child_org, [$child_term->id(), $this->termA->id()]);
+
+    $node = $this->createTestNode('info_details', $child_org);
 
     $this->assertTrue(
       $node->access('update', $this->userA),
@@ -398,10 +429,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ]);
 
     $vocab = Vocabulary::load('user_organization');
-    $this->createTerm($vocab, [
+    $third_term = $this->createTerm($vocab, [
       'name' => 'Test Term C ' . $this->randomMachineName(),
       'field_state_organization' => $third_org->id(),
     ]);
+    $this->setOrgPageOwnerGroups($third_org, [$third_term->id()]);
     $termA = $this->getUserTermForOrg($this->orgPageA);
     $termB = $this->getUserTermForOrg($this->orgPageB);
 
@@ -665,10 +697,14 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * the denormalized list.
    */
   public function testMultiOrgContentAllowsAnyMatchingOrgUser(): void {
+    $termA = $this->getUserTermForOrg($this->orgPageA);
+    $termB = $this->getUserTermForOrg($this->orgPageB);
+
     $node = $this->createNode([
       'type' => 'info_details',
       'title' => 'Multi-org node ' . $this->randomMachineName(),
       'field_organizations' => [$this->orgPageA->id(), $this->orgPageB->id()],
+      'field_content_organization' => [$termA->id(), $termB->id()],
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
@@ -716,14 +752,14 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Mimics what the editor form does on Save: derive Owner Groups from
-   * Organization(s) + ancestors and persist. We need this in tests because
-   * mass_org_access no longer syncs in entity_presave — only at form load
-   * and via the drush moab backfill.
+   * Mimics what the drush moab backfill does on each entity: copy Owner
+   * Groups from the related org_page and persist. We need this in tests
+   * because mass_org_access does not sync in entity_presave — values are
+   * populated only at form load (from the editor's terms) or via drush.
    */
   private function syncOwnerGroupsAndSave($entity): void {
     \Drupal::service('mass_org_access.org_access_checker')
-      ->syncContentOrganization($entity);
+      ->populateOwnerGroupsFromOrgPage($entity);
     if (method_exists($entity, 'setNewRevision')) {
       $entity->setNewRevision(FALSE);
     }

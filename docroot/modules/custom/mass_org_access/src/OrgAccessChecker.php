@@ -69,15 +69,21 @@ class OrgAccessChecker {
   }
 
   /**
-   * Backfill: derive field_content_organization from the entity's first
-   * field_organizations value via user_organization → field_state_organization
-   * + taxonomy term ancestors.
+   * Backfill: copy field_content_organization from the related org_page.
+   *
+   * Reads the entity's first field_organizations value, loads the referenced
+   * org_page, and copies its field_content_organization verbatim. Org_page's
+   * Owner Groups are populated manually by the content team with the term
+   * plus all ancestor terms — see REQUIREMENTS.md Section C/D — so no
+   * ancestor walk is needed here.
    *
    * Used by `drush moab` only. Org_page bundle is intentionally skipped:
-   * its Owner Groups are maintained manually by the content team and act
-   * as the source of truth for the rest of the content.
+   * its Owner Groups are the source of truth and must not be overwritten.
+   * If the related org_page has no Owner Groups yet, this method leaves the
+   * entity untouched — per spec, that entity remains admin-only-editable
+   * until org_page is populated.
    */
-  public function syncContentOrganization(EntityInterface $entity): void {
+  public function populateOwnerGroupsFromOrgPage(EntityInterface $entity): void {
     if (!$entity->hasField('field_content_organization')) {
       return;
     }
@@ -91,13 +97,20 @@ class OrgAccessChecker {
     if (!$first_org_nid) {
       return;
     }
-    $term_ids = $this->getTermIdsByOrgNidsWithAncestors([$first_org_nid]);
-    if (empty($term_ids)) {
+    $org_page = $this->entityTypeManager->getStorage('node')->load($first_org_nid);
+    if (!$org_page || !$org_page->hasField('field_content_organization')) {
+      return;
+    }
+    $tids = array_column(
+      $org_page->get('field_content_organization')->getValue(),
+      'target_id'
+    );
+    if (empty($tids)) {
       return;
     }
     $entity->set(
       'field_content_organization',
-      array_map(fn($tid) => ['target_id' => $tid], $term_ids)
+      array_map(fn($tid) => ['target_id' => (int) $tid], $tids)
     );
   }
 
@@ -129,32 +142,10 @@ class OrgAccessChecker {
   }
 
   /**
-   * Returns user_organization term IDs for the given org_page NIDs, plus all
-   * ancestors via the taxonomy term parent hierarchy.
-   *
-   * Used by the drush moab backfill (via syncContentOrganization). Walks
-   * the term `parent` chain so the access decision matches the
-   * entity_reference_tree widget's `auto_check_ancestors` behavior.
-   */
-  private function getTermIdsByOrgNidsWithAncestors(array $nids): array {
-    if (empty($nids)) {
-      return [];
-    }
-    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-    $start_tids = $term_storage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('vid', 'user_organization')
-      ->condition('field_state_organization', $nids, 'IN')
-      ->execute();
-    if (empty($start_tids)) {
-      return [];
-    }
-    return $this->walkTermAncestors(array_map('intval', array_values($start_tids)));
-  }
-
-  /**
    * BFS over the taxonomy term `parent` chain. Returns the input TIDs plus
-   * every reachable ancestor TID, deduplicated.
+   * every reachable ancestor TID, deduplicated. Used by form pre-fill —
+   * the backfill path does not walk ancestors because org_page values
+   * already include them (see REQUIREMENTS.md Section C/D).
    */
   private function walkTermAncestors(array $tids): array {
     $seen = array_fill_keys($tids, TRUE);

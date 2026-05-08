@@ -113,23 +113,6 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Disabled. Owner Groups are derived in entity_prepare_form on the editor
-   * form, and during the one-shot drush moab backfill. Mass.gov does not
-   * persist nodes/media via REST/JSON:API or queue workers in a way that
-   * needs runtime sync, so we skip the per-save overhead.
-   *
-   * Re-enable by removing the early return if a non-form save path is
-   * introduced and Owner Groups must stay in sync at write time.
-   */
-  #[Hook('entity_presave')]
-  public function entityPresave(EntityInterface $entity): void {
-    return;
-    if ($entity instanceof NodeInterface || $entity->getEntityTypeId() === 'media') {
-      $this->orgAccessChecker->syncContentOrganization($entity);
-    }
-  }
-
-  /**
    * Pre-fills Organization Owner Groups directly from the current user's
    * Org Taxonomy assignment (field_user_org) + ancestors, before the form
    * widgets are built. Source of truth is the user — never the entity's

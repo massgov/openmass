@@ -35,47 +35,36 @@ Content node / media.document
 
 ### How the bridge works
 
-`field_organizations` references **org_page nodes**, but Drupal's access check
-is fastest when it can compare term IDs on both sides without joins.
-`field_content_organization` is the bridge — populated automatically on save
-by `entity_presave`:
+`field_organizations` references **org_page nodes**, but Drupal's access
+check is fastest when it can compare term IDs on both sides without
+joins. `field_content_organization` is the bridge — denormalized,
+multi-value, holding `user_organization` taxonomy term IDs.
 
-1. Read the org_page NIDs from `field_organizations` (and the entity's own
-   NID if the bundle is `org_page`).
-2. Walk `field_parent` upward to collect every ancestor org_page NID.
-3. Look up every `user_organization` term whose `field_state_organization`
-   matches any of those NIDs.
-4. Write the resulting term IDs into `field_content_organization`.
+There are two write paths, never `entity_presave`:
 
-A node tagged with a child org therefore carries the parent-org user_organization
-terms too. A user assigned to the parent org passes the access check
-without any traversal at request time — `array_intersect` does the job.
+1. **Form pre-fill** (`entity_prepare_form` →
+   `populateOwnerGroupsFromCurrentUser`): when an editor opens the
+   create/edit form and `field_content_organization` is empty, the
+   module reads the editor's `field_user_org` term IDs, walks
+   `taxonomy_term.parent` ancestors, and writes the union onto the
+   entity. The widget renders with these values selected, so the
+   editor sees their inherited Owner Groups before pressing Save.
 
-### Multi-org content example
+2. **Drush backfill** (`drush moab` →
+   `populateOwnerGroupsFromOrgPage`): for each entity, take the first
+   `field_organizations` value (an org_page NID), load that org_page,
+   and copy its `field_content_organization` verbatim. The content
+   team populates `field_content_organization` on every org_page
+   manually — including all ancestor terms — so no walk is needed.
+   `org_page` itself is skipped during backfill (it is the source of
+   truth).
 
-When `field_organizations` holds several orgs, the sync walks **every**
-chain upward in parallel and unions the results. Each starting NID goes
-into the same BFS queue; cycle protection (a `$seen` map keyed by NID)
-prevents re-processing.
-
-```
-field_organizations = [Dept A, Dept B]
-
-Dept A
-  └─ Office X
-       └─ Top-level M
-
-Dept B
-  └─ Office Y
-```
-
-After `collectAncestorNids`: `[Dept A, Dept B, Office X, Office Y, Top-level M]`.
-After `getTermIdsByOrgNids`: every `user_organization` term whose
-`field_state_organization` matches any of those NIDs.
-That full set is written to `field_content_organization`.
-
-A user assigned to **any** of those orgs (the two leaves, the two
-mid-level offices, or the top-level) passes the intersection check.
+A node tagged with a child org therefore carries the parent-org
+`user_organization` terms too — because the content team wrote them
+onto the child org_page, and the backfill copied that union onto the
+node. A user assigned to the parent org passes the access check
+without any traversal at request time: `array_intersect` does the
+job.
 
 ## Access decision
 
@@ -111,8 +100,10 @@ All hooks are OOP hooks (Drupal 11.3+ `#[Hook(...)]` attributes) in
   invalidate when the user's `field_user_org` changes.
 - **`hook_media_access`** — Same logic for media (currently used for
   `media.document`).
-- **`hook_entity_presave`** — Syncs `field_organizations` →
-  `field_content_organization` on every node and media save.
+- **`hook_entity_prepare_form`** — Pre-fills
+  `field_content_organization` on the editor form from the current
+  user's `field_user_org` (plus taxonomy term ancestors), but only when
+  the field is empty. Runs before widgets read their default values.
 - **`hook_form_node_form_alter`** — Adds a `#validate` callback (named static
   method, not a closure — closures break paragraphs AJAX rebuild). Shows a
   human-readable error if a save somehow reaches form validation.
@@ -133,8 +124,16 @@ Inject as `mass_org_access.org_access_checker` (or by class via the alias).
   `field_content_organization` term IDs.
 - **`userHasOrgAccess(AccountInterface, EntityInterface): bool`** —
   `array_intersect` between the two.
-- **`syncContentOrganization(EntityInterface): void`** — The presave bridge:
-  walks `field_parent` and writes `field_content_organization`.
+- **`populateOwnerGroupsFromCurrentUser(EntityInterface): void`** —
+  Form pre-fill. Reads the current user's `field_user_org` term IDs,
+  walks `taxonomy_term.parent` ancestors, writes the union to
+  `field_content_organization`. Skipped when the field already has a
+  value. Called from `hook_entity_prepare_form`.
+- **`populateOwnerGroupsFromOrgPage(EntityInterface): void`** — Drush
+  backfill. Reads the entity's first `field_organizations` value, loads
+  that org_page, copies its `field_content_organization` verbatim. No
+  ancestor walk — the content team already includes ancestors. Skips `org_page`
+  bundle. Called only by `BackfillRunner` and `mass-org-access:backfill-dev`.
 
 ## Permissions
 
