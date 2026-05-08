@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_org_access\Drush\Commands;
 
-use Drupal\mass_org_access\BackfillBatchManager;
+use Drupal\mass_org_access\BackfillRunner;
 use Drupal\mass_org_access\OrgAccessChecker;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -15,28 +15,41 @@ class MassOrgAccessCommands extends DrushCommands {
   use AutowireTrait;
 
   public function __construct(
-    private readonly BackfillBatchManager $batchManager,
+    private readonly BackfillRunner $backfillRunner,
     private readonly OrgAccessChecker $orgAccessChecker,
   ) {
     parent::__construct();
   }
 
   /**
-   * Populate field_content_organization on all existing nodes and media.
+   * Populate field_content_organization on all supported nodes and media.
    *
-   * Reads field_organizations on each entity, resolves the corresponding
-   * user_organization taxonomy terms (including ancestor terms), and writes
-   * them to field_content_organization. This is a one-time backfill for
-   * content that existed before the mass_org_access module was enabled.
+   * Resumable: progress is persisted in State so that a Ctrl+C, crash, or
+   * fresh invocation continues from the last processed entity ID instead
+   * of starting over. Skips org_page (manually maintained source of truth).
+   * Writes a timestamped progress line to a log file and the console after
+   * every batch.
    *
    * @command mass-org-access:backfill
    * @aliases moab
+   * @option reset
+   *   Wipe stored progress and start from scratch.
+   * @option log
+   *   Stream-wrapper URI of the log file. Defaults to
+   *   private://mass_org_access/backfill.log.
    * @usage drush mass-org-access:backfill
-   *   Backfill field_content_organization on all nodes and media.document.
+   *   Backfill (or resume) field_content_organization across all targets.
+   * @usage drush mass-org-access:backfill --reset
+   *   Discard previous progress and rescan everything.
+   * @usage drush mass-org-access:backfill --log=private://moab.log
+   *   Pick a custom log file location.
    */
-  public function backfill(): void {
-    $this->batchManager->queueBackfill();
-    drush_backend_batch_process();
+  public function backfill(array $options = ['reset' => FALSE, 'log' => NULL]): void {
+    $this->backfillRunner->run(
+      $this->output(),
+      $options['log'] ? (string) $options['log'] : NULL,
+      (bool) $options['reset']
+    );
   }
 
   /**
