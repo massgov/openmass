@@ -124,6 +124,25 @@ class MassOrgAccessHooks {
   }
 
   /**
+   * Pre-fills Organization Owner Groups (and Organization(s)) at form load
+   * for new content, so the editor sees the inherited values immediately
+   * instead of an empty field. The same logic runs again at presave as a
+   * safety net for non-form save paths.
+   */
+  #[Hook('form_alter')]
+  public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    $form_object = $form_state->getFormObject();
+    if (!$form_object instanceof EntityFormInterface) {
+      return;
+    }
+    $entity = $form_object->getEntity();
+    if (!$entity->isNew() || !$entity->hasField('field_content_organization')) {
+      return;
+    }
+    $this->orgAccessChecker->syncContentOrganization($entity);
+  }
+
+  /**
    * Adds a validation callback for cross-organization save attempts.
    *
    * Shows a clear error when an editor tries to save a node outside their

@@ -447,6 +447,33 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Form_alter pre-fills Organization Owner Groups at form load for new
+   * entities — author sees the inherited org before pressing Save.
+   */
+  public function testFormAlterPreFillsOrgsOnNewEntityForm(): void {
+    \Drupal::currentUser()->setAccount($this->userA);
+
+    $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
+      'type' => 'info_details',
+      'title' => 'New unsaved ' . $this->randomMachineName(),
+    ]);
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('node', 'default')
+      ->setEntity($entity);
+    $form_state = (new \Drupal\Core\Form\FormState())->setFormObject($form_object);
+    \Drupal::formBuilder()->buildForm($form_object, $form_state);
+
+    $this->assertNotEmpty(
+      $entity->get('field_organizations')->getValue(),
+      'field_organizations is pre-filled at form load time.'
+    );
+    $this->assertNotEmpty(
+      $entity->get('field_content_organization')->getValue(),
+      'field_content_organization is pre-filled at form load time.'
+    );
+  }
+
+  /**
    * New entity gets the creator's first user_org auto-assigned.
    *
    * When an editor creates a node without picking an Organization, the
