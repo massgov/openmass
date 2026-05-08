@@ -17,6 +17,7 @@ dependencies:
   module:
     - content_moderation
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - link
     - mass_validation
@@ -94,6 +95,7 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_content_organization
       label: 'Page Info'
       region: hidden
       parent_name: group_location_detail_node_edit
@@ -113,14 +115,26 @@ bundle: location_details
 mode: default
 content:
   field_content_organization:
-    type: entity_reference_autocomplete
-    weight: 100
+    type: entity_reference_tree
+    weight: 20
     region: content
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
       size: 60
       placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons

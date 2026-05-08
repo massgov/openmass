@@ -108,8 +108,7 @@ class OrgAccessChecker {
       return;
     }
 
-    $all_nids = $this->collectAncestorNids(array_unique($org_nids));
-    $term_ids = $this->getTermIdsByOrgNids($all_nids);
+    $term_ids = $this->getTermIdsByOrgNidsWithAncestors(array_unique($org_nids));
 
     $entity->set(
       'field_content_organization',
@@ -138,47 +137,46 @@ class OrgAccessChecker {
   }
 
   /**
-   * Walks field_parent upward and returns all ancestor NIDs including the input.
+   * Returns user_organization term IDs for the given org_page NIDs, plus all
+   * ancestors via the taxonomy term parent hierarchy.
+   *
+   * Walks the term `parent` chain (not org_page `field_parent`) so the access
+   * decision matches the entity_reference_tree widget's `auto_check_ancestors`
+   * behavior on the editor form.
    */
-  private function collectAncestorNids(array $nids): array {
-    $seen = array_fill_keys($nids, TRUE);
-    $queue = $nids;
-    $node_storage = $this->entityTypeManager->getStorage('node');
+  private function getTermIdsByOrgNidsWithAncestors(array $nids): array {
+    if (empty($nids)) {
+      return [];
+    }
+    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
+
+    $start_tids = $term_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('vid', 'user_organization')
+      ->condition('field_state_organization', $nids, 'IN')
+      ->execute();
+
+    if (empty($start_tids)) {
+      return [];
+    }
+
+    $seen = array_fill_keys($start_tids, TRUE);
+    $queue = array_values($start_tids);
 
     while (!empty($queue)) {
       $batch = array_splice($queue, 0, 50);
-      foreach ($node_storage->loadMultiple($batch) as $node) {
-        if (!$node->hasField('field_parent') || $node->get('field_parent')->isEmpty()) {
-          continue;
-        }
-        $parent_nid = (int) $node->get('field_parent')->target_id;
-        if ($parent_nid && !isset($seen[$parent_nid])) {
-          $seen[$parent_nid] = TRUE;
-          $queue[] = $parent_nid;
+      foreach ($term_storage->loadMultiple($batch) as $term) {
+        foreach ($term->get('parent')->getValue() as $parent) {
+          $parent_tid = (int) $parent['target_id'];
+          if ($parent_tid && !isset($seen[$parent_tid])) {
+            $seen[$parent_tid] = TRUE;
+            $queue[] = $parent_tid;
+          }
         }
       }
     }
 
-    return array_keys($seen);
-  }
-
-  /**
-   * Returns user_organization term IDs for the given org_page NIDs.
-   *
-   * Matches terms whose field_state_organization references any of the NIDs.
-   */
-  private function getTermIdsByOrgNids(array $nids): array {
-    if (empty($nids)) {
-      return [];
-    }
-    return array_values(
-      $this->entityTypeManager->getStorage('taxonomy_term')
-        ->getQuery()
-        ->accessCheck(FALSE)
-        ->condition('vid', 'user_organization')
-        ->condition('field_state_organization', $nids, 'IN')
-        ->execute()
-    );
+    return array_map('intval', array_keys($seen));
   }
 
 }

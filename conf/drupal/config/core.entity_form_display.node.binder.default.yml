@@ -147,6 +147,7 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_content_organization
       label: 'Page Info'
       region: content
       parent_name: group_binder_node_edit_form
@@ -374,14 +375,26 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_content_organization:
-    type: entity_reference_autocomplete
-    weight: 100
+    type: entity_reference_tree
+    weight: 20
     region: content
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
       size: 60
       placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
