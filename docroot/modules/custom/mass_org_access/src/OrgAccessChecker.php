@@ -72,23 +72,13 @@ class OrgAccessChecker {
    * Syncs field_organizations to field_content_organization on the entity.
    *
    * Resolves org_page references to user_organization term references,
-   * including all ancestor org TIDs.
+   * including all ancestor org TIDs. Pure read-of-Organizations →
+   * write-to-Owner-Groups; never auto-assigns the Organization itself
+   * (that is the form pre-fill's job in entity_prepare_form).
    */
   public function syncContentOrganization(EntityInterface $entity): void {
     if (!$entity->hasField('field_content_organization')) {
       return;
-    }
-
-    // For brand-new entities with no Organization picked yet, auto-assign
-    // the creator's first user_organization → org_page so org-based access
-    // applies from day one.
-    if (
-//      $entity->isNew()
-//      &&
-    $entity->hasField('field_organizations')
-//      && $entity->get('field_organizations')->isEmpty()
-    ) {
-      $this->autoAssignFromCreator($entity);
     }
 
     $org_nids = [];
@@ -119,24 +109,28 @@ class OrgAccessChecker {
   }
 
   /**
-   * Pre-fills field_organizations on a new entity from the current user's
-   * first user_organization term. Skipped if the user has no org assigned
-   * or the term has no field_state_organization mapping.
+   * Pre-fills field_organizations from the current user's first
+   * user_organization term → field_state_organization (org_page) when the
+   * entity has no Organization(s) value yet.
+   *
+   * Called from entity_prepare_form so the editor sees the inherited org
+   * before pressing Save. Not called from entity_presave: by save time the
+   * form widget already carries the value (or the editor deliberately
+   * cleared it). Skipped if the user has no org assigned or the term has
+   * no field_state_organization mapping.
    */
-  private function autoAssignFromCreator(EntityInterface $entity): void {
+  public function autoAssignFromCreator(EntityInterface $entity): void {
+    if (!$entity->hasField('field_organizations') || !$entity->get('field_organizations')->isEmpty()) {
+      return;
+    }
     $tids = $this->getUserOrgTids($this->currentUser);
-
-    dump($tids);
-
     if (empty($tids)) {
       return;
     }
-
     $first_term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tids[0]);
     if (!$first_term || !$first_term->hasField('field_state_organization')) {
       return;
     }
-
     $org_page_nid = (int) ($first_term->get('field_state_organization')->target_id ?? 0);
     if ($org_page_nid) {
       $entity->set('field_organizations', [['target_id' => $org_page_nid]]);

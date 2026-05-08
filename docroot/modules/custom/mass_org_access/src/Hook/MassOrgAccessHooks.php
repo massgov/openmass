@@ -125,18 +125,17 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Pre-fills Organization Owner Groups (and Organization(s)) before the
+   * Pre-fills Organization(s) and Organization Owner Groups before the
    * entity form widgets are built, so the editor sees the inherited values
-   * immediately instead of an empty field. Covers two cases:
-   *  - new entity: auto-assign from the creator's first user_organization;
-   *  - existing entity with empty field_content_organization (un-backfilled):
-   *    derive from the entity's existing field_organizations.
-   * Skipped when the field already has a value — never override what the
-   * editor (or backfill) deliberately set.
+   * on form load instead of empty fields. Two effects:
+   *  - field_organizations: auto-assigned from the current user's first
+   *    user_organization → field_state_organization when empty;
+   *  - field_content_organization: derived from the (possibly just
+   *    auto-assigned) field_organizations + ancestors, when itself empty.
    *
    * Uses entity_prepare_form (not form_alter) because the widget reads its
-   * default value from the entity during EntityFormDisplay::buildForm, which
-   * runs before form_alter fires.
+   * default value from the entity during EntityFormDisplay::buildForm,
+   * which runs before form_alter fires.
    */
   #[Hook('entity_prepare_form')]
   public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
@@ -146,10 +145,10 @@ class MassOrgAccessHooks {
     if (!$entity->hasField('field_content_organization')) {
       return;
     }
-    if (!$entity->get('field_content_organization')->isEmpty()) {
-      return;
+    $this->orgAccessChecker->autoAssignFromCreator($entity);
+    if ($entity->get('field_content_organization')->isEmpty()) {
+      $this->orgAccessChecker->syncContentOrganization($entity);
     }
-    $this->orgAccessChecker->syncContentOrganization($entity);
   }
 
   /**

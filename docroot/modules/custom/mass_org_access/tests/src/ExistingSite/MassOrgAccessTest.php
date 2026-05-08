@@ -522,34 +522,37 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * New entity gets the creator's first user_org auto-assigned.
    *
-   * When an editor creates a node without picking an Organization, the
-   * presave hook should pre-fill field_organizations from their first
-   * field_user_org → field_state_organization mapping so org-based access
-   * applies from day one.
+   * When an editor opens the create form without an Organization picked,
+   * entity_prepare_form auto-assigns field_organizations from their first
+   * field_user_org → field_state_organization mapping. Direct
+   * programmatic save (no form) skips auto-assign by design.
    */
   public function testNewEntityAutoAssignsCreatorOrg(): void {
     \Drupal::currentUser()->setAccount($this->userA);
 
-    $node = $this->createNode([
+    $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
       'type' => 'info_details',
       'title' => 'Auto-assigned ' . $this->randomMachineName(),
-      // No field_organizations — checker should populate it.
-      'status' => 1,
-      'moderation_state' => MassModeration::PUBLISHED,
     ]);
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('node', 'default')
+      ->setEntity($entity);
+    $form_state = (new \Drupal\Core\Form\FormState())->setFormObject($form_object);
+    \Drupal::formBuilder()->buildForm($form_object, $form_state);
+    $entity = $form_object->getEntity();
 
-    $org_nids = array_column($node->get('field_organizations')->getValue(), 'target_id');
+    $org_nids = array_column($entity->get('field_organizations')->getValue(), 'target_id');
     $this->assertContains(
       (string) $this->orgPageA->id(),
       array_map('strval', $org_nids),
-      'New entity should be auto-tagged with creator first org_page.'
+      'New entity should be auto-tagged with creator first org_page on form load.'
     );
 
-    $tids = array_column($node->get('field_content_organization')->getValue(), 'target_id');
+    $tids = array_column($entity->get('field_content_organization')->getValue(), 'target_id');
     $this->assertContains(
       (string) $this->termA->id(),
       array_map('strval', $tids),
-      'Auto-assignment should propagate into field_content_organization.'
+      'Auto-assignment should propagate into field_content_organization via sync.'
     );
   }
 
