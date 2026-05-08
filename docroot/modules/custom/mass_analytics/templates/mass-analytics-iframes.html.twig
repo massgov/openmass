@@ -2,8 +2,10 @@
 /**
  * @file
  * Render the Power BI report in a short iframe so the "Sign in" button
- * stays visible above the fold; once the user authenticates inside the
- * frame, an "Expand" button stretches the iframe to the full report size.
+ * stays visible above the fold. After the auth redirect chain stabilises
+ * (a 4 s silence between cross-origin iframe load events), the iframe
+ * auto-expands to full size. A manual Expand/Collapse toggle is always
+ * available and disables the auto-expand once used.
  */
 #}
 <div class="mass-analytics-launcher" style="padding:1rem 0;">
@@ -11,7 +13,7 @@
     <h2 style="margin:0 0 .5rem 0;">Analytics dashboard: {{ node_title }}</h2>
   {% endif %}
   <p style="margin:0 0 1rem 0;color:#555;">
-    Sign in to Power BI in the frame below, then click <strong>Expand</strong> to view the full dashboard.
+    Sign in to Power BI in the frame below. The dashboard will expand automatically once it loads.
   </p>
 
   <iframe
@@ -29,13 +31,6 @@
       id="mass-analytics-expand-btn"
       data-collapsed-height="220"
       data-expanded-height="{{ iframe_height }}"
-      onclick="(function(b){
-        var f=document.getElementById('mass-analytics-iframe');
-        var expanded=b.getAttribute('aria-expanded')==='true';
-        f.height=expanded?b.dataset.collapsedHeight:b.dataset.expandedHeight;
-        b.setAttribute('aria-expanded',!expanded);
-        b.textContent=expanded?'Expand to full size':'Collapse';
-      })(this);return false;"
       aria-expanded="false"
       style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
       Expand to full size
@@ -45,3 +40,55 @@
     </a>
   </p>
 </div>
+
+<script>
+(function () {
+  var iframe = document.getElementById('mass-analytics-iframe');
+  var btn = document.getElementById('mass-analytics-expand-btn');
+  if (!iframe || !btn) return;
+
+  var COLLAPSED = parseInt(btn.dataset.collapsedHeight, 10);
+  var EXPANDED = parseInt(btn.dataset.expandedHeight, 10);
+  var SILENCE_MS = 4000;
+  var FALLBACK_MS = 30000;
+
+  var silenceTimer = null;
+  var fallbackTimer = null;
+  var userTookOver = false;
+
+  function applyExpanded() {
+    iframe.height = EXPANDED;
+    btn.setAttribute('aria-expanded', 'true');
+    btn.textContent = 'Collapse';
+  }
+  function applyCollapsed() {
+    iframe.height = COLLAPSED;
+    btn.setAttribute('aria-expanded', 'false');
+    btn.textContent = 'Expand to full size';
+  }
+  function autoExpand() {
+    if (userTookOver) return;
+    if (btn.getAttribute('aria-expanded') === 'true') return;
+    applyExpanded();
+  }
+
+  // Cross-origin iframe content is unreadable, so we infer "auth chain done"
+  // from the absence of further load events for SILENCE_MS.
+  iframe.addEventListener('load', function () {
+    clearTimeout(silenceTimer);
+    silenceTimer = setTimeout(autoExpand, SILENCE_MS);
+  });
+  fallbackTimer = setTimeout(autoExpand, FALLBACK_MS);
+
+  btn.addEventListener('click', function () {
+    userTookOver = true;
+    clearTimeout(silenceTimer);
+    clearTimeout(fallbackTimer);
+    if (btn.getAttribute('aria-expanded') === 'true') {
+      applyCollapsed();
+    } else {
+      applyExpanded();
+    }
+  });
+})();
+</script>
