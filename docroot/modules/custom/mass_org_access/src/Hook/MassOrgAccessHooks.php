@@ -130,13 +130,10 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Pre-fills Organization(s) and Organization Owner Groups before the
-   * entity form widgets are built, so the editor sees the inherited values
-   * on form load instead of empty fields. Two effects:
-   *  - field_organizations: auto-assigned from the current user's first
-   *    user_organization → field_state_organization when empty;
-   *  - field_content_organization: derived from the (possibly just
-   *    auto-assigned) field_organizations + ancestors, when itself empty.
+   * Pre-fills Organization Owner Groups directly from the current user's
+   * Org Taxonomy assignment (field_user_org) + ancestors, before the form
+   * widgets are built. Source of truth is the user — never the entity's
+   * field_organizations. Skipped when the field already has a value.
    *
    * Uses entity_prepare_form (not form_alter) because the widget reads its
    * default value from the entity during EntityFormDisplay::buildForm,
@@ -147,13 +144,7 @@ class MassOrgAccessHooks {
     if (!$entity instanceof FieldableEntityInterface) {
       return;
     }
-    if (!$entity->hasField('field_content_organization')) {
-      return;
-    }
-    $this->orgAccessChecker->autoAssignFromCreator($entity);
-    if ($entity->get('field_content_organization')->isEmpty()) {
-      $this->orgAccessChecker->syncContentOrganization($entity);
-    }
+    $this->orgAccessChecker->populateOwnerGroupsFromCurrentUser($entity);
   }
 
   /**

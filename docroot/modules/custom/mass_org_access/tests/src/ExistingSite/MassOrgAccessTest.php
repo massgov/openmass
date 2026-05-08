@@ -525,10 +525,10 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * New entity gets the creator's first user_org auto-assigned.
    *
-   * When an editor opens the create form without an Organization picked,
-   * entity_prepare_form auto-assigns field_organizations from their first
-   * field_user_org → field_state_organization mapping. Direct
-   * programmatic save (no form) skips auto-assign by design.
+   * When an editor opens the create form, entity_prepare_form pre-fills
+   * field_content_organization directly from their field_user_org (with
+   * ancestors). field_organizations is not touched — the editor still
+   * picks Organization(s) themselves.
    */
   public function testNewEntityAutoAssignsCreatorOrg(): void {
     \Drupal::currentUser()->setAccount($this->userA);
@@ -544,18 +544,21 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     \Drupal::formBuilder()->buildForm($form_object, $form_state);
     $entity = $form_object->getEntity();
 
-    $org_nids = array_column($entity->get('field_organizations')->getValue(), 'target_id');
-    $this->assertContains(
-      (string) $this->orgPageA->id(),
-      array_map('strval', $org_nids),
-      'New entity should be auto-tagged with creator first org_page on form load.'
-    );
-
     $tids = array_column($entity->get('field_content_organization')->getValue(), 'target_id');
     $this->assertContains(
       (string) $this->termA->id(),
       array_map('strval', $tids),
-      'Auto-assignment should propagate into field_content_organization via sync.'
+      'Form load pre-fills field_content_organization from creator field_user_org.'
+    );
+    // field_organizations may carry an empty add-more slot from the widget
+    // build, but we do not auto-set a real org_page reference here.
+    $org_nids = array_filter(array_column(
+      $entity->get('field_organizations')->getValue(),
+      'target_id'
+    ));
+    $this->assertEmpty(
+      $org_nids,
+      'field_organizations is not auto-filled with an org_page on form load.'
     );
   }
 

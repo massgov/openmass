@@ -109,61 +109,64 @@ class OrgAccessChecker {
   }
 
   /**
-   * Pre-fills field_organizations from the current user's first
-   * user_organization term → field_state_organization (org_page) when the
-   * entity has no Organization(s) value yet.
+   * Pre-fills field_content_organization on the entity from the current
+   * user's field_user_org terms plus their taxonomy ancestors.
    *
-   * Called from entity_prepare_form so the editor sees the inherited org
-   * before pressing Save. Not called from entity_presave: by save time the
-   * form widget already carries the value (or the editor deliberately
-   * cleared it). Skipped if the user has no org assigned or the term has
-   * no field_state_organization mapping.
+   * Called from entity_prepare_form. Source of truth is the user's Org
+   * Taxonomy assignment — never the entity's field_organizations.
+   * Skipped when the user has no org assigned or when the field already
+   * has a value (don't override editor / backfill choices).
    */
-  public function autoAssignFromCreator(EntityInterface $entity): void {
-    if (!$entity->hasField('field_organizations') || !$entity->get('field_organizations')->isEmpty()) {
+  public function populateOwnerGroupsFromCurrentUser(EntityInterface $entity): void {
+    if (!$entity->hasField('field_content_organization')) {
       return;
     }
-    $tids = $this->getUserOrgTids($this->currentUser);
-    if (empty($tids)) {
+    if (!$entity->get('field_content_organization')->isEmpty()) {
       return;
     }
-    $first_term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tids[0]);
-    if (!$first_term || !$first_term->hasField('field_state_organization')) {
+    $user_tids = $this->getUserOrgTids($this->currentUser);
+    if (empty($user_tids)) {
       return;
     }
-    $org_page_nid = (int) ($first_term->get('field_state_organization')->target_id ?? 0);
-    if ($org_page_nid) {
-      $entity->set('field_organizations', [['target_id' => $org_page_nid]]);
-    }
+    $term_ids = $this->walkTermAncestors($user_tids);
+    $entity->set(
+      'field_content_organization',
+      array_map(fn($tid) => ['target_id' => $tid], $term_ids)
+    );
   }
 
   /**
    * Returns user_organization term IDs for the given org_page NIDs, plus all
    * ancestors via the taxonomy term parent hierarchy.
    *
-   * Walks the term `parent` chain (not org_page `field_parent`) so the access
-   * decision matches the entity_reference_tree widget's `auto_check_ancestors`
-   * behavior on the editor form.
+   * Used by the drush moab backfill (via syncContentOrganization). Walks
+   * the term `parent` chain so the access decision matches the
+   * entity_reference_tree widget's `auto_check_ancestors` behavior.
    */
   private function getTermIdsByOrgNidsWithAncestors(array $nids): array {
     if (empty($nids)) {
       return [];
     }
     $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-
     $start_tids = $term_storage->getQuery()
       ->accessCheck(FALSE)
       ->condition('vid', 'user_organization')
       ->condition('field_state_organization', $nids, 'IN')
       ->execute();
-
     if (empty($start_tids)) {
       return [];
     }
+    return $this->walkTermAncestors(array_map('intval', array_values($start_tids)));
+  }
 
-    $seen = array_fill_keys($start_tids, TRUE);
-    $queue = array_values($start_tids);
-
+  /**
+   * BFS over the taxonomy term `parent` chain. Returns the input TIDs plus
+   * every reachable ancestor TID, deduplicated.
+   */
+  private function walkTermAncestors(array $tids): array {
+    $seen = array_fill_keys($tids, TRUE);
+    $queue = $tids;
+    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
     while (!empty($queue)) {
       $batch = array_splice($queue, 0, 50);
       foreach ($term_storage->loadMultiple($batch) as $term) {
@@ -176,7 +179,6 @@ class OrgAccessChecker {
         }
       }
     }
-
     return array_map('intval', array_keys($seen));
   }
 
