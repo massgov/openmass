@@ -455,6 +455,107 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Backfill copies field_content_organization verbatim from the related
+   * org_page, ignoring the field_state_organization → term mapping.
+   *
+   * The content team's manual Owner Groups on org_page are the source of
+   * truth per REQUIREMENTS.md Section C. Even when a "natural" term
+   * exists via field_state_organization, backfill must use whatever was
+   * placed on the org_page — this test makes the two values diverge to
+   * prove it.
+   */
+  public function testBackfillCopiesFromOrgPageVerbatim(): void {
+    $org_page = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Verbatim Org ' . $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $vocab = Vocabulary::load('user_organization');
+    // The "natural" term — would be found by a field_state_organization
+    // reverse lookup. Backfill must NOT pick this one.
+    $natural_term = $this->createTerm($vocab, [
+      'name' => 'Natural Term ' . $this->randomMachineName(),
+      'field_state_organization' => $org_page->id(),
+    ]);
+    // The term the content team actually placed on the org_page (e.g. a
+    // higher-level Secretariat for cross-org access). Has no
+    // field_state_organization link to this org_page. This is what
+    // backfill must copy.
+    $curated_term = $this->createTerm($vocab, [
+      'name' => 'Curated Term ' . $this->randomMachineName(),
+    ]);
+    $this->setOrgPageOwnerGroups($org_page, [$curated_term->id()]);
+
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Verbatim test node ' . $this->randomMachineName(),
+      'field_organizations' => [$org_page->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    \Drupal::service('mass_org_access.org_access_checker')
+      ->populateOwnerGroupsFromOrgPage($node);
+
+    $tids = array_map(
+      'strval',
+      array_column($node->get('field_content_organization')->getValue(), 'target_id')
+    );
+    $this->assertEqualsCanonicalizing(
+      [(string) $curated_term->id()],
+      $tids,
+      'Backfill must copy Owner Groups verbatim from org_page (curated term), not derive via field_state_organization (natural term).'
+    );
+    $this->assertNotContains(
+      (string) $natural_term->id(),
+      $tids,
+      'Backfill must NOT include the field_state_organization-derived term.'
+    );
+  }
+
+  /**
+   * Backfill leaves the entity untouched when the related org_page has
+   * no Owner Groups yet.
+   *
+   * Per REQUIREMENTS.md "Done when" point 6, an entity with no Owner
+   * Groups is editable only by admins. Filling it in here would defeat
+   * the manual gating the content team uses to stage the rollout.
+   */
+  public function testBackfillSkipsEntityWhenOrgPageEmpty(): void {
+    $org_page = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Empty OOG Org ' . $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $vocab = Vocabulary::load('user_organization');
+    // Term mapping exists, but the org_page has not been curated yet.
+    // The old reverse-lookup implementation would have filled the entity
+    // with this term; the new implementation must skip.
+    $this->createTerm($vocab, [
+      'name' => 'Untouched Term ' . $this->randomMachineName(),
+      'field_state_organization' => $org_page->id(),
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Untouched test node ' . $this->randomMachineName(),
+      'field_organizations' => [$org_page->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    \Drupal::service('mass_org_access.org_access_checker')
+      ->populateOwnerGroupsFromOrgPage($node);
+
+    $this->assertEmpty(
+      $node->get('field_content_organization')->getValue(),
+      'Backfill must leave entity field_content_organization empty when the related org_page is not yet curated.'
+    );
+  }
+
+  /**
    * Editor without an organization sees a warning at login.
    *
    * The warning tells the user why they cannot edit content and points them
