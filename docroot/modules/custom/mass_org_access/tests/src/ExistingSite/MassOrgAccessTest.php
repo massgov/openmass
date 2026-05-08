@@ -36,15 +36,18 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * Excluded for permission reasons: action, sitewide_alert, stacked_layout
    * (editor has no edit permission). Excluded for scope reasons:
    * executive_order, sitewide_alert, stacked_layout (field intentionally
-   * not attached per DP-45788 scope).
+   * not attached per DP-45788 scope). Excluded for derived-org reasons:
+   * binder, decision, person (mass_validation derives field_organizations
+   * from a bundle-specific reference field on presave; setting
+   * field_organizations directly in tests is overwritten).
    */
   private const NODE_BUNDLES = [
-    'advisory', 'alert', 'binder', 'campaign_landing',
-    'contact_information', 'curated_list', 'decision', 'decision_tree',
+    'advisory', 'alert', 'campaign_landing',
+    'contact_information', 'curated_list', 'decision_tree',
     'decision_tree_branch', 'decision_tree_conclusion', 'event',
     'external_data_resource', 'fee', 'form_page',
     'glossary', 'guide_page', 'how_to_page', 'info_details', 'location',
-    'location_details', 'news', 'org_page', 'person', 'regulation', 'rules',
+    'location_details', 'news', 'org_page', 'regulation', 'rules',
     'service_page', 'topic_page',
   ];
 
@@ -676,13 +679,15 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   private function createTestNode(string $bundle, NodeInterface $orgPage): NodeInterface {
-    return $this->createNode([
+    $node = $this->createNode([
       'type' => $bundle,
       'title' => 'Test ' . $bundle . ' ' . $this->randomMachineName(),
       'field_organizations' => [$orgPage->id()],
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+    $this->syncOwnerGroupsAndSave($node);
+    return $node;
   }
 
   private function createTestMedia(string $bundle, NodeInterface $orgPage) {
@@ -693,7 +698,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->markEntityForCleanup($file);
     file_put_contents(\Drupal::service('file_system')->realpath($uri), 'test');
 
-    return $this->createMedia([
+    $media = $this->createMedia([
       'name' => 'Test ' . $bundle . ' ' . $this->randomMachineName(),
       'bundle' => $bundle,
       'field_upload_file' => ['target_id' => $file->id()],
@@ -701,6 +706,24 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => 'published',
     ]);
+    $this->syncOwnerGroupsAndSave($media);
+    return $media;
+  }
+
+  /**
+   * Mimics what the editor form does on Save: derive Owner Groups from
+   * Organization(s) + ancestors and persist. We need this in tests because
+   * mass_org_access no longer syncs in entity_presave — only at form load
+   * and via the drush moab backfill.
+   */
+  private function syncOwnerGroupsAndSave($entity): void {
+    \Drupal::service('mass_org_access.org_access_checker')
+      ->syncContentOrganization($entity);
+    if (method_exists($entity, 'setNewRevision')) {
+      $entity->setNewRevision(FALSE);
+    }
+    $entity->setSyncing(TRUE);
+    $entity->save();
   }
 
 }
