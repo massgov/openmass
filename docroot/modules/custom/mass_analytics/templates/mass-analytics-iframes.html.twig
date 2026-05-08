@@ -1,28 +1,47 @@
 {#
 /**
  * @file
- * Render a button that opens the Power BI analytics dashboard in a popup
- * window. Embedding via iframe requires user click on Power BI "Sign in"
- * because of third-party cookie restrictions, so we delegate auth to a
- * standalone window where it works seamlessly.
+ * Render the Power BI report in a short iframe so the "Sign in" button
+ * stays visible above the fold; once the user authenticates inside the
+ * frame, an "Expand" button stretches the iframe to the full report size.
  */
 #}
-<div class="mass-analytics-launcher" style="padding:2rem;text-align:center;">
-  <h2 style="margin-bottom:.5rem;">Analytics dashboard{% if node_title %}: {{ node_title }}{% endif %}</h2>
-  <p style="margin-bottom:1.5rem;color:#555;">
-    The analytics report opens in a new window. You may be asked to sign in to Power BI on first use.
+<div class="mass-analytics-launcher" style="padding:1rem 0;">
+  {% if node_title %}
+    <h2 style="margin:0 0 .5rem 0;">Analytics dashboard: {{ node_title }}</h2>
+  {% endif %}
+  <p style="margin:0 0 1rem 0;color:#555;">
+    Sign in to Power BI in the frame below, then click <strong>Expand</strong> to view the full dashboard.
   </p>
-  <a
-    href="{{ config }}"
-    class="button button--primary mass-analytics-launcher__btn"
-    target="mass_analytics_report"
-    rel="noopener"
-    onclick="window.open(this.href,'mass_analytics_report','noopener,noreferrer,width=1400,height=900,resizable=yes,scrollbars=yes');return false;"
-    style="display:inline-block;padding:.85rem 1.5rem;background:#14558f;color:#fff;text-decoration:none;border-radius:4px;font-weight:600;">
-    Open Analytics Dashboard
-  </a>
-  <p style="margin-top:1.25rem;font-size:.9rem;color:#777;">
-    If the popup is blocked, allow popups for this site or
-    <a href="{{ config }}" target="_blank" rel="noopener">open the report in a new tab</a>.
+
+  <iframe
+    id="mass-analytics-iframe"
+    width="100%"
+    height="220"
+    seamless
+    frameBorder="0"
+    src="{{ config }}"
+    style="border:1px solid #ccc;display:block;transition:height .3s ease;"></iframe>
+
+  <p style="margin:1rem 0 0 0;display:flex;gap:1rem;align-items:center;">
+    <button
+      type="button"
+      id="mass-analytics-expand-btn"
+      data-collapsed-height="220"
+      data-expanded-height="{{ iframe_height }}"
+      onclick="(function(b){
+        var f=document.getElementById('mass-analytics-iframe');
+        var expanded=b.getAttribute('aria-expanded')==='true';
+        f.height=expanded?b.dataset.collapsedHeight:b.dataset.expandedHeight;
+        b.setAttribute('aria-expanded',!expanded);
+        b.textContent=expanded?'Expand to full size':'Collapse';
+      })(this);return false;"
+      aria-expanded="false"
+      style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
+      Expand to full size
+    </button>
+    <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
+      Or open the report in a new tab
+    </a>
   </p>
 </div>
