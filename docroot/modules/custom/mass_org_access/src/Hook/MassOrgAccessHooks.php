@@ -141,6 +141,7 @@ class MassOrgAccessHooks {
    */
   #[Hook('entity_prepare_form')]
   public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
+    // @todo: Make text input field readonly?
     if (!$entity instanceof FieldableEntityInterface) {
       return;
     }
