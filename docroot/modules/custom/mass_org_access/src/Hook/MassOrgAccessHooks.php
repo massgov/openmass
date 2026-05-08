@@ -125,22 +125,21 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Pre-fills Organization Owner Groups (and Organization(s)) at form load
-   * so the editor sees the inherited values immediately instead of an empty
-   * field. Covers two cases:
+   * Pre-fills Organization Owner Groups (and Organization(s)) before the
+   * entity form widgets are built, so the editor sees the inherited values
+   * immediately instead of an empty field. Covers two cases:
    *  - new entity: auto-assign from the creator's first user_organization;
    *  - existing entity with empty field_content_organization (un-backfilled):
    *    derive from the entity's existing field_organizations.
    * Skipped when the field already has a value — never override what the
    * editor (or backfill) deliberately set.
+   *
+   * Uses entity_prepare_form (not form_alter) because the widget reads its
+   * default value from the entity during EntityFormDisplay::buildForm, which
+   * runs before form_alter fires.
    */
-  #[Hook('form_alter')]
-  public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
-    $form_object = $form_state->getFormObject();
-    if (!$form_object instanceof EntityFormInterface) {
-      return;
-    }
-    $entity = $form_object->getEntity();
+  #[Hook('entity_prepare_form')]
+  public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
     if (!$entity instanceof FieldableEntityInterface) {
       return;
     }

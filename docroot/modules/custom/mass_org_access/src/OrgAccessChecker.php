@@ -82,9 +82,11 @@ class OrgAccessChecker {
     // For brand-new entities with no Organization picked yet, auto-assign
     // the creator's first user_organization → org_page so org-based access
     // applies from day one.
-    if ($entity->isNew()
-      && $entity->hasField('field_organizations')
-      && $entity->get('field_organizations')->isEmpty()
+    if (
+//      $entity->isNew()
+//      &&
+    $entity->hasField('field_organizations')
+//      && $entity->get('field_organizations')->isEmpty()
     ) {
       $this->autoAssignFromCreator($entity);
     }
@@ -123,13 +125,18 @@ class OrgAccessChecker {
    */
   private function autoAssignFromCreator(EntityInterface $entity): void {
     $tids = $this->getUserOrgTids($this->currentUser);
+
+    dump($tids);
+
     if (empty($tids)) {
       return;
     }
+
     $first_term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tids[0]);
     if (!$first_term || !$first_term->hasField('field_state_organization')) {
       return;
     }
+
     $org_page_nid = (int) ($first_term->get('field_state_organization')->target_id ?? 0);
     if ($org_page_nid) {
       $entity->set('field_organizations', [['target_id' => $org_page_nid]]);
