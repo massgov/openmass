@@ -113,13 +113,16 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Pre-fills Organization Owner Groups directly from the current user's
-   * Org Taxonomy assignment (field_user_org) + ancestors, before the form
-   * widgets are built. Source of truth is the user — never the entity's
-   * field_organizations. Skipped when the field already has a value.
+   * Pre-fills Organization Owner Groups from the current user's terms.
    *
-   * Uses entity_prepare_form (not form_alter) because the widget reads its
-   * default value from the entity during EntityFormDisplay::buildForm,
+   * Reads the user's Org Taxonomy assignment (field_user_org) plus
+   * ancestors and writes the union to field_content_organization, before
+   * the form widgets are built. Source of truth is the user — never the
+   * entity's field_organizations. Skipped when the field already has a
+   * value.
+   *
+   * Uses entity_prepare_form (not form_alter) because the widget reads
+   * its default value from the entity during EntityFormDisplay::buildForm,
    * which runs before form_alter fires.
    */
   #[Hook('entity_prepare_form')]

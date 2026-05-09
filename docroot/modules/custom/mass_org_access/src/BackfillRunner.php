@@ -9,9 +9,11 @@ use Drupal\Core\State\StateInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Resumable, logged backfill of field_content_organization across nodes
- * and media.document. Progress is persisted in State so a Ctrl+C or
- * crashed run can be resumed from the last processed entity ID.
+ * Resumable, logged backfill of field_content_organization.
+ *
+ * Walks every supported node bundle and media.document. Progress is
+ * persisted in State so a Ctrl+C or crashed run can be resumed from the
+ * last processed entity ID.
  */
 class BackfillRunner {
 
@@ -21,8 +23,10 @@ class BackfillRunner {
   const BATCH_SIZE = 100;
 
   /**
-   * State keys. Single namespace, six entries — totals, last-processed id
-   * cursor, and processed counter, separately for nodes and media.
+   * State keys for backfill progress.
+   *
+   * Single namespace, six entries — totals, last-processed id cursor,
+   * and processed counter, separately for nodes and media.
    */
   private const STATE_KEY = 'mass_org_access.backfill';
 
@@ -78,17 +82,19 @@ class BackfillRunner {
   }
 
   /**
-   * Site-aware timestamp for logging — uses Drupal's configured timezone
-   * (not the server's). Format includes TZ so log lines stay unambiguous
-   * across deployments.
+   * Returns a site-aware timestamp for logging.
+   *
+   * Uses Drupal's configured timezone (not the server's). Format includes
+   * TZ so log lines stay unambiguous across deployments.
    */
   private function now(): string {
     return (new DrupalDateTime())->format('Y-m-d H:i:s T');
   }
 
   /**
-   * Ensures the log file's directory exists and is writable so subsequent
-   * appends don't silently swallow lines.
+   * Ensures the log file's directory exists and is writable.
+   *
+   * Without this, subsequent appends silently swallow lines.
    */
   private function prepareLogFile(string $log_uri, OutputInterface $output): void {
     $dir = dirname($log_uri);
@@ -121,8 +127,9 @@ class BackfillRunner {
   }
 
   /**
-   * Wipes stored progress so the next run rescans from id 0 and recomputes
-   * totals.
+   * Wipes stored progress.
+   *
+   * The next run rescans from id 0 and recomputes totals.
    */
   public function resetProgress(): void {
     $this->state->delete(self::STATE_KEY);
@@ -174,8 +181,9 @@ class BackfillRunner {
   }
 
   /**
-   * Node query: every supported bundle except org_page (source of truth,
-   * populated manually by the content team).
+   * Builds the node query targeting every supported bundle except org_page.
+   *
+   * Org_page is the source of truth, populated manually by the content team.
    */
   private function buildNodeQuery() {
     return $this->entityTypeManager->getStorage('node')

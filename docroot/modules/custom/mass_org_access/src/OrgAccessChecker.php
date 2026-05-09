@@ -115,13 +115,14 @@ class OrgAccessChecker {
   }
 
   /**
-   * Pre-fills field_content_organization on the entity from the current
-   * user's field_user_org terms plus their taxonomy ancestors.
+   * Pre-fills field_content_organization from the current user's terms.
    *
-   * Called from entity_prepare_form. Source of truth is the user's Org
-   * Taxonomy assignment — never the entity's field_organizations.
-   * Skipped when the user has no org assigned or when the field already
-   * has a value (don't override editor / backfill choices).
+   * Reads the editor's field_user_org terms and walks taxonomy ancestors,
+   * writing the union to field_content_organization. Called from
+   * entity_prepare_form. Source of truth is the user's Org Taxonomy
+   * assignment — never the entity's field_organizations. Skipped when the
+   * user has no org assigned or when the field already has a value (don't
+   * override editor / backfill choices).
    */
   public function populateOwnerGroupsFromCurrentUser(EntityInterface $entity): void {
     if (!$entity->hasField('field_content_organization')) {
@@ -142,10 +143,12 @@ class OrgAccessChecker {
   }
 
   /**
-   * BFS over the taxonomy term `parent` chain. Returns the input TIDs plus
-   * every reachable ancestor TID, deduplicated. Used by form pre-fill —
-   * the backfill path does not walk ancestors because org_page values
-   * already include them (see REQUIREMENTS.md Section C/D).
+   * BFS over the taxonomy term `parent` chain.
+   *
+   * Returns the input TIDs plus every reachable ancestor TID,
+   * deduplicated. Used by form pre-fill — the backfill path does not walk
+   * ancestors because org_page values already include them (see
+   * REQUIREMENTS.md Section C/D).
    */
   private function walkTermAncestors(array $tids): array {
     $seen = array_fill_keys($tids, TRUE);

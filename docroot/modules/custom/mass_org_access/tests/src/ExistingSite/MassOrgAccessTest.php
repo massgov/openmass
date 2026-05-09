@@ -455,14 +455,13 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Backfill copies field_content_organization verbatim from the related
-   * org_page, ignoring the field_state_organization → term mapping.
+   * Backfill copies field_content_organization verbatim from the org_page.
    *
-   * The content team's manual Owner Groups on org_page are the source of
-   * truth per REQUIREMENTS.md Section C. Even when a "natural" term
-   * exists via field_state_organization, backfill must use whatever was
-   * placed on the org_page — this test makes the two values diverge to
-   * prove it.
+   * Ignores the field_state_organization → term mapping. The content
+   * team's manual Owner Groups on org_page are the source of truth per
+   * REQUIREMENTS.md Section C. Even when a "natural" term exists via
+   * field_state_organization, backfill must use whatever was placed on
+   * the org_page — this test makes the two values diverge to prove it.
    */
   public function testBackfillCopiesFromOrgPageVerbatim(): void {
     $org_page = $this->createNode([
@@ -515,8 +514,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Backfill leaves the entity untouched when the related org_page has
-   * no Owner Groups yet.
+   * Backfill leaves the entity untouched when org_page is not curated.
    *
    * Per REQUIREMENTS.md "Done when" point 6, an entity with no Owner
    * Groups is editable only by admins. Filling it in here would defeat
@@ -585,9 +583,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Form_alter pre-fills Organization Owner Groups on the EDIT form when
-   * field_content_organization is empty (un-backfilled existing content).
-   * Authors with bypass permission then see the derived value before save.
+   * Form_alter pre-fills Organization Owner Groups on the EDIT form.
+   *
+   * Triggered when field_content_organization is empty (un-backfilled
+   * existing content). Authors with bypass permission then see the
+   * derived value before save.
    */
   public function testFormAlterPreFillsEmptyContentOrgOnEditForm(): void {
     \Drupal::currentUser()->setAccount($this->userA);
@@ -631,8 +631,9 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Form_alter pre-fills Organization Owner Groups at form load for new
-   * entities — author sees the inherited org before pressing Save.
+   * Form_alter pre-fills Organization Owner Groups for new entities.
+   *
+   * Author sees the inherited org at form load, before pressing Save.
    */
   public function testFormAlterPreFillsOrgsOnNewEntityForm(): void {
     \Drupal::currentUser()->setAccount($this->userA);
@@ -853,10 +854,12 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Mimics what the drush moab backfill does on each entity: copy Owner
-   * Groups from the related org_page and persist. We need this in tests
-   * because mass_org_access does not sync in entity_presave — values are
-   * populated only at form load (from the editor's terms) or via drush.
+   * Mimics what the drush moab backfill does on each entity.
+   *
+   * Copies Owner Groups from the related org_page and persists. We need
+   * this in tests because mass_org_access does not sync in entity_presave
+   * — values are populated only at form load (from the editor's terms)
+   * or via drush.
    */
   private function syncOwnerGroupsAndSave($entity): void {
     \Drupal::service('mass_org_access.org_access_checker')
