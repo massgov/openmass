@@ -1,5 +1,22 @@
 
 
+## [0.478.0] - May 5, 2026
+
+### Removed
+  - DP-44256: Removed Percy/Browserstack.
+  
+### Fixed
+  - DP-45856: Hide metadata related to robots noindex on the form.
+  - DP-46633: Ensure Threads social media icons render for both threads.com and threads.net URLs on organization pages.
+  
+### Changed
+  - DP-45941: Allow Editors to Reference Blocked Users in “Authored By” Field for all report filters.
+  
+### Security
+  - DP-46553: Document upload incorrectly flagged as virus: patch drupal/clamav to be more axplanatory why file cannot be uploaded
+  
+
+
 ## [0.477.0] - April 28, 2026
 
 ### Added
