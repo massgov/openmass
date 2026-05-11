@@ -106,9 +106,20 @@ class MassMediaDownloadController extends ControllerBase {
     // Catches stray metadata not handled properly by file_create_url().
     // @see https://www.drupal.org/project/drupal/issues/2867355
     $context = new RenderContext();
-    $uri = $this->renderer->executeInRenderContext($context, function () use ($uri) {
+    $callback = function () use ($uri) {
       return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
-    });
+    };
+    if (\Fiber::getCurrent() !== NULL) {
+      $uri = $callback();
+    }
+    else {
+      try {
+        $uri = $this->renderer->executeInRenderContext($context, $callback);
+      }
+      catch (\FiberError) {
+        $uri = $callback();
+      }
+    }
 
     // Returns a 301 Moved Permanently redirect response.
     $response = new TrustedRedirectResponse($uri, 301);

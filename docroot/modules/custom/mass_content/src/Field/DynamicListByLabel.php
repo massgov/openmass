@@ -15,10 +15,8 @@ class DynamicListByLabel extends QueryGeneratedDynamicEntityReferenceList {
   protected function queries() {
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $this->getEntity();
-    $term_ids = [];
-    foreach ($entity->field_listdynamic_label->referencedEntities() as $term) {
-      $term_ids[] = $term->id();
-    }
+    $term_ids = array_column($entity->get('field_listdynamic_label')->getValue(), 'target_id');
+    $term_ids = array_values(array_filter($term_ids));
 
     if (empty($term_ids)) {
       return [];

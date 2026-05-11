@@ -45,22 +45,22 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
-      {% include "@atoms/09-media/figure--caspio.twig" with {
-        "figure": {
-          "caspio": {
-            "dataId": content.field_caspio_data_identifier[0]['#context'].value
+      {{ include('@atoms/09-media/figure--caspio.twig', {
+        figure: {
+          caspio: {
+            dataId: content.field_caspio_data_identifier[0]['#context'].value,
           },
-          "title": {
-            "text": content.field_caspio_admin_title[0]['#context'].value
-          }
-        }
-      } %}
+          title: {
+            text: content.field_caspio_admin_title[0]['#context'].value,
+          },
+        },
+      }) }}
     {% endblock %}
   </div>
 {% endblock paragraph %}

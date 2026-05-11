@@ -43,18 +43,18 @@
 {# Create url for Read more link. #}
 {% set minutes_url = render_var(url('<current>')) ~ '/minutes' %}
 {# Set display count to determine if more link is displayed. #}
-{% set decorativeLink = minutes_items_count > 1 ? {'text': 'Read Full Minutes', 'href': (minutes_url)} : {} %}
+{% set decorativeLink = minutes_items_count > 1 ? {text: 'Read Full Minutes', href: (minutes_url)} : {} %}
 {%
   set richText = {
-    'compHeading': {
-      'title': 'Meeting Minutes',
-      'level': level
+    compHeading: {
+      title: 'Meeting Minutes',
+      level: level,
     },
-    'decorativeLink': decorativeLink
+    decorativeLink: decorativeLink,
   }
 %}
 
-{% extends "@organisms/by-author/rich-text.twig" %}
+{% extends '@organisms/by-author/rich-text.twig' %}
 {% block rteElements %}
   {# Only render first meeting minute sections. #}
   {% for item in items|slice(0, 1) %}

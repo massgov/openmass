@@ -73,40 +73,40 @@
 {% set headingLevel = 3 %}
 {# Initalize the contents array for the component. #}
 {% set contents = [{
-  "path": "@atoms/11-text/paragraph.twig",
-  "data": {
-    "paragraph": {
-      "text": content.field_event_lede ?: ""
-    }
-  }
+  path: '@atoms/11-text/paragraph.twig',
+  data: {
+    paragraph: {
+      text: content.field_event_lede ?: '',
+    },
+  },
 }] %}
 
 {% set date_split = content.field_event_date|render|split(' -- ') %}
 
 {%
   set event_date = {
-    "path": "@atoms/11-text/raw-html.twig",
-    "data": {
-      "rawHtml": {
-        "content": node.field_event_time is not empty ? content.field_event_time : date_split.0
-      }
-    }
+    path: '@atoms/11-text/raw-html.twig',
+    data: {
+      rawHtml: {
+        content: node.field_event_time is not empty ? content.field_event_time : date_split.0,
+      },
+    },
   }
 %}
 
 {% set contents = contents|merge([event_date]) %}
 
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "level": headingLevel,
-    "emphasizedText": "",
-    "tags": "",
-    "contents": contents
-  }
-} %}
+    level: headingLevel,
+    emphasizedText: '',
+    tags: '',
+    contents: contents,
+  },
+}) }}

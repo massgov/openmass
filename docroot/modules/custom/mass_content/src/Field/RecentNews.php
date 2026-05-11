@@ -3,13 +3,37 @@
 namespace Drupal\mass_content\Field;
 
 use Drupal\mayflower\Helper;
+use Drupal\node\NodeInterface;
 
 /**
- * Recent news field for organizations.
+ * Recent news field for organization and service pages.
  */
 class RecentNews extends QueryGeneratedEntityReferenceList {
 
   protected $length = 6;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function computeValue() {
+    $entity = $this->getEntity();
+
+    // Layout Paragraphs previews use unsaved paragraph entities. Allow
+    // computed news results for those previews when the parent node exists.
+    if ($entity->isNew() && $entity->getEntityTypeId() !== 'paragraph') {
+      return;
+    }
+
+    $query = $this->query();
+    if ($query) {
+      $query->range($this->start, $this->length);
+      $delta = 0;
+      foreach ($query->accessCheck(FALSE)->execute() as $nid) {
+        $this->list[$delta] = $this->createItem($delta, ['target_id' => $nid]);
+        $delta++;
+      }
+    }
+  }
 
   /**
    * {@inheritdoc}
@@ -24,9 +48,18 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
       $node = $entity;
     }
 
+    if (!$node instanceof NodeInterface || $node->isNew()) {
+      return NULL;
+    }
+
     $query = \Drupal::entityQuery('node');
     $query->condition('type', 'news');
-    $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
+    if ($node->bundle() == 'service_page') {
+      $query->condition('field_related_service.target_id', $node->id());
+    }
+    else {
+      $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
+    }
     $query->condition('field_news_type', 'blog_post', '<>');
     $query->condition('langcode', 'en');
     $query->condition('status', 1);

@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.media.document.field_accessibility_self_rpt
     - field.field.media.document.field_category
     - field.field.media.document.field_collections
     - field.field.media.document.field_description
@@ -22,9 +23,11 @@ dependencies:
     - workflows.workflow.media_states
   module:
     - content_moderation
+    - datetime
     - entity_reference_tree
     - field_group
     - file
+    - mass_fields
     - path
 third_party_settings:
   field_group:
@@ -32,9 +35,9 @@ third_party_settings:
       children:
         - field_start_date
       label: Timeframe
-      region: hidden
-      parent_name: ''
-      weight: 11
+      region: content
+      parent_name: group_basic
+      weight: 15
       format_type: fieldset
       format_settings:
         classes: ''
@@ -73,10 +76,12 @@ third_party_settings:
         - field_description
         - field_document_listing_desc
         - field_upload_file
+        - field_accessibility_self_rpt
         - field_category
         - field_organizations
         - langcode
         - field_media_english_version
+        - group_timeframe
         - field_document_label
         - field_collections
         - field_internal_notes
@@ -97,15 +102,21 @@ targetEntityType: media
 bundle: document
 mode: default
 content:
+  field_accessibility_self_rpt:
+    type: list_long_label_document_self_reported_accessibility_status_widget
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_category:
     type: options_select
-    weight: 6
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   field_collections:
     type: entity_reference_tree
-    weight: 18
+    weight: 12
     region: content
     settings:
       theme: default
@@ -131,7 +142,7 @@ content:
     third_party_settings: {  }
   field_document_label:
     type: entity_reference_autocomplete
-    weight: 17
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -149,7 +160,7 @@ content:
     third_party_settings: {  }
   field_internal_notes:
     type: string_textarea
-    weight: 20
+    weight: 13
     region: content
     settings:
       rows: 1
@@ -157,7 +168,7 @@ content:
     third_party_settings: {  }
   field_media_english_version:
     type: entity_reference_autocomplete
-    weight: 9
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS
@@ -185,13 +196,19 @@ content:
             selector: ''
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 7
+    weight: 8
     region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_start_date:
+    type: datetime_default
+    weight: 7
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_title:
     type: string_textfield
@@ -210,7 +227,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 8
+    weight: 9
     region: content
     settings:
       include_locked: false
@@ -241,14 +258,14 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
     display_label: true
   simple_sitemap:
-    weight: 5
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -287,5 +304,4 @@ hidden:
   field_file_mime: true
   field_language: true
   field_size: true
-  field_start_date: true
   name: true

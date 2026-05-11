@@ -36,24 +36,24 @@
  * @see template_preprocess_field()
  */
 #}
-{% embed "@organisms/by-author/stacked-row-section.twig" with {
-  "title": "",
-  "id": ""
+{% embed '@organisms/by-author/stacked-row-section.twig' with {
+  title: '',
+  id: '',
 } %}
   {% block stackedRowContentOverride %}
-    {% include "@organisms/by-author/short-description.twig" with {
-      "short_description": {
-        "richText": {
-          "rteElements": [{
-            "path": "@atoms/11-text/paragraph.twig",
-            "data": {
-              "paragraph": {
-                "text": items[0].content
-              }
-            }
-          }]
-        }
-      }
-    } %}
+    {{ include('@organisms/by-author/short-description.twig', {
+      short_description: {
+        richText: {
+          rteElements: [{
+            path: '@atoms/11-text/paragraph.twig',
+            data: {
+              paragraph: {
+                text: items[0].content,
+              },
+            },
+          }],
+        },
+      },
+    }) }}
   {% endblock %}
 {% endembed %}

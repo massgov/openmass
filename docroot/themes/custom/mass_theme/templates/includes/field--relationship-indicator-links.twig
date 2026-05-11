@@ -38,15 +38,15 @@
 #}
 {% for item in items %}
   {% set item = {
-    "href": item.content['#url'],
-    "title": item.content['#title']
+    href: item.content['#url'],
+    title: item.content['#title'],
   } %}
 
   {% if loop.last %}
-    {% set item = item|merge({'class': "ma__relationship-indicators--term--last"}) %}
+    {% set item = item|merge({class: 'ma__relationship-indicators--term--last'}) %}
   {% endif %}
 
-  {% include "@atoms/item-link.twig" with {
-    "itemLink": item
-  } %}
+  {{ include('@atoms/item-link.twig', {
+    itemLink: item,
+  }) }}
 {% endfor %}

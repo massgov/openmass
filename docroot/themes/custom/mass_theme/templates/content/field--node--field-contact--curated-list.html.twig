@@ -36,10 +36,10 @@
  * @see template_preprocess_field()
  */
 #}
-{% embed "@organisms/contact/contact-list.twig" with {
-  "contactList": {
-    "viewSpecific": false
-  }
+{% embed '@organisms/contact/contact-list.twig' with {
+  contactList: {
+    viewSpecific: false,
+  },
 } %}
   {% block contactListContacts %}
     {% for item in items %}

@@ -368,8 +368,11 @@ display:
           bef:
             general:
               autosubmit: false
+              auto_submit_sort_only: false
+              autosubmit_breakpoint: ''
               autosubmit_exclude_textfield: false
               autosubmit_textfield_delay: 500
+              autosubmit_textfield_minimum_length: 3
               autosubmit_hide: false
               input_required: false
               allow_secondary: false
@@ -379,15 +382,28 @@ display:
               field_collections_target_id_entityreference_filter:
                 plugin_id: default
                 advanced:
+                  sort_options_method: alphabetical_asc
+                  sort_options_natural: true
                   rewrite:
                     filter_rewrite_values: ''
+                    filter_rewrite_values_key: false
                   collapsible: false
+                  collapsible_disable_automatic_open: false
+                  open_by_default: false
                   is_secondary: false
+                  hide_label: false
+                  field_classes: ''
               combine:
                 plugin_id: default
                 advanced:
+                  sort_options_method: alphabetical_asc
+                  sort_options_natural: true
                   collapsible: false
+                  collapsible_disable_automatic_open: false
+                  open_by_default: false
                   is_secondary: false
+                  hide_label: false
+                  field_classes: ''
       access:
         type: perm
         options:
@@ -546,22 +562,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -612,22 +612,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:

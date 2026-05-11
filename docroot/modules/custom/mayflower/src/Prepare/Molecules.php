@@ -296,6 +296,7 @@ class Molecules {
       'x.com' => 'x-logo',
       'facebook.com' => 'facebook-logo',
       'threads.net' => 'threads-logo',
+      'threads.com' => 'threads-logo',
       'flickr.com' => 'flickr-logo',
       'linkedin.com' => 'linkedin-logo',
       'instagram.com' => 'instagram-logo',
@@ -643,9 +644,13 @@ class Molecules {
 
         if (in_array($bundle, $bundles_using_email_fields)) {
           $link = Helper::separatedEmailLink($entity, $fields['link']);
-          $item['link'] = $link['href'];
-          $item['value'] = $link['text'];
+          $item['link'] = trim((string) ($link['href'] ?? ''));
+          $item['value'] = trim((string) ($link['text'] ?? ''));
           $item['type'] = 'email';
+
+          if (empty($item['link']) || empty($item['value'])) {
+            continue;
+          }
 
           // Respect first email address provided if present.
           if (!$contactInfo['email']) {
@@ -654,8 +659,11 @@ class Molecules {
         }
         else {
           $link = Helper::separatedLinks($entity, $fields['link']);
-          $item['link'] = $link[0]['href'];
-          $item['value'] = $link[0]['text'];
+          $item['link'] = trim((string) ($link[0]['href'] ?? ''));
+          $item['value'] = trim((string) ($link[0]['text'] ?? ''));
+          if (empty($item['link']) || empty($item['value'])) {
+            continue;
+          }
         }
       }
 

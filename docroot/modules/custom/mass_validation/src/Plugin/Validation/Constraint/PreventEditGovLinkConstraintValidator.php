@@ -29,10 +29,18 @@ class PreventEditGovLinkConstraintValidator extends ConstraintValidator {
         // Validate link fields.
         if (isset($values[0]['uri'])) {
           foreach ($values as $index => $link) {
-            if (strpos($link['uri'], 'edit.mass.gov') !== FALSE) {
+            if (!empty($link['uri']) && strpos($link['uri'], 'edit.mass.gov') !== FALSE) {
+              // Attach the violation to the field as a whole rather than a
+              // specific delta. This avoids issues where deeply nested or
+              // AJAX-rendered widgets (such as layout_paragraphs link fields)
+              // cannot be resolved to a concrete form element, which would
+              // otherwise result in FormState::setError() receiving a NULL
+              // element and triggering a TypeError.
               $this->context->buildViolation($constraint->message)
-                ->atPath($entity_field . '.' . $index)
+                ->atPath($entity_field)
                 ->addViolation();
+              // One violation per field is sufficient.
+              break;
             }
           }
         }

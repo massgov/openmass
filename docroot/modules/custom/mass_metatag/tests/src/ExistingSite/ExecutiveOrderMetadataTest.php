@@ -40,6 +40,8 @@ class ExecutiveOrderMetadataTest extends MetadataTestCase {
       'field_executive_order_issuer' => $issuer_paragraph,
       'moderation_state' => 'published',
     ]);
+    // Ensure Auto Entity Label finalizes generated title.
+    $node->save();
     return $node;
   }
 

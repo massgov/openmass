@@ -48,7 +48,7 @@
 {# The total number of board members to initially show. #}
 {% set totalShown = 8 %}
 
-{% embed "@organisms/by-author/stacked-row-section.twig" %}
+{% embed '@organisms/by-author/stacked-row-section.twig' %}
 
   {% block stackedRowContentOverride %}
     {# Heading #}
@@ -58,8 +58,8 @@
     {% embed '@organisms/by-author/teaser-listing-group.twig' with {
       teaserListingGroup: {
         totalShown: totalShown,
-        moreItemsLabel: "Show all members"|t,
-        lessItemsLabel: "Show fewer members"|t,
+        moreItemsLabel: 'Show all members'|t,
+        lessItemsLabel: 'Show fewer members'|t,
       },
     } %}
 

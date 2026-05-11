@@ -45,35 +45,35 @@
 {% set description = false %}
 {% if paragraph.field_description is not empty %}
   {% set description = {
-    "rteElements": [
+    rteElements: [
       {
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": content.field_description|render
-          }
-        }
-      }
-    ]
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: content.field_description|render,
+          },
+        },
+      },
+    ],
   } %}
 {% endif %}
-{% embed "@organisms/by-author/link-list.twig" with {
-  "linkList": {
-    "compHeading": {
-      "title": content.field_section_title|render,
-      "sub": "",
-      "level": level,
-      "color": "",
-      "id": "",
-      "centered": false,
-      "hideLine": true
+{% embed '@organisms/by-author/link-list.twig' with {
+  linkList: {
+    compHeading: {
+      title: content.field_section_title|render,
+      sub: '',
+      level: level,
+      color: '',
+      id: '',
+      centered: false,
+      hideLine: true,
     },
-    "description": description,
-    "stacked": true,
-    "hideBullets": true,
-    "hideLine": true,
-    "links": []
-  }
+    description: description,
+    stacked: true,
+    hideBullets: true,
+    hideLine: true,
+    links: [],
+  },
 } %}
   {% block linkListDecorativeLink %}
     {{ content.field_links_documents }}
