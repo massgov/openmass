@@ -31,7 +31,7 @@
         </a>
       </div>
       <label style="display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.9rem;color:#555;margin-top:.75rem;">
-        <input type="checkbox" class="mass-analytics-remember-state">
+        <input type="checkbox" class="mass-analytics-remember-state" checked>
         Remember state after reload
       </label>
       <div style="font-size:.85rem;color:#777;margin-top:.15rem;">
@@ -87,7 +87,9 @@
     cbs.forEach(function (c) { c.checked = checked; });
   }
   function isRememberOn() {
-    return readLS(REMEMBER_KEY) === '1';
+    // Default to enabled when the user has not made an explicit choice yet.
+    var v = readLS(REMEMBER_KEY);
+    return v === null ? true : v === '1';
   }
   function persistStateIfNeeded(expanded) {
     if (isRememberOn()) {
