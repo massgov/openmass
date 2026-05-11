@@ -1,4 +1,12 @@
 services:
+  mass_org_access.settings:
+    class: Drupal\mass_org_access\OrgAccessSettings
+    arguments:
+      - '@state'
+
+  Drupal\mass_org_access\OrgAccessSettings:
+    alias: mass_org_access.settings
+
   mass_org_access.org_access_checker:
     class: Drupal\mass_org_access\OrgAccessChecker
     arguments:
@@ -24,6 +32,7 @@ services:
     arguments:
       - '@mass_org_access.org_access_checker'
       - '@messenger'
+      - '@mass_org_access.settings'
     tags:
       - { name: drupal.hook }
 

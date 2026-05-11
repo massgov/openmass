@@ -15,6 +15,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\mass_org_access\OrgAccessChecker;
+use Drupal\mass_org_access\OrgAccessSettings;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
 
@@ -28,6 +29,7 @@ class MassOrgAccessHooks {
   public function __construct(
     private readonly OrgAccessChecker $orgAccessChecker,
     private readonly MessengerInterface $messenger,
+    private readonly OrgAccessSettings $settings,
   ) {}
 
   /**
@@ -87,6 +89,9 @@ class MassOrgAccessHooks {
    */
   private function checkAccess(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
     if (!in_array($operation, ['update', 'delete'], TRUE)) {
+      return AccessResult::neutral();
+    }
+    if (!$this->settings->isEnforcementEnabled()) {
       return AccessResult::neutral();
     }
     if ($account->hasPermission('bypass org access')) {
@@ -157,6 +162,11 @@ class MassOrgAccessHooks {
    * AJAX rebuilds don't break on closure serialization.
    */
   public static function validateOrgAccess(array &$form, FormStateInterface $form_state): void {
+    /** @var \Drupal\mass_org_access\OrgAccessSettings $settings */
+    $settings = \Drupal::service('mass_org_access.settings');
+    if (!$settings->isEnforcementEnabled()) {
+      return;
+    }
     $account = \Drupal::currentUser();
     if ($account->hasPermission('bypass org access')) {
       return;
@@ -206,6 +216,9 @@ class MassOrgAccessHooks {
    */
   #[Hook('user_login')]
   public function userLogin(UserInterface $account): void {
+    if (!$this->settings->isEnforcementEnabled()) {
+      return;
+    }
     if ($account->hasPermission('bypass org access')) {
       return;
     }

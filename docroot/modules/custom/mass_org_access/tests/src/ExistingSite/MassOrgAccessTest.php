@@ -68,6 +68,12 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
 
+    // Tests assert the gated behavior; flip the feature switch on for the
+    // duration of the test. tearDown() resets it. State is used (not env)
+    // because it is shared between the test process and the webserver
+    // process that handles DTT HTTP requests.
+    \Drupal::state()->set('mass_org_access.enforce', TRUE);
+
     $this->orgPageA = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Org A ' . $this->randomMachineName(),
@@ -110,6 +116,14 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->userB->set('field_user_org', $termB->id());
     $this->userB->activate();
     $this->userB->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function tearDown(): void {
+    \Drupal::state()->delete('mass_org_access.enforce');
+    parent::tearDown();
   }
 
   /**
@@ -580,6 +594,70 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->assertFalse(
       Url::fromRoute('view.change_parents.page_1', ['node' => $this->orgPageB->id()])->access($this->userA),
       '/node/X/move-children must be denied for a user without org access.'
+    );
+  }
+
+  /**
+   * OrgAccessSettings reads MASS_ORG_ACCESS_ENFORCE and the State fallback.
+   *
+   * Env var wins over State. Both default to OFF when unset.
+   */
+  public function testOrgAccessSettingsParsesSwitchSources(): void {
+    $settings = \Drupal::service('mass_org_access.settings');
+    $state = \Drupal::state();
+
+    // Wipe both layers.
+    putenv('MASS_ORG_ACCESS_ENFORCE');
+    $state->delete('mass_org_access.enforce');
+    $this->assertFalse($settings->isEnforcementEnabled(), 'Both unset → OFF.');
+
+    // State alone.
+    $state->set('mass_org_access.enforce', TRUE);
+    $this->assertTrue($settings->isEnforcementEnabled(), 'State TRUE → ON.');
+    $state->set('mass_org_access.enforce', FALSE);
+    $this->assertFalse($settings->isEnforcementEnabled(), 'State FALSE → OFF.');
+
+    // Env wins regardless of State.
+    $state->set('mass_org_access.enforce', FALSE);
+    foreach (['1', 'true', 'TRUE', 'yes', 'on'] as $truthy) {
+      putenv('MASS_ORG_ACCESS_ENFORCE=' . $truthy);
+      $this->assertTrue(
+        $settings->isEnforcementEnabled(),
+        sprintf('Env "%s" → ON (overrides State FALSE).', $truthy)
+      );
+    }
+    putenv('MASS_ORG_ACCESS_ENFORCE');
+
+    // Restore the value setUp() set so the rest of tearDown() is clean.
+    $state->set('mass_org_access.enforce', TRUE);
+  }
+
+  /**
+   * With the feature switch off, the org gate is silent.
+   *
+   * Release 1 ships the module without enforcement. User A (termA) on a
+   * node tagged with orgPageB (termB) would normally be denied; with
+   * the switch off, mass_org_access returns neutral and Drupal's
+   * default `administer nodes` perm on the editor role lets the user
+   * through.
+   */
+  public function testEnforcementSwitchControlsBlocking(): void {
+    $node = $this->createTestNode('info_details', $this->orgPageB);
+
+    // Sanity: with the switch ON (set in setUp()), user A is blocked.
+    $this->assertFalse(
+      $node->access('update', $this->userA),
+      'Sanity: enforcement ON blocks cross-org update.'
+    );
+
+    // Flip switch OFF via State; reset entity access cache so the next
+    // access() call re-runs the hook.
+    \Drupal::state()->set('mass_org_access.enforce', FALSE);
+    \Drupal::entityTypeManager()->getAccessControlHandler('node')->resetCache();
+
+    $this->assertTrue(
+      $node->access('update', $this->userA),
+      'Enforcement OFF must let user A through despite the org mismatch.'
     );
   }
 
