@@ -598,6 +598,35 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Entities with no Owner Groups are denied to regular editors.
+   *
+   * REQUIREMENTS.md "Done when" point 6: nodes and media with no
+   * Organization Owner Groups value are editable only by admins and
+   * content admins. The positive case (bypass user can still edit)
+   * is covered by testBypassOrgAccessGrantsAllUpdates with OOG set;
+   * for empty OOG the bypass branch returns neutral and the bundle's
+   * default permissions decide — outside this module's contract.
+   */
+  public function testEmptyOwnerGroupsDeniedForRegularEditors(): void {
+    // Build a node, then strip Owner Groups to simulate un-curated content.
+    $node = $this->createTestNode('info_details', $this->orgPageA);
+    $node->set('field_content_organization', []);
+    $node->setNewRevision(FALSE);
+    $node->setSyncing(TRUE);
+    $node->save();
+    \Drupal::entityTypeManager()->getAccessControlHandler('node')->resetCache();
+
+    $this->assertFalse(
+      $node->access('update', $this->userA),
+      'Empty Owner Groups must be denied for regular editors per spec point 6.'
+    );
+    $this->assertFalse(
+      $node->access('delete', $this->userA),
+      'Empty Owner Groups must also block delete for regular editors.'
+    );
+  }
+
+  /**
    * OrgAccessSettings reads MASS_ORG_ACCESS_ENFORCE and the State fallback.
    *
    * Env var wins over State. Both default to OFF when unset.

@@ -107,9 +107,13 @@ class MassOrgAccessHooks {
       return $forbidden;
     }
 
+    // Per REQUIREMENTS.md "Done when" point 6: entities with no Owner
+    // Groups are editable only by admins and content admins. The bypass
+    // check above already let those roles through, so any user reaching
+    // this point with an empty Owner Groups field is denied.
     $entity_tids = $this->orgAccessChecker->getEntityOrgTids($entity);
     if (empty($entity_tids)) {
-      return AccessResult::neutral();
+      return $forbidden;
     }
     if ($this->orgAccessChecker->userHasOrgAccess($account, $entity)) {
       return AccessResult::neutral();
