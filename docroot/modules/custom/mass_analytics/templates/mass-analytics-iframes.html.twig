@@ -1,9 +1,11 @@
 {#
 /**
  * @file
- * Render the Power BI report in a short iframe so the "Sign in" button
- * stays visible above the fold; once the user authenticates inside the
- * frame, an "Expand" button stretches the iframe to the full report size.
+ * Power BI analytics dashboard launcher. Short iframe (220px) with manual
+ * Expand/Collapse toggle, duplicated above and below the iframe so the
+ * controls are reachable from either side. The "Keep expanded after
+ * reload" checkbox persists the expanded state via localStorage so the
+ * iframe restores its expanded size on the next page load.
  */
 #}
 <div class="mass-analytics-launcher" style="padding:1rem 0;">
@@ -14,6 +16,30 @@
     Sign in to Power BI in the frame below, then click <strong>Expand</strong> to view the full dashboard.
   </p>
 
+  {% set controls %}
+    <div class="mass-analytics-controls" style="margin:1rem 0;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+      <button
+        type="button"
+        class="mass-analytics-expand-btn"
+        aria-expanded="false"
+        style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
+        Expand to full size
+      </button>
+      <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
+        Or open the report in a new tab
+      </a>
+      <label style="display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.9rem;color:#555;">
+        <input type="checkbox" class="mass-analytics-keep-expanded">
+        Keep expanded after reload
+      </label>
+      <span style="font-size:.85rem;color:#777;flex-basis:100%;margin-top:-.25rem;">
+        If checked, after page reload the iframe with report will be always expanded until you collapse it.
+      </span>
+    </div>
+  {% endset %}
+
+  {{ controls }}
+
   <iframe
     id="mass-analytics-iframe"
     width="100%"
@@ -21,27 +47,53 @@
     seamless
     frameBorder="0"
     src="{{ config }}"
+    data-collapsed-height="220"
+    data-expanded-height="{{ iframe_height }}"
     style="border:1px solid #ccc;display:block;transition:height .3s ease;"></iframe>
 
-  <p style="margin:1rem 0 0 0;display:flex;gap:1rem;align-items:center;">
-    <button
-      type="button"
-      id="mass-analytics-expand-btn"
-      data-collapsed-height="220"
-      data-expanded-height="{{ iframe_height }}"
-      onclick="(function(b){
-        var f=document.getElementById('mass-analytics-iframe');
-        var expanded=b.getAttribute('aria-expanded')==='true';
-        f.height=expanded?b.dataset.collapsedHeight:b.dataset.expandedHeight;
-        b.setAttribute('aria-expanded',!expanded);
-        b.textContent=expanded?'Expand to full size':'Collapse';
-      })(this);return false;"
-      aria-expanded="false"
-      style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
-      Expand to full size
-    </button>
-    <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
-      Or open the report in a new tab
-    </a>
-  </p>
+  {{ controls }}
 </div>
+
+<script>
+(function () {
+  var iframe = document.getElementById('mass-analytics-iframe');
+  if (!iframe) return;
+  var btns = document.querySelectorAll('.mass-analytics-expand-btn');
+  var cbs = document.querySelectorAll('.mass-analytics-keep-expanded');
+  var COLLAPSED = parseInt(iframe.dataset.collapsedHeight, 10);
+  var EXPANDED = parseInt(iframe.dataset.expandedHeight, 10);
+  var STORAGE_KEY = 'mass_analytics_keep_expanded';
+
+  function applyState(expanded) {
+    iframe.height = expanded ? EXPANDED : COLLAPSED;
+    btns.forEach(function (b) {
+      b.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      b.textContent = expanded ? 'Collapse' : 'Expand to full size';
+    });
+  }
+  function setCheckboxes(checked) {
+    cbs.forEach(function (c) { c.checked = checked; });
+  }
+  function persistKeep(checked) {
+    try { localStorage.setItem(STORAGE_KEY, checked ? '1' : '0'); } catch (e) {}
+  }
+
+  var keep = false;
+  try { keep = localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) {}
+  setCheckboxes(keep);
+  if (keep) applyState(true);
+
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var nowExpanded = b.getAttribute('aria-expanded') !== 'true';
+      applyState(nowExpanded);
+    });
+  });
+  cbs.forEach(function (c) {
+    c.addEventListener('change', function () {
+      setCheckboxes(c.checked);
+      persistKeep(c.checked);
+    });
+  });
+})();
+</script>
