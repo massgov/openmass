@@ -461,55 +461,6 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
-  browserstack_percy_test:
-    parameters:
-      target:
-        type: string
-        default: test
-      list:
-        type: string
-        default: post-release
-      tugboat:
-        type: string
-        default: ""
-    working_directory: /tmp/code/browserstack
-    docker:
-      - image: cimg/php:8.3-node
-        environment:
-          BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
-          BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
-          BROWSERSTACK_LOCAL: false
-          BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
-          MASS_BYPASS_RATE_LIMIT: $MASS_BYPASS_RATE_LIMIT
-          PERCY_TOKEN: $PERCY_TOKEN
-          PERCY_TARGET: << parameters.target >>
-          PERCY_LIST: << parameters.list >>
-          PERCY_DO_NOT_CAPTURE_RESPONSIVE_ASSETS: true
-          PERCY_CLIENT_ERROR_LOGS: false
-    steps:
-      - attach_workspace: {at: /tmp}
-      - *vendor_bin_add_path
-      - *no_host_check
-      - *no_ssh_timeout
-      - *yarn_install
-      - when:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Percy on BrowserStack Automate test (Tugboat target)
-                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test || true
-      - unless:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Percy on BrowserStack Automate test (non Tugboat target)
-                command: npm run percy-snapshots-test || true
-                no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
   backstop_reference:
     parameters:
       target:
@@ -824,14 +775,6 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [deploy-test-refresh-db]
-          target: test
-          list: all
-          filters:
-            branches:
-              only: /^release\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
           requires: [deploy-test-refresh-db]
@@ -888,14 +831,6 @@ workflows:
             requires: [deploy-test-no-refresh-db]
             target: test
             reference: prod
-            filters:
-              branches:
-                only: /^hotfix\/.*$/
-      - browserstack_percy_test:
-            name: browserstack-percy-test
-            requires: [deploy-test-no-refresh-db]
-            target: test
-            list: all
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -967,14 +902,6 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
-          filters:
-            branches:
-              only: /^mayflower\/.*$/
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [deploy-test-refresh-db]
-          target: test
-          list: all
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -1261,20 +1188,6 @@ workflows:
           tugboat: << pipeline.parameters.tugboat >>
           cachebuster: << pipeline.parameters.cachebuster >>
 
-  browserstack_percy_compare:
-    when:
-      and:
-        - not:
-            equal: [ webhook, << pipeline.trigger_source >> ]
-        - equal: [ browserstack_percy_compare, << pipeline.parameters.trigger_workflow >> ]
-    jobs:
-      - build
-      - browserstack_percy_test:
-          requires: [ build ]
-          target: << pipeline.parameters.target >>
-          list: << pipeline.parameters.list >>
-          tugboat: << pipeline.parameters.tugboat >>
-
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
@@ -1293,11 +1206,6 @@ workflows:
           requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [ deploy-cd-refresh-db ]
-          target: cd
-          list: all
       - crawl:
           name: crawl-deploy-450
           requires: [ deploy-cd-refresh-db ]

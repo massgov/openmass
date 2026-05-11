@@ -1,5 +1,23 @@
 
 
+## [0.477.0] - April 28, 2026
+
+### Added
+  - DP-45023: Added accessible translation widget.
+  
+### Fixed
+  - DP-46271: Fix press release city injection to use the first paragraph even when the first p tag has attributes like lang.
+  - DP-46385: Fix icon duplicate id by cleaning up clipPath.
+  - DP-46544: Fixed issue with keyboard navigation getting trapped on global nav menu close button.
+  
+### Changed
+  - DP-46332: Updated log processing class to address issues with missing and broken logs.
+  
+### Security
+  - DP-46568: Drupal security update 11.3.8.
+  
+
+
 ## [0.476.0] - April 21, 2026
 
 ### Changed
