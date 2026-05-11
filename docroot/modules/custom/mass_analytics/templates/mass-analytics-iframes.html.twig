@@ -1,11 +1,9 @@
 {#
 /**
  * @file
- * Power BI analytics dashboard launcher. Short iframe (220px) with manual
- * Expand/Collapse toggle, duplicated above and below the iframe so the
- * controls are reachable from either side. The "Remember state after
- * reload" checkbox opts in to persisting the user's last expanded or
- * collapsed choice across page reloads via localStorage.
+ * Power BI analytics dashboard launcher. Short iframe (220px) with a
+ * manual Expand/Collapse toggle, duplicated above and below the iframe
+ * so the controls are reachable from either side.
  */
 #}
 <div class="mass-analytics-launcher" style="padding:1rem 0;">
@@ -17,26 +15,17 @@
   </p>
 
   {% set controls %}
-    <div class="mass-analytics-controls" style="margin:1rem 0;">
-      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
-        <button
-          type="button"
-          class="mass-analytics-expand-btn"
-          aria-expanded="false"
-          style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
-          Expand to full size
-        </button>
-        <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
-          Or open the report in a new tab
-        </a>
-      </div>
-      <label style="display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.9rem;color:#555;margin-top:.75rem;">
-        <input type="checkbox" class="mass-analytics-remember-state" checked>
-        Remember state after reload
-      </label>
-      <div style="font-size:.85rem;color:#777;margin-top:.15rem;">
-        If checked, the iframe will restore its last expanded or collapsed state after page reload.
-      </div>
+    <div class="mass-analytics-controls" style="margin:1rem 0;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+      <button
+        type="button"
+        class="mass-analytics-expand-btn"
+        aria-expanded="false"
+        style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
+        Expand to full size
+      </button>
+      <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
+        Or open the report in a new tab
+      </a>
     </div>
   {% endset %}
 
@@ -51,7 +40,6 @@
     src="{{ config }}"
     data-collapsed-height="220"
     data-expanded-height="{{ iframe_height }}"
-    data-node-id="{{ node_id }}"
     style="border:1px solid #ccc;display:block;transition:height .3s ease;"></iframe>
 
   {{ controls }}
@@ -62,19 +50,8 @@
   var iframe = document.getElementById('mass-analytics-iframe');
   if (!iframe) return;
   var btns = document.querySelectorAll('.mass-analytics-expand-btn');
-  var cbs = document.querySelectorAll('.mass-analytics-remember-state');
   var COLLAPSED = parseInt(iframe.dataset.collapsedHeight, 10);
   var EXPANDED = parseInt(iframe.dataset.expandedHeight, 10);
-  var NODE_ID = iframe.dataset.nodeId || '0';
-  var REMEMBER_KEY = 'mass_analytics_remember_state__' + NODE_ID;
-  var STATE_KEY = 'mass_analytics_iframe_state__' + NODE_ID;
-
-  function readLS(key) {
-    try { return localStorage.getItem(key); } catch (e) { return null; }
-  }
-  function writeLS(key, value) {
-    try { localStorage.setItem(key, value); } catch (e) {}
-  }
 
   function applyState(expanded) {
     iframe.height = expanded ? EXPANDED : COLLAPSED;
@@ -83,41 +60,11 @@
       b.textContent = expanded ? 'Collapse' : 'Expand to full size';
     });
   }
-  function setCheckboxes(checked) {
-    cbs.forEach(function (c) { c.checked = checked; });
-  }
-  function isRememberOn() {
-    // Default to enabled when the user has not made an explicit choice yet.
-    var v = readLS(REMEMBER_KEY);
-    return v === null ? true : v === '1';
-  }
-  function persistStateIfNeeded(expanded) {
-    if (isRememberOn()) {
-      writeLS(STATE_KEY, expanded ? 'expanded' : 'collapsed');
-    }
-  }
-
-  var remember = isRememberOn();
-  setCheckboxes(remember);
-  if (remember && readLS(STATE_KEY) === 'expanded') {
-    applyState(true);
-  }
 
   btns.forEach(function (b) {
     b.addEventListener('click', function () {
       var nowExpanded = b.getAttribute('aria-expanded') !== 'true';
       applyState(nowExpanded);
-      persistStateIfNeeded(nowExpanded);
-    });
-  });
-  cbs.forEach(function (c) {
-    c.addEventListener('change', function () {
-      setCheckboxes(c.checked);
-      writeLS(REMEMBER_KEY, c.checked ? '1' : '0');
-      if (c.checked) {
-        var currentlyExpanded = btns[0].getAttribute('aria-expanded') === 'true';
-        writeLS(STATE_KEY, currentlyExpanded ? 'expanded' : 'collapsed');
-      }
     });
   });
 })();
