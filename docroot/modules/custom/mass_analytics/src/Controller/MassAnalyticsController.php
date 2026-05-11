@@ -46,6 +46,7 @@ class MassAnalyticsController extends ControllerBase {
       '#theme' => 'mass_analytics_iframe',
       '#config' => $report_url,
       '#node_title' => $node->getTitle(),
+      '#node_id' => (int) $node->id(),
       '#cache' => [
         'max-age' => 0,
       ],

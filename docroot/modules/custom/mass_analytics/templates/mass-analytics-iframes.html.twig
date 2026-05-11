@@ -51,6 +51,7 @@
     src="{{ config }}"
     data-collapsed-height="220"
     data-expanded-height="{{ iframe_height }}"
+    data-node-id="{{ node_id }}"
     style="border:1px solid #ccc;display:block;transition:height .3s ease;"></iframe>
 
   {{ controls }}
@@ -64,8 +65,9 @@
   var cbs = document.querySelectorAll('.mass-analytics-remember-state');
   var COLLAPSED = parseInt(iframe.dataset.collapsedHeight, 10);
   var EXPANDED = parseInt(iframe.dataset.expandedHeight, 10);
+  var NODE_ID = iframe.dataset.nodeId || '0';
   var REMEMBER_KEY = 'mass_analytics_remember_state';
-  var STATE_KEY = 'mass_analytics_iframe_state';
+  var STATE_KEY = 'mass_analytics_iframe_state__' + NODE_ID;
 
   function readLS(key) {
     try { return localStorage.getItem(key); } catch (e) { return null; }
