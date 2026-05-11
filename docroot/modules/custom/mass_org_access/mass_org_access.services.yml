@@ -26,3 +26,8 @@ services:
       - '@messenger'
     tags:
       - { name: drupal.hook }
+
+  mass_org_access.route_subscriber:
+    class: Drupal\mass_org_access\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

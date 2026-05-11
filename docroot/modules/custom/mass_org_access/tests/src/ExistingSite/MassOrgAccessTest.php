@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_org_access\ExistingSite;
 
 use Drupal\Core\Session\AnonymousUserSession;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
@@ -550,6 +551,60 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->assertEmpty(
       $node->get('field_content_organization')->getValue(),
       'Backfill must leave entity field_content_organization empty when the related org_page is not yet curated.'
+    );
+  }
+
+  /**
+   * Side-door write routes are blocked for users without org access.
+   *
+   * The children-reorder, move-children, and redirects routes used to
+   * require only `node.view`, so hook_node_access never gated them.
+   * RouteSubscriber raises the requirement to `node.update`, routing
+   * the decision through mass_org_access like the canonical edit form.
+   */
+  public function testSideDoorWriteRoutesBlockedWithoutOrgAccess(): void {
+    // /node/X/redirects is reachable only on trashed nodes per
+    // mass_redirects' _entity_is_state requirement, so flip the state
+    // explicitly. orgPageB carries termB; user A has only termA → denied.
+    $trashed = $this->createTestNode('info_details', $this->orgPageB);
+    $trashed->set('moderation_state', MassModeration::TRASH)->save();
+
+    $this->assertFalse(
+      Url::fromRoute('entity.node.redirects', ['node' => $trashed->id()])->access($this->userA),
+      '/node/X/redirects must be denied for a user without org access.'
+    );
+    $this->assertFalse(
+      Url::fromRoute('entity.node.entity_hierarchy_reorder', ['node' => $this->orgPageB->id()])->access($this->userA),
+      '/node/X/children must be denied for a user without org access.'
+    );
+    $this->assertFalse(
+      Url::fromRoute('view.change_parents.page_1', ['node' => $this->orgPageB->id()])->access($this->userA),
+      '/node/X/move-children must be denied for a user without org access.'
+    );
+  }
+
+  /**
+   * Side-door write routes remain open to a user with matching org.
+   *
+   * Same routes / same node as the negative test, but the user's
+   * `field_user_org` term matches the node's Owner Groups, so access
+   * must pass — proving the RouteSubscriber did not over-block.
+   */
+  public function testSideDoorWriteRoutesOpenWithOrgAccess(): void {
+    $trashed = $this->createTestNode('info_details', $this->orgPageB);
+    $trashed->set('moderation_state', MassModeration::TRASH)->save();
+
+    $this->assertTrue(
+      Url::fromRoute('entity.node.redirects', ['node' => $trashed->id()])->access($this->userB),
+      '/node/X/redirects must be reachable by a user whose org matches the node.'
+    );
+    $this->assertTrue(
+      Url::fromRoute('entity.node.entity_hierarchy_reorder', ['node' => $this->orgPageB->id()])->access($this->userB),
+      '/node/X/children must be reachable by a user whose org matches the node.'
+    );
+    $this->assertTrue(
+      Url::fromRoute('view.change_parents.page_1', ['node' => $this->orgPageB->id()])->access($this->userB),
+      '/node/X/move-children must be reachable by a user whose org matches the node.'
     );
   }
 
