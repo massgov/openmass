@@ -5,7 +5,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\file\FileInterface;
 use Drupal\mass_caching\AkamaiPurger;
 use Drupal\media\MediaInterface;
-use Drupal\node\NodeInterface;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
 
@@ -165,9 +164,10 @@ function mass_caching_module_implements_alter(&$implementations, $hook) {
 /**
  * Implements hook_entity_update().
  *
- * Purge media's download path and redirect's source URL when the entity is updated. This is implemented
- * as a hook_entity_update() rather than hook_ENTITY_TYPE_update because we need it to
- * run after pathauto's hook_entity_update().
+ * Purge the URL for node aliases, media download paths, and redirect source
+ * paths when an entity is updated. This is implemented as a
+ * hook_entity_update() rather than hook_ENTITY_TYPE_update because we need it
+ * to run after pathauto's hook_entity_update().
  */
 function mass_caching_entity_update(EntityInterface $entity) {
   switch ($entity->getEntityTypeId()) {
@@ -176,7 +176,7 @@ function mass_caching_entity_update(EntityInterface $entity) {
       break;
 
     case 'node':
-      mass_caching_purge_node($entity);
+      \Drupal::service('mass_caching.node_purge_handler')->purge($entity);
       break;
 
     case 'redirect':
@@ -188,9 +188,10 @@ function mass_caching_entity_update(EntityInterface $entity) {
 /**
  * Implements hook_entity_insert().
  *
- * Purge media's download path and redirect's source URL when an entity is created. This is implemented
- * as a hook_entity_insert() rather than hook_ENTITY_TYPE_insert because we need it to
- * run after pathauto's hook_entity_update().
+ * Purge the URL for node aliases, media download paths, and redirect source
+ * paths when an entity is created. This is implemented as a
+ * hook_entity_insert() rather than hook_ENTITY_TYPE_insert because we need it
+ * to run after pathauto's hook_entity_update().
  */
 function mass_caching_entity_insert(EntityInterface $entity) {
   switch ($entity->getEntityTypeId()) {
@@ -199,7 +200,7 @@ function mass_caching_entity_insert(EntityInterface $entity) {
       break;
 
     case 'node':
-      mass_caching_purge_node($entity);
+      \Drupal::service('mass_caching.node_purge_handler')->purge($entity);
       break;
 
     case 'redirect':
@@ -207,99 +208,6 @@ function mass_caching_entity_insert(EntityInterface $entity) {
       break;
 
   }
-}
-
-/**
- * Purge URL paths for public-facing node saves.
- *
- * This intentionally complements tag-based purging: Akamai's configured purger
- * handles URL invalidations, so public node saves need explicit URL items.
- *
- * @param \Drupal\node\NodeInterface $node
- *   A node entity.
- */
-function mass_caching_purge_node(NodeInterface $node) {
-  if (!mass_caching_node_should_purge($node)) {
-    return;
-  }
-
-  $paths = ['/node/' . $node->id()];
-  $paths[] = mass_caching_node_current_alias($node);
-  $paths[] = mass_caching_node_path_field_alias($node);
-
-  if (isset($node->original) && $node->original instanceof NodeInterface) {
-    $paths[] = mass_caching_node_path_field_alias($node->original);
-  }
-
-  $purger = \Drupal::service('manual_purger');
-  foreach (array_unique(array_filter($paths)) as $path) {
-    $purger->purgePath($path);
-  }
-}
-
-/**
- * Determine if a node save should purge public Akamai URLs.
- *
- * Draft-only saves should not evict public cache entries. Published edits and
- * unpublishes should, because the public response either changed or disappeared.
- *
- * @param \Drupal\node\NodeInterface $node
- *   A node entity.
- *
- * @return bool
- *   TRUE when the save affects the public/default revision.
- */
-function mass_caching_node_should_purge(NodeInterface $node) {
-  if (!$node->isDefaultRevision()) {
-    return FALSE;
-  }
-
-  if ($node->isPublished()) {
-    return TRUE;
-  }
-
-  return isset($node->original)
-    && $node->original instanceof NodeInterface
-    && $node->original->isPublished();
-}
-
-/**
- * Get the node's current canonical alias.
- *
- * @param \Drupal\node\NodeInterface $node
- *   A node entity.
- *
- * @return string|null
- *   The current alias, or NULL when there is not one.
- */
-function mass_caching_node_current_alias(NodeInterface $node) {
-  $internal_path = '/node/' . $node->id();
-  $alias = \Drupal::service('path_alias.manager')->getAliasByPath($internal_path);
-  return $alias !== $internal_path ? $alias : NULL;
-}
-
-/**
- * Get a path field alias from the in-memory node object.
- *
- * This captures the previous alias from $node->original during alias changes.
- *
- * @param \Drupal\node\NodeInterface $node
- *   A node entity.
- *
- * @return string|null
- *   The path alias, or NULL when unavailable.
- */
-function mass_caching_node_path_field_alias(NodeInterface $node) {
-  if (!$node->hasField('path') || $node->get('path')->isEmpty()) {
-    return NULL;
-  }
-
-  $value = $node->get('path')->first()->getValue();
-  if (empty($value['alias']) || !is_string($value['alias'])) {
-    return NULL;
-  }
-
-  return str_starts_with($value['alias'], '/') ? $value['alias'] : NULL;
 }
 
 /**
