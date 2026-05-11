@@ -3,9 +3,9 @@
  * @file
  * Power BI analytics dashboard launcher. Short iframe (220px) with manual
  * Expand/Collapse toggle, duplicated above and below the iframe so the
- * controls are reachable from either side. The "Keep expanded after
- * reload" checkbox persists the expanded state via localStorage so the
- * iframe restores its expanded size on the next page load.
+ * controls are reachable from either side. The "Remember state after
+ * reload" checkbox opts in to persisting the user's last expanded or
+ * collapsed choice across page reloads via localStorage.
  */
 #}
 <div class="mass-analytics-launcher" style="padding:1rem 0;">
@@ -29,11 +29,11 @@
         Or open the report in a new tab
       </a>
       <label style="display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.9rem;color:#555;">
-        <input type="checkbox" class="mass-analytics-keep-expanded">
-        Keep expanded after reload
+        <input type="checkbox" class="mass-analytics-remember-state">
+        Remember state after reload
       </label>
       <span style="font-size:.85rem;color:#777;flex-basis:100%;margin-top:-.25rem;">
-        If checked, after page reload the iframe with report will be always expanded until you collapse it.
+        If checked, the iframe will restore its last expanded or collapsed state after page reload.
       </span>
     </div>
   {% endset %}
@@ -59,10 +59,18 @@
   var iframe = document.getElementById('mass-analytics-iframe');
   if (!iframe) return;
   var btns = document.querySelectorAll('.mass-analytics-expand-btn');
-  var cbs = document.querySelectorAll('.mass-analytics-keep-expanded');
+  var cbs = document.querySelectorAll('.mass-analytics-remember-state');
   var COLLAPSED = parseInt(iframe.dataset.collapsedHeight, 10);
   var EXPANDED = parseInt(iframe.dataset.expandedHeight, 10);
-  var STORAGE_KEY = 'mass_analytics_keep_expanded';
+  var REMEMBER_KEY = 'mass_analytics_remember_state';
+  var STATE_KEY = 'mass_analytics_iframe_state';
+
+  function readLS(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+  }
+  function writeLS(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) {}
+  }
 
   function applyState(expanded) {
     iframe.height = expanded ? EXPANDED : COLLAPSED;
@@ -74,25 +82,36 @@
   function setCheckboxes(checked) {
     cbs.forEach(function (c) { c.checked = checked; });
   }
-  function persistKeep(checked) {
-    try { localStorage.setItem(STORAGE_KEY, checked ? '1' : '0'); } catch (e) {}
+  function isRememberOn() {
+    return readLS(REMEMBER_KEY) === '1';
+  }
+  function persistStateIfNeeded(expanded) {
+    if (isRememberOn()) {
+      writeLS(STATE_KEY, expanded ? 'expanded' : 'collapsed');
+    }
   }
 
-  var keep = false;
-  try { keep = localStorage.getItem(STORAGE_KEY) === '1'; } catch (e) {}
-  setCheckboxes(keep);
-  if (keep) applyState(true);
+  var remember = isRememberOn();
+  setCheckboxes(remember);
+  if (remember && readLS(STATE_KEY) === 'expanded') {
+    applyState(true);
+  }
 
   btns.forEach(function (b) {
     b.addEventListener('click', function () {
       var nowExpanded = b.getAttribute('aria-expanded') !== 'true';
       applyState(nowExpanded);
+      persistStateIfNeeded(nowExpanded);
     });
   });
   cbs.forEach(function (c) {
     c.addEventListener('change', function () {
       setCheckboxes(c.checked);
-      persistKeep(c.checked);
+      writeLS(REMEMBER_KEY, c.checked ? '1' : '0');
+      if (c.checked) {
+        var currentlyExpanded = btns[0].getAttribute('aria-expanded') === 'true';
+        writeLS(STATE_KEY, currentlyExpanded ? 'expanded' : 'collapsed');
+      }
     });
   });
 })();
