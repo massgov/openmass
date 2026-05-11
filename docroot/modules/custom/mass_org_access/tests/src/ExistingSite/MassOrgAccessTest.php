@@ -584,6 +584,34 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * The "Add Collections" VBO actions respect mass_org_access.
+   *
+   * Both mass_views actions previously bypassed their own access check
+   * (compared an EntityType object to the string 'node'/'media' which
+   * never matched, falling through to AccessResult::allowed()). With
+   * the typo fixed, the actions defer to $entity->access('update'),
+   * which routes through mass_org_access.
+   *
+   * Positive case is not asserted here: the action also requires
+   * status field edit access, which is admin-only by design.
+   */
+  public function testChangeCollectionsActionRespectsOrgAccess(): void {
+    $manager = \Drupal::service('plugin.manager.action');
+    $node = $this->createTestNode('info_details', $this->orgPageB);
+
+    $this->assertFalse(
+      $manager->createInstance('mass_views_change_collections')->access($node, $this->userA),
+      'ChangeCollections must deny user A (termA) on a node tagged with orgPageB.'
+    );
+
+    $media = $this->createTestMedia('document', $this->orgPageB);
+    $this->assertFalse(
+      $manager->createInstance('mass_views_add_documents_collections')->access($media, $this->userA),
+      'AddCollectionsDocuments must deny user A (termA) on media tagged with orgPageB.'
+    );
+  }
+
+  /**
    * Side-door write routes remain open to a user with matching org.
    *
    * Same routes / same node as the negative test, but the user's
