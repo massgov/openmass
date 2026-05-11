@@ -292,4 +292,43 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertEquals('State House Notes', $triggers[0]->getText());
   }
 
+  /**
+   * Test that glossary terms containing parentheses still match.
+   */
+  public function testGlossaryPopoverTermWithParentheses() {
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Parens Terms Glossary',
+      'field_terms' => [
+        [
+          'key' => 'Bond Anticipation Note (BAN)',
+          'value' => 'Short-term debt instrument.',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Parens Terms Service Page',
+      'field_service_body' => 'Issuers may use a Bond Anticipation Note (BAN) for short-term needs.',
+      'moderation_state' => 'published',
+    ]);
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.popover__trigger') !== NULL;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(1, $triggers);
+    $this->assertEquals('Bond Anticipation Note (BAN)', $triggers[0]->getText());
+  }
+
 }

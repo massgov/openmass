@@ -55,9 +55,8 @@
       // Replace regex special characters with escaped versions.
       replaced = replaced.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-      // Replace punctuation/symbol characters with optional wildcard chars.
-      // Keep backslashes intact so escaped regex tokens are not broken.
-      replaced = replaced.replace(/[^\w\s\\]/g, '.?');
+      // Replace any non-escaped, non alphanumeric characters with wildcards
+      replaced = replaced.replace(/[^\w\s]/g, '.?');
 
       return replaced;
     };
@@ -207,10 +206,6 @@
 
     trigger.textContent = text;
     body.innerHTML = definition;
-    // Keep tooltip content wrapping normally even if inline trigger context
-    // uses a no-wrap wrapper to prevent punctuation-only line breaks.
-    dialog.style.whiteSpace = 'normal';
-    body.style.whiteSpace = 'normal';
 
     dialog.id = dialog.id.replace('uniqueID', tooltipId);
     dialog.setAttribute('aria-labelledby', labelledby.replace('uniqueID', tooltipId));
