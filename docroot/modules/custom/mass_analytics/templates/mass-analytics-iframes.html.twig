@@ -17,24 +17,26 @@
   </p>
 
   {% set controls %}
-    <div class="mass-analytics-controls" style="margin:1rem 0;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
-      <button
-        type="button"
-        class="mass-analytics-expand-btn"
-        aria-expanded="false"
-        style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
-        Expand to full size
-      </button>
-      <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
-        Or open the report in a new tab
-      </a>
-      <label style="display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.9rem;color:#555;">
+    <div class="mass-analytics-controls" style="margin:1rem 0;">
+      <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+        <button
+          type="button"
+          class="mass-analytics-expand-btn"
+          aria-expanded="false"
+          style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
+          Expand to full size
+        </button>
+        <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
+          Or open the report in a new tab
+        </a>
+      </div>
+      <label style="display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.9rem;color:#555;margin-top:.75rem;">
         <input type="checkbox" class="mass-analytics-remember-state">
         Remember state after reload
       </label>
-      <span style="font-size:.85rem;color:#777;flex-basis:100%;margin-top:-.25rem;">
+      <div style="font-size:.85rem;color:#777;margin-top:.15rem;">
         If checked, the iframe will restore its last expanded or collapsed state after page reload.
-      </span>
+      </div>
     </div>
   {% endset %}
 
