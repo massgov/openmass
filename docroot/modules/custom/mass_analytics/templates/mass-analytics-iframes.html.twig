@@ -66,7 +66,7 @@
   var COLLAPSED = parseInt(iframe.dataset.collapsedHeight, 10);
   var EXPANDED = parseInt(iframe.dataset.expandedHeight, 10);
   var NODE_ID = iframe.dataset.nodeId || '0';
-  var REMEMBER_KEY = 'mass_analytics_remember_state';
+  var REMEMBER_KEY = 'mass_analytics_remember_state__' + NODE_ID;
   var STATE_KEY = 'mass_analytics_iframe_state__' + NODE_ID;
 
   function readLS(key) {
