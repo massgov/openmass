@@ -164,10 +164,9 @@ function mass_caching_module_implements_alter(&$implementations, $hook) {
 /**
  * Implements hook_entity_update().
  *
- * Purge the URL for node aliases, media download paths, and redirect source
- * paths when an entity is updated. This is implemented as a
- * hook_entity_update() rather than hook_ENTITY_TYPE_update because we need it
- * to run after pathauto's hook_entity_update().
+ * Purge media's download path and redirect's source URL when the entity is updated. This is implemented
+ * as a hook_entity_update() rather than hook_ENTITY_TYPE_update because we need it to
+ * run after pathauto's hook_entity_update().
  */
 function mass_caching_entity_update(EntityInterface $entity) {
   switch ($entity->getEntityTypeId()) {
@@ -184,10 +183,9 @@ function mass_caching_entity_update(EntityInterface $entity) {
 /**
  * Implements hook_entity_insert().
  *
- * Purge the URL for node aliases, media download paths, and redirect source
- * paths when an entity is created. This is implemented as a
- * hook_entity_insert() rather than hook_ENTITY_TYPE_insert because we need it
- * to run after pathauto's hook_entity_update().
+ * Purge media's download path and redirect's source URL when an entity is created. This is implemented
+ * as a hook_entity_insert() rather than hook_ENTITY_TYPE_insert because we need it to
+ * run after pathauto's hook_entity_update().
  */
 function mass_caching_entity_insert(EntityInterface $entity) {
   switch ($entity->getEntityTypeId()) {
