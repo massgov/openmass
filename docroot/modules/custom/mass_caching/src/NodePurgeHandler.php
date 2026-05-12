@@ -44,6 +44,8 @@ class NodePurgeHandler {
    *
    * @param \Drupal\node\NodeInterface $node
    *   A node entity.
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function purge(NodeInterface $node): void {
     if (!$this->shouldPurge($node)) {
@@ -54,8 +56,8 @@ class NodePurgeHandler {
     $paths[] = $this->getCurrentAlias($node);
     $paths[] = $this->getPathFieldAlias($node);
 
-    if (isset($node->original) && $node->original instanceof NodeInterface) {
-      $paths[] = $this->getPathFieldAlias($node->original);
+    if (!empty($node->getOriginal()) && $node->getOriginal() instanceof NodeInterface) {
+      $paths[] = $this->getPathFieldAlias($node->getOriginal());
     }
 
     foreach (array_unique(array_filter($paths)) as $path) {
@@ -85,9 +87,9 @@ class NodePurgeHandler {
       return TRUE;
     }
 
-    return isset($node->original)
-      && $node->original instanceof NodeInterface
-      && $node->original->isPublished();
+    return !empty($node->getOriginal())
+      && $node->getOriginal() instanceof NodeInterface
+      && $node->getOriginal()->isPublished();
   }
 
   /**
@@ -108,7 +110,7 @@ class NodePurgeHandler {
   /**
    * Get a path field alias from the in-memory node object.
    *
-   * This captures the previous alias from $node->original during alias changes.
+   * This captures the previous alias from $node->getOriginal() during alias changes.
    *
    * @param \Drupal\node\NodeInterface $node
    *   A node entity.
