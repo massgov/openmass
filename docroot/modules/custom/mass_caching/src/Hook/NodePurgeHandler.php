@@ -6,6 +6,7 @@ namespace Drupal\mass_caching\Hook;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Hook\Order\OrderAfter;
 use Drupal\mass_caching\ManualPurger;
 use Drupal\node\NodeInterface;
 use Drupal\path_alias\AliasManagerInterface;
@@ -41,7 +42,7 @@ class NodePurgeHandler {
   }
 
   /**
-   * Purge URL paths on update.
+   * Purge URL paths on entity update.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *
@@ -50,7 +51,7 @@ class NodePurgeHandler {
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
-  #[Hook('entity_update')]
+  #[Hook('entity_update', order: new OrderAfter(modules: ['pathauto']))]
   public function entityUpdate(EntityInterface $entity): void {
     if ($entity instanceof NodeInterface) {
       $this->purgeNode($entity);
@@ -58,7 +59,7 @@ class NodePurgeHandler {
   }
 
   /**
-   * Purge URL paths on insert.
+   * Purge URL paths on entity insert.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *
@@ -67,7 +68,7 @@ class NodePurgeHandler {
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
-  #[Hook('entity_insert')]
+  #[Hook('entity_insert', order: new OrderAfter(modules: ['pathauto']))]
   public function entityInsert(EntityInterface $entity): void {
     if ($entity instanceof NodeInterface) {
       $this->purgeNode($entity);
