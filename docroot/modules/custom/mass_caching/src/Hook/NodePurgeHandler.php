@@ -46,6 +46,8 @@ class NodePurgeHandler {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *
    * @return void
+   *   This method does not return any value.
+   *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   #[Hook('entity_update')]
