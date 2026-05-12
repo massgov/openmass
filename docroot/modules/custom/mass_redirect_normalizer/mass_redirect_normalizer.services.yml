@@ -10,3 +10,13 @@ services:
   Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager:
     alias: mass_redirect_normalizer.manager
 
+  mass_redirect_normalizer.eligibility:
+    class: Drupal\mass_redirect_normalizer\RedirectLinkNormalizationEligibility
+    arguments: ['@entity_type.manager']
+
+  mass_redirect_normalizer.enqueuer:
+    class: Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer
+    arguments: ['@queue', '@state', '@entity_type.manager', '@mass_redirect_normalizer.eligibility']
+
+  Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer:
+    alias: mass_redirect_normalizer.enqueuer

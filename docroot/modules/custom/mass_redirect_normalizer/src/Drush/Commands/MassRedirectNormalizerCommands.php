@@ -6,10 +6,12 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\mass_redirect_normalizer\RedirectLinkNormalizationEligibility;
 use Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager;
+use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use Drupal\mayflower\Helper;
-use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -23,10 +25,15 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   use AutowireTrait;
   private const PROGRESS_STATE_KEY = 'mass_redirect_normalizer.command_progress';
 
+  private const ENQUEUE_LOCK_NAME = 'mass_redirect_normalizer.enqueue';
+
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected RedirectLinkNormalizationManager $normalizerManager,
     protected StateInterface $state,
+    protected RedirectLinkQueueEnqueuer $enqueuer,
+    protected RedirectLinkNormalizationEligibility $eligibility,
+    protected LockBackendInterface $lock,
   ) {
     parent::__construct();
   }
@@ -35,7 +42,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    * Normalizes redirect-based links in nodes and paragraphs.
    *
    * Use --simulate (or global `drush --simulate`) to preview changes only.
-   * Without simulation, changes are saved.
+   * Without simulation, eligible entities are enqueued for queue workers.
    *
    * @command mass-redirect-normalizer:normalize-links
    * @field-labels
@@ -87,7 +94,6 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     $limit = max(0, (int) ($options['limit'] ?? 0));
     $startId = max(0, (int) ($options['start-id'] ?? 0));
     $entityIdsOption = isset($options['entity-ids']) ? trim((string) $options['entity-ids']) : '';
-    $resume = !empty($options['resume']);
     $showProgress = !empty($options['show-progress']);
     $resetProgress = !empty($options['reset-progress']);
     try {
@@ -97,12 +103,16 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       // Allow PHPUnit to call this command without full Drush bootstrap.
       $simulate = !empty($options['simulate']);
     }
+    $resume = !$simulate || !empty($options['resume']);
     $rows = [];
     $csvRows = [];
     $processed = 0;
     $runProcessed = 0;
     $entitiesChanged = 0;
     $valueUpdates = 0;
+    $enqueued = 0;
+    $alreadyQueued = 0;
+    $skippedIneligible = 0;
     $progressEvery = 100;
     $nodePublishedCache = [];
     $newerDraftCache = [];
@@ -123,162 +133,218 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     if ($resume && is_array($saved)) {
       // Keep counters running when we resume.
       $processed = max(0, (int) ($saved['processed'] ?? 0));
-      $entitiesChanged = max(0, (int) ($saved['updated_entities'] ?? 0));
-      $valueUpdates = max(0, (int) ($saved['changed_field_values'] ?? 0));
+      if ($simulate) {
+        $entitiesChanged = max(0, (int) ($saved['updated_entities'] ?? 0));
+        $valueUpdates = max(0, (int) ($saved['changed_field_values'] ?? 0));
+      }
+      else {
+        $enqueued = max(0, (int) ($saved['updated_entities'] ?? 0));
+      }
     }
     if ($resume && $this->logger()) {
-      $this->logger()->notice((string) dt('Resume enabled: continuing from saved checkpoint.'));
+      $this->logger()->notice((string) dt('Continuing from saved checkpoint.'));
     }
 
-    foreach ($entityTypes as $entityType) {
-      $effectiveStartId = $startId;
-      if (
+    $lockAcquired = FALSE;
+    if (!$simulate) {
+      if (!$this->lock->acquire(self::ENQUEUE_LOCK_NAME, 3600)) {
+        if ($this->logger()) {
+          $this->logger()->warning((string) dt('Another redirect link normalization enqueue sweep is already running. Exiting.'));
+        }
+        return new RowsOfFields([]);
+      }
+      $lockAcquired = TRUE;
+    }
+
+    try {
+      foreach ($entityTypes as $entityType) {
+        $effectiveStartId = $startId;
+        if (
         $resume &&
         isset($lastIds[$entityType]) &&
         is_numeric($lastIds[$entityType])
-      ) {
-        $effectiveStartId = max($effectiveStartId, ((int) $lastIds[$entityType]) + 1);
-      }
-      if ($entityIdsOption !== '') {
-        $ids = array_values(array_filter(array_map('intval', preg_split('/\s*,\s*/', $entityIdsOption)), function (int $id) use ($effectiveStartId): bool {
-          return $id > 0 && ($effectiveStartId === 0 || $id >= $effectiveStartId);
-        }));
-      }
-      else {
-        $idField = $entityType === 'node' ? 'nid' : 'id';
-        $query = $this->entityTypeManager->getStorage($entityType)->getQuery()
-          ->accessCheck(FALSE)
-          ->sort($idField);
-        if ($effectiveStartId > 0) {
-          $query->condition($idField, $effectiveStartId, '>=');
+        ) {
+          $effectiveStartId = max($effectiveStartId, ((int) $lastIds[$entityType]) + 1);
         }
-        if (!empty($options['bundle'])) {
-          $query->condition('type', $options['bundle']);
+        if ($entityIdsOption !== '') {
+          $ids = array_values(array_filter(array_map('intval', preg_split('/\s*,\s*/', $entityIdsOption)), function (int $id) use ($effectiveStartId): bool {
+            return $id > 0 && ($effectiveStartId === 0 || $id >= $effectiveStartId);
+          }));
         }
-        if ($limit > 0) {
-          $query->range(0, $limit);
-        }
-        $ids = $query->execute();
-      }
-
-      foreach ($ids as $id) {
-        if ($limit > 0 && $runProcessed >= $limit) {
-          break 2;
-        }
-
-        $entity = $this->entityTypeManager->getStorage($entityType)->load($id);
-        if (!$entity) {
-          continue;
-        }
-
-        if (!empty($options['bundle']) && $entity->bundle() !== $options['bundle']) {
-          continue;
-        }
-
-        // Skip orphan paragraphs.
-        if ($entityType === 'paragraph' && Helper::isParagraphOrphan($entity)) {
-          continue;
-        }
-
-        if (!$this->isEntityEligibleForNormalization(
-          $entityType,
-          $entity,
-          $nodePublishedCache,
-          $newerDraftCache,
-        )) {
-          continue;
-        }
-
-        $result = $this->normalizerManager->normalizeEntity($entity, !$simulate, $simulate);
-        $processed++;
-        $runProcessed++;
-        if ($this->logger() && $runProcessed % $progressEvery === 0) {
-          $this->logger()->notice((string) dt('Progress: processed @count entities; updated entities @updated; changed field values @diffs. Last @type:@id', [
-            '@count' => $processed,
-            '@updated' => $entitiesChanged,
-            '@diffs' => $valueUpdates,
-            '@type' => $entityType,
-            '@id' => $id,
-          ]));
-        }
-        $this->saveProgressState($processed, $entitiesChanged, $valueUpdates, $entityType, (int) $id, $simulate, FALSE);
-        if (!empty($result['changed'])) {
-          $changes = $result['changes'] ?? [];
-          if ($kindsFilter !== []) {
-            $changes = array_values(array_filter($changes, function (array $change) use ($kindsFilter): bool {
-              return in_array((string) ($change['kind'] ?? ''), $kindsFilter, TRUE);
-            }));
+        else {
+          $idField = $entityType === 'node' ? 'nid' : 'id';
+          $query = $this->entityTypeManager->getStorage($entityType)->getQuery()
+            ->accessCheck(FALSE)
+            ->sort($idField);
+          if ($effectiveStartId > 0) {
+            $query->condition($idField, $effectiveStartId, '>=');
           }
-          if ($changes === []) {
+          if (!empty($options['bundle'])) {
+            $query->condition('type', $options['bundle']);
+          }
+          if ($limit > 0) {
+            $query->range(0, $limit);
+          }
+          $ids = $query->execute();
+        }
+
+        foreach ($ids as $id) {
+          if ($limit > 0 && $runProcessed >= $limit) {
+            break 2;
+          }
+
+          $entity = $this->entityTypeManager->getStorage($entityType)->load($id);
+          if (!$entity) {
             continue;
           }
-          $entitiesChanged++;
-          $valueUpdates += count($changes);
-          $parentNodeId = '-';
-          if ($entityType === 'paragraph' && $entity instanceof Paragraph) {
-            $parentNode = Helper::getParentNode($entity);
-            $parentNodeId = $parentNode ? (string) $parentNode->id() : '-';
+
+          if (!empty($options['bundle']) && $entity->bundle() !== $options['bundle']) {
+            continue;
           }
-          foreach ($changes as $change) {
-            [$beforePreview, $afterPreview] = $this->buildUrlBeforeAfter(
-              (string) $change['kind'],
-              (string) $change['before'],
-              (string) $change['after'],
-              TRUE,
-            );
-            [$beforeRaw, $afterRaw] = $this->buildUrlBeforeAfter(
-              (string) $change['kind'],
-              (string) $change['before'],
-              (string) $change['after'],
-              FALSE,
-            );
-            $row = [
-              'status' => $simulate ? 'would_update' : 'updated',
-              'entity_type' => $entityType,
-              'entity_id' => $id,
-              'parent_node_id' => $parentNodeId,
-              'bundle' => $entity->bundle(),
-              'field' => $change['field'],
-              'delta' => (string) $change['delta'],
-              'kind' => $change['kind'],
-              'before' => $beforePreview,
-              'after' => $afterPreview,
-              'details' => $simulate ? 'dry-run' : 'saved',
-            ];
-            $rows[] = $row;
-            $csvRows[] = [
-              'status' => $row['status'],
-              'entity_type' => $row['entity_type'],
-              'entity_id' => $row['entity_id'],
-              'parent_node_id' => $row['parent_node_id'],
-              'bundle' => $row['bundle'],
-              'field' => $row['field'],
-              'delta' => $row['delta'],
-              'kind' => $row['kind'],
-              'before' => $beforeRaw,
-              'after' => $afterRaw,
-              'details' => $row['details'],
-            ];
+
+          if (!$this->eligibility->isEligible($entityType, $entity, $nodePublishedCache, $newerDraftCache)) {
+            continue;
           }
+
+          if ($simulate) {
+            $result = $this->normalizerManager->normalizeEntity($entity, FALSE, TRUE);
+            $processed++;
+            $runProcessed++;
+            if ($this->logger() && $runProcessed % $progressEvery === 0) {
+              $this->logger()->notice((string) dt('Progress: processed @count entities; updated entities @updated; changed field values @diffs. Last @type:@id', [
+                '@count' => $processed,
+                '@updated' => $entitiesChanged,
+                '@diffs' => $valueUpdates,
+                '@type' => $entityType,
+                '@id' => $id,
+              ]));
+            }
+            $this->saveProgressState($processed, $entitiesChanged, $valueUpdates, $entityType, (int) $id, $simulate, FALSE);
+            if (!empty($result['changed'])) {
+              $changes = $result['changes'] ?? [];
+              if ($kindsFilter !== []) {
+                $changes = array_values(array_filter($changes, function (array $change) use ($kindsFilter): bool {
+                  return in_array((string) ($change['kind'] ?? ''), $kindsFilter, TRUE);
+                }));
+              }
+              if ($changes === []) {
+                continue;
+              }
+              $entitiesChanged++;
+              $valueUpdates += count($changes);
+              $parentNodeId = '-';
+              if ($entityType === 'paragraph' && $entity instanceof Paragraph) {
+                $parentNode = Helper::getParentNode($entity);
+                $parentNodeId = $parentNode ? (string) $parentNode->id() : '-';
+              }
+              foreach ($changes as $change) {
+                [$beforePreview, $afterPreview] = $this->buildUrlBeforeAfter(
+                (string) $change['kind'],
+                (string) $change['before'],
+                (string) $change['after'],
+                TRUE,
+                );
+                [$beforeRaw, $afterRaw] = $this->buildUrlBeforeAfter(
+                  (string) $change['kind'],
+                  (string) $change['before'],
+                  (string) $change['after'],
+                  FALSE,
+                );
+                $row = [
+                  'status' => 'would_update',
+                  'entity_type' => $entityType,
+                  'entity_id' => $id,
+                  'parent_node_id' => $parentNodeId,
+                  'bundle' => $entity->bundle(),
+                  'field' => $change['field'],
+                  'delta' => (string) $change['delta'],
+                  'kind' => $change['kind'],
+                  'before' => $beforePreview,
+                  'after' => $afterPreview,
+                  'details' => 'dry-run',
+                ];
+                $rows[] = $row;
+                $csvRows[] = [
+                  'status' => $row['status'],
+                  'entity_type' => $row['entity_type'],
+                  'entity_id' => $row['entity_id'],
+                  'parent_node_id' => $row['parent_node_id'],
+                  'bundle' => $row['bundle'],
+                  'field' => $row['field'],
+                  'delta' => $row['delta'],
+                  'kind' => $row['kind'],
+                  'before' => $beforeRaw,
+                  'after' => $afterRaw,
+                  'details' => $row['details'],
+                ];
+              }
+            }
+            continue;
+          }
+
+          $enqueueResult = $this->enqueuer->enqueueById($entityType, (int) $id, 'drush');
+          $processed++;
+          $runProcessed++;
+          if ($enqueueResult === 'enqueued') {
+            $enqueued++;
+          }
+          elseif ($enqueueResult === 'already_queued') {
+            $alreadyQueued++;
+          }
+          else {
+            $skippedIneligible++;
+          }
+
+          if ($this->logger() && $runProcessed % $progressEvery === 0) {
+            $this->logger()->notice((string) dt('Progress: scanned @count entities; enqueued @enqueued; already queued @already; skipped @skipped. Last @type:@id', [
+              '@count' => $processed,
+              '@enqueued' => $enqueued,
+              '@already' => $alreadyQueued,
+              '@skipped' => $skippedIneligible,
+              '@type' => $entityType,
+              '@id' => $id,
+            ]));
+          }
+          $this->saveProgressState($processed, $enqueued, $valueUpdates, $entityType, (int) $id, $simulate, FALSE);
         }
       }
     }
-
-    $mode = $simulate ? 'SIMULATION' : 'EXECUTION';
-    if ($this->logger()) {
-      $limitText = $limit > 0 ? (string) $limit : 'none';
-      $this->logger()->notice((string) dt('@mode: processed @count entities (limit: @limit); updated entities: @updated; changed field values: @diffs.', [
-        '@mode' => $mode,
-        '@count' => $processed,
-        '@limit' => $limitText,
-        '@updated' => $entitiesChanged,
-        '@diffs' => $valueUpdates,
-      ]));
+    finally {
+      if ($lockAcquired) {
+        $this->lock->release(self::ENQUEUE_LOCK_NAME);
+      }
     }
-    $this->saveProgressState($processed, $entitiesChanged, $valueUpdates, NULL, NULL, $simulate, TRUE);
+
+    if ($simulate) {
+      $mode = 'SIMULATION';
+      if ($this->logger()) {
+        $limitText = $limit > 0 ? (string) $limit : 'none';
+        $this->logger()->notice((string) dt('@mode: processed @count entities (limit: @limit); updated entities: @updated; changed field values: @diffs.', [
+          '@mode' => $mode,
+          '@count' => $processed,
+          '@limit' => $limitText,
+          '@updated' => $entitiesChanged,
+          '@diffs' => $valueUpdates,
+        ]));
+      }
+      $this->saveProgressState($processed, $entitiesChanged, $valueUpdates, NULL, NULL, $simulate, TRUE);
+    }
+    else {
+      if ($this->logger()) {
+        $limitText = $limit > 0 ? (string) $limit : 'none';
+        $this->logger()->notice((string) dt('ENQUEUE: scanned @count entities (limit: @limit); enqueued @enqueued; already queued @already; skipped @skipped.', [
+          '@count' => $processed,
+          '@limit' => $limitText,
+          '@enqueued' => $enqueued,
+          '@already' => $alreadyQueued,
+          '@skipped' => $skippedIneligible,
+        ]));
+      }
+      $this->saveProgressState($processed, $enqueued, $valueUpdates, NULL, NULL, $simulate, TRUE);
+    }
 
     $csvPath = isset($options['csv-path']) ? trim((string) $options['csv-path']) : '';
-    if ($csvPath !== '') {
+    if ($csvPath !== '' && $simulate) {
       $this->writeCsvReport($csvPath, $csvRows);
       if ($this->logger()) {
         $this->logger()->notice((string) dt('CSV report written to @path with @count row(s).', [
@@ -289,79 +355,6 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     }
 
     return new RowsOfFields($rows);
-  }
-
-  /**
-   * Checks if this entity should be processed by bulk normalization.
-   *
-   * Bulk command targets published content only and skips nodes/paragraphs when
-   * the parent node has a newer unpublished draft revision.
-   */
-  private function isEntityEligibleForNormalization(
-    string $entityType,
-    object $entity,
-    array &$nodePublishedCache,
-    array &$newerDraftCache,
-  ): bool {
-    if ($entityType === 'node') {
-      if (!$entity instanceof NodeInterface) {
-        return FALSE;
-      }
-      $nodeId = (int) $entity->id();
-      $isPublished = $nodePublishedCache[$nodeId] ?? $entity->isPublished();
-      $nodePublishedCache[$nodeId] = $isPublished;
-      if (!$isPublished) {
-        return FALSE;
-      }
-      return !$this->hasNewerUnpublishedDraft($entity, $newerDraftCache);
-    }
-
-    if ($entityType === 'paragraph') {
-      if (!$entity instanceof Paragraph) {
-        return FALSE;
-      }
-      $parentNode = Helper::getParentNode($entity);
-      if (!$parentNode instanceof NodeInterface) {
-        return FALSE;
-      }
-      $parentNodeId = (int) $parentNode->id();
-      $parentPublished = $nodePublishedCache[$parentNodeId] ?? $parentNode->isPublished();
-      $nodePublishedCache[$parentNodeId] = $parentPublished;
-      if (!$parentPublished) {
-        return FALSE;
-      }
-      return !$this->hasNewerUnpublishedDraft($parentNode, $newerDraftCache);
-    }
-
-    return FALSE;
-  }
-
-  /**
-   * Returns TRUE when latest node revision is unpublished and newer.
-   */
-  private function hasNewerUnpublishedDraft(NodeInterface $node, array &$cache): bool {
-    $nodeId = (int) $node->id();
-    if (array_key_exists($nodeId, $cache)) {
-      return $cache[$nodeId];
-    }
-
-    /** @var \Drupal\Core\Entity\RevisionableStorageInterface $storage */
-    $storage = $this->entityTypeManager->getStorage('node');
-    $latestRevisionId = $storage->getLatestRevisionId($node->id());
-    if (!$latestRevisionId || (int) $latestRevisionId === (int) $node->getRevisionId()) {
-      $cache[$nodeId] = FALSE;
-      return $cache[$nodeId];
-    }
-
-    $revisions = $storage->loadMultipleRevisions([(int) $latestRevisionId]);
-    $latest = $revisions[(int) $latestRevisionId] ?? NULL;
-    if (!$latest instanceof NodeInterface) {
-      $cache[$nodeId] = FALSE;
-      return $cache[$nodeId];
-    }
-
-    $cache[$nodeId] = !$latest->isPublished();
-    return $cache[$nodeId];
   }
 
   /**

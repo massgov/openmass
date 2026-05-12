@@ -4,8 +4,10 @@ This module rewrites internal links that still point at **redirect source paths*
 
 The same logic runs in two places:
 
-- **Bulk Drush command** — scan many entities and fix stored values.
-- **`hook_entity_presave()`** — when an editor saves a node or paragraph, links are normalized on that save.
+- **Bulk Drush command** — scan eligible entities and enqueue normalization work.
+- **`hook_entity_presave()`** — when an editor saves a node or paragraph, enqueue normalization for later processing.
+
+Run queued work with `ddev drush queue:run mass_redirect_normalizer_link_normalization`. Until the queue worker runs, presave and bulk enqueue changes are **eventual**, not immediate.
 
 ---
 
@@ -44,15 +46,15 @@ This split makes the code easier to test and maintain.
 
 | Option | Meaning |
 |--------|---------|
-| `--simulate` | Dry run: **no** database writes. Same idea as global `ddev drush --simulate ...`. |
+| `--simulate` | Dry run: **no** database writes and **no** queue writes. Same idea as global `ddev drush --simulate ...`. |
 | `--limit=N` | Max eligible entities to process **total** across node + paragraph. Command stops when it reaches `N`. **`0` = no limit. |
 | `--bundle=...` | Only that bundle (node type or paragraph type machine name). Still checked after load. |
 | `--entity-ids=1,2,3` | Only these IDs. IDs are checked in both node and paragraph entities. Ignores `--limit`. |
-| `--kinds=text,link,entity_reference` | Include only these change kinds in table output, CSV output, and updated/value counters. |
-| `--csv-path=./redirect-normalizer-report.csv` | Write a full CSV report in the current directory (or other relative/absolute path). |
+| `--kinds=text,link,entity_reference` | Include only these change kinds in simulate table output, CSV output, and updated/value counters. |
+| `--csv-path=./redirect-normalizer-report.csv` | Write a full CSV report in the current directory (or other relative/absolute path). Simulate only. |
 | `--entity-type=node|paragraph|all` | Restrict scans to one entity type, or both (`all`/default). |
 | `--start-id=N` | Start scanning from this ID (inclusive). Useful for manual resume windows. |
-| `--resume` | Continue from saved progress checkpoint (last processed ID per entity type). |
+| `--resume` | Continue simulate runs from saved progress checkpoint. Execute mode auto-resumes by default. |
 | `--show-progress` | Print saved progress checkpoint and exit without scanning. |
 | `--reset-progress` | Clear saved progress checkpoint before run. |
 
@@ -67,7 +69,7 @@ By default, bulk command processes only **published** content.
 
 | Column | Notes |
 |--------|--------|
-| Status | `would_update` (simulate) or `updated` (real run). |
+| Status | `would_update` in simulate mode. |
 | Entity type | `node` or `paragraph`. |
 | Entity ID | Entity id. |
 | Parent node ID | For **paragraphs**, the host node id from `Helper::getParentNode()`. For nodes, `-`. |
@@ -76,7 +78,7 @@ By default, bulk command processes only **published** content.
 
 ### CSV reporting
 
-- CSV includes the same rows as table output (including `--kinds` filtering).
+- CSV includes the same rows as simulate table output (including `--kinds` filtering).
 - CSV `before` / `after` values are full values (not table-truncated).
 - Header columns:
   - `status,entity_type,entity_id,parent_node_id,bundle,field,delta,kind,before,after,details`
@@ -90,24 +92,26 @@ ddev drush mnrl --simulate --limit=20000 --csv-path=./redirect-normalizer-report
 # Only entity-reference changes, current directory CSV.
 ddev drush mnrl --simulate --kinds=entity_reference --csv-path=./entity-reference-only-report.csv
 
-# Apply only selected IDs and export report.
-ddev drush mnrl --entity-ids=857211,858626 --csv-path=./mnrl-selected-exec.csv
+# Enqueue selected IDs for queue workers.
+ddev drush mnrl --entity-ids=857211,858626
 ```
 
 ### What the command skips
 
 - **Orphan paragraphs** — paragraphs that are not attached to real host content (`Helper::isParagraphOrphan()`). They are **not** processed and **do not** appear as rows.
-- Entities with **no** redirect-based links to fix produce **no** rows (empty table is normal).
+- Entities with **no** redirect-based links to fix produce **no** simulate rows (empty table is normal).
 - Unpublished/trashed content is skipped.
 - Published content with newer unpublished draft revisions is skipped.
 
-### Simulate, then run, then verify (manual QA)
+### Simulate, enqueue, then verify (manual QA)
 
 1. **Preview:**
    `ddev drush mass-redirect-normalizer:normalize-links --simulate --limit=100 --csv-path=./redirect-normalizer-preview.csv`
-2. **Apply:**
-   `ddev drush mass-redirect-normalizer:normalize-links --limit=100 --csv-path=./redirect-normalizer-exec.csv`
-3. **Re-check:** run **simulate** again with the same filters. Items that were fixed should **not** show `would_update` anymore (unless something else changed them back).
+2. **Enqueue:**
+   `ddev drush mass-redirect-normalizer:normalize-links --limit=100`
+3. **Process queue:**
+   `ddev drush queue:run mass_redirect_normalizer_link_normalization`
+4. **Re-check:** run **simulate** again with the same filters. Items that were fixed should **not** show `would_update` anymore (unless something else changed them back).
 
 For big runs, command prints progress notice every 100 processed entities. This
 is expected and helps confirm it is still running.
@@ -118,33 +122,34 @@ For a narrow retest after you know specific IDs:
 
 ### Long-run recovery and resume
 
-For long/background runs (for example Acquia SSH), use checkpoint options so you
-can return later, inspect state, and safely continue.
+For long/background runs (for example Acquia SSH), execute mode continues from
+the saved checkpoint automatically. If another enqueue sweep is already active,
+the command exits without starting a second sweep.
 
 ```bash
-# 1) Start a long run and save report in current directory.
-ddev drush mnrl --entity-type=paragraph --limit=50000 --csv-path=./mnrl-paragraph-run.csv
+# 1) Enqueue a long paragraph sweep.
+ddev drush mnrl --entity-type=paragraph --limit=50000
 
-# 2) Later, check saved checkpoint only (no scan).
-ddev drush mnrl --show-progress
+# 2) Process queued work.
+ddev drush queue:run mass_redirect_normalizer_link_normalization
 
-# 3) Resume from last checkpoint.
-ddev drush mnrl --entity-type=paragraph --resume --csv-path=./mnrl-paragraph-resume.csv
+# 3) Continue enqueue from the saved checkpoint.
+ddev drush mnrl --entity-type=paragraph --limit=50000
 
 # 4) If you need a clean restart, clear checkpoint then run.
-ddev drush mnrl --reset-progress --entity-type=paragraph --start-id=1 --csv-path=./mnrl-paragraph-fresh.csv
+ddev drush mnrl --reset-progress --entity-type=paragraph --start-id=1
 ```
 
 Notes:
 - Checkpoint stores last processed ID per entity type (`node` / `paragraph`),
-  processed count, updated entity count, changed field values, mode, and
+  processed count, enqueued count, changed field values (simulate only), mode, and
   timestamp.
 - When `--resume` and `--start-id` are both set, the command uses the higher
   effective start position.
 
 ### Important detail about saved content
 
-On **first save**, `hook_entity_presave()` may already rewrite links in the stored field values. So if you create test content in the UI and then expect the bulk command to “see” the old redirect URL in the database, it might already be normalized. The automated tests handle that case where needed.
+On **first save**, `hook_entity_presave()` enqueues normalization work. The stored field values may still contain redirect source paths until the queue worker runs. The automated tests handle that case where needed.
 
 Entity-reference behavior:
 
@@ -163,7 +168,8 @@ Existing-site integration tests validate end-to-end behavior of:
 - redirect-chain resolution and safety guards (loops, unresolved/ambiguous targets),
 - rich-text and link-field normalization (including Linkit-friendly entity URIs),
 - entity-reference rewrites for node/media with strict-safe rules,
-- command output/reporting behavior (simulate rows, CSV export, filters).
+- command output/reporting behavior (simulate rows, CSV export, filters),
+- queue enqueue, worker processing, dedupe, resume, and lock behavior.
 
 Test file:
 
@@ -183,7 +189,7 @@ ddev exec ./vendor/bin/phpunit docroot/modules/custom/mass_redirect_normalizer/t
 - Redirect loops and max-depth behavior (no infinite follow, expected stop point).
 - External URL behavior (ignored; no rewrite).
 - Alias-like non-node targets (rewrite link, but do not add node metadata).
-- Presave normalization path for nodes (`hook_entity_presave()` behavior).
+- Presave enqueue path for nodes (`hook_entity_presave()` behavior).
 - Manager behavior:
   - Run it twice gives same result (first run fixes links, second run has nothing new to fix).
   - Multi-value link field handling (only redirecting values change).
@@ -203,16 +209,15 @@ ddev exec ./vendor/bin/phpunit docroot/modules/custom/mass_redirect_normalizer/t
   - CSV export with `--csv-path`:
     - Writes a parseable report with full `before`/`after` values.
     - Example: `ddev drush mnrl --simulate --limit=20000 --csv-path=./redirect-normalizer-report.csv`
-  - Simulate vs execution output:
+  - Simulate vs enqueue output:
     - `--simulate` rows show `would_update`.
-    - Execution rows show `updated`.
-    - `before` / `after` columns show what will change or changed.
+    - Execute mode enqueues eligible entities and does not save inline.
 
 ---
 
 ## Periodic / bulk cleanup
 
-Use the Drush command above for one-off or scheduled bulk runs.
+Use the Drush command to enqueue work, then drain the queue with `queue:run` for one-off or scheduled bulk runs.
 
 ---
 

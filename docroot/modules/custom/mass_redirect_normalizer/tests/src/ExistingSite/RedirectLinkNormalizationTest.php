@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 
 use Drupal\mass_redirect_normalizer\Drush\Commands\MassRedirectNormalizerCommands;
+use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\file\Entity\File;
 use Drupal\path_alias\Entity\PathAlias;
@@ -76,6 +77,32 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => 'published',
     ]);
+  }
+
+  /**
+   * Builds the Drush command with module services for tests.
+   */
+  private function createNormalizerCommand(): MassRedirectNormalizerCommands {
+    return new MassRedirectNormalizerCommands(
+      \Drupal::entityTypeManager(),
+      \Drupal::service('mass_redirect_normalizer.manager'),
+      \Drupal::state(),
+      \Drupal::service('mass_redirect_normalizer.enqueuer'),
+      \Drupal::service('mass_redirect_normalizer.eligibility'),
+      \Drupal::lock(),
+    );
+  }
+
+  /**
+   * Processes all pending redirect-link normalization queue items.
+   */
+  private function drainNormalizationQueue(): void {
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $worker = \Drupal::service('plugin.manager.queue_worker')->createInstance(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    while ($item = $queue->claimItem()) {
+      $worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
   }
 
   /**
@@ -161,8 +188,9 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       ],
     ]);
 
-    // Trigger presave normalization on node save.
+    // Trigger presave enqueue on node save.
     $sourceNode->save();
+    $this->drainNormalizationQueue();
 
     $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($sourceNode->id());
     $this->assertNotNull($reloaded);
@@ -497,11 +525,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $dryPreview = $manager->normalizeEntity($reloaded, FALSE, TRUE);
     $this->assertNotEmpty($dryPreview['changed'], 'Dry run should detect redirect-based link in body.');
 
-    $command = new MassRedirectNormalizerCommands(
-      \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager'),
-      \Drupal::state()
-    );
+    $command = $this->createNormalizerCommand();
     $rowsObj = $command->normalizeRedirectLinks([
       'bundle' => 'page',
       'entity-ids' => (string) $page->id(),
@@ -541,11 +565,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       ],
     ]);
 
-    $command = new MassRedirectNormalizerCommands(
-      \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager'),
-      \Drupal::state()
-    );
+    $command = $this->createNormalizerCommand();
     $rowsObj = $command->normalizeRedirectLinks([
       'entity-ids' => (string) $unpublished->id(),
       'simulate' => TRUE,
@@ -596,11 +616,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       @unlink($csvPath);
     }
 
-    $command = new MassRedirectNormalizerCommands(
-      \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager'),
-      \Drupal::state()
-    );
+    $command = $this->createNormalizerCommand();
     $command->normalizeRedirectLinks([
       'entity-ids' => (string) $page->id(),
       'simulate' => TRUE,
@@ -793,11 +809,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       @unlink($csvPath);
     }
 
-    $command = new MassRedirectNormalizerCommands(
-      \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager'),
-      \Drupal::state()
-    );
+    $command = $this->createNormalizerCommand();
     $command->normalizeRedirectLinks([
       'entity-ids' => (string) $org->id(),
       'simulate' => TRUE,
@@ -873,11 +885,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     }
     \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
 
-    $command = new MassRedirectNormalizerCommands(
-      \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager'),
-      \Drupal::state()
-    );
+    $command = $this->createNormalizerCommand();
     $rowsObj = $command->normalizeRedirectLinks([
       'entity-ids' => (string) $org->id(),
       'simulate' => TRUE,
@@ -946,11 +954,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $firstId = $ids[0];
     $secondId = $ids[1];
 
-    $command = new MassRedirectNormalizerCommands(
-      \Drupal::entityTypeManager(),
-      \Drupal::service('mass_redirect_normalizer.manager'),
-      \Drupal::state()
-    );
+    $command = $this->createNormalizerCommand();
 
     // First pass with limit=1 should checkpoint first ID.
     $rowsObj1 = $command->normalizeRedirectLinks([
@@ -1176,6 +1180,275 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     /** @var \Drupal\node\NodeInterface $reloaded */
     $this->assertGreaterThan($beforeRevisionId, (int) $reloaded->getRevisionId());
     $this->assertSame(1, (int) $reloaded->getRevisionUserId());
+  }
+
+  /**
+   * Tests execute mode enqueues work without saving inline.
+   */
+  public function testCommandExecuteEnqueuesWithoutSavingInline(): void {
+    \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
+    \Drupal::state()->delete('mass_redirect_normalizer.command_progress');
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    while ($queue->numberOfItems() > 0) {
+      $item = $queue->claimItem();
+      if ($item) {
+        $queue->deleteItem($item);
+      }
+    }
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $page = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Enqueue me</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $redirectMarkup = '<p><a href="/' . $sourceStart . '">Enqueue me</a></p>';
+    $nid = (int) $page->id();
+    $vid = (int) $page->getRevisionId();
+    $connection = \Drupal::database();
+    foreach (['node__body', 'node_revision__body'] as $table) {
+      $connection->update($table)
+        ->fields(['body_value' => $redirectMarkup])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+
+    $command = $this->createNormalizerCommand();
+    $rowsObj = $command->normalizeRedirectLinks([
+      'entity-ids' => (string) $page->id(),
+      'simulate' => FALSE,
+    ]);
+    $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
+    $this->assertSame([], $rows);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertStringContainsString('/' . $sourceStart, (string) $reloaded->get('body')->value);
+
+    $this->assertGreaterThan(0, $queue->numberOfItems());
+    $this->drainNormalizationQueue();
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    $this->assertNotNull($reloaded);
+    $this->assertStringContainsString($target->toUrl()->toString(), (string) $reloaded->get('body')->value);
+  }
+
+  /**
+   * Tests duplicate enqueue attempts do not multiply queue items.
+   */
+  public function testDuplicateEnqueueDedupesQueueItems(): void {
+    \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    while ($queue->numberOfItems() > 0) {
+      $item = $queue->claimItem();
+      if ($item) {
+        $queue->deleteItem($item);
+      }
+    }
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $page = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Dedupe</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer $enqueuer */
+    $enqueuer = \Drupal::service('mass_redirect_normalizer.enqueuer');
+    $this->assertSame('enqueued', $enqueuer->enqueueById('node', (int) $page->id(), 'drush'));
+    $this->assertSame('already_queued', $enqueuer->enqueueById('node', (int) $page->id(), 'drush'));
+    $this->assertSame(1, $queue->numberOfItems());
+  }
+
+  /**
+   * Tests execute mode auto-resumes enqueue checkpoint.
+   */
+  public function testCommandExecuteAutoResumesEnqueueCheckpoint(): void {
+    \Drupal::state()->delete('mass_redirect_normalizer.command_progress');
+    \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    while ($queue->numberOfItems() > 0) {
+      $item = $queue->claimItem();
+      if ($item) {
+        $queue->deleteItem($item);
+      }
+    }
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $nodeA = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">A</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+    $nodeB = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">B</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    foreach ([$nodeA, $nodeB] as $node) {
+      $redirectMarkup = '<p><a href="/' . $sourceStart . '">Resume enqueue</a></p>';
+      $nid = (int) $node->id();
+      $vid = (int) $node->getRevisionId();
+      $connection = \Drupal::database();
+      foreach (['node__body', 'node_revision__body'] as $table) {
+        $connection->update($table)
+          ->fields(['body_value' => $redirectMarkup])
+          ->condition('entity_id', $nid)
+          ->condition('revision_id', $vid)
+          ->execute();
+      }
+      \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+    }
+
+    $ids = [(int) $nodeA->id(), (int) $nodeB->id()];
+    sort($ids);
+    $firstId = $ids[0];
+    $secondId = $ids[1];
+
+    $command = $this->createNormalizerCommand();
+    $command->normalizeRedirectLinks([
+      'entity-type' => 'node',
+      'bundle' => 'page',
+      'entity-ids' => $firstId . ',' . $secondId,
+      'start-id' => $firstId,
+      'limit' => 1,
+      'simulate' => FALSE,
+      'reset-progress' => TRUE,
+    ]);
+
+    $checkpoint = \Drupal::state()->get('mass_redirect_normalizer.command_progress');
+    $this->assertIsArray($checkpoint);
+    $this->assertSame($firstId, (int) ($checkpoint['last_ids']['node'] ?? 0));
+
+    $command->normalizeRedirectLinks([
+      'entity-type' => 'node',
+      'bundle' => 'page',
+      'entity-ids' => $firstId . ',' . $secondId,
+      'limit' => 1,
+      'simulate' => FALSE,
+    ]);
+
+    $checkpoint = \Drupal::state()->get('mass_redirect_normalizer.command_progress');
+    $this->assertIsArray($checkpoint);
+    $this->assertSame($secondId, (int) ($checkpoint['last_ids']['node'] ?? 0));
+  }
+
+  /**
+   * Tests execute mode exits when enqueue lock is already held.
+   */
+  public function testCommandEnqueueBlockedWhileLockHeld(): void {
+    $lock = \Drupal::lock();
+    $this->assertTrue($lock->acquire('mass_redirect_normalizer.enqueue', 3600));
+
+    $command = $this->createNormalizerCommand();
+    $rowsObj = $command->normalizeRedirectLinks([
+      'simulate' => FALSE,
+      'limit' => 1,
+    ]);
+    $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
+    $this->assertSame([], $rows);
+
+    $lock->release('mass_redirect_normalizer.enqueue');
+  }
+
+  /**
+   * Tests simulate mode does not enqueue queue items.
+   */
+  public function testSimulateDoesNotEnqueue(): void {
+    \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    while ($queue->numberOfItems() > 0) {
+      $item = $queue->claimItem();
+      if ($item) {
+        $queue->deleteItem($item);
+      }
+    }
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $page = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Simulate only</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $redirectMarkup = '<p><a href="/' . $sourceStart . '">Simulate only</a></p>';
+    $nid = (int) $page->id();
+    $vid = (int) $page->getRevisionId();
+    $connection = \Drupal::database();
+    foreach (['node__body', 'node_revision__body'] as $table) {
+      $connection->update($table)
+        ->fields(['body_value' => $redirectMarkup])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+
+    $command = $this->createNormalizerCommand();
+    $rowsObj = $command->normalizeRedirectLinks([
+      'entity-ids' => (string) $page->id(),
+      'simulate' => TRUE,
+    ]);
+    $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
+    $this->assertNotEmpty($rows);
+    $this->assertSame(0, $queue->numberOfItems());
   }
 
 }
