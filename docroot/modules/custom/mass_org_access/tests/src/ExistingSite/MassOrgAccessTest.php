@@ -889,16 +889,19 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * The Organization Owner Groups field is hidden from regular editors.
+   * Owner Groups widget is hidden from regular editors when enforcement is off.
    *
-   * Field-level access denies edit unless the user has bypass org access.
+   * While the gate is off (rollout phase), only bypass users see the
+   * widget so auto-populate runs invisibly and editors do not have to
+   * think about the field.
    */
-  public function testOrgOwnerGroupsFieldHiddenFromRegularEditors(): void {
+  public function testOrgOwnerGroupsFieldHiddenFromEditorsWhenEnforcementOff(): void {
+    \Drupal::state()->set('mass_org_access.enforce', FALSE);
     $node = $this->createTestNode('info_details', $this->orgPageA);
 
     $this->assertFalse(
       $node->get('field_content_organization')->access('edit', $this->userA),
-      'Regular editor must not be able to edit field_content_organization.'
+      'Enforcement OFF: regular editor must NOT be able to edit field_content_organization.'
     );
     $this->assertTrue(
       $node->get('field_content_organization')->access('view', $this->userA),
@@ -907,18 +910,43 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Users with bypass org access can edit Organization Owner Groups.
+   * Owner Groups widget is exposed to editors once enforcement is on.
+   *
+   * Once the gate is enabled the field-level guard yields to Drupal's
+   * default permissions so editors with save perm can broaden access
+   * by adding more org terms.
+   */
+  public function testOrgOwnerGroupsFieldVisibleToEditorsWhenEnforcementOn(): void {
+    // setUp() already flipped enforcement ON; spelled out here for clarity.
+    \Drupal::state()->set('mass_org_access.enforce', TRUE);
+    $node = $this->createTestNode('info_details', $this->orgPageA);
+
+    $this->assertTrue(
+      $node->get('field_content_organization')->access('edit', $this->userA),
+      'Enforcement ON: regular editor must be able to edit field_content_organization.'
+    );
+  }
+
+  /**
+   * Bypass users always see Owner Groups regardless of the switch.
    */
   public function testOrgOwnerGroupsFieldVisibleToBypassUsers(): void {
     $bypass_user = $this->createUser();
     $bypass_user->addRole('content_team');
     $bypass_user->activate();
     $bypass_user->save();
-
     $node = $this->createTestNode('info_details', $this->orgPageA);
+
+    \Drupal::state()->set('mass_org_access.enforce', FALSE);
     $this->assertTrue(
       $node->get('field_content_organization')->access('edit', $bypass_user),
-      'content_team must be able to edit field_content_organization.'
+      'Bypass user must see Owner Groups while enforcement is OFF.'
+    );
+
+    \Drupal::state()->set('mass_org_access.enforce', TRUE);
+    $this->assertTrue(
+      $node->get('field_content_organization')->access('edit', $bypass_user),
+      'Bypass user must still see Owner Groups when enforcement is ON.'
     );
   }
 

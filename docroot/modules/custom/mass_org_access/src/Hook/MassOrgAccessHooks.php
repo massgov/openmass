@@ -75,8 +75,16 @@ class MassOrgAccessHooks {
       if ($operation === 'view') {
         return AccessResult::neutral();
       }
-      return AccessResult::forbiddenIf(!$account->hasPermission('bypass org access'))
-        ->cachePerPermissions();
+      // While enforcement is off (rollout phase), only bypass users
+      // (admins / content_team) may edit the widget so the auto-populate
+      // flow runs invisibly. Once enforcement is on, the field is
+      // exposed to editors with save permission so they can broaden
+      // access by adding more org terms.
+      if (!$this->settings->isEnforcementEnabled()) {
+        return AccessResult::forbiddenIf(!$account->hasPermission('bypass org access'))
+          ->cachePerPermissions();
+      }
+      return AccessResult::neutral();
     }
     return AccessResult::neutral();
   }
