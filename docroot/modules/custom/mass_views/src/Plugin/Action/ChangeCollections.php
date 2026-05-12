@@ -149,8 +149,13 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
    */
   public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
     if ($object->getEntityTypeId() === 'node') {
-      $access = $object->access('update', $account, TRUE)
-        ->andIf($object->status->access('edit', $account, TRUE));
+      // The action only writes field_collections, so the entity-level
+      // update check is enough. A previous version also called
+      // $object->status->access('edit'), but on a content_moderation
+      // site that field is read-only for everyone (state changes go
+      // through moderation transitions), which blocked the bulk action
+      // for every user.
+      $access = $object->access('update', $account, TRUE);
       return $return_as_object ? $access : $access->isAllowed();
     }
 
