@@ -6,8 +6,10 @@ dependencies:
     - field.field.paragraph.numbered_step.field_next_step_details
     - field.field.paragraph.numbered_step.field_next_step_link
     - field.field.paragraph.numbered_step.field_next_step_title
+    - field.field.paragraph.numbered_step.field_step_documents
     - paragraphs.paragraphs_type.numbered_step
   module:
+    - entity_reference_revisions
     - mass_content
     - text
 id: paragraph.numbered_step.default
@@ -32,7 +34,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 2
+    weight: 3
     region: content
   field_next_step_title:
     type: string
@@ -41,5 +43,14 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 0
+    region: content
+  field_step_documents:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 2
     region: content
 hidden: {  }

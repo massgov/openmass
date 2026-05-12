@@ -1,20 +1,20 @@
-uuid: 0a106556-55ae-47ac-af41-9ece17abad30
+uuid: 0ba83e9b-fa58-435f-821f-c115d5ea550b
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.paragraph.field_step
+    - field.storage.paragraph.field_step_documents
+    - paragraphs.paragraphs_type.link_group_document
     - paragraphs.paragraphs_type.numbered_step
-    - paragraphs.paragraphs_type.numbered_steps
   module:
     - entity_reference_revisions
-id: paragraph.numbered_steps.field_step
-field_name: field_step
+id: paragraph.numbered_step.field_step_documents
+field_name: field_step_documents
 entity_type: paragraph
-bundle: numbered_steps
-label: Steps
+bundle: numbered_step
+label: 'Step documents'
 description: ''
-required: true
+required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
@@ -22,7 +22,7 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
-      numbered_step: numbered_step
+      link_group_document: link_group_document
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -237,7 +237,7 @@ settings:
         enabled: false
       link_group_document:
         weight: 210
-        enabled: false
+        enabled: true
       link_group_link:
         weight: 211
         enabled: false
@@ -303,7 +303,7 @@ settings:
         enabled: false
       numbered_step:
         weight: 232
-        enabled: true
+        enabled: false
       numbered_steps:
         weight: 233
         enabled: false
