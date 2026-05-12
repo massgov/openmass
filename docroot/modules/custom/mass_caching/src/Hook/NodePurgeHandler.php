@@ -1,7 +1,12 @@
 <?php
 
-namespace Drupal\mass_caching;
+declare(strict_types=1);
 
+namespace Drupal\mass_caching\Hook;
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\mass_caching\ManualPurger;
 use Drupal\node\NodeInterface;
 use Drupal\path_alias\AliasManagerInterface;
 
@@ -36,6 +41,22 @@ class NodePurgeHandler {
   }
 
   /**
+   * Purge URL paths.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *
+   * @return void
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   */
+  #[Hook('entity_update')]
+  #[Hook('entity_insert')]
+  public function purge(EntityInterface $entity): void {
+    if ($entity instanceof NodeInterface) {
+      $this->purgeNode($entity);
+    }
+  }
+
+  /**
    * Purge URL paths for public-facing node saves.
    *
    * This intentionally complements tag-based purging: Akamai's configured
@@ -47,7 +68,7 @@ class NodePurgeHandler {
    *
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
-  public function purge(NodeInterface $node): void {
+  public function purgeNode(NodeInterface $node): void {
     if (!$this->shouldPurge($node)) {
       return;
     }

@@ -175,10 +175,6 @@ function mass_caching_entity_update(EntityInterface $entity) {
       mass_caching_purge_media($entity);
       break;
 
-    case 'node':
-      \Drupal::service('mass_caching.node_purge_handler')->purge($entity);
-      break;
-
     case 'redirect':
       mass_caching_purge_redirect($entity);
       break;
@@ -197,10 +193,6 @@ function mass_caching_entity_insert(EntityInterface $entity) {
   switch ($entity->getEntityTypeId()) {
     case 'media':
       mass_caching_purge_media($entity);
-      break;
-
-    case 'node':
-      \Drupal::service('mass_caching.node_purge_handler')->purge($entity);
       break;
 
     case 'redirect':

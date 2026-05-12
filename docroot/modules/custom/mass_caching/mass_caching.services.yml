@@ -8,9 +8,6 @@ services:
   manual_purger:
     class: Drupal\mass_caching\ManualPurger
     arguments: ['@purge.queuers', '@purge.invalidation.factory', '@purge.queue', '@settings']
-  mass_caching.node_purge_handler:
-    class: Drupal\mass_caching\NodePurgeHandler
-    arguments: ['@manual_purger', '@path_alias.manager']
   stale_response_subscriber:
     class: Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber
     tags:
