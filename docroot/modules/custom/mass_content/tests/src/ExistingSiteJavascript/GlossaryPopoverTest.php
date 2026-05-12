@@ -160,6 +160,9 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $dialog = $page->find('css', '.popover__dialog');
 
     $trigger->click();
+    $page->waitFor(10, function () use ($dialog) {
+      return $dialog->isVisible();
+    });
     $this->assertTrue($dialog->isVisible());
     $this->assertSession()->elementTextContains('css', '.popover__dialog', $this->definition);
   }
@@ -329,6 +332,49 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $triggers = $page->findAll('css', '.popover__trigger');
     $this->assertCount(1, $triggers);
     $this->assertEquals('Bond Anticipation Note (BAN)', $triggers[0]->getText());
+  }
+
+  /**
+   * Test middle-overlap terms keep one non-overlapping highlight.
+   */
+  public function testGlossaryPopoverMiddleOverlappingTerms() {
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Middle Overlap Glossary',
+      'field_terms' => [
+        [
+          'key' => 'General Fund',
+          'value' => 'General fund definition',
+        ],
+        [
+          'key' => 'Fund Balance',
+          'value' => 'Fund balance definition',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Middle Overlap Service Page',
+      'field_service_body' => 'General Fund Balance is reported annually.',
+      'moderation_state' => 'published',
+    ]);
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.popover__trigger') !== NULL;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(1, $triggers, 'Only one overlapping term should be highlighted.');
+    $this->assertEquals('General Fund', $triggers[0]->getText());
   }
 
 }

@@ -268,13 +268,16 @@
         }
       });
 
-      // Prefer complete terms over partial overlaps.
-      // Example: keep "state house notes", reject overlapping "note".
+      // Prefer longer terms, then earlier matches, and reject overlaps.
+      // Contained matches (e.g. "Note" inside "State House Notes") lose to
+      // the longer span. Middle overlaps (e.g. "General Fund" vs "Fund Balance")
+      // still allow only one highlight; equal-length ties keep the earlier one.
       matchCandidates.sort((a, b) => {
-        if (a.start !== b.start) {
-          return a.start - b.start;
+        const lengthDiff = (b.end - b.start) - (a.end - a.start);
+        if (lengthDiff !== 0) {
+          return lengthDiff;
         }
-        return (b.end - b.start) - (a.end - a.start);
+        return a.start - b.start;
       });
       const acceptedMatches = [];
       matchCandidates.forEach(candidate => {
