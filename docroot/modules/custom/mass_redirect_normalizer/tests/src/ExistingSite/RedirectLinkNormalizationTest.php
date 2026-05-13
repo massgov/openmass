@@ -90,6 +90,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       \Drupal::service('mass_redirect_normalizer.enqueuer'),
       \Drupal::service('mass_redirect_normalizer.eligibility'),
       \Drupal::lock(),
+      \Drupal::database(),
     );
   }
 
@@ -1510,6 +1511,39 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
     $this->assertSame([], $rows);
 
+    $lock->release('mass_redirect_normalizer.enqueue');
+  }
+
+  /**
+   * Tests --release-enqueue-lock clears a sweep lock held by another lock ID.
+   */
+  public function testReleaseEnqueueLockClearsStaleSweepLock(): void {
+    $database = \Drupal::database();
+    $database->delete('semaphore')
+      ->condition('name', 'mass_redirect_normalizer.enqueue')
+      ->execute();
+    $database->insert('semaphore')
+      ->fields([
+        'name' => 'mass_redirect_normalizer.enqueue',
+        'value' => 'stale-lock-value-not-current-request',
+        'expire' => microtime(TRUE) + 3600,
+      ])
+      ->execute();
+
+    $command = $this->createNormalizerCommand();
+    $command->normalizeRedirectLinks([
+      'release-enqueue-lock' => TRUE,
+    ]);
+
+    $count = (int) $database->select('semaphore', 's')
+      ->condition('name', 'mass_redirect_normalizer.enqueue')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    $this->assertSame(0, $count);
+
+    $lock = \Drupal::lock();
+    $this->assertTrue($lock->acquire('mass_redirect_normalizer.enqueue', 3600));
     $lock->release('mass_redirect_normalizer.enqueue');
   }
 

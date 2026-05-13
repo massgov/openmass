@@ -57,8 +57,11 @@ This split makes the code easier to test and maintain.
 | `--resume` | Continue simulate runs from saved progress checkpoint. Execute mode auto-resumes by default. |
 | `--show-progress` | Print saved progress checkpoint and exit without scanning. |
 | `--reset-progress` | Clear saved progress checkpoint before run. |
+| `--release-enqueue-lock` | Delete the enqueue sweep lock row from `{semaphore}` and exit (no sweep). Use after a **crash or segfault** when PHP never released the lock—`lock->release()` only clears locks owned by the current request. |
 
 By default, bulk command processes only **published** content.
+
+Execute mode **acquires** a sweep-wide lock so two `mnrl` runs do not enqueue in parallel. If a run dies without releasing (segfault, kill), the next execute may warn that another sweep is running; run `drush mnrl --release-enqueue-lock` once, then rerun.
 
 **Enqueue sweep performance:** plain execute (`mnrl` without `--simulate`,
 `--kinds`, or `--csv-path`) only runs entity ID queries and pushes each ID onto
@@ -185,7 +188,7 @@ Existing-site integration tests validate end-to-end behavior of:
 - rich-text and link-field normalization (including Linkit-friendly entity URIs),
 - entity-reference rewrites for node/media with strict-safe rules,
 - command output/reporting behavior (simulate rows, CSV export, filters),
-- queue enqueue, worker processing, dedupe, resume, and lock behavior.
+- queue enqueue, worker processing, dedupe, resume, and enqueue-lock behavior.
 
 Test file:
 

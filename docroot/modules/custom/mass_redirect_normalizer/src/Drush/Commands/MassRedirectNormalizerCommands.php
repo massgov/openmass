@@ -5,6 +5,7 @@ namespace Drupal\mass_redirect_normalizer\Drush\Commands;
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Lock\LockBackendInterface;
@@ -39,6 +40,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     protected RedirectLinkQueueEnqueuer $enqueuer,
     protected RedirectLinkNormalizationEligibility $eligibility,
     protected LockBackendInterface $lock,
+    protected Connection $database,
   ) {
     parent::__construct();
   }
@@ -57,6 +59,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       $container->get('mass_redirect_normalizer.enqueuer'),
       $container->get('mass_redirect_normalizer.eligibility'),
       $container->get('lock'),
+      $container->get('database'),
     );
   }
 
@@ -99,6 +102,10 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
    * @option resume Continue from saved checkpoint.
    * @option show-progress Print saved checkpoint and exit.
    * @option reset-progress Clear saved checkpoint before running.
+   * @option release-enqueue-lock Delete the enqueue sweep lock row from
+   *   {semaphore} and exit (does not run a sweep). Use after a crash or kill when
+   *   PHP could not release the lock; LockBackendInterface::release() only clears
+   *   locks owned by the current request.
    * @usage mass-redirect-normalizer:normalize-links --simulate --limit=100
    *   Preview changes. Use --format=json for machine-readable output.
    */
@@ -115,6 +122,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       'resume' => FALSE,
       'show-progress' => FALSE,
       'reset-progress' => FALSE,
+      'release-enqueue-lock' => FALSE,
     ],
   ): RowsOfFields {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
@@ -157,6 +165,14 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       return new RowsOfFields([]);
     }
 
+    if (!empty($options['release-enqueue-lock'])) {
+      $this->breakStaleEnqueueLock();
+      if ($this->logger()) {
+        $this->logger()->notice((string) dt('Released the enqueue sweep lock (clears stale rows left by crashed processes).'));
+      }
+      return new RowsOfFields([]);
+    }
+
     $saved = $this->state->get(self::PROGRESS_STATE_KEY, []);
     $lastIds = (is_array($saved) && isset($saved['last_ids']) && is_array($saved['last_ids'])) ? $saved['last_ids'] : [];
     if ($resume && is_array($saved)) {
@@ -181,7 +197,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     if (!$simulate) {
       if (!$this->lock->acquire(self::ENQUEUE_LOCK_NAME, 3600)) {
         if ($this->logger()) {
-          $this->logger()->warning((string) dt('Another redirect link normalization enqueue sweep is already running. Exiting.'));
+          $this->logger()->warning((string) dt('Another redirect link normalization enqueue sweep is already running. Exiting. If no sweep is running (for example after a crash), run: drush mnrl --release-enqueue-lock'));
         }
         return new RowsOfFields([]);
       }
@@ -992,6 +1008,18 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       }
     }
     return ((int) ($saved['processed'] ?? 0)) > 0;
+  }
+
+  /**
+   * Deletes the enqueue sweep lock row from {semaphore} (see --release-enqueue-lock).
+   *
+   * Drupal's lock release only removes rows for the current request's lock ID.
+   * Crashed processes leave a row that must be cleared out-of-band.
+   */
+  private function breakStaleEnqueueLock(): void {
+    $this->database->delete('semaphore')
+      ->condition('name', self::ENQUEUE_LOCK_NAME)
+      ->execute();
   }
 
   /**
