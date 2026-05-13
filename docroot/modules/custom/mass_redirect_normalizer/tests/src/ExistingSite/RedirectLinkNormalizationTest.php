@@ -201,6 +201,63 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests presave enqueues the node and the queue worker rewrites redirect links.
+   */
+  public function testPresaveEnqueueThenWorkerNormalizesBody(): void {
+    \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    while ($item = $queue->claimItem()) {
+      $queue->deleteItem($item);
+    }
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $sourceNode = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Presave queue</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+    // Second save: presave runs with a real nid so the enqueuer can queue work.
+    $sourceNode->save();
+
+    $this->assertGreaterThan(0, $queue->numberOfItems(), 'Presave should enqueue normalization work.');
+
+    $worker = \Drupal::service('plugin.manager.queue_worker')->createInstance(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $claimed = $queue->claimItem();
+    $this->assertNotFalse($claimed);
+    $this->assertSame('node', $claimed->data['entity_type']);
+    $this->assertSame((int) $sourceNode->id(), (int) $claimed->data['entity_id']);
+    $this->assertSame('presave', $claimed->data['source']);
+    $worker->processItem($claimed->data);
+    $queue->deleteItem($claimed);
+
+    while ($item = $queue->claimItem()) {
+      $worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
+
+    $this->assertSame(0, $queue->numberOfItems());
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($sourceNode->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $body = (string) $reloaded->get('body')->value;
+    $this->assertStringContainsString($target->toUrl()->toString(), $body);
+    $this->assertStringContainsString('data-entity-type="node"', $body);
+  }
+
+  /**
    * Tests looped redirects do not cause infinite processing.
    */
   public function testRedirectLoopIsSafelyIgnored(): void {
@@ -629,6 +686,66 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $this->assertStringContainsString('would_update,node,' . $page->id(), $csv);
     $this->assertStringContainsString('/' . $sourceStart, $csv);
     $this->assertStringContainsString($target->toUrl()->toString(), $csv);
+
+    @unlink($csvPath);
+  }
+
+  /**
+   * Tests CSV output appends new rows when the report file already exists.
+   */
+  public function testCommandAppendsToExistingCsvReport(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $page = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">CSV append</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $redirectMarkup = '<p><a href="/' . $sourceStart . '">CSV append</a></p>';
+    $nid = (int) $page->id();
+    $vid = (int) $page->getRevisionId();
+    $connection = \Drupal::database();
+    foreach (['node__body', 'node_revision__body'] as $table) {
+      $connection->update($table)
+        ->fields(['body_value' => $redirectMarkup])
+        ->condition('entity_id', $nid)
+        ->condition('revision_id', $vid)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+
+    $csvPath = sys_get_temp_dir() . '/mass-redirect-normalizer-append-' . $this->randomMachineName() . '.csv';
+    if (file_exists($csvPath)) {
+      @unlink($csvPath);
+    }
+
+    $command = $this->createNormalizerCommand();
+    $opts = [
+      'entity-ids' => (string) $page->id(),
+      'simulate' => TRUE,
+      'csv-path' => $csvPath,
+    ];
+    $command->normalizeRedirectLinks($opts);
+
+    $linesFirst = count(file($csvPath));
+
+    $command->normalizeRedirectLinks($opts);
+
+    $linesSecond = count(file($csvPath));
+    $this->assertGreaterThan($linesFirst, $linesSecond);
+    $this->assertSame($linesFirst + ($linesFirst - 1), $linesSecond);
 
     @unlink($csvPath);
   }

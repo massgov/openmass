@@ -65,7 +65,6 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
     }
 
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-    $_ENV['MASS_REDIRECT_NORMALIZER_WORKER'] = '1';
 
     try {
       $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
@@ -87,7 +86,6 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
       ]);
     }
     finally {
-      unset($_ENV['MASS_REDIRECT_NORMALIZER_WORKER']);
       $this->enqueuer->clearPending($entityType, $entityId);
     }
   }

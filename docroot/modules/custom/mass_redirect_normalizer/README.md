@@ -48,10 +48,10 @@ This split makes the code easier to test and maintain.
 |--------|---------|
 | `--simulate` | Dry run: **no** database writes and **no** queue writes. Same idea as global `ddev drush --simulate ...`. |
 | `--limit=N` | Max eligible entities to process **total** across node + paragraph. Command stops when it reaches `N`. **`0` = no limit. |
-| `--bundle=...` | Only that bundle (node type or paragraph type machine name). Still checked after load. |
+| `--bundle=...` | Only that bundle (node type or paragraph type machine name). With `--entity-ids`, IDs are filtered with a single query (no full entity load on the fast enqueue path). |
 | `--entity-ids=1,2,3` | Only these IDs. IDs are checked in both node and paragraph entities. Ignores `--limit`. |
-| `--kinds=text,link,entity_reference` | Include only these change kinds in simulate table output, CSV output, and updated/value counters. |
-| `--csv-path=./redirect-normalizer-report.csv` | Write a full CSV report in the current directory (or other relative/absolute path). Simulate only. |
+| `--kinds=text,link,entity_reference` | **Simulate:** include only these change kinds in table, CSV, and counters. **Execute (enqueue):** only entities with at least one matching kind of change are enqueued; each entity is dry-run first (slower). |
+| `--csv-path=./redirect-normalizer-report.csv` | Write a full CSV report. **Simulate:** diffs for scanned entities. **Execute:** same diff columns for entities you enqueue; each entity is dry-run first to build the report (slower). For fastest bulk enqueue, omit both `--kinds` and `--csv-path`. If the file already exists and is non-empty, **new rows are appended** (the header line is not repeated). |
 | `--entity-type=node|paragraph|all` | Restrict scans to one entity type, or both (`all`/default). |
 | `--start-id=N` | Start scanning from this ID (inclusive). Useful for manual resume windows. |
 | `--resume` | Continue simulate runs from saved progress checkpoint. Execute mode auto-resumes by default. |
@@ -60,10 +60,20 @@ This split makes the code easier to test and maintain.
 
 By default, bulk command processes only **published** content.
 
-- Nodes must be published.
-- Paragraphs are processed only when their parent node is published.
+**Enqueue sweep performance:** plain execute (`mnrl` without `--simulate`,
+`--kinds`, or `--csv-path`) only runs entity ID queries and pushes each ID onto
+the queue—**no entity loads and no eligibility checks in Drush**. The queue
+worker loads each entity, applies the same eligibility rules as simulate mode,
+then normalizes. Bulk node lists add a **published (`status = 1`)** filter in
+the ID query (not when using `--entity-ids`). With `--kinds` or `--csv-path`,
+execute mode dry-runs each entity first (slower) to filter or build the report.
+Bulk enqueue writes checkpoints and dedupe keys periodically (same batch stride as load chunks).
+
+- Nodes must be published (enforced in the worker; bulk ID queries for nodes are
+  already limited to published where applicable).
+- Paragraphs are processed only when their parent node is published (worker).
 - If a published node has a newer unpublished draft revision, that node and its
-  child paragraphs are skipped by bulk command (so we do not touch draft work).
+  child paragraphs are skipped when the worker runs (so we do not touch draft work).
 
 ### Default table columns
 
@@ -96,12 +106,14 @@ ddev drush mnrl --simulate --kinds=entity_reference --csv-path=./entity-referenc
 ddev drush mnrl --entity-ids=857211,858626
 ```
 
-### What the command skips
+### What gets skipped (simulate vs queue worker)
 
-- **Orphan paragraphs** — paragraphs that are not attached to real host content (`Helper::isParagraphOrphan()`). They are **not** processed and **do not** appear as rows.
+- **Simulate mode** applies eligibility before showing rows: orphan paragraphs,
+  unpublished content, and newer-draft cases are omitted from output.
+- **Fast enqueue** does not evaluate those rules in Drush; the **queue worker**
+  skips the same ineligible entities when it runs. You may still see queue items
+  for IDs that become no-ops in the worker (cheap claim/delete).
 - Entities with **no** redirect-based links to fix produce **no** simulate rows (empty table is normal).
-- Unpublished/trashed content is skipped.
-- Published content with newer unpublished draft revisions is skipped.
 
 ### Simulate, enqueue, then verify (manual QA)
 
@@ -113,8 +125,12 @@ ddev drush mnrl --entity-ids=857211,858626
    `ddev drush queue:run mass_redirect_normalizer_link_normalization`
 4. **Re-check:** run **simulate** again with the same filters. Items that were fixed should **not** show `would_update` anymore (unless something else changed them back).
 
-For big runs, command prints progress notice every 100 processed entities. This
-is expected and helps confirm it is still running.
+For big runs, the command prints a progress notice every 500 entities. When it
+can estimate the sweep size (same filters as the scan), the line includes
+**scanned N of total (pct%) in this run**. With `--limit`, total equals that
+limit. **Continuing from saved checkpoint** appears only when a prior run did not
+finish cleanly (`completed` was not saved); it does not appear after a completed
+sweep or on a truly empty checkpoint.
 
 For a narrow retest after you know specific IDs:
 

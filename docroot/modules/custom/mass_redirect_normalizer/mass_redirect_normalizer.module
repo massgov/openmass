@@ -12,10 +12,6 @@ function mass_redirect_normalizer_entity_presave(EntityInterface $entity) {
     return;
   }
 
-  if (!empty($_ENV['MASS_REDIRECT_NORMALIZER_WORKER'])) {
-    return;
-  }
-
   /** @var \Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer $enqueuer */
   $enqueuer = \Drupal::service('mass_redirect_normalizer.enqueuer');
   $enqueuer->enqueueEntity($entity, 'presave');
