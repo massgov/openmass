@@ -6,6 +6,7 @@ use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\Query\QueryInterface;
 use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\mass_redirect_normalizer\RedirectLinkNormalizationEligibility;
@@ -189,29 +190,12 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
 
     try {
       foreach ($entityTypes as $entityType) {
-        $effectiveStartId = $startId;
-        if (
-        $resume &&
-        isset($lastIds[$entityType]) &&
-        is_numeric($lastIds[$entityType])
-        ) {
-          $effectiveStartId = max($effectiveStartId, ((int) $lastIds[$entityType]) + 1);
-        }
+        $effectiveStartId = $this->effectiveStartIdForEntityType($entityType, $startId, $resume, $lastIds);
         if ($entityIdsOption !== '') {
           $ids = $this->parseCommaSeparatedEntityIds($entityIdsOption, $effectiveStartId);
         }
         else {
-          $idField = $entityType === 'node' ? 'nid' : 'id';
-          $query = $this->entityTypeManager->getStorage($entityType)->getQuery()
-            ->accessCheck(FALSE)
-            ->sort($idField);
-          if ($effectiveStartId > 0) {
-            $query->condition($idField, $effectiveStartId, '>=');
-          }
-          if (!empty($options['bundle'])) {
-            $query->condition('type', $options['bundle']);
-          }
-          $this->applyBulkPublishedNodeFilter($query, $entityType, $entityIdsOption);
+          $query = $this->buildSweepEntityQuery($entityType, $options, $entityIdsOption, $effectiveStartId);
           if ($limit > 0) {
             $query->range(0, $limit);
           }
@@ -316,12 +300,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
               }
               $this->saveProgressState($processed, $entitiesChanged, $valueUpdates, $entityType, (int) $id, $simulate, FALSE);
               if (!empty($result['changed'])) {
-                $changes = $result['changes'] ?? [];
-                if ($kindsFilter !== []) {
-                  $changes = array_values(array_filter($changes, function (array $change) use ($kindsFilter): bool {
-                    return in_array((string) ($change['kind'] ?? ''), $kindsFilter, TRUE);
-                  }));
-                }
+                $changes = $this->filterChangesByKinds($result['changes'] ?? [], $kindsFilter);
                 if ($changes === []) {
                   continue;
                 }
@@ -333,12 +312,7 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
 
             if ($executeUsesDryRun) {
               $result = $this->normalizerManager->normalizeEntity($entity, FALSE, TRUE);
-              $changes = $result['changes'] ?? [];
-              if ($kindsFilter !== []) {
-                $changes = array_values(array_filter($changes, function (array $change) use ($kindsFilter): bool {
-                  return in_array((string) ($change['kind'] ?? ''), $kindsFilter, TRUE);
-                }));
-              }
+              $changes = $this->filterChangesByKinds($result['changes'] ?? [], $kindsFilter);
               if ($changes === []) {
                 $processed++;
                 $runProcessed++;
@@ -722,6 +696,24 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   }
 
   /**
+   * Filters normalization changes by optional --kinds list.
+   *
+   * @param array<int, array<string, mixed>> $changes
+   * @param string[] $kindsFilter
+   *
+   * @return array<int, array<string, mixed>>
+   *   Changes matching the kinds filter (unchanged when the filter is empty).
+   */
+  private function filterChangesByKinds(array $changes, array $kindsFilter): array {
+    if ($kindsFilter === []) {
+      return $changes;
+    }
+    return array_values(array_filter($changes, static function (array $change) use ($kindsFilter): bool {
+      return in_array((string) ($change['kind'] ?? ''), $kindsFilter, TRUE);
+    }));
+  }
+
+  /**
    * Parses entity type option to node/paragraph list.
    *
    * @return string[]
@@ -730,9 +722,9 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   private function parseEntityTypesOption(string $entityTypeOption): array {
     $entityTypeOption = trim(strtolower($entityTypeOption));
     if ($entityTypeOption === '' || $entityTypeOption === 'all') {
-      return ['node', 'paragraph'];
+      return [...RedirectLinkQueueEnqueuer::SUPPORTED_ENTITY_TYPES];
     }
-    if (!in_array($entityTypeOption, ['node', 'paragraph'], TRUE)) {
+    if (!in_array($entityTypeOption, RedirectLinkQueueEnqueuer::SUPPORTED_ENTITY_TYPES, TRUE)) {
       throw new \InvalidArgumentException('Invalid --entity-type value. Allowed: node,paragraph,all');
     }
     return [$entityTypeOption];
@@ -859,6 +851,49 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   }
 
   /**
+   * Start ID for this entity type after applying resume checkpoint.
+   */
+  private function effectiveStartIdForEntityType(
+    string $entityType,
+    int $startId,
+    bool $resume,
+    array $lastIds,
+  ): int {
+    $effectiveStartId = $startId;
+    if (
+      $resume &&
+      isset($lastIds[$entityType]) &&
+      is_numeric($lastIds[$entityType])
+    ) {
+      $effectiveStartId = max($effectiveStartId, ((int) $lastIds[$entityType]) + 1);
+    }
+    return $effectiveStartId;
+  }
+
+  /**
+   * Base entity ID query for bulk sweep (caller adds range or count).
+   */
+  private function buildSweepEntityQuery(
+    string $entityType,
+    array $options,
+    string $entityIdsOption,
+    int $effectiveStartId,
+  ): QueryInterface {
+    $idField = $entityType === 'node' ? 'nid' : 'id';
+    $query = $this->entityTypeManager->getStorage($entityType)->getQuery()
+      ->accessCheck(FALSE)
+      ->sort($idField);
+    if ($effectiveStartId > 0) {
+      $query->condition($idField, $effectiveStartId, '>=');
+    }
+    if (!empty($options['bundle'])) {
+      $query->condition('type', $options['bundle']);
+    }
+    $this->applyBulkPublishedNodeFilter($query, $entityType, $entityIdsOption);
+    return $query;
+  }
+
+  /**
    * Estimates how many entities will be scanned in this invocation for progress %.
    *
    * When --limit is set, the cap is the total. Otherwise counts matching IDs per
@@ -878,29 +913,12 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
     }
     $total = 0;
     foreach ($entityTypes as $entityType) {
-      $effectiveStartId = $startId;
-      if (
-        $resume &&
-        isset($lastIds[$entityType]) &&
-        is_numeric($lastIds[$entityType])
-      ) {
-        $effectiveStartId = max($effectiveStartId, ((int) $lastIds[$entityType]) + 1);
-      }
+      $effectiveStartId = $this->effectiveStartIdForEntityType($entityType, $startId, $resume, $lastIds);
       if ($entityIdsOption !== '') {
         $total += count($this->parseCommaSeparatedEntityIds($entityIdsOption, $effectiveStartId));
       }
       else {
-        $idField = $entityType === 'node' ? 'nid' : 'id';
-        $query = $this->entityTypeManager->getStorage($entityType)->getQuery()
-          ->accessCheck(FALSE)
-          ->sort($idField);
-        if ($effectiveStartId > 0) {
-          $query->condition($idField, $effectiveStartId, '>=');
-        }
-        if (!empty($options['bundle'])) {
-          $query->condition('type', $options['bundle']);
-        }
-        $this->applyBulkPublishedNodeFilter($query, $entityType, $entityIdsOption);
+        $query = $this->buildSweepEntityQuery($entityType, $options, $entityIdsOption, $effectiveStartId);
         $total += (int) $query->count()->execute();
       }
     }

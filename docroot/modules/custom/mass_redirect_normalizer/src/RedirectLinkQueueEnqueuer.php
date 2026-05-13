@@ -14,6 +14,13 @@ final class RedirectLinkQueueEnqueuer {
 
   public const QUEUE_NAME = 'mass_redirect_normalizer_link_normalization';
 
+  /**
+   * Entity types that participate in redirect link normalization.
+   *
+   * @var list<string>
+   */
+  public const SUPPORTED_ENTITY_TYPES = ['node', 'paragraph'];
+
   private const PENDING_STATE_KEY = 'mass_redirect_normalizer.queue_pending_keys';
 
   /**
@@ -51,7 +58,7 @@ final class RedirectLinkQueueEnqueuer {
    *   One of: enqueued, already_queued, skipped (invalid type/id only).
    */
   public function enqueueId(string $entityType, int $entityId, string $source = 'drush'): string {
-    if (!in_array($entityType, ['node', 'paragraph'], TRUE) || $entityId <= 0) {
+    if (!self::isSupportedEntityType($entityType) || $entityId <= 0) {
       return 'skipped';
     }
 
@@ -65,15 +72,11 @@ final class RedirectLinkQueueEnqueuer {
    *   One of: enqueued, already_queued, skipped.
    */
   public function enqueueEntity(ContentEntityInterface $entity, string $source = 'presave'): string {
-    $entityType = $entity->getEntityTypeId();
-    if (!in_array($entityType, ['node', 'paragraph'], TRUE)) {
+    $pair = self::queueableEntityPair($entity);
+    if ($pair === NULL) {
       return 'skipped';
     }
-
-    $entityId = (int) $entity->id();
-    if ($entityId <= 0) {
-      return 'skipped';
-    }
+    [$entityType, $entityId] = $pair;
 
     if (!$this->eligibility->isEligible($entityType, $entity)) {
       return 'skipped';
@@ -91,22 +94,18 @@ final class RedirectLinkQueueEnqueuer {
    *   One of: enqueued, already_queued, skipped.
    */
   public function enqueueVerified(ContentEntityInterface $entity, string $source = 'drush'): string {
-    $entityType = $entity->getEntityTypeId();
-    if (!in_array($entityType, ['node', 'paragraph'], TRUE)) {
+    $pair = self::queueableEntityPair($entity);
+    if ($pair === NULL) {
       return 'skipped';
     }
-    $entityId = (int) $entity->id();
-    if ($entityId <= 0) {
-      return 'skipped';
-    }
-    return $this->addToQueue($entityType, $entityId, $source);
+    return $this->addToQueue($pair[0], $pair[1], $source);
   }
 
   /**
    * Enqueues a loaded entity by type and ID.
    */
   public function enqueueById(string $entityType, int $entityId, string $source = 'drush'): string {
-    if (!in_array($entityType, ['node', 'paragraph'], TRUE) || $entityId <= 0) {
+    if (!self::isSupportedEntityType($entityType) || $entityId <= 0) {
       return 'skipped';
     }
 
@@ -116,6 +115,31 @@ final class RedirectLinkQueueEnqueuer {
     }
 
     return $this->enqueueEntity($entity, $source);
+  }
+
+  /**
+   * Whether this entity type is handled by the normalization queue.
+   */
+  private static function isSupportedEntityType(string $entityType): bool {
+    return in_array($entityType, self::SUPPORTED_ENTITY_TYPES, TRUE);
+  }
+
+  /**
+   * Node/paragraph type and positive ID for queue payloads, or NULL if invalid.
+   *
+   * @return array{0: string, 1: int}|null
+   *   Entity type and positive numeric ID, or NULL when not queueable.
+   */
+  private static function queueableEntityPair(ContentEntityInterface $entity): ?array {
+    $entityType = $entity->getEntityTypeId();
+    if (!self::isSupportedEntityType($entityType)) {
+      return NULL;
+    }
+    $entityId = (int) $entity->id();
+    if ($entityId <= 0) {
+      return NULL;
+    }
+    return [$entityType, $entityId];
   }
 
   /**

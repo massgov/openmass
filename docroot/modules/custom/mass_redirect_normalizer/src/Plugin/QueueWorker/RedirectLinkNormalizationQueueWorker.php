@@ -60,7 +60,7 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
 
     $entityType = (string) ($data['entity_type'] ?? '');
     $entityId = (int) ($data['entity_id'] ?? 0);
-    if (!in_array($entityType, ['node', 'paragraph'], TRUE) || $entityId <= 0) {
+    if (!in_array($entityType, RedirectLinkQueueEnqueuer::SUPPORTED_ENTITY_TYPES, TRUE) || $entityId <= 0) {
       return;
     }
 
