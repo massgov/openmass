@@ -1,5 +1,19 @@
 
 
+## [0.479.0] - May 12, 2026
+
+### Added
+  - DP-43779: Add tests for author created friendly URLs (redirects).
+  - DP-46580: Help text to feedback manager.
+  - DP-46681: Added logger for capturing oversized purger headers.
+  
+### Fixed
+  - DP-46457: Fix Offered by tab order when show more/less is present.
+  - DP-46555: Fix org past-events pagination and initial results range; DP-39285 regression revert only affects events-page template changes, not the full PR.
+  - DP-46838: Bug - unable to add a new field to a new paragraph.
+  
+
+
 ## [0.478.0] - May 5, 2026
 
 ### Removed
