@@ -1,0 +1,13 @@
+/*
+ * Glossary popover overrides.
+ *
+ * The inline trigger + trailing punctuation are wrapped in
+ * `.glossary-nowrap` (white-space: nowrap) to prevent punctuation from
+ * wrapping to a new line. The popover dialog itself must still wrap text
+ * normally so the definition does not overflow horizontally.
+ */
+.glossary-nowrap .popover__dialog,
+.glossary-nowrap .popover__body,
+.glossary-nowrap .popover__title {
+  white-space: normal;
+}
