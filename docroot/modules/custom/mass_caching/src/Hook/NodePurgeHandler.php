@@ -42,24 +42,7 @@ class NodePurgeHandler {
   }
 
   /**
-   * Purge URL paths on entity update.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *
-   * @return void
-   *   This method does not return any value.
-   *
-   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
-   */
-  #[Hook('entity_update', order: new OrderAfter(modules: ['pathauto']))]
-  public function entityUpdate(EntityInterface $entity): void {
-    if ($entity instanceof NodeInterface) {
-      $this->purgeNode($entity);
-    }
-  }
-
-  /**
-   * Purge URL paths on entity insert.
+   * Purge URL paths on entity insert or update.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *
@@ -69,7 +52,8 @@ class NodePurgeHandler {
    * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   #[Hook('entity_insert', order: new OrderAfter(modules: ['pathauto']))]
-  public function entityInsert(EntityInterface $entity): void {
+  #[Hook('entity_update', order: new OrderAfter(modules: ['pathauto']))]
+  public function entityInsertOrUpdate(EntityInterface $entity): void {
     if ($entity instanceof NodeInterface) {
       $this->purgeNode($entity);
     }
