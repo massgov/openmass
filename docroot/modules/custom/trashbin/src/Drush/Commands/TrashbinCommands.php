@@ -4,6 +4,7 @@ namespace Drupal\trashbin\Drush\Commands;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\trashbin\TrashbinPurgeCandidateQuery;
 use Drush\Attributes as CLI;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -18,7 +19,9 @@ final class TrashbinCommands extends DrushCommands {
   protected function __construct(
     private EntityTypeManagerInterface $etm,
     private TimeInterface $time,
+    private TrashbinPurgeCandidateQuery $purgeCandidateQuery,
   ) {
+    parent::__construct();
   }
 
   /**
@@ -36,11 +39,9 @@ final class TrashbinCommands extends DrushCommands {
 
     $cutoff = ((int) $options['days-ago'] > 0) ? $maximum : $startedAt;
 
-    // Validate entity type and get storage/definition.
     $storage = $this->etm->getStorage($entity_type);
     $definition = $storage->getEntityType();
 
-    // Resolve table/keys from the entity type definition (nodes: node_field_data/node_revision).
     $base_table = $definition->getDataTable() ?: $definition->getBaseTable();
     if (!$base_table) {
       $this->logger()->error('Entity type {type} does not have a base/data table and cannot be purged.', ['type' => $entity_type]);
@@ -49,58 +50,17 @@ final class TrashbinCommands extends DrushCommands {
 
     $id_key = $definition->getKey('id');
     $rev_key = $definition->getKey('revision');
-    $changed_key = 'changed';
 
     if (!$id_key || !$rev_key) {
       $this->logger()->error('Entity type {type} must be revisionable to use trashbin purge (missing id/revision keys).', ['type' => $entity_type]);
       return;
     }
 
-    // Build a DB query that joins to content_moderation_state_field_data on the
-    // current (latest) revision id and filters to moderation_state = trash.
-    $connection = \Drupal::database();
-    $query = $connection->select($base_table, 'b')
-      ->fields('b', [$id_key])
-      ->range(0, (int) $options['max']);
-
-    // Note: innerJoin() returns the alias string, not the Select object, so it
-    // must not be chained.
-    $query->innerJoin(
-      'content_moderation_state_field_data',
-      'md',
-      'md.content_entity_type_id = :etype AND md.content_entity_id = b.' . $id_key . ' AND md.content_entity_revision_id = b.' . $rev_key,
-      [':etype' => $entity_type]
+    $ids = $this->purgeCandidateQuery->getCandidateIds(
+      $entity_type,
+      (int) $options['max'],
+      $cutoff
     );
-
-    $revision_table = $definition->getRevisionTable();
-    $rt_timestamp = 'rt.revision_timestamp';
-    if ($entity_type == 'media') {
-      $rt_timestamp = 'rt.revision_created';
-    }
-
-    if ($revision_table) {
-      $query->innerJoin(
-        $revision_table,
-        'rt',
-        'rt.' . $rev_key . ' = b.' . $rev_key . ' AND rt.' . $id_key . ' = b.' . $id_key
-      );
-    }
-
-    // Always: moderation_state = 'trash'
-    $query->condition('md.moderation_state', 'trash');
-
-    // Execution-stable cutoff:
-    // - days-ago > 0  → cutoff = now - N days
-    // - days-ago = 0  → cutoff = command start time (prevents deleting items created/edited during the run)
-    $query->where('GREATEST(b.' . $changed_key . ', ' . $rt_timestamp . ') < :cutoff', [':cutoff' => $cutoff]);
-
-    // Oldest last-activity first (matches GREATEST above). Newest-first batches
-    // can starve very old trash when eligible rows exceed --max.
-    $query->addExpression('GREATEST(b.' . $changed_key . ', ' . $rt_timestamp . ')', 'trash_last_activity');
-    $query->orderBy('trash_last_activity', 'ASC');
-    $query->orderBy('b.' . $id_key, 'ASC');
-
-    $ids = $query->execute()->fetchCol();
 
     $this->logger()->notice('Found {count} entities to delete.', ['count' => count($ids)]);
 
