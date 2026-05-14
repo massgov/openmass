@@ -824,16 +824,16 @@ display:
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 25
+          items_per_page: 50
           total_pages: null
           id: 0
           tags:
             next: Next
             previous: Previous
           expose:
-            items_per_page: false
+            items_per_page: true
             items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options: '50, 100, 250'
             items_per_page_options_all: false
             items_per_page_options_all_label: '- All -'
             offset: false
@@ -1679,7 +1679,10 @@ display:
           plugin_id: result
           empty: false
           content: 'Displaying @start - @end of @total'
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
     cache_metadata:
       max-age: 0
       contexts:
