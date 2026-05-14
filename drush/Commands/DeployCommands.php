@@ -456,7 +456,12 @@ class DeployCommands extends DrushCommands {
     // Empty path is the homepage
     $paths = ['', '/orgs/office-of-the-governor', '/media/1268726'];
     foreach ($paths as $path) {
-      $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
+      $process = Drush::drush(
+        $targetRecord,
+        'mass-caching:purge-path',
+        [$path ?: '/'],
+        ['verbose' => TRUE],
+      );
       $process->mustRun();
     }
     $this->logger()->success("Selective Purge enqueued at " . $targetRecord->name());
