@@ -94,7 +94,11 @@ final class TrashbinCommands extends DrushCommands {
     // - days-ago = 0  → cutoff = command start time (prevents deleting items created/edited during the run)
     $query->where('GREATEST(b.' . $changed_key . ', ' . $rt_timestamp . ') < :cutoff', [':cutoff' => $cutoff]);
 
-    $query->orderBy($rt_timestamp, 'DESC');
+    // Oldest last-activity first (matches GREATEST above). Newest-first batches
+    // can starve very old trash when eligible rows exceed --max.
+    $query->addExpression('GREATEST(b.' . $changed_key . ', ' . $rt_timestamp . ')', 'trash_last_activity');
+    $query->orderBy('trash_last_activity', 'ASC');
+    $query->orderBy('b.' . $id_key, 'ASC');
 
     $ids = $query->execute()->fetchCol();
 
