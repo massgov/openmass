@@ -38,7 +38,7 @@ third_party_settings:
       label: Timeframe
       region: content
       parent_name: group_basic
-      weight: 15
+      weight: 14
       format_type: fieldset
       format_settings:
         classes: ''
@@ -82,10 +82,11 @@ third_party_settings:
         - field_organizations
         - langcode
         - field_media_english_version
-        - group_timeframe
         - field_document_label
         - field_collections
         - field_internal_notes
+        - group_timeframe
+        - field_content_organization
       label: Basic
       region: content
       parent_name: group_form
@@ -121,6 +122,9 @@ content:
     region: content
     settings:
       theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
       dots: 0
       size: 60
       placeholder: ''
@@ -132,10 +136,11 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_content_organization:
     type: entity_reference_tree
-    weight: 20
+    weight: 15
     region: content
     settings:
       theme: default
