@@ -40,7 +40,7 @@ class PathAliasPurgeHooks {
    */
   #[Hook('path_alias_update')]
   public function pathAliasUpdate(PathAliasInterface $path): void {
-    if ($path->getAlias() !== $path->original->getAlias()) {
+    if ($path->getAlias() !== $path->getOriginal()->getAlias()) {
       $this->manualPurger->purgePath($path->getAlias());
     }
   }

@@ -65,12 +65,7 @@ class PurgerHooks {
       // We need to run queue invalidations during testing so that tests pass
       // like AutomatedPurgingTest.
       if (!$enabled && isset($definitions[$name]) && !defined('PHPUNIT_COMPOSER_INSTALL')) {
-        // To disable a purger, make it capable of an operation we don't use.
-        // It can't be an empty array as we get ValueError in
-        // \Drupal\purge\Plugin\Purge\Purger\CapacityTracker::getTimeHintTotal.
-        // Purge bug reported at:
-        // https://www.drupal.org/project/purge/issues/3298855
-        $definitions[$name]['types'] = ['everything'];
+        $definitions[$name]['types'] = [];
       }
     }
   }
