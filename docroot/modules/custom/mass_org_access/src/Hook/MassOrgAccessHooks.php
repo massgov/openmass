@@ -144,11 +144,57 @@ class MassOrgAccessHooks {
    */
   #[Hook('entity_prepare_form')]
   public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
-    // @todo: Make text input field readonly?
     if (!$entity instanceof FieldableEntityInterface) {
       return;
     }
     $this->orgAccessChecker->populateOwnerGroupsFromCurrentUser($entity);
+  }
+
+  /**
+   * Hides the autocomplete tags input and shows a read-only list instead.
+   *
+   * The autocomplete input stays in the DOM (display:none) so it still
+   * submits with whatever the "Browse organizations" popup set, but
+   * users cannot type or delete tokens by hand — a stray backspace on
+   * a parent-org token would otherwise silently strip access for
+   * everyone in that group. A sibling list markup shows the selected
+   * terms one per line so a long list is fully visible. The list is
+   * server-rendered from the entity's referenced terms; after saving
+   * the form Drupal rebuilds it with the fresh values.
+   */
+  #[Hook('field_widget_complete_form_alter')]
+  public function fieldWidgetCompleteFormAlter(array &$field_widget_complete_form, FormStateInterface $form_state, array $context): void {
+    if ($context['items']->getName() !== 'field_content_organization') {
+      return;
+    }
+    if (!isset($field_widget_complete_form['widget']['target_id'])) {
+      return;
+    }
+    $widget = &$field_widget_complete_form['widget']['target_id'];
+    $widget['#attributes']['readonly'] = 'readonly';
+    $widget['#wrapper_attributes']['class'][] = 'oog-readonly-source-hidden';
+
+    $labels = [];
+    foreach ($context['items']->referencedEntities() as $term) {
+      if ($term instanceof EntityInterface) {
+        $labels[] = htmlspecialchars($term->label(), ENT_QUOTES);
+      }
+    }
+    $list_html = $labels
+      ? '<ul>' . implode('', array_map(fn($l) => '<li>' . $l . '</li>', $labels)) . '</ul>'
+      : '<em>(none assigned)</em>';
+    // Render via #type item so Drupal's form-element template wraps the
+    // markup with a real <label> + <div class="description">; the
+    // styling stays consistent with every other field on the page.
+    $field_widget_complete_form['oog_display'] = [
+      '#type' => 'item',
+      '#title' => $widget['#title'] ?? NULL,
+      '#description' => $widget['#description'] ?? NULL,
+      '#markup' => '<div class="oog-readonly-display">' . $list_html . '</div>',
+      '#wrapper_attributes' => ['class' => ['oog-readonly-wrapper']],
+      '#weight' => -10,
+    ];
+    $field_widget_complete_form['#attached']['library'][] = 'mass_org_access/oog_readonly_display';
   }
 
   /**
