@@ -2,6 +2,9 @@
  * Keeps the read-only Owner Groups display in sync with the hidden
  * autocomplete input. After the "Browse organizations" popup updates
  * the input's value, JS re-renders the visible <ul>.
+ *
+ * @param {Drupal} Drupal Drupal global object providing behaviors registry.
+ * @param {Function} once Core/once helper for one-time element processing.
  */
 
 (function (Drupal, once) {
@@ -48,7 +51,7 @@
         // attribute and also poll as a fallback.
         new MutationObserver(render).observe(input, {
           attributes: true,
-          attributeFilter: ['value'],
+          attributeFilter: ['value']
         });
         let last = input.value;
         setInterval(function () {
@@ -58,7 +61,7 @@
           }
         }, 500);
       });
-    },
+    }
   };
 
   /**
@@ -67,6 +70,10 @@
    * Items are separated by ", "; values that contain ", " or quote
    * characters are wrapped in double quotes by Drupal. Each item also
    * carries a trailing " (TID)" that we strip for display.
+   *
+   * @param {string} value Raw value from the autocomplete input.
+   *
+   * @return {string[]} Array of cleaned-up term labels.
    */
   function parseAutocomplete(value) {
     if (!value) {
