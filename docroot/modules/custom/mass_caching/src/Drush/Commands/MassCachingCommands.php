@@ -26,24 +26,20 @@ final class MassCachingCommands extends DrushCommands {
    * Enqueue purge invalidations for a relative path.
    *
    * @param string $path
-   *   The path to purge. Use "/" for the homepage.
+   *   The path to purge.
    *
    * @throws \InvalidArgumentException
    *
    * @command mass-caching:purge-path
    */
   public function purgePath(string $path): void {
-    if ($path === '/') {
-      $path = '';
-    }
-
     if ($path !== '' && !str_starts_with($path, '/')) {
       throw new \InvalidArgumentException('Path must be relative and begin with "/".');
     }
 
     $this->manualPurger->purgePath($path);
-    $this->logger()->success(dt('Purge enqueued for @path.', [
-      '@path' => $path === '' ? '/' : $path,
+    $this->io()->success(dt('Purge enqueued for "@path".', [
+      '@path' => $path,
     ]));
   }
 

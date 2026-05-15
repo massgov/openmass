@@ -459,7 +459,7 @@ class DeployCommands extends DrushCommands {
       $process = Drush::drush(
         $targetRecord,
         'mass-caching:purge-path',
-        [$path ?: '/'],
+        [$path],
         ['verbose' => TRUE],
       );
       $process->mustRun();
