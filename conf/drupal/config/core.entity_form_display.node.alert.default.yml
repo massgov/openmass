@@ -90,12 +90,12 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - path
         - simple_sitemap
         - url_redirects
         - search
         - search_nosnippet
-        - field_content_organization
       label: 'Page Info'
       region: content
       parent_name: group_alert
@@ -365,7 +365,7 @@ content:
             selector: ''
   field_content_organization:
     type: entity_reference_tree
-    weight: 20
+    weight: 0
     region: content
     settings:
       theme: default

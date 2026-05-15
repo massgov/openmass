@@ -171,12 +171,12 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - field_infodetails_metatags
         - url_redirects
         - search
         - search_nosnippet
         - simple_sitemap
-        - field_content_organization
       label: 'Page Info'
       region: content
       parent_name: group_information_details_edit_f
@@ -256,6 +256,9 @@ content:
     region: content
     settings:
       theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
       dots: 0
       size: 60
       placeholder: ''
@@ -267,6 +270,7 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_contact:
     type: entity_reference_autocomplete
@@ -552,7 +556,7 @@ content:
     third_party_settings: {  }
   field_infodetails_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 21
     region: content
     settings:
       sidebar: false
@@ -650,20 +654,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 4
+    weight: 23
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 5
+    weight: 24
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 6
+    weight: 25
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -702,7 +706,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 3
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }
