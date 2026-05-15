@@ -29,8 +29,11 @@ class EntityPurgeHooks {
   /**
    * Purge URL paths when entities are inserted or updated.
    *
-   * This runs after pathauto's entity hooks so aliases are available before we
-   * attempt to clear them.
+   * This runs after pathauto's entity hooks so that aliases are available
+   * before we attempt to clear them.
+   *
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
+   * @throws \Drupal\Core\Entity\EntityMalformedException
    */
   #[Hook('entity_update', order: new OrderAfter(modules: ['pathauto']))]
   #[Hook('entity_insert', order: new OrderAfter(modules: ['pathauto']))]
