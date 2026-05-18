@@ -25,7 +25,6 @@ display:
     position: 0
     display_options:
       title: 'PDF Accessibility Report'
-      group_by: true
       fields:
         media_report_link:
           id: media_report_link
@@ -355,6 +354,7 @@ display:
           replica: false
           query_tags: {  }
       relationships: {  }
+      group_by: true
       header: {  }
       footer: {  }
       display_extenders: {  }
@@ -362,7 +362,6 @@ display:
       max-age: -1
       contexts:
         - 'languages:language_interface'
-        - url
         - url.query_args
         - user.permissions
       tags: {  }
@@ -372,13 +371,6 @@ display:
     display_plugin: page
     position: 2
     display_options:
-      display_description: 'PDF accessibility results grouped by file.'
-      display_extenders: {  }
-      path: admin/reports/pdf-accessibility/files
-      menu:
-        type: tab
-        title: Files
-        weight: 1
       fields:
         fid:
           id: fid
@@ -741,16 +733,22 @@ display:
           caption: ''
           description: ''
           class: ''
-      relationships: {  }
       defaults:
-        fields: false
         style: false
         relationships: false
+        fields: false
+      relationships: {  }
+      display_description: 'PDF accessibility results grouped by file.'
+      display_extenders: {  }
+      path: admin/reports/pdf-accessibility/files
+      menu:
+        type: tab
+        title: Files
+        weight: 1
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_interface'
-        - url
         - url.query_args
         - user.permissions
       tags: {  }
@@ -776,7 +774,6 @@ display:
       max-age: -1
       contexts:
         - 'languages:language_interface'
-        - url
         - url.query_args
         - user.permissions
       tags: {  }
