@@ -5,7 +5,7 @@ services:
 
   mass_redirect_normalizer.manager:
     class: Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager
-    arguments: ['@mass_redirect_normalizer.resolver', '@datetime.time']
+    arguments: ['@mass_redirect_normalizer.resolver', '@datetime.time', '@entity_type.manager']
 
   Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager:
     alias: mass_redirect_normalizer.manager

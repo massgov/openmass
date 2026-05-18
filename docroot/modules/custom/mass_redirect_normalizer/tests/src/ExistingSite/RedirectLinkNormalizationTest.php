@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 
 use Drupal\mass_redirect_normalizer\Drush\Commands\MassRedirectNormalizerCommands;
 use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\file\Entity\File;
 use Drupal\path_alias\Entity\PathAlias;
@@ -1600,6 +1601,178 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $rows = method_exists($rowsObj, 'getArrayCopy') ? $rowsObj->getArrayCopy() : iterator_to_array($rowsObj);
     $this->assertNotEmpty($rows);
     $this->assertSame(0, $queue->numberOfItems());
+  }
+
+  /**
+   * Tests paragraph normalization is not reverted when the host node is saved.
+   */
+  public function testParagraphNormalizationSurvivesHostNodeRevision(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+    $targetPath = $target->toUrl()->toString();
+
+    [$node, $paragraphId] = $this->createHowToWithMethodParagraph();
+    $this->setParagraphMethodDetailsMarkup($paragraphId, '<p><a href="/' . $sourceStart . '">Need docs</a></p>');
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $paragraph = Paragraph::load($paragraphId);
+    $this->assertNotNull($paragraph);
+    $result = $manager->normalizeEntity($paragraph, TRUE);
+    $this->assertTrue($result['changed']);
+
+    $this->assertParagraphMethodDetailsContains($paragraphId, $targetPath, '/' . $sourceStart);
+    $this->assertHostNodeReferencesNormalizedParagraph($node, $paragraphId, $targetPath, '/' . $sourceStart);
+  }
+
+  /**
+   * Tests doc-to-doc redirect chains on nested paragraphs (real-id style).
+   *
+   * Redirect entities may point old doc paths at a newer doc path; normalization
+   * should stop at the last redirect entity, not a media/file download route.
+   */
+  public function testParagraphNormalizationWithDocToDocRedirectChain(): void {
+    $oldDoc = 'doc/old-checklist-' . $this->randomMachineName() . '/download';
+    $newDoc = 'doc/new-checklist-' . $this->randomMachineName() . '/download';
+    $this->createRedirect('/' . $oldDoc, '/' . $newDoc);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $resolver */
+    $resolver = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $resolver->resolveRedirectTarget('/' . $oldDoc);
+    $this->assertTrue($resolved['changed']);
+    $this->assertSame('/' . $newDoc, $resolved['target_path']);
+
+    [$node, $paragraphId] = $this->createHowToWithMethodParagraph();
+    $this->setParagraphMethodDetailsMarkup($paragraphId, '<p><a href="/' . $oldDoc . '">Need docs</a></p>');
+
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $paragraph = Paragraph::load($paragraphId);
+    $this->assertNotNull($paragraph);
+    $result = $manager->normalizeEntity($paragraph, TRUE);
+    $this->assertTrue($result['changed']);
+
+    $this->assertParagraphMethodDetailsContains($paragraphId, '/' . $newDoc, '/' . $oldDoc);
+    $this->assertHostNodeReferencesNormalizedParagraph($node, $paragraphId, '/' . $newDoc, '/' . $oldDoc);
+  }
+
+  /**
+   * Creates a published how-to with one method paragraph.
+   *
+   * @return array{0: \Drupal\node\NodeInterface, 1: int}
+   *   Host node and method paragraph ID.
+   */
+  private function createHowToWithMethodParagraph(): array {
+    $method = Paragraph::create([
+      'type' => 'method',
+      'field_method_type' => 'online',
+      'field_method_details' => [
+        'value' => '<p><a href="/placeholder">Need docs</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $contact = $this->createNode([
+      'type' => 'contact_information',
+      'title' => $this->randomMachineName(),
+      'field_display_title' => 'Test contact',
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->cleanupEntities[] = $contact;
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'how_to_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_how_to_lede' => [
+        'value' => 'Test lede',
+        'format' => 'plain_text',
+      ],
+      'field_how_to_link_1' => [
+        'uri' => 'https://www.example.com',
+        'title' => 'Example',
+      ],
+      'field_how_to_methods_5' => [$method],
+      'field_how_to_contacts_3' => [$contact],
+      'field_organizations' => [$org],
+    ]);
+    $this->cleanupEntities[] = $node;
+
+    return [$node, (int) $method->id()];
+  }
+
+  /**
+   * Sets method paragraph body markup in storage (bypasses presave normalization).
+   */
+  private function setParagraphMethodDetailsMarkup(int $paragraphId, string $markup): void {
+    $connection = \Drupal::database();
+    foreach (['paragraph__field_method_details', 'paragraph_revision__field_method_details'] as $table) {
+      $connection->update($table)
+        ->fields(['field_method_details_value' => $markup])
+        ->condition('entity_id', $paragraphId)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('paragraph')->resetCache([$paragraphId]);
+  }
+
+  /**
+   * Asserts paragraph field_method_details contains expected path fragments.
+   */
+  private function assertParagraphMethodDetailsContains(int $paragraphId, string $contains, string $notContains): void {
+    $paragraph = Paragraph::load($paragraphId);
+    $this->assertNotNull($paragraph);
+    $html = (string) $paragraph->get('field_method_details')->value;
+    $this->assertStringContainsString($contains, $html);
+    $this->assertStringNotContainsString($notContains, $html);
+  }
+
+  /**
+   * Asserts the host node's paragraph reference stores normalized markup.
+   */
+  private function assertHostNodeReferencesNormalizedParagraph(
+    $node,
+    int $paragraphId,
+    string $contains,
+    string $notContains,
+  ): void {
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($node);
+    $this->assertSame(
+      'Revision created to normalize redirected internal links in nested content.',
+      (string) $node->getRevisionLogMessage()
+    );
+
+    $paragraphRevisionId = NULL;
+    foreach ($node->get('field_how_to_methods_5') as $item) {
+      if ((int) $item->target_id === $paragraphId) {
+        $paragraphRevisionId = (int) $item->target_revision_id;
+        break;
+      }
+    }
+    $this->assertNotNull($paragraphRevisionId);
+
+    $stored = \Drupal::database()->select('paragraph_revision__field_method_details', 'p')
+      ->fields('p', ['field_method_details_value'])
+      ->condition('entity_id', $paragraphId)
+      ->condition('revision_id', $paragraphRevisionId)
+      ->execute()
+      ->fetchField();
+    $this->assertIsString($stored);
+    $this->assertStringContainsString($contains, $stored);
+    $this->assertStringNotContainsString($notContains, $stored);
   }
 
 }

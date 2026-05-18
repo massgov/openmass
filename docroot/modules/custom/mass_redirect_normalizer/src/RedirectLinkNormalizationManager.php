@@ -4,9 +4,11 @@ namespace Drupal\mass_redirect_normalizer;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\mayflower\Helper;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
@@ -19,12 +21,10 @@ class RedirectLinkNormalizationManager {
   private const REVISION_MESSAGE = 'Revision created to normalize redirected internal links.';
   private const NESTED_REVISION_MESSAGE = 'Revision created to normalize redirected internal links in nested content.';
 
-  /**
-   * Creates the manager.
-   */
   public function __construct(
     protected RedirectLinkResolver $resolver,
     protected TimeInterface $time,
+    protected EntityTypeManagerInterface $entityTypeManager,
   ) {
   }
 
@@ -69,12 +69,12 @@ class RedirectLinkNormalizationManager {
       ];
     }
 
-    $this->prepareRevision($entity, self::REVISION_MESSAGE);
-    $entity->save();
-
-    if ($entity->getEntityTypeId() === 'paragraph' && $node = Helper::getParentNode($entity)) {
-      $this->prepareRevision($node, self::NESTED_REVISION_MESSAGE);
-      $node->save();
+    if ($entity instanceof Paragraph) {
+      $this->saveNormalizedParagraphAndAncestors($entity);
+    }
+    else {
+      $this->prepareRevision($entity, self::REVISION_MESSAGE);
+      $entity->save();
     }
 
     return [
@@ -82,6 +82,98 @@ class RedirectLinkNormalizationManager {
       'skipped' => FALSE,
       'changes' => $result['changes'],
     ];
+  }
+
+  /**
+   * Saves a normalized paragraph and ancestor revisions without stale embeds.
+   *
+   * After the paragraph is saved, parent entities must reference the new
+   * paragraph revision. Saving the host node with an in-memory copy of the
+   * pre-normalization paragraph would create another paragraph revision that
+   * reverts the link fix.
+   */
+  private function saveNormalizedParagraphAndAncestors(Paragraph $paragraph): void {
+    $paragraphStorage = $this->entityTypeManager->getStorage('paragraph');
+
+    $this->prepareRevision($paragraph, self::REVISION_MESSAGE);
+    $paragraph->save();
+
+    $freshParagraph = $paragraphStorage->loadRevision((int) $paragraph->getRevisionId());
+    if (!$freshParagraph instanceof Paragraph) {
+      return;
+    }
+
+    $parent = $freshParagraph->getParentEntity();
+    while ($parent instanceof Paragraph) {
+      $parentParagraph = $paragraphStorage->load((int) $parent->id());
+      if (!$parentParagraph instanceof Paragraph) {
+        return;
+      }
+      $this->replaceParagraphReference($parentParagraph, $freshParagraph);
+      $this->prepareRevision($parentParagraph, self::REVISION_MESSAGE);
+      $parentParagraph->save();
+
+      $freshParagraph = $paragraphStorage->loadRevision((int) $parentParagraph->getRevisionId());
+      if (!$freshParagraph instanceof Paragraph) {
+        return;
+      }
+      $parent = $freshParagraph->getParentEntity();
+    }
+
+    if ($parent instanceof NodeInterface) {
+      $node = $this->entityTypeManager->getStorage('node')->load((int) $parent->id());
+      if ($node instanceof NodeInterface) {
+        $this->replaceParagraphReference($node, $freshParagraph);
+        $this->prepareRevision($node, self::NESTED_REVISION_MESSAGE);
+        $node->save();
+      }
+    }
+  }
+
+  /**
+   * Points entity reference revision fields at the saved paragraph revision.
+   *
+   * Walks nested paragraph fields so host entities embed the normalized copy.
+   *
+   * @return bool
+   *   TRUE when a reference to the paragraph was replaced.
+   */
+  private function replaceParagraphReference(ContentEntityInterface $parent, Paragraph $freshParagraph): bool {
+    $paragraphId = (int) $freshParagraph->id();
+    $found = FALSE;
+
+    foreach ($parent->getFieldDefinitions() as $fieldName => $definition) {
+      if ($definition->getType() !== 'entity_reference_revisions') {
+        continue;
+      }
+      if ($parent->get($fieldName)->isEmpty()) {
+        continue;
+      }
+
+      foreach ($parent->get($fieldName) as $delta => $item) {
+        if ((int) ($item->target_id ?? 0) === $paragraphId) {
+          $parent->get($fieldName)->set($delta, [
+            'target_id' => $paragraphId,
+            'target_revision_id' => (int) $freshParagraph->getRevisionId(),
+            'entity' => $freshParagraph,
+          ]);
+          $found = TRUE;
+          continue;
+        }
+
+        $embedded = $item->entity;
+        if ($embedded instanceof Paragraph && $this->replaceParagraphReference($embedded, $freshParagraph)) {
+          $parent->get($fieldName)->set($delta, [
+            'target_id' => (int) $embedded->id(),
+            'target_revision_id' => (int) $embedded->getRevisionId(),
+            'entity' => $embedded,
+          ]);
+          $found = TRUE;
+        }
+      }
+    }
+
+    return $found;
   }
 
   /**
