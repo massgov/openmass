@@ -261,6 +261,7 @@
         "drupal/r4032login": "^2.2",
         "drupal/rabbit_hole": "^1.1",
         "drupal/redirect": "^1",
+        "drupal/reference_blocked_users": "^1.0",
         "drupal/require_on_publish": "^2.0",
         "drupal/scheduled_transitions": "^2.7",
         "drupal/schema_metatag": "^3.0",
@@ -423,6 +424,9 @@
                 "Entity reference lazy load: fall back when fiber switching is disallowed": "patches/core/drupal-core-entity-reference-item-base-fibererror-fallback.patch",
                 "Access policy processor: fall back when fiber switching is disallowed": "patches/core/drupal-core-access-policy-processor-fibererror-inline-fallback.patch"
             },
+            "drupal/clamav": {
+                "DP-45788: Distinguish ClamAV scan-limit overruns (Heuristics.Limits.Exceeded.*) from real virus hits": "patches/clamav/DP-45788_clamav_heuristics_limits_exceeded.patch"
+            },
             "drupal/conditional_fields": {
                 "Warning: Undefined array key (https://www.drupal.org/project/conditional_fields/issues/3443731)": "https://www.drupal.org/files/issues/2024-04-26/3443731-3.patch",
                 "Errors after update to alpha6 (https://www.drupal.org/project/conditional_fields/issues/3501575)": "https://www.drupal.org/files/issues/2025-05-27/3501575-13.patch"
@@ -498,9 +502,6 @@
             },
             "drupal/pathologic": {
                 "Dynamic routes like image styles break under pathologic (https://www.drupal.org/project/pathologic/issues/2718473)": "https://www.drupal.org/files/issues/2020-01-29/2718473-dynamic-image-style-lookup-20.patch"
-            },
-            "drupal/pdfa11y": {
-                "Add figure ALT text and heading structure accessibility checks": "patches/pdfa11y/pdfa11y-figure-alt-heading-checks.patch"
             },
             "drupal/password_policy": {
                 "Can't edit user profile because password policy validates even when password unchanged": "https://www.drupal.org/files/issues/2020-03-19/password_policy-empty-password-skip-validation-2971079-37.patch"
