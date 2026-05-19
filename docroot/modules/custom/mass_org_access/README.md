@@ -1,75 +1,63 @@
 # Mass Org Access
 
-Restricts who can edit, publish, transition, schedule, bulk-change, or delete
-content on Mass.gov to users assigned to that content's organization.
-Editors and authors retain full **view** and **clone** access to all
-content sitewide. Implements DP-45788.
+Restricts who can edit / publish / transition / schedule / bulk-change /
+delete content on Mass.gov to users assigned to that content's
+organization. **View and clone access stay open sitewide.** Implements
+DP-45788.
 
 ## Data model
 
 ```
 User
-  └─ field_user_org (multi-value, → user_organization terms)
+  └─ field_user_org                 → user_organization terms
 
-user_organization taxonomy term
-  └─ field_state_organization (→ org_page node)
+user_organization (taxonomy)
+  └─ field_state_organization       → org_page node
+  └─ parent                         → user_organization (hierarchy)
 
-org_page node
-  └─ field_parent (→ parent org_page)
+org_page (node bundle)               source of truth for OOG content
+  └─ field_content_organization     → user_organization terms (curated)
 
 Content node / media.document
-  ├─ field_organizations           (→ org_page nodes)   ← editor-facing
-  └─ field_content_organization    (→ user_organization terms, hidden)
-                                                          auto-populated
+  ├─ field_organizations            → org_page nodes        (editor-facing)
+  │  └─ binder / decision / person bundles use
+  │     field_binder_ref_organization,
+  │     field_decision_ref_organization,
+  │     field_person_ref_org instead
+  └─ field_content_organization     → user_organization terms (hidden,
+                                       drives access check)
 ```
 
-### Field reference
+| Field | On | Card. | Purpose |
+|-------|----|-------|---------|
+| `field_user_org` | user | ∞ | Orgs the user belongs to |
+| `field_state_organization` | term `user_organization` | 1 | Maps term to org_page node |
+| `field_organizations` | content | ∞ | Editor-facing org tagging |
+| `field_binder_ref_organization` | node `binder` | ∞ | Binder's org tagging |
+| `field_decision_ref_organization` | node `decision` | 1 | Decision's org tagging |
+| `field_person_ref_org` | node `person` | ∞ | Person's org tagging |
+| `field_content_organization` | content | ∞ | Hidden OOG list (drives access) |
 
-| Field | Entity | Cardinality | Type | Purpose |
-|-------|--------|-------------|------|---------|
-| `field_user_org` | user | unlimited | entity_reference → taxonomy_term (`user_organization`) | The orgs the user belongs to |
-| `field_state_organization` | taxonomy_term (`user_organization`) | 1 | entity_reference → node (`org_page`) | Maps a user_organization term to its real org_page node |
-| `field_parent` | node (`org_page`) | 1 | entity_reference → node (`org_page`) | Org hierarchy (parent organization) |
-| `field_organizations` | node (any of 31 bundles) / media.document | unlimited | entity_reference → node (`org_page`) | Editor-facing org tagging on content |
-| `field_content_organization` | node (any of 31 bundles) / media.document | unlimited | entity_reference → taxonomy_term (`user_organization`) | Hidden, denormalized list of user_organization term TIDs (incl. ancestors). Drives the access check. |
+## Feature switch
 
-### How the bridge works
+`OrgAccessSettings::isEnforcementEnabled()` gates every access decision,
+form validator, login warning, and the widget's edit permission. **Off
+by default.**
 
-`field_organizations` references **org_page nodes**, but Drupal's access
-check is fastest when it can compare term IDs on both sides without
-joins. `field_content_organization` is the bridge — denormalized,
-multi-value, holding `user_organization` taxonomy term IDs.
+- Env `MASS_ORG_ACCESS_ENFORCE` (`1`/`true`/`yes`/`on` case-insensitive)
+  wins when set. Use this on Acquia.
+- State key `mass_org_access.enforce` is the fallback — DB-backed, so it
+  propagates between PHPUnit and webserver processes during DTT tests.
 
-There are two write paths, never `entity_presave`:
+**Off (Release 1):** access hooks return neutral. The OOG widget is
+forbidden to anyone without `bypass org access` (admins + content_team),
+which lets us pre-fill `field_content_organization` invisibly while the
+content team finishes curating org_pages.
 
-1. **Form pre-fill** (`entity_prepare_form` →
-   `populateOwnerGroupsFromCurrentUser`): when an editor opens the
-   create/edit form and `field_content_organization` is empty, the
-   module reads the editor's `field_user_org` term IDs, walks
-   `taxonomy_term.parent` ancestors, and writes the union onto the
-   entity. The widget renders with these values selected, so the
-   editor sees their inherited Owner Groups before pressing Save.
-
-2. **Drush backfill** (`drush moab` →
-   `populateOwnerGroupsFromOrgPage`): for each entity, take the first
-   `field_organizations` value (an org_page NID), load that org_page,
-   and copy its `field_content_organization` verbatim. The content
-   team populates `field_content_organization` on every org_page
-   manually — including all ancestor terms — so no walk is needed.
-   `org_page` itself is skipped during backfill (it is the source of
-   truth).
-
-A node tagged with a child org therefore carries the parent-org
-`user_organization` terms too — because the content team wrote them
-onto the child org_page, and the backfill copied that union onto the
-node. A user assigned to the parent org passes the access check
-without any traversal at request time: `array_intersect` does the
-job.
+**On (Release 2):** access gate enforces, widget opens to any editor
+with save permission.
 
 ## Access decision
-
-`userHasOrgAccess` (and the hooks built on it) decides write access by
-intersecting two flat lists:
 
 ```
 allowed = !empty(array_intersect(
@@ -78,101 +66,145 @@ allowed = !empty(array_intersect(
 ))
 ```
 
-The hooks layer additional rules on top:
+Layered on top, in order:
 
-1. **Operation gate** — only `update` and `delete` are checked. `view` is
-   always neutral.
-2. **Bypass** — anyone with `bypass org access` permission (granted to
-   `content_team`; admins inherit it via `is_admin: true`) is neutral.
-3. **No org assigned** — if the user has no `field_user_org` value, write
-   access is forbidden across the board, even on content with no org.
-4. **Empty `field_content_organization`** — neutral (rollout safety; lets
-   un-backfilled content fall through to Drupal's normal checks).
-5. **Intersection** — non-empty intersection → neutral; empty → forbidden.
+1. **Operation gate** — only `update` / `delete`. `view` is always neutral.
+2. **Switch off** → neutral.
+3. **Bypass** — `bypass org access` permission → neutral.
+4. **User has no org** → forbidden.
+5. **Entity has no OOG terms** → forbidden (admin-only-editable).
+6. **Intersection** — non-empty → neutral; empty → forbidden.
+
+Cache: `cachePerUser()` + `user:UID` tag, so decisions invalidate when
+the user's `field_user_org` changes.
 
 ## Hooks
 
-All hooks are OOP hooks (Drupal 11.3+ `#[Hook(...)]` attributes) in
-`src/Hook/MassOrgAccessHooks.php`.
+OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 
-- **`hook_node_access`** — Blocks `update`/`delete` on nodes outside the user's
-  org. View is always neutral. Adds `user:UID` cache tag so decisions
-  invalidate when the user's `field_user_org` changes.
-- **`hook_media_access`** — Same logic for media (currently used for
-  `media.document`).
-- **`hook_entity_prepare_form`** — Pre-fills
-  `field_content_organization` on the editor form from the current
-  user's `field_user_org` (plus taxonomy term ancestors), but only when
-  the field is empty. Runs before widgets read their default values.
-- **`hook_form_node_form_alter`** — Adds a `#validate` callback (named static
-  method, not a closure — closures break paragraphs AJAX rebuild). Shows a
-  human-readable error if a save somehow reaches form validation.
-- **`hook_entity_field_access`** — Locks down `field_user_org` so only users
-  with `administer users` can edit it — prevents an editor from
-  self-assigning organizations on `/user/UID/edit`.
-- **`hook_user_login`** — Shows a warning to editors / authors at login when
-  they have no `field_user_org` assigned, telling them to contact a site
-  administrator.
+| Hook | Behavior |
+|------|----------|
+| `node_access` / `media_access` | The access decision above. |
+| `entity_field_access` | Locks `field_user_org` to `administer users`. Locks `field_content_organization` to `bypass org access` while the switch is off; neutral once on. |
+| `entity_prepare_form` | Pre-fills `field_content_organization` from current user's `field_user_org` + ancestors when empty. |
+| `form_node_form_alter` | Adds `validateOrgAccess` callback (static method — closures break paragraphs AJAX). Surfaces a clear error if a save reaches form validation. |
+| `field_widget_complete_form_alter` | Hides the OOG autocomplete and renders a read-only list (see widget section). Attaches both JS libraries. |
+| `user_login` | At login, warns editor/author roles without `field_user_org`. Silent while switch is off. |
 
-## Service: `OrgAccessChecker`
+## Routing
 
-Inject as `mass_org_access.org_access_checker` (or by class via the alias).
+`Routing/RouteSubscriber.php` swaps `_entity_access` from `node.view` to
+`node.update` on three side-door routes so the org gate fires there too:
 
-- **`getUserOrgTids(AccountInterface): int[]`** — User's `field_user_org` term
-  IDs, cached per request via `drupal_static()`.
-- **`getEntityOrgTids(EntityInterface): int[]`** — The entity's
-  `field_content_organization` term IDs.
-- **`userHasOrgAccess(AccountInterface, EntityInterface): bool`** —
-  `array_intersect` between the two.
-- **`populateOwnerGroupsFromCurrentUser(EntityInterface): void`** —
-  Form pre-fill. Reads the current user's `field_user_org` term IDs,
-  walks `taxonomy_term.parent` ancestors, writes the union to
-  `field_content_organization`. Skipped when the field already has a
-  value. Called from `hook_entity_prepare_form`.
-- **`populateOwnerGroupsFromOrgPage(EntityInterface): void`** — Drush
-  backfill. Reads the entity's first `field_organizations` value, loads
-  that org_page, copies its `field_content_organization` verbatim. No
-  ancestor walk — the content team already includes ancestors. Skips `org_page`
-  bundle. Called only by `BackfillRunner` and `mass-org-access:backfill-dev`.
+- `entity.node.entity_hierarchy_reorder` (reorder children)
+- `view.change_parents.page_1` (move children between parents)
+- `entity.node.redirects`
 
-## Permissions
+## Owner Groups "widget"
 
-- **`bypass org access`** — custom permission. Granted to `content_team`;
-  inherited by `administrator` via `is_admin: true`. Skips the org gate
-  entirely while leaving Drupal's per-bundle `edit any X content` /
-  `delete any X content` permissions intact.
+Two JS layers on `field_content_organization`:
 
-## Drush commands
+**Read-only display** (`js/oog-readonly-display.js` +
+`css/oog-readonly-display.css`). The default `entity_reference_tree`
+autocomplete is hidden via the `.oog-readonly-source-hidden` class on its
+wrapper; a sibling `#type item` element renders the term labels as a
+`<ul>`. The autocomplete input still submits whatever the "Browse
+organizations" popup wrote into it, so save validation goes through
+Drupal's native entity reference machinery unchanged. JS watches the
+input for value changes (event listener + MutationObserver + 500 ms
+polling fallback) because jQuery `.val()` doesn't fire native events.
+
+**Owner Groups augmentation from Organizations**
+(`js/oog-from-organizations.js`). When the author adds an organization
+into `field_organizations` (or the bundle-specific equivalent for
+binder/decision/person), the JS fetches
+`/mass-org-access/lookup-user-orgs?org_page_nids[]=…`, finds any
+`user_organization` terms whose `field_state_organization` references
+the added org_page, collects their ancestors via `loadAllParents()`, and
+appends the union to `field_content_organization`. Removing the
+organization drops only the terms that organization auto-added and that
+no other tracked organization still pulls in (reference counting via
+`Map<orgNid, Set<tid>>`). Manual terms stay. Polling catches autocomplete
+picks because jQuery UI's `.val()` doesn't fire events.
+
+Placement: `field_content_organization` is weighted to be first inside
+the **Page Info** field group on all 28 node form displays. Help text is
+rewritten across 29 bundle field configs.
+
+## Services
+
+| Service ID | Class | Role |
+|------------|-------|------|
+| `mass_org_access.settings` | `OrgAccessSettings` | Reads env + State for the feature switch |
+| `mass_org_access.org_access_checker` | `OrgAccessChecker` | Access intersection + `populateOwnerGroupsFromCurrentUser` (form pre-fill) + `populateOwnerGroupsFromOrgPage` (backfill) |
+| `mass_org_access.backfill_runner` | `BackfillRunner` | Resumable drush backfill driver |
+| `mass_org_access.route_subscriber` | `Routing\RouteSubscriber` | Side-door route hardening |
+
+The endpoint is served by `Controller\OrgLookupController::lookup`
+(route `mass_org_access.lookup_user_orgs`, custom access mirroring
+`entity_field_access` on the OOG field).
+
+## Permission
+
+`bypass org access` — granted to `content_team`, inherited by
+`administrator` via `is_admin: true`. Skips the org gate and grants the
+OOG widget while the switch is off.
+
+## Drush
 
 ```sh
-drush mass-org-access:backfill        # alias: moab — full backfill
-drush mass-org-access:backfill-dev    # alias: moab-dev — first 100 nodes + 100 media, prints IDs
+drush mass-org-access:backfill        # alias: moab
 ```
 
-The backfill saves with `setNewRevision(FALSE)` and `setSyncing(TRUE)` so
-content moderation hooks don't create new revisions for what is purely
-metadata maintenance.
+Resumable via the `mass_org_access.backfill` State key (totals + last
+processed id + processed counter, kept separately for nodes and media).
+For each entity it loads the first `field_organizations` value, then
+copies `org_page.field_content_organization` verbatim onto the entity
+— no ancestor walk, because the content team includes ancestors in the
+curated org_page values. `org_page` itself is skipped (it's the source
+of truth). Saves use `setNewRevision(FALSE)` and `setSyncing(TRUE)` to
+skip revision bloat and mass_validation overrides. Timestamps land in
+`private://mass_org_access/backfill.log`.
 
 ## Bundles in scope
 
-`field_content_organization` exists on the 31 content node bundles that
-have `field_organizations`, plus `media.document`. The list of bundles
-the editor role can actually edit (and which are therefore tested
-end-to-end) is in `tests/src/ExistingSite/MassOrgAccessTest::NODE_BUNDLES`.
+28 node bundles carry both `field_organizations` (or a bundle-specific
+ref field) and `field_content_organization`, plus `media.document`. See
+`tests/src/ExistingSiteJavascript/OogAugmentFromOrganizationsTest::entityProvider`
+for the canonical list.
 
 ## Tests
 
 ```sh
+# Backend behavior — access decisions, populate, backfill (~30s)
 ddev exec phpunit docroot/modules/custom/mass_org_access/tests/src/ExistingSite/MassOrgAccessTest.php
+
+# JS visibility per role + bundle (87 cases, ~5-7 min)
+ddev exec phpunit docroot/modules/custom/mass_org_access/tests/src/ExistingSiteJavascript/OwnerGroupsWidgetVisibilityTest.php
+
+# JS Owner Groups augmentation (31 cases incl. real autocomplete typing, ~2.5 min)
+ddev exec phpunit docroot/modules/custom/mass_org_access/tests/src/ExistingSiteJavascript/OogAugmentFromOrganizationsTest.php
 ```
 
-Coverage:
-- Same-org / cross-org write across all 28 editor-editable node bundles + media.document.
-- View neutrality across anonymous, authenticated, editor, author, viewer,
-  mmg_editor, content_team, bulk_edit.
-- User without org denied; warning shown at login.
-- `bypass org access` (content_team) bypasses the gate.
-- Ancestor-org user can edit child-org content (denormalization works).
-- Multi-org content allows any matching-org user.
-- Multi-org user can edit any of their orgs but not unrelated orgs.
-- Editor cannot self-edit `field_user_org`; admin can.
+`OwnerGroupsWidgetVisibilityTest` checks that the widget is **hidden**
+for editor and **visible** for administrator and content_team across all
+28 node bundles + media.document in Release 1.
+
+`OogAugmentFromOrganizationsTest` adds an org_page, asserts the mapped
+user_organization term appears in OOG, removes the org_page, asserts the
+term leaves — across every bundle, both via direct value writes and via
+a full type-into-autocomplete + click-suggestion flow on info_details.
+
+JS tests require the `selenium-chrome` DDEV add-on and a correct
+`DTT_MINK_DRIVER_ARGS` env var; see `.ddev/config.local.yaml` (or
+`config.zlocal.yaml`) for the values that work with Chrome 138+.
+
+## Rollout sequence
+
+1. Deploy with switch **off** (current default).
+2. Content team curates `field_content_organization` on the ~1000
+   `org_page` nodes.
+3. `drush moab` on prod (resumable, hours).
+4. Wait ≥1 week, identify users who would lose edit access.
+5. Flip switch on (`drush sset mass_org_access.enforce 1` or set the env
+   var). The widget opens up to editors, hooks start enforcing.
