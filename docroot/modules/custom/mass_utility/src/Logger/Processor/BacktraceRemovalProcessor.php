@@ -1,31 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\mass_utility\Logger\Processor;
 
+use Monolog\LogRecord;
+use Monolog\Processor\ProcessorInterface;
+
 /**
- * Removes backtrace property, which causes infinite loop.
+ * Removes backtrace data that can bloat or recurse in log payloads.
  */
-class BacktraceRemovalProcessor {
+class BacktraceRemovalProcessor implements ProcessorInterface {
 
   /**
    * Process an individual record.
    */
-  public function __invoke($record) {
-    // Remove the backtrace from context so it doesn't cause infinite recursion.
-    if (isset($record['context']) && isset($record['context']['backtrace'])) {
-      unset($record['context']['backtrace']);
-    }
+  public function __invoke(LogRecord $record): LogRecord {
+    $context = $record->context;
 
-    if (getenv('AH_SITE_ENVIRONMENT')) {
+    // Remove the raw backtrace so it doesn't cause infinite recursion.
+    unset($context['backtrace']);
+
+    if (getenv('AH_SITE_ENVIRONMENT') && isset($context['@backtrace_string'])) {
       // Limit the backtrace in the message to N lines in Acquia environments.
       // This prevents truncation of log lines that exceed the max length.
-      if (isset($record['context']) && isset($record['context']['@backtrace_string'])) {
-        $parts = explode("\n", $record['context']['@backtrace_string']);
-        $record['context']['@backtrace_string'] = implode("\n", array_slice($parts, 0, 5));
-      }
+      $parts = explode("\n", (string) $context['@backtrace_string']);
+      $context['@backtrace_string'] = implode("\n", array_slice($parts, 0, 5));
     }
 
-    return $record;
+    return $record->with(context: $context);
   }
 
 }

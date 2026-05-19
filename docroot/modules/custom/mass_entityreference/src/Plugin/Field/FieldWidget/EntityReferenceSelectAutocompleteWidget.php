@@ -68,7 +68,11 @@ class EntityReferenceSelectAutocompleteWidget extends EntityReferenceAutocomplet
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $entity = $items->getEntity();
-    $referenced_entities = $items->referencedEntities();
+    $target_id = $items[$delta]->target_id ?? NULL;
+    $target_type = $this->getFieldSetting('target_type');
+    $referenced_entity = ($target_id && $target_type) ? \Drupal::entityTypeManager()
+      ->getStorage($target_type)
+      ->load($target_id) : NULL;
 
     // Append the match operation to the selection settings.
     $selection_settings = $this->getFieldSetting('handler_settings') + ['match_operator' => $this->getSetting('match_operator')];
@@ -83,7 +87,7 @@ class EntityReferenceSelectAutocompleteWidget extends EntityReferenceAutocomplet
       // the 'ValidReference' constraint.
       '#validate_reference' => FALSE,
       '#maxlength' => 1024,
-      '#default_value' => isset($referenced_entities[$delta]) ? $referenced_entities[$delta] : NULL,
+      '#default_value' => $referenced_entity,
       '#size' => $this->getSetting('size'),
       '#placeholder' => $this->getSetting('placeholder'),
     ];

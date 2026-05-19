@@ -4,23 +4,23 @@
   {% set level = element['#level'] %}
 {% endif %}
 
-{% embed "@organisms/by-author/link-list.twig" with  {
-  "linkList": {
-    "sectionClass": "",
-    "stacked": true,
-    "compHeading": {
-      "title": "Related",
-      "sub": "",
-      "color": "",
-      "id": "",
-      "centered": false,
-      "sidebar": true,
-      "level": level
+{% embed '@organisms/by-author/link-list.twig' with  {
+  linkList: {
+    sectionClass: '',
+    stacked: true,
+    compHeading: {
+      title: 'Related',
+      sub: '',
+      color: '',
+      id: '',
+      centered: false,
+      sidebar: true,
+      level: level,
     },
-    "description": null,
-    "stacked": false,
-    "hideBullets": false
-  }
+    description: null,
+    stacked: false,
+    hideBullets: false,
+  },
 } %}
 
   {% block linkListDecorativeLink %}

@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.media.field_accessibility_self_rpt
     - field.storage.media.field_category
     - field.storage.media.field_collections
     - field.storage.media.field_description
@@ -24,6 +25,7 @@ dependencies:
     - mass_views
     - media
     - media_entity_download
+    - options
     - rest
     - serialization
     - taxonomy
@@ -992,24 +994,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -1032,47 +1016,32 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        mid:
-          id: mid
+        media_entity_ids_filter:
+          id: media_entity_ids_filter
           table: media_field_data
-          field: mid
+          field: media_entity_ids_filter
           relationship: none
           group_type: group
-          admin_label: ''
-          entity_type: media
-          entity_field: mid
-          plugin_id: numeric
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
+          admin_label: 'Entity IDs'
+          plugin_id: mass_views_entity_ids_filter
+          operator: in
+          value: ''
           group: 1
           exposed: true
           expose:
-            operator_id: mid_op
-            label: ID
+            operator_id: ''
+            label: 'Paste Document IDs'
             description: ''
             use_operator: false
-            operator: mid_op
+            operator: ''
             operator_limit_selection: false
             operator_list: {  }
-            identifier: mid
+            identifier: entity_ids
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1088,6 +1057,7 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+          filter_description: 'Paste in up to 300 Document IDs to filter for those documents only.'
         status_1:
           id: status_1
           table: media_field_data
@@ -1163,24 +1133,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1220,24 +1172,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1286,24 +1220,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1349,24 +1265,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1416,24 +1314,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -1479,24 +1359,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1538,20 +1400,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1618,24 +1466,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -1685,24 +1515,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1750,24 +1562,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1817,24 +1611,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1929,24 +1705,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: true
           is_grouped: false
           group_info:
@@ -1986,24 +1744,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2057,24 +1797,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -2118,24 +1840,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -2218,6 +1922,70 @@ display:
                 title: mpeg
                 operator: '='
                 value: audio/mpeg
+        field_accessibility_self_rpt_value:
+          id: field_accessibility_self_rpt_value
+          table: media__field_accessibility_self_rpt
+          field: field_accessibility_self_rpt_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: string
+          operator: '='
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_accessibility_self_rpt_value_op
+            label: 'Accessibility Status (self-reported) (field_accessibility_self_rpt)'
+            description: null
+            use_operator: false
+            operator: field_accessibility_self_rpt_value_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_accessibility_self_rpt_value
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: null
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+            autocomplete_contextual: 0
+            autocomplete_autosubmit: 0
+          is_grouped: true
+          group_info:
+            label: 'Accessibility Status (self-reported)'
+            description: ''
+            identifier: field_accessibility_self_rpt_value
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items:
+              1:
+                title: 'Verified Accessible'
+                operator: '='
+                value: verified_accessible
+              2:
+                title: 'Unverified or not accessible'
+                operator: '='
+                value: unverified_or_not_accessible_yet
+              3:
+                title: Exception
+                operator: '='
+                value: exception
+              4:
+                title: blank
+                operator: empty
+                value: ''
       filter_groups:
         operator: AND
         groups:
@@ -4111,6 +3879,68 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        field_accessibility_self_rpt:
+          id: field_accessibility_self_rpt
+          table: media__field_accessibility_self_rpt
+          field: field_accessibility_self_rpt
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Accessibility Status (self-reported)'
+          exclude: false
+          alter:
+            alter_text: true
+            text: '{{ field_accessibility_self_rpt__value }}'
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: list_default
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       style:
         type: data_export
         options:
@@ -4152,6 +3982,7 @@ display:
         - url
         - user.permissions
       tags:
+        - 'config:field.storage.media.field_accessibility_self_rpt'
         - 'config:field.storage.media.field_category'
         - 'config:field.storage.media.field_collections'
         - 'config:field.storage.media.field_description'

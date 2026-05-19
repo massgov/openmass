@@ -78,17 +78,17 @@
   {% set level = elements['#level'] %}
 {% endif %}
 
-{% embed "@molecules/section-links.twig" with {
-  "sectionLinks": {
-    "id": node.id,
-    "title": {
-      "href": url,
-      "text": node.title.value,
-      "info": ""
+{% embed '@molecules/section-links.twig' with {
+  sectionLinks: {
+    id: node.id,
+    title: {
+      href: url,
+      text: node.title.value,
+      info: '',
     },
-    "level": level,
-    "description": node.field_topic_lede.value,
-  }
+    level: level,
+    description: node.field_topic_lede.value,
+  },
 } %}
   {% block sectionLinks %}
     {{ content.computed_card_links }}

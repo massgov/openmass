@@ -1,22 +1,22 @@
 {# Set top heading level for the component. #}
 {% set level = 2 %}
 
-{% embed "@organisms/by-author/link-list.twig" with  {
-  "linkList": {
-    "sectionClass": "",
-    "stacked": true,
-    "compHeading": {
-      "title": label,
-      "sub": "",
-      "color": "",
-      "id": "",
-      "centered": false,
-      "level": level
+{% embed '@organisms/by-author/link-list.twig' with  {
+  linkList: {
+    sectionClass: '',
+    stacked: true,
+    compHeading: {
+      title: label,
+      sub: '',
+      color: '',
+      id: '',
+      centered: false,
+      level: level,
     },
-    "description": null,
-    "stacked": false,
-    "hideBullets": true
-  }
+    description: null,
+    stacked: false,
+    hideBullets: true,
+  },
 } %}
 
   {% block linkListDecorativeLink %}

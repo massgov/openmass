@@ -42,24 +42,24 @@
 {% if paragraph.field_emergency_alert_link_type.0.value is same as('1') and paragraph.field_emergency_alert_link.0.uri %}
   {%
     set decorativeLink = {
-      'text': content.field_emergency_alert_message|field_value,
-      'href': paragraph.field_emergency_alert_link.0.url,
+      text: content.field_emergency_alert_message|field_value,
+      href: paragraph.field_emergency_alert_link.0.url,
     }
   %}
   <h2>
-    {% include "@atoms/decorative-link.twig" %}
+    {{ include('@atoms/decorative-link.twig') }}
   </h2>
 {% else %}
   {%
     set compHeading = {
-      'title': content.field_emergency_alert_message|field_value,
-      'sub': '',
-      'color': 'yellow',
-      'id': paragraph.id(),
-      'centered': '',
+      title: content.field_emergency_alert_message|field_value,
+      sub: '',
+      color: 'yellow',
+      id: paragraph.id(),
+      centered: '',
     }
   %}
-  {% include "@atoms/04-headings/comp-heading.twig" %}
+  {{ include('@atoms/04-headings/comp-heading.twig') }}
 {% endif %}
 
 {{ content.field_emergency_alert_timestamp }}

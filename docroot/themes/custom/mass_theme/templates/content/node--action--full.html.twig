@@ -22,10 +22,10 @@
  #}
 {%
 set pageHeader = {
-  'title': label|field_value,
-  'subTitle': content.field_lede|field_value,
-  'intro': '',
-  'headerTags': {}
+  title: label|field_value,
+  subTitle: content.field_lede|field_value,
+  intro: '',
+  headerTags: {},
 }
 %}
 
@@ -39,21 +39,21 @@ set pageHeader = {
   {# Alert is currently appearing on all actions, commenting out until it can be fixed. #}
   {# include "@organisms/by-template/header-alert.twig" #}
   {% if content.field_action_header|render|trim is not empty or content.field_header_cta|render|trim is not empty %}
-    {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
+    {{ include('@mass_theme/includes/organisms-page-action-header.html.twig') }}
   {% else %}
-    {% include "@organisms/page-header/page-header.twig" %}
-    {% include "@organisms/page-header/page-header-addons.twig" %}
+    {{ include('@organisms/page-header/page-header.twig') }}
+    {{ include('@organisms/page-header/page-header-addons.twig') }}
   {% endif %}
   {% if content.field_action_banner|render|trim is not empty %}
     {{ content.field_action_banner|field_value }}
   {% endif %}
 {% endblock %}
 {% block pageContent %}
-  {% include "@custom_includes/organisms-quick-actions.html.twig" %}
+  {{ include('@custom_includes/organisms-quick-actions.html.twig') }}
   {{ content.field_action_details }}
 {% endblock %}
 {% block sidebar %}
-  {% include "@custom_includes/organisms-quick-actions.html.twig" %}
+  {{ include('@custom_includes/organisms-quick-actions.html.twig') }}
   {{ content.field_related_link }}
   {{ content.field_action_sidebar }}
 {% endblock %}

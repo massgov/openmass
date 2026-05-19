@@ -41,7 +41,7 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
@@ -51,15 +51,15 @@
         set statsCallout = {
         pull: content.field_alignment|field_value|render.__toString(),
         stat: content.field_stat|field_value|render.__toString(),
-        content: content.field_description|field_value|render.__toString()
+        content: content.field_description|field_value|render.__toString(),
       }
       %}
       {% if paragraph.field_stat_wrapping.value %}
-        {% include "@molecules/callout-stats.twig" with statsCallout %}
+        {{ include('@molecules/callout-stats.twig', statsCallout) }}
       {% else %}
-        {% embed "@organisms/by-author/rich-text.twig" %}
+        {% embed '@organisms/by-author/rich-text.twig' %}
           {% block rteElements %}
-            {% include "@molecules/callout-stats.twig" with statsCallout %}
+            {{ include('@molecules/callout-stats.twig', statsCallout) }}
           {% endblock %}
         {% endembed %}
       {% endif %}

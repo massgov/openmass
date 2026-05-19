@@ -677,6 +677,204 @@ display:
           operator: '='
           value: false
           group: 1
+          exposed: true
+          expose:
+            operator_id: page_title_op
+            label: 'Page title contains'
+            description: ''
+            use_operator: false
+            operator: page_title_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: title
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        page_path:
+          id: page_path
+          table: editoria11y_dismissals
+          field: page_path
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: page_path_op
+            label: 'Url contains'
+            description: ''
+            use_operator: false
+            operator: page_path_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: url
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        page_language:
+          id: page_language
+          table: editoria11y_dismissals
+          field: page_language
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: language
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: page_language_op
+            label: Language
+            description: ''
+            use_operator: false
+            operator: page_language_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: lang
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        result_name:
+          id: result_name
+          table: editoria11y_dismissals
+          field: result_name
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: in_operator
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: result_name_op
+            label: 'Issue type'
+            description: ''
+            use_operator: false
+            operator: result_name_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: result
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        stale:
+          id: stale
+          table: editoria11y_dismissals
+          field: stale
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: in_operator
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: stale_op
+            label: 'Still on page'
+            description: ''
+            use_operator: false
+            operator: stale_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: stale
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        dismissal_status:
+          id: dismissal_status
+          table: editoria11y_dismissals
+          field: dismissal_status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: in_operator
+          operator: in
+          value:
+            all: all
+            hide: hide
+            ok: ok
+          group: 1
           exposed: false
           expose:
             operator_id: ''

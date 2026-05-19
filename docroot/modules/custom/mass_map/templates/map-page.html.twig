@@ -9,32 +9,32 @@
 {# Increase heading number by 1 from the parent heading. #}
 {% set level = level + 1 %}
 {% set locationListing = locationListing|merge({
-                          'resultsHeading': {
-                            'level': level,
-                            'numResults': locationListing.resultsHeading.numResults,
-                            'totalResults': locationListing.resultsHeading.totalResults,
-                            'subject': pageHeader.title},
-                          'imagePromos': {
-                            'promoHeading': level,
-                            'items': locationListing.imagePromos.items
-                          }
+                          resultsHeading: {
+                            level: level,
+                            numResults: locationListing.resultsHeading.numResults,
+                            totalResults: locationListing.resultsHeading.totalResults,
+                            subject: pageHeader.title},
+                          imagePromos: {
+                            promoHeading: level,
+                            items: locationListing.imagePromos.items,
+                          },
                           }) %}
 {% set stackedRowSections = [{
-  "title": "",
-  "id": "",
-  "pageContent": [{
-    "path": "@organisms/by-author/location-listing.twig",
-    "data": {
-      "locationListing": locationListing
-    }
-  }]
+  title: '',
+  id: '',
+  pageContent: [{
+    path: '@organisms/by-author/location-listing.twig',
+    data: {
+      locationListing: locationListing,
+    },
+  }],
 }] %}
 
 {# {% extends '@templates/stacked-row-template.twig' %} #}
 {% extends 'node.html.twig' %}
 
 {% block preContent %}
-  {% include "@organisms/page-header/page-header.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
 {% endblock %}
 {% block main %}
 <section class="ma__stacked-row-section">
@@ -42,7 +42,7 @@
     <div class="page-content">
       {% block pageContent %}
         {% for stackedRowSection in stackedRowSections %}
-          {% include "@organisms/by-author/stacked-row-section.twig" %}
+          {{ include('@organisms/by-author/stacked-row-section.twig') }}
         {% endfor %}
       {% endblock %}
     </div>

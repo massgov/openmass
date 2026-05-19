@@ -89,8 +89,17 @@ function mass_fields_get_tags_from_references(ContentEntityInterface $entity) {
   // for entities. We don't want to cause those queries to execute.
   foreach ($entity->getFields(FALSE) as $field_items) {
     if ($field_items instanceof EntityReferenceFieldItemListInterface) {
+      $target_type = $field_items->getFieldDefinition()->getSetting('target_type');
+      $target_ids = array_column($field_items->getValue(), 'target_id');
+      $target_ids = array_values(array_unique(array_filter($target_ids)));
+      if (!$target_type || !$target_ids) {
+        continue;
+      }
+      $entities = \Drupal::entityTypeManager()
+        ->getStorage($target_type)
+        ->loadMultiple($target_ids);
 
-      $referenced = array_merge($referenced, array_filter($field_items->referencedEntities(), function ($referencedEntity) {
+      $referenced = array_merge($referenced, array_filter($entities, function ($referencedEntity) {
         if ($referencedEntity->bundle() === 'org_page') {
           // These nodes are referenced by many pages, so lets not do such a wide cache invalidation.
           return FALSE;
@@ -325,10 +334,19 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
   }
   // Get the sections field value.
   $field_organization_sections = $entity->get('field_organization_sections')->getValue();
+  $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
   // Loop through the sections.
   foreach ($field_organization_sections as $section_key => $section_value) {
     // Get the section entity.
-    $section_entity = $entity->get('field_organization_sections')[$section_key]->entity;
+    $section_revision_id = $section_value['target_revision_id'] ?? NULL;
+    $section_id = $section_value['target_id'] ?? NULL;
+    $section_entity = $section_revision_id ? $paragraph_storage->loadRevision($section_revision_id) : NULL;
+    if (!$section_entity && $section_id) {
+      $section_entity = $paragraph_storage->load($section_id);
+    }
+    if (!$section_entity) {
+      continue;
+    }
     // If the section content field is empty, continue to the next section.
     if ($section_entity->get('field_section_long_form_content')->isEmpty()) {
       continue;
@@ -338,7 +356,12 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
     // Loop through the section content paragraphs.
     foreach ($field_section_long_form_content as $content_key => $content_value) {
       // Get the content paragraph entity.
-      $content_entity = $section_entity->get('field_section_long_form_content')[$content_key]->entity;
+      $content_revision_id = $content_value['target_revision_id'] ?? NULL;
+      $content_id = $content_value['target_id'] ?? NULL;
+      $content_entity = $content_revision_id ? $paragraph_storage->loadRevision($content_revision_id) : NULL;
+      if (!$content_entity && $content_id) {
+        $content_entity = $paragraph_storage->load($content_id);
+      }
       // Get the paragraph type.
       if ($content_entity) {
         $paragraph_type = $content_entity->bundle();
@@ -628,9 +651,12 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     $more_links = [];
     foreach ($entity->field_service_detail_sections as $delta => $section) {
       $subtotal = 0;
-      if ($section->entity && $section->entity->bundle() === 'section') {
-        $subtotal += $section->entity->field_section_links->count();
-        $subtotal += $section->entity->field_section_downloads->count();
+      $section_entity = $section->target_id ? \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->load($section->target_id) : NULL;
+      if ($section_entity && $section_entity->bundle() === 'section') {
+        $subtotal += $section_entity->field_section_links->count();
+        $subtotal += $section_entity->field_section_downloads->count();
         $total += $subtotal;
       }
       if ($subtotal > 6) {

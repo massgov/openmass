@@ -77,14 +77,14 @@
 {% if node.field_ref_links is not empty or node.field_ref_fax_number is not empty or node.field_contact_more_info_link is not empty %}
   {% set secondaryItems = true %}
 {% endif %}
-{% embed "@organisms/contact/contact-us.twig" with {
-  "contactUs": {
-    "accordion": false,
-    "isExpanded": false,
-    "columns": false,
-    "showMore": true,
-    "hideSecondary": not secondaryItems
-  }
+{% embed '@organisms/contact/contact-us.twig' with {
+  contactUs: {
+    accordion: false,
+    isExpanded: false,
+    columns: false,
+    showMore: true,
+    hideSecondary: not secondaryItems,
+  },
 } %}
   {% block primaryContactGroups %}
     {% if node.field_ref_address is not empty %}
@@ -105,13 +105,13 @@
       {% endif %}
       {% if node.field_contact_more_info_link is not empty %}
         <div class="ma__contact-us__more-info">
-          {% include "@atoms/decorative-link.twig" with {
-            "decorativeLink": {
-              "href": content.field_contact_more_info_link[0]['#url_title'],
-              "text": content.field_contact_more_info_link[0]['#title'],
-              "info": ""
-            }
-          } %}
+          {{ include('@atoms/decorative-link.twig', {
+            decorativeLink: {
+              href: content.field_contact_more_info_link[0]['#url_title'],
+              text: content.field_contact_more_info_link[0]['#title'],
+              info: '',
+            },
+          }) }}
         </div>
       {% endif %}
     {% endif %}

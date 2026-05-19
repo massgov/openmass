@@ -13,14 +13,14 @@
 #}
 {%
 set pageHeader = {
-  'title': label|field_value,
+  title: label|field_value,
 }
 %}
 
 {% extends 'node.html.twig' %}
 
 {% block preContent %}
-  {% include "@organisms/page-header/page-header.twig" %}
+  {{ include('@organisms/page-header/page-header.twig') }}
 {% endblock %}
 {% block pageContent %}
   <div class="main-content--two">

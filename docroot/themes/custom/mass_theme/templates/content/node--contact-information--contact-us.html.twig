@@ -94,14 +94,14 @@
   {% set moreLink = true %}
 {% endif %}
 
-{% embed "@organisms/contact/contact-row.twig" with {
-  "contactRow": {
-    "addressContactGroup": addressContactGroup,
-    "phoneContactGroup": phoneContactGroup,
-    "onlineContactGroup": onlineContactGroup,
-    "faxContactGroup": faxContactGroup,
-    "moreLink": moreLink
-  }
+{% embed '@organisms/contact/contact-row.twig' with {
+  contactRow: {
+    addressContactGroup: addressContactGroup,
+    phoneContactGroup: phoneContactGroup,
+    onlineContactGroup: onlineContactGroup,
+    faxContactGroup: faxContactGroup,
+    moreLink: moreLink,
+  },
 } %}
   {% block addressContactGroup %}
     {{ content.field_ref_address|merge({'#level': level}) }}
@@ -116,12 +116,12 @@
     {{ content.field_ref_fax_number|merge({'#level': level}) }}
   {% endblock %}
   {% block moreLink %}
-    {% include "@atoms/decorative-link.twig" with {
-      "decorativeLink": {
-        "href": content.field_contact_more_info_link[0]['#url_title'],
-        "text": content.field_contact_more_info_link[0]['#title'],
-        "info": ""
-      }
-    } %}
+    {{ include('@atoms/decorative-link.twig', {
+      decorativeLink: {
+        href: content.field_contact_more_info_link[0]['#url_title'],
+        text: content.field_contact_more_info_link[0]['#title'],
+        info: '',
+      },
+    }) }}
   {% endblock %}
 {% endembed %}

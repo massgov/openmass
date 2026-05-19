@@ -1,0 +1,36 @@
+--- a/src/Plugin/Field/MetatagEntityFieldItemList.php
++++ b/src/Plugin/Field/MetatagEntityFieldItemList.php
+@@ -45,7 +45,7 @@
+     // @todo capture the cacheable metadata and properly bubble it up.
+     // @see https://www.drupal.org/project/metatag/issues/3175269
+     // @see https://www.drupal.org/project/metatag/issues/3039650
+-    $tags = $renderer->executeInRenderContext(new RenderContext(), static function () use ($entity) {
++    $callback = static function () use ($entity) {
+       $metatag_manager = \Drupal::service('metatag.manager');
+       assert($metatag_manager instanceof MetatagManagerInterface);
+ 
+@@ -59,7 +59,23 @@
+       \Drupal::service('module_handler')->alter('metatags', $metatags_for_entity, $context);
+ 
+       return $metatag_manager->generateRawElements($metatags_for_entity, $entity);
+-    });
++    };
++
++    // Renderer::executeInRenderContext() starts a nested Fiber (Drupal 10.3+).
++    // Fiber::start() throws FiberError when a Fiber is already running, or in
++    // unsafe execution contexts (e.g. ContentEntityBase::__sleep during cache
++    // backend ::set() from post-transaction callbacks).
++    if (\Fiber::getCurrent() !== NULL) {
++      $tags = $callback();
++    }
++    else {
++      try {
++        $tags = $renderer->executeInRenderContext(new RenderContext(), $callback);
++      }
++      catch (\FiberError) {
++        $tags = $callback();
++      }
++    }
+     $this->list = [];
+     foreach ($tags as $tag) {
+       $offset = count($this->list);

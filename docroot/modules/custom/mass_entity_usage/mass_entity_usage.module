@@ -49,6 +49,125 @@ function mass_entity_usage_queue_info_alter(&$queues) {
 }
 
 /**
+ * Implements hook_entity_usage_queue_tracking_should_remove_usage().
+ *
+ * When a node is in unpublished or trash moderation state, remove all
+ * entity_usage records for that node and for its paragraphs. The queue worker
+ * deletes the node's usage; we delete usage where a paragraph on this node is
+ * the source. No usage is kept when the source has no published version (the
+ * default revision is unpublished).
+ *
+ * @see \Drupal\entity_usage_queue_tracking\Plugin\QueueWorker\EntityUsageTracker::processItem()
+ */
+function mass_entity_usage_entity_usage_queue_tracking_should_remove_usage($entity) {
+  if ($entity->getEntityTypeId() !== 'node') {
+    return FALSE;
+  }
+
+  $content_moderation_state = \Drupal\content_moderation\Entity\ContentModerationState::loadFromModeratedEntity($entity);
+  if (!$content_moderation_state instanceof \Drupal\content_moderation\Entity\ContentModerationStateInterface
+    || $content_moderation_state->get('moderation_state')->isEmpty()) {
+    return FALSE;
+  }
+
+  $state = $content_moderation_state->get('moderation_state')->value;
+  $remove_states = [
+    \Drupal\mass_content_moderation\MassModeration::UNPUBLISHED,
+    \Drupal\mass_content_moderation\MassModeration::TRASH,
+  ];
+  if (!in_array($state, $remove_states, TRUE)) {
+    return FALSE;
+  }
+
+  $usage = \Drupal::service('entity_usage.usage');
+  foreach (_mass_entity_usage_get_paragraph_ids_from_node($entity) as $paragraph_id) {
+    $usage->deleteBySourceEntity($paragraph_id, 'paragraph');
+  }
+  \Drupal::service('cache_tags.invalidator')->invalidateTags(['config:views.view.report_orphaned_documents']);
+  return TRUE;
+}
+
+/**
+ * Collects paragraph IDs referenced by a node (entity_reference_revisions).
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $node
+ *   The node entity.
+ *
+ * @return int[]
+ *   Unique paragraph entity IDs (including nested child paragraphs).
+ */
+function _mass_entity_usage_get_paragraph_ids_from_node($node) {
+  $root_ids = [];
+  foreach ($node->getFieldDefinitions() as $name => $definition) {
+    if ($definition->getType() !== 'entity_reference_revisions') {
+      continue;
+    }
+    if ($definition->getSetting('target_type') !== 'paragraph') {
+      continue;
+    }
+    foreach ($node->get($name) as $item) {
+      if ($item->target_id) {
+        $root_ids[$item->target_id] = TRUE;
+      }
+    }
+  }
+
+  if (!$root_ids) {
+    return [];
+  }
+
+  return _mass_entity_usage_get_nested_paragraph_ids(array_keys($root_ids));
+}
+
+/**
+ * Expands a list of paragraph IDs to include all nested child paragraphs.
+ *
+ * This walks paragraph -> paragraph references (entity_reference_revisions with
+ * target_type = 'paragraph') starting from the given IDs.
+ *
+ * @param int[] $paragraph_ids
+ *   Root paragraph entity IDs.
+ *
+ * @return int[]
+ *   All unique paragraph IDs reachable from the roots (including roots).
+ */
+function _mass_entity_usage_get_nested_paragraph_ids(array $paragraph_ids) {
+  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+  $seen = [];
+  $queue = $paragraph_ids;
+
+  while ($queue) {
+    $id = array_pop($queue);
+    if (isset($seen[$id])) {
+      continue;
+    }
+    $seen[$id] = TRUE;
+
+    /** @var \Drupal\paragraphs\Entity\ParagraphInterface|null $paragraph */
+    $paragraph = $storage->load($id);
+    if (!$paragraph) {
+      continue;
+    }
+
+    foreach ($paragraph->getFieldDefinitions() as $name => $definition) {
+      if ($definition->getType() !== 'entity_reference_revisions') {
+        continue;
+      }
+      if ($definition->getSetting('target_type') !== 'paragraph') {
+        continue;
+      }
+      foreach ($paragraph->get($name) as $item) {
+        if ($item->target_id && !isset($seen[$item->target_id])) {
+          $queue[] = $item->target_id;
+        }
+      }
+    }
+  }
+
+  return array_keys($seen);
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_entity_usage_form_node_form_alter(array &$form, FormStateInterface $form_state, $form_id) {

@@ -37,13 +37,13 @@ body[data-fullscreen="fullscreenoverlay"] .toolbar .toolbar-bar {
   border-right: 1px solid transparent;
 }
 .toolbar .toolbar-bar .toolbar-tab > .toolbar-item:hover {
-  background-color: #388557;
+  background-color: #388557 !important;
   border-color: #388557;
   color: #fff;
 }
 
 .toolbar .toolbar-bar .toolbar-tab > .toolbar-item.is-active {
-  background-color: #d9eae2;
+  background-color: #d9eae2 !important;
   border-color: #388557;
 }
 .toolbar .toolbar-bar .toolbar-tab > .toolbar-item.toolbar-admin-home-tab.is-active {
@@ -57,10 +57,14 @@ body[data-fullscreen="fullscreenoverlay"] .toolbar .toolbar-bar {
  * Custom add-content buttons
  *
  */
+#toolbar-administration .toolbar-admin-home-tab.toolbar-item {
+  background-color: unset !important;
+}
+
 #toolbar-link-node-add_page,
 #toolbar-link-entity-media-add_form,
 .toolbar .toolbar-bar .toolbar-tab > .button--add-content {
-  background-color: #388557;
+  background-color: #388557 !important;
   color: #fff;
   margin: 0.875rem 0.9375rem;
   border-bottom: 1px solid transparent;
@@ -83,7 +87,7 @@ body[data-fullscreen="fullscreenoverlay"] .toolbar .toolbar-bar {
 #toolbar-link-entity-media-add_form:hover,
 .toolbar .toolbar-bar .toolbar-tab > .button--add-content:hover {
   border-color: #32784E;
-  background-color: #d9eae2;
+  background-color: #d9eae2 !important;
   color: #32784E;
 }
 

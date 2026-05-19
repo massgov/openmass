@@ -1,0 +1,112 @@
+diff --git a/src/Hook/TokenTokensHooks.php b/src/Hook/TokenTokensHooks.php
+--- a/src/Hook/TokenTokensHooks.php
++++ b/src/Hook/TokenTokensHooks.php
+@@ -303,7 +303,12 @@
+                 '#theme' => 'user_picture',
+                 '#account' => $account,
+               ];
+-              $replacements[$original] = $this->renderer->renderInIsolation($output);
++              try {
++                $replacements[$original] = $this->renderer->renderInIsolation($output);
++              }
++              catch (\FiberError) {
++                $replacements[$original] = $this->renderer->render($output);
++              }
+             }
+             break;
+ 
+@@ -699,13 +704,33 @@
+         switch ($name) {
+           case 'first':
+             $value = $array[$keys[0]];
+-            $value = is_array($value) ? $this->renderer->renderInIsolation($value) : (string) $value;
++            if (is_array($value)) {
++              try {
++                $value = $this->renderer->renderInIsolation($value);
++              }
++              catch (\FiberError) {
++                $value = $this->renderer->render($value);
++              }
++            }
++            else {
++              $value = (string) $value;
++            }
+             $replacements[$original] = $value;
+             break;
+ 
+           case 'last':
+             $value = $array[$keys[count($keys) - 1]];
+-            $value = is_array($value) ? $this->renderer->renderInIsolation($value) : (string) $value;
++            if (is_array($value)) {
++              try {
++                $value = $this->renderer->renderInIsolation($value);
++              }
++              catch (\FiberError) {
++                $value = $this->renderer->render($value);
++              }
++            }
++            else {
++              $value = (string) $value;
++            }
+             $replacements[$original] = $value;
+             break;
+ 
+@@ -1117,7 +1142,17 @@
+             $field_output['#pre_render'][] = '\Drupal\token\TokenFieldRender::preRender';
+           }
+           $field_output['#token_options'] = $options;
+-          $replacements[$original] = $this->renderer->renderInIsolation($field_output);
++          try {
++            $replacements[$original] = $this->renderer->renderInIsolation($field_output);
++          }
++          catch (\FiberError) {
++            // Drupal 10.3+ renderInIsolation() starts a nested Fiber via
++            // executeInRenderContext(). In some contexts (e.g. token
++            // generation while already in a render Fiber during entity
++            // serialization/cache writes), starting a new Fiber is invalid.
++            // Fall back to in-context rendering when a render context exists.
++            $replacements[$original] = $this->renderer->render($field_output);
++          }
+         }
+         // Handle [entity:field_name:value] and [entity:field_name:0:value]
+         // tokens.
+diff --git a/token.module b/token.module
+--- a/token.module
++++ b/token.module
+@@ -247,7 +247,17 @@
+ 
+   foreach (token_element_children($array) as $key) {
+     $value = $array[$key];
+-    $rendered[] = is_array($value) ? $renderer->renderInIsolation($value) : (string) $value;
++    if (is_array($value)) {
++      try {
++        $rendered[] = $renderer->renderInIsolation($value);
++      }
++      catch (\FiberError) {
++        $rendered[] = $renderer->render($value);
++      }
++    }
++    else {
++      $rendered[] = (string) $value;
++    }
+   }
+   $join = $options['join'] ?? ', ';
+   return implode($join, $rendered);
+@@ -260,7 +270,17 @@
+   /** @var \Drupal\Core\Render\RendererInterface $renderer */
+   $renderer = \Drupal::service('renderer');
+ 
+-  $rendered = is_array($value) ? $renderer->renderInIsolation($value) : (string) $value;
++  if (is_array($value)) {
++    try {
++      $rendered = $renderer->renderInIsolation($value);
++    }
++    catch (\FiberError) {
++      $rendered = $renderer->render($value);
++    }
++  }
++  else {
++    $rendered = (string) $value;
++  }
+   return $rendered;
+ }

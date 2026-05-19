@@ -32,7 +32,7 @@
  */
 #}
 {# Hamburger menu only for non home pages #}
-<nav class="ma__header__hamburger__nav" aria-label="main navigation" id="main-navigation">
+<nav class="ma__header__hamburger__nav" aria-label="main" id="main-navigation">
   <div class="ma__header__hamburger-wrapper">
 
     <div class="ma__header__hamburger__button-container js-sticky-header">
@@ -70,11 +70,11 @@
 
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
       <div class="ma__header__hamburger__logo ma__header__hamburger__logo--mobile">
-        {% include "@atoms/09-media/site-logo.twig" %}
+        {{ include('@atoms/09-media/site-logo.twig') }}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__nav-search js-header__nav-search">
-          {% include "@molecules/header-search.twig" %}
+          {{ include('@molecules/header-search.twig') }}
         </div>
       {% endif %}
       <div class="ma__header__hamburger__main-nav">

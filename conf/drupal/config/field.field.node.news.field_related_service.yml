@@ -1,0 +1,29 @@
+uuid: 3399a2a4-ffdf-4ded-9e1e-d05666b388ef
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_related_service
+    - node.type.news
+    - node.type.service_page
+id: node.news.field_related_service
+field_name: field_related_service
+entity_type: node
+bundle: news
+label: 'Related service'
+description: 'Optional: choose a service related to this news. If that service page has a news section, this news page will be linked there.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      service_page: service_page
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
