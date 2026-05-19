@@ -889,6 +889,30 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Backfill no-ops on an entity whose Owner Groups already match.
+   *
+   * Drives the "skip save() when nothing changed" optimization in
+   * BackfillRunner::processQueue — populateOwnerGroupsFromOrgPage now
+   * returns a bool the runner uses to bail before touching storage.
+   */
+  public function testPopulateReturnsFalseWhenOwnerGroupsAlreadyMatch(): void {
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Already correct ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id()],
+      'field_content_organization' => [$this->termA->id()],
+    ]);
+
+    $changed = \Drupal::service('mass_org_access.org_access_checker')
+      ->populateOwnerGroupsFromOrgPage($node);
+
+    $this->assertFalse(
+      $changed,
+      'populateOwnerGroupsFromOrgPage must return FALSE when no value changes.'
+    );
+  }
+
+  /**
    * Owner Groups widget is hidden from regular editors when enforcement is off.
    *
    * While the gate is off (rollout phase), only bypass users see the

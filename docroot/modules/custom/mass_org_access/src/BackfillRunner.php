@@ -3,6 +3,7 @@
 namespace Drupal\mass_org_access;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\State\StateInterface;
@@ -37,6 +38,7 @@ class BackfillRunner {
 
   public function __construct(
     private readonly EntityTypeManagerInterface $entityTypeManager,
+    private readonly EntityFieldManagerInterface $entityFieldManager,
     private readonly OrgAccessChecker $orgAccessChecker,
     private readonly StateInterface $state,
     private readonly FileSystemInterface $fileSystem,
@@ -158,14 +160,20 @@ class BackfillRunner {
       }
 
       foreach ($storage->loadMultiple($ids) as $entity) {
-        $this->orgAccessChecker->populateOwnerGroupsFromOrgPage($entity);
+        $progress[$entity_type . '_last_id'] = (int) $entity->id();
+        $progress[$entity_type . '_processed']++;
+        // Skip the save() when populate returned no change. Cuts the run
+        // time and hook churn on entities whose Owner Groups already
+        // match (re-runs after partial backfill) or whose related
+        // org_page has no curated values yet.
+        if (!$this->orgAccessChecker->populateOwnerGroupsFromOrgPage($entity)) {
+          continue;
+        }
         if (method_exists($entity, 'setNewRevision')) {
           $entity->setNewRevision(FALSE);
         }
         $entity->setSyncing(TRUE);
         $storage->save($entity);
-        $progress[$entity_type . '_last_id'] = (int) $entity->id();
-        $progress[$entity_type . '_processed']++;
       }
       $this->saveProgress($progress);
 
@@ -181,25 +189,41 @@ class BackfillRunner {
   }
 
   /**
-   * Builds the node query targeting every supported bundle except org_page.
+   * Builds the node query targeting bundles that carry the OOG field.
    *
-   * Org_page is the source of truth, populated manually by the content team.
+   * Restricts the scan to bundles that actually have
+   * field_content_organization (and excludes org_page — source of truth,
+   * untouched by the backfill). Without this filter the backfill would
+   * walk every node bundle on the site (page, executive_order, …) and
+   * resave it needlessly.
    */
   private function buildNodeQuery() {
+    $bundles = array_values(array_diff(
+      $this->bundlesWithOogField('node'),
+      ['org_page']
+    ));
     return $this->entityTypeManager->getStorage('node')
       ->getQuery()
       ->accessCheck(FALSE)
-      ->condition('type', 'org_page', '<>');
+      ->condition('type', $bundles, 'IN');
   }
 
   /**
-   * Media query: only the document bundle has field_content_organization.
+   * Builds the media query targeting bundles that carry the OOG field.
    */
   private function buildMediaQuery() {
     return $this->entityTypeManager->getStorage('media')
       ->getQuery()
       ->accessCheck(FALSE)
-      ->condition('bundle', 'document');
+      ->condition('bundle', $this->bundlesWithOogField('media'), 'IN');
+  }
+
+  /**
+   * Bundles of $entity_type that have field_content_organization attached.
+   */
+  private function bundlesWithOogField(string $entity_type): array {
+    $map = $this->entityFieldManager->getFieldMap();
+    return array_keys($map[$entity_type]['field_content_organization']['bundles'] ?? []);
   }
 
   /**

@@ -74,44 +74,58 @@ class OrgAccessChecker {
    * Reads the entity's first field_organizations value, loads the referenced
    * org_page, and copies its field_content_organization verbatim. Org_page's
    * Owner Groups are populated manually by the content team with the term
-   * plus all ancestor terms — see REQUIREMENTS.md Section C/D — so no
-   * ancestor walk is needed here.
+   * plus all ancestor terms, so no ancestor walk is needed here.
    *
    * Used by `drush moab` only. Org_page bundle is intentionally skipped:
    * its Owner Groups are the source of truth and must not be overwritten.
    * If the related org_page has no Owner Groups yet, this method leaves the
    * entity untouched — per spec, that entity remains admin-only-editable
    * until org_page is populated.
+   *
+   * @return bool
+   *   TRUE if the entity's field_content_organization was updated to a
+   *   new value. FALSE if nothing changed — the caller can use this to
+   *   skip an unnecessary save().
    */
-  public function populateOwnerGroupsFromOrgPage(EntityInterface $entity): void {
+  public function populateOwnerGroupsFromOrgPage(EntityInterface $entity): bool {
     if (!$entity->hasField('field_content_organization')) {
-      return;
+      return FALSE;
     }
     if ($entity instanceof NodeInterface && $entity->bundle() === 'org_page') {
-      return;
+      return FALSE;
     }
     if (!$entity->hasField('field_organizations') || $entity->get('field_organizations')->isEmpty()) {
-      return;
+      return FALSE;
     }
     $first_org_nid = (int) ($entity->get('field_organizations')->first()->target_id ?? 0);
     if (!$first_org_nid) {
-      return;
+      return FALSE;
     }
     $org_page = $this->entityTypeManager->getStorage('node')->load($first_org_nid);
     if (!$org_page || !$org_page->hasField('field_content_organization')) {
-      return;
+      return FALSE;
     }
-    $tids = array_column(
-      $org_page->get('field_content_organization')->getValue(),
-      'target_id'
+    $new_tids = array_values(array_unique(array_map(
+      'intval',
+      array_column($org_page->get('field_content_organization')->getValue(), 'target_id')
+    )));
+    if (empty($new_tids)) {
+      return FALSE;
+    }
+    sort($new_tids);
+    $current_tids = array_map(
+      'intval',
+      array_column($entity->get('field_content_organization')->getValue(), 'target_id')
     );
-    if (empty($tids)) {
-      return;
+    sort($current_tids);
+    if ($new_tids === $current_tids) {
+      return FALSE;
     }
     $entity->set(
       'field_content_organization',
-      array_map(fn($tid) => ['target_id' => (int) $tid], $tids)
+      array_map(fn($tid) => ['target_id' => $tid], $new_tids)
     );
+    return TRUE;
   }
 
   /**

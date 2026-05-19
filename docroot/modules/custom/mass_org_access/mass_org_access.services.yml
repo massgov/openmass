@@ -20,6 +20,7 @@ services:
     class: Drupal\mass_org_access\BackfillRunner
     arguments:
       - '@entity_type.manager'
+      - '@entity_field.manager'
       - '@mass_org_access.org_access_checker'
       - '@state'
       - '@file_system'
