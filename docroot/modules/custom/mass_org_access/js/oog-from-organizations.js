@@ -112,7 +112,7 @@
     // replaces the inputs — re-sync when the wrapper subtree mutates.
     const wrappers = form.querySelectorAll(ORG_WRAPPER_SELECTOR);
     wrappers.forEach(function (wrapper) {
-      new MutationObserver(run).observe(wrapper, { childList: true, subtree: true });
+      new MutationObserver(run).observe(wrapper, {childList: true, subtree: true});
     });
 
     // Polling fallback — catches autocomplete selects (jQuery .val(),
@@ -170,7 +170,7 @@
           const tid = String(term.tid);
           tracked.add(tid);
           if (!existingIds.has(tid)) {
-            oogTerms.push({ id: tid, label: term.label });
+            oogTerms.push({id: tid, label: term.label});
             existingIds.add(tid);
           }
         });
@@ -205,8 +205,8 @@
     const nextValue = formatTagged(oogTerms);
     if (nextValue !== oogInput.value) {
       oogInput.value = nextValue;
-      oogInput.dispatchEvent(new Event('change', { bubbles: true }));
-      oogInput.dispatchEvent(new Event('input', { bubbles: true }));
+      oogInput.dispatchEvent(new Event('change', {bubbles: true}));
+      oogInput.dispatchEvent(new Event('input', {bubbles: true}));
     }
     return currentNids;
   }
@@ -248,7 +248,7 @@
       .map(function (n) { return 'org_page_nids%5B%5D=' + encodeURIComponent(n); })
       .join('&');
     const response = await fetch(ENDPOINT + '?' + params, {
-      headers: { Accept: 'application/json' },
+      headers: {Accept: 'application/json'},
       credentials: 'same-origin'
     });
     if (!response.ok) {
