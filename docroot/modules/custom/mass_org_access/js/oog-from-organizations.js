@@ -28,12 +28,29 @@
   'use strict';
 
   const ENDPOINT = '/mass-org-access/lookup-user-orgs';
-  const ORG_INPUT_SELECTOR =
-    'input.form-autocomplete[name^="field_organizations["][name$="[target_id]"]';
+  // Each bundle that auto-derives field_organizations (binder, decision,
+  // person…) writes its organization picks into a bundle-specific field.
+  // mass_validation later unions them into field_organizations on
+  // presave, but for the JS augmentation we have to listen to the
+  // editor-facing fields directly.
+  const ORG_FIELD_PREFIXES = [
+    'field_organizations',
+    'field_binder_ref_organization',
+    'field_decision_ref_organization',
+    'field_person_ref_org'
+  ];
+  const ORG_INPUT_SELECTOR = ORG_FIELD_PREFIXES
+    .map(function (name) {
+      return 'input.form-autocomplete[name^="' + name + '["][name$="[target_id]"]';
+    })
+    .join(',');
+  const ORG_WRAPPER_SELECTOR = ORG_FIELD_PREFIXES
+    .map(function (name) {
+      return '.field--name-' + name.replace(/_/g, '-');
+    })
+    .join(',');
   const OOG_SELECTOR =
     'input.form-autocomplete[name="field_content_organization[target_id]"]';
-  const ORG_WRAPPER_SELECTOR =
-    '[data-drupal-selector="edit-field-organizations-wrapper"], .field--name-field-organizations';
 
   Drupal.behaviors.massOrgAccessAugmentOogFromOrgs = {
     attach: function (context) {
