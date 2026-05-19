@@ -27,7 +27,7 @@ class Ed11yPidCountJoin extends JoinPluginBase {
     if ($this->table === 'ed11y_action') {
       $subQuery->condition($pseudoTableAlias . '.action_type', 'ok');
     }
- 
+
     $subQuery->addExpression('COUNT(' . $pseudoTableAlias . '.pid)', 'pid_count');
     $subQuery->groupBy($pseudoTableAlias . '.pid');
 
