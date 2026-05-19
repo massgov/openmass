@@ -11,6 +11,9 @@ dependencies:
     - taxonomy
     - user
     - views_data_export
+  enforced:
+    module:
+      - editoria11y_export
 _core:
   default_config_hash: xRUORjS2BAPfjnI34IgWIZykF7nkZcOpL_o0iOmEXhQ
 id: ed11y_export
@@ -298,7 +301,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: editoria11y_page_link
-          label: Title
+          label: Page
           exclude: false
           alter:
             alter_text: false
@@ -829,7 +832,7 @@ display:
           exposed: true
           expose:
             operator_id: page_title_op
-            label: Title
+            label: Page
             description: ''
             use_operator: false
             operator: page_title_op
@@ -871,7 +874,7 @@ display:
           expose:
             operator_id: uid_13_op
             label: 'Authored by'
-            description: '<none>'
+            description: ''
             use_operator: false
             operator: uid_13_op
             operator_limit_selection: false
@@ -1479,14 +1482,15 @@ display:
         display_link:
           id: display_link
           table: views
-          field: display_link
+          field: area_text_custom
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: display_link
-          label: 'Back to dashboard'
+          plugin_id: text_custom
+          label: ''
           empty: true
-          display_id: overview
+          content: '<a href="/admin/reports/editoria11y/export">Back to dashboard</a>'
+          tokenize: false
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -2339,7 +2343,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: editoria11y_page_link
-          label: Title
+          label: Page
           exclude: false
           alter:
             alter_text: true
@@ -3809,7 +3813,7 @@ display:
           exposed: true
           expose:
             operator_id: page_title_op
-            label: Title
+            label: Page
             description: ''
             use_operator: false
             operator: page_title_op
@@ -3851,7 +3855,7 @@ display:
           expose:
             operator_id: uid_13_op
             label: 'Authored by'
-            description: '<none>'
+            description: ''
             use_operator: false
             operator: uid_13_op
             operator_limit_selection: false
@@ -4654,7 +4658,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: editoria11y_page_link
-          label: Title
+          label: Page
           exclude: false
           alter:
             alter_text: false
@@ -5078,7 +5082,7 @@ display:
           exposed: true
           expose:
             operator_id: page_title_op
-            label: Title
+            label: Page
             description: ''
             use_operator: false
             operator: page_title_op
@@ -5120,7 +5124,7 @@ display:
           expose:
             operator_id: uid_13_op
             label: 'Authored by'
-            description: '<none>'
+            description: ''
             use_operator: false
             operator: uid_13_op
             operator_limit_selection: false
@@ -5665,36 +5669,39 @@ display:
         display_link:
           id: display_link
           table: views
-          field: display_link
+          field: area_text_custom
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: display_link
-          label: 'Export pages with alerts'
+          plugin_id: text_custom
+          label: ''
           empty: true
-          display_id: pages
+          content: '<a href="./pages">Export pages with alerts</a>'
+          tokenize: false
         display_link_1:
           id: display_link_1
           table: views
-          field: display_link
+          field: area_text_custom
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: display_link
-          label: 'Export dismissals'
+          plugin_id: text_custom
+          label: ''
           empty: false
-          display_id: dismissals
+          content: '<a href="./dismissals">Export dismissals</a>'
+          tokenize: false
         display_link_2:
           id: display_link_2
           table: views
-          field: display_link
+          field: area_text_custom
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: display_link
-          label: 'Export alert list'
+          plugin_id: text_custom
+          label: ''
           empty: false
-          display_id: results
+          content: '<a href="./alerts">Export alert list</a>'
+          tokenize: false
       footer: {  }
       display_extenders: {  }
       path: admin/reports/editoria11y/export
@@ -5727,14 +5734,15 @@ display:
         display_link:
           id: display_link
           table: views
-          field: display_link
+          field: area_text_custom
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: display_link
-          label: 'Back to dashboard'
+          plugin_id: text_custom
+          label: ''
           empty: true
-          display_id: overview
+          content: '<a href="/admin/reports/editoria11y/export">Back to dashboard</a>'
+          tokenize: false
       exposed_block: false
       display_extenders: {  }
       path: admin/reports/editoria11y/export/pages
@@ -6150,7 +6158,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: editoria11y_page_link
-          label: Title
+          label: Page
           exclude: false
           alter:
             alter_text: false
@@ -6627,7 +6635,7 @@ display:
           exposed: true
           expose:
             operator_id: page_title_op
-            label: Title
+            label: Page
             description: ''
             use_operator: false
             operator: page_title_op
@@ -6669,7 +6677,7 @@ display:
           expose:
             operator_id: uid_13_op
             label: 'Authored by'
-            description: '<none>'
+            description: ''
             use_operator: false
             operator: uid_13_op
             operator_limit_selection: false
