@@ -165,8 +165,7 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
-   * Real-typing flow on info_details: type a substring, click first dropdown
-   * suggestion, OOG syncs.
+   * Real-typing flow on info_details (type a substring, click dropdown).
    *
    * Uses an existing org_page (rather than a freshly created one) because
    * Drupal's view-based entity autocomplete returns cached/indexed
@@ -264,6 +263,8 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
    * Builds the org_page + mapping term + editable entity + admin login.
    *
    * @return array{orgPage: \Drupal\node\NodeInterface, term: \Drupal\taxonomy\TermInterface, entity: \Drupal\Core\Entity\EntityInterface}
+   *   Test context with the created org_page, mapped term, and entity
+   *   whose edit form is now loaded in the browser session.
    */
   private function setupEditForm(string $entityType, string $bundle, array $extraEntityFields = []): array {
     $orgPage = $this->createNode([
@@ -337,8 +338,7 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
-   * Picks a published org_page that already has a mapped user_organization
-   * term and is therefore guaranteed to surface in the autocomplete view.
+   * Picks a published org_page that has a mapped user_organization term.
    *
    * The dataProvider-based tests can fake any mapping via createNode +
    * createTerm; the typing test cannot, because Drupal's view-based
@@ -346,6 +346,7 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
    * already-mapped pair so the suggestion is present in the index.
    *
    * @return array{0:\Drupal\node\NodeInterface,1:\Drupal\taxonomy\TermInterface}
+   *   Tuple of the org_page node and the mapped user_organization term.
    */
   private function pickPublishedOrgPageWithMappedTerm(): array {
     $termIds = \Drupal::entityQuery('taxonomy_term')
@@ -366,7 +367,9 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
-   * Every node bundle that has both field_organizations and
+   * Provides every entity bundle that needs the OOG augmentation feature.
+   *
+   * All 28 node bundles carrying both field_organizations and
    * field_content_organization, plus media.document.
    */
   public static function entityProvider(): array {
