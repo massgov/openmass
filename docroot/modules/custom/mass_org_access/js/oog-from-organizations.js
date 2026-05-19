@@ -301,7 +301,7 @@
         if (label.startsWith('"') && label.endsWith('"')) {
           label = label.slice(1, -1).replace(/""/g, '"');
         }
-        return { id: match[2], label: label };
+        return {id: match[2], label: label};
       })
       .filter(Boolean);
   }
