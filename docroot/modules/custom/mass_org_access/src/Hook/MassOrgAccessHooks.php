@@ -195,6 +195,11 @@ class MassOrgAccessHooks {
       '#weight' => -10,
     ];
     $field_widget_complete_form['#attached']['library'][] = 'mass_org_access/oog_readonly_display';
+    // When the user adds an organization in field_organizations on the
+    // same form, JS pulls the matching curated Owner Groups from the
+    // org_page and appends them here. Only loaded alongside the OOG
+    // widget, which already implies the user has edit access to it.
+    $field_widget_complete_form['#attached']['library'][] = 'mass_org_access/oog_from_organizations';
   }
 
   /**

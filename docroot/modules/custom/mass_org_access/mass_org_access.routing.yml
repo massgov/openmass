@@ -1,0 +1,9 @@
+mass_org_access.lookup_user_orgs:
+  path: '/mass-org-access/lookup-user-orgs'
+  defaults:
+    _controller: '\Drupal\mass_org_access\Controller\OrgLookupController::lookup'
+    _format: 'json'
+  requirements:
+    _custom_access: '\Drupal\mass_org_access\Controller\OrgLookupController::access'
+  options:
+    no_cache: TRUE
