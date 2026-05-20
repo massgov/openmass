@@ -33,8 +33,12 @@ final class MassCachingCommands extends DrushCommands {
    * @command mass-caching:purge-path
    */
   public function purgePath(string $path): void {
-    if ($path !== '' && !str_starts_with($path, '/')) {
+    if ($path !== '<front>' && !str_starts_with($path, '/')) {
       throw new \InvalidArgumentException('Path must be relative and begin with "/".');
+    }
+
+    if ($path == '<front>') {
+      $path = '';
     }
 
     $this->manualPurger->purgePath($path);

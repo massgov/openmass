@@ -454,7 +454,7 @@ class DeployCommands extends DrushCommands {
 
     // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
     // Empty path is the homepage
-    $paths = ['\'\'', '/orgs/office-of-the-governor', '/media/1268726'];
+    $paths = ['<front>', '/orgs/office-of-the-governor', '/media/1268726'];
     foreach ($paths as $path) {
       $process = Drush::drush(
         $targetRecord,
