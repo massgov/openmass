@@ -1,5 +1,22 @@
 
 
+## [0.480.0] - May 19, 2026
+
+### Fixed
+  - DP-45871: Glossary Terms Double-Defining Content and Not Recognizing Full-Term Matches.
+  - DP-46593: Improve keyboard focus visibility on the dark site header, brand banner, and utility navigation.
+  - DP-46594: Updates Mayflower artifacts to fix the global menu drawer edge showing through the translate modal on Android.
+  - DP-46676: Keyboard navigation focus not trapped within global navigation menu.
+  - DP-46853: CSV export from advanced search no longer times out with 503 errors for large organization filters.
+  
+### Added
+  - DP-46855: Added a handler to more broadly purge by URL on saves to published content and when unpublishing content.
+  
+### Changed
+  - DP-46954: Remove green decorative underline from H3 and H4 in rich text and component headings, and remove extra spacing reserved for that line.
+  
+
+
 ## [0.479.0] - May 12, 2026
 
 ### Added
