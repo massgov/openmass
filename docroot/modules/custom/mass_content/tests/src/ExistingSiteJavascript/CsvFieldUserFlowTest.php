@@ -161,10 +161,81 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Waits until the CSV table is initialized and interactive.
+   */
+  private function waitForCsvTableReady(bool $expect_initial_rows = TRUE, string $initial_row_text = 'Alpha Office'): void {
+    $this->waitForCsvTables();
+    $this->assertSession()->waitForElement('css', 'button.csv-field-search-submit', 30);
+
+    if (!$expect_initial_rows) {
+      return;
+    }
+
+    $this->waitForCsvTableRowText($initial_row_text);
+  }
+
+  /**
+   * Whether any table body row contains the given text.
+   */
+  private function csvTableBodyContainsText(string $text): bool {
+    foreach ($this->getSession()->getPage()->findAll('css', 'table.dataTable tbody tr') as $row) {
+      if (str_contains($row->getText(), $text)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Waits until a row with the given text appears in the CSV table body.
+   */
+  private function waitForCsvTableRowText(string $text, int $timeout = 30): void {
+    $deadline = time() + $timeout;
+    do {
+      if ($this->csvTableBodyContainsText($text)) {
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->fail('Timed out waiting for CSV table row containing: ' . $text);
+  }
+
+  /**
+   * Waits until no table body row contains the given text.
+   */
+  private function waitForCsvTableRowTextAbsent(string $text, int $timeout = 30): void {
+    $deadline = time() + $timeout;
+    do {
+      if (!$this->csvTableBodyContainsText($text)) {
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->fail('Timed out waiting for CSV table row to disappear: ' . $text);
+  }
+
+  /**
    * Waits until filtered table text appears after a search submit.
    */
-  private function waitForCsvTableText(string $text): void {
-    $this->assertSession()->waitForText($text);
+  private function waitForCsvTableText(string $text, int $timeout = 30): void {
+    $this->assertSession()->waitForText($text, $timeout);
+    $this->waitForCsvTableRowText($text, $timeout);
+  }
+
+  /**
+   * Sets the search value and submits the CSV table search form.
+   */
+  private function searchCsvTable(string $search_term, ?string $absent_row_text = NULL): void {
+    $assert = $this->assertSession();
+    $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
+    $search_input->setValue($search_term);
+    $this->submitCsvTableSearch($search_input);
+    $this->waitForCsvTableRowText($search_term);
+    if ($absent_row_text !== NULL) {
+      $this->waitForCsvTableRowTextAbsent($absent_row_text);
+    }
   }
 
   /**
@@ -230,9 +301,11 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
    */
   private function submitCsvTableSearch($search_input): void {
     $page = $this->getSession()->getPage();
-    $search_button = $page->find('css', 'button.csv-field-search-submit');
-    if ($search_button) {
-      $search_button->click();
+    if ($page->find('css', 'button.csv-field-search-submit')) {
+      // CI overlays (e.g. ed11y) can intercept native WebDriver clicks.
+      $this->getSession()->executeScript(
+        "var btn = document.querySelector('button.csv-field-search-submit'); if (btn) { btn.click(); }"
+      );
       return;
     }
     // Fallback when the custom submit button is not present.
@@ -359,15 +432,11 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $this->drupalGet('node/' . $node->id());
 
-    $assert = $this->assertSession();
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $search_input = $assert->elementExists('css', '.dataTables_filter input[type="search"], .dt-search input[type="search"]');
-    $search_input->setValue('Unique Agency');
-    $this->submitCsvTableSearch($search_input);
-    $this->waitForCsvTableText('Unique Agency');
+    $this->waitForCsvTableReady();
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
 
-    $assert->pageTextContains('Unique Agency');
-    $assert->pageTextNotContains('Alpha Office');
+    $this->assertSession()->pageTextContains('Unique Agency');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
   }
 
   /**
@@ -438,16 +507,14 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('node/' . $node->id());
 
     $assert = $this->assertSession();
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $table = $assert->elementExists('css', '.dataTable.display');
-    $settings = $table->getAttribute('data-settings');
+    $this->waitForCsvTableReady(FALSE);
+    $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
     $this->assertStringContainsString('"hideSearchingData":1', $settings);
-    $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
-    $search_input->setValue('Unique Agency');
-    $this->submitCsvTableSearch($search_input);
-    $this->waitForCsvTableText('Unique Agency');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
     $assert->pageTextContains('Unique Agency');
-    $assert->pageTextNotContains('Alpha Office');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
   }
 
   /**
@@ -727,17 +794,13 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $this->drupalGet($path);
 
-    $assert = $this->assertSession();
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $search_input = $assert->elementExists('css', '.dataTables_filter input[type="search"], .dt-search input[type="search"]');
-    $search_input->setValue('Unique Agency');
-    $this->submitCsvTableSearch($search_input);
-    $this->waitForCsvTableText('Unique Agency');
-    $assert->pageTextNotContains('Alpha Office');
+    $this->waitForCsvTableReady();
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
 
     $this->drupalGet($path);
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $assert->pageTextContains('Alpha Office');
+    $this->waitForCsvTableReady();
+    $this->assertTrue($this->csvTableBodyContainsText('Alpha Office'));
   }
 
   /**
@@ -835,20 +898,19 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Search Button');
 
     $this->drupalGet('node/' . $node->id());
-    $this->waitForCsvTables();
+    $this->waitForCsvTableReady();
 
     $assert = $this->assertSession();
     $assert->elementExists('css', 'button.csv-field-search-submit');
-    $assert->pageTextContains('Alpha Office');
+    $this->assertTrue($this->csvTableBodyContainsText('Alpha Office'));
 
     $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
     $search_input->setValue('Unique Agency');
-    $assert->pageTextContains('Alpha Office', 'Typing alone must not filter results.');
+    $this->assertTrue($this->csvTableBodyContainsText('Alpha Office'), 'Typing alone must not filter results.');
 
-    $this->submitCsvTableSearch($search_input);
-    $this->waitForCsvTableText('Unique Agency');
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
     $assert->pageTextContains('Unique Agency');
-    $assert->pageTextNotContains('Alpha Office');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
   }
 
   /**
@@ -866,18 +928,18 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Hide Until Search');
 
     $this->drupalGet('node/' . $node->id());
-    $this->waitForCsvTables();
+    $this->waitForCsvTableReady(FALSE);
 
     $assert = $this->assertSession();
-    $assert->pageTextNotContains('Alpha Office');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
 
     $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
     $search_input->setValue('Unique Agency');
-    $assert->pageTextNotContains('Alpha Office', 'Typing alone must not reveal rows when hide-until-search is enabled.');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'), 'Typing alone must not reveal rows when hide-until-search is enabled.');
 
-    $this->submitCsvTableSearch($search_input);
-    $this->waitForCsvTableText('Unique Agency');
+    $this->searchCsvTable('Unique Agency');
     $assert->pageTextContains('Unique Agency');
+    $this->assertTrue($this->csvTableBodyContainsText('Unique Agency'));
   }
 
   /**
