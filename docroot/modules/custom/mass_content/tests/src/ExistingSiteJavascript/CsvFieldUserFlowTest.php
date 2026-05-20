@@ -109,6 +109,21 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Submits CSV table search (custom Search button or Enter fallback).
+   */
+  private function submitCsvTableSearch($search_input): void {
+    $page = $this->getSession()->getPage();
+    $search_button = $page->find('css', 'button.csv-field-search-submit');
+    if ($search_button) {
+      $search_button->click();
+      return;
+    }
+    // Fallback when the custom submit button is not present.
+    $search_input->keyDown(13);
+    $search_input->keyUp(13);
+  }
+
+  /**
    * Creates an org page node containing a CSV table paragraph.
    */
   private function createOrgPageWithCsvTable(Paragraph $section, string $title) {
@@ -231,6 +246,7 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $assert->waitForElement('css', '.dataTables_wrapper');
     $search_input = $assert->elementExists('css', '.dataTables_filter input[type="search"], .dt-search input[type="search"]');
     $search_input->setValue('Unique Agency');
+    $this->submitCsvTableSearch($search_input);
     $this->getSession()->wait(5000, "document.body.innerText.indexOf('Unique Agency') !== -1");
 
     $assert->pageTextContains('Unique Agency');
@@ -314,15 +330,7 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertStringContainsString('"hideSearchingData":1', $settings);
     $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
     $search_input->setValue('Unique Agency');
-    $search_button = $this->getSession()->getPage()->find('css', 'button.dt-search-submit');
-    if ($search_button) {
-      $search_button->click();
-    }
-    else {
-      // Fallback for DataTables default search mode (no custom submit button).
-      $search_input->keyDown(13);
-      $search_input->keyUp(13);
-    }
+    $this->submitCsvTableSearch($search_input);
 
     $this->getSession()->wait(5000, "document.body.innerText.indexOf('Unique Agency') !== -1");
     $assert->pageTextContains('Unique Agency');
@@ -613,6 +621,7 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $assert->waitForElement('css', '.dataTables_wrapper');
     $search_input = $assert->elementExists('css', '.dataTables_filter input[type="search"], .dt-search input[type="search"]');
     $search_input->setValue('Unique Agency');
+    $this->submitCsvTableSearch($search_input);
     $this->getSession()->wait(5000, "document.body.innerText.indexOf('Unique Agency') !== -1");
     $assert->pageTextNotContains('Alpha Office');
 
