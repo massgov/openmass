@@ -10,8 +10,8 @@ id: node.fee.field_content_organization
 field_name: field_content_organization
 entity_type: node
 bundle: fee
-label: 'Organization Owner Groups'
-description: 'The list of Organization Owner Groups that may edit this content. This is setup automatically for new pages based on the group of the page creator. For pages that existed before we added this field, we auto-populated this based on values in the Organization(s) field. This field is visible only to Administrators and Content Administrators currently and is not used for permission yet. After full release, permissions will be enforced, and this field will be visible and changeable for all editors who have permissions.'
+label: 'Permission Groups'
+description: 'Lists the permission groups that may edit this content. Auto-populated on create from the creator profile, and augmented when an organization is added in the Organizations field. Once permissions are enforced, editors whose Permission Groups overlap this list may edit or delete the content.'
 required: false
 translatable: true
 default_value: {  }
