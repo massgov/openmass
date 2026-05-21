@@ -147,6 +147,13 @@ class MassOrgAccessHooks {
     if (!$entity instanceof FieldableEntityInterface) {
       return;
     }
+    // Pre-fill only for new content (creator's own org). Existing
+    // entities are populated exclusively by drush moab — if they are
+    // still empty when an editor opens the form, they remain empty and
+    // stay admin-only-editable.
+    if (!$entity->isNew()) {
+      return;
+    }
     $this->orgAccessChecker->populateOwnerGroupsFromCurrentUser($entity);
   }
 

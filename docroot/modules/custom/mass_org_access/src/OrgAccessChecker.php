@@ -129,14 +129,13 @@ class OrgAccessChecker {
   }
 
   /**
-   * Pre-fills field_content_organization from the current user's terms.
+   * Sets field_content_organization to the current user's org terms.
    *
-   * Reads the editor's field_user_org terms and walks taxonomy ancestors,
-   * writing the union to field_content_organization. Called from
-   * entity_prepare_form. Source of truth is the user's Org Taxonomy
-   * assignment — never the entity's field_organizations. Skipped when the
-   * user has no org assigned or when the field already has a value (don't
-   * override editor / backfill choices).
+   * Reads the editor's field_user_org terms, walks taxonomy ancestors,
+   * and writes the union. Skipped when the user has no org assigned or
+   * the field already has a value. The caller decides when to invoke
+   * this — the entity_prepare_form hook calls it only for new content;
+   * existing content is left to drush moab.
    */
   public function populateOwnerGroupsFromCurrentUser(EntityInterface $entity): void {
     if (!$entity->hasField('field_content_organization')) {

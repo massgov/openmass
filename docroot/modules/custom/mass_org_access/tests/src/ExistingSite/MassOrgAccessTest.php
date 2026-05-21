@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_org_access\ExistingSite;
 
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
@@ -773,50 +774,41 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Form_alter pre-fills Organization Owner Groups on the EDIT form.
+   * Edit form does not pre-fill Owner Groups on existing content.
    *
-   * Triggered when field_content_organization is empty (un-backfilled
-   * existing content). Authors with bypass permission then see the
-   * derived value before save.
+   * Existing entities are populated only by drush moab. If their Owner
+   * Groups are still empty when an editor opens the form, the field
+   * must stay empty so admin-only-editable holds — the editor's own
+   * field_user_org must not seep in.
    */
-  public function testFormAlterPreFillsEmptyContentOrgOnEditForm(): void {
+  public function testEditFormDoesNotPreFillOwnerGroupsOnExistingContent(): void {
     \Drupal::currentUser()->setAccount($this->userA);
+
     $node = $this->createNode([
       'type' => 'info_details',
       'title' => 'Existing un-backfilled ' . $this->randomMachineName(),
-      'field_organizations' => [$this->orgPageA->id()],
+      'field_organizations' => [$this->orgPageB->id()],
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    // Simulate un-backfilled state — clear via DB to bypass our presave sync.
-    \Drupal::database()
-      ->delete('node__field_content_organization')
-      ->condition('entity_id', $node->id())
-      ->execute();
-    \Drupal::database()
-      ->delete('node_revision__field_content_organization')
-      ->condition('entity_id', $node->id())
-      ->execute();
+    foreach (['node__field_content_organization', 'node_revision__field_content_organization'] as $table) {
+      \Drupal::database()
+        ->delete($table)
+        ->condition('entity_id', $node->id())
+        ->execute();
+    }
     \Drupal::entityTypeManager()->getStorage('node')->resetCache([$node->id()]);
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
-
-    $this->assertEmpty(
-      $node->get('field_content_organization')->getValue(),
-      'Sanity: field is empty before form load.'
-    );
 
     $form_object = \Drupal::entityTypeManager()
       ->getFormObject('node', 'default')
       ->setEntity($node);
-    $form_state = (new \Drupal\Core\Form\FormState())->setFormObject($form_object);
+    $form_state = (new FormState())->setFormObject($form_object);
     \Drupal::formBuilder()->buildForm($form_object, $form_state);
 
-    // The form's entity (not necessarily the local $node reference) is what
-    // the widget reads from at render time.
-    $entity_in_form = $form_object->getEntity();
-    $this->assertNotEmpty(
-      $entity_in_form->get('field_content_organization')->getValue(),
-      'Form_alter pre-fills field_content_organization from existing field_organizations.'
+    $this->assertEmpty(
+      $form_object->getEntity()->get('field_content_organization')->getValue(),
+      'Owner Groups must stay empty on an existing entity — populated only by drush moab.'
     );
   }
 
@@ -835,7 +827,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $form_object = \Drupal::entityTypeManager()
       ->getFormObject('node', 'default')
       ->setEntity($entity);
-    $form_state = (new \Drupal\Core\Form\FormState())->setFormObject($form_object);
+    $form_state = (new FormState())->setFormObject($form_object);
     \Drupal::formBuilder()->buildForm($form_object, $form_state);
 
     $this->assertNotEmpty(
@@ -866,7 +858,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $form_object = \Drupal::entityTypeManager()
       ->getFormObject('node', 'default')
       ->setEntity($entity);
-    $form_state = (new \Drupal\Core\Form\FormState())->setFormObject($form_object);
+    $form_state = (new FormState())->setFormObject($form_object);
     \Drupal::formBuilder()->buildForm($form_object, $form_state);
     $entity = $form_object->getEntity();
 
