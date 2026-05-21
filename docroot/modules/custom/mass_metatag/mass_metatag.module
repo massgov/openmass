@@ -37,6 +37,10 @@ function mass_metatag_token_info() {
     'description' => t('The microsites which contain the current node within their hierarchy.'),
     'type' => 'entity_hierarchy_microsite',
   ];
+  $info['tokens']['node']['mass_microsite_title_segment'] = [
+    'name' => t('Microsite title segment'),
+    'description' => t('Inserts " | [Microsite name]" for pages in a microsite, or empty otherwise.'),
+  ];
   $info['tokens']['node']['mass_organizations'] = [
     'name' => t('Related organizations'),
     'description' => t('The organizations related to the current node.'),
@@ -326,6 +330,21 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             }
 
             $replacements[$original] = implode(',', $micrositeIds);
+          }
+          break;
+
+        case 'mass_microsite_title_segment':
+          if (!empty($data['node']) && $data['node'] instanceof NodeInterface) {
+            /** @var \Drupal\mass_microsites\NearestMicrositeLookup $nearest_microsite_lookup */
+            $nearest_microsite_lookup = \Drupal::service('mass_microsites.nearest_microsite_lookup');
+            $microsite = $nearest_microsite_lookup->getNearestMicrosite($data['node']);
+            if ($microsite) {
+              $replacements[$original] = ' | ' . $microsite->label();
+              $bubbleable_metadata->addCacheableDependency($microsite);
+            }
+            else {
+              $replacements[$original] = '';
+            }
           }
           break;
         case 'mass_organizations':
