@@ -978,41 +978,31 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Owner Groups widget is hidden from regular editors when enforcement is off.
+   * Owner Groups widget is visible to editors regardless of the switch.
    *
-   * While the gate is off (rollout phase), only bypass users see the
-   * widget so auto-populate runs invisibly and editors do not have to
-   * think about the field.
+   * Field-level access is not restricted — any role that can edit the
+   * host entity sees the widget. The enforcement switch only gates the
+   * access decision on update/delete, not who can read/write the
+   * Owner Groups field on the form.
    */
-  public function testOrgOwnerGroupsFieldHiddenFromEditorsWhenEnforcementOff(): void {
-    \Drupal::state()->set('mass_org_access.enforce', FALSE);
+  public function testOwnerGroupsFieldVisibleToEditorsRegardlessOfSwitch(): void {
     $node = $this->createTestNode('info_details', $this->orgPageA);
 
-    $this->assertFalse(
+    \Drupal::state()->set('mass_org_access.enforce', FALSE);
+    $this->assertTrue(
       $node->get('field_content_organization')->access('edit', $this->userA),
-      'Enforcement OFF: regular editor must NOT be able to edit field_content_organization.'
+      'Editor must see Owner Groups widget with enforcement OFF.'
     );
+
+    \Drupal::state()->set('mass_org_access.enforce', TRUE);
+    $this->assertTrue(
+      $node->get('field_content_organization')->access('edit', $this->userA),
+      'Editor must see Owner Groups widget with enforcement ON.'
+    );
+
     $this->assertTrue(
       $node->get('field_content_organization')->access('view', $this->userA),
-      'View access for field_content_organization stays neutral.'
-    );
-  }
-
-  /**
-   * Owner Groups widget is exposed to editors once enforcement is on.
-   *
-   * Once the gate is enabled the field-level guard yields to Drupal's
-   * default permissions so editors with save perm can broaden access
-   * by adding more org terms.
-   */
-  public function testOrgOwnerGroupsFieldVisibleToEditorsWhenEnforcementOn(): void {
-    // setUp() already flipped enforcement ON; spelled out here for clarity.
-    \Drupal::state()->set('mass_org_access.enforce', TRUE);
-    $node = $this->createTestNode('info_details', $this->orgPageA);
-
-    $this->assertTrue(
-      $node->get('field_content_organization')->access('edit', $this->userA),
-      'Enforcement ON: regular editor must be able to edit field_content_organization.'
+      'View access for Owner Groups stays neutral.'
     );
   }
 

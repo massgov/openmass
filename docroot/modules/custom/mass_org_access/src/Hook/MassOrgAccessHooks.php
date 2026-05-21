@@ -51,42 +51,24 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Restricts who can edit org-related fields.
+   * Locks field_user_org to users with `administer users`.
    *
-   * - field_user_org: users cannot self-assign organizations; only accounts
-   *   with 'administer users' may edit.
-   * - field_content_organization: only accounts with 'bypass org access'
-   *   (admins / content_team) see and edit it on the entity form. The
-   *   widget is therefore hidden from regular editors automatically.
-   *
-   * View access stays neutral in both cases.
+   * Prevents an editor from self-assigning organizations on
+   * `/user/UID/edit`. View access stays neutral so editors can still
+   * see the org listed on user pages. field_content_organization is
+   * not restricted here — anyone who can edit the host entity may edit
+   * the widget.
    */
   #[Hook('entity_field_access')]
   public function entityFieldAccess(string $operation, FieldDefinitionInterface $field, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
-    $field_name = $field->getName();
-    if ($field_name === 'field_user_org') {
-      if ($operation === 'view') {
-        return AccessResult::neutral();
-      }
-      return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
-        ->cachePerPermissions();
-    }
-    if ($field_name === 'field_content_organization') {
-      if ($operation === 'view') {
-        return AccessResult::neutral();
-      }
-      // While enforcement is off (rollout phase), only bypass users
-      // (admins / content_team) may edit the widget so the auto-populate
-      // flow runs invisibly. Once enforcement is on, the field is
-      // exposed to editors with save permission so they can broaden
-      // access by adding more org terms.
-      if (!$this->settings->isEnforcementEnabled()) {
-        return AccessResult::forbiddenIf(!$account->hasPermission('bypass org access'))
-          ->cachePerPermissions();
-      }
+    if ($field->getName() !== 'field_user_org') {
       return AccessResult::neutral();
     }
-    return AccessResult::neutral();
+    if ($operation === 'view') {
+      return AccessResult::neutral();
+    }
+    return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
+      ->cachePerPermissions();
   }
 
   /**

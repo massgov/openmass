@@ -9,10 +9,10 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 /**
  * Verifies the Organization Owner Groups widget visibility per role.
  *
- * Release 1 keeps enforcement off and only users with the
- * `bypass org access` permission (administrator, content_team) can see
- * the `field_content_organization` widget on add forms. Regular editors
- * must not see it until Release 2 opens it up.
+ * Any role with edit access to the host entity must see the
+ * `field_content_organization` widget on the add form — there is no
+ * extra field-level guard. The enforcement switch state does not
+ * change widget visibility.
  */
 class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBase {
 
@@ -86,10 +86,8 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
    * Builds a user with the requested role plus enough perms to reach add forms.
    *
    * `bypass node access` + `administer media` + `create document media`
-   * unblock GET on /node/add/* and /media/add/document regardless of the
-   * test role's bundle-specific permissions. Widget visibility is gated
-   * by `bypass org access` (independent of the above), which only the
-   * administrator and content_team roles grant.
+   * unblock GET on /node/add/* and /media/add/document regardless of
+   * the test role's bundle-specific permissions.
    */
   private function createRoleUser(string $role) {
     $user = $this->createUser([
@@ -159,9 +157,8 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   /**
    * Bundles × roles for the node add form.
    *
-   * 28 bundles × 3 roles = 84 cases. Widget is visible when the role
-   * carries `bypass org access` (administrator, content_team) and hidden
-   * for plain editor in Release 1.
+   * 28 bundles × 3 roles = 84 cases. Widget is visible to every role
+   * with edit access to the host entity.
    */
   public static function nodeWidgetVisibilityProvider(): array {
     $bundles = [
@@ -197,7 +194,7 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
     $roles = [
       'administrator' => TRUE,
       'content_team' => TRUE,
-      'editor' => FALSE,
+      'editor' => TRUE,
     ];
     $cases = [];
     foreach ($bundles as $bundle) {
@@ -221,7 +218,7 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
     return [
       'administrator-visible' => ['administrator', TRUE],
       'content_team-visible' => ['content_team', TRUE],
-      'editor-hidden' => ['editor', FALSE],
+      'editor-visible' => ['editor', TRUE],
     ];
   }
 
