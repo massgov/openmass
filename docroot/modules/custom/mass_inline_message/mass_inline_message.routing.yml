@@ -1,0 +1,23 @@
+mass_inline_message.dialog:
+  path: '/mass-inline-message/dialog/{filter_format}'
+  defaults:
+    _form: '\Drupal\mass_inline_message\Form\MassInlineMessageDialog'
+    _title: 'Message box'
+  requirements:
+    _custom_access: '\Drupal\mass_inline_message\Form\MassInlineMessageDialog::access'
+  options:
+    parameters:
+      filter_format:
+        type: entity:filter_format
+
+mass_inline_message.preview:
+  path: '/mass-inline-message/preview/{filter_format}'
+  defaults:
+    _controller: '\Drupal\mass_inline_message\Controller\MassInlineMessagePreviewController::preview'
+  methods: [POST]
+  requirements:
+    _custom_access: '\Drupal\mass_inline_message\Form\MassInlineMessageDialog::access'
+  options:
+    parameters:
+      filter_format:
+        type: entity:filter_format

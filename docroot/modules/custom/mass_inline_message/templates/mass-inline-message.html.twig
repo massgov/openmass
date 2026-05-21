@@ -1,0 +1,16 @@
+{% include '@molecules/inline-message.twig' with {
+  inlineMessage: {
+    type: type,
+    heading: heading,
+    richText: body ? {
+      rteElements: [{
+        path: '@atoms/11-text/raw-html.twig',
+        data: {
+          rawHtml: {
+            content: body,
+          },
+        },
+      }],
+    } : null,
+  },
+} %}

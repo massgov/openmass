@@ -1,0 +1,227 @@
+<?php
+
+/**
+ * @file
+ * Mass Inline Message module hooks.
+ */
+
+use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\mass_inline_message\Plugin\Filter\FilterMassInlineMessage;
+use Drupal\mayflower\Helper;
+
+/**
+ * Implements hook_entity_bundle_field_info_alter().
+ */
+function mass_inline_message_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  $rich_text_field_types = [
+    'text_long',
+    'text_with_summary',
+    'string_long',
+  ];
+
+  foreach ($fields as &$field) {
+    if ($field instanceof FieldConfig && in_array($field->getType(), $rich_text_field_types, TRUE)) {
+      $field->addPropertyConstraints('value', [
+        'InlineMessageConstraint' => [],
+      ]);
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_inline_message_theme() {
+  return [
+    'mass_inline_message' => [
+      'variables' => [
+        'type' => 'info',
+        'heading' => '',
+        'body' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Applies Maxlength module attributes to a form element.
+ *
+ * Mirrors maxlength_field_widget_single_element_form_alter() for custom forms.
+ *
+ * @param array $element
+ *   A textfield, textarea, or text_format form element.
+ * @param int $limit
+ *   Maximum plain-text character count.
+ * @param array $options
+ *   Options with keys: enforce (bool), label (string).
+ */
+function mass_inline_message_apply_maxlength(array &$element, int $limit, array $options = []): void {
+  $enforce = $options['enforce'] ?? TRUE;
+  $label = $options['label'] ?? t('Content limited to @limit characters, remaining: <strong>@remaining</strong>');
+
+  $element['#maxlength_js'] = TRUE;
+  $element['#attributes']['class'][] = 'maxlength';
+  $element['#attached']['library'][] = 'maxlength/maxlength';
+  $element['#attributes']['data-maxlength'] = $limit;
+  $element['#attributes']['maxlength_js_label'][] = $label;
+
+  if ($enforce) {
+    $element['#attributes']['class'][] = 'maxlength_js_enforce';
+    $element['#attributes']['#maxlength_js_enforce'] = TRUE;
+  }
+
+  if (isset($element['value'])) {
+    $element['value']['#maxlength_js'] = TRUE;
+    $element['value']['#attributes']['class'][] = 'maxlength';
+    $element['value']['#attributes']['data-maxlength'] = $limit;
+    $element['value']['#attributes']['maxlength_js_label'][] = $label;
+    if ($enforce) {
+      $element['value']['#attributes']['class'][] = 'maxlength_js_enforce';
+      $element['value']['#attributes']['#maxlength_js_enforce'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Builds Mayflower inline-message render array from stored values.
+ *
+ * @param string $type
+ *   Mayflower type: info or warning.
+ * @param string $heading
+ *   Message title.
+ * @param string|null $body
+ *   Filtered HTML body or NULL.
+ *
+ * @return array
+ *   Render array for #theme mass_inline_message.
+ */
+function mass_inline_message_build_render_array(string $type, string $heading, ?string $body = NULL): array {
+  return [
+    '#theme' => 'mass_inline_message',
+    '#type' => $type,
+    '#heading' => $heading,
+    '#body' => $body ? Markup::create($body) : NULL,
+  ];
+}
+
+/**
+ * Renders Mayflower inline-message HTML (same output as filter_mass_inline_message).
+ *
+ * @param bool $inline_svg
+ *   When TRUE, replaces svg-placeholder tags with embeds (for CKEditor preview).
+ */
+function mass_inline_message_render_html(string $type, string $heading, ?string $body = NULL, bool $inline_svg = FALSE): string {
+  $render_array = mass_inline_message_build_render_array($type, $heading, $body);
+  $html = (string) \Drupal::service('renderer')->renderPlain($render_array);
+  if ($inline_svg) {
+    $html = mass_inline_message_process_svg_placeholders($html);
+  }
+  return $html;
+}
+
+/**
+ * Inlines Mayflower SVG placeholders for contexts without SvgProcessor.
+ */
+function mass_inline_message_process_svg_placeholders(string $html): string {
+  if (strpos($html, '<svg-placeholder') === FALSE) {
+    return $html;
+  }
+
+  $inlined = [];
+  preg_match_all('/<svg-placeholder\s+path="([^"]*)"(?:[^>]*width="([^"]*)")?(?:[^>]*height="([^"]*)")?(?:[^>]*class="([^"]*)")?[^>]*>/', $html, $matches, PREG_SET_ORDER);
+
+  foreach ($matches as $match) {
+    $path = $match[1];
+    $dimensions = array_filter([
+      'width' => $match[2] ?? '',
+      'height' => $match[3] ?? '',
+      'class' => $match[4] ?? '',
+    ]);
+
+    $svg_node = Helper::getSvg($path);
+    if (!$svg_node) {
+      continue;
+    }
+
+    $hash = md5($path);
+    if (!$dimensions) {
+      if ($svg_node->hasAttribute('width')) {
+        $dimensions['width'] = $svg_node->getAttribute('width');
+      }
+      if ($svg_node->hasAttribute('height')) {
+        $dimensions['height'] = $svg_node->getAttribute('height');
+      }
+    }
+
+    $svg_node->setAttribute('id', $hash);
+    $replacement = Helper::getSvgEmbed($hash, $dimensions);
+    $inlined[] = Helper::getSvgSource($hash, $svg_node);
+    $html = preg_replace(
+      sprintf('/<svg-placeholder\s+path="%s"[^>]*>/', preg_quote($path, '/')),
+      $replacement,
+      $html
+    );
+  }
+
+  if ($inlined) {
+    $html .= Helper::wrapInlinedSvgs($inlined);
+  }
+
+  return $html;
+}
+
+/**
+ * Unwraps a single CKEditor-exported div wrapper around message body HTML.
+ */
+function mass_inline_message_unwrap_ckeditor_div(string $body_html): string {
+  $body_html = trim($body_html);
+  if ($body_html === '') {
+    return '';
+  }
+
+  if (preg_match('#^<div[^>]*>(.*)</div>$#is', $body_html, $matches)) {
+    $inner = trim($matches[1]);
+    if ($inner !== '') {
+      return $inner;
+    }
+  }
+
+  return $body_html;
+}
+
+/**
+ * Extracts raw message body HTML from a mass-inline-message element.
+ */
+function mass_inline_message_extract_raw_body_html(\DOMElement $node): string {
+  $body_html = '';
+  foreach ($node->childNodes as $child) {
+    $body_html .= $node->ownerDocument->saveHTML($child);
+  }
+  return mass_inline_message_unwrap_ckeditor_div($body_html);
+}
+
+/**
+ * Extracts and normalizes message body HTML from a mass-inline-message element.
+ */
+function mass_inline_message_extract_body_html(\DOMElement $node): string {
+  return mass_inline_message_normalize_body_html(mass_inline_message_extract_raw_body_html($node));
+}
+
+/**
+ * Normalizes message body HTML for validation and rendering.
+ *
+ * CKEditor data export wraps the body in a single div; unwrap it. Sanitize with
+ * the same allowlist used when saving from the dialog.
+ */
+function mass_inline_message_normalize_body_html(string $body_html): string {
+  $body_html = mass_inline_message_unwrap_ckeditor_div($body_html);
+  if ($body_html === '') {
+    return '';
+  }
+
+  return Xss::filter($body_html, FilterMassInlineMessage::ALLOWED_BODY_TAGS);
+}

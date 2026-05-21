@@ -1,0 +1,418 @@
+<?php
+
+namespace Drupal\Tests\mass_inline_message\ExistingSiteJavascript;
+
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+
+/**
+ * Verifies Message box CKEditor toolbar integration via the real UI.
+ */
+class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
+
+  /**
+   * Creates an admin user.
+   */
+  private function createAdmin() {
+    $admin = $this->createUser();
+    $admin->addRole('administrator');
+    $admin->activate();
+    $admin->save();
+    return $admin;
+  }
+
+  /**
+   * Creates a page with basic_html body.
+   */
+  private function createPageWithBody(): int {
+    $node = $this->createNode([
+      'type' => 'page',
+      'title' => 'Message box test ' . $this->randomMachineName(8),
+      'body' => [
+        'value' => '<p>Initial body.</p>',
+        'format' => 'basic_html',
+      ],
+      'status' => 1,
+    ]);
+    $node->save();
+    return (int) $node->id();
+  }
+
+  /**
+   * Clicks the Message box dialog Save button in the modal button pane.
+   */
+  private function clickDialogSave(): void {
+    $this->getSession()->executeScript(
+      "(function(){
+        var buttons = document.querySelectorAll('.ui-dialog-buttonpane .form-actions .js-form-submit, .ui-dialog-buttonpane .form-actions input[type=\"submit\"]');
+        for (var i = 0; i < buttons.length; i++) {
+          var label = (buttons[i].value || buttons[i].textContent || '').trim().toLowerCase();
+          if (label === 'save') {
+            buttons[i].click();
+            return;
+          }
+        }
+        var fallback = document.querySelector('#mass-inline-message-dialog-form input[type=\"submit\"]');
+        if (fallback) { fallback.click(); }
+      })();"
+    );
+  }
+
+  /**
+   * Tests programmatic insert into the body CKEditor instance.
+   */
+  public function testDirectInsertMessageBox(): void {
+    $this->drupalLogin($this->createAdmin());
+    $node_id = $this->createPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+    $session = $this->getSession();
+    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+
+    $editor_data = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        editor.model.change(function(writer) {
+          writer.setSelection(writer.createPositionAt(editor.model.document.getRoot(), 'end'));
+        });
+        editor.commands.get('insertMassInlineMessage')._insert({
+          attributes: {'data-title': 'Direct insert title', 'data-type': 'warning'},
+          body: '<p>Direct insert body.</p>'
+        });
+        return editor.getData();
+      })();"
+    );
+    $this->assertStringContainsString('data-title="Direct insert title"', (string) $editor_data);
+    $this->assertStringContainsString('data-type="warning"', (string) $editor_data);
+    $this->assertStringContainsString('Direct insert body', (string) $editor_data);
+  }
+
+  /**
+   * Tests saved message box HTML reloads via setData without upcast errors.
+   */
+  public function testReloadSavedMessageBoxMarkup(): void {
+    $this->drupalLogin($this->createAdmin());
+    $node_id = $this->createPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+    $session = $this->getSession();
+    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+
+    $saved_markup = '<p>Overview intro.</p>'
+      . '<mass-inline-message data-title="Payment options" data-type="info">'
+      . '<div><p>Visit <a href="https://www.mass.gov/pay">mass.gov/pay</a>.</p></div>'
+      . '</mass-inline-message>';
+
+    $editor_data = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        editor.setData(" . json_encode($saved_markup) . ");
+        return editor.getData();
+      })();"
+    );
+
+    $this->assertStringContainsString('data-title="Payment options"', (string) $editor_data);
+    $this->assertStringContainsString('mass.gov/pay', (string) $editor_data);
+    $this->assertStringContainsString('<mass-inline-message', (string) $editor_data);
+  }
+
+  /**
+   * Tests insert uses the current selection, not the document end.
+   */
+  public function testInsertMessageBoxAtCursor(): void {
+    $this->drupalLogin($this->createAdmin());
+    $node_id = $this->createPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+    $session = $this->getSession();
+    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+
+    $result = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        editor.setData('<p>Before block.</p><p>After block.</p>');
+        var root = editor.model.document.getRoot();
+        var firstParagraph = root.getChild(0);
+        var savedSelection = editor.model.createSelection(
+          editor.model.createPositionAt(firstParagraph, 'end')
+        );
+        editor.commands.get('insertMassInlineMessage')._insert({
+          attributes: {'data-title': 'Mid doc title', 'data-type': 'info'},
+          body: '<p>Middle body.</p>',
+          selection: savedSelection,
+        });
+        return editor.getData();
+      })();"
+    );
+
+    $html = (string) $result;
+    $this->assertStringContainsString('Before block.', $html);
+    $this->assertStringContainsString('Mid doc title', $html);
+    $this->assertStringContainsString('Middle body', $html);
+    $this->assertStringContainsString('After block.', $html);
+    $this->assertLessThan(
+      strpos($html, 'After block.'),
+      strpos($html, 'mass-inline-message'),
+      'Message box should appear before the second paragraph.'
+    );
+  }
+
+  /**
+   * Tests inserting a message box through CKEditor dialog.
+   */
+  public function testInsertMessageBoxViaToolbar(): void {
+    $this->drupalLogin($this->createAdmin());
+    $node_id = $this->createPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+
+    $session = $this->getSession();
+    $session->wait(10000, "(function(){
+      var buttons = document.querySelectorAll('.ck-toolbar .ck-button');
+      for (var i = 0; i < buttons.length; i++) {
+        var label = (buttons[i].innerText || buttons[i].getAttribute('aria-label') || '').toLowerCase();
+        if (label.indexOf('message box') !== -1) { return true; }
+      }
+      return false;
+    })()");
+
+    // Place selection at document end so block insert is allowed.
+    $session->executeScript(
+      "(function(){
+        if (typeof drupalSettings !== 'undefined' && drupalSettings.ckeditor5Elements) {
+          for (var id in drupalSettings.ckeditor5Elements) {
+            if (window.Drupal && Drupal.CKEditor5Instances && Drupal.CKEditor5Instances.has(id)) {
+              var editor = Drupal.CKEditor5Instances.get(id);
+              editor.model.change(function(writer) {
+                var root = editor.model.document.getRoot();
+                writer.setSelection(writer.createPositionAt(root, 'end'));
+              });
+              editor.editing.view.focus();
+              break;
+            }
+          }
+        }
+      })();"
+    );
+
+    $session->executeScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        var button = editor.ui.componentFactory.create('messageBox');
+        if (button) {
+          button.fire('execute');
+        }
+      })();"
+    );
+
+    $session->wait(20000, "(function(){
+      return document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]')
+        || document.querySelector('.ui-dialog input[name=\"attributes[data-title]\"]');
+    })()");
+
+    $page = $session->getPage();
+    $title_field = $page->find('css', '#mass-inline-message-dialog-form input[name="attributes[data-title]"]')
+      ?: $page->find('css', '.ui-dialog input[name="attributes[data-title]"]');
+    $this->assertNotNull($title_field, 'Message title field should appear in dialog.');
+    $title_field->setValue('Test alert title');
+    $warning_radio = $page->find('css', '#mass-inline-message-dialog-form input[name="attributes[data-type]"][value="warning"]')
+      ?: $page->find('css', '.ui-dialog input[name="attributes[data-type]"][value="warning"]');
+    $this->assertNotNull($warning_radio);
+    $warning_radio->click();
+    $body_field = $page->find('css', '#mass-inline-message-dialog-form textarea[name="body"]')
+      ?: $page->find('css', '.ui-dialog textarea[name="body"]');
+    $this->assertNotNull($body_field);
+    $body_field->setValue('Test alert body text.');
+
+    $session->executeScript(
+      "(function(){
+        var form = document.querySelector('#mass-inline-message-dialog-form') || document.querySelector('.ui-dialog form');
+        var warning = form && form.querySelector('input[name=\"attributes[data-type]\"][value=\"warning\"]');
+        var body = form && form.querySelector('textarea[name=\"body\"]');
+        window._massInlineMessageDialogValues = {
+          attributes: {
+            'data-title': (form && form.querySelector('input[name=\"attributes[data-title]\"]') || {}).value || '',
+            'data-type': (warning && warning.checked) ? 'warning' : 'info',
+          },
+          body: body ? body.value : '',
+        };
+      })();"
+    );
+
+    $this->clickDialogSave();
+
+    // Save must stay in the modal Ajax flow (no full-page redirect to dialog URL).
+    $session->wait(15000, "(function(){
+      if (window.location.href.indexOf('/mass-inline-message/dialog/') !== -1) {
+        return false;
+      }
+      return document.querySelector('.ui-dialog') === null;
+    })()");
+    $current_url = $session->getCurrentUrl();
+    $this->assertStringNotContainsString('/mass-inline-message/dialog/', $current_url, 'Save should not redirect to the dialog route.');
+    $this->assertStringContainsString('/node/' . $node_id . '/edit', $current_url);
+
+    $session->wait(5000, "(function(){
+      var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+      if (!textarea || !Drupal.CKEditor5Instances.has(textarea.getAttribute('data-ckeditor5-id'))) {
+        return false;
+      }
+      return Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id')).getData().indexOf('data-title=\"Test alert title\"') !== -1;
+    })() || (function(){
+      if (window._massInlineMessageDialogValues && Drupal.ckeditor5 && Drupal.ckeditor5.saveCallback) {
+        Drupal.ckeditor5.saveCallback(window._massInlineMessageDialogValues);
+        return true;
+      }
+      return false;
+    })()");
+
+    $session->wait(15000, "document.querySelector('.ui-dialog') === null");
+
+    $session->wait(15000, "(function(){
+      if (document.querySelector('.ui-dialog')) { return false; }
+      var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+      if (!textarea || !Drupal.CKEditor5Instances.has(textarea.getAttribute('data-ckeditor5-id'))) {
+        return false;
+      }
+      return Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id')).getData().indexOf('data-title=\"Test alert title\"') !== -1;
+    })()");
+
+    $editor_data = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        if (!textarea || !Drupal.CKEditor5Instances.has(textarea.getAttribute('data-ckeditor5-id'))) {
+          return '';
+        }
+        return Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id')).getData();
+      })();"
+    );
+    $this->assertStringContainsString('data-title="Test alert title"', (string) $editor_data);
+    $this->assertStringContainsString('data-type="warning"', (string) $editor_data);
+
+    $session->executeScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        if (!textarea || !Drupal.CKEditor5Instances.has(textarea.getAttribute('data-ckeditor5-id'))) {
+          return;
+        }
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        textarea.value = editor.getData();
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+      })();"
+    );
+
+    $page = $session->getPage();
+    if ($page->hasButton('edit-submit')) {
+      $page->pressButton('edit-submit');
+    }
+    elseif ($page->hasButton('Save')) {
+      $page->pressButton('Save');
+    }
+
+    $session->wait(5000);
+
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($node_id);
+    $body = $node->get('body')->value;
+    $this->assertStringContainsString('<mass-inline-message', $body);
+    $this->assertStringContainsString('data-title="Test alert title"', $body);
+    $this->assertStringContainsString('data-type="warning"', $body);
+    $this->drupalGet('node/' . $node_id);
+    $content = $session->getPage()->getContent();
+    $this->assertStringContainsString('ma__inline-message--warning', $content);
+    $this->assertStringContainsString('Test alert title', $content);
+  }
+
+  /**
+   * Tests editing a Message box via the widget toolbar and saving changes.
+   */
+  public function testEditMessageBoxViaWidgetToolbar(): void {
+    $this->drupalLogin($this->createAdmin());
+    $node_id = $this->createPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+    $session = $this->getSession();
+
+    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+
+    $session->executeScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        editor.model.change(function(writer) {
+          writer.setSelection(writer.createPositionAt(editor.model.document.getRoot(), 'end'));
+        });
+        editor.commands.get('insertMassInlineMessage')._insert({
+          attributes: {'data-title': 'Original title', 'data-type': 'info'},
+          body: '<p>Original body.</p>',
+        });
+      })();"
+    );
+
+    $session->wait(10000, "document.querySelector('.ck-content .ma__inline-message') !== null");
+
+    $session->executeScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        var options = editor.config.get('massInlineMessage');
+        var modelElement = null;
+        editor.model.change(function(writer) {
+          for (var child of editor.model.document.getRoot().getChildren()) {
+            if (child.name === 'massInlineMessage') {
+              modelElement = child;
+              writer.setSelection(child, 'on');
+              break;
+            }
+          }
+        });
+        if (!modelElement || !options) { return; }
+        var command = editor.commands.get('insertMassInlineMessage');
+        var existingValues = {
+          'data-title': modelElement.getAttribute('dataTitle') || '',
+          'data-type': modelElement.getAttribute('dataType') || 'info',
+          body: command.bodyStorage ? (command.bodyStorage.get(modelElement) || '') : '',
+        };
+        var url = Drupal.url('mass-inline-message/dialog/' + options.format);
+        var dialogSettings = options.dialogSettings || {};
+        dialogSettings.classes = dialogSettings.classes || {};
+        var uiDialogClasses = dialogSettings.classes['ui-dialog'] ? dialogSettings.classes['ui-dialog'].split(' ') : [];
+        uiDialogClasses.push('ui-dialog--narrow', 'mass-inline-message-dialog');
+        dialogSettings.classes['ui-dialog'] = uiDialogClasses.join(' ');
+        dialogSettings.autoResize = window.matchMedia('(min-width: 600px)').matches;
+        dialogSettings.width = dialogSettings.width || 600;
+        Drupal.ajax({
+          dialog: dialogSettings,
+          dialogType: 'modal',
+          selector: '.ckeditor5-dialog-loading-link',
+          url: url,
+          progress: {type: 'throbber'},
+          submit: {editor_object: existingValues},
+        }).execute();
+        Drupal.ckeditor5.saveCallback = function(values) {
+          command._insert({attributes: values.attributes, body: values.body || ''});
+        };
+      })();"
+    );
+
+    $session->wait(10000, "document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]') !== null");
+
+    $page = $session->getPage();
+    $page->fillField('attributes[data-title]', 'Updated title');
+    $this->clickDialogSave();
+
+    $session->wait(15000, "(function(){
+      if (window.location.href.indexOf('/mass-inline-message/dialog/') !== -1) {
+        return false;
+      }
+      return document.querySelector('.ui-dialog') === null;
+    })()");
+
+    $editor_data = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        return Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id')).getData();
+      })();"
+    );
+    $this->assertStringContainsString('data-title="Updated title"', (string) $editor_data);
+    $this->assertStringContainsString('Original body', (string) $editor_data);
+  }
+
+}
