@@ -1,4 +1,7 @@
 /**
+ * @param $
+ * @param Drupal
+ * @param drupalSettings
  * @file
  * Keeps Message box dialog Save on the Ajax modal flow (Drupal 11).
  *
@@ -54,7 +57,7 @@
       url: $form.attr('action') || window.location.href,
       event: 'click',
       setClick: true,
-      progress: {type: 'throbber'},
+      progress: {type: 'throbber'}
     });
     ajax.eventResponse(button, $.Event('click'));
 
@@ -208,7 +211,7 @@
           wireDialogContent(dialogContent);
         });
       }
-    },
+    }
   };
 
   window.addEventListener('dialog:aftercreate', function (event) {
