@@ -173,3 +173,10 @@ function _mass_entity_usage_get_nested_paragraph_ids(array $paragraph_ids) {
 function mass_entity_usage_form_node_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   LinkingPagesWarning::alter($form, $form_state, $form_id);
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_entity_usage_form_media_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  LinkingPagesWarning::alter($form, $form_state, $form_id);
+}

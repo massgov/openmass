@@ -16,7 +16,7 @@
         return;
       }
 
-      once('mass-unpublish-warn', 'form.node-form', context).forEach(function (formEl) {
+      once('mass-unpublish-warn', 'form.node-form, form.media-form', context).forEach(function (formEl) {
         var $form = $(formEl);
 
         function getTargetState() {
