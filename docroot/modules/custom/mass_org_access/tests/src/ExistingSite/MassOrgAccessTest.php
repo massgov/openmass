@@ -905,6 +905,43 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Backfill never overwrites Owner Groups a human has already filled in.
+   *
+   * Uses a term that does NOT appear in any org_page so we can tell the
+   * difference between "skip because equal" and "skip because populated"
+   * — the latter is what protects manual admin additions.
+   */
+  public function testPopulateSkipsEntityWithExistingOwnerGroups(): void {
+    $manualTerm = $this->createTerm(
+      Vocabulary::load('user_organization'),
+      ['name' => 'Manual ' . $this->randomMachineName()]
+    );
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Curated ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id()],
+      'field_content_organization' => [$manualTerm->id()],
+    ]);
+
+    $changed = \Drupal::service('mass_org_access.org_access_checker')
+      ->populateOwnerGroupsFromOrgPage($node);
+
+    $this->assertFalse(
+      $changed,
+      'populateOwnerGroupsFromOrgPage must skip entities with non-empty Owner Groups.'
+    );
+    $tids = array_map('intval', array_column(
+      $node->get('field_content_organization')->getValue(),
+      'target_id'
+    ));
+    $this->assertSame(
+      [(int) $manualTerm->id()],
+      $tids,
+      'Manual Owner Groups value must survive backfill untouched.'
+    );
+  }
+
+  /**
    * Multi-org content gets the union of every referenced org_page's terms.
    *
    * Content tagged to two organizations must end up with Owner Groups

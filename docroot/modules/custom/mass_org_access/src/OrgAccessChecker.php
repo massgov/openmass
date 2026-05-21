@@ -94,6 +94,12 @@ class OrgAccessChecker {
     if ($entity instanceof NodeInterface && $entity->bundle() === 'org_page') {
       return FALSE;
     }
+    // Never overwrite an entity whose Owner Groups are already populated
+    // — admins/content_team may have curated the value by hand. Backfill
+    // only fills empty fields.
+    if (!$entity->get('field_content_organization')->isEmpty()) {
+      return FALSE;
+    }
     if (!$entity->hasField('field_organizations') || $entity->get('field_organizations')->isEmpty()) {
       return FALSE;
     }
@@ -121,14 +127,6 @@ class OrgAccessChecker {
     }
     $new_tids = array_keys($collected);
     sort($new_tids);
-    $current_tids = array_map(
-      'intval',
-      array_column($entity->get('field_content_organization')->getValue(), 'target_id')
-    );
-    sort($current_tids);
-    if ($new_tids === $current_tids) {
-      return FALSE;
-    }
     $entity->set(
       'field_content_organization',
       array_map(fn($tid) => ['target_id' => $tid], $new_tids)
