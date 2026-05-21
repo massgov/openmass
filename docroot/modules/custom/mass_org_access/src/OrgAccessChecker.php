@@ -69,18 +69,18 @@ class OrgAccessChecker {
   }
 
   /**
-   * Backfill: copy field_content_organization from the related org_page.
+   * Backfill: copy field_content_organization from every related org_page.
    *
-   * Reads the entity's first field_organizations value, loads the referenced
-   * org_page, and copies its field_content_organization verbatim. Org_page's
-   * Owner Groups are populated manually by the content team with the term
-   * plus all ancestor terms, so no ancestor walk is needed here.
+   * Iterates every NID in field_organizations, loads each org_page, and
+   * writes the union of their field_content_organization terms onto the
+   * entity. Org_page Owner Groups are curated manually by the content
+   * team and already include ancestor terms — no walk needed.
    *
    * Used by `drush moab` only. Org_page bundle is intentionally skipped:
    * its Owner Groups are the source of truth and must not be overwritten.
-   * If the related org_page has no Owner Groups yet, this method leaves the
-   * entity untouched — per spec, that entity remains admin-only-editable
-   * until org_page is populated.
+   * If none of the related org_pages have any Owner Groups, this method
+   * leaves the entity untouched — that entity remains admin-only-editable
+   * until at least one org_page is populated.
    *
    * @return bool
    *   TRUE if the entity's field_content_organization was updated to a
@@ -97,21 +97,29 @@ class OrgAccessChecker {
     if (!$entity->hasField('field_organizations') || $entity->get('field_organizations')->isEmpty()) {
       return FALSE;
     }
-    $first_org_nid = (int) ($entity->get('field_organizations')->first()->target_id ?? 0);
-    if (!$first_org_nid) {
+    $org_nids = array_values(array_unique(array_filter(array_map(
+      fn(array $item) => (int) ($item['target_id'] ?? 0),
+      $entity->get('field_organizations')->getValue()
+    ))));
+    if (empty($org_nids)) {
       return FALSE;
     }
-    $org_page = $this->entityTypeManager->getStorage('node')->load($first_org_nid);
-    if (!$org_page || !$org_page->hasField('field_content_organization')) {
+    $collected = [];
+    foreach ($this->entityTypeManager->getStorage('node')->loadMultiple($org_nids) as $org_page) {
+      if (!$org_page->hasField('field_content_organization')) {
+        continue;
+      }
+      foreach ($org_page->get('field_content_organization')->getValue() as $item) {
+        $tid = (int) ($item['target_id'] ?? 0);
+        if ($tid) {
+          $collected[$tid] = TRUE;
+        }
+      }
+    }
+    if (empty($collected)) {
       return FALSE;
     }
-    $new_tids = array_values(array_unique(array_map(
-      'intval',
-      array_column($org_page->get('field_content_organization')->getValue(), 'target_id')
-    )));
-    if (empty($new_tids)) {
-      return FALSE;
-    }
+    $new_tids = array_keys($collected);
     sort($new_tids);
     $current_tids = array_map(
       'intval',

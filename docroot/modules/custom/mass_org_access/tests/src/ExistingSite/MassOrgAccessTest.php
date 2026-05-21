@@ -905,6 +905,42 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Multi-org content gets the union of every referenced org_page's terms.
+   *
+   * Content tagged to two organizations must end up with Owner Groups
+   * from both — not just the first one — so editors of either org can
+   * still edit/delete the content after enforcement is on.
+   */
+  public function testPopulateOwnerGroupsUnionsAllReferencedOrgPages(): void {
+    $termB = $this->getUserTermForOrg($this->orgPageB);
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Multi-org ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id(), $this->orgPageB->id()],
+    ]);
+    $node->set('field_content_organization', []);
+
+    $changed = \Drupal::service('mass_org_access.org_access_checker')
+      ->populateOwnerGroupsFromOrgPage($node);
+
+    $this->assertTrue($changed, 'Multi-org populate writes a value.');
+    $tids = array_map('intval', array_column(
+      $node->get('field_content_organization')->getValue(),
+      'target_id'
+    ));
+    $this->assertContains(
+      (int) $this->termA->id(),
+      $tids,
+      'Owner Groups must include terms from the first referenced org_page.'
+    );
+    $this->assertContains(
+      (int) $termB->id(),
+      $tids,
+      'Owner Groups must include terms from the second referenced org_page.'
+    );
+  }
+
+  /**
    * Owner Groups widget is hidden from regular editors when enforcement is off.
    *
    * While the gate is off (rollout phase), only bypass users see the
