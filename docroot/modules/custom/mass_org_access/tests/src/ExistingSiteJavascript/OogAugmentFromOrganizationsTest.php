@@ -260,6 +260,76 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
+   * Real-typing flow on the media.document ADD form.
+   *
+   * Reproduces the path where authors create a new document and pick
+   * an organization via the autocomplete dropdown — the typed value
+   * arrives via jQuery UI's .val() (no native events), and our
+   * polling fallback must catch it and augment Permission Groups.
+   */
+  public function testAutocompleteOnMediaAddPopulatesPermissionGroups(): void {
+    [$orgPage, $term] = $this->pickPublishedOrgPageWithMappedTerm();
+
+    $user = $this->createUser(['bypass node access', 'administer media', 'create document media']);
+    $user->addRole('administrator');
+    $user->activate();
+    $user->save();
+    $this->drupalLogin($user);
+    $this->drupalGet('media/add/document');
+
+    $session = $this->getSession();
+    $page = $session->getPage();
+    $session->executeScript(
+      'document.querySelectorAll("details").forEach(function(d){d.setAttribute("open","open");});'
+    );
+
+    // Clear any baseline rows so the diff is clean — mass_utility may
+    // have pre-filled field_organizations[0] from the user's own org,
+    // and populateOwnerGroupsFromCurrentUser may have pre-filled OOG.
+    $session->executeScript(
+      'document.querySelectorAll(\'input[name^="field_organizations["][name$="[target_id]"]\').forEach(function(i){i.value="";});'
+      . ' var oog=document.querySelector(\'input[name="field_content_organization[target_id]"]\'); if (oog) { oog.value=""; }'
+    );
+
+    $fullLabel = $orgPage->label();
+    $needle = mb_substr($fullLabel, 0, max(8, mb_strlen($fullLabel) - 3));
+    $orgField = $page->find('css', 'input[name="field_organizations[0][target_id]"]');
+    $this->assertNotNull($orgField, 'field_organizations[0] input must exist on media add form.');
+    $orgField->focus();
+    $orgField->setValue($needle);
+    $session->executeScript(sprintf(
+      '(function(){var $i = jQuery(%s); if ($i.autocomplete) {$i.focus(); $i.autocomplete("search", %s);}})();',
+      json_encode('input[name="field_organizations[0][target_id]"]'),
+      json_encode($needle)
+    ));
+
+    $matchScript = sprintf(
+      'Array.from(document.querySelectorAll(".ui-autocomplete li")).filter(function(li){return li.textContent.indexOf(%s) !== -1;}).length',
+      json_encode($needle)
+    );
+    $hasDropdown = $page->waitFor(15, function () use ($session, $matchScript) {
+      return (int) $session->evaluateScript($matchScript) > 0;
+    });
+    $this->assertTrue(
+      $hasDropdown,
+      sprintf('Autocomplete dropdown must surface "%s" on media add form.', $needle)
+    );
+    $session->executeScript(sprintf(
+      'Array.from(document.querySelectorAll(".ui-autocomplete li")).find(function(li){return li.textContent.indexOf(%s) !== -1;})?.querySelector("a, .ui-menu-item-wrapper")?.click();',
+      json_encode($needle)
+    ));
+
+    $tidTag = sprintf('(%d)', $term->id());
+    $appeared = $page->waitFor(8, function () use ($session, $tidTag) {
+      return strpos((string) $session->evaluateScript(self::OOG_INPUT_JS), $tidTag) !== FALSE;
+    });
+    $this->assertTrue(
+      $appeared,
+      sprintf('Mapped term %s should appear in Permission Groups after autocomplete pick on media add form.', $tidTag)
+    );
+  }
+
+  /**
    * Builds the org_page + mapping term + editable entity + admin login.
    *
    * @return array{orgPage: \Drupal\node\NodeInterface, term: \Drupal\taxonomy\TermInterface, entity: \Drupal\Core\Entity\EntityInterface}
