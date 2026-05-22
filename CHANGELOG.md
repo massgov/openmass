@@ -1,38 +1,74 @@
 
 
+## [0.480.1] - May 20, 2026
+
+### Security
+  - DP-47058: Drupal security update 11.3.10
+
+## [0.480.0] - May 19, 2026
+
+### Fixed
+  - DP-45871: Glossary Terms Double-Defining Content and Not Recognizing Full-Term Matches.
+  - DP-46593: Improve keyboard focus visibility on the dark site header, brand banner, and utility navigation.
+  - DP-46594: Updates Mayflower artifacts to fix the global menu drawer edge showing through the translate modal on Android.
+  - DP-46676: Keyboard navigation focus not trapped within global navigation menu.
+  - DP-46853: CSV export from advanced search no longer times out with 503 errors for large organization filters.
+
+### Added
+  - DP-46855: Added a handler to more broadly purge by URL on saves to published content and when unpublishing content.
+
+### Changed
+  - DP-46954: Remove green decorative underline from H3 and H4 in rich text and component headings, and remove extra spacing reserved for that line.
+
+
+
+## [0.479.0] - May 12, 2026
+
+### Added
+  - DP-43779: Add tests for author created friendly URLs (redirects).
+  - DP-46580: Help text to feedback manager.
+  - DP-46681: Added logger for capturing oversized purger headers.
+
+### Fixed
+  - DP-46457: Fix Offered by tab order when show more/less is present.
+  - DP-46555: Fix org past-events pagination and initial results range; DP-39285 regression revert only affects events-page template changes, not the full PR.
+  - DP-46838: Bug - unable to add a new field to a new paragraph.
+
+
+
 ## [0.478.0] - May 5, 2026
 
 ### Removed
   - DP-44256: Removed Percy/Browserstack.
-  
+
 ### Fixed
   - DP-45856: Hide metadata related to robots noindex on the form.
   - DP-46633: Ensure Threads social media icons render for both threads.com and threads.net URLs on organization pages.
-  
+
 ### Changed
   - DP-45941: Allow Editors to Reference Blocked Users in “Authored By” Field for all report filters.
-  
+
 ### Security
   - DP-46553: Document upload incorrectly flagged as virus: patch drupal/clamav to be more axplanatory why file cannot be uploaded
-  
+
 
 
 ## [0.477.0] - April 28, 2026
 
 ### Added
   - DP-45023: Added accessible translation widget.
-  
+
 ### Fixed
   - DP-46271: Fix press release city injection to use the first paragraph even when the first p tag has attributes like lang.
   - DP-46385: Fix icon duplicate id by cleaning up clipPath.
   - DP-46544: Fixed issue with keyboard navigation getting trapped on global nav menu close button.
-  
+
 ### Changed
   - DP-46332: Updated log processing class to address issues with missing and broken logs.
-  
+
 ### Security
   - DP-46568: Drupal security update 11.3.8.
-  
+
 
 
 ## [0.476.0] - April 21, 2026
