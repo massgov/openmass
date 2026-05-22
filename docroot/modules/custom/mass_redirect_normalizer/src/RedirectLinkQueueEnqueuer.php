@@ -21,6 +21,11 @@ final class RedirectLinkQueueEnqueuer {
    */
   public const SUPPORTED_ENTITY_TYPES = ['node', 'paragraph'];
 
+  /**
+   * Maximum entity references stored in one queue item during bulk enqueue.
+   */
+  public const BULK_QUEUE_ITEM_SIZE = 100;
+
   private const PENDING_STATE_KEY = 'mass_redirect_normalizer.queue_pending_keys';
 
   /**
@@ -63,6 +68,74 @@ final class RedirectLinkQueueEnqueuer {
     }
 
     return $this->addToQueue($entityType, $entityId, $source);
+  }
+
+  /**
+   * Enqueues entity IDs in queue-item batches.
+   *
+   * The pending-key dedupe still happens per entity, but Drupal's queue table
+   * gets one row per batch instead of one row per entity.
+   *
+   * @param string $entityType
+   *   Entity type for every ID in the list.
+   * @param int[] $entityIds
+   *   Entity IDs to enqueue.
+   * @param string $source
+   *   Source label for queue payloads.
+   *
+   * @return array{enqueued: int, already_queued: int, skipped: int}
+   *   Per-entity result counts.
+   */
+  public function enqueueIds(string $entityType, array $entityIds, string $source = 'drush'): array {
+    $counts = [
+      'enqueued' => 0,
+      'already_queued' => 0,
+      'skipped' => 0,
+    ];
+    if (!self::isSupportedEntityType($entityType) || $entityIds === []) {
+      $counts['skipped'] = count($entityIds);
+      return $counts;
+    }
+
+    $items = [];
+    $queuedInThisCall = [];
+    foreach ($entityIds as $entityId) {
+      $entityId = (int) $entityId;
+      if ($entityId <= 0) {
+        $counts['skipped']++;
+        continue;
+      }
+
+      $itemKey = $this->buildItemKey($entityType, $entityId);
+      if ($this->isPending($itemKey) || isset($queuedInThisCall[$itemKey])) {
+        $counts['already_queued']++;
+        continue;
+      }
+
+      $items[] = [
+        'entity_type' => $entityType,
+        'entity_id' => $entityId,
+      ];
+      $queuedInThisCall[$itemKey] = TRUE;
+      $counts['enqueued']++;
+
+      if (count($items) >= self::BULK_QUEUE_ITEM_SIZE) {
+        $this->createBatchQueueItem($items, $source);
+        foreach ($items as $item) {
+          $this->markPending($this->buildItemKey($item['entity_type'], $item['entity_id']));
+        }
+        $items = [];
+      }
+    }
+
+    if ($items !== []) {
+      $this->createBatchQueueItem($items, $source);
+      foreach ($items as $item) {
+        $this->markPending($this->buildItemKey($item['entity_type'], $item['entity_id']));
+      }
+    }
+
+    return $counts;
   }
 
   /**
@@ -164,6 +237,21 @@ final class RedirectLinkQueueEnqueuer {
   }
 
   /**
+   * Creates one queue item containing multiple entity references.
+   *
+   * @param array<int, array{entity_type: string, entity_id: int}> $items
+   *   Entity references to process.
+   * @param string $source
+   *   Source label for the queue payload.
+   */
+  private function createBatchQueueItem(array $items, string $source): void {
+    $this->queueFactory->get(self::QUEUE_NAME)->createItem([
+      'items' => $items,
+      'source' => $source,
+    ]);
+  }
+
+  /**
    * Loads pending dedupe keys once per PHP request when needed.
    */
   private function ensurePendingLoaded(): void {
@@ -210,6 +298,40 @@ final class RedirectLinkQueueEnqueuer {
     }
     unset($this->pendingWorkingCopy[$itemKey]);
     $this->persistPendingWorkingCopy();
+  }
+
+  /**
+   * Clears pending dedupe state for multiple queue items with one state write.
+   *
+   * @param array<int, array{entity_type: string, entity_id: int}> $items
+   *   Entity references that have finished processing.
+   */
+  public function clearPendingMultiple(array $items): void {
+    if ($items === []) {
+      return;
+    }
+
+    $this->ensurePendingLoaded();
+    $changed = FALSE;
+    foreach ($items as $item) {
+      $entityType = (string) ($item['entity_type'] ?? '');
+      $entityId = (int) ($item['entity_id'] ?? 0);
+      if (!self::isSupportedEntityType($entityType) || $entityId <= 0) {
+        continue;
+      }
+
+      $itemKey = $this->buildItemKey($entityType, $entityId);
+      if (!array_key_exists($itemKey, $this->pendingWorkingCopy)) {
+        continue;
+      }
+
+      unset($this->pendingWorkingCopy[$itemKey]);
+      $changed = TRUE;
+    }
+
+    if ($changed) {
+      $this->persistPendingWorkingCopy();
+    }
   }
 
   /**

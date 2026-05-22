@@ -1407,6 +1407,85 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests bulk command enqueue batches multiple entities into one queue item.
+   */
+  public function testCommandExecuteBatchesQueueItems(): void {
+    \Drupal::state()->delete('mass_redirect_normalizer.command_progress');
+    \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    while ($queue->numberOfItems() > 0) {
+      $item = $queue->claimItem();
+      if ($item) {
+        $queue->deleteItem($item);
+      }
+    }
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $nodeA = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Batch A</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+    $nodeB = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Batch B</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    // Ignore any presave queue items from fixture setup; this test covers the
+    // command's fast bulk enqueue path.
+    \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
+    while ($queue->numberOfItems() > 0) {
+      $item = $queue->claimItem();
+      if ($item) {
+        $queue->deleteItem($item);
+      }
+    }
+
+    $command = $this->createNormalizerCommand();
+    $command->normalizeRedirectLinks([
+      'entity-type' => 'node',
+      'entity-ids' => $nodeA->id() . ',' . $nodeB->id(),
+      'simulate' => FALSE,
+    ]);
+
+    $this->assertSame(1, $queue->numberOfItems());
+    $claimed = $queue->claimItem();
+    $this->assertNotFalse($claimed);
+    $this->assertIsArray($claimed->data['items'] ?? NULL);
+    $this->assertCount(2, $claimed->data['items']);
+
+    $worker = \Drupal::service('plugin.manager.queue_worker')->createInstance(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $worker->processItem($claimed->data);
+    $queue->deleteItem($claimed);
+
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $storage->resetCache([(int) $nodeA->id(), (int) $nodeB->id()]);
+    $reloadedA = $storage->load($nodeA->id());
+    $reloadedB = $storage->load($nodeB->id());
+    $targetPath = $target->toUrl()->toString();
+    $this->assertStringContainsString($targetPath, (string) $reloadedA->get('body')->value);
+    $this->assertStringContainsString($targetPath, (string) $reloadedB->get('body')->value);
+  }
+
+  /**
    * Tests execute mode auto-resumes enqueue checkpoint.
    */
   public function testCommandExecuteAutoResumesEnqueueCheckpoint(): void {

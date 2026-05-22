@@ -64,13 +64,16 @@ By default, bulk command processes only **published** content.
 Execute mode **acquires** a sweep-wide lock so two `mnrl` runs do not enqueue in parallel. If a run dies without releasing (segfault, kill), the next execute may warn that another sweep is running; run `drush mnrl --release-enqueue-lock` once, then rerun.
 
 **Enqueue sweep performance:** plain execute (`mnrl` without `--simulate`,
-`--kinds`, or `--csv-path`) only runs entity ID queries and pushes each ID onto
-the queue—**no entity loads and no eligibility checks in Drush**. The queue
-worker loads each entity, applies the same eligibility rules as simulate mode,
-then normalizes. Bulk node lists add a **published (`status = 1`)** filter in
-the ID query (not when using `--entity-ids`). With `--kinds` or `--csv-path`,
-execute mode dry-runs each entity first (slower) to filter or build the report.
-Bulk enqueue writes checkpoints and dedupe keys periodically (same batch stride as load chunks).
+`--kinds`, or `--csv-path`) only runs entity ID queries and pushes IDs onto
+batched queue items—**no entity loads and no eligibility checks in Drush**. Each
+queue item contains up to 100 entity IDs, which reduces queue insert/claim/delete
+database churn compared with one queue row per entity. The queue worker loads
+each entity, applies the same eligibility rules as simulate mode, then
+normalizes. Bulk node lists add a **published (`status = 1`)** filter in the ID
+query (not when using `--entity-ids`). With `--kinds` or `--csv-path`, execute
+mode dry-runs each entity first (slower) to filter or build the report. Bulk
+enqueue writes checkpoints and dedupe keys periodically (same batch stride as
+load chunks).
 
 - Nodes must be published (enforced in the worker; bulk ID queries for nodes are
   already limited to published where applicable).

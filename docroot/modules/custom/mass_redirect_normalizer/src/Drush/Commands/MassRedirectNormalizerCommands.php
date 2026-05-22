@@ -226,28 +226,32 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
 
         // Fast enqueue: push IDs only; worker loads entities and applies eligibility.
         if (!$simulate && !$executeUsesDryRun) {
-          $remainingInBatch = $idListCount;
-          $fastIterations = 0;
-          foreach ($idList as $id) {
-            if ($limit > 0 && $runProcessed >= $limit) {
-              break 2;
+          $queueBatch = [];
+          $lastQueuedId = NULL;
+          foreach ($idList as $index => $id) {
+            if ($limit > 0 && $runProcessed + count($queueBatch) >= $limit) {
+              break;
             }
 
-            $enqueueResult = $this->enqueuer->enqueueId($entityType, (int) $id, 'drush');
-            $fastIterations++;
-            $processed++;
-            $runProcessed++;
-            if ($enqueueResult === 'enqueued') {
-              $enqueued++;
-            }
-            elseif ($enqueueResult === 'already_queued') {
-              $alreadyQueued++;
-            }
-            else {
-              $skippedIneligible++;
+            $queueBatch[] = (int) $id;
+            $lastQueuedId = (int) $id;
+            $shouldFlushQueueBatch = count($queueBatch) >= RedirectLinkQueueEnqueuer::BULK_QUEUE_ITEM_SIZE
+              || $index === $idListCount - 1
+              || ($limit > 0 && $runProcessed + count($queueBatch) >= $limit);
+            if (!$shouldFlushQueueBatch) {
+              continue;
             }
 
-            if ($this->logger() && $runProcessed % self::SWEEP_BATCH === 0) {
+            $enqueueCounts = $this->enqueuer->enqueueIds($entityType, $queueBatch, 'drush');
+            $batchProcessed = count($queueBatch);
+            $processed += $batchProcessed;
+            $runProcessed += $batchProcessed;
+            $enqueued += $enqueueCounts['enqueued'];
+            $alreadyQueued += $enqueueCounts['already_queued'];
+            $skippedIneligible += $enqueueCounts['skipped'];
+            $queueBatch = [];
+
+            if ($this->logger() && ($runProcessed % self::SWEEP_BATCH === 0 || $runProcessed >= $sweepTotal)) {
               $this->logger()->notice($this->buildSweepProgressNotice(
                 'Enqueue',
                 $runProcessed,
@@ -258,17 +262,15 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
                   '@already' => $alreadyQueued,
                   '@skipped' => $skippedIneligible,
                   '@type' => $entityType,
-                  '@id' => $id,
+                  '@id' => $lastQueuedId,
                 ],
               ));
             }
-            $remainingInBatch--;
-            $shouldCheckpoint = ($remainingInBatch === 0)
-              || ($fastIterations % self::SWEEP_BATCH === 0)
-              || ($limit > 0 && $runProcessed >= $limit);
-            if ($shouldCheckpoint) {
-              $this->saveProgressState($processed, $enqueued, $valueUpdates, $entityType, (int) $id, $simulate, FALSE);
-            }
+            $this->saveProgressState($processed, $enqueued, $valueUpdates, $entityType, $lastQueuedId, $simulate, FALSE);
+          }
+          if ($limit > 0 && $runProcessed >= $limit) {
+            $this->enqueuer->flushPendingDedupeState();
+            break;
           }
           $this->enqueuer->flushPendingDedupeState();
           continue;

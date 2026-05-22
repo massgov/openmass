@@ -58,25 +58,40 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
       return;
     }
 
+    if (isset($data['items']) && is_array($data['items'])) {
+      $processedItems = [];
+      foreach ($data['items'] as $item) {
+        if (is_array($item)) {
+          $processedItem = $this->processEntityReference($item, FALSE);
+          if ($processedItem !== NULL) {
+            $processedItems[] = $processedItem;
+          }
+        }
+      }
+      $this->enqueuer->clearPendingMultiple($processedItems);
+      return;
+    }
+
+    $this->processEntityReference($data);
+  }
+
+  /**
+   * Processes one queued entity reference.
+   */
+  private function processEntityReference(array $data, bool $clearPending = TRUE): ?array {
     $entityType = (string) ($data['entity_type'] ?? '');
     $entityId = (int) ($data['entity_id'] ?? 0);
     if (!in_array($entityType, RedirectLinkQueueEnqueuer::SUPPORTED_ENTITY_TYPES, TRUE) || $entityId <= 0) {
-      return;
+      return NULL;
     }
 
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     try {
       $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
-      if (!$entity) {
-        return;
+      if ($entity && $this->eligibility->isEligible($entityType, $entity)) {
+        $this->normalizerManager->normalizeEntity($entity, TRUE);
       }
-
-      if (!$this->eligibility->isEligible($entityType, $entity)) {
-        return;
-      }
-
-      $this->normalizerManager->normalizeEntity($entity, TRUE);
     }
     catch (\Throwable $exception) {
       $this->logger->error('Redirect link normalization failed for @type:@id: @message', [
@@ -86,8 +101,15 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
       ]);
     }
     finally {
-      $this->enqueuer->clearPending($entityType, $entityId);
+      if ($clearPending) {
+        $this->enqueuer->clearPending($entityType, $entityId);
+      }
     }
+
+    return [
+      'entity_type' => $entityType,
+      'entity_id' => $entityId,
+    ];
   }
 
 }
