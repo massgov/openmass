@@ -40,22 +40,25 @@ Content node / media.document
 
 ## Feature switch
 
-`OrgAccessSettings::isEnforcementEnabled()` gates every access decision,
-form validator, login warning, and the widget's edit permission. **Off
-by default.**
+`OrgAccessSettings::isEnforcementEnabled()` gates the access decision,
+form validator, and login warning. **Off by default.**
 
 - Env `MASS_ORG_ACCESS_ENFORCE` (`1`/`true`/`yes`/`on` case-insensitive)
   wins when set. Use this on Acquia.
 - State key `mass_org_access.enforce` is the fallback — DB-backed, so it
   propagates between PHPUnit and webserver processes during DTT tests.
 
-**Off (Release 1):** access hooks return neutral. The OOG widget is
-forbidden to anyone without `bypass org access` (admins + content_team),
-which lets us pre-fill `field_content_organization` invisibly while the
-content team finishes curating org_pages.
+The Permission Groups widget itself is **not gated by the switch** — it
+is visible to every role that can edit the host entity, so authors can
+see and broaden the field before enforcement is enabled.
 
-**On (Release 2):** access gate enforces, widget opens to any editor
-with save permission.
+**Off:** access hooks return neutral. Editors can save anything they
+can already save, and the JS auto-populates Permission Groups so the
+field is correct by the time enforcement turns on.
+
+**On:** access hooks block update/delete on out-of-org content.
+Empty Permission Groups → admin-only-editable. Bypass users
+(`bypass org access`) skip the gate.
 
 ## Access decision
 
@@ -85,10 +88,10 @@ OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 | Hook | Behavior |
 |------|----------|
 | `node_access` / `media_access` | The access decision above. |
-| `entity_field_access` | Locks `field_user_org` to `administer users`. Locks `field_content_organization` to `bypass org access` while the switch is off; neutral once on. |
-| `entity_prepare_form` | Pre-fills `field_content_organization` from current user's `field_user_org` + ancestors when empty. |
-| `form_node_form_alter` | Adds `validateOrgAccess` callback (static method — closures break paragraphs AJAX). Surfaces a clear error if a save reaches form validation. |
-| `field_widget_complete_form_alter` | Hides the OOG autocomplete and renders a read-only list (see widget section). Attaches both JS libraries. |
+| `entity_field_access` | Locks `field_user_org` to `administer users` (prevents self-promotion). Permission Groups itself is not field-restricted. |
+| `entity_prepare_form` | On new entities only: pre-fills `field_content_organization` from the creator's `field_user_org` + ancestors. Existing entities are populated exclusively by `drush moab`. |
+| `form_node_form_alter` | Adds `validateOrgAccess` callback (static method — closures break paragraphs AJAX). Defense-in-depth: surfaces an error if a save reaches form validation despite `node_access` already denying it. |
+| `field_widget_complete_form_alter` | Renders Permission Groups as a read-only list (see widget section). Attaches both JS libraries. |
 | `user_login` | At login, warns editor/author roles without `field_user_org`. Silent while switch is off. |
 
 ## Routing
@@ -141,14 +144,15 @@ rewritten across 29 bundle field configs.
 | `mass_org_access.route_subscriber` | `Routing\RouteSubscriber` | Side-door route hardening |
 
 The endpoint is served by `Controller\OrgLookupController::lookup`
-(route `mass_org_access.lookup_user_orgs`, custom access mirroring
-`entity_field_access` on the OOG field).
+(route `mass_org_access.lookup_user_orgs`). Access: any authenticated
+user with `access content` — matches who can see the widget.
 
 ## Permission
 
 `bypass org access` — granted to `content_team`, inherited by
-`administrator` via `is_admin: true`. Skips the org gate and grants the
-OOG widget while the switch is off.
+`administrator` via `is_admin: true`. Skips the org gate (allows
+update/delete regardless of org match). Does not affect widget
+visibility — the widget is open to all roles with entity edit access.
 
 ## Drush
 
@@ -186,9 +190,9 @@ ddev exec phpunit docroot/modules/custom/mass_org_access/tests/src/ExistingSiteJ
 ddev exec phpunit docroot/modules/custom/mass_org_access/tests/src/ExistingSiteJavascript/OogAugmentFromOrganizationsTest.php
 ```
 
-`OwnerGroupsWidgetVisibilityTest` checks that the widget is **hidden**
-for editor and **visible** for administrator and content_team across all
-28 node bundles + media.document in Release 1.
+`OwnerGroupsWidgetVisibilityTest` checks that the widget is **visible**
+for every role with entity edit access (administrator, content_team,
+editor) across all 28 node bundles + media.document.
 
 `OogAugmentFromOrganizationsTest` adds an org_page, asserts the mapped
 user_organization term appears in OOG, removes the org_page, asserts the

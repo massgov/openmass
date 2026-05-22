@@ -112,13 +112,14 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Pre-fills Organization Owner Groups from the current user's terms.
+   * Pre-fills Permission Groups on new entities only.
    *
-   * Reads the user's Org Taxonomy assignment (field_user_org) plus
-   * ancestors and writes the union to field_content_organization, before
-   * the form widgets are built. Source of truth is the user — never the
-   * entity's field_organizations. Skipped when the field already has a
-   * value.
+   * Reads the creator's field_user_org plus ancestors and writes the
+   * union to field_content_organization before the form widgets are
+   * built, so the new content reflects the author's own org. Existing
+   * entities are populated exclusively by drush moab — opening an
+   * un-backfilled legacy entity must not silently re-stamp it with the
+   * current editor's org.
    *
    * Uses entity_prepare_form (not form_alter) because the widget reads
    * its default value from the entity during EntityFormDisplay::buildForm,
@@ -192,11 +193,13 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Adds a validation callback for cross-organization save attempts.
+   * Defense-in-depth validation callback on node forms.
    *
-   * Shows a clear error when an editor tries to save a node outside their
-   * organization. The edit form itself remains accessible for viewing and
-   * cloning.
+   * The node_access hook already denies update/delete on out-of-org
+   * content, and RouteSubscriber narrows the side-door routes;
+   * reaching form validation would require a code path that bypassed
+   * both. If that happens, the callback surfaces a clear error
+   * instead of silently letting the save through.
    */
   #[Hook('form_node_form_alter')]
   public function formNodeFormAlter(array &$form, FormStateInterface $form_state, string $form_id): void {

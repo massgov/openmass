@@ -7,9 +7,9 @@ use Drupal\Core\State\StateInterface;
 /**
  * Toggles mass_org_access enforcement.
  *
- * Default is OFF (Release 1: ship the field, drush backfill, and reports
- * without restricting writes). Setting the switch to a truthy value
- * flips the gate on for Release 2 without redeploying code.
+ * Default is OFF — the field, drush backfill, and reports ship without
+ * restricting writes. Setting the switch to a truthy value flips the
+ * gate on without redeploying code.
  *
  * Two layers — env var wins, State fallback:
  * - MASS_ORG_ACCESS_ENFORCE=1|true|yes|on (case-insensitive). Best for
