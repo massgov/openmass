@@ -179,8 +179,10 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
       'title' => 'OOG Augment Typing ' . $this->randomMachineName(6),
       'status' => 1,
     ]);
+    // Use editor role — admins bypass the endpoint access check; an
+    // editor exercises the path real authors take.
     $user = $this->createUser(['bypass node access']);
-    $user->addRole('administrator');
+    $user->addRole('editor');
     $user->activate();
     $user->save();
     $this->drupalLogin($user);
@@ -270,8 +272,11 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   public function testAutocompleteOnMediaAddPopulatesPermissionGroups(): void {
     [$orgPage, $term] = $this->pickPublishedOrgPageWithMappedTerm();
 
+    // Editor role is the one that triggers the real-world bug — admins
+    // bypass everything, so we have to log in as a regular editor to
+    // exercise the endpoint access path that authors actually use.
     $user = $this->createUser(['bypass node access', 'administer media', 'create document media']);
-    $user->addRole('administrator');
+    $user->addRole('editor');
     $user->activate();
     $user->save();
     $this->drupalLogin($user);

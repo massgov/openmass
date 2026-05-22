@@ -9,7 +9,6 @@ use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\mass_org_access\OrgAccessSettings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,34 +26,22 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class OrgLookupController extends ControllerBase {
 
-  private readonly OrgAccessSettings $settings;
-
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, OrgAccessSettings $settings) {
+  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
     $this->entityTypeManager = $entityTypeManager;
-    $this->settings = $settings;
   }
 
   public static function create(ContainerInterface $container): self {
-    return new self(
-      $container->get('entity_type.manager'),
-      $container->get('mass_org_access.settings'),
-    );
+    return new self($container->get('entity_type.manager'));
   }
 
   /**
-   * Access check that mirrors entity_field_access for field_content_organization.
+   * Endpoint access — authenticated users with `access content` only.
    *
-   * Release 1 (enforcement off): only accounts with `bypass org access`
-   * can edit the OOG widget, so only they can use this endpoint.
-   *
-   * Release 2 (enforcement on): the widget opens up to any authenticated
-   * user with content edit access. Anonymous traffic remains blocked.
+   * Mirrors the widget itself, which is visible to any role that can
+   * edit a host entity. Anonymous traffic is blocked.
+   * @todo Shuld we check "update" access for the entity instead?
    */
   public function access(AccountInterface $account): AccessResultInterface {
-    if (!$this->settings->isEnforcementEnabled()) {
-      return AccessResult::allowedIfHasPermission($account, 'bypass org access')
-        ->cachePerPermissions();
-    }
     return AccessResult::allowedIf($account->isAuthenticated() && $account->hasPermission('access content'))
       ->cachePerPermissions();
   }
