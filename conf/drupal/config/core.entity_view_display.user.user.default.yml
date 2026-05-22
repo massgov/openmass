@@ -18,35 +18,18 @@ targetEntityType: user
 bundle: user
 mode: default
 content:
-  field_approval_notes:
-    type: basic_string
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    weight: 6
-    region: content
-  field_approved:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 5
-    region: content
   field_user_org:
     type: entity_reference_label
     label: above
     settings:
-      link: true
+      link: false
     third_party_settings: {  }
     weight: 1
     region: content
   member_for:
     settings: {  }
     third_party_settings: {  }
-    weight: 3
+    weight: 2
     region: content
   user_picture:
     type: image
@@ -60,4 +43,6 @@ content:
     weight: 0
     region: content
 hidden:
+  field_approval_notes: true
+  field_approved: true
   langcode: true
