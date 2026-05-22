@@ -7,6 +7,7 @@
 
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -17,7 +18,10 @@ use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\Extension;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
@@ -1175,6 +1179,31 @@ function mass_utility_entity_view(array &$build, EntityInterface $entity, Entity
  */
 function mass_utility_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
   \Drupal::classResolver(EntityViewBuildAlterGravityFormToken::class)->alter($build, $entity, $display);
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function mass_utility_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+  if ($field_definition->getTargetEntityTypeId() !== 'user') {
+    return AccessResult::neutral();
+  }
+
+  $approval_fields = [
+    'field_approved',
+    'field_approval_notes',
+  ];
+  if (!in_array($field_definition->getName(), $approval_fields, TRUE)) {
+    return AccessResult::neutral();
+  }
+
+  if (!in_array($operation, ['view', 'edit'], TRUE)) {
+    return AccessResult::neutral();
+  }
+
+  return AccessResult::allowedIf($account->hasRole('administrator'))
+    ->cachePerUser()
+    ->addCacheContexts(['user.roles:administrator']);
 }
 
 /**
