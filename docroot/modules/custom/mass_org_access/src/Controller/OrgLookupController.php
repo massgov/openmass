@@ -39,7 +39,8 @@ class OrgLookupController extends ControllerBase {
    *
    * Mirrors the widget itself, which is visible to any role that can
    * edit a host entity. Anonymous traffic is blocked.
-   * @todo Shuld we check "update" access for the entity instead?
+   *
+   * @todo Should we check "update" access for the entity instead?
    */
   public function access(AccountInterface $account): AccessResultInterface {
     return AccessResult::allowedIf($account->isAuthenticated() && $account->hasPermission('access content'))
