@@ -20,6 +20,7 @@ dependencies:
     - better_exposed_filters
     - content_moderation
     - csv_serialization
+    - datetime
     - file
     - mass_views
     - media
@@ -1365,18 +1366,34 @@ display:
             autocomplete_dependent: 0
             autocomplete_contextual: 0
             autocomplete_autosubmit: 0
-          is_grouped: false
+          is_grouped: true
           group_info:
-            label: ''
+            label: 'Accessibility Status (self-reported)'
             description: ''
-            identifier: ''
+            identifier: field_accessibility_self_rpt_value
             optional: true
             widget: select
             multiple: false
             remember: false
             default_group: All
             default_group_multiple: {  }
-            group_items: {  }
+            group_items:
+              1:
+                title: 'Verified accessible'
+                operator: '='
+                value: verified_accessible
+              2:
+                title: 'Unverified or not accessible yet'
+                operator: '='
+                value: unverified_or_not_accessible_yet
+              3:
+                title: Exception
+                operator: '='
+                value: exception
+              4:
+                title: blank
+                operator: empty
+                value: ''
       filter_groups:
         operator: AND
         groups:
