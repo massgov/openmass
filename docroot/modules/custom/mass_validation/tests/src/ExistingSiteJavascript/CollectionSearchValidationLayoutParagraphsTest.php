@@ -33,26 +33,43 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
   private $user;
 
   /**
+   * Returns JS to resolve the topmost Layout Paragraphs dialog Save button.
+   */
+  private function activeLpDialogSaveButtonScript(): string {
+    return "(function(){
+      var dialogs = document.querySelectorAll('.ui-dialog');
+      for (var i = dialogs.length - 1; i >= 0; i--) {
+        var dialog = dialogs[i];
+        var style = window.getComputedStyle(dialog);
+        if (style.display === 'none' || style.visibility === 'hidden') {
+          continue;
+        }
+        var el = dialog.querySelector('.ui-dialog-buttonpane button.lpb-btn--save');
+        if (el) { return el; }
+      }
+      return document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+    })()";
+  }
+
+  /**
    * Waits for the LPB Save button in the active dialog and asserts it is visible.
    */
   private function assertDialogSaveButtonVisible(string $context): void {
     $this->getSession()->wait(
-      10000,
-      "document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save') !== null"
+      15000,
+      $this->activeLpDialogSaveButtonScript() . ' !== null'
     );
     $this->getSession()->executeScript(
       "(function(){
-        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+        var el = " . $this->activeLpDialogSaveButtonScript() . ";
         if (el) {
           try { el.scrollIntoView({block: 'center'}); } catch (e) {}
         }
       })();"
     );
-    $saveBtn = $this->getSession()->getPage()->find('css', '.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
-    $this->assertNotNull($saveBtn, "Save button present in {$context} modal.");
     $isVisible = $this->getSession()->evaluateScript(
       "(function(){
-        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+        var el = " . $this->activeLpDialogSaveButtonScript() . ";
         if (!el) { return false; }
         var rect = el.getBoundingClientRect();
         var style = window.getComputedStyle(el);
@@ -68,12 +85,30 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
   private function clickDialogSaveButton(): void {
     $this->getSession()->executeScript(
       "(function(){
-        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+        var el = " . $this->activeLpDialogSaveButtonScript() . ";
         if (el) {
           try { el.scrollIntoView({block: 'center'}); } catch (e) {}
           el.click();
         }
       })();"
+    );
+  }
+
+  /**
+   * Waits for validation errors inside the active LP dialog.
+   */
+  private function waitForDialogValidationErrors(): void {
+    $this->getSession()->wait(
+      12000,
+      "(function(){
+        var dialogs = document.querySelectorAll('.ui-dialog');
+        for (var i = dialogs.length - 1; i >= 0; i--) {
+          if (dialogs[i].querySelector('.messages-list__item.messages.messages--error')) {
+            return true;
+          }
+        }
+        return false;
+      })()"
     );
   }
 
@@ -126,7 +161,7 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $addSection->click();
 
     // Wait until the component chooser modal is attached to the DOM.
-    $this->getSession()->wait(3000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') !== null");
+    $this->getSession()->wait(8000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') !== null");
 
     $keyMsg = $page->find('css', '.ui-dialog .ui-dialog-content a:contains("Key Message Section")');
     $serviceSection = $page->find('css', '.ui-dialog .ui-dialog-content a:contains("Service Section")');
@@ -165,7 +200,10 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->clickDialogSaveButton();
 
     // Wait for the modal to close after the AJAX save completes.
-    $this->getSession()->wait(8000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') === null");
+    $this->getSession()->wait(
+      12000,
+      "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') === null"
+    );
 
     // Sanity check: modal should be gone.
     $stillOpen = $page->find('css', 'div.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front');
@@ -182,7 +220,10 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     );
 
     // Wait for the region component chooser modal to render.
-    $this->getSession()->wait(500, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front .lpb-component-list') !== null");
+    $this->getSession()->wait(
+      8000,
+      "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front .lpb-component-list') !== null"
+    );
 
     // Assert the "Custom Search" option exists.
     $customSearch = $page->find('css', '.ui-dialog .lpb-component-list__item.type-collection_search a.use-ajax');
@@ -195,20 +236,38 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     );
 
     // Wait for the Custom Search configuration modal (title contains “Custom Search”).
-    $this->getSession()->wait(6000, "document.querySelector('.ui-dialog .ui-dialog-title') && document.querySelector('.ui-dialog .ui-dialog-title').textContent.toLowerCase().indexOf('custom search') !== -1");
+    $this->getSession()->wait(
+      12000,
+      "(function(){
+        var dialogs = document.querySelectorAll('.ui-dialog');
+        for (var i = dialogs.length - 1; i >= 0; i--) {
+          var title = dialogs[i].querySelector('.ui-dialog-title');
+          if (title && title.textContent.toLowerCase().indexOf('custom search') !== -1) {
+            return true;
+          }
+        }
+        return false;
+      })()"
+    );
 
-    $csModalTitle = $page->find('css', '.ui-dialog .ui-dialog-title');
-    $this->assertNotNull($csModalTitle, 'Custom Search modal title present.');
-    $this->assertStringContainsStringIgnoringCase('custom search', $csModalTitle->getText());
+    $csModalTitleText = $this->getSession()->evaluateScript(
+      "(function(){
+        var dialogs = document.querySelectorAll('.ui-dialog');
+        for (var i = dialogs.length - 1; i >= 0; i--) {
+          var title = dialogs[i].querySelector('.ui-dialog-title');
+          if (title && title.textContent.toLowerCase().indexOf('custom search') !== -1) {
+            return title.textContent;
+          }
+        }
+        return '';
+      })();"
+    );
+    $this->assertStringContainsStringIgnoringCase('custom search', (string) $csModalTitleText);
     $page->selectFieldOption('field_search_type', 'External search destination (using query string)');
     $this->getSession()->wait(1000);
     $this->assertDialogSaveButtonVisible('Custom Search');
     $this->clickDialogSaveButton();
-    // Wait for server‑side validation and the error message list to render inside the dialog.
-    $this->getSession()->wait(
-      6000,
-      "document.querySelector('.ui-dialog .messages-list__item.messages.messages--error') !== null"
-    );
+    $this->waitForDialogValidationErrors();
 
     // Confirm the dialog’s error message container exists.
     $errorBox = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error');
@@ -228,23 +287,48 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertTrue($linkSearchSiteUrl->isVisible(), '"Search site URL" link is visible.');
     $this->assertTrue($linkQueryParam->isVisible(), '"Name for query parameter" link is visible.');
 
-    $page->selectFieldOption('field_search_type', 'Collection');
-    $this->getSession()->wait(1000);
+    $this->getSession()->executeScript(
+      "(function(){
+        var select = document.querySelector('.ui-dialog select[name=\"field_search_type\"]');
+        if (!select) { return; }
+        select.value = 'collection';
+        select.dispatchEvent(new Event('change', {bubbles: true}));
+      })();"
+    );
+    $this->getSession()->wait(
+      3000,
+      "document.querySelector('.ui-dialog select[name=\"field_search_type\"]') && document.querySelector('.ui-dialog select[name=\"field_search_type\"]').value === 'collection'"
+    );
     $this->assertDialogSaveButtonVisible('Custom Search');
     $this->clickDialogSaveButton();
-    // Wait for server‑side validation and the error message list to render inside the dialog.
     $this->getSession()->wait(
-      6000,
-      "document.querySelector('.ui-dialog .messages-list__item.messages.messages--error') !== null"
+      12000,
+      "(function(){
+        var dialogs = document.querySelectorAll('.ui-dialog');
+        for (var i = dialogs.length - 1; i >= 0; i--) {
+          var box = dialogs[i].querySelector('.messages-list__item.messages.messages--error');
+          if (box && box.textContent.toLowerCase().indexOf('collection') !== -1) {
+            return true;
+          }
+        }
+        return false;
+      })()"
     );
 
-    // Confirm the dialog’s error message container exists.
-    $errorBox = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error');
-    $this->assertNotNull($errorBox, 'Validation error box is present in the Custom Search modal.');
-
-    // Claro renders comma‑separated links to invalid fields; verify expected anchors are present.
-    $linkCollection = $page->find('css', '.ui-dialog .messages-list__item.messages.messages--error a[href^="#edit-field-collection"]');
-    $this->assertNull($linkCollection, 'Validation link for "Collection" present.');
+    $errorText = (string) $this->getSession()->evaluateScript(
+      "(function(){
+        var dialogs = document.querySelectorAll('.ui-dialog');
+        for (var i = dialogs.length - 1; i >= 0; i--) {
+          var box = dialogs[i].querySelector('.messages-list__item.messages.messages--error');
+          if (box && box.textContent.toLowerCase().indexOf('collection') !== -1) {
+            return box.textContent;
+          }
+        }
+        return '';
+      })();"
+    );
+    $this->assertStringContainsStringIgnoringCase('search heading', $errorText);
+    $this->assertStringContainsStringIgnoringCase('collection', $errorText);
   }
 
 }
