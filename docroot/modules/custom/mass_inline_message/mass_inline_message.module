@@ -8,6 +8,7 @@
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\mass_inline_message\Plugin\Filter\FilterMassInlineMessage;
@@ -45,6 +46,13 @@ function mass_inline_message_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_layout_paragraphs_component_form_alter().
+ */
+function mass_inline_message_form_layout_paragraphs_component_form_alter(array &$form, FormStateInterface $form_state): void {
+  $form['#attached']['library'][] = 'mass_inline_message/dialog';
 }
 
 /**

@@ -67,8 +67,12 @@ export default class InsertMassInlineMessageCommand extends Command {
 
   refresh() {
     const model = this.editor.model;
-    const root = model.document.getRoot();
-    this.isEnabled = model.schema.checkChild(root, 'massInlineMessage');
+    const position = model.document.selection.getFirstPosition();
+    if (!position) {
+      this.isEnabled = false;
+      return;
+    }
+    this.isEnabled = model.schema.findAllowedParent(position, 'massInlineMessage') !== null;
   }
 
 }

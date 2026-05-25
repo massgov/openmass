@@ -12,6 +12,20 @@
  */
 let scrollLockState = null;
 
+/**
+ * Returns TRUE when CKEditor is inside another open dialog (e.g. Layout Paragraphs).
+ */
+function isNestedEditorDialogContext() {
+  const dialogs = document.querySelectorAll('.ui-dialog');
+  for (const dialog of dialogs) {
+    if (dialog.offsetParent !== null && dialog.querySelector('.ck-editor')) {
+      return true;
+    }
+  }
+  const offCanvas = document.getElementById('drupal-off-canvas');
+  return !!(offCanvas && offCanvas.offsetParent !== null && offCanvas.querySelector('.ck-editor'));
+}
+
 function lockPageScroll() {
   if (scrollLockState) {
     return;
@@ -42,10 +56,16 @@ function unlockPageScroll() {
 }
 
 export function openMassInlineMessageDialog(url, editorObject, saveCallback, dialogSettings) {
-  lockPageScroll();
+  const nestedDialog = isNestedEditorDialogContext();
+
+  if (!nestedDialog) {
+    lockPageScroll();
+  }
 
   const unlock = () => {
-    unlockPageScroll();
+    if (!nestedDialog) {
+      unlockPageScroll();
+    }
     window.removeEventListener('dialog:afterclose', unlock);
     document.removeEventListener('editor:dialogsave', unlock);
   };
@@ -86,12 +106,15 @@ export function openMassInlineMessageDialog(url, editorObject, saveCallback, dia
   dialogSettings.autoResize = window.matchMedia('(min-width: 600px)').matches;
   dialogSettings.width = dialogSettings.width || 600;
 
+  // Match core CKEditor dialog loading when nested inside Layout Paragraphs modals.
+  const progressType = nestedDialog ? 'fullscreen' : 'throbber';
+
   const ckeditorAjaxDialog = Drupal.ajax({
     dialog: dialogSettings,
     dialogType: 'modal',
     selector: '.ckeditor5-dialog-loading-link',
     url,
-    progress: {type: 'throbber'},
+    progress: {type: progressType},
     submit: {
       editor_object: editorObject,
     },
