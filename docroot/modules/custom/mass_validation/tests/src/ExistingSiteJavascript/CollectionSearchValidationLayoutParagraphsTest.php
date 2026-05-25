@@ -33,6 +33,51 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
   private $user;
 
   /**
+   * Waits for the LPB Save button in the active dialog and asserts it is visible.
+   */
+  private function assertDialogSaveButtonVisible(string $context): void {
+    $this->getSession()->wait(
+      10000,
+      "document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save') !== null"
+    );
+    $this->getSession()->executeScript(
+      "(function(){
+        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+        if (el) {
+          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
+        }
+      })();"
+    );
+    $saveBtn = $this->getSession()->getPage()->find('css', '.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+    $this->assertNotNull($saveBtn, "Save button present in {$context} modal.");
+    $isVisible = $this->getSession()->evaluateScript(
+      "(function(){
+        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+        if (!el) { return false; }
+        var rect = el.getBoundingClientRect();
+        var style = window.getComputedStyle(el);
+        return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' && style.display !== 'none';
+      })();"
+    );
+    $this->assertTrue($isVisible, "Save button is visible in {$context} modal.");
+  }
+
+  /**
+   * Clicks the LPB Save button in the active dialog via JavaScript.
+   */
+  private function clickDialogSaveButton(): void {
+    $this->getSession()->executeScript(
+      "(function(){
+        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+        if (el) {
+          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
+          el.click();
+        }
+      })();"
+    );
+  }
+
+  /**
    * Create the user.
    */
   protected function setUp(): void {
@@ -116,15 +161,8 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertStringContainsString('Create new Service Section', $newTitle->getText());
 
     // In the “Create new Service Section” modal, click Save to create the section container.
-    $this->getSession()->wait(2000, "document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save') !== null");
-    $saveBtn = $page->find('css', '.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
-    $this->assertNotNull($saveBtn, 'Save button present in Create Service Section modal.');
-    $this->assertTrue($saveBtn->isVisible(), 'Save button is visible.');
-
-    // Scroll into view and click via JS to avoid toolbar/overlay interception.
-    $this->getSession()->executeScript(
-      "(function(){var el=document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
-    );
+    $this->assertDialogSaveButtonVisible('Create Service Section');
+    $this->clickDialogSaveButton();
 
     // Wait for the modal to close after the AJAX save completes.
     $this->getSession()->wait(8000, "document.querySelector('.ui-dialog.lpb-dialog.ui-widget.ui-widget-content.ui-front') === null");
@@ -163,15 +201,9 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertNotNull($csModalTitle, 'Custom Search modal title present.');
     $this->assertStringContainsStringIgnoringCase('custom search', $csModalTitle->getText());
     $page->selectFieldOption('field_search_type', 'External search destination (using query string)');
-    $this->getSession()->wait(2000, "document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save') !== null");
-    $saveBtn = $page->find('css', '.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
-    $this->assertNotNull($saveBtn, 'Save button present in Create Service Section modal.');
-    $this->assertTrue($saveBtn->isVisible(), 'Save button is visible.');
-
-    // Scroll into view and click via JS to avoid toolbar/overlay interception.
-    $this->getSession()->executeScript(
-      "(function(){var el=document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
-    );
+    $this->getSession()->wait(1000);
+    $this->assertDialogSaveButtonVisible('Custom Search');
+    $this->clickDialogSaveButton();
     // Wait for server‑side validation and the error message list to render inside the dialog.
     $this->getSession()->wait(
       6000,
@@ -197,15 +229,9 @@ class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSeleniu
     $this->assertTrue($linkQueryParam->isVisible(), '"Name for query parameter" link is visible.');
 
     $page->selectFieldOption('field_search_type', 'Collection');
-    $this->getSession()->wait(2000, "document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save') !== null");
-    $saveBtn = $page->find('css', '.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
-    $this->assertNotNull($saveBtn, 'Save button present in Create Service Section modal.');
-    $this->assertTrue($saveBtn->isVisible(), 'Save button is visible.');
-
-    // Scroll into view and click via JS to avoid toolbar/overlay interception.
-    $this->getSession()->executeScript(
-      "(function(){var el=document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save'); if(el){ try{el.scrollIntoView({block:'center'});}catch(e){} el.click(); }})();"
-    );
+    $this->getSession()->wait(1000);
+    $this->assertDialogSaveButtonVisible('Custom Search');
+    $this->clickDialogSaveButton();
     // Wait for server‑side validation and the error message list to render inside the dialog.
     $this->getSession()->wait(
       6000,
