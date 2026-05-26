@@ -5,6 +5,8 @@ dependencies:
   config:
     - field.field.user.user.field_approval_notes
     - field.field.user.user.field_approved
+    - field.field.user.user.field_default_labels
+    - field.field.user.user.field_default_organizations
     - field.field.user.user.field_user_org
     - field.field.user.user.user_picture
     - image.style.thumbnail
@@ -25,6 +27,22 @@ content:
       link: false
     third_party_settings: {  }
     weight: 1
+    region: content
+  field_default_organizations:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: false
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_default_labels:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: false
+    third_party_settings: {  }
+    weight: 3
     region: content
   member_for:
     settings: {  }

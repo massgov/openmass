@@ -13,6 +13,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\mass_org_access\OrgAccessChecker;
 use Drupal\mass_org_access\OrgAccessSettings;
@@ -30,6 +31,7 @@ class MassOrgAccessHooks {
     private readonly OrgAccessChecker $orgAccessChecker,
     private readonly MessengerInterface $messenger,
     private readonly OrgAccessSettings $settings,
+    private readonly AccountProxyInterface $currentUser,
   ) {}
 
   /**
@@ -138,6 +140,9 @@ class MassOrgAccessHooks {
       return;
     }
     $this->orgAccessChecker->populateOwnerGroupsFromCurrentUser($entity);
+    if (!$this->currentUser->isAnonymous()) {
+      $this->orgAccessChecker->applyDefaultsToNewEntity($entity, $this->currentUser);
+    }
   }
 
   /**

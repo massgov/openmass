@@ -11,22 +11,16 @@ content.
 
 ## Real consumers
 
-### 1. `mass_utility.module` — default org on new media form
+### 1. `mass_org_access` — default org on new media and node forms
 
-`mass_utility_form_media_form_alter()` (around line 340) pre-fills the
-`field_organizations` widget on the **new media** form with the current
-user's org so the editor doesn't have to pick it manually. It iterates
-the user's `field_user_org` term IDs, loads each term, and reads
-`field_state_organization` to find the corresponding org_page.
+`OrgAccessChecker::applyDefaultsToNewEntity()` (via `entity_prepare_form`)
+pre-fills Organization(s) on **new** node and media forms from the user's
+`field_default_organizations` when set.
 
-This writes a `#default_value` into the form structure for the media
-being created — it does **not** modify the user account.
-
-After cardinality on `field_user_org` changed to unlimited, the loop runs
-over every term but assigns to the same `widget[0]` slot, so only the
-last iteration's org becomes the pre-filled default. The field is still
-multi-valued — the editor can add the rest with "Add another item" —
-but the auto-fill is no longer comprehensive.
+For **new media.document** only, when default organizations are empty,
+`getDefaultOrganizationNidsWithFallback()` uses the same mapping as the
+legacy flow: each `field_user_org` term's `field_state_organization` →
+org_page NID.
 
 ### 2. `mass_utility/OrganizationTransfer.php` — media queue worker (DEAD CODE)
 
