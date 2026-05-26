@@ -165,6 +165,88 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
+   * Initial-render sync augments OOG from pre-filled organizations.
+   *
+   * Covers the path where field_organizations arrives already populated
+   * (e.g. mass_utility's user defaults on /node/add/*): JS must fetch
+   * the mapped terms and append them to Permission Groups on first
+   * sync, not only on subsequent user edits.
+   */
+  public function testInitialSyncAugmentsFromPreFilledOrganizations(): void {
+    $context = $this->setupEditForm('node', 'info_details', [
+      'field_organizations' => [],
+    ]);
+    // Re-set field_organizations on the saved entity so the edit form
+    // loads with a pre-filled organization but empty OOG.
+    $context['entity']->set('field_organizations', [['target_id' => $context['orgPage']->id()]]);
+    $context['entity']->set('field_content_organization', []);
+    $context['entity']->setSyncing(TRUE);
+    $context['entity']->save();
+    $this->drupalGet('node/' . $context['entity']->id() . '/edit');
+
+    $session = $this->getSession();
+    $page = $session->getPage();
+    $session->executeScript(
+      'document.querySelectorAll("details").forEach(function(d){d.setAttribute("open","open");});'
+    );
+
+    $tidTag = sprintf('(%d)', $context['term']->id());
+    $appeared = $page->waitFor(8, function () use ($session, $tidTag) {
+      return strpos((string) $session->evaluateScript(self::OOG_INPUT_JS), $tidTag) !== FALSE;
+    });
+    $this->assertTrue(
+      $appeared,
+      sprintf('Initial JS sync must add mapped term %s for pre-filled organization.', $tidTag)
+    );
+  }
+
+  /**
+   * Manual OOG term survives even when a pre-filled organization maps to it.
+   *
+   * If OOG already contains a term that the org_page also maps to,
+   * removing that org_page must NOT drop the manual term — JS only
+   * tracks terms it actually added to OOG.
+   */
+  public function testInitialSyncDoesNotTrackPreExistingOwnerGroupTerm(): void {
+    $context = $this->setupEditForm('node', 'info_details', [
+      'field_organizations' => [],
+    ]);
+    // Pre-load: org_page is in field_organizations, and the same term
+    // it would augment is already in OOG (e.g. set by drush moab or by
+    // mass_org_access populate-from-current-user).
+    $context['entity']->set('field_organizations', [['target_id' => $context['orgPage']->id()]]);
+    $context['entity']->set('field_content_organization', [['target_id' => $context['term']->id()]]);
+    $context['entity']->setSyncing(TRUE);
+    $context['entity']->save();
+    $this->drupalGet('node/' . $context['entity']->id() . '/edit');
+
+    $session = $this->getSession();
+    $page = $session->getPage();
+    $session->executeScript(
+      'document.querySelectorAll("details").forEach(function(d){d.setAttribute("open","open");});'
+    );
+
+    // Give initial sync a chance to run + poll cycle.
+    sleep(2);
+
+    // Now clear the organization. The term that was already in OOG
+    // must stay because JS did not track it.
+    $session->executeScript(sprintf(
+      '(function(){var i=%s; i.value=""; i.dispatchEvent(new Event("change",{bubbles:true}));})();',
+      self::ORG_INPUT_JS
+    ));
+
+    sleep(2);
+    $tidTag = sprintf('(%d)', $context['term']->id());
+    $finalOog = (string) $session->evaluateScript(self::OOG_INPUT_JS);
+    $this->assertStringContainsString(
+      $tidTag,
+      $finalOog,
+      'Pre-existing OOG term must survive removal of an org_page that also maps to it.'
+    );
+  }
+
+  /**
    * Real-typing flow on info_details (type a substring, click dropdown).
    *
    * Uses an existing org_page (rather than a freshly created one) because
