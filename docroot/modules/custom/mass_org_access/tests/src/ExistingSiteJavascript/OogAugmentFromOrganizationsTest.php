@@ -167,22 +167,23 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   /**
    * Initial-render sync augments OOG from pre-filled organizations.
    *
-   * Covers the path where field_organizations arrives already populated
-   * (e.g. mass_utility's user defaults on /node/add/*): JS must fetch
-   * the mapped terms and append them to Permission Groups on first
-   * sync, not only on subsequent user edits.
+   * Covers the path where the organization field arrives already
+   * populated (e.g. mass_utility's user defaults on /node/add/* or
+   * legacy content): JS must fetch the mapped terms and append them
+   * to Permission Groups on first sync, not only on subsequent user
+   * edits. Runs against every distinct organization-field flavor
+   * (field_organizations on common bundles + the bundle-specific
+   * refs on binder / decision / person).
+   *
+   * @dataProvider organizationFieldProvider
    */
-  public function testInitialSyncAugmentsFromPreFilledOrganizations(): void {
-    $context = $this->setupEditForm('node', 'info_details', [
-      'field_organizations' => [],
-    ]);
-    // Re-set field_organizations on the saved entity so the edit form
-    // loads with a pre-filled organization but empty OOG.
-    $context['entity']->set('field_organizations', [['target_id' => $context['orgPage']->id()]]);
+  public function testInitialSyncAugmentsFromPreFilledOrganizations(string $entityType, string $bundle, string $orgField): void {
+    $context = $this->setupEditForm($entityType, $bundle);
+    $context['entity']->set($orgField, [['target_id' => $context['orgPage']->id()]]);
     $context['entity']->set('field_content_organization', []);
     $context['entity']->setSyncing(TRUE);
     $context['entity']->save();
-    $this->drupalGet('node/' . $context['entity']->id() . '/edit');
+    $this->drupalGet(sprintf('%s/%d/edit', $entityType, $context['entity']->id()));
 
     $session = $this->getSession();
     $page = $session->getPage();
@@ -196,8 +197,28 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
     });
     $this->assertTrue(
       $appeared,
-      sprintf('Initial JS sync must add mapped term %s for pre-filled organization.', $tidTag)
+      sprintf(
+        'Initial JS sync must add mapped term %s for pre-filled %s on %s:%s.',
+        $tidTag,
+        $orgField,
+        $entityType,
+        $bundle
+      )
     );
+  }
+
+  /**
+   * Bundles × organization field name for the initial-sync test.
+   */
+  public static function organizationFieldProvider(): array {
+    return [
+      'node:info_details (field_organizations)' => ['node', 'info_details', 'field_organizations'],
+      'node:news (field_organizations)' => ['node', 'news', 'field_organizations'],
+      'node:binder (field_binder_ref_organization)' => ['node', 'binder', 'field_binder_ref_organization'],
+      'node:decision (field_decision_ref_organization)' => ['node', 'decision', 'field_decision_ref_organization'],
+      'node:person (field_person_ref_org)' => ['node', 'person', 'field_person_ref_org'],
+      'media:document (field_organizations)' => ['media', 'document', 'field_organizations'],
+    ];
   }
 
   /**
