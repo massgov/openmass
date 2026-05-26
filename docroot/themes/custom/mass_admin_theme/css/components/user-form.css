@@ -1,3 +1,15 @@
 .user-form fieldset:not(.fieldgroup) {
   background-color: #f2f2f2;
 }
+
+/*
+ * Editors do not see approval fields; picture is followed by language settings.
+ * Match language → locale spacing (adjacent claro-details), not field--type padding.
+ */
+.user-form #edit-user-picture-wrapper:has(+ #edit-language) {
+  padding-bottom: 0;
+}
+
+.user-form #edit-user-picture-wrapper:has(+ #edit-language) .claro-details {
+  margin-bottom: 0;
+}
