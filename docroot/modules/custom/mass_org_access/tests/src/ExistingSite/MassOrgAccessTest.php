@@ -849,7 +849,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * New entity gets permission groups from field_user_org when no default orgs.
    *
-   * field_organizations is only filled when the user has default organizations.
+   * The field_organizations field is only filled when the user has defaults.
    */
   public function testNewEntityAutoAssignsCreatorOrg(): void {
     $this->userA->set('field_default_organizations', []);
