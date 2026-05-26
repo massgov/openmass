@@ -740,6 +740,16 @@ function mass_fields_paragraph_view(array &$build, EntityInterface $entity, Enti
  * Implements hook_entity_field_access().
  */
 function mass_fields_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL) {
+  // User approval fields are for access managers only.
+  if ($field_definition->getTargetEntityTypeId() === 'user') {
+    switch ($field_definition->getName()) {
+      case 'field_approved':
+      case 'field_approval_notes':
+        return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
+          ->cachePerPermissions();
+    }
+  }
+
   // This is being used to hide the custom HTML field from all roles without permission.
   // At this point only Admin have access.
   if ($operation === 'edit') {
