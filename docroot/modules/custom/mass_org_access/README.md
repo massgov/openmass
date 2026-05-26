@@ -88,7 +88,7 @@ OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 | Hook | Behavior |
 |------|----------|
 | `node_access` / `media_access` | The access decision above. |
-| `entity_field_access` | Locks `field_user_org` to `administer users` (prevents self-promotion). Permission Groups itself is not field-restricted. |
+| `entity_field_access` | Locks `field_user_org` edit to `administer users` (prevents self-promotion). Locks `field_approved` and `field_approval_notes` view/edit to `administer users`. Permission Groups itself is not field-restricted. |
 | `entity_prepare_form` | On new entities only: pre-fills `field_content_organization` from the creator's `field_user_org` + ancestors. Existing entities are populated exclusively by `drush moab`. |
 | `form_node_form_alter` | Adds `validateOrgAccess` callback (static method — closures break paragraphs AJAX). Defense-in-depth: surfaces an error if a save reaches form validation despite `node_access` already denying it. |
 | `field_widget_complete_form_alter` | Renders Permission Groups as a read-only list (see widget section). Attaches both JS libraries. |
@@ -157,7 +157,9 @@ Authors and editors maintain optional profile fields:
 | `field_default_labels` | label terms pre-filled on **new** pages/documents |
 
 `field_user_org` (Permission Groups on the user) remains **admin-only**
-via `entity_field_access`. Authors edit defaults on their own profile.
+via `entity_field_access`. `field_approved` and `field_approval_notes` are
+also restricted to users with `administer users` (view and edit). Authors
+edit defaults on their own profile.
 
 **New content only** (`entity_prepare_form` when `$entity->isNew()`):
 

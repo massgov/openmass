@@ -53,24 +53,32 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Locks field_user_org to users with `administer users`.
+   * Restricts sensitive user profile fields to `administer users`.
    *
-   * Prevents an editor from self-assigning organizations on
-   * `/user/UID/edit`. View access stays neutral so editors can still
-   * see the org listed on user pages. field_content_organization is
-   * not restricted here — anyone who can edit the host entity may edit
-   * the widget.
+   * - field_user_org: edit only (editors may still view their org).
+   * - field_approved / field_approval_notes: view and edit (access managers only).
    */
   #[Hook('entity_field_access')]
   public function entityFieldAccess(string $operation, FieldDefinitionInterface $field, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
-    if ($field->getName() !== 'field_user_org') {
+    if ($field->getTargetEntityTypeId() !== 'user') {
       return AccessResult::neutral();
     }
-    if ($operation === 'view') {
-      return AccessResult::neutral();
+
+    $field_name = $field->getName();
+    if ($field_name === 'field_user_org') {
+      if ($operation === 'view') {
+        return AccessResult::neutral();
+      }
+      return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
+        ->cachePerPermissions();
     }
-    return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
-      ->cachePerPermissions();
+
+    if (in_array($field_name, ['field_approved', 'field_approval_notes'], TRUE)) {
+      return AccessResult::forbiddenIf(!$account->hasPermission('administer users'))
+        ->cachePerPermissions();
+    }
+
+    return AccessResult::neutral();
   }
 
   /**
