@@ -1,5 +1,20 @@
 
 
+## [0.481.0] - May 26, 2026
+
+### Changed
+  - DP-44689: Use the info icon and standard callout spacing for the decision tree disclaimer.
+  - DP-46912: Enable item count selection in all content and advanced content reports.
+  - DP-46922: Small updates to purge oversized header logger.
+  
+### Added
+  - DP-45952: Added top down org hierarchy view report.
+  
+### Fixed
+  - DP-47000: Fix csv export for all documents to respect value of accessibility status filter
+  
+
+
 ## [0.480.1] - May 20, 2026
 
 ### Security
