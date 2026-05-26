@@ -2,19 +2,24 @@
 
 /**
  * @file
- * Deploy hooks for mass_org_access.
+ * Deploy hooks for mass_utility.
  */
 
 use Drupal\user\UserInterface;
 
 /**
  * Populates field_default_organizations from each user's permission groups.
+ *
+ * One-shot migration: for every active user that already has a value in
+ * field_user_org but no value in field_default_organizations, seed the
+ * default organizations from the permission-group → org_page mapping.
+ * Subsequent runs no-op.
  */
-function mass_org_access_deploy_populate_user_default_orgs(&$sandbox): ?string {
+function mass_utility_deploy_populate_user_default_orgs(&$sandbox): ?string {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  /** @var \Drupal\mass_org_access\OrgAccessChecker $checker */
-  $checker = \Drupal::service('mass_org_access.org_access_checker');
+  /** @var \Drupal\mass_utility\Hook\UserDefaultsHooks $defaults */
+  $defaults = \Drupal::service('mass_utility.user_defaults_hooks');
   $storage = \Drupal::entityTypeManager()->getStorage('user');
   $batch_size = 100;
 
@@ -58,7 +63,7 @@ function mass_org_access_deploy_populate_user_default_orgs(&$sandbox): ?string {
   foreach ($users as $user) {
     $sandbox['last_uid'] = (int) $user->id();
     $sandbox['progress']++;
-    if ($user instanceof UserInterface && $checker->populateUserDefaultOrganizationsFromPermissionGroups($user)) {
+    if ($user instanceof UserInterface && $defaults->populateFromPermissionGroups($user)) {
       $user->save();
       $sandbox['updated']++;
     }

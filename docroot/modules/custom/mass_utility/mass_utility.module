@@ -337,8 +337,6 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
     $form['actions']['submit']['#submit'][] = 'mass_utility_media_document_redirect';
   }
 
-  // New media organization defaults are set in mass_org_access entity_prepare_form.
-
   // Hide the Temporary Unpublished Access form on the edit page for media items.
   if (isset($form['access_unpublished_settings'])) {
     $form['access_unpublished_settings']['#access'] = FALSE;

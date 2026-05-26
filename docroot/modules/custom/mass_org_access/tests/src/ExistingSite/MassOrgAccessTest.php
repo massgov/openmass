@@ -813,11 +813,12 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * New entity form pre-fills organizations and permission groups from defaults.
+   * Form_alter pre-fills Organization Owner Groups for new entities.
+   *
+   * Author sees the inherited permission groups at form load, before
+   * pressing Save.
    */
   public function testFormAlterPreFillsOrgsOnNewEntityForm(): void {
-    $this->userA->set('field_default_organizations', $this->orgPageA->id());
-    $this->userA->save();
     \Drupal::currentUser()->setAccount($this->userA);
 
     $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
@@ -831,15 +832,6 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     \Drupal::formBuilder()->buildForm($form_object, $form_state);
     $entity = $form_object->getEntity();
 
-    $org_nids = array_filter(array_column(
-      $entity->get('field_organizations')->getValue(),
-      'target_id'
-    ));
-    $this->assertEquals(
-      [(string) $this->orgPageA->id()],
-      array_map('strval', $org_nids),
-      'field_organizations is pre-filled from user default organizations.'
-    );
     $this->assertNotEmpty(
       $entity->get('field_content_organization')->getValue(),
       'field_content_organization is pre-filled from permission groups.'
@@ -847,13 +839,15 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * New entity gets permission groups from field_user_org when no default orgs.
+   * New entity gets the creator's permission groups auto-assigned.
    *
-   * The field_organizations field is only filled when the user has defaults.
+   * When an editor opens the create form, entity_prepare_form pre-fills
+   * field_content_organization directly from their field_user_org (with
+   * ancestors). field_organizations is not touched by mass_org_access —
+   * the editor still picks Organization(s) themselves (or mass_utility's
+   * UserDefaults pre-fills from their default organizations).
    */
   public function testNewEntityAutoAssignsCreatorOrg(): void {
-    $this->userA->set('field_default_organizations', []);
-    $this->userA->save();
     \Drupal::currentUser()->setAccount($this->userA);
 
     $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
@@ -1171,208 +1165,6 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     }
     $entity->setSyncing(TRUE);
     $entity->save();
-  }
-
-  /**
-   * Authors can edit default org/label fields but not field_user_org.
-   */
-  public function testAuthorCanEditDefaultFieldsOnOwnProfile(): void {
-    $author = $this->createUser();
-    $author->addRole('author');
-    $author->activate();
-    $author->save();
-
-    $this->assertTrue(
-      $author->get('field_default_organizations')->access('edit', $author),
-      'Author must be able to edit default organizations on their own profile.'
-    );
-    $this->assertTrue(
-      $author->get('field_default_labels')->access('edit', $author),
-      'Author must be able to edit default labels on their own profile.'
-    );
-    $this->assertFalse(
-      $author->get('field_user_org')->access('edit', $author),
-      'Author must not edit permission groups on their own profile.'
-    );
-  }
-
-  /**
-   * Deploy hook copies permission-group org pages into default organizations.
-   */
-  public function testDeployHookPopulatesDefaultOrganizations(): void {
-    require_once DRUPAL_ROOT . '/modules/custom/mass_org_access/mass_org_access.deploy.php';
-
-    $user = $this->createUser();
-    $user->addRole('editor');
-    $user->set('field_user_org', $this->termA->id());
-    $user->set('field_default_organizations', []);
-    $user->activate();
-    $user->save();
-
-    $sandbox = [];
-    do {
-      mass_org_access_deploy_populate_user_default_orgs($sandbox);
-    } while (($sandbox['#finished'] ?? 0) < 1);
-
-    $user = \Drupal::entityTypeManager()->getStorage('user')->load($user->id());
-    $org_nids = array_filter(array_column(
-      $user->get('field_default_organizations')->getValue(),
-      'target_id'
-    ));
-    $this->assertEqualsCanonicalizing(
-      [(string) $this->orgPageA->id()],
-      array_map('strval', $org_nids)
-    );
-    $this->assertEmpty(
-      array_filter(array_column($user->get('field_default_labels')->getValue(), 'target_id')),
-      'Deploy hook must not set default labels.'
-    );
-
-    $before = $user->get('field_default_organizations')->getValue();
-    $changed = \Drupal::service('mass_org_access.org_access_checker')
-      ->populateUserDefaultOrganizationsFromPermissionGroups($user);
-    $this->assertFalse($changed, 'Populate must no-op when defaults already exist.');
-    $this->assertEquals($before, $user->get('field_default_organizations')->getValue());
-  }
-
-  /**
-   * New node form pre-fills default labels from the user profile.
-   */
-  public function testNewNodePrefillDefaultLabels(): void {
-    $vocab = Vocabulary::load('label');
-    $label = $this->createTerm($vocab, [
-      'name' => 'Default label ' . $this->randomMachineName(),
-    ]);
-    $this->userA->set('field_default_organizations', $this->orgPageA->id());
-    $this->userA->set('field_default_labels', $label->id());
-    $this->userA->save();
-    \Drupal::currentUser()->setAccount($this->userA);
-
-    $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
-      'type' => 'info_details',
-      'title' => 'Labels prefill ' . $this->randomMachineName(),
-    ]);
-    $form_object = \Drupal::entityTypeManager()
-      ->getFormObject('node', 'default')
-      ->setEntity($entity);
-    $form_state = (new FormState())->setFormObject($form_object);
-    \Drupal::formBuilder()->buildForm($form_object, $form_state);
-    $entity = $form_object->getEntity();
-
-    $label_tids = array_filter(array_column(
-      $entity->get('field_reusable_label')->getValue(),
-      'target_id'
-    ));
-    $this->assertContains(
-      (string) $label->id(),
-      array_map('strval', $label_tids),
-      'field_reusable_label is pre-filled from user default labels.'
-    );
-  }
-
-  /**
-   * New media uses default organizations when set on the user profile.
-   */
-  public function testNewMediaPrefillUsesUserDefaultOrganizations(): void {
-    $this->userA->set('field_default_organizations', $this->orgPageB->id());
-    $this->userA->save();
-    \Drupal::currentUser()->setAccount($this->userA);
-
-    $media = \Drupal::entityTypeManager()->getStorage('media')->create([
-      'bundle' => 'document',
-      'name' => 'Media defaults ' . $this->randomMachineName(),
-    ]);
-    $form_object = \Drupal::entityTypeManager()
-      ->getFormObject('media', 'default')
-      ->setEntity($media);
-    $form_state = (new FormState())->setFormObject($form_object);
-    \Drupal::formBuilder()->buildForm($form_object, $form_state);
-    $media = $form_object->getEntity();
-
-    $org_nids = array_filter(array_column(
-      $media->get('field_organizations')->getValue(),
-      'target_id'
-    ));
-    $this->assertEquals(
-      [(string) $this->orgPageB->id()],
-      array_map('strval', $org_nids),
-      'New media must use profile default organizations.'
-    );
-  }
-
-  /**
-   * New media falls back to permission-group org when defaults are empty.
-   */
-  public function testNewMediaPrefillFallsBackToPermissionGroups(): void {
-    $this->userA->set('field_default_organizations', []);
-    $this->userA->save();
-    \Drupal::currentUser()->setAccount($this->userA);
-
-    $media = \Drupal::entityTypeManager()->getStorage('media')->create([
-      'bundle' => 'document',
-      'name' => 'Media fallback ' . $this->randomMachineName(),
-    ]);
-    $form_object = \Drupal::entityTypeManager()
-      ->getFormObject('media', 'default')
-      ->setEntity($media);
-    $form_state = (new FormState())->setFormObject($form_object);
-    \Drupal::formBuilder()->buildForm($form_object, $form_state);
-    $media = $form_object->getEntity();
-
-    $org_nids = array_filter(array_column(
-      $media->get('field_organizations')->getValue(),
-      'target_id'
-    ));
-    $this->assertEquals(
-      [(string) $this->orgPageA->id()],
-      array_map('strval', $org_nids),
-      'New media must fall back to org_page from permission groups.'
-    );
-  }
-
-  /**
-   * Existing content edit forms must not apply user defaults.
-   */
-  public function testExistingNodeEditDoesNotApplyDefaults(): void {
-    $vocab = Vocabulary::load('label');
-    $label = $this->createTerm($vocab, [
-      'name' => 'Unused default ' . $this->randomMachineName(),
-    ]);
-    $this->userA->set('field_default_organizations', $this->orgPageA->id());
-    $this->userA->set('field_default_labels', $label->id());
-    $this->userA->save();
-    \Drupal::currentUser()->setAccount($this->userA);
-
-    $node = $this->createNode([
-      'type' => 'info_details',
-      'title' => 'Existing no defaults ' . $this->randomMachineName(),
-      'field_organizations' => [$this->orgPageB->id()],
-      'status' => 1,
-      'moderation_state' => MassModeration::PUBLISHED,
-    ]);
-    $node->set('field_reusable_label', []);
-    $node->save();
-
-    $form_object = \Drupal::entityTypeManager()
-      ->getFormObject('node', 'default')
-      ->setEntity($node);
-    $form_state = (new FormState())->setFormObject($form_object);
-    \Drupal::formBuilder()->buildForm($form_object, $form_state);
-    $node = $form_object->getEntity();
-
-    $org_nids = array_filter(array_column(
-      $node->get('field_organizations')->getValue(),
-      'target_id'
-    ));
-    $this->assertEquals(
-      [(string) $this->orgPageB->id()],
-      array_map('strval', $org_nids),
-      'Edit form must not replace existing organizations with defaults.'
-    );
-    $this->assertEmpty(
-      array_filter(array_column($node->get('field_reusable_label')->getValue(), 'target_id')),
-      'Edit form must not inject default labels.'
-    );
   }
 
 }
