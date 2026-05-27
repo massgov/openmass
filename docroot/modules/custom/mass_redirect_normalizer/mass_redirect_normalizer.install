@@ -68,12 +68,24 @@ function mass_redirect_normalizer_schema(): array {
         'size' => 'big',
         'not null' => FALSE,
       ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'default' => 'succeeded',
+      ],
+      'error_message' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
     ],
     'primary key' => ['id'],
     'indexes' => [
       'changed_at' => ['changed_at'],
       'entity' => ['entity_type', 'entity_id'],
       'source' => ['source'],
+      'status' => ['status'],
     ],
   ];
 
@@ -81,11 +93,26 @@ function mass_redirect_normalizer_schema(): array {
 }
 
 /**
- * Add change log table for queue worker reporting.
+ * Ensures the change log report table exists.
  */
 function mass_redirect_normalizer_update_10001(): void {
-  $schema = mass_redirect_normalizer_schema();
-  if (!\Drupal::database()->schema()->tableExists('mass_redirect_normalizer_change_log')) {
-    \Drupal::database()->schema()->createTable('mass_redirect_normalizer_change_log', $schema['mass_redirect_normalizer_change_log']);
+  $definitions = mass_redirect_normalizer_schema();
+  $schema = \Drupal::database()->schema();
+  foreach ($definitions as $table => $definition) {
+    if (!$schema->tableExists($table)) {
+      $schema->createTable($table, $definition);
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mass_redirect_normalizer_uninstall(): void {
+  $schema = \Drupal::database()->schema();
+  foreach (array_keys(mass_redirect_normalizer_schema()) as $table) {
+    if ($schema->tableExists($table)) {
+      $schema->dropTable($table);
+    }
   }
 }

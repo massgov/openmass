@@ -76,6 +76,13 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
             '@id' => $entityId,
             '@message' => $exception->getMessage(),
           ]);
+          $this->changeLog->logFailure(
+            $entityType,
+            $entityId,
+            $this->resolveBundleForFailureLog($entityType, $entityId),
+            $source,
+            $exception->getMessage(),
+          );
         }
       }
     }
@@ -133,6 +140,17 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
       return [];
     }
     return [[$entityType, $entityId]];
+  }
+
+  /**
+   * Resolves bundle label for failure log rows when the entity cannot be loaded.
+   */
+  private function resolveBundleForFailureLog(string $entityType, int $entityId): string {
+    $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
+    if ($entity instanceof ContentEntityInterface) {
+      return (string) $entity->bundle();
+    }
+    return '';
   }
 
 }

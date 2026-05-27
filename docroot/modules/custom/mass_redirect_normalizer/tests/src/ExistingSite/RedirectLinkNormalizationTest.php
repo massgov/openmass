@@ -5,6 +5,7 @@ namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 use Drupal\mass_redirect_normalizer\Drush\Commands\MassRedirectNormalizerCommands;
 use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\user\Entity\Role;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\file\Entity\File;
 use Drupal\path_alias\Entity\PathAlias;
@@ -1732,30 +1733,40 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       ->fetchField();
 
     $this->assertGreaterThan(0, $count);
+
+    $status = \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+      ->fields('l', ['status'])
+      ->condition('entity_type', 'node')
+      ->condition('entity_id', (int) $page->id())
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+    $this->assertSame('succeeded', $status);
   }
 
   /**
    * Tests report permissions are scoped to content admins and admin role.
    */
   public function testReportPermissionsRoleScope(): void {
-    $contentTeam = file_get_contents('/var/www/html/conf/drupal/config/user.role.content_team.yml');
-    $editor = file_get_contents('/var/www/html/conf/drupal/config/user.role.editor.yml');
-    $author = file_get_contents('/var/www/html/conf/drupal/config/user.role.author.yml');
-    $this->assertIsString($contentTeam);
-    $this->assertIsString($editor);
-    $this->assertIsString($author);
+    $contentTeam = Role::load('content_team');
+    $editor = Role::load('editor');
+    $author = Role::load('author');
+    $this->assertNotNull($contentTeam);
+    $this->assertNotNull($editor);
+    $this->assertNotNull($author);
 
-    $this->assertStringContainsString('view mass redirect normalizer report', $contentTeam);
-    $this->assertStringContainsString('export mass redirect normalizer report', $contentTeam);
-    $this->assertStringContainsString('clear mass redirect normalizer report', $contentTeam);
-    $this->assertStringNotContainsString('view mass redirect normalizer report', $editor);
-    $this->assertStringNotContainsString('view mass redirect normalizer report', $author);
+    $contentTeamPermissions = $contentTeam->getPermissions();
+    $this->assertContains('view mass redirect normalizer report', $contentTeamPermissions);
+    $this->assertContains('export mass redirect normalizer report', $contentTeamPermissions);
+    $this->assertContains('clear mass redirect normalizer report', $contentTeamPermissions);
+    $this->assertNotContains('view mass redirect normalizer report', $editor->getPermissions());
+    $this->assertNotContains('view mass redirect normalizer report', $author->getPermissions());
   }
 
   /**
    * Tests change log service clear and export operations.
    */
-  public function testChangeLogServiceClearAndExport(): void {
+  public function testChangeLogServiceClearAll(): void {
     $this->ensureChangeLogTableExists();
     \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
 
@@ -1770,9 +1781,6 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
         'after' => '<p>/new</p>',
       ],
     ]);
-
-    $uri = $service->exportCsv();
-    $this->assertStringContainsString('public://mnrl-reports/', $uri);
 
     $countBeforeClear = (int) \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
       ->countQuery()
@@ -1789,36 +1797,96 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests change log status column for succeeded and failed rows.
+   */
+  public function testChangeLogStatusColumnForSuccessAndFailure(): void {
+    $this->ensureChangeLogTableExists();
+    \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkChangeLog $service */
+    $service = \Drupal::service('mass_redirect_normalizer.change_log');
+    $service->logChanges('node', 456, 'page', 'drush', [
+      [
+        'field' => 'body',
+        'delta' => 0,
+        'kind' => 'text',
+        'before' => '<p>/old</p>',
+        'after' => '<p>/new</p>',
+      ],
+    ]);
+    $service->logFailure('node', 789, 'page', 'drush', 'Example failure message.');
+
+    $succeeded = \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+      ->fields('l', ['status', 'error_message'])
+      ->condition('entity_id', 456)
+      ->execute()
+      ->fetchAssoc();
+    $this->assertIsArray($succeeded);
+    $this->assertSame('succeeded', $succeeded['status']);
+    $this->assertNull($succeeded['error_message']);
+
+    $failed = \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+      ->fields('l', ['status', 'error_message'])
+      ->condition('entity_id', 789)
+      ->execute()
+      ->fetchAssoc();
+    $this->assertIsArray($failed);
+    $this->assertSame('failed', $failed['status']);
+    $this->assertSame('Example failure message.', $failed['error_message']);
+  }
+
+  /**
    * Ensures the change log table exists in ExistingSite tests.
    */
   private function ensureChangeLogTableExists(): void {
     $schema = \Drupal::database()->schema();
-    if ($schema->tableExists('mass_redirect_normalizer_change_log')) {
+    $table = 'mass_redirect_normalizer_change_log';
+    if (!$schema->tableExists($table)) {
+      $definition = [
+        'description' => 'Stores redirect normalization changes written by queue worker.',
+        'fields' => [
+          'id' => ['type' => 'serial', 'not null' => TRUE],
+          'changed_at' => ['type' => 'int', 'not null' => TRUE],
+          'source' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE, 'default' => ''],
+          'entity_type' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE, 'default' => ''],
+          'entity_id' => ['type' => 'int', 'not null' => TRUE],
+          'bundle' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE, 'default' => ''],
+          'field_name' => ['type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''],
+          'delta' => ['type' => 'int', 'not null' => TRUE],
+          'kind' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE, 'default' => ''],
+          'before_value' => ['type' => 'text', 'size' => 'big', 'not null' => FALSE],
+          'after_value' => ['type' => 'text', 'size' => 'big', 'not null' => FALSE],
+          'status' => ['type' => 'varchar', 'length' => 16, 'not null' => TRUE, 'default' => 'succeeded'],
+          'error_message' => ['type' => 'text', 'size' => 'big', 'not null' => FALSE],
+        ],
+        'primary key' => ['id'],
+        'indexes' => [
+          'changed_at' => ['changed_at'],
+          'entity' => ['entity_type', 'entity_id'],
+          'source' => ['source'],
+          'status' => ['status'],
+        ],
+      ];
+      $schema->createTable($table, $definition);
       return;
     }
-    $definition = [
-      'description' => 'Stores redirect normalization changes written by queue worker.',
-      'fields' => [
-        'id' => ['type' => 'serial', 'not null' => TRUE],
-        'changed_at' => ['type' => 'int', 'not null' => TRUE],
-        'source' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE, 'default' => ''],
-        'entity_type' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE, 'default' => ''],
-        'entity_id' => ['type' => 'int', 'not null' => TRUE],
-        'bundle' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE, 'default' => ''],
-        'field_name' => ['type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''],
-        'delta' => ['type' => 'int', 'not null' => TRUE],
-        'kind' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE, 'default' => ''],
-        'before_value' => ['type' => 'text', 'size' => 'big', 'not null' => FALSE],
-        'after_value' => ['type' => 'text', 'size' => 'big', 'not null' => FALSE],
-      ],
-      'primary key' => ['id'],
-      'indexes' => [
-        'changed_at' => ['changed_at'],
-        'entity' => ['entity_type', 'entity_id'],
-        'source' => ['source'],
-      ],
-    ];
-    $schema->createTable('mass_redirect_normalizer_change_log', $definition);
+
+    if (!$schema->fieldExists($table, 'status')) {
+      $schema->addField($table, 'status', [
+        'type' => 'varchar',
+        'length' => 16,
+        'not null' => TRUE,
+        'default' => 'succeeded',
+      ]);
+      $schema->addIndex($table, 'status', ['status']);
+    }
+    if (!$schema->fieldExists($table, 'error_message')) {
+      $schema->addField($table, 'error_message', [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ]);
+    }
   }
 
   /**

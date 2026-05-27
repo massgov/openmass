@@ -56,7 +56,7 @@ final class RedirectLinkChangeLogClearForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getCancelUrl(): Url {
-    return Url::fromRoute('mass_redirect_normalizer.change_log');
+    return Url::fromRoute('view.redirect_link_normalizer_report.page_1');
   }
 
   /**
@@ -65,7 +65,7 @@ final class RedirectLinkChangeLogClearForm extends ConfirmFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state): void {
     $this->changeLog->clearAll();
     $this->messenger()->addStatus($this->t('Redirect normalizer report records were cleared.'));
-    $form_state->setRedirect('mass_redirect_normalizer.change_log');
+    $form_state->setRedirect('view.redirect_link_normalizer_report.page_1');
   }
 
 }

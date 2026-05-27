@@ -89,8 +89,12 @@ Permissions:
 Granted to **Content Administrator** (`content_team`) and **Administrator**
 (`is_admin: true`). Not granted to Author or Editor.
 
-The report lists changed field values (newest first), with actions to export CSV
-to `public://mnrl-reports/` or clear all records.
+The report is a **Views** page (`redirect_link_normalizer_report`) listing field
+changes and failures (newest first). Each row has a **Status** of `succeeded`
+(link rewritten) or `failed` (exception message in **Error**). **Export CSV**
+uses `views_data_export` and `csv_serialization` (same pattern as other Mass
+reports). **Clear all records** opens a confirm form. Both actions appear as
+buttons above the table.
 
 ### Operator workflow
 

@@ -1,11 +1,3 @@
-mass_redirect_normalizer.change_log:
-  path: '/admin/reports/redirect-link-normalizer'
-  defaults:
-    _controller: '\Drupal\mass_redirect_normalizer\Controller\RedirectLinkChangeLogController::report'
-    _title: 'Redirect link normalization report'
-  requirements:
-    _permission: 'view mass redirect normalizer report'
-
 mass_redirect_normalizer.change_log_clear:
   path: '/admin/reports/redirect-link-normalizer/clear'
   defaults:
@@ -13,10 +5,3 @@ mass_redirect_normalizer.change_log_clear:
     _title: 'Clear redirect link normalization report'
   requirements:
     _permission: 'clear mass redirect normalizer report'
-
-mass_redirect_normalizer.change_log_export:
-  path: '/admin/reports/redirect-link-normalizer/export'
-  defaults:
-    _controller: '\Drupal\mass_redirect_normalizer\Controller\RedirectLinkChangeLogController::export'
-  requirements:
-    _permission: 'export mass redirect normalizer report'
