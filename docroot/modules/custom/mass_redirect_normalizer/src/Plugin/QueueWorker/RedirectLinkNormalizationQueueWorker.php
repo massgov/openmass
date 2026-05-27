@@ -65,10 +65,14 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
     $source = (string) ($data['source'] ?? 'drush');
 
     try {
-      foreach ($this->expandQueuePayload($data) as $pair) {
+      $pairs = $this->expandQueuePayload($data);
+      $loadedByTypeAndId = $this->loadEntitiesForPairs($pairs);
+
+      foreach ($pairs as $pair) {
         [$entityType, $entityId] = $pair;
+        $entity = $loadedByTypeAndId[$entityType][$entityId] ?? NULL;
         try {
-          $this->processEntity($entityType, $entityId, $source);
+          $this->processEntity($entityType, $entityId, $source, $entity);
         }
         catch (\Throwable $exception) {
           $this->logger->error('Redirect link normalization failed for @type:@id: @message', [
@@ -79,7 +83,7 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
           $this->changeLog->logFailure(
             $entityType,
             $entityId,
-            $this->resolveBundleForFailureLog($entityType, $entityId),
+            $entity instanceof ContentEntityInterface ? (string) $entity->bundle() : '',
             $source,
             $exception->getMessage(),
           );
@@ -94,11 +98,15 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
   /**
    * Processes a single queued entity.
    */
-  private function processEntity(string $entityType, int $entityId, string $source): void {
+  private function processEntity(
+    string $entityType,
+    int $entityId,
+    string $source,
+    ?ContentEntityInterface $entity = NULL,
+  ): void {
     if (!in_array($entityType, RedirectLinkQueueEnqueuer::SUPPORTED_ENTITY_TYPES, TRUE) || $entityId <= 0) {
       return;
     }
-    $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
     if (!$entity instanceof ContentEntityInterface) {
       return;
     }
@@ -143,14 +151,37 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
   }
 
   /**
-   * Resolves bundle label for failure log rows when the entity cannot be loaded.
+   * Batch-loads all entities referenced by queue payload tuples.
+   *
+   * @param array<int, array{0:string,1:int}> $pairs
+   *   Entity type and ID tuples.
+   *
+   * @return array<string, array<int, \Drupal\Core\Entity\ContentEntityInterface>>
+   *   Loaded content entities indexed by [entity_type][entity_id].
    */
-  private function resolveBundleForFailureLog(string $entityType, int $entityId): string {
-    $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
-    if ($entity instanceof ContentEntityInterface) {
-      return (string) $entity->bundle();
+  private function loadEntitiesForPairs(array $pairs): array {
+    $idsByType = [];
+    foreach ($pairs as [$entityType, $entityId]) {
+      if (!in_array($entityType, RedirectLinkQueueEnqueuer::SUPPORTED_ENTITY_TYPES, TRUE) || $entityId <= 0) {
+        continue;
+      }
+      $idsByType[$entityType][$entityId] = $entityId;
     }
-    return '';
+
+    $loaded = [];
+    foreach ($idsByType as $entityType => $ids) {
+      $entities = $this->entityTypeManager
+        ->getStorage($entityType)
+        ->loadMultiple(array_values($ids));
+
+      foreach ($entities as $id => $entity) {
+        if ($entity instanceof ContentEntityInterface) {
+          $loaded[$entityType][(int) $id] = $entity;
+        }
+      }
+    }
+
+    return $loaded;
   }
 
 }
