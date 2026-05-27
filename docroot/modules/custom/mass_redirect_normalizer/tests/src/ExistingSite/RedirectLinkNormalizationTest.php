@@ -3,9 +3,11 @@
 namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 
 use Drupal\mass_redirect_normalizer\Drush\Commands\MassRedirectNormalizerCommands;
+use Drupal\mass_redirect_normalizer\RedirectLinkChangeLog;
 use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\Role;
+use Drupal\views\Views;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\file\Entity\File;
 use Drupal\path_alias\Entity\PathAlias;
@@ -1853,6 +1855,62 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests the redirect link normalization report view lists change log rows.
+   */
+  public function testChangeLogReportViewShowsLoggedData(): void {
+    $this->ensureChangeLogTableExists();
+    \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
+
+    $successEntityId = 45601;
+    $failureEntityId = 78901;
+    $beforeMarkup = '<p><a href="/old-path-mnrl-view-test">Old</a></p>';
+    $afterMarkup = '<p><a href="/new-path-mnrl-view-test">New</a></p>';
+    $failureMessage = 'MNRL view test failure message.';
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkChangeLog $service */
+    $service = \Drupal::service('mass_redirect_normalizer.change_log');
+    $service->logChanges('node', $successEntityId, 'page', 'drush', [
+      [
+        'field' => 'body',
+        'delta' => 0,
+        'kind' => 'text',
+        'before' => $beforeMarkup,
+        'after' => $afterMarkup,
+      ],
+    ]);
+    $service->logFailure('node', $failureEntityId, 'page', 'drush', $failureMessage);
+
+    $view = Views::getView('redirect_link_normalizer_report');
+    $this->assertNotNull($view, 'redirect_link_normalizer_report view must exist.');
+    $view->setDisplay('page_1');
+    $view->execute();
+    $this->assertNotEmpty($view->result);
+
+    $successRow = NULL;
+    $failureRow = NULL;
+    foreach ($view->result as $row) {
+      $entityId = (int) $this->viewResultValue($row, 'entity_id');
+      if ($entityId === $successEntityId) {
+        $successRow = $row;
+      }
+      if ($entityId === $failureEntityId) {
+        $failureRow = $row;
+      }
+    }
+
+    $this->assertNotNull($successRow, 'Report view should include the succeeded change row.');
+    $this->assertSame('succeeded', $this->viewResultValue($successRow, 'status'));
+    $this->assertSame('body', $this->viewResultValue($successRow, 'field_name'));
+    $this->assertSame('drush', $this->viewResultValue($successRow, 'source'));
+    $this->assertStringContainsString('/old-path-mnrl-view-test', (string) $this->viewResultValue($successRow, 'before_value'));
+    $this->assertStringContainsString('/new-path-mnrl-view-test', (string) $this->viewResultValue($successRow, 'after_value'));
+
+    $this->assertNotNull($failureRow, 'Report view should include the failed change row.');
+    $this->assertSame('failed', $this->viewResultValue($failureRow, 'status'));
+    $this->assertSame($failureMessage, $this->viewResultValue($failureRow, 'error_message'));
+  }
+
+  /**
    * Ensures the change log table exists in ExistingSite tests.
    */
   private function ensureChangeLogTableExists(): void {
@@ -1904,6 +1962,19 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
         'not null' => FALSE,
       ]);
     }
+  }
+
+  /**
+   * Reads a field value from a Views result row for the change log base table.
+   */
+  private function viewResultValue(object $row, string $field): mixed {
+    $table = RedirectLinkChangeLog::TABLE;
+    foreach ([$field, $table . '_' . $field] as $property) {
+      if (property_exists($row, $property)) {
+        return $row->{$property};
+      }
+    }
+    return NULL;
   }
 
   /**
