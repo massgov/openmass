@@ -21,3 +21,7 @@ services:
     arguments: ['@logger.channel.mass_caching', '@entity_type.manager']
     tags:
       - { name: event_subscriber }
+  mass_caching.akamai_header_creation_subscriber:
+    class: Drupal\mass_caching\EventSubscriber\AkamaiHeaderCreationSubscriber
+    tags:
+      - { name: event_subscriber }
