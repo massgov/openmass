@@ -6,9 +6,12 @@ use Drupal\mass_redirect_normalizer\Drush\Commands\MassRedirectNormalizerCommand
 use Drupal\mass_redirect_normalizer\RedirectLinkChangeLog;
 use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\user\Entity\User;
 use Drupal\user\Entity\Role;
 use Drupal\views\Views;
 use Drupal\redirect\Entity\Redirect;
+use Symfony\Component\HttpFoundation\Request as HttpRequest;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Drupal\file\Entity\File;
 use Drupal\path_alias\Entity\PathAlias;
 use MassGov\Dtt\MassExistingSiteBase;
@@ -2113,6 +2116,101 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
     $html = (string) $paragraph->get('field_method_details')->value;
     $this->assertStringContainsString($contains, $html);
     $this->assertStringNotContainsString($notContains, $html);
+  }
+
+  /**
+   * Tests CSV export returns all rows when the change log spans multiple pages.
+   *
+   * The page_1 display paginates at 50 rows. This test seeds 55 rows (more
+   * than one page worth) so that a naïve export using the page pager would
+   * truncate the output. The data_export_1 display uses pager type "none" and
+   * export_method "standard", so all rows must appear in the downloaded CSV
+   * regardless of the page display's items-per-page setting.
+   */
+  public function testCsvExportReturnsAllRowsAcrossMultiplePages(): void {
+    $this->ensureChangeLogTableExists();
+    \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
+
+    // 55 rows: one full page (50) plus 5 on a second page.
+    $rowCount = 55;
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkChangeLog $service */
+    $service = \Drupal::service('mass_redirect_normalizer.change_log');
+    $entityIds = [];
+    for ($i = 1; $i <= $rowCount; $i++) {
+      $entityId = 900000 + $i;
+      $entityIds[] = $entityId;
+      $service->logChanges('node', $entityId, 'page', 'drush', [
+        [
+          'field' => 'body',
+          'delta' => 0,
+          'kind' => 'text',
+          'before' => sprintf('<a href="/old-%d">old</a>', $i),
+          'after' => sprintf('<a href="/new-%d">new</a>', $i),
+        ],
+      ]);
+    }
+
+    // Verify the page display sees only 50 (paged).
+    $pageView = Views::getView('redirect_link_normalizer_report');
+    $this->assertNotNull($pageView);
+    $pageView->setDisplay('page_1');
+    $pageView->execute();
+    $this->assertCount(50, $pageView->result, 'Page display should return only the first 50 rows.');
+
+    // Hit the export route as a freshly created admin user via an HTTP kernel
+    // sub-request. This is the same code path as a browser clicking the
+    // Export CSV button.
+    $adminUser = $this->createUser();
+    $adminUser->addRole('administrator');
+    $adminUser->activate();
+    $adminUser->save();
+
+    $accountSwitcher = \Drupal::service('account_switcher');
+    $accountSwitcher->switchTo($adminUser);
+
+    $exportRequest = HttpRequest::create(
+      '/admin/reports/redirect-link-normalizer/export'
+    );
+    $exportResponse = \Drupal::service('http_kernel')->handle(
+      $exportRequest,
+      HttpKernelInterface::SUB_REQUEST
+    );
+    $accountSwitcher->switchBack();
+
+    $this->assertSame(200, $exportResponse->getStatusCode(), 'Export route must return HTTP 200.');
+    $csv = (string) $exportResponse->getContent();
+    $this->assertNotEmpty($csv, 'CSV export response must not be empty.');
+    $this->assertStringContainsString('Changed,Status', $csv, 'CSV must contain a header row.');
+
+    // Count data rows by splitting on newlines. RFC-4180 quoted fields that
+    // contain embedded newlines will expand the raw line count, so use
+    // str_getcsv with the whole document as the "line delimiter" approach
+    // to count logical rows regardless of embedded newlines.
+    // Each logical row ends at a newline not inside a quoted field.
+    // A simple approximation: count occurrences of our unique entity IDs.
+    $this->assertStringContainsString('900001', $csv, 'First entity ID must appear in CSV.');
+    $this->assertStringContainsString('900055', $csv, 'Last entity ID (page 2) must appear in CSV.');
+
+    // Use PHP's csv parser to count logical data rows reliably.
+    $handle = fopen('php://memory', 'r+');
+    fwrite($handle, $csv);
+    rewind($handle);
+    $csvRows = [];
+    while (($row = fgetcsv($handle)) !== FALSE) {
+      $csvRows[] = $row;
+    }
+    fclose($handle);
+    // First row is the header; subtract it.
+    $dataRowCount = count($csvRows) - 1;
+    $this->assertSame(
+      $rowCount,
+      $dataRowCount,
+      sprintf(
+        'CSV export should contain all %d rows, not just one page worth (%d found).',
+        $rowCount,
+        $dataRowCount
+      )
+    );
   }
 
   /**
