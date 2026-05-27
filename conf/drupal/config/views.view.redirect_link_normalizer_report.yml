@@ -119,7 +119,7 @@ display:
         options:
           perm: 'view mass redirect normalizer report'
       cache:
-        type: tag
+        type: none
         options: {  }
       empty:
         area_text_custom:
@@ -149,7 +149,7 @@ display:
           disable_sql_rewrite: false
       display_extenders: {  }
     cache_metadata:
-      max-age: -1
+      max-age: 0
       contexts:
         - 'languages:language_interface'
         - url.query_args
@@ -190,7 +190,7 @@ display:
       redirect_to_display: page_1
       include_query_params: false
     cache_metadata:
-      max-age: -1
+      max-age: 0
       contexts:
         - 'languages:language_interface'
         - request_format
@@ -217,7 +217,7 @@ display:
       display_extenders: {  }
       path: admin/reports/redirect-link-normalizer
     cache_metadata:
-      max-age: -1
+      max-age: 0
       contexts:
         - 'languages:language_interface'
         - url.query_args
