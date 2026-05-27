@@ -12,6 +12,11 @@ function mass_redirect_normalizer_entity_presave(EntityInterface $entity) {
     return;
   }
 
+  // Avoid re-enqueueing while the queue worker is saving normalized entities.
+  if (!empty($_ENV['MASS_REDIRECT_NORMALIZER_QUEUE_PROCESSING'])) {
+    return;
+  }
+
   /** @var \Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer $enqueuer */
   $enqueuer = \Drupal::service('mass_redirect_normalizer.enqueuer');
   $enqueuer->enqueueEntity($entity, 'presave');

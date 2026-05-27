@@ -46,129 +46,77 @@ This split makes the code easier to test and maintain.
 
 | Option | Meaning |
 |--------|---------|
-| `--simulate` | Dry run: **no** database writes and **no** queue writes. Same idea as global `ddev drush --simulate ...`. |
-| `--limit=N` | Max eligible entities to process **total** across node + paragraph. Command stops when it reaches `N`. **`0` = no limit. |
-| `--bundle=...` | Only that bundle (node type or paragraph type machine name). With `--entity-ids`, IDs are filtered with a single query (no full entity load on the fast enqueue path). |
-| `--entity-ids=1,2,3` | Only these IDs. IDs are checked in both node and paragraph entities. Ignores `--limit`. |
-| `--kinds=text,link,entity_reference` | **Simulate:** include only these change kinds in table, CSV, and counters. **Execute (enqueue):** only entities with at least one matching kind of change are enqueued; each entity is dry-run first (slower). |
-| `--csv-path=./redirect-normalizer-report.csv` | Write a full CSV report. **Simulate:** diffs for scanned entities. **Execute:** same diff columns for entities you enqueue; each entity is dry-run first to build the report (slower). For fastest bulk enqueue, omit both `--kinds` and `--csv-path`. If the file already exists and is non-empty, **new rows are appended** (the header line is not repeated). |
-| `--entity-type=node|paragraph|all` | Restrict scans to one entity type, or both (`all`/default). |
-| `--start-id=N` | Start scanning from this ID (inclusive). Useful for manual resume windows. |
-| `--resume` | Continue simulate runs from saved progress checkpoint. Execute mode auto-resumes by default. |
-| `--show-progress` | Print saved progress checkpoint and exit without scanning. |
-| `--reset-progress` | Clear saved progress checkpoint before run. |
-| `--release-enqueue-lock` | Delete the enqueue sweep lock row from `{semaphore}` and exit (no sweep). Use after a **crash or segfault** when PHP never released the lock—`lock->release()` only clears locks owned by the current request. |
+| `--release-enqueue-lock` | Delete the enqueue sweep lock row from `{semaphore}` and exit (no sweep). Use after a **crash or kill** when PHP could not release the lock. |
 
-By default, bulk command processes only **published** content.
+`mnrl` enqueues **all published nodes**, then **all paragraphs**, using fast ID
+streaming (no entity loads in Drush). Queue items are batched (up to 100 entity
+refs per row).
 
-Execute mode **acquires** a sweep-wide lock so two `mnrl` runs do not enqueue in parallel. If a run dies without releasing (segfault, kill), the next execute may warn that another sweep is running; run `drush mnrl --release-enqueue-lock` once, then rerun.
-
-**Enqueue sweep performance:** plain execute (`mnrl` without `--simulate`,
-`--kinds`, or `--csv-path`) only runs entity ID queries and pushes each ID onto
-the queue—**no entity loads and no eligibility checks in Drush**. The queue
-worker loads each entity, applies the same eligibility rules as simulate mode,
-then normalizes. Bulk node lists add a **published (`status = 1`)** filter in
-the ID query (not when using `--entity-ids`). With `--kinds` or `--csv-path`,
-execute mode dry-runs each entity first (slower) to filter or build the report.
-Bulk enqueue writes checkpoints and dedupe keys periodically (same batch stride as load chunks).
-
-- Nodes must be published (enforced in the worker; bulk ID queries for nodes are
-  already limited to published where applicable).
-- Paragraphs are processed only when their parent node is published (worker).
-- If a published node has a newer unpublished draft revision, that node and its
-  child paragraphs are skipped when the worker runs (so we do not touch draft work).
-
-### Default table columns
-
-| Column | Notes |
-|--------|--------|
-| Status | `would_update` in simulate mode. |
-| Entity type | `node` or `paragraph`. |
-| Entity ID | Entity id. |
-| Parent node ID | For **paragraphs**, the host node id from `Helper::getParentNode()`. For nodes, `-`. |
-| Bundle | Bundle / type machine name. |
-| URL before / URL after | This is just the changed value, not full HTML. For link fields, it shows stored path/URL. For text fields, it shows only changed `href` values. For entity references, it shows `node:123` or `media:456`. If many links changed in one field, they are joined with `; `. If too long, CLI shortens it. |
-
-### CSV reporting
-
-- CSV includes the same rows as simulate table output (including `--kinds` filtering).
-- CSV `before` / `after` values are full values (not table-truncated).
-- Header columns:
-  - `status,entity_type,entity_id,parent_node_id,bundle,field,delta,kind,before,after,details`
-
-Examples:
+Execute mode **acquires** a sweep-wide lock so two `mnrl` runs do not enqueue in
+parallel. If a run dies without releasing, run:
 
 ```bash
-# Full simulation report in current directory.
-ddev drush mnrl --simulate --limit=20000 --csv-path=./redirect-normalizer-report.csv
-
-# Only entity-reference changes, current directory CSV.
-ddev drush mnrl --simulate --kinds=entity_reference --csv-path=./entity-reference-only-report.csv
-
-# Enqueue selected IDs for queue workers.
-ddev drush mnrl --entity-ids=857211,858626
+ddev drush mnrl --release-enqueue-lock
 ```
 
-### What gets skipped (simulate vs queue worker)
+Then rerun `ddev drush mnrl`.
 
-- **Simulate mode** applies eligibility before showing rows: orphan paragraphs,
-  unpublished content, and newer-draft cases are omitted from output.
-- **Fast enqueue** does not evaluate those rules in Drush; the **queue worker**
-  skips the same ineligible entities when it runs. You may still see queue items
-  for IDs that become no-ops in the worker (cheap claim/delete).
-- Entities with **no** redirect-based links to fix produce **no** simulate rows (empty table is normal).
+### Queue worker responsibilities
 
-### Simulate, enqueue, then verify (manual QA)
+The queue worker loads each entity, applies eligibility, normalizes redirect
+links, saves revisions when needed, and writes **change log rows** only when a
+field value actually changed.
 
-1. **Preview:**
-   `ddev drush mass-redirect-normalizer:normalize-links --simulate --limit=100 --csv-path=./redirect-normalizer-preview.csv`
-2. **Enqueue:**
-   `ddev drush mass-redirect-normalizer:normalize-links --limit=100`
-3. **Process queue:**
-   `ddev drush queue:run mass_redirect_normalizer_link_normalization`
-4. **Re-check:** run **simulate** again with the same filters. Items that were fixed should **not** show `would_update` anymore (unless something else changed them back).
+- Nodes must be published (bulk node ID query is published-only).
+- Paragraphs are processed only when their parent node is published.
+- If a published node has a newer unpublished draft revision, that node and its
+  child paragraphs are skipped.
 
-For big runs, the command prints a progress notice every 500 entities. When it
-can estimate the sweep size (same filters as the scan), the line includes
-**scanned N of total (pct%) in this run**. With `--limit`, total equals that
-limit. **Continuing from saved checkpoint** appears only when a prior run did not
-finish cleanly (`completed` was not saved); it does not appear after a completed
-sweep or on a truly empty checkpoint.
+Entities with **no** redirect-based links to fix are no-ops in the worker.
 
-For a narrow retest after you know specific IDs:
+### Change report (admin UI)
 
-`ddev drush mass-redirect-normalizer:normalize-links --simulate --entity-ids=123,456`
+Report page:
 
-### Long-run recovery and resume
+`/admin/reports/redirect-link-normalizer`
 
-For long/background runs (for example Acquia SSH), execute mode continues from
-the saved checkpoint automatically. If another enqueue sweep is already active,
-the command exits without starting a second sweep.
+Permissions:
+
+- `view mass redirect normalizer report`
+- `export mass redirect normalizer report`
+- `clear mass redirect normalizer report`
+
+Granted to **Content Administrator** (`content_team`) and **Administrator**
+(`is_admin: true`). Not granted to Author or Editor.
+
+The report lists changed field values (newest first), with actions to export CSV
+to `public://mnrl-reports/` or clear all records.
+
+### Operator workflow
 
 ```bash
-# 1) Enqueue a long paragraph sweep.
-ddev drush mnrl --entity-type=paragraph --limit=50000
+# 1) Enqueue full site
+ddev drush mnrl
 
-# 2) Process queued work.
+# 2) Process queue (cron every 5 min, or manual)
 ddev drush queue:run mass_redirect_normalizer_link_normalization
 
-# 3) Continue enqueue from the saved checkpoint.
-ddev drush mnrl --entity-type=paragraph --limit=50000
-
-# 4) If you need a clean restart, clear checkpoint then run.
-ddev drush mnrl --reset-progress --entity-type=paragraph --start-id=1
+# 3) Review changes
+# Open /admin/reports/redirect-link-normalizer
 ```
 
-Notes:
-- Checkpoint stores last processed ID per entity type (`node` / `paragraph`),
-  processed count, enqueued count, changed field values (simulate only), mode, and
-  timestamp.
-- When `--resume` and `--start-id` are both set, the command uses the higher
-  effective start position.
+If `mnrl` was interrupted:
+
+```bash
+ddev drush mnrl --release-enqueue-lock
+ddev drush mnrl
+```
+
+Progress notices print every 500 entities per phase (node, then paragraph).
 
 ### Important detail about saved content
 
-On **first save**, `hook_entity_presave()` enqueues normalization work. The stored field values may still contain redirect source paths until the queue worker runs. The automated tests handle that case where needed.
+On **editor save**, `hook_entity_presave()` enqueues normalization work. While the **queue worker** is processing, presave does **not** re-enqueue (avoids the queue growing during `queue:run`).
 
 Entity-reference behavior:
 
@@ -214,23 +162,10 @@ ddev exec ./vendor/bin/phpunit docroot/modules/custom/mass_redirect_normalizer/t
   - Multi-value link field handling (only redirecting values change).
   - Link item metadata preservation (`title`, `options`).
   - Entity-reference rewrites for node/media fields (including strict-safe skips and alias-conflict guard behavior).
-- Drush command behavior:
-  - Bundle filter:
-    - Process one bundle only.
-    - Example: `ddev drush mnrl --simulate --bundle=info_details --csv-path=./mnrl-info-details.csv`
-  - Targeted runs with `--entity-ids`:
-    - Restrict processing to specific IDs (checked in nodes and paragraphs).
-    - Example: `ddev drush mnrl --simulate --entity-ids=857211,858626 --csv-path=./mnrl-targeted.csv`
-  - Kind filter with `--kinds`:
-    - Include only selected change types: `text`, `link`, `entity_reference`.
-    - Example (entity-reference only): `ddev drush mnrl --simulate --kinds=entity_reference --csv-path=./mnrl-entity-reference.csv`
-    - Example (text + link only): `ddev drush mnrl --simulate --kinds=text,link --csv-path=./mnrl-text-link.csv`
-  - CSV export with `--csv-path`:
-    - Writes a parseable report with full `before`/`after` values.
-    - Example: `ddev drush mnrl --simulate --limit=20000 --csv-path=./redirect-normalizer-report.csv`
-  - Simulate vs enqueue output:
-    - `--simulate` rows show `would_update`.
-    - Execute mode enqueues eligible entities and does not save inline.
+- Drush enqueue-only command behavior (fast ID sweep, batched queue rows).
+- Queue worker change-log writes for entities that actually changed.
+- Report permissions scoped to content admin and administrator roles.
+- Presave enqueue and worker processing paths.
 
 ---
 

@@ -5,7 +5,6 @@ namespace Drupal\mass_redirect_normalizer;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\State\StateInterface;
 
 /**
  * Enqueues redirect-link normalization work on the core queue.
@@ -21,99 +20,94 @@ final class RedirectLinkQueueEnqueuer {
    */
   public const SUPPORTED_ENTITY_TYPES = ['node', 'paragraph'];
 
-  private const PENDING_STATE_KEY = 'mass_redirect_normalizer.queue_pending_keys';
+  public const QUEUE_ITEM_BATCH_SIZE = 100;
 
   /**
-   * How often to persist dedupe keys during bulk enqueues (aligned with Drush sweep batching).
-   */
-  private const PENDING_FLUSH_INTERVAL = 500;
-
-  /**
-   * In-request copy of pending keys to avoid thousands of state reads/writes.
+   * Buffered entity refs to write in a single queue row.
    *
-   * @var array<string, bool>|null
+   * @var array<int, array{entity_type:string, entity_id:int}>
    */
-  private ?array $pendingWorkingCopy = NULL;
-
-  /**
-   * Mutations since last persist when using $pendingWorkingCopy.
-   */
-  private int $pendingMutationsSincePersist = 0;
+  private array $bulkQueueBuffer = [];
 
   public function __construct(
     protected QueueFactory $queueFactory,
-    protected StateInterface $state,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected RedirectLinkNormalizationEligibility $eligibility,
   ) {}
 
   /**
-   * Enqueues an entity ID without loading the entity or checking eligibility.
-   *
-   * Eligibility and normalization run in the queue worker. Use this for bulk
-   * Drush sweeps; use enqueueEntity() from presave where the entity is already
-   * loaded.
+   * Buffers a bulk sweep entity reference and flushes by batch size.
    *
    * @return string
-   *   One of: enqueued, already_queued, skipped (invalid type/id only).
+   *   One of: enqueued, skipped.
    */
-  public function enqueueId(string $entityType, int $entityId, string $source = 'drush'): string {
+  public function enqueueIdBulk(string $entityType, int $entityId, string $source = 'drush'): string {
     if (!self::isSupportedEntityType($entityType) || $entityId <= 0) {
       return 'skipped';
     }
 
-    return $this->addToQueue($entityType, $entityId, $source);
+    $this->bulkQueueBuffer[] = [
+      'entity_type' => $entityType,
+      'entity_id' => $entityId,
+    ];
+    if (count($this->bulkQueueBuffer) >= self::QUEUE_ITEM_BATCH_SIZE) {
+      $this->flushEnqueueBuffers($source);
+    }
+    return 'enqueued';
   }
 
   /**
-   * Enqueues one entity for later normalization.
+   * Flushes queued entity refs into one queue row.
+   */
+  public function flushEnqueueBuffers(string $source = 'drush'): void {
+    if ($this->bulkQueueBuffer === []) {
+      return;
+    }
+    $this->queueFactory->get(self::QUEUE_NAME)->createItem([
+      'entities' => $this->bulkQueueBuffer,
+      'source' => $source,
+    ]);
+    $this->bulkQueueBuffer = [];
+  }
+
+  /**
+   * Enqueues one entity for later normalization (presave path).
    *
    * @return string
-   *   One of: enqueued, already_queued, skipped.
+   *   One of: enqueued, skipped.
    */
   public function enqueueEntity(ContentEntityInterface $entity, string $source = 'presave'): string {
-    $pair = self::queueableEntityPair($entity);
-    if ($pair === NULL) {
+    $entityType = $entity->getEntityTypeId();
+    if (!self::isSupportedEntityType($entityType)) {
       return 'skipped';
     }
-    [$entityType, $entityId] = $pair;
-
+    $entityId = (int) $entity->id();
+    if ($entityId <= 0) {
+      return 'skipped';
+    }
     if (!$this->eligibility->isEligible($entityType, $entity)) {
       return 'skipped';
     }
 
-    return $this->addToQueue($entityType, $entityId, $source);
+    $this->queueFactory->get(self::QUEUE_NAME)->createItem([
+      'entity_type' => $entityType,
+      'entity_id' => $entityId,
+      'source' => $source,
+    ]);
+    return 'enqueued';
   }
 
   /**
-   * Adds to queue without re-checking eligibility (caller already verified).
-   *
-   * Used when Drush has loaded the entity and run eligibility or dry-run checks.
-   *
-   * @return string
-   *   One of: enqueued, already_queued, skipped.
+   * Enqueues a loaded entity by type and ID (test/helper compatibility).
    */
-  public function enqueueVerified(ContentEntityInterface $entity, string $source = 'drush'): string {
-    $pair = self::queueableEntityPair($entity);
-    if ($pair === NULL) {
-      return 'skipped';
-    }
-    return $this->addToQueue($pair[0], $pair[1], $source);
-  }
-
-  /**
-   * Enqueues a loaded entity by type and ID.
-   */
-  public function enqueueById(string $entityType, int $entityId, string $source = 'drush'): string {
+  public function enqueueById(string $entityType, int $entityId, string $source = 'presave'): string {
     if (!self::isSupportedEntityType($entityType) || $entityId <= 0) {
       return 'skipped';
     }
-
     $entity = $this->entityTypeManager->getStorage($entityType)->load($entityId);
     if (!$entity instanceof ContentEntityInterface) {
       return 'skipped';
     }
-
     return $this->enqueueEntity($entity, $source);
   }
 
@@ -122,122 +116,6 @@ final class RedirectLinkQueueEnqueuer {
    */
   private static function isSupportedEntityType(string $entityType): bool {
     return in_array($entityType, self::SUPPORTED_ENTITY_TYPES, TRUE);
-  }
-
-  /**
-   * Node/paragraph type and positive ID for queue payloads, or NULL if invalid.
-   *
-   * @return array{0: string, 1: int}|null
-   *   Entity type and positive numeric ID, or NULL when not queueable.
-   */
-  private static function queueableEntityPair(ContentEntityInterface $entity): ?array {
-    $entityType = $entity->getEntityTypeId();
-    if (!self::isSupportedEntityType($entityType)) {
-      return NULL;
-    }
-    $entityId = (int) $entity->id();
-    if ($entityId <= 0) {
-      return NULL;
-    }
-    return [$entityType, $entityId];
-  }
-
-  /**
-   * Creates a queue item if not already pending.
-   *
-   * @return string
-   *   enqueued, already_queued.
-   */
-  private function addToQueue(string $entityType, int $entityId, string $source): string {
-    $itemKey = $this->buildItemKey($entityType, $entityId);
-    if ($this->isPending($itemKey)) {
-      return 'already_queued';
-    }
-
-    $this->queueFactory->get(self::QUEUE_NAME)->createItem([
-      'entity_type' => $entityType,
-      'entity_id' => $entityId,
-      'source' => $source,
-    ]);
-    $this->markPending($itemKey);
-    return 'enqueued';
-  }
-
-  /**
-   * Loads pending dedupe keys once per PHP request when needed.
-   */
-  private function ensurePendingLoaded(): void {
-    if ($this->pendingWorkingCopy !== NULL) {
-      return;
-    }
-    $pending = $this->state->get(self::PENDING_STATE_KEY, []);
-    $this->pendingWorkingCopy = is_array($pending) ? $pending : [];
-  }
-
-  /**
-   * Writes the working pending map to state storage.
-   */
-  private function persistPendingWorkingCopy(): void {
-    if ($this->pendingWorkingCopy === NULL) {
-      return;
-    }
-    if ($this->pendingWorkingCopy === []) {
-      $this->state->delete(self::PENDING_STATE_KEY);
-      return;
-    }
-    $this->state->set(self::PENDING_STATE_KEY, $this->pendingWorkingCopy);
-  }
-
-  /**
-   * Persists any batched pending dedupe keys (call between bulk phases).
-   */
-  public function flushPendingDedupeState(): void {
-    if ($this->pendingWorkingCopy === NULL) {
-      return;
-    }
-    $this->persistPendingWorkingCopy();
-    $this->pendingMutationsSincePersist = 0;
-  }
-
-  /**
-   * Clears pending dedupe state for one queue item.
-   */
-  public function clearPending(string $entityType, int $entityId): void {
-    $itemKey = $this->buildItemKey($entityType, $entityId);
-    $this->ensurePendingLoaded();
-    if (!array_key_exists($itemKey, $this->pendingWorkingCopy)) {
-      return;
-    }
-    unset($this->pendingWorkingCopy[$itemKey]);
-    $this->persistPendingWorkingCopy();
-  }
-
-  /**
-   * Builds a stable dedupe key for queue items.
-   */
-  public function buildItemKey(string $entityType, int $entityId): string {
-    return $entityType . ':' . $entityId;
-  }
-
-  /**
-   * Returns TRUE when the entity is already pending in the queue.
-   */
-  private function isPending(string $itemKey): bool {
-    $this->ensurePendingLoaded();
-    return !empty($this->pendingWorkingCopy[$itemKey]);
-  }
-
-  /**
-   * Marks one entity as pending in queue dedupe state.
-   */
-  private function markPending(string $itemKey): void {
-    $this->ensurePendingLoaded();
-    $this->pendingWorkingCopy[$itemKey] = TRUE;
-    $this->pendingMutationsSincePersist++;
-    if ($this->pendingMutationsSincePersist >= self::PENDING_FLUSH_INTERVAL) {
-      $this->persistPendingWorkingCopy();
-      $this->pendingMutationsSincePersist = 0;
-    }
   }
 
 }

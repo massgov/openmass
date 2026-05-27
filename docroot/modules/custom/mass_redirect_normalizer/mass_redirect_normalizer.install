@@ -1,0 +1,91 @@
+<?php
+
+/**
+ * @file
+ * Install and update hooks for mass_redirect_normalizer.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function mass_redirect_normalizer_schema(): array {
+  $schema['mass_redirect_normalizer_change_log'] = [
+    'description' => 'Stores redirect normalization changes written by queue worker.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+      ],
+      'changed_at' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'source' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'entity_type' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'entity_id' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'bundle' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'field_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'delta' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'kind' => [
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'before_value' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+      'after_value' => [
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'changed_at' => ['changed_at'],
+      'entity' => ['entity_type', 'entity_id'],
+      'source' => ['source'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Add change log table for queue worker reporting.
+ */
+function mass_redirect_normalizer_update_10001(): void {
+  $schema = mass_redirect_normalizer_schema();
+  if (!\Drupal::database()->schema()->tableExists('mass_redirect_normalizer_change_log')) {
+    \Drupal::database()->schema()->createTable('mass_redirect_normalizer_change_log', $schema['mass_redirect_normalizer_change_log']);
+  }
+}

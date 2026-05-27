@@ -16,7 +16,11 @@ services:
 
   mass_redirect_normalizer.enqueuer:
     class: Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer
-    arguments: ['@queue', '@state', '@entity_type.manager', '@mass_redirect_normalizer.eligibility']
+    arguments: ['@queue', '@entity_type.manager', '@mass_redirect_normalizer.eligibility']
 
   Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer:
     alias: mass_redirect_normalizer.enqueuer
+
+  mass_redirect_normalizer.change_log:
+    class: Drupal\mass_redirect_normalizer\RedirectLinkChangeLog
+    arguments: ['@database', '@file_system']
