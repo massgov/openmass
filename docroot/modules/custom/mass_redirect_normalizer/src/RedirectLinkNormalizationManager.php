@@ -20,6 +20,12 @@ use Drupal\paragraphs\Entity\Paragraph;
 class RedirectLinkNormalizationManager {
   private const REVISION_MESSAGE = 'Revision created to normalize redirected internal links.';
   private const NESTED_REVISION_MESSAGE = 'Revision created to normalize redirected internal links in nested content.';
+  /**
+   * In-process cache: whether an entity type/bundle has normalizable fields.
+   *
+   * @var array<string, bool>
+   */
+  private static array $normalizableFieldCache = [];
 
   public function __construct(
     protected RedirectLinkResolver $resolver,
@@ -44,6 +50,9 @@ class RedirectLinkNormalizationManager {
   public function normalizeEntity(ContentEntityInterface $entity, bool $save = TRUE, bool $dryRun = FALSE): array {
     if ($entity instanceof Paragraph && Helper::isParagraphOrphan($entity)) {
       return ['changed' => FALSE, 'skipped' => TRUE, 'changes' => []];
+    }
+    if (!$this->hasNormalizableFields($entity)) {
+      return ['changed' => FALSE, 'skipped' => FALSE, 'changes' => []];
     }
 
     $apply = !$dryRun;
@@ -82,6 +91,34 @@ class RedirectLinkNormalizationManager {
       'skipped' => FALSE,
       'changes' => $result['changes'],
     ];
+  }
+
+  /**
+   * Fast pre-check to avoid scanning entities with no supported field types.
+   */
+  private function hasNormalizableFields(ContentEntityInterface $entity): bool {
+    $cacheKey = $entity->getEntityTypeId() . ':' . $entity->bundle();
+    if (array_key_exists($cacheKey, self::$normalizableFieldCache)) {
+      return self::$normalizableFieldCache[$cacheKey];
+    }
+
+    foreach ($entity->getFieldDefinitions() as $definition) {
+      $fieldType = $definition->getType();
+      if (in_array($fieldType, ['text_long', 'text_with_summary', 'string_long', 'link'], TRUE)) {
+        self::$normalizableFieldCache[$cacheKey] = TRUE;
+        return TRUE;
+      }
+      if ($fieldType === 'entity_reference') {
+        $targetType = (string) $definition->getSetting('target_type');
+        if (in_array($targetType, ['node', 'media'], TRUE)) {
+          self::$normalizableFieldCache[$cacheKey] = TRUE;
+          return TRUE;
+        }
+      }
+    }
+
+    self::$normalizableFieldCache[$cacheKey] = FALSE;
+    return FALSE;
   }
 
   /**
