@@ -161,6 +161,10 @@ display:
     display_plugin: data_export
     position: 1
     display_options:
+      access:
+        type: perm
+        options:
+          perm: 'export mass redirect normalizer report'
       style:
         type: data_export
         options:
@@ -175,20 +179,16 @@ display:
             encoding: utf8
             utf8_bom: '0'
             use_serializer_encode_only: false
-      access:
-        type: perm
-        options:
-          perm: 'export mass redirect normalizer report'
+      display_extenders: {  }
+      path: admin/reports/redirect-link-normalizer/export
       displays:
         page_1: page_1
         default: '0'
-      path: admin/reports/redirect-link-normalizer/export
       filename: redirect-link-normalizer-report.csv
       automatic_download: true
       store_in_public_file_directory: false
       redirect_to_display: page_1
       include_query_params: false
-      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:

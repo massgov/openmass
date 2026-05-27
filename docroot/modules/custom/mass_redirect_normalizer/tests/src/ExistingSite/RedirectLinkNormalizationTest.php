@@ -90,6 +90,7 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
       \Drupal::service('mass_redirect_normalizer.enqueuer'),
       \Drupal::lock(),
       \Drupal::database(),
+      \Drupal::state(),
     );
   }
 
@@ -1605,10 +1606,26 @@ class RedirectLinkNormalizationTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests mnrl clears the normalization queue before a fresh enqueue sweep.
+   */
+  public function testMnrlPurgesNormalizationQueueBeforeEnqueue(): void {
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $queue->createItem(['entity_type' => 'node', 'entity_id' => 1, 'source' => 'presave']);
+    $queue->createItem(['entity_type' => 'node', 'entity_id' => 2, 'source' => 'presave']);
+    $this->assertSame(2, $queue->numberOfItems());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer $enqueuer */
+    $enqueuer = \Drupal::service('mass_redirect_normalizer.enqueuer');
+    $cleared = $enqueuer->purgeNormalizationQueue();
+    $this->assertSame(2, $cleared);
+    $this->assertSame(0, $queue->numberOfItems());
+  }
+
+  /**
    * Tests --release-enqueue-lock clears a sweep lock held by another lock ID.
    */
   public function testReleaseEnqueueLockClearsStaleSweepLock(): void {
-    $this->markTestSkipped('Covered by new lock behavior tests.');
+    $this->markTestSkipped('Removed --release-enqueue-lock; mnrl releases stale locks automatically.');
     $database = \Drupal::database();
     $database->delete('semaphore')
       ->condition('name', 'mass_redirect_normalizer.enqueue')

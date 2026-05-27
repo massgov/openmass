@@ -42,24 +42,18 @@ This split makes the code easier to test and maintain.
 | Command | `mass-redirect-normalizer:normalize-links` |
 | Alias | `mnrl` |
 
-### Options
-
-| Option | Meaning |
-|--------|---------|
-| `--release-enqueue-lock` | Delete the enqueue sweep lock row from `{semaphore}` and exit (no sweep). Use after a **crash or kill** when PHP could not release the lock. |
-
 `mnrl` enqueues **all published nodes**, then **all paragraphs**, using fast ID
 streaming (no entity loads in Drush). Queue items are batched (up to 100 entity
 refs per row).
 
-Execute mode **acquires** a sweep-wide lock so two `mnrl` runs do not enqueue in
-parallel. If a run dies without releasing, run:
+**Safe to rerun:** each run clears any stale enqueue lock, **empties the
+normalization queue**, then performs a full sweep from ID 0. You do not need a
+separate lock-release step after a crash.
 
-```bash
-ddev drush mnrl --release-enqueue-lock
-```
-
-Then rerun `ddev drush mnrl`.
+If a previous run failed partway through, rerun `ddev drush mnrl`, then continue
+with `ddev drush queue:run mass_redirect_normalizer_link_normalization` (the
+worker picks up where the queue left off only between `queue:run` invocations—not
+during `mnrl`).
 
 ### Queue worker responsibilities
 
@@ -102,21 +96,47 @@ buttons above the table.
 # 1) Enqueue full site
 ddev drush mnrl
 
-# 2) Process queue (cron every 5 min, or manual)
+# 2) Process queue (hourly cron or manual)
 ddev drush queue:run mass_redirect_normalizer_link_normalization
 
 # 3) Review changes
 # Open /admin/reports/redirect-link-normalizer
 ```
 
-If `mnrl` was interrupted:
+If `mnrl` was interrupted, rerun `ddev drush mnrl` (it replaces the queue with a
+fresh sweep). Progress notices print every 500 entities per phase (node, then
+paragraph).
+
+### Scheduled jobs (weekly enqueue + hourly drain)
+
+Use **two** schedulers. While `mnrl` runs it sets state
+`mass_redirect_normalizer.sweep_in_progress`; hourly `queue:run` should **skip**
+when that state is set.
+
+| Schedule | Command | Role |
+|----------|---------|------|
+| **Saturday** (e.g. 02:00) | `drush mnrl` | Full-site enqueue (~1M entity refs). |
+| **Every hour** | `drush queue:run …` (see below) | Drain queue (presave + weekly batch). |
+
+Example Acquia / cron (adjust paths and timezone):
 
 ```bash
-ddev drush mnrl --release-enqueue-lock
-ddev drush mnrl
+# Weekly full enqueue — Saturday 02:00
+0 2 * * 6  cd $AH_SITE_GROUP.$AH_SITE_ENVIRONMENT && drush mnrl
+
+# Hourly drain — skip while mnrl sweep is running
+0 * * * *  cd $AH_SITE_GROUP.$AH_SITE_ENVIRONMENT && \
+  if [ -z "$(drush state:get mass_redirect_normalizer.sweep_in_progress 2>/dev/null)" ]; then \
+    drush queue:run mass_redirect_normalizer_link_normalization --time-limit=300; \
+  fi
 ```
 
-Progress notices print every 500 entities per phase (node, then paragraph).
+After Saturday `mnrl`, the queue may hold ~10k batch rows. Use a higher
+`--time-limit` on weekends or extra `queue:run` sessions until
+`drush queue:list` shows `0` for this queue.
+
+**Do not** run `mnrl` and `queue:run` at the same time on purpose: `mnrl` empties
+the queue first. The hourly guard only helps when cron fires during a long `mnrl`.
 
 ### Important detail about saved content
 

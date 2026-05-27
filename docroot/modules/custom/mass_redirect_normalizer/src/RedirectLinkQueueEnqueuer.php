@@ -14,6 +14,11 @@ final class RedirectLinkQueueEnqueuer {
   public const QUEUE_NAME = 'mass_redirect_normalizer_link_normalization';
 
   /**
+   * State key: set while mnrl enqueue sweep is running (hourly drain should skip).
+   */
+  public const SWEEP_IN_PROGRESS_STATE_KEY = 'mass_redirect_normalizer.sweep_in_progress';
+
+  /**
    * Entity types that participate in redirect link normalization.
    *
    * @var list<string>
@@ -54,6 +59,20 @@ final class RedirectLinkQueueEnqueuer {
       $this->flushEnqueueBuffers($source);
     }
     return 'enqueued';
+  }
+
+  /**
+   * Removes all pending normalization queue items and clears the bulk buffer.
+   *
+   * @return int
+   *   Number of queue rows deleted.
+   */
+  public function purgeNormalizationQueue(): int {
+    $this->bulkQueueBuffer = [];
+    $queue = $this->queueFactory->get(self::QUEUE_NAME);
+    $count = $queue->numberOfItems();
+    $queue->deleteQueue();
+    return $count;
   }
 
   /**
