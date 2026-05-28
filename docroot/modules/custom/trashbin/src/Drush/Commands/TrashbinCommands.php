@@ -3,9 +3,9 @@
 namespace Drupal\trashbin\Drush\Commands;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\trashbin\TrashbinPurgeCandidateQuery;
-use Drush\Attributes as CLI;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 use Drush\Drush;
@@ -16,22 +16,27 @@ final class TrashbinCommands extends DrushCommands {
 
   const TRASHBIN_PURGE = 'trashbin:purge';
 
-  protected function __construct(
+  public function __construct(
+    private Connection $connection,
     private EntityTypeManagerInterface $etm,
     private TimeInterface $time,
-    private TrashbinPurgeCandidateQuery $purgeCandidateQuery,
   ) {
     parent::__construct();
   }
 
   /**
    * Delete content entities in Trash; when --days-ago=0, delete all trashed items; when >0, delete only those older than N days.
+   *
+   * @command trashbin:purge
+   * @param string $entity_type
+   *   Entity type to purge.
+   * @option max
+   *   Maximum number of entities to delete.
+   * @option days-ago
+   *   Number of days that the item must be unchanged in the trashbin.
+   * @usage drush --simulate trashbin:purge node
+   *   Get a report of what would be purged.
    */
-  #[CLI\Command(name: self::TRASHBIN_PURGE, aliases: [])]
-  #[CLI\Argument(name: 'entity_type', description: 'Entity type to purge')]
-  #[CLI\Option(name: 'max', description: 'Maximum number of entities to delete.')]
-  #[CLI\Option(name: 'days-ago', description: 'Number of days that the item must be unchanged in the trashbin.')]
-  #[CLI\Usage(name: 'drush --simulate trashbin:purge node', description: 'Get a report of what would be purged.')]
   public function purge($entity_type, $options = ['max' => 1000, 'days-ago' => 180]) {
     // Capture command start time to avoid racing with edits during execution.
     $startedAt = $this->time->getCurrentTime();
@@ -56,7 +61,9 @@ final class TrashbinCommands extends DrushCommands {
       return;
     }
 
-    $ids = $this->purgeCandidateQuery->getCandidateIds(
+    $purgeCandidateQuery = new TrashbinPurgeCandidateQuery($this->connection, $this->etm);
+
+    $ids = $purgeCandidateQuery->getCandidateIds(
       $entity_type,
       (int) $options['max'],
       $cutoff
