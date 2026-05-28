@@ -19,7 +19,7 @@ class MassFieldsHooks {
    *
    * This hook class intentionally handles only the DP-47095 fields:
    * - field_approved
-   * - field_approval_notes
+   * - field_approval_notes.
    */
   #[Hook('entity_field_access')]
   public function entityFieldAccess(string $operation, FieldDefinitionInterface $field_definition, AccountInterface $account, ?FieldItemListInterface $items = NULL): AccessResultInterface {
