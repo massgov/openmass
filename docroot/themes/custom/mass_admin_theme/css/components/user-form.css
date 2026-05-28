@@ -1,3 +1,15 @@
 .user-form fieldset:not(.fieldgroup) {
   background-color: #f2f2f2;
 }
+
+/*
+ * Editors do not see approval fields, so picture settings can sit directly above
+ * language settings. Normalize spacing to match other sections.
+ */
+.user-form #edit-user-picture-wrapper:has(+ #edit-language) {
+  padding-bottom: 0;
+}
+
+.user-form #edit-user-picture-wrapper:has(+ #edit-language) .claro-details {
+  margin-bottom: 0;
+}
