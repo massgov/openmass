@@ -1,4 +1,9 @@
 services:
+  mass_fields.hooks:
+    class: Drupal\mass_fields\Hook\MassFieldsHooks
+    tags:
+      - { name: drupal.hook }
+
   mass_fields.route_subscriber:
     class: Drupal\mass_fields\Routing\AutocompleteRouteSubscriber
     tags:
