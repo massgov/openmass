@@ -29,9 +29,18 @@ class OrgAccessChecker {
     $uid = $account->id();
     if (!isset($cache[$uid])) {
       $user = $this->entityTypeManager->getStorage('user')->load($uid);
-      $cache[$uid] = $user
-        ? array_map('intval', array_column($user->get('field_user_org')->getValue(), 'target_id'))
-        : [];
+      if (!$user || !$user->hasField('field_user_org')) {
+        $cache[$uid] = [];
+      }
+      else {
+        $ids = [];
+        foreach ($user->get('field_user_org') as $item) {
+          if (!$item->isEmpty()) {
+            $ids[] = (int) $item->target_id;
+          }
+        }
+        $cache[$uid] = $ids;
+      }
     }
     return $cache[$uid];
   }

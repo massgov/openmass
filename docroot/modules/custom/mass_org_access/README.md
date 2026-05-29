@@ -147,6 +147,49 @@ The endpoint is served by `Controller\OrgLookupController::lookup`
 (route `mass_org_access.lookup_user_orgs`). Access: any authenticated
 user with `access content` — matches who can see the widget.
 
+## User default organizations and labels (DP-46788)
+
+Authors and editors maintain optional profile fields:
+
+| Field | Purpose |
+|-------|---------|
+| `field_default_organizations` | org_page nodes pre-filled on **new** content |
+| `field_default_labels` | label terms pre-filled on **new** pages/documents |
+
+`field_user_org` (Permission Groups on the user) remains **admin-only**
+via `entity_field_access`. Authors edit defaults on their own profile.
+
+**New content only** (`entity_prepare_form` when `$entity->isNew()`):
+
+- Organization(s) (or bundle-specific org field for binder/decision/person)
+  from `field_default_organizations`.
+- Label(s) (`field_reusable_label` or `field_document_label` on media) from
+  `field_default_labels`.
+- Permission Groups on content (`field_content_organization`) still come
+  from the creator's `field_user_org` + ancestors (unchanged).
+
+**New media.document** when default organizations are empty: falls back to
+org_page nodes mapped from the user's permission groups
+(`field_state_organization` on each `field_user_org` term).
+
+Editors may remove or change pre-filled values before the first save; nothing
+is enforced on submit.
+
+### Deploy hook: populate default organizations
+
+`mass_org_access_deploy_populate_user_default_orgs` runs via `drush deploy`.
+For each active user with `field_user_org`, copies mapped org_page NIDs into
+`field_default_organizations` when that field is still empty. Does **not**
+set default labels.
+
+Verify locally:
+
+```sh
+ddev drush deploy
+# or only this hook:
+ddev drush deploy:hook mass_org_access_populate_user_default_orgs
+```
+
 ## Permission
 
 `bypass org access` — granted to `content_team`, inherited by

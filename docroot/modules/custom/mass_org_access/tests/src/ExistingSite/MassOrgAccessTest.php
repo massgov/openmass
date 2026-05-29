@@ -815,7 +815,8 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * Form_alter pre-fills Organization Owner Groups for new entities.
    *
-   * Author sees the inherited org at form load, before pressing Save.
+   * Author sees the inherited permission groups at form load, before
+   * pressing Save.
    */
   public function testFormAlterPreFillsOrgsOnNewEntityForm(): void {
     \Drupal::currentUser()->setAccount($this->userA);
@@ -829,24 +830,22 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       ->setEntity($entity);
     $form_state = (new FormState())->setFormObject($form_object);
     \Drupal::formBuilder()->buildForm($form_object, $form_state);
+    $entity = $form_object->getEntity();
 
     $this->assertNotEmpty(
-      $entity->get('field_organizations')->getValue(),
-      'field_organizations is pre-filled at form load time.'
-    );
-    $this->assertNotEmpty(
       $entity->get('field_content_organization')->getValue(),
-      'field_content_organization is pre-filled at form load time.'
+      'field_content_organization is pre-filled from permission groups.'
     );
   }
 
   /**
-   * New entity gets the creator's first user_org auto-assigned.
+   * New entity gets the creator's permission groups auto-assigned.
    *
    * When an editor opens the create form, entity_prepare_form pre-fills
    * field_content_organization directly from their field_user_org (with
-   * ancestors). field_organizations is not touched — the editor still
-   * picks Organization(s) themselves.
+   * ancestors). field_organizations is not touched by mass_org_access —
+   * the editor still picks Organization(s) themselves (or mass_utility's
+   * UserDefaults pre-fills from their default organizations).
    */
   public function testNewEntityAutoAssignsCreatorOrg(): void {
     \Drupal::currentUser()->setAccount($this->userA);

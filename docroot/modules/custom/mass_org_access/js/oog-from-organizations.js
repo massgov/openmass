@@ -75,7 +75,12 @@
   function attachForm(form) {
     const oogInput = form.querySelector(OOG_SELECTOR);
     const trackedByOrg = new Map();
-    let lastOrgNids = collectOrgNids(form);
+    // Start with an empty baseline so any pre-filled organizations
+    // (e.g. from mass_utility's user defaults on /node/add/*) are
+    // treated as just-added on the first sync pass — that triggers
+    // the lookup and augments OOG on initial render, not only on
+    // subsequent edits.
+    let lastOrgNids = new Set();
     let syncing = false;
 
     const run = function () {
@@ -93,6 +98,9 @@
         }
       );
     };
+
+    // Initial sync: pick up organizations already present on form load.
+    run();
 
     // jQuery UI autocomplete writes to the input via .val(), which does
     // not fire native change/input events — fast paths catch only
@@ -118,7 +126,7 @@
     // Polling fallback — catches autocomplete selects (jQuery .val(),
     // no events) and direct programmatic writes. Sync only triggers
     // when the collected set of NIDs actually differs.
-    let pollSnapshot = serializeNids(lastOrgNids);
+    let pollSnapshot = serializeNids(collectOrgNids(form));
     setInterval(function () {
       const snapshot = serializeNids(collectOrgNids(form));
       if (snapshot !== pollSnapshot) {
@@ -168,10 +176,14 @@
         trackedByOrg.set(orgNid, tracked);
         terms.forEach(function (term) {
           const tid = String(term.tid);
-          tracked.add(tid);
+          // Track only terms this org actually added to OOG. A term
+          // that was already there (manual entry, prior backfill,
+          // populate-from-current-user) must not be removed when this
+          // organization is later cleared.
           if (!existingIds.has(tid)) {
             oogTerms.push({id: tid, label: term.label});
             existingIds.add(tid);
+            tracked.add(tid);
           }
         });
       });
