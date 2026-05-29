@@ -50,13 +50,12 @@
   <div{{ attributes.addClass(classes) }}>
     {% block content %}
       {% if processStepperSteps %}
-        {% include '@organisms/by-author/process-stepper.twig' with {
+        {{ include('@organisms/by-author/process-stepper.twig', {
           processStepper: {
             steps: processStepperSteps|default([]),
           },
-        } %}
+        }) }}
       {% endif %}
     {% endblock %}
   </div>
 {% endblock paragraph %}
-
