@@ -138,6 +138,26 @@ class Molecules {
       ],
     ];
 
+    $downloadLinks = [];
+    if (array_key_exists('documents', $referenced_fields) && Helper::isFieldPopulated($entity, $referenced_fields['documents'])) {
+      $documents = Helper::getReferencedEntitiesFromField($entity, $referenced_fields['documents']);
+      foreach ($documents as $document) {
+        if (!Helper::isFieldPopulated($document, 'field_file_download_single')) {
+          continue;
+        }
+        $downloads = Helper::getReferencedEntitiesFromField($document, 'field_file_download_single');
+        foreach ($downloads as $download) {
+          $downloadLink = self::prepareDownloadLink($download);
+          if (!empty($downloadLink)) {
+            $downloadLinks[] = $downloadLink;
+          }
+        }
+      }
+      if (!empty($downloadLinks)) {
+        $numberedStep['downloadLinks'] = Helper::removeArrayDuplicates($downloadLinks);
+      }
+    }
+
     if (array_key_exists('more_link', $referenced_fields) && Helper::isFieldPopulated($entity, $referenced_fields['more_link'])) {
       $link = Helper::separatedLink($entity->get($referenced_fields['more_link'])[0]);
       $numberedStep['button'] = [

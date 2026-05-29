@@ -1416,6 +1416,7 @@ class Organisms {
     $referenced_field_map = [
       'title' => ['field_next_step_title'],
       'richText' => ['field_next_step_details'],
+      'documents' => ['field_step_documents'],
       'more_link' => ['field_next_step_link'],
     ];
 
