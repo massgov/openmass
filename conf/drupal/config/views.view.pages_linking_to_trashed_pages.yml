@@ -339,7 +339,7 @@ display:
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 10
+          items_per_page: 25
           total_pages: null
           id: 0
           tags:
@@ -841,12 +841,18 @@ display:
         metatag_display_extender:
           metatags: {  }
           tokenize: false
-      path: admin/reports/pages-linking-to-trashed-pages
+      path: admin/reports/pages-linking-to-trashed-pages/export
       displays:
         page_1: page_1
         default: '0'
+      filename: links_to_unpublished_pages
+      automatic_download: false
       export_method: batch
       export_batch_size: 100
+      store_in_public_file_directory: false
+      custom_redirect_path: false
+      redirect_to_display: page_1
+      include_query_params: true
     cache_metadata:
       max-age: -1
       contexts:
