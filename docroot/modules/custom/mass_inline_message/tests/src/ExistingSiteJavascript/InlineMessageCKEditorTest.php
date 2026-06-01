@@ -218,23 +218,20 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
       ?: $page->find('css', '.ui-dialog input[name="attributes[data-type]"][value="warning"]');
     $this->assertNotNull($warning_radio);
     $warning_radio->click();
-    $body_field = $page->find('css', '#mass-inline-message-dialog-form textarea[name="body"]')
-      ?: $page->find('css', '.ui-dialog textarea[name="body"]');
-    $this->assertNotNull($body_field);
-    $body_field->setValue('Test alert body text.');
-
+    $session->wait(
+      15000,
+      "document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"][data-ckeditor5-id]') !== null"
+    );
     $session->executeScript(
       "(function(){
-        var form = document.querySelector('#mass-inline-message-dialog-form') || document.querySelector('.ui-dialog form');
-        var warning = form && form.querySelector('input[name=\"attributes[data-type]\"][value=\"warning\"]');
-        var body = form && form.querySelector('textarea[name=\"body\"]');
-        window._massInlineMessageDialogValues = {
-          attributes: {
-            'data-title': (form && form.querySelector('input[name=\"attributes[data-title]\"]') || {}).value || '',
-            'data-type': (warning && warning.checked) ? 'warning' : 'info',
-          },
-          body: body ? body.value : '',
-        };
+        var textarea = document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"]')
+          || document.querySelector('.ui-dialog textarea[name=\"body[value]\"]');
+        if (!textarea) { return; }
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        if (editor) {
+          editor.setData('<p>Test alert body text.</p>');
+          editor.updateSourceElement();
+        }
       })();"
     );
 

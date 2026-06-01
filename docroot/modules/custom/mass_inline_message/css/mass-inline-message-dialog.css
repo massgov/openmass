@@ -1,0 +1,34 @@
+/**
+ * Message box configuration dialog (nested CKEditor for body field).
+ *
+ * dialogClass applies mass-inline-message-dialog on the .ui-dialog wrapper only
+ * (same pattern as entity-select-dialog). Form markup uses
+ * mass-inline-message-dialog-form so global heading styles do not override the
+ * modal title bar.
+ */
+
+.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar {
+  color: var(--jui-dialog-title-color, #fff);
+  background-color: var(--jui-dialog-title-bg-color, #232429);
+}
+
+.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar .ui-dialog-title {
+  color: inherit;
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .filter-guidelines,
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-filter-wrapper > .form-item__label[for*="format"] {
+  display: none;
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-text-format-wrapper .ck-editor {
+  max-width: 100%;
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-text-format-wrapper .ck-editor__editable {
+  min-height: 8rem;
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-text-format-wrapper .ck-toolbar {
+  flex-wrap: wrap;
+}

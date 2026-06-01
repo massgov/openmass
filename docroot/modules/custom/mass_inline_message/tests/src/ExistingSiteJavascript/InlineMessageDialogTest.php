@@ -21,6 +21,10 @@ class InlineMessageDialogTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('/mass-inline-message/dialog/basic_html');
     $session = $this->getSession();
     $session->wait(5000, "document.querySelector('input[name=\"attributes[data-title]\"]') !== null");
+    $session->wait(
+      15000,
+      "document.querySelector('textarea[name=\"body[value]\"][data-ckeditor5-id]') !== null"
+    );
     $title_count = $session->evaluateScript(
       "document.querySelectorAll('input[name=\"attributes[data-title]\"]').length"
     );
@@ -28,9 +32,13 @@ class InlineMessageDialogTest extends ExistingSiteSelenium2DriverTestBase {
       "document.querySelectorAll('input[name=\"attributes[data-type]\"][value=\"warning\"]').length"
     );
     $cancel_count = $session->evaluateScript(
-      "document.querySelectorAll('form.mass-inline-message-dialog .dialog-cancel, .ui-dialog-buttonpane .dialog-cancel').length"
+      "document.querySelectorAll('form.mass-inline-message-dialog-form .dialog-cancel, .ui-dialog-buttonpane .dialog-cancel').length"
+    );
+    $body_editor_count = $session->evaluateScript(
+      "document.querySelectorAll('textarea[name=\"body[value]\"][data-ckeditor5-id]').length"
     );
     $this->assertSame(1, (int) $title_count, 'Message title field should appear on dialog route.');
+    $this->assertSame(1, (int) $body_editor_count, 'Message text should use the parent text format editor.');
     $this->assertGreaterThanOrEqual(1, (int) $warning_count, 'Alert message type option should appear on dialog route.');
     $this->assertGreaterThanOrEqual(1, (int) $cancel_count, 'Cancel button should appear on dialog route.');
   }
@@ -98,7 +106,7 @@ class InlineMessageDialogTest extends ExistingSiteSelenium2DriverTestBase {
       ?: $page->find('css', '.ui-dialog input[name="attributes[data-type]"][value="warning"]');
     $this->assertNotNull($warning_radio, 'Alert message type option should appear in dialog.');
     $cancel_button = $page->find('css', '.ui-dialog-buttonpane .dialog-cancel')
-      ?: $page->find('css', 'form.mass-inline-message-dialog .dialog-cancel');
+      ?: $page->find('css', 'form.mass-inline-message-dialog-form .dialog-cancel');
     $this->assertNotNull($cancel_button, 'Cancel button should appear in dialog.');
   }
 

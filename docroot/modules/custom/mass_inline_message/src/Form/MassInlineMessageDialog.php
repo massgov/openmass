@@ -57,7 +57,7 @@ class MassInlineMessageDialog extends FormBase {
 
     $form['#prefix'] = '<div id="mass-inline-message-dialog-form">';
     $form['#suffix'] = '</div>';
-    $form['#attributes']['class'][] = 'mass-inline-message-dialog';
+    $form['#attributes']['class'][] = 'mass-inline-message-dialog-form';
     $form['#attached']['library'][] = 'editor/drupal.editor.dialog';
     $form['#attached']['library'][] = 'mass_inline_message/dialog';
 
@@ -90,16 +90,25 @@ class MassInlineMessageDialog extends FormBase {
     ];
 
     $body_default = $editor_object['body'] ?? '';
+    $format_id = $filter_format->id();
     $form['body'] = [
-      '#type' => 'textarea',
+      '#type' => 'text_format',
       '#title' => $this->t('Message text'),
       '#default_value' => $body_default,
+      '#format' => $format_id,
+      '#allowed_formats' => [$format_id],
       '#rows' => 4,
-      '#description' => $this->t('Optional. Limited HTML allowed (@format). Up to @count characters (plain text, not including HTML).', [
+      '#description' => $this->t('Optional. Uses the same editor as the parent field (@format). Up to @count characters (plain text, not including HTML).', [
         '@format' => $filter_format->label(),
         '@count' => self::BODY_MAX_LENGTH,
       ]),
     ];
+    if (isset($form['body']['format'])) {
+      $form['body']['format']['#access'] = FALSE;
+    }
+    if (isset($form['body']['guidelines'])) {
+      $form['body']['guidelines']['#access'] = FALSE;
+    }
     mass_inline_message_apply_maxlength($form['body'], self::BODY_MAX_LENGTH, [
       'enforce' => TRUE,
       'label' => $this->t('Content limited to @limit characters, remaining: <strong>@remaining</strong>'),
@@ -176,7 +185,14 @@ class MassInlineMessageDialog extends FormBase {
     $attributes = $form_state->getValue('attributes');
     $attributes['data-title'] = trim($attributes['data-title']);
 
-    $body_raw = trim($form_state->getValue('body') ?? '');
+    $body_values = $form_state->getValue('body');
+    $body_raw = '';
+    if (is_array($body_values)) {
+      $body_raw = trim($body_values['value'] ?? '');
+    }
+    else {
+      $body_raw = trim((string) $body_values);
+    }
     $body_html = '';
     if ($body_raw !== '') {
       $filter_format = $form['#filter_format'];

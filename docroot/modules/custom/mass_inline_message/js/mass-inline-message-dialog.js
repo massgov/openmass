@@ -26,9 +26,21 @@
     return matched;
   }
 
+  function syncDialogBodyEditors(form) {
+    if (!form || !Drupal.CKEditor5Instances) {
+      return;
+    }
+    form.querySelectorAll('[data-ckeditor5-id]').forEach(function (textarea) {
+      var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+      if (editor) {
+        editor.updateSourceElement();
+      }
+    });
+  }
+
   function submitDialogButtonViaAjax($button) {
     var button = $button.get(0);
-    var $form = $button.closest('form.mass-inline-message-dialog');
+    var $form = $button.closest('form.mass-inline-message-dialog-form');
     if (!button || !$form.length) {
       return false;
     }
@@ -37,6 +49,7 @@
     }
     $form.data('massInlineMessageAjaxInFlight', true);
 
+    syncDialogBodyEditors($form.get(0));
     Drupal.attachBehaviors($form.get(0), drupalSettings);
 
     var ajaxInstance = getAjaxInstance(button);
@@ -127,7 +140,7 @@
         return;
       }
 
-      var $form = $dialog.find('form.mass-inline-message-dialog');
+      var $form = $dialog.find('form.mass-inline-message-dialog-form');
       if (!$form.length) {
         return;
       }
@@ -137,7 +150,7 @@
       }
 
       var fromButtonPane = !!target.closest('.ui-dialog-buttonpane');
-      var fromFormActions = !!target.closest('form.mass-inline-message-dialog .form-actions');
+      var fromFormActions = !!target.closest('form.mass-inline-message-dialog-form .form-actions');
 
       if (!fromButtonPane && !fromFormActions) {
         return;
@@ -159,7 +172,7 @@
 
     document.addEventListener('submit', function (event) {
       var form = event.target;
-      if (!(form instanceof HTMLFormElement) || !form.classList.contains('mass-inline-message-dialog')) {
+      if (!(form instanceof HTMLFormElement) || !form.classList.contains('mass-inline-message-dialog-form')) {
         return;
       }
 
@@ -191,7 +204,7 @@
       return;
     }
 
-    var form = dialogContent.querySelector('form.mass-inline-message-dialog');
+    var form = dialogContent.querySelector('form.mass-inline-message-dialog-form');
     if (form) {
       Drupal.attachBehaviors(form, drupalSettings);
     }
@@ -201,7 +214,7 @@
     attach: function (context) {
       bindGlobalHandlers();
 
-      $(context).find('form.mass-inline-message-dialog').each(function () {
+      $(context).find('form.mass-inline-message-dialog-form').each(function () {
         Drupal.attachBehaviors(this, drupalSettings);
       });
 
