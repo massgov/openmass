@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\mass_org_access\OrgAccessChecker;
 use Drupal\mass_org_access\OrgAccessSettings;
@@ -29,6 +30,7 @@ class MassOrgAccessHooks {
     private readonly OrgAccessChecker $orgAccessChecker,
     private readonly MessengerInterface $messenger,
     private readonly OrgAccessSettings $settings,
+    private readonly AccountProxyInterface $currentUser,
   ) {}
 
   /**
@@ -121,11 +123,26 @@ class MassOrgAccessHooks {
    * terms one per line so a long list is fully visible. The list is
    * server-rendered from the entity's referenced terms; after saving
    * the form Drupal rebuilds it with the fresh values.
+   *
+   * Release 1 visibility: only admins / content admins (`bypass org access`)
+   * and anyone editing an Organization page may see the field. For everyone
+   * else it is hidden with CSS — the field stays in the form so the value
+   * still derives from Organization(s) (via the oog_from_organizations JS)
+   * and saves, keeping the org-taxonomy permission data populated; the
+   * author just never sees or touches it. Release 2 can drop the wrapper to
+   * restore visibility.
    */
   #[Hook('field_widget_complete_form_alter')]
   public function fieldWidgetCompleteFormAlter(array &$field_widget_complete_form, FormStateInterface $form_state, array $context): void {
     if ($context['items']->getName() !== 'field_content_organization') {
       return;
+    }
+    $entity = $context['items']->getEntity();
+    $can_see = $this->currentUser->hasPermission('bypass org access')
+      || $entity->bundle() === 'org_page';
+    if (!$can_see) {
+      $field_widget_complete_form['#prefix'] = '<div class="oog-hidden-from-author">';
+      $field_widget_complete_form['#suffix'] = '</div>';
     }
     if (!isset($field_widget_complete_form['widget']['target_id'])) {
       return;

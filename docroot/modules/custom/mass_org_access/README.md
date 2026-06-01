@@ -90,7 +90,7 @@ OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 | `node_access` / `media_access` | The access decision above. |
 | `entity_field_access` | Locks `field_user_org` to `administer users` (prevents self-promotion). Permission Groups itself is not field-restricted. |
 | `form_node_form_alter` | Adds `validateOrgAccess` callback (static method — closures break paragraphs AJAX). Defense-in-depth: surfaces an error if a save reaches form validation despite `node_access` already denying it. |
-| `field_widget_complete_form_alter` | Renders Permission Groups as a read-only list (see widget section). Attaches both JS libraries. |
+| `field_widget_complete_form_alter` | Renders Permission Groups as a read-only list + attaches both JS libraries. Release 1: hides the field (CSS wrapper `.oog-hidden-from-author`) from anyone without `bypass org access` unless the bundle is `org_page`; the field stays in the form so its value still derives from Organization(s) and saves. |
 | `user_login` | At login, warns editor/author roles without `field_user_org`. Silent while switch is off. |
 
 ## Routing
@@ -103,6 +103,14 @@ OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 - `entity.node.redirects`
 
 ## Owner Groups "widget"
+
+**Release 1 visibility.** The field is shown only to users with
+`bypass org access` (admins + content admins) on every bundle, plus anyone
+editing an `org_page`. For everyone else it is wrapped in
+`.oog-hidden-from-author` (`display:none`) — present in the DOM (so the
+JS-derived value still submits and the org-taxonomy permission data stays
+populated) but not visible. Drop the wrapper in Release 2 to restore
+visibility.
 
 Two JS layers on `field_content_organization`:
 

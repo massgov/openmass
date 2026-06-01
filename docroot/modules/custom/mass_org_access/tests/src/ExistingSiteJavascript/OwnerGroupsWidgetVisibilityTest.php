@@ -7,17 +7,20 @@ namespace Drupal\Tests\mass_org_access\ExistingSiteJavascript;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
- * Verifies the Organization Owner Groups widget visibility per role.
+ * Verifies Permission Groups widget visibility per role and bundle.
  *
- * Any role with edit access to the host entity must see the
- * `field_content_organization` widget on the add form — there is no
- * extra field-level guard. The enforcement switch state does not
- * change widget visibility.
+ * Release 1 rule: the Permission Groups field (field_content_organization)
+ * is shown only to users who can manage it — admins and content admins
+ * (the `bypass org access` permission) on every bundle, plus anyone editing
+ * an Organization page. For authors/editors on every other bundle the field
+ * is hidden, but it stays in the form (in a `.oog-hidden-from-author`
+ * wrapper) so its value still derives from Organization(s) and saves. So
+ * "hidden" means present-but-not-visible, never removed.
  */
 class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBase {
 
   /**
-   * CSS selector for the autocomplete input the widget submits.
+   * CSS selector for the input the widget submits (stays in the DOM).
    */
   private const WIDGET_INPUT_SELECTOR = '[name^="field_content_organization[target_id]"]';
 
@@ -27,10 +30,23 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   private const WIDGET_DISPLAY_SELECTOR = '.oog-readonly-display';
 
   /**
+   * CSS selector for the wrapper that hides the field from authors/editors.
+   */
+  private const HIDDEN_WRAPPER_SELECTOR = '.oog-hidden-from-author';
+
+  /**
+   * Roles that may see/manage Permission Groups on every bundle.
+   */
+  private const MANAGER_ROLES = ['administrator', 'content_team'];
+
+  /**
    * Whether the test stored a previous enforcement value to restore.
    */
   private ?bool $previousEnforce;
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
     $state = \Drupal::state();
@@ -38,6 +54,9 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
     $state->delete('mass_org_access.enforce');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   protected function tearDown(): void {
     if ($this->previousEnforce !== NULL) {
       \Drupal::state()->set('mass_org_access.enforce', $this->previousEnforce);
@@ -54,18 +73,21 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
     $user = $this->createRoleUser($role);
     $this->drupalLogin($user);
     $this->drupalGet('node/add/' . $bundle);
+    $this->openPageInfoTab();
 
+    $context = sprintf('node/%s as %s', $bundle, $role);
     if ($expectedVisible) {
-      $this->openPageInfoTab();
-      $this->assertWidgetVisible(sprintf('node/%s as %s', $bundle, $role));
+      $this->assertFieldVisible($context);
     }
     else {
-      $this->assertWidgetAbsent(sprintf('node/%s as %s', $bundle, $role));
+      $this->assertFieldHiddenButPresent($context);
     }
   }
 
   /**
    * Widget visibility per role on the media.document add form (no tabs).
+   *
+   * Media has no Organization page bundle, so only the manager roles see it.
    *
    * @dataProvider mediaDocumentVisibilityProvider
    */
@@ -74,11 +96,12 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
     $this->drupalLogin($user);
     $this->drupalGet('media/add/document');
 
+    $context = sprintf('media/document as %s', $role);
     if ($expectedVisible) {
-      $this->assertWidgetVisible(sprintf('media/document as %s', $role));
+      $this->assertFieldVisible($context);
     }
     else {
-      $this->assertWidgetAbsent(sprintf('media/document as %s', $role));
+      $this->assertFieldHiddenButPresent($context);
     }
   }
 
@@ -119,46 +142,64 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
-   * Asserts the widget input + read-only display are present and visible.
+   * Asserts the field is present, not wrapped for hiding, and visible.
    */
-  private function assertWidgetVisible(string $context): void {
+  private function assertFieldVisible(string $context): void {
     $page = $this->getSession()->getPage();
     $input = $page->find('css', self::WIDGET_INPUT_SELECTOR);
     $display = $page->find('css', self::WIDGET_DISPLAY_SELECTOR);
     $this->assertNotNull(
       $input,
-      sprintf('Expected Owner Groups input in DOM on %s.', $context)
+      sprintf('Expected Permission Groups input in DOM on %s.', $context)
     );
     $this->assertNotNull(
       $display,
-      sprintf('Expected Owner Groups read-only display in DOM on %s.', $context)
+      sprintf('Expected Permission Groups display in DOM on %s.', $context)
+    );
+    $this->assertNull(
+      $page->find('css', self::HIDDEN_WRAPPER_SELECTOR),
+      sprintf('Permission Groups must NOT be wrapped for hiding on %s.', $context)
     );
     $this->assertTrue(
       $display->isVisible(),
-      sprintf('Owner Groups read-only display must be visible on %s.', $context)
+      sprintf('Permission Groups display must be visible on %s.', $context)
     );
   }
 
   /**
-   * Asserts no Owner Groups widget anywhere in the rendered form.
+   * Asserts the field is hidden from the user but still present for submit.
+   *
+   * The input stays in the DOM (so the JS-derived value posts and the
+   * org-taxonomy permission data is kept populated) but the field sits in
+   * the `.oog-hidden-from-author` wrapper and is not visible.
    */
-  private function assertWidgetAbsent(string $context): void {
+  private function assertFieldHiddenButPresent(string $context): void {
     $page = $this->getSession()->getPage();
-    $this->assertNull(
-      $page->find('css', self::WIDGET_INPUT_SELECTOR),
-      sprintf('Owner Groups input must be absent on %s.', $context)
+    $input = $page->find('css', self::WIDGET_INPUT_SELECTOR);
+    $display = $page->find('css', self::WIDGET_DISPLAY_SELECTOR);
+    $this->assertNotNull(
+      $input,
+      sprintf('Permission Groups input must stay in the DOM (for JS + submit) on %s.', $context)
     );
-    $this->assertNull(
-      $page->find('css', self::WIDGET_DISPLAY_SELECTOR),
-      sprintf('Owner Groups read-only display must be absent on %s.', $context)
+    $this->assertNotNull(
+      $page->find('css', self::HIDDEN_WRAPPER_SELECTOR),
+      sprintf('Permission Groups must be wrapped in the hide wrapper on %s.', $context)
+    );
+    $this->assertNotNull(
+      $display,
+      sprintf('Permission Groups display element should still render on %s.', $context)
+    );
+    $this->assertFalse(
+      $display->isVisible(),
+      sprintf('Permission Groups must not be visible to the user on %s.', $context)
     );
   }
 
   /**
    * Bundles × roles for the node add form.
    *
-   * 28 bundles × 3 roles = 84 cases. Widget is visible to every role
-   * with edit access to the host entity.
+   * Visible when the role is a manager (admin / content admin) OR the bundle
+   * is the Organization page. 28 bundles × 4 roles = 112 cases.
    */
   public static function nodeWidgetVisibilityProvider(): array {
     $bundles = [
@@ -191,14 +232,12 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
       'service_page',
       'topic_page',
     ];
-    $roles = [
-      'administrator' => TRUE,
-      'content_team' => TRUE,
-      'editor' => TRUE,
-    ];
+    $roles = ['administrator', 'content_team', 'editor', 'author'];
     $cases = [];
     foreach ($bundles as $bundle) {
-      foreach ($roles as $role => $expected_visible) {
+      foreach ($roles as $role) {
+        $expected_visible = in_array($role, self::MANAGER_ROLES, TRUE)
+          || $bundle === 'org_page';
         $key = sprintf(
           '%s-%s-%s',
           $bundle,
@@ -212,13 +251,14 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
-   * Roles for the media.document add form (no Page Info tab).
+   * Roles for the media.document add form (no Organization page bundle).
    */
   public static function mediaDocumentVisibilityProvider(): array {
     return [
       'administrator-visible' => ['administrator', TRUE],
       'content_team-visible' => ['content_team', TRUE],
-      'editor-visible' => ['editor', TRUE],
+      'editor-hidden' => ['editor', FALSE],
+      'author-hidden' => ['author', FALSE],
     ];
   }
 
