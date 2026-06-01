@@ -89,7 +89,6 @@ OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 |------|----------|
 | `node_access` / `media_access` | The access decision above. |
 | `entity_field_access` | Locks `field_user_org` to `administer users` (prevents self-promotion). Permission Groups itself is not field-restricted. |
-| `entity_prepare_form` | On new entities only: pre-fills `field_content_organization` from the creator's `field_user_org` + ancestors. Existing entities are populated exclusively by `drush moab`. |
 | `form_node_form_alter` | Adds `validateOrgAccess` callback (static method — closures break paragraphs AJAX). Defense-in-depth: surfaces an error if a save reaches form validation despite `node_access` already denying it. |
 | `field_widget_complete_form_alter` | Renders Permission Groups as a read-only list (see widget section). Attaches both JS libraries. |
 | `user_login` | At login, warns editor/author roles without `field_user_org`. Silent while switch is off. |
@@ -139,7 +138,7 @@ rewritten across 29 bundle field configs.
 | Service ID | Class | Role |
 |------------|-------|------|
 | `mass_org_access.settings` | `OrgAccessSettings` | Reads env + State for the feature switch |
-| `mass_org_access.org_access_checker` | `OrgAccessChecker` | Access intersection + `populateOwnerGroupsFromCurrentUser` (form pre-fill) + `populateOwnerGroupsFromOrgPage` (backfill) |
+| `mass_org_access.org_access_checker` | `OrgAccessChecker` | Access intersection + `populateOwnerGroupsFromOrgPage` (backfill) |
 | `mass_org_access.backfill_runner` | `BackfillRunner` | Resumable drush backfill driver |
 | `mass_org_access.route_subscriber` | `Routing\RouteSubscriber` | Side-door route hardening |
 
@@ -159,14 +158,19 @@ Authors and editors maintain optional profile fields:
 `field_user_org` (Permission Groups on the user) remains **admin-only**
 via `entity_field_access`. Authors edit defaults on their own profile.
 
-**New content only** (`entity_prepare_form` when `$entity->isNew()`):
+**New content only** (`entity_prepare_form` when `$entity->isNew()`,
+in `mass_utility`):
 
 - Organization(s) (or bundle-specific org field for binder/decision/person)
   from `field_default_organizations`.
 - Label(s) (`field_reusable_label` or `field_document_label` on media) from
   `field_default_labels`.
-- Permission Groups on content (`field_content_organization`) still come
-  from the creator's `field_user_org` + ancestors (unchanged).
+
+Permission Groups (`field_content_organization`) is **not** pre-filled from
+the user directly. It derives from Organization(s): the augmentation JS
+mirrors the related `user_organization` terms (and ancestors) into it
+whenever an org is present — on initial load of the pre-filled
+Organization(s) and as the author edits it.
 
 **New media.document** when default organizations are empty: falls back to
 org_page nodes mapped from the user's permission groups

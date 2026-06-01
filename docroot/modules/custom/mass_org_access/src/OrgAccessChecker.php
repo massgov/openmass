@@ -5,7 +5,6 @@ namespace Drupal\mass_org_access;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\node\NodeInterface;
 
 /**
@@ -15,7 +14,6 @@ class OrgAccessChecker {
 
   public function __construct(
     private readonly EntityTypeManagerInterface $entityTypeManager,
-    private readonly AccountProxyInterface $currentUser,
   ) {}
 
   /**
@@ -141,60 +139,6 @@ class OrgAccessChecker {
       array_map(fn($tid) => ['target_id' => $tid], $new_tids)
     );
     return TRUE;
-  }
-
-  /**
-   * Sets field_content_organization to the current user's org terms.
-   *
-   * Reads the editor's field_user_org terms, walks taxonomy ancestors,
-   * and writes the union. Skipped when the user has no org assigned or
-   * the field already has a value. The caller decides when to invoke
-   * this — the entity_prepare_form hook calls it only for new content;
-   * existing content is left to drush moab.
-   */
-  public function populateOwnerGroupsFromCurrentUser(EntityInterface $entity): void {
-    if (!$entity->hasField('field_content_organization')) {
-      return;
-    }
-    if (!$entity->get('field_content_organization')->isEmpty()) {
-      return;
-    }
-    $user_tids = $this->getUserOrgTids($this->currentUser);
-    if (empty($user_tids)) {
-      return;
-    }
-    $term_ids = $this->walkTermAncestors($user_tids);
-    $entity->set(
-      'field_content_organization',
-      array_map(fn($tid) => ['target_id' => $tid], $term_ids)
-    );
-  }
-
-  /**
-   * BFS over the taxonomy term `parent` chain.
-   *
-   * Returns the input TIDs plus every reachable ancestor TID,
-   * deduplicated. Used by form pre-fill — the backfill path does not walk
-   * ancestors because org_page values already include them (see
-   * REQUIREMENTS.md Section C/D).
-   */
-  private function walkTermAncestors(array $tids): array {
-    $seen = array_fill_keys($tids, TRUE);
-    $queue = $tids;
-    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-    while (!empty($queue)) {
-      $batch = array_splice($queue, 0, 50);
-      foreach ($term_storage->loadMultiple($batch) as $term) {
-        foreach ($term->get('parent')->getValue() as $parent) {
-          $parent_tid = (int) $parent['target_id'];
-          if ($parent_tid && !isset($seen[$parent_tid])) {
-            $seen[$parent_tid] = TRUE;
-            $queue[] = $parent_tid;
-          }
-        }
-      }
-    }
-    return array_map('intval', array_keys($seen));
   }
 
 }

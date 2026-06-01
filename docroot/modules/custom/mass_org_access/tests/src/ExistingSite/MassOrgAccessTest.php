@@ -813,12 +813,14 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Form_alter pre-fills Organization Owner Groups for new entities.
+   * New entity form does not stamp Owner Groups from the creator's profile.
    *
-   * Author sees the inherited permission groups at form load, before
-   * pressing Save.
+   * Permission Groups are derived from Organization(s) on the form (by the
+   * augmentation JS), never copied straight from the creator's own
+   * field_user_org. So on a server-built new entity form — no JS — the
+   * field stays empty even when the creator has permission groups assigned.
    */
-  public function testFormAlterPreFillsOrgsOnNewEntityForm(): void {
+  public function testNewEntityFormDoesNotPreFillOwnerGroupsFromUser(): void {
     \Drupal::currentUser()->setAccount($this->userA);
 
     $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
@@ -832,50 +834,13 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     \Drupal::formBuilder()->buildForm($form_object, $form_state);
     $entity = $form_object->getEntity();
 
-    $this->assertNotEmpty(
+    $tids = array_filter(array_column(
       $entity->get('field_content_organization')->getValue(),
-      'field_content_organization is pre-filled from permission groups.'
-    );
-  }
-
-  /**
-   * New entity gets the creator's permission groups auto-assigned.
-   *
-   * When an editor opens the create form, entity_prepare_form pre-fills
-   * field_content_organization directly from their field_user_org (with
-   * ancestors). field_organizations is not touched by mass_org_access —
-   * the editor still picks Organization(s) themselves (or mass_utility's
-   * UserDefaults pre-fills from their default organizations).
-   */
-  public function testNewEntityAutoAssignsCreatorOrg(): void {
-    \Drupal::currentUser()->setAccount($this->userA);
-
-    $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
-      'type' => 'info_details',
-      'title' => 'Auto-assigned ' . $this->randomMachineName(),
-    ]);
-    $form_object = \Drupal::entityTypeManager()
-      ->getFormObject('node', 'default')
-      ->setEntity($entity);
-    $form_state = (new FormState())->setFormObject($form_object);
-    \Drupal::formBuilder()->buildForm($form_object, $form_state);
-    $entity = $form_object->getEntity();
-
-    $tids = array_column($entity->get('field_content_organization')->getValue(), 'target_id');
-    $this->assertContains(
-      (string) $this->termA->id(),
-      array_map('strval', $tids),
-      'Form load pre-fills field_content_organization from creator field_user_org.'
-    );
-    // field_organizations may carry an empty add-more slot from the widget
-    // build, but we do not auto-set a real org_page reference here.
-    $org_nids = array_filter(array_column(
-      $entity->get('field_organizations')->getValue(),
       'target_id'
     ));
     $this->assertEmpty(
-      $org_nids,
-      'field_organizations is not auto-filled with an org_page on form load.'
+      $tids,
+      'Owner Groups must not be pre-filled from the creator field_user_org; it derives from Organization(s) via JS.'
     );
   }
 
