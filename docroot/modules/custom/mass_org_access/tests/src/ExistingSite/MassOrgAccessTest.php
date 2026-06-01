@@ -1037,6 +1037,60 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * The Permission Groups (field_user_org) user field is required.
+   */
+  public function testFieldUserOrgIsRequired(): void {
+    $field = \Drupal::configFactory()
+      ->get('field.field.user.user.field_user_org');
+    $this->assertTrue(
+      (bool) $field->get('required'),
+      'field_user_org must be configured as required.'
+    );
+  }
+
+  /**
+   * Admins cannot save a user that has no Permission Groups term.
+   *
+   * The field is required and admins (administer users) see it on the user
+   * form, so leaving it empty blocks the save — forcing every managed user
+   * to be assigned an organization.
+   */
+  public function testRequiredBlocksAdminSaveWhenOrgEmpty(): void {
+    $user_manager = $this->createUser(['administer users']);
+    $target = $this->createUser();
+    $target->addRole('editor');
+    $target->activate();
+    $target->save();
+
+    $this->drupalLogin($user_manager);
+    $this->drupalGet('user/' . $target->id() . '/edit');
+    $this->submitForm([], 'Save');
+
+    $this->assertSession()->pageTextNotContains('The changes have been saved.');
+    $this->assertSession()->elementExists('css', '.messages--error');
+  }
+
+  /**
+   * A non-admin user without a term can still save their own profile.
+   *
+   * The field_user_org field is admin-only, so it is not on the user's own
+   * form and the required constraint does not block their save — only admins
+   * assign it.
+   */
+  public function testRequiredDoesNotBlockOwnProfileSave(): void {
+    $author = $this->createUser();
+    $author->addRole('author');
+    $author->activate();
+    $author->save();
+
+    $this->drupalLogin($author);
+    $this->drupalGet('user/' . $author->id() . '/edit');
+    $this->submitForm([], 'Save');
+
+    $this->assertSession()->pageTextContains('The changes have been saved.');
+  }
+
+  /**
    * Loads the user_organization term that maps to a given org_page node.
    *
    * Used in multi-org tests where termA / termB might be needed by reference,
