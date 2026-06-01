@@ -393,7 +393,7 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
 
     // Clear any baseline rows so the diff is clean — mass_utility may
     // have pre-filled field_organizations[0] from the user's own org,
-    // and populateOwnerGroupsFromCurrentUser may have pre-filled OOG.
+    // which the JS then mirrors into the Permission Groups field.
     $session->executeScript(
       'document.querySelectorAll(\'input[name^="field_organizations["][name$="[target_id]"]\').forEach(function(i){i.value="";});'
       . ' var oog=document.querySelector(\'input[name="field_content_organization[target_id]"]\'); if (oog) { oog.value=""; }'

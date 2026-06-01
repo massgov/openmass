@@ -6,7 +6,6 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -109,35 +108,6 @@ class MassOrgAccessHooks {
       return AccessResult::neutral();
     }
     return $forbidden;
-  }
-
-  /**
-   * Pre-fills Permission Groups on new entities only.
-   *
-   * Reads the creator's field_user_org plus ancestors and writes the
-   * union to field_content_organization before the form widgets are
-   * built, so the new content reflects the author's own org. Existing
-   * entities are populated exclusively by drush moab — opening an
-   * un-backfilled legacy entity must not silently re-stamp it with the
-   * current editor's org.
-   *
-   * Uses entity_prepare_form (not form_alter) because the widget reads
-   * its default value from the entity during EntityFormDisplay::buildForm,
-   * which runs before form_alter fires.
-   */
-  #[Hook('entity_prepare_form')]
-  public function entityPrepareForm(EntityInterface $entity, string $operation, FormStateInterface $form_state): void {
-    if (!$entity instanceof FieldableEntityInterface) {
-      return;
-    }
-    // Pre-fill only for new content (creator's own org). Existing
-    // entities are populated exclusively by drush moab — if they are
-    // still empty when an editor opens the form, they remain empty and
-    // stay admin-only-editable.
-    if (!$entity->isNew()) {
-      return;
-    }
-    $this->orgAccessChecker->populateOwnerGroupsFromCurrentUser($entity);
   }
 
   /**
