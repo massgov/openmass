@@ -4,6 +4,7 @@ namespace Drupal\mass_org_access\Hook;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityFormInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
@@ -177,6 +178,15 @@ class MassOrgAccessHooks {
     // org_page and appends them here. Only loaded alongside the OOG
     // widget, which already implies the user has edit access to it.
     $field_widget_complete_form['#attached']['library'][] = 'mass_org_access/oog_from_organizations';
+    // Pass the current user's own permission groups so the same JS can warn
+    // before a save that would strip the author's access (their groups not
+    // among the content's). Off for bypass users and users with no groups
+    // (the login warning already covers the latter).
+    $user_tids = $this->orgAccessChecker->getUserOrgTids($this->currentUser);
+    $field_widget_complete_form['#attached']['drupalSettings']['massOrgAccess'] = [
+      'userPermissionGroupTids' => array_values($user_tids),
+      'warnOnSelfLockout' => !$this->currentUser->hasPermission('bypass org access') && !empty($user_tids),
+    ];
   }
 
   /**
@@ -247,6 +257,42 @@ class MassOrgAccessHooks {
     $form_state->setErrorByName('', t(
       'You do not have permission to save this content. It belongs to @org. Contact your administrator if you need access.',
       ['@org' => $org_list]
+    ));
+  }
+
+  /**
+   * Warns a user who is about to save content that locks them out of it.
+   *
+   * If none of the Permission Groups being saved on a node or media entity
+   * match the saving user's own Permission Groups, that user will not be able
+   * to edit the entity again once org-based permissions are enforced. This
+   * adds a non-blocking warning (the save still goes through) so they can
+   * adjust the Organization(s) if it was a mistake. Runs on every real save
+   * via entity_presave — paragraph AJAX rebuilds don't save, so it does not
+   * fire mid-edit. Skips: backfill/sync saves, users with `bypass org access`
+   * (never locked out), and users with no Permission Groups of their own
+   * (the login warning already covers them).
+   */
+  #[Hook('entity_presave')]
+  public function entityPresaveWarnSelfLockout(EntityInterface $entity): void {
+    if (!$entity instanceof ContentEntityInterface || $entity->isSyncing()) {
+      return;
+    }
+    if (!$entity->hasField('field_content_organization')) {
+      return;
+    }
+    if ($this->currentUser->hasPermission('bypass org access')) {
+      return;
+    }
+    $user_tids = $this->orgAccessChecker->getUserOrgTids($this->currentUser);
+    if (empty($user_tids)) {
+      return;
+    }
+    if (array_intersect($user_tids, $this->orgAccessChecker->getEntityOrgTids($entity))) {
+      return;
+    }
+    $this->messenger->addWarning($this->t(
+      'You have lost access to this content. If this was a mistake, contact your administrator.'
     ));
   }
 

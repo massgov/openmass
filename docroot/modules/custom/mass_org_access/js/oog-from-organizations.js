@@ -11,11 +11,11 @@
  *
  * On diff we fetch /mass-org-access/lookup-user-orgs for added NIDs and
  * append the returned user_organization terms to
- * field_content_organization. We remember which terms each org brought
- * in (Map<orgNid, Set<tid>>) so when an org is removed we drop only the
- * terms that organization auto-added and that are no longer referenced
- * by any remaining tracked org. Terms a user added by hand are never
- * touched.
+ * field_content_organization. We remember each org's full mapped term set
+ * (Map<orgNid, Set<tid>>) so when an org is removed we drop its related
+ * terms — including ones already present from drush backfill — except any
+ * still mapped by an organization that remains (shared ancestors). Terms a
+ * user added by hand that map to no organization are never touched.
  *
  * Nothing is persisted before form submit — the change lives in the
  * hidden OOG autocomplete input until the user saves.
@@ -74,7 +74,7 @@
    */
   function attachForm(form) {
     const oogInput = form.querySelector(OOG_SELECTOR);
-    const trackedByOrg = new Map();
+    const mappedByOrg = new Map();
     // Start with an empty baseline so any pre-filled organizations
     // (e.g. from mass_utility's user defaults on /node/add/*) are
     // treated as just-added on the first sync pass — that triggers
@@ -88,7 +88,7 @@
         return;
       }
       syncing = true;
-      syncOnce(form, oogInput, trackedByOrg, lastOrgNids).then(
+      syncOnce(form, oogInput, mappedByOrg, lastOrgNids).then(
         function (nextNids) {
           lastOrgNids = nextNids;
           syncing = false;
@@ -134,6 +134,93 @@
         run();
       }
     }, 500);
+
+    setupSelfLockoutConfirm(form, oogInput);
+  }
+
+  /**
+   * Warns before a save that would remove the author's own access.
+   *
+   * If, at save time, none of the content's Permission Groups match the
+   * current user's own Permission Groups, the user would be locked out of
+   * the entity once enforcement is on. We block the first Save click,
+   * surface an inline notice with a confirmation checkbox, and let the save
+   * through only after the user ticks it — so an intentional "transfer
+   * ownership" still works, but an accidental lockout does not happen
+   * silently. No-ops for users the server marked as not-at-risk.
+   *
+   * @param {HTMLFormElement} form     The edit form.
+   * @param {HTMLInputElement} oogInput The Owner Groups autocomplete input.
+   */
+  function setupSelfLockoutConfirm(form, oogInput) {
+    const settings = (window.drupalSettings && drupalSettings.massOrgAccess) || {};
+    if (!settings.warnOnSelfLockout) {
+      return;
+    }
+    const userTids = (settings.userPermissionGroupTids || []).map(String);
+    if (!userTids.length) {
+      return;
+    }
+    // The primary submit buttons carry name="op" (Save / Preview / per-state
+    // moderation saves). The field "Add another / Remove / Upload" buttons
+    // have field-specific names, so this skips them. The node form can hold
+    // several .form-actions wrappers (one per multi-value field), so we must
+    // not scope by the first .form-actions — we'd miss the real Save.
+    const buttons = form.querySelectorAll(
+      'input[type="submit"][name="op"], button[type="submit"][name="op"]'
+    );
+    buttons.forEach(function (button) {
+      if (/preview/i.test(button.value || button.textContent || '')) {
+        return;
+      }
+      button.addEventListener('click', function (event) {
+        // Already acknowledged — let the save proceed.
+        const checkbox = form.querySelector('.oog-lockout-confirm input[type="checkbox"]');
+        if (checkbox && checkbox.checked) {
+          return;
+        }
+        const oogTids = parseTagged(oogInput.value).map(function (t) { return String(t.id); });
+        const shares = oogTids.some(function (t) { return userTids.indexOf(t) !== -1; });
+        if (shares) {
+          return;
+        }
+        // Disjoint: stop this save and ask for explicit confirmation.
+        event.preventDefault();
+        event.stopPropagation();
+        showLockoutConfirm(button);
+      }, true);
+    });
+  }
+
+  /**
+   * Injects (once) the inline lockout notice + confirmation checkbox.
+   *
+   * @param {HTMLElement} button The Save button that was blocked.
+   */
+  function showLockoutConfirm(button) {
+    const form = button.closest('form');
+    const anchor = button.closest('.form-actions') || button;
+    let box = form.querySelector('.oog-lockout-confirm');
+    if (!box) {
+      box = document.createElement('div');
+      box.className = 'oog-lockout-confirm messages messages--warning';
+      box.setAttribute('role', 'alert');
+      const label = document.createElement('label');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      label.appendChild(checkbox);
+      label.appendChild(document.createTextNode(
+        ' Save anyway — I understand I may lose the ability to edit this content.'
+      ));
+      const text = document.createElement('p');
+      text.textContent =
+        'None of your permission groups are on this content. Once organization-based '
+        + 'editing permissions are enforced you will not be able to edit it again.';
+      box.appendChild(text);
+      box.appendChild(label);
+      anchor.parentNode.insertBefore(box, anchor);
+    }
+    box.scrollIntoView({behavior: 'smooth', block: 'center'});
   }
 
   /**
@@ -152,12 +239,12 @@
    *
    * @param {HTMLFormElement} form        Edit form.
    * @param {HTMLInputElement} oogInput   field_content_organization input.
-   * @param {Map<string,Set<string>>} trackedByOrg Reference map of auto-adds.
+   * @param {Map<string,Set<string>>} mappedByOrg Each org's full mapped tids.
    * @param {Set<string>} previousNids    Last known set of org NIDs.
    *
    * @return {Promise<Set<string>>} The current set of org NIDs.
    */
-  async function syncOnce(form, oogInput, trackedByOrg, previousNids) {
+  async function syncOnce(form, oogInput, mappedByOrg, previousNids) {
     const currentNids = collectOrgNids(form);
     const added = [...currentNids].filter(function (n) { return !previousNids.has(n); });
     const removed = [...previousNids].filter(function (n) { return !currentNids.has(n); });
@@ -172,42 +259,44 @@
       const existingIds = new Set(oogTerms.map(function (t) { return t.id; }));
       added.forEach(function (orgNid) {
         const terms = fetched[orgNid] || [];
-        const tracked = new Set();
-        trackedByOrg.set(orgNid, tracked);
+        const mapped = new Set();
+        mappedByOrg.set(orgNid, mapped);
         terms.forEach(function (term) {
           const tid = String(term.tid);
-          // Track only terms this org actually added to OOG. A term
-          // that was already there (manual entry, prior backfill,
-          // populate-from-current-user) must not be removed when this
-          // organization is later cleared.
+          // Record the org's full mapped set — including terms already in
+          // OOG (e.g. from drush backfill). Per spec, removing an org later
+          // removes its related Permission Groups (and parents), so those
+          // terms must be droppable even though we don't re-add them here.
+          mapped.add(tid);
           if (!existingIds.has(tid)) {
             oogTerms.push({id: tid, label: term.label});
             existingIds.add(tid);
-            tracked.add(tid);
           }
         });
       });
     }
 
     if (removed.length) {
-      const stillTracked = new Set();
-      trackedByOrg.forEach(function (tids, orgNid) {
+      // Keep any term still mapped by an organization that remains on the
+      // entity (shared ancestors must not be dropped when one child leaves).
+      const stillMapped = new Set();
+      mappedByOrg.forEach(function (tids, orgNid) {
         if (currentNids.has(orgNid)) {
-          tids.forEach(function (t) { stillTracked.add(t); });
+          tids.forEach(function (t) { stillMapped.add(t); });
         }
       });
       const toDrop = new Set();
       removed.forEach(function (orgNid) {
-        const tids = trackedByOrg.get(orgNid);
+        const tids = mappedByOrg.get(orgNid);
         if (!tids) {
           return;
         }
         tids.forEach(function (tid) {
-          if (!stillTracked.has(tid)) {
+          if (!stillMapped.has(tid)) {
             toDrop.add(tid);
           }
         });
-        trackedByOrg.delete(orgNid);
+        mappedByOrg.delete(orgNid);
       });
       if (toDrop.size) {
         oogTerms = oogTerms.filter(function (t) { return !toDrop.has(t.id); });

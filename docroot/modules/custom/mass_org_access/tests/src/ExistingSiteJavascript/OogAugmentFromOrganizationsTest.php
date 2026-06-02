@@ -222,19 +222,19 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
-   * Manual OOG term survives even when a pre-filled organization maps to it.
+   * Removing an org drops its mapped term even if it pre-existed in OOG.
    *
-   * If OOG already contains a term that the org_page also maps to,
-   * removing that org_page must NOT drop the manual term — JS only
-   * tracks terms it actually added to OOG.
+   * Per spec, removing an organization removes the related Permission Group
+   * (and parents). So a term that maps to the removed org_page must be
+   * dropped from OOG even when it was already there (e.g. from drush
+   * backfill) — not only when this session added it.
    */
-  public function testInitialSyncDoesNotTrackPreExistingOwnerGroupTerm(): void {
+  public function testRemovingOrgDropsItsMappedTermEvenIfPreExisting(): void {
     $context = $this->setupEditForm('node', 'info_details', [
       'field_organizations' => [],
     ]);
-    // Pre-load: org_page is in field_organizations, and the same term
-    // it would augment is already in OOG (e.g. set by drush moab or by
-    // mass_org_access populate-from-current-user).
+    // Pre-load: org_page is in field_organizations, and the same term it
+    // maps to is already in OOG (e.g. set by drush moab).
     $context['entity']->set('field_organizations', [['target_id' => $context['orgPage']->id()]]);
     $context['entity']->set('field_content_organization', [['target_id' => $context['term']->id()]]);
     $context['entity']->setSyncing(TRUE);
@@ -247,23 +247,22 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
       'document.querySelectorAll("details").forEach(function(d){d.setAttribute("open","open");});'
     );
 
-    // Give initial sync a chance to run + poll cycle.
+    // Give the initial sync a chance to record the org's mapped set.
     sleep(2);
 
-    // Now clear the organization. The term that was already in OOG
-    // must stay because JS did not track it.
+    // Remove the organization — its related Permission Group must drop.
     $session->executeScript(sprintf(
       '(function(){var i=%s; i.value=""; i.dispatchEvent(new Event("change",{bubbles:true}));})();',
       self::ORG_INPUT_JS
     ));
 
-    sleep(2);
     $tidTag = sprintf('(%d)', $context['term']->id());
-    $finalOog = (string) $session->evaluateScript(self::OOG_INPUT_JS);
-    $this->assertStringContainsString(
-      $tidTag,
-      $finalOog,
-      'Pre-existing OOG term must survive removal of an org_page that also maps to it.'
+    $dropped = $page->waitFor(8, function () use ($session, $tidTag) {
+      return strpos((string) $session->evaluateScript(self::OOG_INPUT_JS), $tidTag) === FALSE;
+    });
+    $this->assertTrue(
+      $dropped,
+      'A term mapped to the removed org must be dropped from OOG, even if it pre-existed.'
     );
   }
 
@@ -434,6 +433,97 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
     $this->assertTrue(
       $appeared,
       sprintf('Mapped term %s should appear in Permission Groups after autocomplete pick on media add form.', $tidTag)
+    );
+  }
+
+  /**
+   * Saving content that would lock the author out needs explicit confirmation.
+   *
+   * A non-admin user whose Permission Groups do not match the content's
+   * Permission Groups gets the first Save blocked with an inline notice +
+   * checkbox; the save only goes through after they tick it, so an accidental
+   * self-lockout cannot happen silently. Runs across every supported bundle.
+   *
+   * The user's own Permission Group is a freshly created term that no content
+   * references, so any entity's Permission Groups are guaranteed disjoint —
+   * the confirmation must trigger regardless of the entity's current value.
+   *
+   * @dataProvider entityProvider
+   */
+  public function testSelfLockoutSaveRequiresConfirmation(string $entityType, string $bundle): void {
+    $userTerm = $this->createTerm(
+      Vocabulary::load('user_organization'),
+      ['name' => 'Lockout user org ' . $this->randomMachineName(6)]
+    );
+    $user = $this->createUser([
+      'bypass node access',
+      'administer media',
+      'create document media',
+    ]);
+    $user->addRole('editor');
+    $user->set('field_user_org', $userTerm->id());
+    $user->activate();
+    $user->save();
+
+    $entity = $this->createEntityForBundle($entityType, $bundle, []);
+    $this->drupalLogin($user);
+    $this->drupalGet(sprintf('%s/%d/edit', $entityType, $entity->id()));
+
+    $session = $this->getSession();
+    $page = $session->getPage();
+    $session->executeScript(
+      'document.querySelectorAll("details").forEach(function(d){d.setAttribute("open","open");});'
+    );
+
+    // The confirmation JS only attaches where an organization widget is
+    // rendered (it derives Permission Groups from the orgs). Bundles that
+    // show no organization widget have no self-lockout path to guard.
+    $orgInputSelectors = '\'input[name^="field_organizations["][name$="[target_id]"], '
+      . 'input[name^="field_binder_ref_organization["][name$="[target_id]"], '
+      . 'input[name^="field_decision_ref_organization["][name$="[target_id]"], '
+      . 'input[name^="field_person_ref_org["][name$="[target_id]"]\'';
+    $hasOrgInput = $session->evaluateScript(
+      'document.querySelector(' . $orgInputSelectors . ') !== null'
+    );
+    if (!$hasOrgInput) {
+      $this->markTestSkipped(sprintf(
+        '%s:%s renders no organization widget, so there is no lockout path.',
+        $entityType,
+        $bundle
+      ));
+    }
+
+    // First Save: the disjoint Permission Groups block the submit and the
+    // inline confirmation appears; the form is not left.
+    $page->pressButton('Save');
+    $confirm = $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.oog-lockout-confirm');
+    });
+    $this->assertNotNull(
+      $confirm,
+      sprintf('First save on %s:%s must be blocked with the confirmation.', $entityType, $bundle)
+    );
+    $this->assertStringContainsString(
+      '/edit',
+      $session->getCurrentUrl(),
+      sprintf('%s:%s must not be submitted before the user confirms.', $entityType, $bundle)
+    );
+
+    // Tick the confirmation, then Save again. Our gate now releases the
+    // submit: the form posts and the server re-renders the page, replacing
+    // the client-injected notice. (If the gate wrongly re-blocked, the box
+    // would persist with no round-trip.) This holds whether the save then
+    // succeeds or fails unrelated validation, so the assertion stays robust.
+    $session->executeScript(
+      "document.querySelector('.oog-lockout-confirm input[type=\"checkbox\"]').checked = true;"
+    );
+    $page->pressButton('Save');
+    $released = $page->waitFor(15, function () use ($page) {
+      return $page->find('css', '.oog-lockout-confirm') === NULL;
+    });
+    $this->assertTrue(
+      $released,
+      sprintf('After confirming on %s:%s the gate must release the save.', $entityType, $bundle)
     );
   }
 
