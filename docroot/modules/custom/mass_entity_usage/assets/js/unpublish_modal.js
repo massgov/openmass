@@ -7,8 +7,7 @@
       var count = parseInt(settings.linkingPagesCount || 0, 10);
       var unpublishStates = settings.unpublishStates || ['archived', 'unpublished', 'trash'];
       var title = settings.modalTitle || 'Heads up';
-      var msg1 = settings.modalMessageSingular;
-      var msgN = settings.modalMessagePlural;
+      var modalMessage = settings.modalMessage;
 
 
       // If nothing links here, there is nothing to warn about.
@@ -48,7 +47,7 @@
         }
 
         function openConfirm() {
-          var text = (count === 1) ? msg1 : msgN.replace('@count', count);
+          var text = modalMessage;
           var $wrapper = $('<div class="mass-linking-unpublish-modal"><p>' + text + '</p></div>');
 
           var dialog = Drupal.dialog($wrapper.get(0), {
