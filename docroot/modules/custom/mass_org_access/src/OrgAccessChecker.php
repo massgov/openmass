@@ -76,25 +76,27 @@ class OrgAccessChecker {
   }
 
   /**
-   * Backfill: copy field_content_organization from every related org_page.
+   * Backfill: derive field_content_organization from the entity's orgs.
    *
-   * Iterates every NID in field_organizations, loads each org_page, and
-   * writes the union of their field_content_organization terms onto the
-   * entity. Org_page Owner Groups are curated manually by the content
-   * team and already include ancestor terms — no walk needed.
+   * For every org_page NID in field_organizations, reverse-looks-up the
+   * user_organization term(s) mapped to that org via field_state_organization,
+   * adds each term plus its ancestors, and writes the union onto the entity.
+   * This is the same derivation the live edit form runs (see
+   * OrgLookupController), so the bulk job and the on-edit population stay in
+   * lock-step — one source of truth (the State Organizations taxonomy), not
+   * the org_page node, which is content and may be deleted/unpublished.
    *
-   * Used by `drush moab` only. Org_page bundle is intentionally skipped:
-   * its Owner Groups are the source of truth and must not be overwritten.
-   * If none of the related org_pages have any Owner Groups, this method
-   * leaves the entity untouched — that entity remains admin-only-editable
-   * until at least one org_page is populated.
+   * Used by `drush moab`. Org_page bundle is intentionally skipped: its own
+   * Permission Groups are curated by the content team and must not be
+   * overwritten. If no related org maps to any term, the entity is left
+   * untouched — it stays admin-only-editable until a mapping exists.
    *
    * @return bool
    *   TRUE if the entity's field_content_organization was updated to a
    *   new value. FALSE if nothing changed — the caller can use this to
    *   skip an unnecessary save().
    */
-  public function populateOwnerGroupsFromOrgPage(EntityInterface $entity): bool {
+  public function populateOwnerGroupsFromOrganizations(EntityInterface $entity): bool {
     if (!$entity->hasField('field_content_organization')) {
       return FALSE;
     }
@@ -117,28 +119,73 @@ class OrgAccessChecker {
     if (empty($org_nids)) {
       return FALSE;
     }
-    $collected = [];
-    foreach ($this->entityTypeManager->getStorage('node')->loadMultiple($org_nids) as $org_page) {
-      if (!$org_page->hasField('field_content_organization')) {
-        continue;
-      }
-      foreach ($org_page->get('field_content_organization')->getValue() as $item) {
-        $tid = (int) ($item['target_id'] ?? 0);
-        if ($tid) {
-          $collected[$tid] = TRUE;
-        }
-      }
-    }
-    if (empty($collected)) {
+    $new_tids = $this->ownerGroupTidsForOrgs($org_nids);
+    if (empty($new_tids)) {
       return FALSE;
     }
-    $new_tids = array_keys($collected);
-    sort($new_tids);
     $entity->set(
       'field_content_organization',
       array_map(fn($tid) => ['target_id' => $tid], $new_tids)
     );
     return TRUE;
+  }
+
+  /**
+   * Permission Group terms mapped to a single org_page, plus ancestors.
+   *
+   * Reverse lookup: finds every user_organization term whose
+   * field_state_organization references $org_nid, then walks each up the
+   * taxonomy via loadAllParents() so ancestor (broader) groups are included.
+   * The org_page node itself is not the source — only the taxonomy mapping —
+   * so an unmapped or out-of-sync org silently yields an empty result.
+   *
+   * Single source of truth for both the live edit form (OrgLookupController)
+   * and the bulk backfill.
+   *
+   * @return array<int, array{tid: int, label: string}>
+   *   Keyed by tid; each value is {tid, label}.
+   */
+  public function ownerGroupTermsForOrg(int $org_nid): array {
+    /** @var \Drupal\taxonomy\TermStorageInterface $term_storage */
+    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
+    $tids = $term_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('vid', 'user_organization')
+      ->condition('field_state_organization.target_id', $org_nid)
+      ->execute();
+    $collected = [];
+    foreach ($tids as $tid) {
+      foreach ($term_storage->loadAllParents($tid) as $parent_tid => $term) {
+        if (!isset($collected[$parent_tid])) {
+          $collected[$parent_tid] = [
+            'tid' => (int) $parent_tid,
+            'label' => $term->label(),
+          ];
+        }
+      }
+    }
+    return $collected;
+  }
+
+  /**
+   * Deduped, sorted Permission Group TIDs for a set of org_page NIDs.
+   *
+   * @param int[] $org_nids
+   *   org_page node IDs.
+   *
+   * @return int[]
+   *   Sorted unique user_organization term IDs (terms + ancestors).
+   */
+  public function ownerGroupTidsForOrgs(array $org_nids): array {
+    $tids = [];
+    foreach ($org_nids as $org_nid) {
+      foreach ($this->ownerGroupTermsForOrg((int) $org_nid) as $term) {
+        $tids[$term['tid']] = TRUE;
+      }
+    }
+    $result = array_map('intval', array_keys($tids));
+    sort($result);
+    return $result;
   }
 
 }

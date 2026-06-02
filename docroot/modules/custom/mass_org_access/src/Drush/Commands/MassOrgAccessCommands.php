@@ -97,7 +97,7 @@ class MassOrgAccessCommands extends DrushCommands {
 
     $storage = $entity_type_manager->getStorage($entity_type_id);
     foreach ($storage->loadMultiple($ids) as $entity) {
-      $this->orgAccessChecker->populateOwnerGroupsFromOrgPage($entity);
+      $this->orgAccessChecker->populateOwnerGroupsFromOrganizations($entity);
       $term_ids = $this->orgAccessChecker->getEntityOrgTids($entity);
 
       if (method_exists($entity, 'setNewRevision')) {

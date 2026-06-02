@@ -366,11 +366,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * A user whose org is an ancestor of the content org may edit the content.
    *
-   * The content team manually populates the child org_page's
-   * field_content_organization with the child term AND its ancestor terms.
-   * The drush backfill then copies that union onto child-tagged content,
-   * so a parent-org user matches via simple intersection without runtime
-   * traversal.
+   * Backfill derives Permission Groups via the field_state_organization
+   * reverse lookup, then walks the taxonomy hierarchy with loadAllParents()
+   * to add ancestor terms. So content tagged with a child org gets the child
+   * term AND its parent term, and a parent-org user matches via simple
+   * intersection without runtime traversal.
    */
   public function testAncestorOrgUserCanUpdateChildOrgContent(): void {
     $child_org = $this->createNode([
@@ -382,14 +382,14 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ]);
 
     $vocab = Vocabulary::load('user_organization');
-    $child_term = $this->createTerm($vocab, [
+    // The child term maps to the child org, and sits UNDER termA (userA's
+    // org) in the taxonomy hierarchy — so loadAllParents() yields termA too.
+    // Created for its mapping side effect; the reverse lookup finds it.
+    $this->createTerm($vocab, [
       'name' => 'Child Term ' . $this->randomMachineName(),
       'field_state_organization' => $child_org->id(),
+      'parent' => [$this->termA->id()],
     ]);
-
-    // The content team puts both the child term and its parent term on
-    // the child org_page.
-    $this->setOrgPageOwnerGroups($child_org, [$child_term->id(), $this->termA->id()]);
 
     $node = $this->createTestNode('info_details', $child_org);
 
@@ -472,101 +472,94 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Backfill copies field_content_organization verbatim from the org_page.
+   * Backfill derives Permission Groups via the field_state_organization lookup.
    *
-   * Ignores the field_state_organization → term mapping. The content
-   * team's manual Owner Groups on org_page are the source of truth per
-   * REQUIREMENTS.md Section C. Even when a "natural" term exists via
-   * field_state_organization, backfill must use whatever was placed on
-   * the org_page — this test makes the two values diverge to prove it.
+   * Per v2-2, the command reads each org node in Organization(s) and finds the
+   * user_organization term whose field_state_organization references that org
+   * (+ ancestors). The org_page's OWN field_content_organization is NOT the
+   * source — the org node is content and may be deleted/unpublished. This test
+   * makes the reverse-lookup term and an org_page-curated value diverge to
+   * prove the reverse-lookup term wins.
    */
-  public function testBackfillCopiesFromOrgPageVerbatim(): void {
+  public function testBackfillDerivesViaReverseLookup(): void {
     $org_page = $this->createNode([
       'type' => 'org_page',
-      'title' => 'Verbatim Org ' . $this->randomMachineName(),
+      'title' => 'Reverse Org ' . $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $vocab = Vocabulary::load('user_organization');
-    // The "natural" term — would be found by a field_state_organization
-    // reverse lookup. Backfill must NOT pick this one.
-    $natural_term = $this->createTerm($vocab, [
-      'name' => 'Natural Term ' . $this->randomMachineName(),
+    // The mapped term: field_state_organization → this org node. Backfill
+    // must derive THIS one via the reverse lookup.
+    $mapped_term = $this->createTerm($vocab, [
+      'name' => 'Mapped Term ' . $this->randomMachineName(),
       'field_state_organization' => $org_page->id(),
     ]);
-    // The term the content team actually placed on the org_page (e.g. a
-    // higher-level Secretariat for cross-org access). Has no
-    // field_state_organization link to this org_page. This is what
-    // backfill must copy.
-    $curated_term = $this->createTerm($vocab, [
-      'name' => 'Curated Term ' . $this->randomMachineName(),
+    // A different term placed on the org_page's own Permission Groups field.
+    // Backfill must NOT copy this — the org node is not the source.
+    $other_term = $this->createTerm($vocab, [
+      'name' => 'Other Term ' . $this->randomMachineName(),
     ]);
-    $this->setOrgPageOwnerGroups($org_page, [$curated_term->id()]);
+    $this->setOrgPageOwnerGroups($org_page, [$other_term->id()]);
 
     $node = $this->createNode([
       'type' => 'info_details',
-      'title' => 'Verbatim test node ' . $this->randomMachineName(),
+      'title' => 'Reverse lookup test node ' . $this->randomMachineName(),
       'field_organizations' => [$org_page->id()],
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
     \Drupal::service('mass_org_access.org_access_checker')
-      ->populateOwnerGroupsFromOrgPage($node);
+      ->populateOwnerGroupsFromOrganizations($node);
 
     $tids = array_map(
       'strval',
       array_column($node->get('field_content_organization')->getValue(), 'target_id')
     );
     $this->assertEqualsCanonicalizing(
-      [(string) $curated_term->id()],
+      [(string) $mapped_term->id()],
       $tids,
-      'Backfill must copy Owner Groups verbatim from org_page (curated term), not derive via field_state_organization (natural term).'
+      'Backfill must derive Permission Groups via the field_state_organization reverse lookup.'
     );
     $this->assertNotContains(
-      (string) $natural_term->id(),
+      (string) $other_term->id(),
       $tids,
-      'Backfill must NOT include the field_state_organization-derived term.'
+      "Backfill must NOT copy the org_page's own Permission Groups value."
     );
   }
 
   /**
-   * Backfill leaves the entity untouched when org_page is not curated.
+   * Backfill leaves the entity untouched when no term maps to its org.
    *
-   * Per REQUIREMENTS.md "Done when" point 6, an entity with no Owner
-   * Groups is editable only by admins. Filling it in here would defeat
-   * the manual gating the content team uses to stage the rollout.
+   * Per "Done when" point 6, an entity with no Permission Groups is editable
+   * only by admins. If no user_organization term has field_state_organization
+   * pointing at the org node, the reverse lookup yields nothing and backfill
+   * must leave the field empty — preserving the content team's staged rollout.
    */
-  public function testBackfillSkipsEntityWhenOrgPageEmpty(): void {
+  public function testBackfillSkipsEntityWhenNoOrgMapping(): void {
     $org_page = $this->createNode([
       'type' => 'org_page',
-      'title' => 'Empty OOG Org ' . $this->randomMachineName(),
+      'title' => 'Unmapped Org ' . $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $vocab = Vocabulary::load('user_organization');
-    // Term mapping exists, but the org_page has not been curated yet.
-    // The old reverse-lookup implementation would have filled the entity
-    // with this term; the new implementation must skip.
-    $this->createTerm($vocab, [
-      'name' => 'Untouched Term ' . $this->randomMachineName(),
-      'field_state_organization' => $org_page->id(),
-    ]);
-
+    // No user_organization term references this org_page via
+    // field_state_organization, so the reverse lookup finds nothing.
     $node = $this->createNode([
       'type' => 'info_details',
-      'title' => 'Untouched test node ' . $this->randomMachineName(),
+      'title' => 'Unmapped test node ' . $this->randomMachineName(),
       'field_organizations' => [$org_page->id()],
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
     \Drupal::service('mass_org_access.org_access_checker')
-      ->populateOwnerGroupsFromOrgPage($node);
+      ->populateOwnerGroupsFromOrganizations($node);
 
     $this->assertEmpty(
       $node->get('field_content_organization')->getValue(),
-      'Backfill must leave entity field_content_organization empty when the related org_page is not yet curated.'
+      'Backfill must leave Permission Groups empty when no term maps to the org.'
     );
   }
 
@@ -849,7 +842,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * Backfill no-ops on an entity whose Owner Groups already match.
    *
    * Drives the "skip save() when nothing changed" optimization in
-   * BackfillRunner::processQueue — populateOwnerGroupsFromOrgPage now
+   * BackfillRunner::processQueue — populateOwnerGroupsFromOrganizations now
    * returns a bool the runner uses to bail before touching storage.
    */
   public function testPopulateReturnsFalseWhenOwnerGroupsAlreadyMatch(): void {
@@ -861,11 +854,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ]);
 
     $changed = \Drupal::service('mass_org_access.org_access_checker')
-      ->populateOwnerGroupsFromOrgPage($node);
+      ->populateOwnerGroupsFromOrganizations($node);
 
     $this->assertFalse(
       $changed,
-      'populateOwnerGroupsFromOrgPage must return FALSE when no value changes.'
+      'populateOwnerGroupsFromOrganizations must return FALSE when no value changes.'
     );
   }
 
@@ -889,11 +882,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ]);
 
     $changed = \Drupal::service('mass_org_access.org_access_checker')
-      ->populateOwnerGroupsFromOrgPage($node);
+      ->populateOwnerGroupsFromOrganizations($node);
 
     $this->assertFalse(
       $changed,
-      'populateOwnerGroupsFromOrgPage must skip entities with non-empty Owner Groups.'
+      'populateOwnerGroupsFromOrganizations must skip entities with non-empty Owner Groups.'
     );
     $tids = array_map('intval', array_column(
       $node->get('field_content_organization')->getValue(),
@@ -923,7 +916,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $node->set('field_content_organization', []);
 
     $changed = \Drupal::service('mass_org_access.org_access_checker')
-      ->populateOwnerGroupsFromOrgPage($node);
+      ->populateOwnerGroupsFromOrganizations($node);
 
     $this->assertTrue($changed, 'Multi-org populate writes a value.');
     $tids = array_map('intval', array_column(
@@ -1249,7 +1242,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    */
   private function syncOwnerGroupsAndSave($entity): void {
     \Drupal::service('mass_org_access.org_access_checker')
-      ->populateOwnerGroupsFromOrgPage($entity);
+      ->populateOwnerGroupsFromOrganizations($entity);
     if (method_exists($entity, 'setNewRevision')) {
       $entity->setNewRevision(FALSE);
     }

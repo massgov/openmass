@@ -146,7 +146,7 @@ rewritten across 29 bundle field configs.
 | Service ID | Class | Role |
 |------------|-------|------|
 | `mass_org_access.settings` | `OrgAccessSettings` | Reads env + State for the feature switch |
-| `mass_org_access.org_access_checker` | `OrgAccessChecker` | Access intersection + `populateOwnerGroupsFromOrgPage` (backfill) |
+| `mass_org_access.org_access_checker` | `OrgAccessChecker` | Access intersection + `ownerGroupTermsForOrg` (shared reverse lookup) + `populateOwnerGroupsFromOrganizations` (backfill) |
 | `mass_org_access.backfill_runner` | `BackfillRunner` | Resumable drush backfill driver |
 | `mass_org_access.route_subscriber` | `Routing\RouteSubscriber` | Side-door route hardening |
 
@@ -217,11 +217,13 @@ drush mass-org-access:backfill        # alias: moab
 
 Resumable via the `mass_org_access.backfill` State key (totals + last
 processed id + processed counter, kept separately for nodes and media).
-For each entity it loads the first `field_organizations` value, then
-copies `org_page.field_content_organization` verbatim onto the entity
-— no ancestor walk, because the content team includes ancestors in the
-curated org_page values. `org_page` itself is skipped (it's the source
-of truth). Saves use `setNewRevision(FALSE)` and `setSyncing(TRUE)` to
+For each entity it reads every `field_organizations` value and, per org,
+reverse-looks-up the `user_organization` term whose
+`field_state_organization` references that org (+ ancestors via
+`loadAllParents()`) — the shared `ownerGroupTermsForOrg()`, the same
+derivation the live edit form uses. The org_page's own
+`field_content_organization` is not the source. `org_page` bundle itself is
+skipped. Saves use `setNewRevision(FALSE)` and `setSyncing(TRUE)` to
 skip revision bloat and mass_validation overrides. Timestamps land in
 `private://mass_org_access/backfill.log`.
 
