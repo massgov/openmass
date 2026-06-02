@@ -21,6 +21,25 @@
   display: none;
 }
 
+/**
+ * Inline self-lockout confirmation shown on save. The frontend
+ * .messages--warning style is dark navy and reads as an unrelated panel on
+ * the editing UI, so people miss it. Render it light (white background, dark
+ * text) like a normal message, keeping the warning gold accent border.
+ */
+.oog-lockout-confirm.messages--warning {
+  background-color: #fff;
+  color: #1a1a1a;
+}
+
+.oog-lockout-confirm p {
+  margin: 0 0 0.5em;
+}
+
+.oog-lockout-confirm label {
+  font-weight: bold;
+}
+
 .oog-readonly-display {
   background: #f5f5f5;
   border: 1px solid #ccc;

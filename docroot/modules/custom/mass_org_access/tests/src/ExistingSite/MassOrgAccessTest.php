@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_org_access\ExistingSite;
 
 use Drupal\Core\Form\FormState;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
@@ -1088,6 +1089,76 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->submitForm([], 'Save');
 
     $this->assertSession()->pageTextContains('The changes have been saved.');
+  }
+
+  /**
+   * Saving content with no matching Permission Groups warns the user.
+   */
+  public function testLockoutWarningWhenPermissionGroupsDisjoint(): void {
+    $term_b = $this->getUserTermForOrg($this->orgPageB);
+    \Drupal::messenger()->deleteAll();
+    \Drupal::currentUser()->setAccount($this->userA);
+
+    $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Lockout ' . $this->randomMachineName(),
+      'field_content_organization' => [$term_b->id()],
+    ]);
+
+    $this->assertNotEmpty(
+      $this->lockoutWarnings(),
+      'Saving content whose Permission Groups exclude the user must warn them.'
+    );
+  }
+
+  /**
+   * No warning when the saved Permission Groups include one of the user's.
+   */
+  public function testNoLockoutWarningWhenPermissionGroupsOverlap(): void {
+    \Drupal::messenger()->deleteAll();
+    \Drupal::currentUser()->setAccount($this->userA);
+
+    $this->createNode([
+      'type' => 'info_details',
+      'title' => 'No lockout ' . $this->randomMachineName(),
+      'field_content_organization' => [$this->termA->id()],
+    ]);
+
+    $this->assertEmpty(
+      $this->lockoutWarnings(),
+      'No lockout warning when the user shares a Permission Group with the content.'
+    );
+  }
+
+  /**
+   * Users with bypass org access never get the lockout warning.
+   */
+  public function testNoLockoutWarningForBypassUser(): void {
+    $term_b = $this->getUserTermForOrg($this->orgPageB);
+    $bypass_user = $this->createUser(['bypass org access']);
+    \Drupal::messenger()->deleteAll();
+    \Drupal::currentUser()->setAccount($bypass_user);
+
+    $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Bypass ' . $this->randomMachineName(),
+      'field_content_organization' => [$term_b->id()],
+    ]);
+
+    $this->assertEmpty(
+      $this->lockoutWarnings(),
+      'A bypass-org-access user must never see the lockout warning.'
+    );
+  }
+
+  /**
+   * Returns the queued lockout warning messages, as strings.
+   */
+  private function lockoutWarnings(): array {
+    $messages = \Drupal::messenger()->messagesByType(MessengerInterface::TYPE_WARNING);
+    return array_filter(array_map('strval', $messages), static function (string $m): bool {
+      return str_contains($m, 'lost access to this content');
+    });
   }
 
   /**
