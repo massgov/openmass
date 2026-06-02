@@ -46,22 +46,30 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   /**
    * Enqueues all eligible node and paragraph IDs for queue processing.
    *
-   * Safe to rerun after failure: clears any stale sweep lock, empties the
+   * Safe to rerun after failure: once the lock is available, empties the
    * normalization queue, then runs a full ID sweep from the beginning.
    *
    * @command mass-redirect-normalizer:normalize-links
    * @aliases mnrl
+   * @option force-release-lock
+   *   Force-release the enqueue lock before attempting this run.
    */
-  public function normalizeRedirectLinks(): RowsOfFields {
+  public function normalizeRedirectLinks(array $options = ['force-release-lock' => FALSE]): RowsOfFields {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-    $this->releaseEnqueueLock();
-    if (!$this->lock->acquire(self::ENQUEUE_LOCK_NAME, 3600)) {
-      $this->releaseEnqueueLock();
-      if (!$this->lock->acquire(self::ENQUEUE_LOCK_NAME, 3600)) {
-        $this->logWarning((string) dt('Could not acquire the redirect link normalization enqueue lock. Try again in a moment.'));
-        return new RowsOfFields([]);
+    if (!empty($options['force-release-lock'])) {
+      $released = $this->forceReleaseEnqueueLock();
+      if ($released > 0) {
+        $this->logWarning(sprintf(
+          'Force-released %d enqueue lock row(s) before starting this run.',
+          $released
+        ));
       }
+    }
+
+    if (!$this->lock->acquire(self::ENQUEUE_LOCK_NAME, 3600)) {
+      $this->logWarning('Could not acquire the redirect link normalization enqueue lock. Try again in a moment.');
+      return new RowsOfFields([]);
     }
 
     $enqueued = 0;
@@ -69,15 +77,16 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
       $this->state->set(RedirectLinkQueueEnqueuer::SWEEP_IN_PROGRESS_STATE_KEY, time());
       $cleared = $this->enqueuer->purgeNormalizationQueue();
       if ($cleared > 0) {
-        $this->logNotice((string) dt('Cleared @count pending normalization queue item(s) before starting a fresh enqueue sweep.', [
-          '@count' => $cleared,
-        ]));
+        $this->logNotice(sprintf(
+          'Cleared %d pending normalization queue item(s) before starting a fresh enqueue sweep.',
+          $cleared
+        ));
       }
 
       foreach (RedirectLinkQueueEnqueuer::SUPPORTED_ENTITY_TYPES as $entityType) {
         $this->logNotice($entityType === 'node'
-          ? (string) dt('Node phase: streaming published node IDs from ID 0 (chunked; no up-front ID load).')
-          : (string) dt('Paragraph phase: streaming paragraph IDs from ID 0 (chunked).')
+          ? 'Node phase: streaming published node IDs from ID 0 (chunked; no up-front ID load).'
+          : 'Paragraph phase: streaming paragraph IDs from ID 0 (chunked).'
         );
 
         $phaseScanned = 0;
@@ -87,32 +96,30 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
           $enqueued++;
 
           if ($phaseScanned % self::SWEEP_PROGRESS_BATCH === 0) {
-            $this->logNotice((string) dt(
-              'Progress (@type): scanned @scanned in this phase; enqueued @enqueued. Last @type:@id',
-              [
-                '@type' => $entityType,
-                '@scanned' => $phaseScanned,
-                '@enqueued' => $enqueued,
-                '@id' => $entityId,
-              ]
+            $this->logNotice(sprintf(
+              'Progress (%s): scanned %d in this phase; enqueued %d. Last %s:%d',
+              $entityType,
+              $phaseScanned,
+              $enqueued,
+              $entityType,
+              $entityId
             ));
           }
         }
 
-        $this->logNotice((string) dt(
-          '@type phase finished this run: scanned @scanned; enqueued @enqueued.',
-          [
-            '@type' => $entityType,
-            '@scanned' => $phaseScanned,
-            '@enqueued' => $enqueued,
-          ]
+        $this->logNotice(sprintf(
+          '%s phase finished this run: scanned %d; enqueued %d.',
+          $entityType,
+          $phaseScanned,
+          $enqueued
         ));
       }
 
       $this->enqueuer->flushEnqueueBuffers('drush');
-      $this->logNotice((string) dt('ENQUEUE: completed scan; total enqueued entity refs @count.', [
-        '@count' => $enqueued,
-      ]));
+      $this->logNotice(sprintf(
+        'ENQUEUE: completed scan; total enqueued entity refs %d.',
+        $enqueued
+      ));
     }
     finally {
       $this->state->delete(RedirectLinkQueueEnqueuer::SWEEP_IN_PROGRESS_STATE_KEY);
@@ -155,10 +162,10 @@ final class MassRedirectNormalizerCommands extends DrushCommands {
   }
 
   /**
-   * Deletes the enqueue sweep lock row from {semaphore}.
+   * Force-deletes enqueue lock row(s) from {semaphore}.
    */
-  private function releaseEnqueueLock(): void {
-    $this->database->delete('semaphore')
+  private function forceReleaseEnqueueLock(): int {
+    return (int) $this->database->delete('semaphore')
       ->condition('name', self::ENQUEUE_LOCK_NAME)
       ->execute();
   }

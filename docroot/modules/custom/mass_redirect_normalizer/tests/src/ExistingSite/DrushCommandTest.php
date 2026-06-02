@@ -110,12 +110,37 @@ class DrushCommandTest extends MassExistingSiteBase {
   }
 
   /**
-   * Tests --release-enqueue-lock clears a sweep lock held by another lock ID.
+   * Tests --force-release-lock clears a stale sweep lock row.
    */
   public function testReleaseEnqueueLockClearsStaleSweepLock(): void {
-    $this->markTestSkipped(
-      'Removed --release-enqueue-lock; mnrl releases stale locks automatically.'
-    );
+    $database = \Drupal::database();
+    $database->delete('semaphore')
+      ->condition('name', 'mass_redirect_normalizer.enqueue')
+      ->execute();
+    $database->insert('semaphore')
+      ->fields([
+        'name' => 'mass_redirect_normalizer.enqueue',
+        'value' => 'stale-lock-value-not-current-request',
+        'expire' => microtime(TRUE) + 3600,
+      ])
+      ->execute();
+
+    $command = $this->createNormalizerCommand();
+    $method = new \ReflectionMethod($command, 'forceReleaseEnqueueLock');
+    $method->setAccessible(TRUE);
+    $released = (int) $method->invoke($command);
+    $this->assertSame(1, $released);
+
+    $count = (int) $database->select('semaphore', 's')
+      ->condition('name', 'mass_redirect_normalizer.enqueue')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    $this->assertSame(0, $count);
+
+    $lock = \Drupal::lock();
+    $this->assertTrue($lock->acquire('mass_redirect_normalizer.enqueue', 3600));
+    $lock->release('mass_redirect_normalizer.enqueue');
   }
 
   /**

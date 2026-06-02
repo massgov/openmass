@@ -54,6 +54,12 @@ class RedirectLinkResolver {
         $anchor->setAttribute('data-entity-substitution', 'canonical');
         $anchor->setAttribute('data-entity-type', 'node');
       }
+      else {
+        // Remove stale node metadata when the rewritten href is not a node.
+        $anchor->removeAttribute('data-entity-uuid');
+        $anchor->removeAttribute('data-entity-substitution');
+        $anchor->removeAttribute('data-entity-type');
+      }
       $changed = TRUE;
     }
 

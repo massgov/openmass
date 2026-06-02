@@ -301,6 +301,33 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests non-node redirect targets clear stale node metadata attributes.
+   */
+  public function testDocumentRedirectClearsStaleNodeMetadataInText(): void {
+    $source = 'doc-source-stale-' . $this->randomMachineName();
+    $target = '/sites/default/files/documents/example-stale.pdf';
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect($target);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(301);
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $text = '<p><a href="/' . $source . '" data-entity-type="node" data-entity-uuid="stale-uuid" data-entity-substitution="canonical">Doc link</a></p>';
+    $normalized = $service->normalizeRedirectLinksInText($text);
+
+    $this->assertTrue($normalized['changed']);
+    $this->assertStringContainsString($target, $normalized['text']);
+    $this->assertStringNotContainsString('data-entity-type="node"', $normalized['text']);
+    $this->assertStringNotContainsString('data-entity-uuid=', $normalized['text']);
+    $this->assertStringNotContainsString('data-entity-substitution=', $normalized['text']);
+  }
+
+  /**
    * Tests redirected document links are rewritten in link fields.
    */
   public function testDocumentRedirectIsNormalizedInLinkField(): void {
