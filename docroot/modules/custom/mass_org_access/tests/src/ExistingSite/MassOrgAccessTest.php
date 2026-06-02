@@ -564,6 +564,60 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Backfill populates a forward (unpublished) draft, not just the published.
+   *
+   * Edit access is checked against the latest revision, so the draft must
+   * also receive Permission Groups — otherwise its rightful editors are
+   * locked out and publishing it would wipe the backfilled value.
+   */
+  public function testBackfillPopulatesForwardDraft(): void {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Forward draft backfill ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    $nid = $node->id();
+    $published_vid = (int) $node->getRevisionId();
+
+    // Create a forward (unpublished) draft; the published revision stays the
+    // default.
+    $node->set('moderation_state', 'draft');
+    $node->set('title', 'Forward draft backfill (draft) ' . $this->randomMachineName());
+    $node->save();
+    $draft_vid = (int) $storage->getLatestRevisionId($nid);
+    $this->assertNotSame($published_vid, $draft_vid, 'A forward draft revision must exist.');
+
+    // Backfill the default (published) revision; the runner must also fill
+    // the forward draft.
+    $storage->resetCache([$nid]);
+    \Drupal::service('mass_org_access.backfill_runner')->backfillEntity($storage->load($nid));
+
+    $storage->resetCache([$nid]);
+    $published_pg = array_map('strval', array_column(
+      $storage->loadRevision($published_vid)->get('field_content_organization')->getValue(),
+      'target_id'
+    ));
+    $draft_pg = array_map('strval', array_column(
+      $storage->loadRevision($draft_vid)->get('field_content_organization')->getValue(),
+      'target_id'
+    ));
+
+    $this->assertContains(
+      (string) $this->termA->id(),
+      $published_pg,
+      'Backfill must populate the published revision.'
+    );
+    $this->assertContains(
+      (string) $this->termA->id(),
+      $draft_pg,
+      'Backfill must also populate the forward draft revision.'
+    );
+  }
+
+  /**
    * Permission Groups is required on org_page, optional on other bundles.
    *
    * Authors must populate it when creating an Organization page; everywhere

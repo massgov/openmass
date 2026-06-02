@@ -3,6 +3,7 @@
 namespace Drupal\mass_org_access;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
@@ -162,18 +163,7 @@ class BackfillRunner {
       foreach ($storage->loadMultiple($ids) as $entity) {
         $progress[$entity_type . '_last_id'] = (int) $entity->id();
         $progress[$entity_type . '_processed']++;
-        // Skip the save() when populate returned no change. Cuts the run
-        // time and hook churn on entities whose Owner Groups already
-        // match (re-runs after partial backfill) or whose related
-        // org_page has no curated values yet.
-        if (!$this->orgAccessChecker->populateOwnerGroupsFromOrganizations($entity)) {
-          continue;
-        }
-        if (method_exists($entity, 'setNewRevision')) {
-          $entity->setNewRevision(FALSE);
-        }
-        $entity->setSyncing(TRUE);
-        $storage->save($entity);
+        $this->backfillEntity($entity);
       }
       $this->saveProgress($progress);
 
@@ -186,6 +176,56 @@ class BackfillRunner {
         $progress[$entity_type . '_last_id']
       ));
     }
+  }
+
+  /**
+   * Backfills one entity: its default revision and any forward draft.
+   *
+   * Edit access is checked against the latest revision, so a forward
+   * (unpublished) draft left empty would lock its rightful editors out and
+   * wipe the backfilled Permission Groups the moment the draft is published.
+   * Both revisions are updated in place — only field_content_organization,
+   * preserving the draft's content and pending state — so authors lose
+   * nothing.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The default (loaded) revision of the entity to backfill.
+   */
+  public function backfillEntity(EntityInterface $entity): void {
+    $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
+    $this->populateRevision($entity, $storage);
+
+    $latest_vid = $storage->getLatestRevisionId($entity->id());
+    if ($latest_vid && (int) $latest_vid !== (int) $entity->getRevisionId()) {
+      $draft = $storage->loadRevision($latest_vid);
+      if ($draft) {
+        $this->populateRevision($draft, $storage);
+      }
+    }
+  }
+
+  /**
+   * Populates one revision's Permission Groups and saves it if it changed.
+   *
+   * Saves in place: no new revision, `setSyncing(TRUE)` so mass_validation
+   * and the changed-timestamp stay out of the way. Skips the save entirely
+   * when populate reports no change, to cut churn on already-correct or
+   * unmappable entities.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $revision
+   *   The revision to populate (default revision or a forward draft).
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   The storage handler for the entity type.
+   */
+  private function populateRevision($revision, $storage): void {
+    if (!$this->orgAccessChecker->populateOwnerGroupsFromOrganizations($revision)) {
+      return;
+    }
+    if (method_exists($revision, 'setNewRevision')) {
+      $revision->setNewRevision(FALSE);
+    }
+    $revision->setSyncing(TRUE);
+    $storage->save($revision);
   }
 
   /**

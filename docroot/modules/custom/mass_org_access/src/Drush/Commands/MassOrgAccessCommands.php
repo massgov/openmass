@@ -97,18 +97,36 @@ class MassOrgAccessCommands extends DrushCommands {
 
     $storage = $entity_type_manager->getStorage($entity_type_id);
     foreach ($storage->loadMultiple($ids) as $entity) {
-      $this->orgAccessChecker->populateOwnerGroupsFromOrganizations($entity);
+      $this->populateRevision($entity, $storage);
       $term_ids = $this->orgAccessChecker->getEntityOrgTids($entity);
 
-      if (method_exists($entity, 'setNewRevision')) {
-        $entity->setNewRevision(FALSE);
+      // Mirror the real backfill: also populate a forward (unpublished)
+      // draft, since edit access checks the latest revision.
+      $latest_vid = $storage->getLatestRevisionId($entity->id());
+      $draft_str = '';
+      if ($latest_vid && (int) $latest_vid !== (int) $entity->getRevisionId()) {
+        $draft = $storage->loadRevision($latest_vid);
+        if ($draft) {
+          $this->populateRevision($draft, $storage);
+          $draft_str = sprintf(' + draft TIDs: [%s]', implode(', ', $this->orgAccessChecker->getEntityOrgTids($draft)) ?: '(none)');
+        }
       }
-      $entity->setSyncing(TRUE);
-      $storage->save($entity);
 
       $term_str = $term_ids ? implode(', ', $term_ids) : '(none)';
-      $this->output()->writeln(sprintf('  %s:%d  →  org TIDs: [%s]', $entity_type_id, $entity->id(), $term_str));
+      $this->output()->writeln(sprintf('  %s:%d  →  org TIDs: [%s]%s', $entity_type_id, $entity->id(), $term_str, $draft_str));
     }
+  }
+
+  /**
+   * Populates one revision's Permission Groups and saves it in place.
+   */
+  private function populateRevision($revision, $storage): void {
+    $this->orgAccessChecker->populateOwnerGroupsFromOrganizations($revision);
+    if (method_exists($revision, 'setNewRevision')) {
+      $revision->setNewRevision(FALSE);
+    }
+    $revision->setSyncing(TRUE);
+    $storage->save($revision);
   }
 
 }
