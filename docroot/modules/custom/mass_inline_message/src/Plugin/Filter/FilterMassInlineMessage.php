@@ -43,7 +43,9 @@ class FilterMassInlineMessage extends FilterBase {
       $body_html = mass_inline_message_normalize_body_html($matches[2]);
       $body_for_render = $body_html !== '' ? $body_html : NULL;
 
-      return mass_inline_message_render_html($type, $title, $body_for_render);
+      // Layout Paragraphs preview renders via Ajax and may skip the global
+      // SVG placeholder processor; inline the icon SVGs here for consistency.
+      return mass_inline_message_render_html($type, $title, $body_for_render, TRUE);
     }, $text);
 
     return new FilterProcessResult($output ?? $text);
