@@ -9,6 +9,17 @@ content.
 > that lives on **content nodes** and feeds the `mg_stakeholder_org` metatag
 > token. That one is unrelated.
 
+> **Primary consumer (inside `mass_org_access`, since v2-2 / 2026-06-02):**
+> this field is the source of truth for deriving a node/media entity's
+> Permission Groups from its `Organization(s)`. Given an org_page NID,
+> `OrgAccessChecker::ownerGroupTermsForOrg()` finds the `user_organization`
+> term whose `field_state_organization` references that org (+ ancestors via
+> `loadAllParents()`). Both the live edit form (`OrgLookupController`) and the
+> bulk backfill (`drush moab`) use it — one shared reverse lookup. The org_page
+> node itself is never read for permissions (it is content; can be deleted /
+> unpublished). The forward direction (term → org_page) below is the older
+> new-content-prefill use; both directions now matter.
+
 ## Real consumers
 
 ### 1. `mass_org_access` — default org on new media and node forms

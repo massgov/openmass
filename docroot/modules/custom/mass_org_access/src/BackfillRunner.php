@@ -166,7 +166,7 @@ class BackfillRunner {
         // time and hook churn on entities whose Owner Groups already
         // match (re-runs after partial backfill) or whose related
         // org_page has no curated values yet.
-        if (!$this->orgAccessChecker->populateOwnerGroupsFromOrgPage($entity)) {
+        if (!$this->orgAccessChecker->populateOwnerGroupsFromOrganizations($entity)) {
           continue;
         }
         if (method_exists($entity, 'setNewRevision')) {
