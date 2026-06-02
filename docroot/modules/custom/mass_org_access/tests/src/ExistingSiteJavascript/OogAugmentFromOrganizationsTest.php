@@ -495,7 +495,7 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
 
     // First Save: the disjoint Permission Groups block the submit and the
     // inline confirmation appears; the form is not left.
-    $page->pressButton('Save');
+    $this->clickSaveButton();
     $confirm = $page->waitFor(10, function () use ($page) {
       return $page->find('css', '.oog-lockout-confirm');
     });
@@ -517,7 +517,7 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
     $session->executeScript(
       "document.querySelector('.oog-lockout-confirm input[type=\"checkbox\"]').checked = true;"
     );
-    $page->pressButton('Save');
+    $this->clickSaveButton();
     $released = $page->waitFor(15, function () use ($page) {
       return $page->find('css', '.oog-lockout-confirm') === NULL;
     });
@@ -525,6 +525,24 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
       $released,
       sprintf('After confirming on %s:%s the gate must release the save.', $entityType, $bundle)
     );
+  }
+
+  /**
+   * Clicks the form's primary Save button via JS.
+   *
+   * Avoids Selenium's coordinate-based click, which CI intermittently reports
+   * as "intercepted" when the sticky footer overlaps the button. A
+   * programmatic click still fires the capture-phase listener that gates the
+   * lockout confirmation and still submits the form.
+   */
+  private function clickSaveButton(): void {
+    $clicked = $this->getSession()->evaluateScript(
+      "(function(){var b=Array.prototype.slice.call(document.querySelectorAll("
+      . "'input[type=\"submit\"][name=\"op\"], button[type=\"submit\"][name=\"op\"]'"
+      . ")).find(function(x){return (x.value||x.textContent||'').trim()==='Save';});"
+      . "if(b){b.click();return true;}return false;})()"
+    );
+    $this->assertTrue((bool) $clicked, 'The Save button must be present on the form.');
   }
 
   /**
