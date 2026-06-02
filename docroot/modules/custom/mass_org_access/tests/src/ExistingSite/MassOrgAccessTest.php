@@ -564,6 +564,36 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Permission Groups is required on org_page, optional on other bundles.
+   *
+   * Authors must populate it when creating an Organization page; everywhere
+   * else it stays optional (auto-derived from Organization(s)).
+   */
+  public function testPermissionGroupsRequiredOnOrgPageOnly(): void {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+
+    $org_page = $storage->create([
+      'type' => 'org_page',
+      'title' => 'Required check org ' . $this->randomMachineName(),
+    ]);
+    $this->assertGreaterThan(
+      0,
+      $org_page->validate()->getByField('field_content_organization')->count(),
+      'Permission Groups must be required on org_page.'
+    );
+
+    $info = $storage->create([
+      'type' => 'info_details',
+      'title' => 'Required check info ' . $this->randomMachineName(),
+    ]);
+    $this->assertSame(
+      0,
+      $info->validate()->getByField('field_content_organization')->count(),
+      'Permission Groups must not be required on info_details.'
+    );
+  }
+
+  /**
    * Side-door write routes are blocked for users without org access.
    *
    * The children-reorder, move-children, and redirects routes used to
