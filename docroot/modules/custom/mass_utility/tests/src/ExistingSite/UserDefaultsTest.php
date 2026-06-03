@@ -151,6 +151,39 @@ class UserDefaultsTest extends MassExistingSiteBase {
   }
 
   /**
+   * New pages must NOT fall back to the creator's permission-group org.
+   *
+   * The mirror of testNewMediaPrefillFallsBackToPermissionGroups: media may
+   * fall back, but pages may not. userA has a permission group that maps to
+   * orgPageA, yet with no default organizations set a new node must leave
+   * field_organizations empty so the author chooses the org explicitly.
+   */
+  public function testNewNodePrefillDoesNotFallBackToPermissionGroups(): void {
+    $this->userA->set('field_default_organizations', []);
+    $this->userA->save();
+    \Drupal::currentUser()->setAccount($this->userA);
+
+    $entity = \Drupal::entityTypeManager()->getStorage('node')->create([
+      'type' => 'info_details',
+      'title' => 'No node fallback ' . $this->randomMachineName(),
+    ]);
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('node', 'default')
+      ->setEntity($entity);
+    $form_state = (new FormState())->setFormObject($form_object);
+    \Drupal::formBuilder()->buildForm($form_object, $form_state);
+    $entity = $form_object->getEntity();
+
+    $this->assertEmpty(
+      array_filter(array_column(
+        $entity->get('field_organizations')->getValue(),
+        'target_id'
+      )),
+      'New pages must not fall back to the permission-group org of the creator.'
+    );
+  }
+
+  /**
    * New node form pre-fills default labels from the user profile.
    */
   public function testNewNodePrefillDefaultLabels(): void {
