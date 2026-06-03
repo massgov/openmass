@@ -17,13 +17,12 @@ use Symfony\Component\HttpFoundation\Request;
  * Returns Permission Group terms (label + tid) for given org_page NIDs.
  *
  * Used by the JS that augments field_content_organization when authors add
- * organizations to field_organizations. The reverse lookup itself lives in
+ * organizations to field_organizations. The lookup itself lives in
  * OrgAccessChecker::ownerGroupTermsForOrg() — the SAME derivation the bulk
  * backfill (drush moab) uses — so the live edit form and the bulk job stay in
- * lock-step. For each org_page NID we return the user_organization terms whose
- * field_state_organization points at that node, plus ancestor terms. The
- * org_page node itself is not the source of truth — only the taxonomy mapping
- * is — so an out-of-sync or unmapped org_page silently yields an empty result.
+ * lock-step. For each org_page NID we return the user_organization terms on
+ * that org_page's own field_content_organization, curated by the content team,
+ * so an org_page with no Permission Groups silently yields an empty result.
  */
 class OrgLookupController extends ControllerBase {
 
@@ -54,10 +53,9 @@ class OrgLookupController extends ControllerBase {
   /**
    * Looks up Owner Groups terms for the requested org_page nodes.
    *
-   * For each NID we find user_organization terms whose
-   * field_state_organization references it, then collect each matching
-   * term plus all of its ancestors via loadAllParents(). The merged
-   * unique set is returned per NID.
+   * For each NID we load the org_page and return the user_organization
+   * terms on its own field_content_organization. The set is returned per
+   * NID.
    *
    * Response shape:
    * {
@@ -70,8 +68,8 @@ class OrgLookupController extends ControllerBase {
    *   }
    * }
    *
-   * NIDs with no matching taxonomy term return an empty array — the JS
-   * treats those as "no terms to add".
+   * NIDs whose org_page has no Permission Groups return an empty array — the
+   * JS treats those as "no terms to add".
    */
   public function lookup(Request $request): JsonResponse {
     $raw = (array) $request->query->all('org_page_nids');

@@ -14,10 +14,11 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 /**
  * Verifies the JS that augments Owner Groups from Organizations.
  *
- * The user_organization term whose field_state_organization points at an
- * org_page is added to field_content_organization when the author adds
- * that org_page to field_organizations, and removed again if the
- * org_page is removed before save. Covered across every node bundle
+ * The user_organization terms curated on an org_page's own
+ * field_content_organization are added to a content entity's
+ * field_content_organization when the author adds that org_page to
+ * field_organizations, and removed again if the org_page is removed before
+ * save. Covered across every node bundle
  * that carries both fields and media.document; one additional case
  * exercises real autocomplete typing with a dropdown click on
  * info_details so we know the end-to-end UI flow stays wired up.
@@ -562,9 +563,13 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
       Vocabulary::load('user_organization'),
       [
         'name' => 'OOG Augment Term ' . $this->randomMachineName(6),
-        'field_state_organization' => $orgPage->id(),
       ]
     );
+    // The org_page's own Permission Groups are the direct source the widget
+    // pulls from when the author adds this org to field_organizations.
+    $orgPage->set('field_content_organization', [['target_id' => $term->id()]]);
+    $orgPage->setSyncing(TRUE);
+    $orgPage->save();
     $entity = $this->createEntityForBundle($entityType, $bundle, $extraEntityFields);
     $user = $this->createUser(['bypass node access']);
     $user->addRole('administrator');
@@ -645,9 +650,20 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
       $term = \Drupal\taxonomy\Entity\Term::load((int) $tid);
       $orgPageId = (int) $term->get('field_state_organization')->target_id;
       $orgPage = \Drupal\node\Entity\Node::load($orgPageId);
-      if ($orgPage && $orgPage->isPublished()) {
-        return [$orgPage, $term];
+      if (!$orgPage || !$orgPage->isPublished()) {
+        continue;
       }
+      // The widget reads the org_page's own Permission Groups. Seed this term
+      // as the direct source if the org_page has none yet, then return the
+      // term that actually sits on the field so the assertion matches the
+      // lookup result.
+      if ($orgPage->get('field_content_organization')->isEmpty()) {
+        $orgPage->set('field_content_organization', [['target_id' => $term->id()]]);
+        $orgPage->setSyncing(TRUE);
+        $orgPage->save();
+      }
+      $curated = $orgPage->get('field_content_organization')->referencedEntities();
+      return [$orgPage, reset($curated)];
     }
     $this->markTestSkipped('No published org_page with a mapped user_organization term available.');
   }

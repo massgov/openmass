@@ -78,18 +78,16 @@ class OrgAccessChecker {
   /**
    * Backfill: derive field_content_organization from the entity's orgs.
    *
-   * For every org_page NID in field_organizations, reverse-looks-up the
-   * user_organization term(s) mapped to that org via field_state_organization,
-   * adds each term plus its ancestors, and writes the union onto the entity.
-   * This is the same derivation the live edit form runs (see
-   * OrgLookupController), so the bulk job and the on-edit population stay in
-   * lock-step — one source of truth (the State Organizations taxonomy), not
-   * the org_page node, which is content and may be deleted/unpublished.
+   * For every org_page NID in field_organizations, copies the Permission
+   * Groups curated on that org_page's own field_content_organization and
+   * writes the union onto the entity. This is the same derivation the live
+   * edit form runs (see OrgLookupController), so the bulk job and the on-edit
+   * population stay in lock-step.
    *
    * Used by `drush moab`. Org_page bundle is intentionally skipped: its own
-   * Permission Groups are curated by the content team and must not be
-   * overwritten. If no related org maps to any term, the entity is left
-   * untouched — it stays admin-only-editable until a mapping exists.
+   * Permission Groups are the source and must not be overwritten. If no
+   * referenced org_page carries any Permission Groups, the entity is left
+   * untouched — it stays admin-only-editable until the org pages are curated.
    *
    * @return bool
    *   TRUE if the entity's field_content_organization was updated to a
@@ -131,13 +129,13 @@ class OrgAccessChecker {
   }
 
   /**
-   * Permission Group terms mapped to a single org_page, plus ancestors.
+   * Permission Group terms taken directly from an org_page.
    *
-   * Reverse lookup: finds every user_organization term whose
-   * field_state_organization references $org_nid, then walks each up the
-   * taxonomy via loadAllParents() so ancestor (broader) groups are included.
-   * The org_page node itself is not the source — only the taxonomy mapping —
-   * so an unmapped or out-of-sync org silently yields an empty result.
+   * Direct lookup: loads the org_page node and returns the user_organization
+   * terms on its own field_content_organization — the Permission Groups the
+   * content team curates by hand. Their hierarchy picker already stores any
+   * ancestor terms, so the field is copied verbatim with no taxonomy walk. A
+   * missing node, a non-org_page, or an empty field yields an empty result.
    *
    * Single source of truth for both the live edit form (OrgLookupController)
    * and the bulk backfill.
@@ -146,23 +144,16 @@ class OrgAccessChecker {
    *   Keyed by tid; each value is {tid, label}.
    */
   public function ownerGroupTermsForOrg(int $org_nid): array {
-    /** @var \Drupal\taxonomy\TermStorageInterface $term_storage */
-    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-    $tids = $term_storage->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('vid', 'user_organization')
-      ->condition('field_state_organization.target_id', $org_nid)
-      ->execute();
+    $node = $this->entityTypeManager->getStorage('node')->load($org_nid);
+    if (!$node instanceof NodeInterface
+      || $node->bundle() !== 'org_page'
+      || !$node->hasField('field_content_organization')) {
+      return [];
+    }
     $collected = [];
-    foreach ($tids as $tid) {
-      foreach ($term_storage->loadAllParents($tid) as $parent_tid => $term) {
-        if (!isset($collected[$parent_tid])) {
-          $collected[$parent_tid] = [
-            'tid' => (int) $parent_tid,
-            'label' => $term->label(),
-          ];
-        }
-      }
+    foreach ($node->get('field_content_organization')->referencedEntities() as $term) {
+      $tid = (int) $term->id();
+      $collected[$tid] ??= ['tid' => $tid, 'label' => $term->label()];
     }
     return $collected;
   }
@@ -174,7 +165,7 @@ class OrgAccessChecker {
    *   org_page node IDs.
    *
    * @return int[]
-   *   Sorted unique user_organization term IDs (terms + ancestors).
+   *   Sorted unique user_organization term IDs copied from each org_page.
    */
   public function ownerGroupTidsForOrgs(array $org_nids): array {
     $tids = [];

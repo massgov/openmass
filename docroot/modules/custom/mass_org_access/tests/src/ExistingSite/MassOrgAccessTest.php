@@ -368,10 +368,10 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   /**
    * A user whose org is an ancestor of the content org may edit the content.
    *
-   * Backfill derives Permission Groups via the field_state_organization
-   * reverse lookup, then walks the taxonomy hierarchy with loadAllParents()
-   * to add ancestor terms. So content tagged with a child org gets the child
-   * term AND its parent term, and a parent-org user matches via simple
+   * The content team curates each org_page's Permission Groups with the org's
+   * term plus its ancestors (the hierarchy picker adds parents). Backfill
+   * copies that field verbatim, so content tagged with a child org carries the
+   * child term AND its parent term, and a parent-org user matches via simple
    * intersection without runtime traversal.
    */
   public function testAncestorOrgUserCanUpdateChildOrgContent(): void {
@@ -384,14 +384,16 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ]);
 
     $vocab = Vocabulary::load('user_organization');
-    // The child term maps to the child org, and sits UNDER termA (userA's
-    // org) in the taxonomy hierarchy — so loadAllParents() yields termA too.
-    // Created for its mapping side effect; the reverse lookup finds it.
-    $this->createTerm($vocab, [
+    // The child term sits UNDER termA (userA's org) in the taxonomy. The
+    // content team curates the child org_page's Permission Groups with the
+    // child term plus its ancestor termA (their hierarchy picker adds the
+    // parents), so content tagged with the child org carries termA and userA
+    // can edit it.
+    $child_term = $this->createTerm($vocab, [
       'name' => 'Child Term ' . $this->randomMachineName(),
-      'field_state_organization' => $child_org->id(),
       'parent' => [$this->termA->id()],
     ]);
+    $this->setOrgPageOwnerGroups($child_org, [$child_term->id(), $this->termA->id()]);
 
     $node = $this->createTestNode('info_details', $child_org);
 
@@ -474,40 +476,37 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Backfill derives Permission Groups via the field_state_organization lookup.
+   * Backfill copies the Permission Groups curated on the referenced org_page.
    *
-   * Per v2-2, the command reads each org node in Organization(s) and finds the
-   * user_organization term whose field_state_organization references that org
-   * (+ ancestors). The org_page's OWN field_content_organization is NOT the
-   * source — the org node is content and may be deleted/unpublished. This test
-   * makes the reverse-lookup term and an org_page-curated value diverge to
-   * prove the reverse-lookup term wins.
+   * The command reads each org node in Organization(s) and copies that
+   * org_page's own field_content_organization onto the entity. This test makes
+   * the org_page-curated value and a field_state_organization-mapped term
+   * diverge to prove the direct org_page value wins.
    */
-  public function testBackfillDerivesViaReverseLookup(): void {
+  public function testBackfillCopiesOrgPagePermissionGroups(): void {
     $org_page = $this->createNode([
       'type' => 'org_page',
-      'title' => 'Reverse Org ' . $this->randomMachineName(),
+      'title' => 'Direct Org ' . $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $vocab = Vocabulary::load('user_organization');
-    // The mapped term: field_state_organization → this org node. Backfill
-    // must derive THIS one via the reverse lookup.
+    // The org_page's own curated Permission Groups — the direct source.
+    $curated_term = $this->createTerm($vocab, [
+      'name' => 'Curated Term ' . $this->randomMachineName(),
+    ]);
+    $this->setOrgPageOwnerGroups($org_page, [$curated_term->id()]);
+    // A term mapped to the org via field_state_organization but absent from
+    // the org_page's own field. The direct lookup must ignore it.
     $mapped_term = $this->createTerm($vocab, [
       'name' => 'Mapped Term ' . $this->randomMachineName(),
       'field_state_organization' => $org_page->id(),
     ]);
-    // A different term placed on the org_page's own Permission Groups field.
-    // Backfill must NOT copy this — the org node is not the source.
-    $other_term = $this->createTerm($vocab, [
-      'name' => 'Other Term ' . $this->randomMachineName(),
-    ]);
-    $this->setOrgPageOwnerGroups($org_page, [$other_term->id()]);
 
     $node = $this->createNode([
       'type' => 'info_details',
-      'title' => 'Reverse lookup test node ' . $this->randomMachineName(),
+      'title' => 'Direct lookup test node ' . $this->randomMachineName(),
       'field_organizations' => [$org_page->id()],
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
@@ -520,23 +519,23 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       array_column($node->get('field_content_organization')->getValue(), 'target_id')
     );
     $this->assertEqualsCanonicalizing(
-      [(string) $mapped_term->id()],
+      [(string) $curated_term->id()],
       $tids,
-      'Backfill must derive Permission Groups via the field_state_organization reverse lookup.'
+      "Backfill must copy the org_page's own Permission Groups value."
     );
     $this->assertNotContains(
-      (string) $other_term->id(),
+      (string) $mapped_term->id(),
       $tids,
-      "Backfill must NOT copy the org_page's own Permission Groups value."
+      'Backfill must ignore terms mapped only via field_state_organization.'
     );
   }
 
   /**
-   * Backfill leaves the entity untouched when no term maps to its org.
+   * Backfill leaves the entity untouched when its org_page has no groups.
    *
-   * Per "Done when" point 6, an entity with no Permission Groups is editable
-   * only by admins. If no user_organization term has field_state_organization
-   * pointing at the org node, the reverse lookup yields nothing and backfill
+   * An entity with no Permission Groups is editable only by admins. If the
+   * referenced org_page carries no Permission Groups on its own
+   * field_content_organization, the direct lookup yields nothing and backfill
    * must leave the field empty — preserving the content team's staged rollout.
    */
   public function testBackfillSkipsEntityWhenNoOrgMapping(): void {
@@ -547,8 +546,8 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    // No user_organization term references this org_page via
-    // field_state_organization, so the reverse lookup finds nothing.
+    // This org_page has no Permission Groups on its own
+    // field_content_organization, so the direct lookup finds nothing.
     $node = $this->createNode([
       'type' => 'info_details',
       'title' => 'Unmapped test node ' . $this->randomMachineName(),
