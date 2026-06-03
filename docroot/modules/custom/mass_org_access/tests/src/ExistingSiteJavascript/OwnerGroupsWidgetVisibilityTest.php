@@ -45,6 +45,11 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   private ?bool $previousEnforce;
 
   /**
+   * Whether the test stored a previous debug-mode value to restore.
+   */
+  private ?bool $previousDebug;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -52,6 +57,11 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
     $state = \Drupal::state();
     $this->previousEnforce = $state->get('mass_org_access.enforce');
     $state->delete('mass_org_access.enforce');
+    // Debug mode would reveal the field to every editor; keep it off so the
+    // hidden-from-author assertions are deterministic regardless of the
+    // developer's local toggle.
+    $this->previousDebug = $state->get('mass_org_access.debug_mode');
+    $state->delete('mass_org_access.debug_mode');
   }
 
   /**
@@ -60,6 +70,9 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   protected function tearDown(): void {
     if ($this->previousEnforce !== NULL) {
       \Drupal::state()->set('mass_org_access.enforce', $this->previousEnforce);
+    }
+    if ($this->previousDebug !== NULL) {
+      \Drupal::state()->set('mass_org_access.debug_mode', $this->previousDebug);
     }
     parent::tearDown();
   }

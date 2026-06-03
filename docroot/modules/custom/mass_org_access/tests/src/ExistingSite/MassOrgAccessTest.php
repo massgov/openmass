@@ -8,6 +8,7 @@ use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mass_org_access\OrgAccessSettings;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\TermInterface;
@@ -125,6 +126,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    */
   protected function tearDown(): void {
     \Drupal::state()->delete('mass_org_access.enforce');
+    \Drupal::state()->delete(OrgAccessSettings::DEBUG_STATE_KEY);
     parent::tearDown();
   }
 
@@ -998,6 +1000,47 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       $org_nids,
       'Clone must not keep the original Organization(s).'
     );
+  }
+
+  /**
+   * Debug mode reveals the Permission Groups field to non-admin editors.
+   *
+   * Off by default the field is wrapped in the author-hiding div for editors;
+   * the settings-form switch drops that wrapper so they can see which
+   * organizations are attached to the content.
+   */
+  public function testDebugModeRevealsPermissionGroupsToEditors(): void {
+    \Drupal::currentUser()->setAccount($this->userA);
+
+    \Drupal::state()->delete(OrgAccessSettings::DEBUG_STATE_KEY);
+    $this->assertStringContainsString(
+      'oog-hidden-from-author',
+      $this->permissionGroupsWidgetPrefix('info_details'),
+      'Permission Groups must be hidden from editors when debug mode is off.'
+    );
+
+    \Drupal::state()->set(OrgAccessSettings::DEBUG_STATE_KEY, TRUE);
+    $this->assertStringNotContainsString(
+      'oog-hidden-from-author',
+      $this->permissionGroupsWidgetPrefix('info_details'),
+      'Permission Groups must be visible to editors when debug mode is on.'
+    );
+  }
+
+  /**
+   * Builds a node add form and returns the Permission Groups widget #prefix.
+   */
+  private function permissionGroupsWidgetPrefix(string $bundle): string {
+    $node = \Drupal::entityTypeManager()->getStorage('node')->create([
+      'type' => $bundle,
+      'title' => 'Debug widget ' . $this->randomMachineName(),
+    ]);
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('node', 'default')
+      ->setEntity($node);
+    $form_state = (new FormState())->setFormObject($form_object);
+    $form = \Drupal::formBuilder()->buildForm($form_object, $form_state);
+    return (string) ($form['field_content_organization']['#prefix'] ?? '');
   }
 
   /**

@@ -141,9 +141,12 @@ class MassOrgAccessHooks {
     $entity = $context['items']->getEntity();
     $can_see = $this->currentUser->hasPermission('bypass org access')
       || $entity->bundle() === 'org_page';
-    if (!$can_see) {
-//      $field_widget_complete_form['#prefix'] = '<div class="oog-hidden-from-author">';
-//      $field_widget_complete_form['#suffix'] = '</div>';
+    // Debug mode (settings form) reveals the field to everyone so editors can
+    // verify which organizations are attached; otherwise authors/editors get
+    // the CSS-hiding wrapper while the field still submits its derived value.
+    if (!$can_see && !$this->settings->isDebugModeEnabled()) {
+      $field_widget_complete_form['#prefix'] = '<div class="oog-hidden-from-author">';
+      $field_widget_complete_form['#suffix'] = '</div>';
     }
     if (!isset($field_widget_complete_form['widget']['target_id'])) {
       return;

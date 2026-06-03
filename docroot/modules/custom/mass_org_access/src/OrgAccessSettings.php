@@ -23,6 +23,11 @@ class OrgAccessSettings {
   private const ENV_VAR = 'MASS_ORG_ACCESS_ENFORCE';
   public const STATE_KEY = 'mass_org_access.enforce';
 
+  /**
+   * State key for the Permission Groups debug switch.
+   */
+  public const DEBUG_STATE_KEY = 'mass_org_access.debug_mode';
+
   public function __construct(
     private readonly StateInterface $state,
   ) {}
@@ -36,6 +41,17 @@ class OrgAccessSettings {
       return in_array(strtolower($env), ['1', 'true', 'yes', 'on'], TRUE);
     }
     return (bool) $this->state->get(self::STATE_KEY, FALSE);
+  }
+
+  /**
+   * Returns TRUE when the Permission Groups field is shown to all editors.
+   *
+   * A troubleshooting aid: dropping the author-hiding wrapper lets editors
+   * see which organizations are attached to a page. State-only (no env
+   * layer) and OFF by default; toggled from the settings form.
+   */
+  public function isDebugModeEnabled(): bool {
+    return (bool) $this->state->get(self::DEBUG_STATE_KEY, FALSE);
   }
 
 }

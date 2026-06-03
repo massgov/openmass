@@ -7,3 +7,11 @@ mass_org_access.lookup_user_orgs:
     _custom_access: '\Drupal\mass_org_access\Controller\OrgLookupController::access'
   options:
     no_cache: TRUE
+
+mass_org_access.settings:
+  path: '/admin/config/content/mass-org-access'
+  defaults:
+    _form: '\Drupal\mass_org_access\Form\OrgAccessSettingsForm'
+    _title: 'Organization access settings'
+  requirements:
+    _permission: 'administer site configuration'
