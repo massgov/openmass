@@ -142,8 +142,8 @@ class MassOrgAccessHooks {
     $can_see = $this->currentUser->hasPermission('bypass org access')
       || $entity->bundle() === 'org_page';
     if (!$can_see) {
-      $field_widget_complete_form['#prefix'] = '<div class="oog-hidden-from-author">';
-      $field_widget_complete_form['#suffix'] = '</div>';
+//      $field_widget_complete_form['#prefix'] = '<div class="oog-hidden-from-author">';
+//      $field_widget_complete_form['#suffix'] = '</div>';
     }
     if (!isset($field_widget_complete_form['widget']['target_id'])) {
       return;

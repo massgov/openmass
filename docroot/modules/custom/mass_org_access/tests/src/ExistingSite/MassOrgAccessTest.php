@@ -923,6 +923,84 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Cloning a node drops the inherited Organization(s) and Permission Groups.
+   *
+   * Quick Node Clone duplicates every field, then calls hook_cloned_node_alter
+   * before building the clone form. mass_utility clears the organization and
+   * Permission Groups there so the clone starts blank instead of inheriting the
+   * original's, which would silently grant the original's editors access.
+   */
+  public function testCloneDropsInheritedOrganizations(): void {
+    $original = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Clone original ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id()],
+      'field_content_organization' => [$this->termA->id()],
+    ]);
+
+    $clone = $original->createDuplicate();
+    \Drupal::moduleHandler()->alter('cloned_node', $clone, $original);
+
+    $this->assertEmpty(
+      array_column($clone->get('field_organizations')->getValue(), 'target_id'),
+      'Clone must drop the inherited Organization(s).'
+    );
+    $this->assertEmpty(
+      array_column($clone->get('field_content_organization')->getValue(), 'target_id'),
+      'Clone must drop the inherited Permission Groups.'
+    );
+  }
+
+  /**
+   * A clone is treated as new: the cloning user's default org takes over.
+   *
+   * After the inherited organization is cleared, building the clone form fires
+   * entity_prepare_form, which pre-fills the organization from the cloning
+   * user's defaults — the same path a brand-new node takes.
+   */
+  public function testCloneAppliesCloningUserDefaultOrganization(): void {
+    $cloner = $this->createUser();
+    $cloner->addRole('editor');
+    $cloner->set('field_user_org', $this->termA->id());
+    $cloner->set('field_default_organizations', [$this->orgPageB->id()]);
+    $cloner->activate();
+    $cloner->save();
+    \Drupal::currentUser()->setAccount($cloner);
+
+    $original = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Clone original ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id()],
+      'field_content_organization' => [$this->termA->id()],
+    ]);
+
+    $clone = $original->createDuplicate();
+    \Drupal::moduleHandler()->alter('cloned_node', $clone, $original);
+
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('node', 'default')
+      ->setEntity($clone);
+    $form_state = (new FormState())->setFormObject($form_object);
+    \Drupal::formBuilder()->buildForm($form_object, $form_state);
+    $clone = $form_object->getEntity();
+
+    $org_nids = array_map(
+      'intval',
+      array_column($clone->get('field_organizations')->getValue(), 'target_id')
+    );
+    $this->assertEqualsCanonicalizing(
+      [(int) $this->orgPageB->id()],
+      $org_nids,
+      'Clone must adopt the cloning user default org, not the inherited one.'
+    );
+    $this->assertNotContains(
+      (int) $this->orgPageA->id(),
+      $org_nids,
+      'Clone must not keep the original Organization(s).'
+    );
+  }
+
+  /**
    * Backfill no-ops on an entity whose Owner Groups already match.
    *
    * Drives the "skip save() when nothing changed" optimization in
