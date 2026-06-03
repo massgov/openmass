@@ -142,10 +142,11 @@ class Molecules {
     if (array_key_exists('documents', $referenced_fields) && Helper::isFieldPopulated($entity, $referenced_fields['documents'])) {
       $documents = Helper::getReferencedEntitiesFromField($entity, $referenced_fields['documents']);
       foreach ($documents as $document) {
-        if (!Helper::isFieldPopulated($document, 'field_file_download_single')) {
+        if ($document->bundle() !== 'documents_multiple' || !Helper::isFieldPopulated($document, 'field_file_download_multiple')) {
           continue;
         }
-        $downloads = Helper::getReferencedEntitiesFromField($document, 'field_file_download_single');
+
+        $downloads = Helper::getReferencedEntitiesFromField($document, 'field_file_download_multiple');
         foreach ($downloads as $download) {
           $downloadLink = self::prepareDownloadLink($download);
           if (!empty($downloadLink)) {

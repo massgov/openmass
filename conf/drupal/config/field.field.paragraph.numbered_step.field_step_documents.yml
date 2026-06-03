@@ -4,7 +4,7 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_step_documents
-    - paragraphs.paragraphs_type.link_group_document
+    - paragraphs.paragraphs_type.documents_multiple
     - paragraphs.paragraphs_type.numbered_step
   module:
     - entity_reference_revisions
@@ -22,7 +22,7 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
-      link_group_document: link_group_document
+      documents_multiple: documents_multiple
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -139,20 +139,23 @@ settings:
       decision_section:
         weight: 177
         enabled: false
-      emergency_alert:
+      documents_multiple:
         weight: 178
-        enabled: false
-      event_agenda_section:
+        enabled: true
+      emergency_alert:
         weight: 179
         enabled: false
-      event_minutes_section:
+      event_agenda_section:
         weight: 180
         enabled: false
-      external_organization:
+      event_minutes_section:
         weight: 181
         enabled: false
-      fax_number:
+      external_organization:
         weight: 182
+        enabled: false
+      fax_number:
+        weight: 183
         enabled: false
       featured_content_2up_item:
         weight: 183
@@ -237,21 +240,21 @@ settings:
         enabled: false
       link_group_document:
         weight: 210
-        enabled: true
-      link_group_link:
-        weight: 211
         enabled: false
-      links:
+      link_group_link:
         weight: 212
         enabled: false
-      links_downloads:
+      links:
         weight: 213
         enabled: false
-      links_downloads_flexible:
+      links_downloads:
         weight: 214
         enabled: false
-      list_board_members:
+      links_downloads_flexible:
         weight: 215
+        enabled: false
+      list_board_members:
+        weight: 216
         enabled: false
       list_dynamic:
         weight: 216
