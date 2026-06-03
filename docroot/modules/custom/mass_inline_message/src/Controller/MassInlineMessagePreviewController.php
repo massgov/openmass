@@ -4,6 +4,9 @@ namespace Drupal\mass_inline_message\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\filter\Entity\FilterFormat;
+use Drupal\mass_inline_message\MassInlineMessageRenderer;
+use Drupal\mass_inline_message\MessageBoxBody;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -11,6 +14,19 @@ use Symfony\Component\HttpFoundation\Request;
  * Renders Message box previews for CKEditor using the same theme as the view.
  */
 class MassInlineMessagePreviewController extends ControllerBase {
+
+  public function __construct(
+    protected MassInlineMessageRenderer $messageRenderer,
+  ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('mass_inline_message.renderer'),
+    );
+  }
 
   /**
    * Returns Mayflower inline-message HTML for CKEditor widget preview.
@@ -30,11 +46,14 @@ class MassInlineMessagePreviewController extends ControllerBase {
     $body_raw = trim((string) ($payload['body'] ?? ''));
     $body_for_render = NULL;
     if ($body_raw !== '') {
-      $body_for_render = mass_inline_message_normalize_body_html($body_raw);
+      $body_for_render = check_markup(
+        MessageBoxBody::normalize($body_raw),
+        $filter_format->id()
+      );
     }
 
     return new JsonResponse([
-      'html' => mass_inline_message_render_html($type, $title, $body_for_render, TRUE),
+      'html' => $this->messageRenderer->renderHtml($type, $title, $body_for_render, TRUE),
     ]);
   }
 

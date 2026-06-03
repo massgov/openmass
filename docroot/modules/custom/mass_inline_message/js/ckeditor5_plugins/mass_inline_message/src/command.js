@@ -23,21 +23,43 @@ export function buildMessageBoxHtml(attributes, body) {
 
 export default class InsertMassInlineMessageCommand extends Command {
 
-  execute({ attributes, body, selection }) {
-    this._insert({ attributes, body, selection });
+  execute({ attributes, body, selection, replaceElement }) {
+    this._insert({ attributes, body, selection, replaceElement });
   }
 
   /**
    * Inserts or replaces a message box (not gated by isEnabled).
    *
    * @param {object} options
-   *   attributes, body, and optional selection captured before the dialog.
+   *   attributes, body, optional selection, and optional replaceElement when
+   *   saving from a dialog (selection is often lost on editor:dialogsave).
    */
-  _insert({ attributes, body, selection }) {
+  _insert({ attributes, body, selection, replaceElement }) {
     const editor = this.editor;
-    const insertSelection = selection || editor.model.document.selection;
+    const editingPlugin = editor.plugins.get('MassInlineMessageEditing');
 
     editor.model.change((writer) => {
+      const existing = replaceElement
+        || (selection || editor.model.document.selection).getSelectedElement();
+
+      if (existing && existing.name === 'massInlineMessage' && existing.root) {
+        writer.setAttribute('dataTitle', attributes['data-title'] || '', existing);
+        writer.setAttribute('dataType', attributes['data-type'] || 'info', existing);
+
+        if (this.bodyStorage) {
+          if (body) {
+            this.bodyStorage.set(existing, body);
+          }
+          else {
+            this.bodyStorage.delete(existing);
+          }
+        }
+
+        writer.setSelection(existing, 'on');
+        editingPlugin.refreshWidgetPreview(existing);
+        return;
+      }
+
       const messageBox = writer.createElement('massInlineMessage', {
         dataTitle: attributes['data-title'] || '',
         dataType: attributes['data-type'] || 'info',
@@ -52,14 +74,7 @@ export default class InsertMassInlineMessageCommand extends Command {
         }
       }
 
-      const selected = insertSelection.getSelectedElement();
-      if (selected && selected.name === 'massInlineMessage' && selected.parent) {
-        writer.insert(messageBox, writer.createPositionBefore(selected));
-        writer.remove(selected);
-        writer.setSelection(messageBox, 'on');
-        return;
-      }
-
+      const insertSelection = selection || editor.model.document.selection;
       editor.model.insertContent(messageBox, insertSelection);
       writer.setSelection(messageBox, 'on');
     });

@@ -2,85 +2,31 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use Drupal\Tests\mass_inline_message\Traits\InlineMessageMarkupTestTrait;
 
 /**
  * Verifies Message box CKEditor toolbar integration via the real UI.
  */
-class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
+class InlineMessageCKEditorTest extends MassInlineMessageJavascriptTestBase {
 
-  /**
-   * Creates an admin user.
-   */
-  private function createAdmin() {
-    $admin = $this->createUser();
-    $admin->addRole('administrator');
-    $admin->activate();
-    $admin->save();
-    return $admin;
-  }
-
-  /**
-   * Creates a page with basic_html body.
-   */
-  private function createPageWithBody(): int {
-    $node = $this->createNode([
-      'type' => 'page',
-      'title' => 'Message box test ' . $this->randomMachineName(8),
-      'body' => [
-        'value' => '<p>Initial body.</p>',
-        'format' => 'basic_html',
-      ],
-      'status' => 1,
-    ]);
-    $node->save();
-    return (int) $node->id();
-  }
-
-  /**
-   * Clicks the Message box dialog Save button in the modal button pane.
-   */
-  private function clickDialogSave(): void {
-    $this->getSession()->executeScript(
-      "(function(){
-        var buttons = document.querySelectorAll('.ui-dialog-buttonpane .form-actions .js-form-submit, .ui-dialog-buttonpane .form-actions input[type=\"submit\"]');
-        for (var i = 0; i < buttons.length; i++) {
-          var label = (buttons[i].value || buttons[i].textContent || '').trim().toLowerCase();
-          if (label === 'save') {
-            buttons[i].click();
-            return;
-          }
-        }
-        var fallback = document.querySelector('#mass-inline-message-dialog-form input[type=\"submit\"]');
-        if (fallback) { fallback.click(); }
-      })();"
-    );
-  }
+  use InlineMessageMarkupTestTrait;
 
   /**
    * Tests programmatic insert into the body CKEditor instance.
    */
   public function testDirectInsertMessageBox(): void {
-    $this->drupalLogin($this->createAdmin());
-    $node_id = $this->createPageWithBody();
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
     $this->drupalGet('node/' . $node_id . '/edit');
-    $session = $this->getSession();
-    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+    $this->waitForBodyFieldEditor();
 
-    $editor_data = $session->evaluateScript(
-      "(function(){
-        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
-        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
-        editor.model.change(function(writer) {
-          writer.setSelection(writer.createPositionAt(editor.model.document.getRoot(), 'end'));
-        });
-        editor.commands.get('insertMassInlineMessage')._insert({
-          attributes: {'data-title': 'Direct insert title', 'data-type': 'warning'},
-          body: '<p>Direct insert body.</p>'
-        });
-        return editor.getData();
-      })();"
+    $this->insertMessageBoxAtEnd(
+      self::BODY_FIELD_EDITOR_SELECTOR,
+      'Direct insert title',
+      'warning',
+      '<p>Direct insert body.</p>',
     );
+    $editor_data = $this->getCKEditorData(self::BODY_FIELD_EDITOR_SELECTOR);
     $this->assertStringContainsString('data-title="Direct insert title"', (string) $editor_data);
     $this->assertStringContainsString('data-type="warning"', (string) $editor_data);
     $this->assertStringContainsString('Direct insert body', (string) $editor_data);
@@ -90,25 +36,12 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
    * Tests saved message box HTML reloads via setData without upcast errors.
    */
   public function testReloadSavedMessageBoxMarkup(): void {
-    $this->drupalLogin($this->createAdmin());
-    $node_id = $this->createPageWithBody();
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
     $this->drupalGet('node/' . $node_id . '/edit');
-    $session = $this->getSession();
-    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+    $this->waitForBodyFieldEditor();
 
-    $saved_markup = '<p>Overview intro.</p>'
-      . '<mass-inline-message data-title="Payment options" data-type="info">'
-      . '<div><p>Visit <a href="https://www.mass.gov/pay">mass.gov/pay</a>.</p></div>'
-      . '</mass-inline-message>';
-
-    $editor_data = $session->evaluateScript(
-      "(function(){
-        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
-        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
-        editor.setData(" . json_encode($saved_markup) . ");
-        return editor.getData();
-      })();"
-    );
+    $editor_data = $this->setCKEditorData(self::BODY_FIELD_EDITOR_SELECTOR, self::OVERVIEW_WITH_MESSAGE_BOX);
 
     $this->assertStringContainsString('data-title="Payment options"', (string) $editor_data);
     $this->assertStringContainsString('mass.gov/pay', (string) $editor_data);
@@ -119,8 +52,8 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
    * Tests insert uses the current selection, not the document end.
    */
   public function testInsertMessageBoxAtCursor(): void {
-    $this->drupalLogin($this->createAdmin());
-    $node_id = $this->createPageWithBody();
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
     $this->drupalGet('node/' . $node_id . '/edit');
     $session = $this->getSession();
     $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
@@ -160,8 +93,8 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
    * Tests inserting a message box through CKEditor dialog.
    */
   public function testInsertMessageBoxViaToolbar(): void {
-    $this->drupalLogin($this->createAdmin());
-    $node_id = $this->createPageWithBody();
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
     $this->drupalGet('node/' . $node_id . '/edit');
 
     $session = $this->getSession();
@@ -222,6 +155,35 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
       15000,
       "document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"][data-ckeditor5-id]') !== null"
     );
+    $nested_guard = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"][data-ckeditor5-id]');
+        if (!textarea || !Drupal.CKEditor5Instances) {
+          return {hasEditor: false, hasButton: false};
+        }
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        if (!editor) {
+          return {hasEditor: false, hasButton: false};
+        }
+        var hasToolbarButton = !!Array.from(document.querySelectorAll('#mass-inline-message-dialog-form .ck-toolbar .ck-button'))
+          .find(function (button) {
+            var label = (
+              button.getAttribute('aria-label') ||
+              button.getAttribute('data-cke-tooltip-text') ||
+              button.getAttribute('title') ||
+              button.textContent ||
+              ''
+            ).toLowerCase();
+            return label.indexOf('message box') !== -1 && button.style.display !== 'none';
+          });
+        return {
+          hasEditor: true,
+          hasButton: hasToolbarButton,
+        };
+      })();"
+    );
+    $this->assertTrue((bool) ($nested_guard['hasEditor'] ?? FALSE), 'Message text dialog should initialize CKEditor.');
+
     $session->executeScript(
       "(function(){
         var textarea = document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"]')
@@ -235,7 +197,7 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
       })();"
     );
 
-    $this->clickDialogSave();
+    $this->clickMessageBoxDialogSave();
 
     // Save must stay in the modal Ajax flow (no full-page redirect to dialog URL).
     $session->wait(15000, "(function(){
@@ -319,11 +281,72 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Tests duplicate Save clicks do not lock the Message box modal.
+   */
+  public function testDialogSaveIsStableOnRapidClicks(): void {
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+
+    $session = $this->getSession();
+    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+    $session->executeScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        editor.model.change(function(writer) {
+          var root = editor.model.document.getRoot();
+          writer.setSelection(writer.createPositionAt(root, 'end'));
+        });
+        editor.editing.view.focus();
+        var button = editor.ui.componentFactory.create('messageBox');
+        if (button) {
+          button.fire('execute');
+        }
+      })();"
+    );
+
+    $session->wait(15000, "document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]') !== null");
+    $page = $session->getPage();
+    $page->fillField('attributes[data-title]', 'Stability title');
+
+    $session->executeScript(
+      "(function(){
+        var save = document.querySelector('.ui-dialog-buttonpane .form-actions .js-form-submit');
+        if (!save) {
+          save = document.querySelector('#mass-inline-message-dialog-save');
+        }
+        if (!save) { return; }
+        save.click();
+        save.click();
+      })();"
+    );
+
+    $session->wait(20000, "(function(){
+      if (window.location.href.indexOf('/mass-inline-message/dialog/') !== -1) {
+        return false;
+      }
+      return document.querySelector('#mass-inline-message-dialog-form') === null;
+    })()");
+    $this->assertStringNotContainsString('/mass-inline-message/dialog/', $session->getCurrentUrl());
+    $editor_data = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        if (!textarea || !Drupal.CKEditor5Instances.has(textarea.getAttribute('data-ckeditor5-id'))) {
+          return '';
+        }
+        return Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id')).getData();
+      })();"
+    );
+    $this->assertStringContainsString('data-title="Stability title"', (string) $editor_data);
+  }
+
+  /**
    * Tests editing a Message box via the widget toolbar and saving changes.
    */
   public function testEditMessageBoxViaWidgetToolbar(): void {
-    $this->drupalLogin($this->createAdmin());
-    $node_id = $this->createPageWithBody();
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
     $this->drupalGet('node/' . $node_id . '/edit');
     $session = $this->getSession();
 
@@ -374,7 +397,7 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
         uiDialogClasses.push('ui-dialog--narrow', 'mass-inline-message-dialog');
         dialogSettings.classes['ui-dialog'] = uiDialogClasses.join(' ');
         dialogSettings.autoResize = window.matchMedia('(min-width: 600px)').matches;
-        dialogSettings.width = dialogSettings.width || 600;
+        dialogSettings.width = dialogSettings.width || 'auto';
         Drupal.ajax({
           dialog: dialogSettings,
           dialogType: 'modal',
@@ -384,7 +407,10 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
           submit: {editor_object: existingValues},
         }).execute();
         Drupal.ckeditor5.saveCallback = function(values) {
-          command._insert({attributes: values.attributes, body: values.body || ''});
+          editor.execute('insertMassInlineMessage', {
+            attributes: values.attributes,
+            body: values.body || '',
+          });
         };
       })();"
     );
@@ -393,7 +419,7 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
 
     $page = $session->getPage();
     $page->fillField('attributes[data-title]', 'Updated title');
-    $this->clickDialogSave();
+    $this->clickMessageBoxDialogSave();
 
     $session->wait(15000, "(function(){
       if (window.location.href.indexOf('/mass-inline-message/dialog/') !== -1) {
@@ -410,6 +436,38 @@ class InlineMessageCKEditorTest extends ExistingSiteSelenium2DriverTestBase {
     );
     $this->assertStringContainsString('data-title="Updated title"', (string) $editor_data);
     $this->assertStringContainsString('Original body', (string) $editor_data);
+
+    // Second edit: widget toolbar should appear again after re-selecting the box.
+    $session->wait(5000, "(function(){
+      var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+      var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+      var found = null;
+      editor.model.change(function(writer) {
+        for (var child of editor.model.document.getRoot().getChildren()) {
+          if (child.name === 'massInlineMessage') {
+            found = child;
+            writer.setSelection(child, 'on');
+            break;
+          }
+        }
+      });
+      return !!found;
+    })()");
+
+    $can_select_again = $session->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        var widget = document.querySelector('.ck-content .mass-inline-message-ckeditor-widget');
+        editor.editing.view.focus();
+        if (widget) {
+          widget.click();
+        }
+        var selected = editor.model.document.selection.getSelectedElement();
+        return selected && selected.name === 'massInlineMessage';
+      })();"
+    );
+    $this->assertTrue((bool) $can_select_again, 'Message box should remain selectable for a second edit.');
   }
 
 }

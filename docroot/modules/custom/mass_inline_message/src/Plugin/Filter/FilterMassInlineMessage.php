@@ -2,8 +2,12 @@
 
 namespace Drupal\mass_inline_message\Plugin\Filter;
 
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
+use Drupal\mass_inline_message\MassInlineMessageRenderer;
+use Drupal\mass_inline_message\MessageBoxBody;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Renders mass-inline-message elements using Mayflower inline-message.
@@ -14,14 +18,28 @@ use Drupal\filter\Plugin\FilterBase;
  *   type = Drupal\filter\Plugin\FilterInterface::TYPE_TRANSFORM_REVERSIBLE,
  * )
  */
-class FilterMassInlineMessage extends FilterBase {
+class FilterMassInlineMessage extends FilterBase implements ContainerFactoryPluginInterface {
+
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    protected MassInlineMessageRenderer $messageRenderer,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+  }
 
   /**
-   * Allowed HTML tags inside message body.
+   * {@inheritdoc}
    */
-  public const ALLOWED_BODY_TAGS = [
-    'p', 'br', 'strong', 'em', 'a', 'ul', 'ol', 'li',
-  ];
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('mass_inline_message.renderer'),
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -40,12 +58,12 @@ class FilterMassInlineMessage extends FilterBase {
         $type = 'info';
       }
 
-      $body_html = mass_inline_message_normalize_body_html($matches[2]);
+      $body_html = MessageBoxBody::normalize($matches[2]);
       $body_for_render = $body_html !== '' ? $body_html : NULL;
 
       // Layout Paragraphs preview renders via Ajax and may skip the global
       // SVG placeholder processor; inline the icon SVGs here for consistency.
-      return mass_inline_message_render_html($type, $title, $body_for_render, TRUE);
+      return $this->messageRenderer->renderHtml($type, $title, $body_for_render, TRUE);
     }, $text);
 
     return new FilterProcessResult($output ?? $text);

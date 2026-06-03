@@ -22,6 +22,4 @@ class InlineMessageConstraint extends Constraint {
 
   public $bodyTooLongMessage = 'Message box text must be @count characters or fewer (plain text, not including HTML).';
 
-  public $disallowedTagMessage = 'Message box text may only use these HTML tags: @tags.';
-
 }

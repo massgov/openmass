@@ -13,6 +13,18 @@
   'use strict';
 
   var handlersBound = false;
+  var DIALOG_ROUTE_FRAGMENT = '/mass-inline-message/dialog/';
+
+  function ensureMassInlineMessageModalContainer() {
+    if (document.getElementById('mass-inline-message-modal')) {
+      return;
+    }
+    var container = document.createElement('div');
+    container.id = 'mass-inline-message-modal';
+    container.className = 'ui-front';
+    container.style.display = 'none';
+    document.body.appendChild(container);
+  }
 
   function getAjaxInstance(button) {
     var matched = null;
@@ -38,6 +50,71 @@
     });
   }
 
+  function disableNestedMessageBoxInDialog(form) {
+    if (!form || !Drupal.CKEditor5Instances) {
+      return;
+    }
+    form.querySelectorAll('textarea[data-ckeditor5-id]').forEach(function (textarea) {
+      var editorId = textarea.getAttribute('data-ckeditor5-id');
+      var editor = Drupal.CKEditor5Instances.get(editorId);
+      if (!editor) {
+        return;
+      }
+
+      var command = editor.commands && editor.commands.get
+        ? editor.commands.get('insertMassInlineMessage')
+        : null;
+      if (command && command.forceDisabled) {
+        command.forceDisabled('massInlineMessageDialog');
+      }
+
+      var toolbarButtons = form.querySelectorAll('.ck-toolbar .ck-button');
+      toolbarButtons.forEach(function (button) {
+        var label = (
+          button.getAttribute('aria-label') ||
+          button.getAttribute('data-cke-tooltip-text') ||
+          button.getAttribute('title') ||
+          button.textContent ||
+          ''
+        ).toLowerCase().trim();
+        if (label.indexOf('message box') !== -1) {
+          button.style.display = 'none';
+          button.setAttribute('aria-hidden', 'true');
+          button.setAttribute('tabindex', '-1');
+        }
+      });
+    });
+  }
+
+  function scheduleDialogEditorGuards(form, attempts) {
+    if (!form || attempts <= 0) {
+      return;
+    }
+    disableNestedMessageBoxInDialog(form);
+    window.setTimeout(function () {
+      scheduleDialogEditorGuards(form, attempts - 1);
+    }, 150);
+  }
+
+  function setFormInFlightState($form, isInFlight) {
+    $form.data('massInlineMessageAjaxInFlight', isInFlight);
+    $form.find('input[type="submit"], button[type="submit"]').prop('disabled', !!isInFlight);
+  }
+
+  function releaseInFlightWhenDialogAjaxFinishes($form) {
+    var matcher = function (event, xhr, settings) {
+      var url = (settings && settings.url) || '';
+      if (url.indexOf(DIALOG_ROUTE_FRAGMENT) === -1) {
+        return;
+      }
+      $(document).off('ajaxComplete.massInlineMessageDialog ajaxError.massInlineMessageDialog', matcher);
+      if ($form && $form.length) {
+        setFormInFlightState($form, false);
+      }
+    };
+    $(document).on('ajaxComplete.massInlineMessageDialog ajaxError.massInlineMessageDialog', matcher);
+  }
+
   function submitDialogButtonViaAjax($button) {
     var button = $button.get(0);
     var $form = $button.closest('form.mass-inline-message-dialog-form');
@@ -47,17 +124,14 @@
     if ($form.data('massInlineMessageAjaxInFlight')) {
       return true;
     }
-    $form.data('massInlineMessageAjaxInFlight', true);
+    setFormInFlightState($form, true);
+    releaseInFlightWhenDialogAjaxFinishes($form);
 
     syncDialogBodyEditors($form.get(0));
-    Drupal.attachBehaviors($form.get(0), drupalSettings);
 
     var ajaxInstance = getAjaxInstance(button);
     if (ajaxInstance) {
       ajaxInstance.eventResponse(button, $.Event(ajaxInstance.event || 'click'));
-      window.setTimeout(function () {
-        $form.removeData('massInlineMessageAjaxInFlight');
-      }, 0);
       return true;
     }
 
@@ -73,10 +147,6 @@
       progress: {type: 'throbber'}
     });
     ajax.eventResponse(button, $.Event('click'));
-
-    window.setTimeout(function () {
-      $form.removeData('massInlineMessageAjaxInFlight');
-    }, 0);
     return true;
   }
 
@@ -84,15 +154,15 @@
     return $dialog.length && $dialog.find('#mass-inline-message-dialog-form').length > 0;
   }
 
-  function getDialogFromElement(element) {
+  /**
+   * Returns the Message box dialog only when the event target is inside it.
+   *
+   * Do not fall back to "any visible Message box dialog" — stacked modals
+   * (entity embed, file browser, etc.) must handle their own button pane clicks.
+   */
+  function getMessageBoxDialogFromElement(element) {
     var $dialog = $(element).closest('.ui-dialog');
-    if (isMessageBoxDialog($dialog)) {
-      return $dialog;
-    }
-    var $visible = $('.ui-dialog:visible').filter(function () {
-      return $(this).find('#mass-inline-message-dialog-form').length > 0;
-    });
-    return $visible.last();
+    return isMessageBoxDialog($dialog) ? $dialog : $();
   }
 
   function findSaveSubmitter($form, target, fromButtonPane) {
@@ -123,6 +193,24 @@
     return $submitters.first();
   }
 
+  function isMessageBoxToolbarButton(target) {
+    if (!(target instanceof Element)) {
+      return false;
+    }
+    var button = target.closest('.ck-toolbar .ck-button');
+    if (!button) {
+      return false;
+    }
+    var label = (
+      button.getAttribute('aria-label') ||
+      button.getAttribute('data-cke-tooltip-text') ||
+      button.getAttribute('title') ||
+      button.textContent ||
+      ''
+    ).toLowerCase().trim();
+    return label.indexOf('message box') !== -1;
+  }
+
   function bindGlobalHandlers() {
     if (handlersBound) {
       return;
@@ -135,13 +223,20 @@
         return;
       }
 
-      var $dialog = getDialogFromElement(target);
+      var $dialog = getMessageBoxDialogFromElement(target);
       if (!$dialog.length) {
         return;
       }
 
       var $form = $dialog.find('form.mass-inline-message-dialog-form');
       if (!$form.length) {
+        return;
+      }
+
+      // Never allow nested Message box insertion inside the dialog body editor.
+      if (target.closest('form.mass-inline-message-dialog-form') && isMessageBoxToolbarButton(target)) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
         return;
       }
 
@@ -204,18 +299,25 @@
       return;
     }
 
+    var dialogWrapper = dialogContent.closest('.ui-dialog');
+    if (dialogWrapper) {
+      dialogWrapper.classList.add('mass-inline-message-dialog');
+    }
+
     var form = dialogContent.querySelector('form.mass-inline-message-dialog-form');
     if (form) {
       Drupal.attachBehaviors(form, drupalSettings);
+      scheduleDialogEditorGuards(form, 12);
     }
   }
 
   Drupal.behaviors.massInlineMessageDialog = {
     attach: function (context) {
+      ensureMassInlineMessageModalContainer();
       bindGlobalHandlers();
 
       $(context).find('form.mass-inline-message-dialog-form').each(function () {
-        Drupal.attachBehaviors(this, drupalSettings);
+        scheduleDialogEditorGuards(this, 4);
       });
 
       if (context instanceof Element || context === document) {

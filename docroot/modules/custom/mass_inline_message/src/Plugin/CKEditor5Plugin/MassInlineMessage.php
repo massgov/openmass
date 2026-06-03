@@ -58,7 +58,7 @@ class MassInlineMessage extends CKEditor5PluginDefault {
       'dialogSettings' => [
         'dialogClass' => 'mass-inline-message-dialog',
         'height' => 'auto',
-        'width' => 600,
+        'width' => 'auto',
       ],
     ];
     return $dynamic_plugin_config;

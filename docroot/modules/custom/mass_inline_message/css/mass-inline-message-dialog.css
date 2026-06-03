@@ -7,13 +7,45 @@
  * modal title bar.
  */
 
-.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar {
+/* Message box uses its own modal wrapper; editor embeds use #drupal-modal on top. */
+#mass-inline-message-modal {
+  position: relative;
+  z-index: 1250;
+}
+
+#drupal-modal {
+  z-index: 1260;
+}
+
+/* Claro title bar contrast for Message box and stacked CKEditor embed modals. */
+.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar,
+.ui-dialog.entity-select-dialog > .ui-dialog-titlebar,
+.ui-dialog:has(#mass-inline-message-dialog-form) > .ui-dialog-titlebar {
   color: var(--jui-dialog-title-color, #fff);
   background-color: var(--jui-dialog-title-bg-color, #232429);
 }
 
-.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar .ui-dialog-title {
+.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar .ui-dialog-title,
+.ui-dialog.entity-select-dialog > .ui-dialog-titlebar .ui-dialog-title,
+.ui-dialog:has(#mass-inline-message-dialog-form) > .ui-dialog-titlebar .ui-dialog-title {
   color: inherit;
+}
+
+/* Match wider editor dialogs like entity embed in admin UI. */
+.ui-dialog--narrow.mass-inline-message-dialog {
+  max-width: 1200px;
+}
+
+@media screen and (min-width: 768px) {
+  .ui-dialog--narrow.mass-inline-message-dialog .mass-inline-message-dialog-form {
+    min-width: 730px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .ui-dialog--narrow.mass-inline-message-dialog .mass-inline-message-dialog-form {
+    min-width: 950px;
+  }
 }
 
 .ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .filter-guidelines,
@@ -31,4 +63,11 @@
 
 .ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-text-format-wrapper .ck-toolbar {
   flex-wrap: wrap;
+}
+
+/* Prevent nested Message box insertion in the dialog body editor. */
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .ck-toolbar .ck-button[aria-label*="Message box" i],
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .ck-toolbar .ck-button[data-cke-tooltip-text*="Message box" i],
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .ck-toolbar .ck-button[title*="Message box" i] {
+  display: none;
 }

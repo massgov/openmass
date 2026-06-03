@@ -3,172 +3,20 @@
 namespace Drupal\Tests\mass_inline_message\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use Drupal\Tests\mass_inline_message\Traits\InlineMessageLayoutParagraphsTestTrait;
 
 /**
  * Verifies Message box works in Layout Paragraphs Rich text on service pages.
- *
- * Covers nested LP modal dialog open, Ajax save (no full-page redirect), and
- * stored markup in the Rich text CKEditor instance.
  */
-class InlineMessageLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestBase {
+class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestBase {
 
-  /**
-   * Clicks the LPB Save button in the active dialog via JavaScript.
-   */
-  private function clickLayoutParagraphDialogSave(): void {
-    $this->getSession()->executeScript(
-      "(function(){
-        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
-        if (el) {
-          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
-          el.click();
-        }
-      })();"
-    );
-  }
-
-  /**
-   * Clicks the Message box configuration dialog Save button.
-   */
-  private function clickMessageBoxDialogSave(): void {
-    $this->getSession()->executeScript(
-      "(function(){
-        var buttons = document.querySelectorAll('.ui-dialog-buttonpane .form-actions .js-form-submit, .ui-dialog-buttonpane .form-actions input[type=\"submit\"]');
-        for (var i = 0; i < buttons.length; i++) {
-          var label = (buttons[i].value || buttons[i].textContent || '').trim().toLowerCase();
-          if (label === 'save') {
-            buttons[i].click();
-            return;
-          }
-        }
-        var fallback = document.querySelector('#mass-inline-message-dialog-form input[type=\"submit\"]');
-        if (fallback) { fallback.click(); }
-      })();"
-    );
-  }
-
-  /**
-   * Opens Content tab and adds Service Section + Rich text LP components.
-   */
-  private function openServiceRichTextEditorInLayoutParagraph(): void {
-    $page = $this->getSession()->getPage();
-    $session = $this->getSession();
-
-    $session->executeScript(
-      "document.querySelector('a[href^=\"#edit-group-content\"]').scrollIntoView({block: 'center'});"
-    );
-    $page->find('css', '.horizontal-tab-button a[href="#edit-group-content"]')->click();
-
-    $session->wait(1500);
-    $addSection = $page->find(
-      'css',
-      '[data-drupal-selector="edit-field-service-sections-layout-paragraphs-builder"] a.lpb-btn.use-ajax.center.js-lpb-ui[href*="/choose-component"]'
-    );
-    $this->assertNotNull($addSection);
-    $addSection->click();
-
-    $session->wait(5000, "document.querySelector('.ui-dialog.lpb-dialog') !== null");
-    $session->executeScript(
-      "(function(){
-        var el = document.querySelector('.ui-dialog .ui-dialog-content a.use-ajax[href*=\"/insert/service_section\"]');
-        if (el) {
-          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
-          el.click();
-        }
-      })();"
-    );
-
-    $session->wait(
-      8000,
-      "document.querySelector('.ui-dialog .ui-dialog-title') && document.querySelector('.ui-dialog .ui-dialog-title').textContent.indexOf('Create new Service Section') !== -1"
-    );
-    $this->clickLayoutParagraphDialogSave();
-    $session->wait(8000, "document.querySelector('.ui-dialog.lpb-dialog') === null");
-
-    $session->wait(
-      8000,
-      "document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax[href*=\"choose-component?parent_uuid\"]') !== null"
-    );
-    $session->executeScript(
-      "(function(){
-        var el = document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax[href*=\"choose-component?parent_uuid\"]');
-        if (el) {
-          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
-          el.click();
-        }
-      })();"
-    );
-
-    $session->wait(3000, "document.querySelector('.ui-dialog .lpb-component-list__item.type-service_rich_text a.use-ajax') !== null");
-    $session->executeScript(
-      "(function(){
-        var el = document.querySelector('.ui-dialog .lpb-component-list__item.type-service_rich_text a.use-ajax');
-        if (el) {
-          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
-          el.click();
-        }
-      })();"
-    );
-
-    $session->wait(
-      10000,
-      "document.querySelector('.ui-dialog .ui-dialog-title') && document.querySelector('.ui-dialog .ui-dialog-title').textContent.toLowerCase().indexOf('rich text') !== -1"
-    );
-
-    $session->wait(
-      15000,
-      "document.querySelector('.ui-dialog .ck-editor [contenteditable=true]') !== null"
-    );
-  }
-
-  /**
-   * Clicks the Message box toolbar button in the LP Rich text CKEditor.
-   */
-  private function clickMessageBoxToolbarButton(): void {
-    $this->getSession()->executeScript(
-      "(function(){
-        var textarea = document.querySelector('.ui-dialog textarea[data-ckeditor5-id]');
-        if (!textarea) { return; }
-        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
-        if (!editor) { return; }
-        editor.model.change(function(writer) {
-          var root = editor.model.document.getRoot();
-          writer.setSelection(writer.createPositionAt(root, 'end'));
-        });
-        editor.editing.view.focus();
-        var button = editor.ui.componentFactory.create('messageBox');
-        if (button) {
-          button.fire('execute');
-        }
-      })();"
-    );
-  }
-
-  /**
-   * Returns CKEditor data from the Rich text field inside the LP modal.
-   */
-  private function getRichTextEditorData(): string {
-    return (string) $this->getSession()->evaluateScript(
-      "(function(){
-        var textarea = document.querySelector('.ui-dialog textarea[data-ckeditor5-id]');
-        if (!textarea) { return ''; }
-        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
-        return editor ? editor.getData() : '';
-      })();"
-    );
-  }
+  use InlineMessageLayoutParagraphsTestTrait;
 
   /**
    * Tests Message box dialog opens from Rich text inside a Service Section LP modal.
    */
   public function testMessageBoxDialogOpensInLayoutParagraphRichText(): void {
-    $user = $this->createUser();
-    $user->addRole('content_team');
-    $user->addRole('editor');
-    $user->activate();
-    $user->save();
-
+    $user = $this->createContentEditor();
     $service_page = $this->createNode([
       'type' => 'service_page',
       'title' => 'Message box LP dialog test ' . $this->randomMachineName(8),
@@ -179,9 +27,9 @@ class InlineMessageLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestB
     $this->drupalLogin($user);
     $this->visit($service_page->toUrl()->toString() . '/edit');
     $this->openServiceRichTextEditorInLayoutParagraph();
-    $session = $this->getSession();
+    $session = $this->inlineMessageSession();
 
-    $this->clickMessageBoxToolbarButton();
+    $this->fireMessageBoxToolbarInLayoutParagraph();
 
     $session->wait(
       20000,
@@ -193,16 +41,15 @@ class InlineMessageLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestB
           }
         }
         return false;
-      })()"
+      })()",
     );
 
     $title_field = $session->getPage()->find('css', '#mass-inline-message-dialog-form input[name="attributes[data-title]"]')
       ?: $session->getPage()->find('css', '.ui-dialog input[name="attributes[data-title]"]');
     $this->assertNotNull($title_field, 'Message title field should appear in nested Message box dialog.');
 
-    // Message box dialog should stack above the Rich text LP modal (two dialogs).
     $dialog_count = (int) $session->evaluateScript(
-      "document.querySelectorAll('.ui-dialog').length"
+      'document.querySelectorAll(\'.ui-dialog\').length',
     );
     $this->assertGreaterThanOrEqual(2, $dialog_count, 'Message box dialog should open on top of the Layout Paragraphs modal.');
   }
@@ -211,12 +58,7 @@ class InlineMessageLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestB
    * Tests inserting a Message box via dialog save stays in the LP Ajax flow.
    */
   public function testMessageBoxInsertAndSaveInLayoutParagraphRichText(): void {
-    $user = $this->createUser();
-    $user->addRole('content_team');
-    $user->addRole('editor');
-    $user->activate();
-    $user->save();
-
+    $user = $this->createContentEditor();
     $title = 'LP section alert ' . $this->randomMachineName(6);
     $service_page = $this->createNode([
       'type' => 'service_page',
@@ -228,15 +70,11 @@ class InlineMessageLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestB
     $this->drupalLogin($user);
     $this->visit($service_page->toUrl()->toString() . '/edit');
     $this->openServiceRichTextEditorInLayoutParagraph();
-    $session = $this->getSession();
+    $session = $this->inlineMessageSession();
     $page = $session->getPage();
 
-    $this->clickMessageBoxToolbarButton();
-
-    $session->wait(
-      20000,
-      "document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]') !== null"
-    );
+    $this->fireMessageBoxToolbarInLayoutParagraph();
+    $this->waitForMessageBoxDialogOpen();
 
     $page->fillField('attributes[data-title]', $title);
     $warning_radio = $page->find('css', '#mass-inline-message-dialog-form input[name="attributes[data-type]"][value="warning"]')
@@ -245,32 +83,99 @@ class InlineMessageLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestB
     $warning_radio->click();
 
     $this->clickMessageBoxDialogSave();
+    $this->waitForMessageBoxDialogClosed();
+    $this->assertMessageBoxSaveDidNotRedirectToDialogRoute();
+    $this->assertStringContainsString('/edit', $session->getCurrentUrl());
+
+    $session->wait(5000, "document.querySelector('.ui-dialog .ck-editor') !== null");
+    $rich_text_title = $session->evaluateScript(
+      "document.querySelector('.ui-dialog .ui-dialog-title') ? document.querySelector('.ui-dialog .ui-dialog-title').textContent : ''",
+    );
+    $this->assertStringContainsStringIgnoringCase('rich text', (string) $rich_text_title);
+
+    $editor_data = $this->getLayoutParagraphRichTextEditorData();
+    $this->assertStringContainsString('data-title="' . $title . '"', $editor_data);
+    $this->assertStringContainsString('data-type="warning"', $editor_data);
+    $this->assertStringContainsString('<mass-inline-message', $editor_data);
+  }
+
+  /**
+   * Widget toolbar stays above the Message box after a second edit in LP Rich text.
+   */
+  public function testMessageBoxWidgetToolbarPlacementAfterSecondEditInLayoutParagraph(): void {
+    $user = $this->createContentEditor();
+    $title = 'LP toolbar placement ' . $this->randomMachineName(6);
+    $service_page = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Message box LP toolbar test ' . $this->randomMachineName(8),
+      'uid' => $user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->drupalLogin($user);
+    $this->visit($service_page->toUrl()->toString() . '/edit');
+    $this->openServiceRichTextEditorInLayoutParagraph();
+    $session = $this->inlineMessageSession();
+    $page = $session->getPage();
+
+    $this->insertMessageBoxAtEnd(
+      self::LP_RICH_TEXT_EDITOR_SELECTOR,
+      $title,
+      'info',
+      '<p>LP toolbar test body.</p>',
+    );
+
+    $session->wait(10000, "document.querySelector('.ui-dialog .ck-content .mass-inline-message-ckeditor-widget') !== null");
+    $this->attachLayoutParagraphToolbarTestHelpers();
+
+    $this->assertTrue(
+      (bool) $session->evaluateScript('window.__massInlineMessageLpToolbarTest.selectMessageBoxWidget()'),
+      'Message box widget should be selectable in LP Rich text.',
+    );
+
+    $session->wait(10000, "(function(){
+      var t = window.__massInlineMessageLpToolbarTest;
+      if (!t || !t.selectMessageBoxWidget()) { return false; }
+      return t.clickWidgetEditButton();
+    })()");
+
+    $this->waitForMessageBoxDialogOpen();
+
+    $updated_title = $title . ' updated';
+    $page->fillField('attributes[data-title]', $updated_title);
+    $this->clickMessageBoxDialogSave();
 
     $session->wait(
       20000,
       "(function(){
-        if (window.location.href.indexOf('/mass-inline-message/dialog/') !== -1) {
-          return false;
-        }
-        return document.querySelector('#mass-inline-message-dialog-form') === null;
-      })()"
+        return document.querySelector('#mass-inline-message-dialog-form') === null
+          && document.querySelector('.ui-dialog .ck-editor') !== null;
+      })()",
     );
 
-    $current_url = $session->getCurrentUrl();
-    $this->assertStringNotContainsString('/mass-inline-message/dialog/', $current_url);
-    $this->assertStringContainsString('/edit', $current_url, 'Save should keep the user on the node edit form (alias or /node path).');
-
-    // Rich text LP modal should still be open after Message box save.
-    $session->wait(5000, "document.querySelector('.ui-dialog .ck-editor') !== null");
-    $rich_text_title = $session->evaluateScript(
-      "document.querySelector('.ui-dialog .ui-dialog-title') ? document.querySelector('.ui-dialog .ui-dialog-title').textContent : ''"
+    $this->assertTrue(
+      (bool) $session->evaluateScript('window.__massInlineMessageLpToolbarTest.selectMessageBoxWidget()'),
+      'Message box widget should be selectable again after the first edit.',
     );
-    $this->assertStringContainsStringIgnoringCase('rich text', (string) $rich_text_title);
 
-    $editor_data = $this->getRichTextEditorData();
-    $this->assertStringContainsString('data-title="' . $title . '"', $editor_data);
-    $this->assertStringContainsString('data-type="warning"', $editor_data);
-    $this->assertStringContainsString('<mass-inline-message', $editor_data);
+    $session->wait(10000, "(function(){
+      var t = window.__massInlineMessageLpToolbarTest;
+      if (!t || !t.selectMessageBoxWidget()) { return false; }
+      return t.clickWidgetEditButton();
+    })()");
+
+    $this->waitForMessageBoxDialogOpen();
+
+    $second_alignment = $session->evaluateScript('window.__massInlineMessageLpToolbarTest.getWidgetToolbarAlignment()');
+    if (!empty($second_alignment['hasBalloon'])) {
+      $this->assertTrue(
+        (bool) ($second_alignment['ok'] ?? FALSE),
+        'Widget toolbar should align above the Message box on second selection: ' . json_encode($second_alignment),
+      );
+    }
+
+    $editor_data = $this->getLayoutParagraphRichTextEditorData();
+    $this->assertStringContainsString('data-title="' . $updated_title . '"', $editor_data);
   }
 
 }

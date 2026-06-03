@@ -4,12 +4,13 @@ namespace Drupal\mass_inline_message\Form;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\CloseModalDialogCommand;
+use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\editor\Ajax\EditorDialogSave;
 use Drupal\filter\Entity\FilterFormat;
+use Drupal\mass_inline_message\MessageBoxBody;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -73,7 +74,7 @@ class MassInlineMessageDialog extends FormBase {
       '#maxlength' => self::TITLE_MAX_LENGTH,
       '#default_value' => $editor_object['data-title'] ?? '',
     ];
-    mass_inline_message_apply_maxlength($form['attributes']['data-title'], self::TITLE_MAX_LENGTH, [
+    MaxlengthFormHelper::apply($form['attributes']['data-title'], self::TITLE_MAX_LENGTH, [
       'enforce' => TRUE,
       'label' => $this->t('Content limited to @limit characters, remaining: <strong>@remaining</strong>'),
     ]);
@@ -109,7 +110,7 @@ class MassInlineMessageDialog extends FormBase {
     if (isset($form['body']['guidelines'])) {
       $form['body']['guidelines']['#access'] = FALSE;
     }
-    mass_inline_message_apply_maxlength($form['body'], self::BODY_MAX_LENGTH, [
+    MaxlengthFormHelper::apply($form['body'], self::BODY_MAX_LENGTH, [
       'enforce' => TRUE,
       'label' => $this->t('Content limited to @limit characters, remaining: <strong>@remaining</strong>'),
     ]);
@@ -195,16 +196,16 @@ class MassInlineMessageDialog extends FormBase {
     }
     $body_html = '';
     if ($body_raw !== '') {
-      $filter_format = $form['#filter_format'];
-      $filtered = check_markup($body_raw, $filter_format->id());
-      $body_html = mass_inline_message_normalize_body_html($filtered);
+      // Keep the authoring HTML from the nested editor so media/embed elements
+      // remain editable; rendering sanitization happens in text format filters.
+      $body_html = MessageBoxBody::normalize($body_raw);
     }
 
     $response->addCommand(new EditorDialogSave([
       'attributes' => $attributes,
       'body' => $body_html,
     ]));
-    $response->addCommand(new CloseModalDialogCommand());
+    $response->addCommand(new CloseDialogCommand('#mass-inline-message-modal'));
     $form_state->setResponse($response);
 
     return $response;

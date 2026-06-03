@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSite;
 
-use MassGov\Dtt\MassExistingSiteBase;
+use Drupal\mass_inline_message\MessageBoxBody;
 
 /**
- * Tests message body HTML normalization helpers.
+ * Tests message body HTML normalization.
  */
-class InlineMessageNormalizeTest extends MassExistingSiteBase {
+class InlineMessageNormalizeTest extends MassInlineMessageExistingSiteTestBase {
 
   /**
    * Tests a single CKEditor div wrapper is unwrapped.
@@ -15,25 +15,25 @@ class InlineMessageNormalizeTest extends MassExistingSiteBase {
   public function testUnwrapsCkeditorDivWrapper(): void {
     $input = '<div><p>Pay at <a href="/pay">mass.gov/pay</a>.</p></div>';
     $expected = '<p>Pay at <a href="/pay">mass.gov/pay</a>.</p>';
-    $this->assertSame($expected, mass_inline_message_normalize_body_html($input));
+    $this->assertSame($expected, MessageBoxBody::normalize($input));
   }
 
   /**
    * Tests empty body normalizes to empty string.
    */
   public function testEmptyBody(): void {
-    $this->assertSame('', mass_inline_message_normalize_body_html(''));
-    $this->assertSame('', mass_inline_message_normalize_body_html('   '));
+    $this->assertSame('', MessageBoxBody::normalize(''));
+    $this->assertSame('', MessageBoxBody::normalize('   '));
   }
 
   /**
-   * Tests disallowed tags are stripped during normalization.
+   * Tests rich embedded markup is preserved for later text-format filtering.
    */
-  public function testStripsDisallowedTags(): void {
-    $input = '<p>OK</p><script>alert(1)</script>';
-    $normalized = mass_inline_message_normalize_body_html($input);
+  public function testPreservesEmbeddedMarkup(): void {
+    $input = '<p>OK</p><drupal-media data-entity-type="media" data-entity-uuid="abc"></drupal-media>';
+    $normalized = MessageBoxBody::normalize($input);
     $this->assertStringContainsString('<p>OK</p>', $normalized);
-    $this->assertStringNotContainsString('<script', $normalized);
+    $this->assertStringContainsString('<drupal-media', $normalized);
   }
 
 }

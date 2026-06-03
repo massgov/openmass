@@ -2,40 +2,35 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
  * Verifies Message box dialog opens from CKEditor toolbar.
  */
-class InlineMessageDialogTest extends ExistingSiteSelenium2DriverTestBase {
+class InlineMessageDialogTest extends MassInlineMessageJavascriptTestBase {
 
   /**
    * Tests the dialog form route renders expected fields.
    */
   public function testMessageBoxDialogFormRoute(): void {
-    $admin = $this->createUser();
-    $admin->addRole('administrator');
-    $admin->activate();
-    $admin->save();
-    $this->drupalLogin($admin);
+    $this->drupalLogin($this->createAdministrator());
     $this->drupalGet('/mass-inline-message/dialog/basic_html');
-    $session = $this->getSession();
+    $session = $this->inlineMessageSession();
     $session->wait(5000, "document.querySelector('input[name=\"attributes[data-title]\"]') !== null");
     $session->wait(
       15000,
-      "document.querySelector('textarea[name=\"body[value]\"][data-ckeditor5-id]') !== null"
+      "document.querySelector('textarea[name=\"body[value]\"][data-ckeditor5-id]') !== null",
     );
     $title_count = $session->evaluateScript(
-      "document.querySelectorAll('input[name=\"attributes[data-title]\"]').length"
+      "document.querySelectorAll('input[name=\"attributes[data-title]\"]').length",
     );
     $warning_count = $session->evaluateScript(
-      "document.querySelectorAll('input[name=\"attributes[data-type]\"][value=\"warning\"]').length"
+      "document.querySelectorAll('input[name=\"attributes[data-type]\"][value=\"warning\"]').length",
     );
     $cancel_count = $session->evaluateScript(
-      "document.querySelectorAll('form.mass-inline-message-dialog-form .dialog-cancel, .ui-dialog-buttonpane .dialog-cancel').length"
+      "document.querySelectorAll('form.mass-inline-message-dialog-form .dialog-cancel, .ui-dialog-buttonpane .dialog-cancel').length",
     );
     $body_editor_count = $session->evaluateScript(
-      "document.querySelectorAll('textarea[name=\"body[value]\"][data-ckeditor5-id]').length"
+      "document.querySelectorAll('textarea[name=\"body[value]\"][data-ckeditor5-id]').length",
     );
     $this->assertSame(1, (int) $title_count, 'Message title field should appear on dialog route.');
     $this->assertSame(1, (int) $body_editor_count, 'Message text should use the parent text format editor.');
@@ -47,25 +42,10 @@ class InlineMessageDialogTest extends ExistingSiteSelenium2DriverTestBase {
    * Tests the Message box toolbar button opens the configuration dialog.
    */
   public function testMessageBoxDialogOpens(): void {
-    $admin = $this->createUser();
-    $admin->addRole('administrator');
-    $admin->activate();
-    $admin->save();
-    $this->drupalLogin($admin);
-
-    $node = $this->createNode([
-      'type' => 'page',
-      'title' => 'Message box dialog test ' . $this->randomMachineName(8),
-      'body' => [
-        'value' => '<p>Initial body.</p>',
-        'format' => 'basic_html',
-      ],
-      'status' => 1,
-    ]);
-    $node->save();
-
-    $this->drupalGet('node/' . $node->id() . '/edit');
-    $session = $this->getSession();
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+    $session = $this->inlineMessageSession();
 
     $session->wait(10000, "(function(){
       var buttons = document.querySelectorAll('.ck-toolbar .ck-button');
@@ -76,28 +56,10 @@ class InlineMessageDialogTest extends ExistingSiteSelenium2DriverTestBase {
       return false;
     })()");
 
-    $session->wait(10000, "document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]') !== null");
+    $this->waitForBodyFieldEditor();
+    $this->fireMessageBoxToolbarButton(self::BODY_FIELD_EDITOR_SELECTOR);
+    $this->waitForMessageBoxDialogOpen();
 
-    $session->executeScript(
-      "(function(){
-        var textarea = document.querySelector('[name=\"body[0][value]\"][data-ckeditor5-id]');
-        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
-        editor.model.change(function(writer) {
-          var root = editor.model.document.getRoot();
-          writer.setSelection(writer.createPositionAt(root, 'end'));
-        });
-        editor.editing.view.focus();
-        var button = editor.ui.componentFactory.create('messageBox');
-        if (button) {
-          button.fire('execute');
-        }
-      })();"
-    );
-
-    $session->wait(20000, "(function(){
-      return document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]')
-        || document.querySelector('.ui-dialog input[name=\"attributes[data-title]\"]');
-    })()");
     $page = $session->getPage();
     $title_field = $page->find('css', '#mass-inline-message-dialog-form input[name="attributes[data-title]"]')
       ?: $page->find('css', '.ui-dialog input[name="attributes[data-title]"]');

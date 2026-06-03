@@ -2,12 +2,11 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSite;
 
-use MassGov\Dtt\MassExistingSiteBase;
 
 /**
  * Tests filter_mass_inline_message renders Mayflower markup.
  */
-class InlineMessageFilterTest extends MassExistingSiteBase {
+class InlineMessageFilterTest extends MassInlineMessageExistingSiteTestBase {
 
   /**
    * Tests warning message box is rendered with Mayflower classes.

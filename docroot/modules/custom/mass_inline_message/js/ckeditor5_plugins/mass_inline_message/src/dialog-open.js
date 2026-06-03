@@ -1,5 +1,5 @@
 /**
- * Opens the Message box configuration dialog without scrolling the page.
+ * Opens the Message box configuration dialog (entity_embed pattern; no body scroll lock).
  *
  * @param {string} url
  *   Dialog URL.
@@ -10,86 +10,76 @@
  * @param {object} dialogSettings
  *   jQuery UI dialog settings.
  */
-let scrollLockState = null;
+import { refreshAllCkeditor5Viewports } from './viewport';
 
 /**
- * Returns TRUE when CKEditor is inside another open dialog (e.g. Layout Paragraphs).
+ * Dedicated modal wrapper so nested editor dialogs can use #drupal-modal.
  */
-function isNestedEditorDialogContext() {
-  const dialogs = document.querySelectorAll('.ui-dialog');
-  for (const dialog of dialogs) {
-    if (dialog.offsetParent !== null && dialog.querySelector('.ck-editor')) {
-      return true;
+function ensureMassInlineMessageModalContainer() {
+  if (document.getElementById('mass-inline-message-modal')) {
+    return;
+  }
+  const container = document.createElement('div');
+  container.id = 'mass-inline-message-modal';
+  container.className = 'ui-front';
+  container.style.display = 'none';
+  document.body.appendChild(container);
+}
+
+/**
+ * Preserve Message box save callback when nested embed/media dialogs close.
+ */
+function bindMessageBoxDialogLifecycle(saveCallback) {
+  window.__massInlineMessageSaveCallback = saveCallback;
+  Drupal.ckeditor5.saveCallback = saveCallback;
+
+  const restoreSaveCallback = () => {
+    if (
+      document.querySelector('#mass-inline-message-dialog-form') &&
+      window.__massInlineMessageSaveCallback
+    ) {
+      Drupal.ckeditor5.saveCallback = window.__massInlineMessageSaveCallback;
     }
-  }
-  const offCanvas = document.getElementById('drupal-off-canvas');
-  return !!(offCanvas && offCanvas.offsetParent !== null && offCanvas.querySelector('.ck-editor'));
-}
+  };
+  window.addEventListener('dialog:afterclose', restoreSaveCallback);
 
-function lockPageScroll() {
-  if (scrollLockState) {
-    return;
-  }
-  const y = window.scrollY;
-  scrollLockState = {x: window.scrollX, y};
-  document.documentElement.style.scrollBehavior = 'auto';
-  document.body.style.position = 'fixed';
-  document.body.style.top = `-${y}px`;
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.width = '100%';
-}
+  const onMessageBoxClose = () => {
+    if (document.querySelector('#mass-inline-message-dialog-form')) {
+      return;
+    }
+    window.removeEventListener('dialog:afterclose', restoreSaveCallback);
+    window.removeEventListener('dialog:afterclose', onMessageBoxClose);
+    delete window.__massInlineMessageSaveCallback;
+    if (Drupal.ckeditor5) {
+      Drupal.ckeditor5.saveCallback = null;
+    }
 
-function unlockPageScroll() {
-  if (!scrollLockState) {
-    return;
-  }
-  const {x, y} = scrollLockState;
-  document.body.style.position = '';
-  document.body.style.top = '';
-  document.body.style.left = '';
-  document.body.style.right = '';
-  document.body.style.width = '';
-  document.documentElement.style.scrollBehavior = '';
-  window.scrollTo(x, y);
-  scrollLockState = null;
+    window.requestAnimationFrame(() => {
+      refreshAllCkeditor5Viewports();
+    });
+  };
+  window.addEventListener('dialog:afterclose', onMessageBoxClose);
 }
 
 export function openMassInlineMessageDialog(url, editorObject, saveCallback, dialogSettings) {
-  const nestedDialog = isNestedEditorDialogContext();
+  ensureMassInlineMessageModalContainer();
 
-  if (!nestedDialog) {
-    lockPageScroll();
-  }
+  bindMessageBoxDialogLifecycle(saveCallback);
 
-  const unlock = () => {
-    if (!nestedDialog) {
-      unlockPageScroll();
-    }
-    window.removeEventListener('dialog:afterclose', unlock);
-    document.removeEventListener('editor:dialogsave', unlock);
-  };
-
-  window.addEventListener('dialog:afterclose', unlock);
-  document.addEventListener('editor:dialogsave', unlock, {once: true});
-
-  const restoreScrollAfterDialog = () => {
-    if (scrollLockState) {
-      document.body.style.top = `-${scrollLockState.y}px`;
-    }
+  const attachDialogBehaviors = () => {
     const dialogContent = document.querySelector(
-      '.ui-dialog:has(#mass-inline-message-dialog-form) .ui-dialog-content',
+      '#mass-inline-message-modal .ui-dialog-content:has(#mass-inline-message-dialog-form)',
     ) || document.querySelector('#mass-inline-message-dialog-form')?.closest('.ui-dialog-content');
     if (dialogContent && window.Drupal && window.Drupal.attachBehaviors) {
       window.Drupal.attachBehaviors(dialogContent, window.drupalSettings);
     }
   };
 
-  window.addEventListener('dialog:aftercreate', restoreScrollAfterDialog, {once: true});
+  window.addEventListener('dialog:aftercreate', attachDialogBehaviors, { once: true });
   if (window.jQuery) {
     window.jQuery(document).one('ajaxComplete.massInlineMessageOpen', () => {
       if (document.querySelector('#mass-inline-message-dialog-form')) {
-        restoreScrollAfterDialog();
+        attachDialogBehaviors();
       }
     });
   }
@@ -104,21 +94,30 @@ export function openMassInlineMessageDialog(url, editorObject, saveCallback, dia
   uiDialogClasses.push('ui-dialog--narrow', 'mass-inline-message-dialog');
   dialogSettings.classes['ui-dialog'] = uiDialogClasses.join(' ');
   dialogSettings.autoResize = window.matchMedia('(min-width: 600px)').matches;
-  dialogSettings.width = dialogSettings.width || 600;
+  dialogSettings.width = dialogSettings.width || 'auto';
 
-  // Match core CKEditor dialog loading when nested inside Layout Paragraphs modals.
+  const nestedDialog = (() => {
+    const dialogs = document.querySelectorAll('.ui-dialog');
+    for (const dialog of dialogs) {
+      if (dialog.offsetParent !== null && dialog.querySelector('.ck-editor')) {
+        return true;
+      }
+    }
+    return false;
+  })();
+
   const progressType = nestedDialog ? 'fullscreen' : 'throbber';
 
   const ckeditorAjaxDialog = Drupal.ajax({
     dialog: dialogSettings,
     dialogType: 'modal',
+    dialogRenderer: 'mass_inline_message',
     selector: '.ckeditor5-dialog-loading-link',
     url,
-    progress: {type: progressType},
+    progress: { type: progressType },
     submit: {
       editor_object: editorObject,
     },
   });
   ckeditorAjaxDialog.execute();
-  Drupal.ckeditor5.saveCallback = saveCallback;
 }
