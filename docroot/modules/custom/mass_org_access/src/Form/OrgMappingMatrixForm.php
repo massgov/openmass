@@ -210,7 +210,7 @@ class OrgMappingMatrixForm extends FormBase {
     $this->state->delete(self::STATE_KEY);
     $this->state->delete(self::FRESH_KEY);
     $this->messenger()->addStatus($this->t('Saved matrix cleared — fields now show each organization page current Permission Groups.'));
-    $form_state->setRebuild();
+    $this->redirectToForm($form_state);
   }
 
   /**
@@ -220,7 +220,22 @@ class OrgMappingMatrixForm extends FormBase {
     $this->state->delete(self::STATE_KEY);
     $this->state->set(self::FRESH_KEY, TRUE);
     $this->messenger()->addStatus($this->t('Saved matrix cleared — fields start empty. Build the mapping from scratch.'));
-    $form_state->setRebuild();
+    $this->redirectToForm($form_state);
+  }
+
+  /**
+   * Redirects to a fresh GET of the form, keeping the page size.
+   *
+   * A plain rebuild would keep the submitted Select2 values and mask the
+   * cleared state; a redirect rebuilds the form from the updated State.
+   */
+  private function redirectToForm(FormStateInterface $form_state): void {
+    $query = [];
+    $items = $this->getRequest()->query->get('items');
+    if ($items !== NULL) {
+      $query['items'] = $items;
+    }
+    $form_state->setRedirect('mass_org_access.mapping_matrix', [], ['query' => $query]);
   }
 
   /**
