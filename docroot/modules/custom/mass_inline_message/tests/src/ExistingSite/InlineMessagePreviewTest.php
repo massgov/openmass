@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSite;
 
-
 /**
  * Tests Message box preview rendering uses the same Mayflower output as the filter.
  */

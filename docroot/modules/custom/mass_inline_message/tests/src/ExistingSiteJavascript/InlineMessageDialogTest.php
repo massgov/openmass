@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSiteJavascript;
 
-
 /**
  * Verifies Message box dialog opens from CKEditor toolbar.
  */

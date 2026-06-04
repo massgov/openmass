@@ -26,7 +26,7 @@ class InlineMessageCKEditorTest extends MassInlineMessageJavascriptTestBase {
       'warning',
       '<p>Direct insert body.</p>',
     );
-    $editor_data = $this->getCKEditorData(self::BODY_FIELD_EDITOR_SELECTOR);
+    $editor_data = $this->getCkeditorData(self::BODY_FIELD_EDITOR_SELECTOR);
     $this->assertStringContainsString('data-title="Direct insert title"', (string) $editor_data);
     $this->assertStringContainsString('data-type="warning"', (string) $editor_data);
     $this->assertStringContainsString('Direct insert body', (string) $editor_data);
@@ -41,7 +41,7 @@ class InlineMessageCKEditorTest extends MassInlineMessageJavascriptTestBase {
     $this->drupalGet('node/' . $node_id . '/edit');
     $this->waitForBodyFieldEditor();
 
-    $editor_data = $this->setCKEditorData(self::BODY_FIELD_EDITOR_SELECTOR, self::OVERVIEW_WITH_MESSAGE_BOX);
+    $editor_data = $this->setCkeditorData(self::BODY_FIELD_EDITOR_SELECTOR, self::OVERVIEW_WITH_MESSAGE_BOX);
 
     $this->assertStringContainsString('data-title="Payment options"', (string) $editor_data);
     $this->assertStringContainsString('mass.gov/pay', (string) $editor_data);

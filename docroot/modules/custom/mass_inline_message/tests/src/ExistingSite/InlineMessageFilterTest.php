@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSite;
 
-
 /**
  * Tests filter_mass_inline_message renders Mayflower markup.
  */

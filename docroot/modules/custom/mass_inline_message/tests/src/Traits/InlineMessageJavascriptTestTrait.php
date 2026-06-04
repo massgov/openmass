@@ -94,7 +94,7 @@ trait InlineMessageJavascriptTestTrait {
   /**
    * Returns CKEditor getData() for a textarea matched by CSS selector.
    */
-  protected function getCKEditorData(string $textareaSelector): string {
+  protected function getCkeditorData(string $textareaSelector): string {
     return (string) $this->inlineMessageSession()->evaluateScript(
       "(function(){
         var textarea = document.querySelector(" . json_encode($textareaSelector) . ");
@@ -109,7 +109,7 @@ trait InlineMessageJavascriptTestTrait {
   /**
    * Sets CKEditor data for a textarea matched by CSS selector.
    */
-  protected function setCKEditorData(string $textareaSelector, string $html): string {
+  protected function setCkeditorData(string $textareaSelector, string $html): string {
     return (string) $this->inlineMessageSession()->evaluateScript(
       "(function(){
         var textarea = document.querySelector(" . json_encode($textareaSelector) . ");

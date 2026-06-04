@@ -81,7 +81,7 @@ class InlineMessageInfoDetailsOverviewTest extends MassInlineMessageJavascriptTe
       return data.indexOf('data-title=\"Payment options\"') !== -1;
     })()");
 
-    $editor_data = $this->getCKEditorData(self::OVERVIEW_EDITOR_SELECTOR);
+    $editor_data = $this->getCkeditorData(self::OVERVIEW_EDITOR_SELECTOR);
     $this->assertStringContainsString('data-title="Payment options"', $editor_data);
     $this->assertStringContainsString('mass.gov/pay', $editor_data);
     $this->assertStringContainsString('<mass-inline-message', $editor_data);

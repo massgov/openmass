@@ -120,7 +120,7 @@ trait InlineMessageLayoutParagraphsTestTrait {
    * Returns CKEditor data from the Rich text field inside the LP modal.
    */
   protected function getLayoutParagraphRichTextEditorData(): string {
-    return $this->getCKEditorData(self::LP_RICH_TEXT_EDITOR_SELECTOR);
+    return $this->getCkeditorData(self::LP_RICH_TEXT_EDITOR_SELECTOR);
   }
 
 }
