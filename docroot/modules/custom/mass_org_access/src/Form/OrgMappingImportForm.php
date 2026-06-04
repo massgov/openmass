@@ -82,6 +82,13 @@ class OrgMappingImportForm extends FormBase {
       ],
     ];
 
+    $form['force_override'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Force override existing mappings'),
+      '#default_value' => FALSE,
+      '#description' => $this->t('When checked, organization pages are overwritten with the CSV values. When unchecked, organization pages that already have Permission Groups are left unchanged and logged as skipped.'),
+    ];
+
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
@@ -133,7 +140,8 @@ class OrgMappingImportForm extends FormBase {
     }
 
     $file = $this->loadUploadedFile($form_state);
-    $log_uri = $this->importer->startLog($file ? $file->getFilename() : 'upload.csv', $parsed);
+    $force = (bool) $form_state->getValue('force_override');
+    $log_uri = $this->importer->startLog($file ? $file->getFilename() : 'upload.csv', $parsed, $force);
 
     // Summarize ignored rows in a single message — never one per row, which on
     // a large wrong file would overflow the session and break the request. The
@@ -148,7 +156,7 @@ class OrgMappingImportForm extends FormBase {
 
     $operations = [];
     foreach ($parsed['mappings'] as $nid => $tids) {
-      $operations[] = [[self::class, 'batchApply'], [$nid, $tids, $log_uri]];
+      $operations[] = [[self::class, 'batchApply'], [$nid, $tids, $force, $log_uri]];
     }
     batch_set([
       'title' => $this->t('Importing organization mappings'),
@@ -177,9 +185,9 @@ class OrgMappingImportForm extends FormBase {
    * Runs outside the request that built the form, so the importer service is
    * resolved from the container here.
    */
-  public static function batchApply(int $nid, array $tids, string $log_uri, array &$context): void {
+  public static function batchApply(int $nid, array $tids, bool $force, string $log_uri, array &$context): void {
     $importer = \Drupal::service('mass_org_access.mapping_importer');
-    $result = $importer->apply($nid, $tids);
+    $result = $importer->apply($nid, $tids, $force);
     $importer->logResult($log_uri, $result);
 
     $key = ($result['status'] ?? '') === OrgMappingImporter::IMPORTED ? 'imported' : 'skipped';

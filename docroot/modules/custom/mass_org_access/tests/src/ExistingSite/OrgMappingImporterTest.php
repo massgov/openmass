@@ -104,6 +104,35 @@ class OrgMappingImporterTest extends MassExistingSiteBase {
   }
 
   /**
+   * With force off, an org_page that already has Permission Groups is skipped.
+   */
+  public function testApplySkipsExistingWhenNotForced(): void {
+    $vocab = Vocabulary::load('user_organization');
+    $existing = $this->createTerm($vocab, ['name' => 'Existing ' . $this->randomMachineName()]);
+    $new = $this->createTerm($vocab, ['name' => 'New ' . $this->randomMachineName()]);
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Has PG ' . $this->randomMachineName(),
+      'field_content_organization' => [$existing->id()],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $result = $this->importer()->apply((int) $org->id(), [(int) $new->id()], FALSE);
+
+    $this->assertSame(OrgMappingImporter::SKIPPED, $result['status']);
+    $this->assertStringContainsString('already has Permission Groups', $result['reason']);
+
+    $org = \Drupal::entityTypeManager()->getStorage('node')->loadUnchanged($org->id());
+    $tids = array_map('intval', array_column(
+      $org->get('field_content_organization')->getValue(),
+      'target_id'
+    ));
+    $this->assertSame([(int) $existing->id()], $tids, 'The existing value is preserved.');
+    $this->assertNotContains((int) $new->id(), $tids);
+  }
+
+  /**
    * Apply refuses a node that is not an organization page.
    */
   public function testApplyRejectsNonOrgPage(): void {

@@ -107,11 +107,14 @@ class OrgMappingImporter {
    *   org_page node ID.
    * @param int[] $tids
    *   user_organization term IDs from the CSV for this node.
+   * @param bool $force
+   *   When FALSE, an org_page that already has Permission Groups is left
+   *   unchanged and reported as skipped; when TRUE, its value is replaced.
    *
    * @return array{nid: int, status: string, reason?: string, tids?: int[], invalid_tids?: int[], revisions?: string[]}
    *   Structured result describing what happened, for the import log.
    */
-  public function apply(int $nid, array $tids): array {
+  public function apply(int $nid, array $tids, bool $force = TRUE): array {
     $storage = $this->entityTypeManager->getStorage('node');
     $node = $storage->load($nid);
     if (!$node instanceof NodeInterface || $node->bundle() !== 'org_page') {
@@ -119,6 +122,13 @@ class OrgMappingImporter {
     }
     if (!$node->hasField('field_content_organization')) {
       return ['nid' => $nid, 'status' => self::SKIPPED, 'reason' => 'no Permission Groups field'];
+    }
+    if (!$force && !$node->get('field_content_organization')->isEmpty()) {
+      return [
+        'nid' => $nid,
+        'status' => self::SKIPPED,
+        'reason' => 'already has Permission Groups; left unchanged (Force Override off)',
+      ];
     }
 
     [$resolved, $invalid_tids] = $this->resolveTermsWithAncestors($tids);
@@ -209,7 +219,7 @@ class OrgMappingImporter {
    * @return string
    *   The log file URI, or '' if it could not be created.
    */
-  public function startLog(string $filename, array $parsed): string {
+  public function startLog(string $filename, array $parsed, bool $force = TRUE): string {
     $uri = uniqid('temporary://org-mapping-import-', TRUE) . '.log';
     $handle = @fopen($uri, 'w');
     if ($handle === FALSE) {
@@ -218,6 +228,7 @@ class OrgMappingImporter {
     fwrite($handle, "Organization mapping import\n");
     fwrite($handle, 'Date: ' . date('Y-m-d H:i:s') . "\n");
     fwrite($handle, 'Source file: ' . $filename . "\n");
+    fwrite($handle, 'Force override existing: ' . ($force ? 'yes' : 'no') . "\n");
     fwrite($handle, str_repeat('=', 60) . "\n\n");
 
     $invalid = (int) ($parsed['invalid'] ?? 0);
