@@ -1,4 +1,4 @@
-(function(){
+(function () {
   function getLpRichTextEditor() {
     var textarea = document.querySelector('.ui-dialog textarea[data-ckeditor5-id]');
     if (!textarea) { return null; }
@@ -20,7 +20,7 @@
   function getWidgetToolbarAlignment() {
     var editor = getLpRichTextEditor();
     if (!editor) {
-      return { ok: false, reason: 'no-editor' };
+      return {ok: false, reason: 'no-editor'};
     }
     var widget = getSelectedWidgetDom(editor);
     var balloon = null;
@@ -36,7 +36,7 @@
       }
     }
     if (!widget || !balloon) {
-      return { ok: false, hasWidget: !!widget, hasBalloon: !!balloon };
+      return {ok: false, hasWidget: !!widget, hasBalloon: !!balloon};
     }
     var wr = widget.getBoundingClientRect();
     var br = balloon.getBoundingClientRect();
@@ -70,7 +70,7 @@
     if (!editor) { return false; }
     var modelElement = findMassInlineMessageModel(editor);
     if (!modelElement) { return false; }
-    editor.model.change(function(writer) {
+    editor.model.change(function (writer) {
       writer.setSelection(modelElement, 'on');
     });
     editor.editing.view.focus();
