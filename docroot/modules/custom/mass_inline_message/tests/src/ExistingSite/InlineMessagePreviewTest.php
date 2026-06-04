@@ -27,6 +27,23 @@ class InlineMessagePreviewTest extends MassInlineMessageExistingSiteTestBase {
   }
 
   /**
+   * Tests title-only message boxes omit the Mayflower rich-text content region.
+   */
+  public function testEmptyBodyOmitsRichTextRegion(): void {
+    $renderer = $this->messageBoxRenderer();
+
+    $title_only = $renderer->renderHtml('info', 'Title only', NULL);
+    $this->assertStringContainsString('Title only', $title_only);
+    $this->assertStringNotContainsString('ma__inline-message__content', $title_only);
+
+    $ckeditor_empty = $renderer->renderHtml('info', 'Title only', '<p></p>');
+    $this->assertStringNotContainsString('ma__inline-message__content', $ckeditor_empty);
+
+    $nbsp_only = $renderer->renderHtml('info', 'Title only', '<p>&nbsp;</p>');
+    $this->assertStringNotContainsString('ma__inline-message__content', $nbsp_only);
+  }
+
+  /**
    * Tests CKEditor preview inlines SVG icons instead of leaving placeholders.
    */
   public function testPreviewRenderInlinesSvgIcons(): void {

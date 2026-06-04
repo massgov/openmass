@@ -46,10 +46,13 @@ class MassInlineMessagePreviewController extends ControllerBase {
     $body_raw = trim((string) ($payload['body'] ?? ''));
     $body_for_render = NULL;
     if ($body_raw !== '') {
-      $body_for_render = check_markup(
+      $filtered_body = check_markup(
         MessageBoxBody::normalize($body_raw),
         $filter_format->id()
       );
+      if (MessageBoxBody::hasRenderableContent($filtered_body)) {
+        $body_for_render = $filtered_body;
+      }
     }
 
     return new JsonResponse([

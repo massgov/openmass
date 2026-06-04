@@ -27,6 +27,18 @@ class InlineMessageNormalizeTest extends MassInlineMessageExistingSiteTestBase {
   }
 
   /**
+   * Tests CKEditor empty paragraph markup is not considered renderable content.
+   */
+  public function testEmptyCkeditorMarkupIsNotRenderable(): void {
+    $this->assertFalse(MessageBoxBody::hasRenderableContent('<p></p>'));
+    $this->assertFalse(MessageBoxBody::hasRenderableContent('<p><br></p>'));
+    $this->assertFalse(MessageBoxBody::hasRenderableContent('<p>&nbsp;</p>'));
+    $this->assertFalse(MessageBoxBody::hasRenderableContent('&nbsp;'));
+    $this->assertSame('', MessageBoxBody::normalize('<div><p>&nbsp;</p></div>'));
+    $this->assertTrue(MessageBoxBody::hasRenderableContent('<p>Text</p>'));
+  }
+
+  /**
    * Tests rich embedded markup is preserved for later text-format filtering.
    */
   public function testPreservesEmbeddedMarkup(): void {

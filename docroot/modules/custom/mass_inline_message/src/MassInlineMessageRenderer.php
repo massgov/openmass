@@ -23,7 +23,7 @@ class MassInlineMessageRenderer {
       '#theme' => 'mass_inline_message',
       '#type' => $type,
       '#heading' => $heading,
-      '#body' => $body ? Markup::create($body) : NULL,
+      '#body' => MessageBoxBody::hasRenderableContent($body) ? Markup::create($body) : NULL,
     ];
   }
 

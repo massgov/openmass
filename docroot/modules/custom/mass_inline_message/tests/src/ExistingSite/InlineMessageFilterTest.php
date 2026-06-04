@@ -22,6 +22,17 @@ class InlineMessageFilterTest extends MassInlineMessageExistingSiteTestBase {
   }
 
   /**
+   * Tests title-only stored markup does not render an empty content region.
+   */
+  public function testFilterOmitsBodyWhenOnlyNbsp(): void {
+    $html = '<mass-inline-message data-title="Alert" data-type="warning"><p>&nbsp;</p></mass-inline-message>';
+    $filtered = check_markup($html, 'basic_html');
+    $this->assertStringContainsString('Alert', $filtered);
+    $this->assertStringNotContainsString('ma__inline-message__content', $filtered);
+    $this->assertStringNotContainsString('&nbsp;', $filtered);
+  }
+
+  /**
    * Tests info message box renders without warning modifier.
    */
   public function testFilterRendersInfoType(): void {

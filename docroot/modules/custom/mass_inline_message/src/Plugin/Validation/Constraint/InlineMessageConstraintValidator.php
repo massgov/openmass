@@ -54,13 +54,13 @@ class InlineMessageConstraintValidator extends ConstraintValidator {
       }
 
       $raw_body_html = MessageBoxBody::extractRawFromElement($node);
-      if ($raw_body_html === '') {
+      if (!MessageBoxBody::hasRenderableContent($raw_body_html)) {
         continue;
       }
 
       $body_html = MessageBoxBody::normalize($raw_body_html);
 
-      $plain_length = mb_strlen(html_entity_decode(strip_tags($body_html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+      $plain_length = mb_strlen(MessageBoxBody::plainText($body_html));
       if ($plain_length > MassInlineMessageDialog::BODY_MAX_LENGTH) {
         $this->context->addViolation($constraint->bodyTooLongMessage, [
           '@count' => MassInlineMessageDialog::BODY_MAX_LENGTH,

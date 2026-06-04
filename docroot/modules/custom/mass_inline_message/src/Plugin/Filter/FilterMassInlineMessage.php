@@ -59,7 +59,7 @@ class FilterMassInlineMessage extends FilterBase implements ContainerFactoryPlug
       }
 
       $body_html = MessageBoxBody::normalize($matches[2]);
-      $body_for_render = $body_html !== '' ? $body_html : NULL;
+      $body_for_render = MessageBoxBody::hasRenderableContent($body_html) ? $body_html : NULL;
 
       // Layout Paragraphs preview renders via Ajax and may skip the global
       // SVG placeholder processor; inline the icon SVGs here for consistency.
