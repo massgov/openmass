@@ -27,6 +27,14 @@ services:
   Drupal\mass_org_access\BackfillRunner:
     alias: mass_org_access.backfill_runner
 
+  mass_org_access.mapping_importer:
+    class: Drupal\mass_org_access\OrgMappingImporter
+    arguments:
+      - '@entity_type.manager'
+
+  Drupal\mass_org_access\OrgMappingImporter:
+    alias: mass_org_access.mapping_importer
+
   mass_org_access.hooks:
     class: Drupal\mass_org_access\Hook\MassOrgAccessHooks
     arguments:

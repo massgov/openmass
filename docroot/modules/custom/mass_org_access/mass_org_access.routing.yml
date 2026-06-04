@@ -15,3 +15,25 @@ mass_org_access.settings:
     _title: 'Organization access settings'
   requirements:
     _permission: 'administer site configuration'
+
+mass_org_access.mapping_import:
+  path: '/admin/config/content/mass-org-access/import'
+  defaults:
+    _form: '\Drupal\mass_org_access\Form\OrgMappingImportForm'
+    _title: 'Import organization mappings'
+  requirements:
+    _permission: 'administer site configuration'
+
+mass_org_access.mapping_import_template:
+  path: '/admin/config/content/mass-org-access/import/template'
+  defaults:
+    _controller: '\Drupal\mass_org_access\Controller\OrgMappingImportController::template'
+  requirements:
+    _permission: 'administer site configuration'
+
+mass_org_access.mapping_import_log:
+  path: '/admin/config/content/mass-org-access/import/log'
+  defaults:
+    _controller: '\Drupal\mass_org_access\Controller\OrgMappingImportController::log'
+  requirements:
+    _permission: 'administer site configuration'
