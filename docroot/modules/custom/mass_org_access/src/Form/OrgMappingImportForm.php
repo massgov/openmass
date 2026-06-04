@@ -210,7 +210,7 @@ class OrgMappingImportForm extends FormBase {
 
     \Drupal::service('mass_org_access.mapping_importer')->finishLog($log_uri, $imported, $skipped);
 
-    $messenger->addStatus(t('Updated Permission Groups on @imported organization page(s); @skipped node(s) skipped.', [
+    $messenger->addStatus(t('Updated Permission Groups on @imported organization page(s); @skipped skipped.', [
       '@imported' => $imported,
       '@skipped' => $skipped,
     ]));

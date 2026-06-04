@@ -5,25 +5,31 @@ declare(strict_types=1);
 namespace Drupal\mass_org_access\Controller;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\mass_org_access\Form\OrgMappingMatrixForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Serves the CSV template and the import log for the org mapping import.
+ * Serves the CSV template, the import log, and the matrix export.
  */
 class OrgMappingImportController implements ContainerInjectionInterface {
 
   public function __construct(
     private readonly PrivateTempStoreFactory $tempStoreFactory,
+    private readonly StateInterface $state,
   ) {}
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): self {
-    return new self($container->get('tempstore.private'));
+    return new self(
+      $container->get('tempstore.private'),
+      $container->get('state'),
+    );
   }
 
   /**
@@ -48,6 +54,24 @@ class OrgMappingImportController implements ContainerInjectionInterface {
     return new Response((string) file_get_contents($uri), 200, [
       'Content-Type' => 'text/plain; charset=utf-8',
       'Content-Disposition' => 'attachment; filename="org-mapping-import.log"',
+    ]);
+  }
+
+  /**
+   * Streams the saved matrix as a "nodeid,termid" CSV.
+   */
+  public function matrixCsv(): Response {
+    $matrix = $this->state->get(OrgMappingMatrixForm::STATE_KEY, []);
+    ksort($matrix);
+    $lines = ['nodeid,termid'];
+    foreach ($matrix as $nid => $tids) {
+      foreach ((array) $tids as $tid) {
+        $lines[] = (int) $nid . ',' . (int) $tid;
+      }
+    }
+    return new Response(implode("\n", $lines) . "\n", 200, [
+      'Content-Type' => 'text/csv',
+      'Content-Disposition' => 'attachment; filename="org-mapping.csv"',
     ]);
   }
 

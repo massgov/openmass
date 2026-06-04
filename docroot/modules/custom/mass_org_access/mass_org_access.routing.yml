@@ -37,3 +37,18 @@ mass_org_access.mapping_import_log:
     _controller: '\Drupal\mass_org_access\Controller\OrgMappingImportController::log'
   requirements:
     _permission: 'administer site configuration'
+
+mass_org_access.mapping_matrix:
+  path: '/admin/config/content/mass-org-access/matrix'
+  defaults:
+    _form: '\Drupal\mass_org_access\Form\OrgMappingMatrixForm'
+    _title: 'Edit organization mappings'
+  requirements:
+    _permission: 'administer site configuration'
+
+mass_org_access.mapping_matrix_csv:
+  path: '/admin/config/content/mass-org-access/matrix/csv'
+  defaults:
+    _controller: '\Drupal\mass_org_access\Controller\OrgMappingImportController::matrixCsv'
+  requirements:
+    _permission: 'administer site configuration'

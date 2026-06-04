@@ -286,7 +286,7 @@ class OrgMappingImporter {
     fwrite($handle, "\n" . str_repeat('=', 60) . "\n");
     fwrite($handle, "Summary\n");
     fwrite($handle, sprintf("  Organization pages updated: %d\n", $imported));
-    fwrite($handle, sprintf("  Nodes skipped: %d\n", $skipped));
+    fwrite($handle, sprintf("  Organization pages skipped: %d\n", $skipped));
     fclose($handle);
   }
 
