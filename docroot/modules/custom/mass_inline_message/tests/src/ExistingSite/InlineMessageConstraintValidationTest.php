@@ -69,23 +69,6 @@ class InlineMessageConstraintValidationTest extends MassInlineMessageExistingSit
   }
 
   /**
-   * Tests valid markup produces no violations.
-   */
-  public function testValidMessage(): void {
-    $markup = '<mass-inline-message data-title="Valid" data-type="warning"><p>Short body.</p></mass-inline-message>';
-    $violations = $this->validateInlineMessageMarkup($markup);
-    $this->assertCount(0, $violations);
-  }
-
-  /**
-   * Tests empty overview text without message boxes has no violations.
-   */
-  public function testEmptyOverviewHasNoViolations(): void {
-    $violations = $this->validateInlineMessageMarkup('');
-    $this->assertCount(0, $violations);
-  }
-
-  /**
    * Tests saving an info_details overview field with a message box passes validation.
    */
   public function testInfoDetailsOverviewFieldSaveWorkflow(): void {

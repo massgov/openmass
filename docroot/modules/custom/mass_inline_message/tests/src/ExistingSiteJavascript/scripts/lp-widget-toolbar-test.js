@@ -79,22 +79,9 @@
     return !!(selected && selected.name === 'massInlineMessage');
   }
 
-  function clickWidgetEditButton() {
-    var buttons = document.querySelectorAll('.ck-body-wrapper .ck-toolbar .ck-button');
-    for (var i = 0; i < buttons.length; i++) {
-      var tip = (buttons[i].getAttribute('data-cke-tooltip-text') || buttons[i].getAttribute('aria-label') || '').toLowerCase();
-      if (tip === 'edit') {
-        buttons[i].click();
-        return true;
-      }
-    }
-    return false;
-  }
-
   window.__massInlineMessageLpToolbarTest = {
     getWidgetToolbarAlignment: getWidgetToolbarAlignment,
-    selectMessageBoxWidget: selectMessageBoxWidget,
-    clickWidgetEditButton: clickWidgetEditButton
+    selectMessageBoxWidget: selectMessageBoxWidget
   };
   return true;
 })();

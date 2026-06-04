@@ -36,7 +36,7 @@ export default class MassInlineMessageUI extends Plugin {
           libraryURL,
           {},
           (values) => {
-            editor.commands.get('insertMassInlineMessage')._insert({
+            editor.execute('insertMassInlineMessage', {
               attributes: values.attributes,
               body: values.body || '',
               selection: savedSelection,

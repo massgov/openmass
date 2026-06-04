@@ -1,6 +1,10 @@
 /**
  * @file
  * Loads server-rendered Mayflower inline-message markup for CKEditor widgets.
+ *
+ * Preview uses a same-origin POST with the editor session cookie. Access is
+ * checked on the server (use text format permission). No extra CSRF header is
+ * used here, same as other CKEditor dialog routes in this project.
  */
 
 const previewRequests = new WeakMap();

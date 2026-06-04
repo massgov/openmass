@@ -30,6 +30,8 @@ class MassInlineMessagePreviewController extends ControllerBase {
 
   /**
    * Returns Mayflower inline-message HTML for CKEditor widget preview.
+   *
+   * POST with session auth; caller must have "use text format" for the format.
    */
   public function preview(FilterFormat $filter_format, Request $request): JsonResponse {
     $payload = json_decode($request->getContent(), TRUE);

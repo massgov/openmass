@@ -1,5 +1,6 @@
 /**
- * Refreshes every active CKEditor 5 instance (e.g. after modal stack changes).
+ * @file
+ * Keeps the widget Edit toolbar positioned above the box inside LP modals.
  */
 export function refreshAllCkeditor5Viewports() {
   if (typeof Drupal === 'undefined' || !Drupal.CKEditor5Instances) {

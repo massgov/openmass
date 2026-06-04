@@ -27,14 +27,6 @@ use Drupal\editor\EditorInterface;
  *     elements = {
  *       "<mass-inline-message>",
  *       "<mass-inline-message data-title data-type>",
- *       "<p>",
- *       "<br>",
- *       "<strong>",
- *       "<em>",
- *       "<a href hreflang>",
- *       "<ul>",
- *       "<ol>",
- *       "<li>",
  *     },
  *   ),
  * )

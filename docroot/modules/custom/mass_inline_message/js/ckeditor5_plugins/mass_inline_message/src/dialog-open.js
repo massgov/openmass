@@ -1,14 +1,9 @@
 /**
- * Opens the Message box configuration dialog (entity_embed pattern; no body scroll lock).
+ * @file
+ * Opens the Message box dialog from CKEditor (Ajax modal + save callback).
  *
- * @param {string} url
- *   Dialog URL.
- * @param {object} editorObject
- *   Values passed as editor_object to the dialog.
- * @param {function} saveCallback
- *   Called with saved values on editor:dialogsave.
- * @param {object} dialogSettings
- *   jQuery UI dialog settings.
+ * Works with mass-inline-message-dialog.js: this file starts the dialog;
+ * the behavior file wires Save/Cancel clicks inside the modal.
  */
 import { refreshAllCkeditor5Viewports } from './viewport';
 

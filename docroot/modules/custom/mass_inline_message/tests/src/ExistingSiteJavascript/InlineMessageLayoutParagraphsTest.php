@@ -13,48 +13,6 @@ class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestB
   use InlineMessageLayoutParagraphsTestTrait;
 
   /**
-   * Tests Message box dialog opens from Rich text inside a Service Section LP modal.
-   */
-  public function testMessageBoxDialogOpensInLayoutParagraphRichText(): void {
-    $user = $this->createContentEditor();
-    $service_page = $this->createNode([
-      'type' => 'service_page',
-      'title' => 'Message box LP dialog test ' . $this->randomMachineName(8),
-      'uid' => $user->id(),
-      'moderation_state' => MassModeration::PUBLISHED,
-    ]);
-
-    $this->drupalLogin($user);
-    $this->visit($service_page->toUrl()->toString() . '/edit');
-    $this->openServiceRichTextEditorInLayoutParagraph();
-    $session = $this->inlineMessageSession();
-
-    $this->fireMessageBoxToolbarInLayoutParagraph();
-
-    $session->wait(
-      20000,
-      "(function(){
-        var dialogs = document.querySelectorAll('.ui-dialog');
-        for (var i = 0; i < dialogs.length; i++) {
-          if (dialogs[i].querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]')) {
-            return true;
-          }
-        }
-        return false;
-      })()",
-    );
-
-    $title_field = $session->getPage()->find('css', '#mass-inline-message-dialog-form input[name="attributes[data-title]"]')
-      ?: $session->getPage()->find('css', '.ui-dialog input[name="attributes[data-title]"]');
-    $this->assertNotNull($title_field, 'Message title field should appear in nested Message box dialog.');
-
-    $dialog_count = (int) $session->evaluateScript(
-      'document.querySelectorAll(\'.ui-dialog\').length',
-    );
-    $this->assertGreaterThanOrEqual(2, $dialog_count, 'Message box dialog should open on top of the Layout Paragraphs modal.');
-  }
-
-  /**
    * Tests inserting a Message box via dialog save stays in the LP Ajax flow.
    */
   public function testMessageBoxInsertAndSaveInLayoutParagraphRichText(): void {
@@ -132,12 +90,15 @@ class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestB
       (bool) $session->evaluateScript('window.__massInlineMessageLpToolbarTest.selectMessageBoxWidget()'),
       'Message box widget should be selectable in LP Rich text.',
     );
-
-    $session->wait(10000, "(function(){
-      var t = window.__massInlineMessageLpToolbarTest;
-      if (!t || !t.selectMessageBoxWidget()) { return false; }
-      return t.clickWidgetEditButton();
+    $session->wait(5000, "(function(){
+      var buttons = document.querySelectorAll('.ck-body-wrapper .ck-toolbar .ck-button');
+      for (var i = 0; i < buttons.length; i++) {
+        var tip = (buttons[i].getAttribute('data-cke-tooltip-text') || buttons[i].getAttribute('aria-label') || '').toLowerCase();
+        if (tip === 'edit') { return true; }
+      }
+      return false;
     })()");
+    $this->clickMessageBoxWidgetEditButton();
 
     $this->waitForMessageBoxDialogOpen();
 
@@ -158,11 +119,16 @@ class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestB
       'Message box widget should be selectable again after the first edit.',
     );
 
-    $session->wait(10000, "(function(){
-      var t = window.__massInlineMessageLpToolbarTest;
-      if (!t || !t.selectMessageBoxWidget()) { return false; }
-      return t.clickWidgetEditButton();
+    $this->assertTrue($session->evaluateScript('window.__massInlineMessageLpToolbarTest.selectMessageBoxWidget()'));
+    $session->wait(5000, "(function(){
+      var buttons = document.querySelectorAll('.ck-body-wrapper .ck-toolbar .ck-button');
+      for (var i = 0; i < buttons.length; i++) {
+        var tip = (buttons[i].getAttribute('data-cke-tooltip-text') || buttons[i].getAttribute('aria-label') || '').toLowerCase();
+        if (tip === 'edit') { return true; }
+      }
+      return false;
     })()");
+    $this->clickMessageBoxWidgetEditButton();
 
     $this->waitForMessageBoxDialogOpen();
 

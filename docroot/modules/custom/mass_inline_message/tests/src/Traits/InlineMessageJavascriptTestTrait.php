@@ -163,6 +163,50 @@ trait InlineMessageJavascriptTestTrait {
   }
 
   /**
+   * Selects the first Message box widget in a CKEditor instance.
+   */
+  protected function selectFirstMessageBoxWidget(string $textareaSelector): bool {
+    return (bool) $this->inlineMessageSession()->evaluateScript(
+      "(function(){
+        var textarea = document.querySelector(" . json_encode($textareaSelector) . ");
+        if (!textarea) { return false; }
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        var found = null;
+        editor.model.change(function(writer) {
+          for (var child of editor.model.document.getRoot().getChildren()) {
+            if (child.name === 'massInlineMessage') {
+              found = child;
+              writer.setSelection(child, 'on');
+              break;
+            }
+          }
+        });
+        editor.editing.view.focus();
+        editor.ui.update();
+        return !!found;
+      })();",
+    );
+  }
+
+  /**
+   * Clicks the floating widget toolbar Edit button.
+   */
+  protected function clickMessageBoxWidgetEditButton(): void {
+    $this->inlineMessageSession()->executeScript(
+      "(function(){
+        var buttons = document.querySelectorAll('.ck-body-wrapper .ck-toolbar .ck-button');
+        for (var i = 0; i < buttons.length; i++) {
+          var tip = (buttons[i].getAttribute('data-cke-tooltip-text') || buttons[i].getAttribute('aria-label') || '').toLowerCase();
+          if (tip === 'edit') {
+            buttons[i].click();
+            return;
+          }
+        }
+      })();",
+    );
+  }
+
+  /**
    * Creates a basic page node with a basic_html body for CKEditor tests.
    */
   protected function createBasicPageWithBody(): int {

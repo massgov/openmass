@@ -9,7 +9,8 @@ import {
 } from './viewport';
 
 /**
- * Message box widget toolbar (same pattern as entity_embed EntityEmbedToolbar).
+ * @file
+ * Message box widget toolbar (Edit button), same idea as entity_embed.
  */
 export default class MassInlineMessageToolbar extends Plugin {
 

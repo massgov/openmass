@@ -1,13 +1,10 @@
 /**
- * @param $
- * @param Drupal
- * @param drupalSettings
  * @file
- * Keeps Message box dialog Save on the Ajax modal flow (Drupal 11).
+ * Message box dialog Save/Cancel inside the Ajax modal (Drupal behavior).
  *
- * Dialog content loads via Ajax, so behaviors must bind without requiring
- * "body" in the Ajax insert context. Uses capture-phase handlers on the
- * mass-inline-message-dialog modal (same class of issue as entity embed).
+ * Pairs with dialog-open.js in the CKEditor plugin. That file opens the
+ * dialog; this file makes Save use Ajax and blocks nested Message box buttons
+ * in the body field editor.
  */
 (function ($, Drupal, drupalSettings) {
   'use strict';
