@@ -64,6 +64,10 @@ class MassOrgAccessCommands extends DrushCommands {
    *   Sync 100 nodes + 100 media, print IDs and assigned org term IDs.
    */
   public function backfillDev(): void {
+    // Same bulk-save semantics as the real backfill: suppress mass_flagging
+    // "Watch" notifications so resaving entities does not email watchers.
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
     $entity_type_manager = \Drupal::entityTypeManager();
 
     $node_ids = array_values($entity_type_manager->getStorage('node')

@@ -57,6 +57,9 @@ class BackfillRunner {
    *   If TRUE, clears all stored progress and recomputes totals from scratch.
    */
   public function run(OutputInterface $output, ?string $log_uri = NULL, bool $reset = FALSE): void {
+
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
     $log_uri = $log_uri ?: self::DEFAULT_LOG_URI;
     $this->prepareLogFile($log_uri, $output);
 
