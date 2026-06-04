@@ -1,5 +1,22 @@
 
 
+## [0.481.0] - June 2, 2026
+
+### Changed
+  - DP-44689: Use the info icon and standard callout spacing for the decision tree disclaimer.
+  - DP-46912: Enable item count selection in all content and advanced content reports.
+  - DP-46922: Small updates to purge oversized header logger.
+  
+### Fixed
+  - DP-45426: Fixed bullet list alignment issues.
+  - DP-47000: Fix csv export for all documents to respect value of accessibility status filter
+  - DP-47095: Restrict user approval fields to users with administer users permission and normalize editor profile form spacing after the fields are hidden.
+  
+### Added
+  - DP-45952: Added top down org hierarchy view report.
+  
+
+
 ## [0.480.1] - May 20, 2026
 
 ### Security
