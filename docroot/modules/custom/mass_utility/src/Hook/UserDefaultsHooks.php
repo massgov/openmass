@@ -63,29 +63,6 @@ class UserDefaultsHooks {
   }
 
   /**
-   * Drops the cloned organizations so a clone is treated as new content.
-   *
-   * Quick Node Clone copies every field, including the editor's Organization(s)
-   * and the derived Permission Groups. A clone must instead start with no
-   * organizations: this alter clears them before the clone form is built, so
-   * entityPrepareForm() re-applies the cloning user's defaults and the
-   * Permission Groups re-derive from whatever organizations they end up with.
-   */
-  #[Hook('cloned_node_alter')]
-  public function clonedNodeAlter(NodeInterface $clone, NodeInterface $original): void {
-    $fields = ['field_organizations', 'field_content_organization'];
-    $bundle_org_field = $this->getOrganizationFieldName($clone);
-    if ($bundle_org_field) {
-      $fields[] = $bundle_org_field;
-    }
-    foreach (array_unique($fields) as $field_name) {
-      if ($clone->hasField($field_name)) {
-        $clone->set($field_name, []);
-      }
-    }
-  }
-
-  /**
    * Pre-fills organization and label fields on new content from user defaults.
    *
    * Does not run on existing entities or when target fields already have
