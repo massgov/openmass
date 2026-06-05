@@ -1577,6 +1577,14 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
           ],
         ];
       }
+      if (isset($form['field_tableau_embed_type'], $form['field_tableau_toolbar'])) {
+        // The toolbar setting only applies to "Connected Apps" embeds.
+        $form['field_tableau_toolbar']['#states'] = [
+          'visible' => [
+            ':input[name="field_tableau_embed_type"]' => ['!value' => 'default'],
+          ],
+        ];
+      }
       break;
     case 'collection_search':
       $form['#validate'][] = '_mass_validation_validate_layout_paragraphs_custom_search';

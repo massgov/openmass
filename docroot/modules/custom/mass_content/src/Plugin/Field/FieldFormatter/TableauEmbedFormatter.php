@@ -44,6 +44,10 @@ class TableauEmbedFormatter extends LinkFormatter {
     // Determine the embed type from the paragraph field.
     $embed_type = $paragraph->get('field_tableau_embed_type')->value ?? 'default';
     $token_url = $paragraph->get('field_tableau_url_token')->uri ?? NULL;
+    $toolbar = 'hidden';
+    if ($paragraph->hasField('field_tableau_toolbar') && !$paragraph->get('field_tableau_toolbar')->isEmpty()) {
+      $toolbar = $paragraph->get('field_tableau_toolbar')->value;
+    }
 
     foreach ($items as $delta => $item) {
       $id = bin2hex(random_bytes(8));
@@ -55,6 +59,7 @@ class TableauEmbedFormatter extends LinkFormatter {
         '#randId' => $id,
         '#embed_type' => $embed_type,
         '#token_url' => ($embed_type === 'connected_apps' && $token_url) ? $token_url : NULL,
+        '#toolbar' => $toolbar,
       ];
     }
 

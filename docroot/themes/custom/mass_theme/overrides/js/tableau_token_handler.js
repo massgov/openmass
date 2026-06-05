@@ -13,6 +13,7 @@
         var $placeholder = $(this);
         var url = $placeholder.data('tableau-url');
         var tokenUrl = $placeholder.data('token-url');
+        var toolbar = $placeholder.data('toolbar') || 'hidden';
         var id = $placeholder.attr('id');
 
         if (!tokenUrl) {
@@ -30,7 +31,7 @@
               var tableauViz = $('<tableau-viz>', {
                 'src': url,
                 'id': id,
-                'toolbar': 'bottom',
+                'toolbar': toolbar,
                 'hide-tabs': '',
                 'token': data.token
               });
