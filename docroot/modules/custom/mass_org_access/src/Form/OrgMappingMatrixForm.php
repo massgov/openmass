@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Drupal\mass_org_access\Form;
 
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -38,6 +40,7 @@ class OrgMappingMatrixForm extends FormBase {
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected StateInterface $state,
+    protected DateFormatterInterface $dateFormatter,
   ) {}
 
   /**
@@ -47,6 +50,7 @@ class OrgMappingMatrixForm extends FormBase {
     return new self(
       $container->get('entity_type.manager'),
       $container->get('state'),
+      $container->get('date.formatter'),
     );
   }
 
@@ -80,14 +84,22 @@ class OrgMappingMatrixForm extends FormBase {
     $matrix = $this->state->get(self::STATE_KEY, []);
 
     $form['help'] = [
-      '#markup' => '<p>' . $this->t('Assign State organization terms to each organization page. <strong>Save</strong> stores the page(s) you have visited; <strong>Apply to nodes</strong> writes the saved matrix onto the org pages; <strong>Download CSV</strong> exports everything saved so far. Showing @per of @total organization pages — save before paging.', [
+      '#weight' => -30,
+      '#markup' => '<p>' . $this->t('Assign State organization terms to each organization page. Showing @per of @total organization pages — save before paging.', [
         '@per' => count($nodes),
         '@total' => $total,
-      ]) . '</p>',
+      ]) . '</p><ul>'
+      . '<li>' . $this->t('<strong>Save</strong> — stores the selections from the page(s) you have visited into the working matrix (kept until cleared), so you can resume later. Nothing is written to the org pages yet.') . '</li>'
+      . '<li>' . $this->t('<strong>Apply to nodes</strong> — writes the whole saved matrix onto the org pages, overwriting their current Permission Groups (terms plus ancestors, published revision and any draft).') . '</li>'
+      . '<li>' . $this->t('<strong>Download CSV</strong> — exports everything saved so far in the <code>nodeid,termid</code> format the Import mappings tab accepts.') . '</li>'
+      . '<li>' . $this->t('<strong>Clear the saved matrix and load from nodes</strong> — discards the working matrix; the fields show each org page&#039;s current Permission Groups again. Org pages themselves are not changed.') . '</li>'
+      . '<li>' . $this->t('<strong>Clear the saved matrix and start fresh</strong> — discards the working matrix and starts with all fields empty, ignoring the values on the org pages. Org pages themselves are not changed.') . '</li>'
+      . '</ul>',
     ];
 
     $form['items_per_page'] = [
       '#type' => 'select',
+      '#weight' => -20,
       '#title' => $this->t('Items per page'),
       '#options' => [
         '50' => '50',
@@ -99,6 +111,13 @@ class OrgMappingMatrixForm extends FormBase {
       '#attributes' => ['data-oog-items-per-page' => 'true'],
     ];
     $form['#attached']['library'][] = 'mass_org_access/matrix_items_per_page';
+    $form['#attached']['library'][] = 'mass_org_access/matrix_sticky_actions';
+
+    // A second, sticky copy of the action buttons above the matrix, so the
+    // admin doesn't have to scroll past 50+ rows to save. The explicit
+    // weight keeps it above the rows — the theme pushes weightless
+    // "actions" wrappers to the bottom of the form otherwise.
+    $form['actions_top'] = $this->buildActions('top') + ['#weight' => -10];
 
     // Resolve the default term IDs per node: a saved matrix value always wins;
     // otherwise show the node's current Permission Groups, unless "start fresh"
@@ -122,6 +141,15 @@ class OrgMappingMatrixForm extends FormBase {
       }
     }
 
+    // Human-readable moderation state labels, so the content team can spot
+    // unpublished/trashed org pages while mapping.
+    $state_labels = [];
+    if ($workflow = $this->entityTypeManager->getStorage('workflow')->load('editorial')) {
+      foreach ($workflow->getTypePlugin()->getConfiguration()['states'] ?? [] as $state_id => $state) {
+        $state_labels[$state_id] = $state['label'] ?? $state_id;
+      }
+    }
+
     $form['orgs'] = ['#tree' => TRUE];
     foreach ($nodes as $nid => $node) {
       $options = [];
@@ -132,7 +160,11 @@ class OrgMappingMatrixForm extends FormBase {
       }
       $form['orgs'][$nid] = [
         '#type' => 'select2',
-        '#title' => $node->label() . ' (' . $nid . ')',
+        '#title' => $node->label() . ' (' . $nid . ')'
+        . $this->moderationStateSuffix($node, $node_storage, $state_labels),
+        '#description' => $this->t('<a href=":url" target="_blank" rel="noopener">View org page</a>', [
+          ':url' => Url::fromRoute('entity.node.edit_form', ['node' => $nid])->toString(),
+        ]),
         '#multiple' => TRUE,
         '#autocomplete' => TRUE,
         '#target_type' => 'taxonomy_term',
@@ -148,36 +180,66 @@ class OrgMappingMatrixForm extends FormBase {
       $form['pager'] = ['#type' => 'pager'];
     }
 
-    $form['actions']['#type'] = 'actions';
-    $form['actions']['save'] = [
+    $form['actions'] = $this->buildActions('bottom');
+
+    return $form;
+  }
+
+  /**
+   * Builds one copy of the action buttons.
+   *
+   * The form renders the set twice — a sticky copy above the matrix and a
+   * regular one below. Top buttons get a "_top" #name suffix so Form API
+   * resolves the triggering element unambiguously; both copies share the
+   * same submit handlers.
+   *
+   * @param string $variant
+   *   Either 'top' or 'bottom'.
+   *
+   * @return array
+   *   The actions render array.
+   */
+  private function buildActions(string $variant): array {
+    $top = $variant === 'top';
+    $name = fn (string $key): string => $top ? $key . '_top' : $key;
+
+    $actions = ['#type' => 'actions'];
+    if ($top) {
+      $actions['#attributes']['class'][] = 'oog-matrix-actions-top';
+    }
+    $actions['save'] = [
       '#type' => 'submit',
+      '#name' => $name('save'),
       '#value' => $this->t('Save'),
       '#submit' => ['::saveSubmit'],
     ];
-    $form['actions']['apply'] = [
+    $actions['apply'] = [
       '#type' => 'submit',
+      '#name' => $name('apply'),
       '#value' => $this->t('Apply to nodes'),
       '#submit' => ['::applySubmit'],
     ];
-    $form['actions']['download'] = [
+    $actions['download'] = [
       '#type' => 'submit',
+      '#name' => $name('download'),
       '#value' => $this->t('Download CSV'),
       '#submit' => ['::downloadSubmit'],
     ];
-    $form['actions']['clear_load'] = [
+    $actions['clear_load'] = [
       '#type' => 'submit',
+      '#name' => $name('clear_load'),
       '#value' => $this->t('Clear the saved matrix and load from nodes'),
       '#submit' => ['::clearLoadSubmit'],
       '#limit_validation_errors' => [],
     ];
-    $form['actions']['clear_fresh'] = [
+    $actions['clear_fresh'] = [
       '#type' => 'submit',
+      '#name' => $name('clear_fresh'),
       '#value' => $this->t('Clear the saved matrix and start fresh'),
       '#submit' => ['::clearFreshSubmit'],
       '#limit_validation_errors' => [],
     ];
-
-    return $form;
+    return $actions;
   }
 
   /**
@@ -298,6 +360,70 @@ class OrgMappingMatrixForm extends FormBase {
     return in_array($value, ['50', '100', '500', 'all'], TRUE)
       ? $value
       : (string) self::PER_PAGE;
+  }
+
+  /**
+   * Moderation state row suffix: current revision plus any forward draft.
+   *
+   * Each revision shows its state, save date, and the user who saved it,
+   * e.g. " — Current revision: Published (05/12/2026 - 14:33, dima);
+   * Latest revision: Draft (06/01/2026 - 09:12, morcutt)". The
+   * latest-revision part only appears when a forward (unpublished) draft
+   * exists, so rows without drafts stay short.
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The org_page (default revision).
+   * @param \Drupal\Core\Entity\EntityStorageInterface $node_storage
+   *   Node storage, for the latest-revision lookup.
+   * @param array $state_labels
+   *   Workflow state labels keyed by state ID.
+   *
+   * @return string
+   *   The suffix, or '' when the node has no moderation state.
+   */
+  private function moderationStateSuffix($node, $node_storage, array $state_labels): string {
+    $current = $this->describeRevision($node, $state_labels);
+    if ($current === '') {
+      return '';
+    }
+    $suffix = ' — ' . $this->t('Current revision: @info', ['@info' => $current]);
+
+    $latest_vid = $node_storage->getLatestRevisionId($node->id());
+    if ($latest_vid && (int) $latest_vid !== (int) $node->getRevisionId()) {
+      $draft = $node_storage->loadRevision($latest_vid);
+      $draft_info = $draft ? $this->describeRevision($draft, $state_labels) : '';
+      if ($draft_info !== '') {
+        $suffix .= '; ' . $this->t('Latest revision: @info', ['@info' => $draft_info]);
+      }
+    }
+    return $suffix;
+  }
+
+  /**
+   * One revision as "State (date, user)".
+   *
+   * @param \Drupal\node\NodeInterface $revision
+   *   The revision to describe.
+   * @param array $state_labels
+   *   Workflow state labels keyed by state ID.
+   *
+   * @return string
+   *   E.g. "Published (05/12/2026 - 14:33, dima)", or '' when the
+   *   revision carries no moderation state.
+   */
+  private function describeRevision($revision, array $state_labels): string {
+    if (!$revision->hasField('moderation_state')) {
+      return '';
+    }
+    $state_id = (string) $revision->get('moderation_state')->value;
+    if ($state_id === '') {
+      return '';
+    }
+    $state = $state_labels[$state_id] ?? $state_id;
+    // US date format with a 12-hour clock.
+    $date = $this->dateFormatter->format((int) $revision->getRevisionCreationTime(), 'custom', 'm/d/Y g:i A');
+    $user = $revision->getRevisionUser()?->getDisplayName() ?? $this->t('unknown user');
+    return "$state ($date, $user)";
   }
 
   /**
