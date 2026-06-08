@@ -2,12 +2,16 @@
 
 namespace Drupal\mass_org_access;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\media\MediaInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -43,6 +47,9 @@ class BackfillRunner {
     private readonly OrgAccessChecker $orgAccessChecker,
     private readonly StateInterface $state,
     private readonly FileSystemInterface $fileSystem,
+    private readonly StageFileFetcher $stageFileFetcher,
+    private readonly ConfigFactoryInterface $configFactory,
+    private readonly ModuleExtensionList $moduleExtensionList,
   ) {}
 
   /**
@@ -62,6 +69,7 @@ class BackfillRunner {
 
     $log_uri = $log_uri ?: self::DEFAULT_LOG_URI;
     $this->prepareLogFile($log_uri, $output);
+    $this->ensureMediaIconPlaceholders($output, $log_uri);
 
     if ($reset) {
       $this->resetProgress();
@@ -76,14 +84,14 @@ class BackfillRunner {
       $progress['media_processed'], $progress['media_total'], $progress['media_last_id']
     ));
 
-    $this->processQueue('node', $progress, $output, $log_uri);
+//    $this->processQueue('node', $progress, $output, $log_uri);
     $this->processQueue('media', $progress, $output, $log_uri);
 
     $this->log($output, $log_uri, sprintf(
-      "=== Run completed %s ===\nNodes total: %d / %d\nMedia total: %d / %d",
+      "=== Run completed %s ===\nNodes total: %d / %d (%d skipped)\nMedia total: %d / %d (%d skipped)",
       $this->now(),
-      $progress['node_processed'], $progress['node_total'],
-      $progress['media_processed'], $progress['media_total']
+      $progress['node_processed'], $progress['node_total'], $progress['node_skipped'],
+      $progress['media_processed'], $progress['media_total'], $progress['media_skipped']
     ));
   }
 
@@ -121,6 +129,8 @@ class BackfillRunner {
       'media_processed' => 0,
       'node_last_id' => 0,
       'media_last_id' => 0,
+      'node_skipped' => 0,
+      'media_skipped' => 0,
     ];
     if ($progress['node_total'] === NULL) {
       $progress['node_total'] = (int) $this->buildNodeQuery()->count()->execute();
@@ -166,15 +176,32 @@ class BackfillRunner {
       foreach ($storage->loadMultiple($ids) as $entity) {
         $progress[$entity_type . '_last_id'] = (int) $entity->id();
         $progress[$entity_type . '_processed']++;
-        $this->backfillEntity($entity);
+        // One bad entity (e.g. a media item whose source file is missing both
+        // locally and on the proxy origin) must never abort the whole run.
+        // Log it and move on; the cursor has already advanced so a resume
+        // skips it too.
+        try {
+          $this->backfillEntity($entity);
+        }
+        catch (\Throwable $e) {
+          $progress[$entity_type . '_skipped']++;
+          $this->log($output, $log_uri, sprintf(
+            'SKIPPED %s:%d — %s: %s',
+            $entity_type,
+            $entity->id(),
+            (new \ReflectionClass($e))->getShortName(),
+            $e->getMessage()
+          ));
+        }
       }
       $this->saveProgress($progress);
 
       $this->log($output, $log_uri, sprintf(
-        '%s: %d / %d processed (last %s %d)',
+        '%s: %d / %d processed, %d skipped (last %s %d)',
         ucfirst($entity_type),
         $progress[$entity_type . '_processed'],
         $progress[$entity_type . '_total'],
+        $progress[$entity_type . '_skipped'],
         strtoupper($id_key),
         $progress[$entity_type . '_last_id']
       ));
@@ -224,11 +251,95 @@ class BackfillRunner {
     if (!$this->orgAccessChecker->populateOwnerGroupsFromOrganizations($revision)) {
       return;
     }
+    // Saving media regenerates its thumbnail from the source file. On a
+    // prod-copied database the file may be missing locally, which would throw
+    // a FileNotExistsException — pull it from the origin first.
+    $this->ensureMediaSourceLocal($revision);
     if (method_exists($revision, 'setNewRevision')) {
       $revision->setNewRevision(FALSE);
     }
     $revision->setSyncing(TRUE);
     $storage->save($revision);
+  }
+
+  /**
+   * Creates placeholders for any missing media-icon thumbnails.
+   *
+   * Document/image media fall back to a generic icon stored under
+   * media.settings:icon_base_uri (e.g. public://media-icons/generic/
+   * document.png). Those icons live in the files directory, not in code, and
+   * are not served by the stage_file_proxy origin — so on a prod-copied
+   * database they are missing and every media resave logs a file_mdm error
+   * while regenerating the thumbnail. Copy the media module's generic icon
+   * over each referenced-but-missing icon so the fallback resolves cleanly.
+   *
+   * @param \Symfony\Component\Console\Output\OutputInterface $output
+   *   Drush output for the summary line.
+   * @param string $log_uri
+   *   Log file URI.
+   */
+  private function ensureMediaIconPlaceholders(OutputInterface $output, string $log_uri): void {
+    $icon_base = (string) $this->configFactory->get('media.settings')->get('icon_base_uri');
+    if ($icon_base === '') {
+      return;
+    }
+    $placeholder = $this->moduleExtensionList->getPath('media') . '/images/icons/generic.png';
+    if (!is_file($placeholder)) {
+      return;
+    }
+    $this->fileSystem->prepareDirectory($icon_base, FileSystemInterface::CREATE_DIRECTORY);
+
+    $file_storage = $this->entityTypeManager->getStorage('file');
+    $fids = $file_storage->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('uri', $icon_base . '/', 'STARTS_WITH')
+      ->execute();
+
+    $created = 0;
+    foreach ($file_storage->loadMultiple($fids) as $file) {
+      $uri = $file->getFileUri();
+      $real = $this->fileSystem->realpath($uri);
+      if ($real && file_exists($real)) {
+        continue;
+      }
+      try {
+        $this->fileSystem->copy($placeholder, $uri, FileExists::Replace);
+        $created++;
+      }
+      catch (\Throwable $e) {
+        // Best effort — a missing placeholder is non-fatal noise, not a stop.
+      }
+    }
+
+    if ($created) {
+      $this->log($output, $log_uri, sprintf(
+        'Created %d missing media-icon placeholder(s) from the generic icon.',
+        $created
+      ));
+    }
+  }
+
+  /**
+   * Fetches a media entity's source file locally when it is missing.
+   *
+   * No-op for non-media entities, and a no-op on production or when
+   * stage_file_proxy is unavailable (handled by the fetcher).
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The revision about to be saved.
+   */
+  private function ensureMediaSourceLocal(EntityInterface $entity): void {
+    if (!$entity instanceof MediaInterface) {
+      return;
+    }
+    $fid = $entity->getSource()->getSourceFieldValue($entity);
+    if (!$fid) {
+      return;
+    }
+    $file = $this->entityTypeManager->getStorage('file')->load($fid);
+    if ($file) {
+      $this->stageFileFetcher->ensureLocalCopy($file->getFileUri());
+    }
   }
 
   /**

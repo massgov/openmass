@@ -15,6 +15,17 @@ services:
   Drupal\mass_org_access\OrgAccessChecker:
     alias: mass_org_access.org_access_checker
 
+  mass_org_access.stage_file_fetcher:
+    class: Drupal\mass_org_access\StageFileFetcher
+    arguments:
+      # Optional: NULL when stage_file_proxy is not installed.
+      - '@?stage_file_proxy.download_manager'
+      - '@config.factory'
+      - '@file_system'
+
+  Drupal\mass_org_access\StageFileFetcher:
+    alias: mass_org_access.stage_file_fetcher
+
   mass_org_access.backfill_runner:
     class: Drupal\mass_org_access\BackfillRunner
     arguments:
@@ -23,6 +34,9 @@ services:
       - '@mass_org_access.org_access_checker'
       - '@state'
       - '@file_system'
+      - '@mass_org_access.stage_file_fetcher'
+      - '@config.factory'
+      - '@extension.list.module'
 
   Drupal\mass_org_access\BackfillRunner:
     alias: mass_org_access.backfill_runner

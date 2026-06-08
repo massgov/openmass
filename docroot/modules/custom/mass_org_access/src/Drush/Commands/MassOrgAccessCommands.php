@@ -2,8 +2,10 @@
 
 namespace Drupal\mass_org_access\Drush\Commands;
 
+use Drupal\media\MediaInterface;
 use Drupal\mass_org_access\BackfillRunner;
 use Drupal\mass_org_access\OrgAccessChecker;
+use Drupal\mass_org_access\StageFileFetcher;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
 
@@ -17,6 +19,7 @@ class MassOrgAccessCommands extends DrushCommands {
   public function __construct(
     private readonly BackfillRunner $backfillRunner,
     private readonly OrgAccessChecker $orgAccessChecker,
+    private readonly StageFileFetcher $stageFileFetcher,
   ) {
     parent::__construct();
   }
@@ -76,6 +79,8 @@ class MassOrgAccessCommands extends DrushCommands {
       ->range(0, 100)
       ->execute());
 
+    $node_ids = [];
+
     $media_ids = array_values($entity_type_manager->getStorage('media')
       ->getQuery()
       ->accessCheck(FALSE)
@@ -126,6 +131,14 @@ class MassOrgAccessCommands extends DrushCommands {
    */
   private function populateRevision($revision, $storage): void {
     $this->orgAccessChecker->populateOwnerGroupsFromOrganizations($revision);
+    // Pull the media source file from the origin if it is missing locally,
+    // so the resave's thumbnail regeneration does not fail.
+    if ($revision instanceof MediaInterface) {
+      $fid = $revision->getSource()->getSourceFieldValue($revision);
+      if ($fid && ($file = \Drupal::entityTypeManager()->getStorage('file')->load($fid))) {
+        $this->stageFileFetcher->ensureLocalCopy($file->getFileUri());
+      }
+    }
     if (method_exists($revision, 'setNewRevision')) {
       $revision->setNewRevision(FALSE);
     }
