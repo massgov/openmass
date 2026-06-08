@@ -416,6 +416,7 @@ class QueueWorkerTest extends MassExistingSiteBase {
       \Drupal::database(),
       $failNodeId,
     ) extends RedirectLinkNormalizationManager {
+
       public function __construct(
         $resolver,
         $time,
@@ -432,6 +433,7 @@ class QueueWorkerTest extends MassExistingSiteBase {
         }
         return parent::normalizeEntity($entity, $save, $dryRun);
       }
+
     };
     \Drupal::getContainer()->set('mass_redirect_normalizer.manager', $selectiveManager);
 
@@ -494,9 +496,11 @@ class QueueWorkerTest extends MassExistingSiteBase {
       \Drupal::entityTypeManager(),
       \Drupal::database(),
     ) extends RedirectLinkNormalizationManager {
+
       public function normalizeEntity(ContentEntityInterface $entity, bool $save = TRUE, bool $dryRun = FALSE): array {
         throw new \RuntimeException('Failed to update host node 1 to reference normalized paragraph revision 2.');
       }
+
     };
     \Drupal::getContainer()->set('mass_redirect_normalizer.manager', $throwingManager);
 
