@@ -186,6 +186,56 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests ambiguous source-path redirects are not applied to text or link fields.
+   */
+  public function testAmbiguousSourcePathRedirectIsIgnored(): void {
+    $targetA = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $targetB = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $source = 'ambiguous-source-' . $this->randomMachineName();
+
+    $redirectA = Redirect::create();
+    $redirectA->setRedirect('node/' . $targetA->id());
+    $redirectA->setSource($source, ['variant' => 'a']);
+    $redirectA->setLanguage('en');
+    $redirectA->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+    $redirectA->save();
+    $this->cleanupEntities[] = $redirectA;
+
+    $redirectB = Redirect::create();
+    $redirectB->setRedirect('node/' . $targetB->id());
+    $redirectB->setSource($source, ['variant' => 'b']);
+    $redirectB->setLanguage('en');
+    $redirectB->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+    $redirectB->save();
+    $this->cleanupEntities[] = $redirectB;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $href = '/' . $source . '?foo=1';
+    $resolved = $service->resolveRedirectTarget($href);
+    $this->assertFalse($resolved['changed']);
+
+    $text = '<p><a href="' . $href . '">Ambiguous</a></p>';
+    $normalized = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalized['changed']);
+    $this->assertStringContainsString($href, $normalized['text']);
+
+    $uriNormalized = $service->normalizeRedirectLinkUri('internal:' . $href);
+    $this->assertFalse($uriNormalized['changed']);
+    $this->assertSame('internal:' . $href, $uriNormalized['uri']);
+  }
+
+  /**
    * Tests external URLs are ignored.
    */
   public function testExternalUrlIsIgnored(): void {

@@ -431,35 +431,15 @@ class RedirectLinkResolver {
 
   /**
    * Loads redirect by source path, tolerating leading slash differences.
+   *
+   * Returns NULL when more than one redirect matches the source path.
    */
   private function loadRedirectBySourcePath(string $sourcePath): ?Redirect {
-    $sourcePath = trim($sourcePath);
-    if ($sourcePath === '') {
+    $redirects = $this->loadRedirectsBySourcePath($sourcePath, 2);
+    if (count($redirects) > 1) {
       return NULL;
     }
-
-    $candidates = $this->buildSourcePathCandidates($sourcePath);
-
-    $storage = $this->entityTypeManager->getStorage('redirect');
-    foreach ($candidates as $candidate) {
-      $query = $storage->getQuery()
-        ->accessCheck(FALSE)
-        ->range(0, 1);
-      $group = $query->orConditionGroup()
-        ->condition('redirect_source.path', $candidate)
-        ->condition('redirect_source__path', $candidate);
-      $ids = $query->condition($group)->execute();
-      if (!$ids) {
-        continue;
-      }
-
-      $redirect = $storage->load((int) reset($ids));
-      if ($redirect instanceof Redirect) {
-        return $redirect;
-      }
-    }
-
-    return NULL;
+    return $redirects[0] ?? NULL;
   }
 
   /**
