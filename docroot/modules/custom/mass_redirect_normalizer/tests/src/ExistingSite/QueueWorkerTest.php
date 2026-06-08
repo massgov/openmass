@@ -352,6 +352,133 @@ class QueueWorkerTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests one failing entity in a bulk item does not block the rest.
+   */
+  public function testQueueWorkerIsolatesBulkBatchFailures(): void {
+    $this->ensureChangeLogTableExists();
+    \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
+    $this->purgeNormalizationQueue();
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $sourceFail = 'bulk-fail-' . $this->randomMachineName();
+    $sourceSuccess = 'bulk-success-' . $this->randomMachineName();
+    $this->createRedirect('/' . $sourceFail, '/node/' . $target->id());
+    $this->createRedirect('/' . $sourceSuccess, '/node/' . $target->id());
+    $targetPath = $target->toUrl()->toString();
+
+    $failingPage = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceFail . '">Fail</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+    $successPage = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceSuccess . '">Success</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+    $failNodeId = (int) $failingPage->id();
+    $successNodeId = (int) $successPage->id();
+
+    $connection = \Drupal::database();
+    foreach ([[$failingPage, $sourceFail], [$successPage, $sourceSuccess]] as [$page, $sourceStart]) {
+      $nid = (int) $page->id();
+      $vid = (int) $page->getRevisionId();
+      $markup = '<p><a href="/' . $sourceStart . '">Needs normalization</a></p>';
+      foreach (['node__body', 'node_revision__body'] as $table) {
+        $connection->update($table)
+          ->fields(['body_value' => $markup])
+          ->condition('entity_id', $nid)
+          ->condition('revision_id', $vid)
+          ->execute();
+      }
+      \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+    }
+
+    $selectiveManager = new class(
+      \Drupal::service('mass_redirect_normalizer.resolver'),
+      \Drupal::service('datetime.time'),
+      \Drupal::entityTypeManager(),
+      \Drupal::database(),
+      $failNodeId,
+    ) extends RedirectLinkNormalizationManager {
+      public function __construct(
+        $resolver,
+        $time,
+        $entityTypeManager,
+        $database,
+        private readonly int $failNodeId,
+      ) {
+        parent::__construct($resolver, $time, $entityTypeManager, $database);
+      }
+
+      public function normalizeEntity(ContentEntityInterface $entity, bool $save = TRUE, bool $dryRun = FALSE): array {
+        if ($entity->getEntityTypeId() === 'node' && (int) $entity->id() === $this->failNodeId) {
+          throw new \RuntimeException('Simulated batch entity failure.');
+        }
+        return parent::normalizeEntity($entity, $save, $dryRun);
+      }
+    };
+    \Drupal::getContainer()->set('mass_redirect_normalizer.manager', $selectiveManager);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer $enqueuer */
+    $enqueuer = \Drupal::service('mass_redirect_normalizer.enqueuer');
+    $enqueuer->enqueueIdBulk('node', $failNodeId, 'drush');
+    $enqueuer->enqueueIdBulk('node', $successNodeId, 'drush');
+    $enqueuer->flushEnqueueBuffers('drush');
+
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $worker = \Drupal::service('plugin.manager.queue_worker')
+      ->createInstance(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $claimed = $queue->claimItem();
+    $this->assertNotFalse($claimed);
+    $worker->processItem($claimed->data);
+    $queue->deleteItem($claimed);
+
+    $failed = \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+      ->fields('l', ['status', 'error_message'])
+      ->condition('entity_type', 'node')
+      ->condition('entity_id', $failNodeId)
+      ->range(0, 1)
+      ->execute()
+      ->fetchAssoc();
+    $this->assertIsArray($failed);
+    $this->assertSame('failed', $failed['status']);
+    $this->assertSame('Simulated batch entity failure.', $failed['error_message']);
+
+    $failedReloaded = \Drupal::entityTypeManager()->getStorage('node')->load($failNodeId);
+    $this->assertNotNull($failedReloaded);
+    $this->assertStringContainsString('/' . $sourceFail, (string) $failedReloaded->get('body')->value);
+
+    $successReloaded = \Drupal::entityTypeManager()->getStorage('node')->load($successNodeId);
+    $this->assertNotNull($successReloaded);
+    $this->assertStringContainsString($targetPath, (string) $successReloaded->get('body')->value);
+
+    $successStatus = \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+      ->fields('l', ['status'])
+      ->condition('entity_type', 'node')
+      ->condition('entity_id', $successNodeId)
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+    $this->assertSame('succeeded', $successStatus);
+  }
+
+  /**
    * Tests queue worker logs failed rows when paragraph host update fails.
    */
   public function testQueueWorkerLogsFailureWhenParagraphHostUpdateFails(): void {
