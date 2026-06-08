@@ -23,4 +23,4 @@ services:
 
   mass_redirect_normalizer.change_log:
     class: Drupal\mass_redirect_normalizer\RedirectLinkChangeLog
-    arguments: ['@database']
+    arguments: ['@database', '@logger.channel.default']

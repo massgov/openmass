@@ -332,4 +332,32 @@ class QueueWorkerTest extends MassExistingSiteBase {
     $this->assertSame('Example failure message.', $failed['error_message']);
   }
 
+  /**
+   * Tests change log insert failures are logged and do not abort processing.
+   */
+  public function testChangeLogInsertFailureDoesNotThrow(): void {
+    $this->ensureChangeLogTableExists();
+    \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkChangeLog $service */
+    $service = \Drupal::service('mass_redirect_normalizer.change_log');
+
+    $service->logFailure('node', 55503, 'page', str_repeat('x', 64), 'Example failure message.');
+    $service->logChanges('node', 55504, 'page', 'drush', [
+      [
+        'field' => str_repeat('f', 256),
+        'delta' => 0,
+        'kind' => 'text',
+        'before' => '<a href="/old">old</a>',
+        'after' => '<a href="/new">new</a>',
+      ],
+    ]);
+
+    $count = (int) \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    $this->assertSame(0, $count);
+  }
+
 }
