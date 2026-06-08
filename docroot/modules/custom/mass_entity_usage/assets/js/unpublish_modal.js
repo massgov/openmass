@@ -58,7 +58,7 @@
             '.layout-region--footer .form-actions',
             '.layout-region-node-footer .form-actions',
             '.layout-region-doc-footer .form-actions',
-            '#edit-actions',
+            '#edit-actions'
           ];
           var $footerSubmit;
           var i;
