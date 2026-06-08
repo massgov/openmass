@@ -250,6 +250,108 @@ class QueueWorkerTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests bulk enqueue payload shape used by production drush sweeps.
+   */
+  public function testQueueWorkerProcessesBulkEnqueuePayload(): void {
+    $this->ensureChangeLogTableExists();
+    \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
+    $this->purgeNormalizationQueue();
+
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $sourceA = 'bulk-queue-a-' . $this->randomMachineName();
+    $sourceB = 'bulk-queue-b-' . $this->randomMachineName();
+    $this->createRedirect('/' . $sourceA, '/node/' . $target->id());
+    $this->createRedirect('/' . $sourceB, '/node/' . $target->id());
+    $targetPath = $target->toUrl()->toString();
+
+    $pageA = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceA . '">Bulk A</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+    $pageB = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceB . '">Bulk B</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $connection = \Drupal::database();
+    foreach ([[$pageA, $sourceA], [$pageB, $sourceB]] as [$page, $sourceStart]) {
+      $nid = (int) $page->id();
+      $vid = (int) $page->getRevisionId();
+      $markup = '<p><a href="/' . $sourceStart . '">Needs normalization</a></p>';
+      foreach (['node__body', 'node_revision__body'] as $table) {
+        $connection->update($table)
+          ->fields(['body_value' => $markup])
+          ->condition('entity_id', $nid)
+          ->condition('revision_id', $vid)
+          ->execute();
+      }
+      \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nid]);
+    }
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer $enqueuer */
+    $enqueuer = \Drupal::service('mass_redirect_normalizer.enqueuer');
+    $enqueuer->enqueueIdBulk('node', (int) $pageA->id(), 'drush');
+    $enqueuer->enqueueIdBulk('node', (int) $pageB->id(), 'drush');
+    $enqueuer->flushEnqueueBuffers('drush');
+
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $this->assertSame(1, $queue->numberOfItems());
+
+    $worker = \Drupal::service('plugin.manager.queue_worker')
+      ->createInstance(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $claimed = $queue->claimItem();
+    $this->assertNotFalse($claimed);
+    $this->assertIsArray($claimed->data['entities'] ?? NULL);
+    $this->assertCount(2, $claimed->data['entities']);
+    $this->assertSame('drush', $claimed->data['source']);
+    $worker->processItem($claimed->data);
+    $queue->deleteItem($claimed);
+    $this->assertSame(0, $queue->numberOfItems());
+
+    foreach ([$pageA, $pageB] as $page) {
+      $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($page->id());
+      $this->assertNotNull($reloaded);
+      $body = (string) $reloaded->get('body')->value;
+      $this->assertStringContainsString($targetPath, $body);
+      $this->assertStringNotContainsString('/bulk-queue-', $body);
+
+      $logCount = (int) \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+        ->condition('entity_type', 'node')
+        ->condition('entity_id', (int) $page->id())
+        ->countQuery()
+        ->execute()
+        ->fetchField();
+      $this->assertGreaterThan(0, $logCount);
+
+      $status = \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+        ->fields('l', ['status'])
+        ->condition('entity_type', 'node')
+        ->condition('entity_id', (int) $page->id())
+        ->range(0, 1)
+        ->execute()
+        ->fetchField();
+      $this->assertSame('succeeded', $status);
+    }
+  }
+
+  /**
    * Tests queue worker logs failed rows when paragraph host update fails.
    */
   public function testQueueWorkerLogsFailureWhenParagraphHostUpdateFails(): void {
