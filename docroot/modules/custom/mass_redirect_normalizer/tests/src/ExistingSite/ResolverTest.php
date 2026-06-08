@@ -816,6 +816,7 @@ class ResolverTest extends MassExistingSiteBase {
     $targetPath = $target->toUrl()->toString();
 
     [$node, $paragraphId] = $this->createHowToWithMethodParagraph();
+    $hostRevisionBefore = (int) $node->getRevisionId();
     $this->setParagraphMethodDetailsMarkup(
       $paragraphId,
       '<p><a href="/' . $sourceStart . '">Need docs</a></p>'
@@ -830,6 +831,14 @@ class ResolverTest extends MassExistingSiteBase {
 
     $this->assertParagraphMethodDetailsContains($paragraphId, $targetPath, '/' . $sourceStart);
     $this->assertHostNodeReferencesNormalizedParagraph($node, $paragraphId, $targetPath, '/' . $sourceStart);
+
+    $hostNode = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($hostNode);
+    $this->assertGreaterThan(
+      $hostRevisionBefore,
+      (int) $hostNode->getRevisionId(),
+      'Host node revision should advance when paragraph save chain completes.'
+    );
   }
 
   /**

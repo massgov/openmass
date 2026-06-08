@@ -3,6 +3,7 @@
 namespace Drupal\mass_redirect_normalizer;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\RevisionLogInterface;
@@ -31,6 +32,7 @@ class RedirectLinkNormalizationManager {
     protected RedirectLinkResolver $resolver,
     protected TimeInterface $time,
     protected EntityTypeManagerInterface $entityTypeManager,
+    protected Connection $database,
   ) {
   }
 
@@ -130,6 +132,20 @@ class RedirectLinkNormalizationManager {
    * reverts the link fix.
    */
   private function saveNormalizedParagraphAndAncestors(Paragraph $paragraph): void {
+    $transaction = $this->database->startTransaction();
+    try {
+      $this->saveNormalizedParagraphAndAncestorsWithinTransaction($paragraph);
+    }
+    catch (\Throwable $exception) {
+      $transaction->rollBack();
+      throw $exception;
+    }
+  }
+
+  /**
+   * Persists paragraph, ancestor, and host-node revisions as one DB unit.
+   */
+  private function saveNormalizedParagraphAndAncestorsWithinTransaction(Paragraph $paragraph): void {
     $paragraphStorage = $this->entityTypeManager->getStorage('paragraph');
 
     $this->prepareRevision($paragraph, self::REVISION_MESSAGE);
@@ -137,14 +153,20 @@ class RedirectLinkNormalizationManager {
 
     $freshParagraph = $paragraphStorage->loadRevision((int) $paragraph->getRevisionId());
     if (!$freshParagraph instanceof Paragraph) {
-      return;
+      throw new \RuntimeException(sprintf(
+        'Failed to load paragraph revision %d after normalization save.',
+        (int) $paragraph->getRevisionId()
+      ));
     }
 
     $parent = $freshParagraph->getParentEntity();
     while ($parent instanceof Paragraph) {
       $parentParagraph = $paragraphStorage->load((int) $parent->id());
       if (!$parentParagraph instanceof Paragraph) {
-        return;
+        throw new \RuntimeException(sprintf(
+          'Failed to load parent paragraph %d while saving normalized nested content.',
+          (int) $parent->id()
+        ));
       }
       $this->replaceParagraphReference($parentParagraph, $freshParagraph);
       $this->prepareRevision($parentParagraph, self::REVISION_MESSAGE);
@@ -152,7 +174,10 @@ class RedirectLinkNormalizationManager {
 
       $freshParagraph = $paragraphStorage->loadRevision((int) $parentParagraph->getRevisionId());
       if (!$freshParagraph instanceof Paragraph) {
-        return;
+        throw new \RuntimeException(sprintf(
+          'Failed to load paragraph revision %d after parent paragraph save.',
+          (int) $parentParagraph->getRevisionId()
+        ));
       }
       $parent = $freshParagraph->getParentEntity();
     }
