@@ -401,6 +401,31 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests media /download paths stay internal in link fields.
+   */
+  public function testMediaDownloadRedirectPreservesDownloadPathInLinkField(): void {
+    $media = $this->createDocumentMedia('download-' . $this->randomMachineName());
+    $source = 'media-download-source-' . $this->randomMachineName();
+    $target = '/media/' . $media->id() . '/download';
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect($target);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(301);
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $normalized = $service->normalizeRedirectLinkUri('internal:/' . $source);
+
+    $this->assertTrue($normalized['changed']);
+    $this->assertSame('internal:' . $target, $normalized['uri']);
+    $this->assertStringNotContainsString('entity:media/', $normalized['uri']);
+  }
+
+  /**
    * Tests redirected document links are rewritten in link fields.
    */
   public function testDocumentRedirectIsNormalizedInLinkField(): void {

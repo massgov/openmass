@@ -83,7 +83,12 @@ class RedirectLinkResolver {
 
     $query = (string) parse_url((string) $resolved['target_path'], PHP_URL_QUERY);
     $fragment = (string) parse_url((string) $resolved['target_path'], PHP_URL_FRAGMENT);
-    if (!empty($resolved['entity']) && $query === '' && $fragment === '') {
+    if (
+      !empty($resolved['entity'])
+      && $query === ''
+      && $fragment === ''
+      && $this->shouldUseEntityUri((string) $resolved['target_path'], $resolved['entity'])
+    ) {
       return [
         'changed' => TRUE,
         'uri' => 'entity:' . $resolved['entity']->getEntityTypeId() . '/' . $resolved['entity']->id(),
@@ -331,6 +336,31 @@ class RedirectLinkResolver {
       }
     }
     return NULL;
+  }
+
+  /**
+   * Returns TRUE when a link field should use an entity: URI for the target.
+   *
+   * Non-canonical entity routes (e.g. /media/N/download) must stay internal.
+   */
+  private function shouldUseEntityUri(string $targetPath, EntityInterface $entity): bool {
+    $pathOnly = '/' . ltrim((string) parse_url($targetPath, PHP_URL_PATH), '/');
+    $entityType = $entity->getEntityTypeId();
+
+    if ($entityType === 'node') {
+      $canonical = '/node/' . $entity->id();
+      if ($pathOnly === $canonical) {
+        return TRUE;
+      }
+      $alias = $this->pathAliasManager->getAliasByPath($canonical);
+      return $alias !== $canonical && $pathOnly === '/' . ltrim($alias, '/');
+    }
+
+    if ($entityType === 'media') {
+      return $pathOnly === '/media/' . $entity->id();
+    }
+
+    return FALSE;
   }
 
   /**
