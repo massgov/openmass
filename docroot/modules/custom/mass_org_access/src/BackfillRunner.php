@@ -84,7 +84,7 @@ class BackfillRunner {
       $progress['media_processed'], $progress['media_total'], $progress['media_last_id']
     ));
 
-//    $this->processQueue('node', $progress, $output, $log_uri);
+    $this->processQueue('node', $progress, $output, $log_uri);
     $this->processQueue('media', $progress, $output, $log_uri);
 
     $this->log($output, $log_uri, sprintf(
