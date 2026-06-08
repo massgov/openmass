@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 
+use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use MassGov\Dtt\MassExistingSiteBase;
 
@@ -15,80 +16,39 @@ class DrushCommandTest extends MassExistingSiteBase {
   use RedirectNormalizerTestTrait;
 
   /**
-   * Tests command bundle filter constrains output.
-   */
-  public function testCommandBundleFiltering(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests command skips unpublished nodes.
-   */
-  public function testCommandSkipsUnpublishedNode(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests command writes CSV report rows for parseable output.
-   */
-  public function testCommandWritesCsvReport(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests CSV output appends new rows when the report file already exists.
-   */
-  public function testCommandAppendsToExistingCsvReport(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests CSV report includes entity-reference change rows.
-   */
-  public function testCommandCsvIncludesEntityReferenceRows(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests command kinds filter returns only selected change types.
-   */
-  public function testCommandKindsFilterReturnsOnlyEntityReferences(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests command progress checkpoint resume and show-progress behavior.
-   */
-  public function testCommandProgressResumeAndShowProgress(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests execute mode enqueues work without saving inline.
-   */
-  public function testCommandExecuteEnqueuesWithoutSavingInline(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests duplicate enqueue attempts do not multiply queue items.
-   */
-  public function testDuplicateEnqueueDedupesQueueItems(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests execute mode auto-resumes enqueue checkpoint.
-   */
-  public function testCommandExecuteAutoResumesEnqueueCheckpoint(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
-  }
-
-  /**
-   * Tests enqueue is blocked while a lock is held.
+   * Tests enqueue is rejected while the sweep lock is already held.
    */
   public function testCommandEnqueueBlockedWhileLockHeld(): void {
-    $this->markTestSkipped('Covered by new lock behavior tests.');
+    \Drupal::state()->delete(RedirectLinkQueueEnqueuer::SWEEP_IN_PROGRESS_STATE_KEY);
+    $this->purgeNormalizationQueue();
+    $queue = \Drupal::queue(RedirectLinkQueueEnqueuer::QUEUE_NAME);
+    $queue->createItem(['entity_type' => 'node', 'entity_id' => 12345, 'source' => 'presave']);
+    $this->assertSame(1, $queue->numberOfItems());
+
+    $database = \Drupal::database();
+    $database->delete('semaphore')
+      ->condition('name', 'mass_redirect_normalizer.enqueue')
+      ->execute();
+    $database->insert('semaphore')
+      ->fields([
+        'name' => 'mass_redirect_normalizer.enqueue',
+        'value' => 'held-by-another-sweep',
+        'expire' => microtime(TRUE) + 3600,
+      ])
+      ->execute();
+
+    $command = $this->createNormalizerCommand();
+    $result = $command->normalizeRedirectLinks();
+    $this->assertInstanceOf(RowsOfFields::class, $result);
+    $this->assertSame(1, $queue->numberOfItems(), 'Queue must not be purged when the lock is unavailable.');
+    $this->assertNull(
+      \Drupal::state()->get(RedirectLinkQueueEnqueuer::SWEEP_IN_PROGRESS_STATE_KEY),
+      'Sweep state must not be set when enqueue is rejected.'
+    );
+
+    $database->delete('semaphore')
+      ->condition('name', 'mass_redirect_normalizer.enqueue')
+      ->execute();
   }
 
   /**
@@ -144,10 +104,23 @@ class DrushCommandTest extends MassExistingSiteBase {
   }
 
   /**
-   * Tests simulate mode does not enqueue queue items.
+   * Tests the sweep ID query excludes unpublished nodes.
    */
-  public function testSimulateDoesNotEnqueue(): void {
-    $this->markTestSkipped('Removed by enqueue-only command refactor.');
+  public function testCommandSweepQueryExcludesUnpublishedNodes(): void {
+    $unpublished = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+
+    $matching = \Drupal::entityTypeManager()->getStorage('node')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('status', 1)
+      ->condition('nid', (int) $unpublished->id())
+      ->execute();
+
+    $this->assertEmpty($matching);
   }
 
 }
