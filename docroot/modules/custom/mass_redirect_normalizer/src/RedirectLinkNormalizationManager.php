@@ -168,7 +168,13 @@ class RedirectLinkNormalizationManager {
           (int) $parent->id()
         ));
       }
-      $this->replaceParagraphReference($parentParagraph, $freshParagraph);
+      if (!$this->replaceParagraphReference($parentParagraph, $freshParagraph)) {
+        throw new \RuntimeException(sprintf(
+          'Failed to update parent paragraph %d to reference normalized paragraph revision %d.',
+          (int) $parentParagraph->id(),
+          (int) $freshParagraph->getRevisionId()
+        ));
+      }
       $this->prepareRevision($parentParagraph, self::REVISION_MESSAGE);
       $parentParagraph->save();
 
@@ -182,14 +188,31 @@ class RedirectLinkNormalizationManager {
       $parent = $freshParagraph->getParentEntity();
     }
 
-    if ($parent instanceof NodeInterface) {
-      $node = $this->entityTypeManager->getStorage('node')->load((int) $parent->id());
-      if ($node instanceof NodeInterface) {
-        $this->replaceParagraphReference($node, $freshParagraph);
-        $this->prepareRevision($node, self::NESTED_REVISION_MESSAGE);
-        $node->save();
-      }
+    if (!$parent instanceof NodeInterface) {
+      throw new \RuntimeException(sprintf(
+        'Failed to resolve host node for normalized paragraph %d.',
+        (int) $freshParagraph->id()
+      ));
     }
+
+    $node = $this->entityTypeManager->getStorage('node')->load((int) $parent->id());
+    if (!$node instanceof NodeInterface) {
+      throw new \RuntimeException(sprintf(
+        'Failed to load host node %d for normalized paragraph %d.',
+        (int) $parent->id(),
+        (int) $freshParagraph->id()
+      ));
+    }
+
+    if (!$this->replaceParagraphReference($node, $freshParagraph)) {
+      throw new \RuntimeException(sprintf(
+        'Failed to update host node %d to reference normalized paragraph revision %d.',
+        (int) $node->id(),
+        (int) $freshParagraph->getRevisionId()
+      ));
+    }
+    $this->prepareRevision($node, self::NESTED_REVISION_MESSAGE);
+    $node->save();
   }
 
   /**

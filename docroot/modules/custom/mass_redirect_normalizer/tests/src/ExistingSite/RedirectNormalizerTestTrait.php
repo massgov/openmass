@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 
 use Drupal\file\Entity\File;
 use Drupal\mass_redirect_normalizer\Drush\Commands\MassRedirectNormalizerCommands;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\mass_redirect_normalizer\RedirectLinkChangeLog;
 use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use Drupal\redirect\Entity\Redirect;
@@ -163,6 +164,88 @@ trait RedirectNormalizerTestTrait {
         'not null' => FALSE,
       ]);
     }
+  }
+
+  /**
+   * Creates a published how-to with one method paragraph.
+   *
+   * @return array{0: \Drupal\node\NodeInterface, 1: int}
+   *   Host node and method paragraph ID.
+   */
+  private function createHowToWithMethodParagraph(): array {
+    $method = Paragraph::create([
+      'type' => 'method',
+      'field_method_type' => 'online',
+      'field_method_details' => [
+        'value' => '<p><a href="/placeholder">Need docs</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $contact = $this->createNode([
+      'type' => 'contact_information',
+      'title' => $this->randomMachineName(),
+      'field_display_title' => 'Test contact',
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->cleanupEntities[] = $contact;
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'how_to_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_how_to_lede' => [
+        'value' => 'Test lede',
+        'format' => 'plain_text',
+      ],
+      'field_how_to_link_1' => [
+        'uri' => 'https://www.example.com',
+        'title' => 'Example',
+      ],
+      'field_how_to_methods_5' => [$method],
+      'field_how_to_contacts_3' => [$contact],
+      'field_organizations' => [$org],
+    ]);
+    $this->cleanupEntities[] = $node;
+
+    return [$node, (int) $method->id()];
+  }
+
+  /**
+   * Sets method paragraph body markup in storage (bypasses presave normalization).
+   */
+  private function setParagraphMethodDetailsMarkup(int $paragraphId, string $markup): void {
+    $connection = \Drupal::database();
+    foreach (['paragraph__field_method_details', 'paragraph_revision__field_method_details'] as $table) {
+      $connection->update($table)
+        ->fields(['field_method_details_value' => $markup])
+        ->condition('entity_id', $paragraphId)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('paragraph')->resetCache([$paragraphId]);
+  }
+
+  /**
+   * Breaks a node's paragraph reference while leaving nested embeds intact.
+   */
+  private function corruptNodeParagraphFieldTarget(int $nodeId, string $fieldName, int $fakeTargetId = 999999): void {
+    $connection = \Drupal::database();
+    foreach (['node__' . $fieldName, 'node_revision__' . $fieldName] as $table) {
+      $connection->update($table)
+        ->fields([$fieldName . '_target_id' => $fakeTargetId])
+        ->condition('entity_id', $nodeId)
+        ->execute();
+    }
+    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$nodeId]);
   }
 
   /**

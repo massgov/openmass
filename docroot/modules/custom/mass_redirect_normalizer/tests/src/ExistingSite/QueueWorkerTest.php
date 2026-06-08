@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\mass_redirect_normalizer\ExistingSite;
 
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager;
 use Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer;
 use MassGov\Dtt\MassExistingSiteBase;
 
@@ -245,6 +247,46 @@ class QueueWorkerTest extends MassExistingSiteBase {
       ->execute()
       ->fetchField();
     $this->assertSame('succeeded', $status);
+  }
+
+  /**
+   * Tests queue worker logs failed rows when paragraph host update fails.
+   */
+  public function testQueueWorkerLogsFailureWhenParagraphHostUpdateFails(): void {
+    $this->ensureChangeLogTableExists();
+    \Drupal::database()->truncate('mass_redirect_normalizer_change_log')->execute();
+
+    [$node, $paragraphId] = $this->createHowToWithMethodParagraph();
+    unset($node);
+
+    $throwingManager = new class(
+      \Drupal::service('mass_redirect_normalizer.resolver'),
+      \Drupal::service('datetime.time'),
+      \Drupal::entityTypeManager(),
+      \Drupal::database(),
+    ) extends RedirectLinkNormalizationManager {
+      public function normalizeEntity(ContentEntityInterface $entity, bool $save = TRUE, bool $dryRun = FALSE): array {
+        throw new \RuntimeException('Failed to update host node 1 to reference normalized paragraph revision 2.');
+      }
+    };
+    \Drupal::getContainer()->set('mass_redirect_normalizer.manager', $throwingManager);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkQueueEnqueuer $enqueuer */
+    $enqueuer = \Drupal::service('mass_redirect_normalizer.enqueuer');
+    $enqueuer->enqueueById('paragraph', $paragraphId, 'drush');
+    $this->drainNormalizationQueue();
+
+    $status = \Drupal::database()->select('mass_redirect_normalizer_change_log', 'l')
+      ->fields('l', ['status', 'error_message'])
+      ->condition('entity_type', 'paragraph')
+      ->condition('entity_id', $paragraphId)
+      ->range(0, 1)
+      ->execute()
+      ->fetchAssoc();
+
+    $this->assertIsArray($status);
+    $this->assertSame('failed', $status['status']);
+    $this->assertStringContainsString('Failed to update host node', (string) $status['error_message']);
   }
 
   /**

@@ -875,77 +875,67 @@ class ResolverTest extends MassExistingSiteBase {
     $this->assertHostNodeReferencesNormalizedParagraph($node, $paragraphId, '/' . $newDoc, '/' . $oldDoc);
   }
 
-  // -------------------------------------------------------------------------
-  // Paragraph test helpers.
-  // -------------------------------------------------------------------------
-
   /**
-   * Creates a published how-to with one method paragraph.
-   *
-   * @return array{0: \Drupal\node\NodeInterface, 1: int}
-   *   Host node and method paragraph ID.
+   * Tests paragraph save chain fails when no host node can be resolved.
    */
-  private function createHowToWithMethodParagraph(): array {
-    $method = Paragraph::create([
+  public function testParagraphSaveChainThrowsWhenHostNodeCannotBeResolved(): void {
+    $paragraph = Paragraph::create([
       'type' => 'method',
       'field_method_type' => 'online',
       'field_method_details' => [
-        'value' => '<p><a href="/placeholder">Need docs</a></p>',
+        'value' => '<p><a href="/placeholder">Orphan</a></p>',
         'format' => 'full_html',
       ],
     ]);
+    $paragraph->save();
+    $this->cleanupEntities[] = $paragraph;
 
-    $contact = $this->createNode([
-      'type' => 'contact_information',
-      'title' => $this->randomMachineName(),
-      'field_display_title' => 'Test contact',
-      'status' => 1,
-      'moderation_state' => 'published',
-    ]);
-    $this->cleanupEntities[] = $contact;
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $method = new \ReflectionMethod($manager, 'saveNormalizedParagraphAndAncestorsWithinTransaction');
+    $method->setAccessible(TRUE);
 
-    $org = $this->createNode([
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessage('Failed to resolve host node');
+    $method->invoke($manager, $paragraph);
+  }
+
+  /**
+   * Tests paragraph save chain fails when host node lacks the paragraph embed.
+   */
+  public function testParagraphSaveChainThrowsWhenHostNodeMissingParagraphReference(): void {
+    $target = $this->createNode([
       'type' => 'org_page',
       'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => 'published',
     ]);
+    [$sourceStart] = $this->createRedirectChain($target);
 
-    $node = $this->createNode([
-      'type' => 'how_to_page',
-      'title' => $this->randomMachineName(),
-      'status' => 1,
-      'moderation_state' => 'published',
-      'field_how_to_lede' => [
-        'value' => 'Test lede',
-        'format' => 'plain_text',
-      ],
-      'field_how_to_link_1' => [
-        'uri' => 'https://www.example.com',
-        'title' => 'Example',
-      ],
-      'field_how_to_methods_5' => [$method],
-      'field_how_to_contacts_3' => [$contact],
-      'field_organizations' => [$org],
-    ]);
-    $this->cleanupEntities[] = $node;
-
-    return [$node, (int) $method->id()];
-  }
-
-  /**
-   * Sets method paragraph body markup in storage (bypasses presave normalization).
-   */
-  private function setParagraphMethodDetailsMarkup(int $paragraphId, string $markup): void {
-    $connection = \Drupal::database();
-    foreach (['paragraph__field_method_details', 'paragraph_revision__field_method_details'] as $table) {
-      $connection->update($table)
-        ->fields(['field_method_details_value' => $markup])
-        ->condition('entity_id', $paragraphId)
-        ->execute();
-    }
+    [$node, $paragraphId] = $this->createHowToWithMethodParagraph();
+    $this->setParagraphMethodDetailsMarkup(
+      $paragraphId,
+      '<p><a href="/' . $sourceStart . '">Need docs</a></p>'
+    );
+    $this->corruptNodeParagraphFieldTarget((int) $node->id(), 'field_how_to_methods_5');
     \Drupal::entityTypeManager()->getStorage('paragraph')->resetCache([$paragraphId]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $paragraph = Paragraph::load($paragraphId);
+    $this->assertNotNull($paragraph);
+
+    $method = new \ReflectionMethod($manager, 'saveNormalizedParagraphAndAncestorsWithinTransaction');
+    $method->setAccessible(TRUE);
+
+    $this->expectException(\RuntimeException::class);
+    $this->expectExceptionMessage('Failed to update host node');
+    $method->invoke($manager, $paragraph);
   }
+
+  // -------------------------------------------------------------------------
+  // Paragraph test helpers.
+  // -------------------------------------------------------------------------
 
   /**
    * Asserts paragraph field_method_details contains expected path fragments.
