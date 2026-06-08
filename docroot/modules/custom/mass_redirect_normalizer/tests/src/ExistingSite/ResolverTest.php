@@ -83,6 +83,79 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests redirect destination query strings are preserved through resolution.
+   */
+  public function testResolveRedirectTargetPreservesDestinationQuery(): void {
+    $source = 'old-page-' . $this->randomMachineName();
+    $targetPath = '/search?category=health';
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect($targetPath);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $source);
+
+    $this->assertTrue($resolved['changed']);
+    $this->assertSame('/search?category=health', $resolved['target_path']);
+
+    $text = '<p><a href="/' . $source . '">Search</a></p>';
+    $normalized = $service->normalizeRedirectLinksInText($text);
+    $this->assertTrue($normalized['changed']);
+    $this->assertStringContainsString('/search?category=health', $normalized['text']);
+  }
+
+  /**
+   * Tests destination query wins over source link query on redirect.
+   */
+  public function testResolveRedirectTargetDestinationQueryOverridesSourceQuery(): void {
+    $source = 'old-page-query-' . $this->randomMachineName();
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect('/search?category=health');
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $source . '?foo=1');
+
+    $this->assertTrue($resolved['changed']);
+    $this->assertSame('/search?category=health', $resolved['target_path']);
+    $this->assertStringNotContainsString('foo=1', $resolved['target_path']);
+  }
+
+  /**
+   * Tests source link query is kept when redirect destination has none.
+   */
+  public function testResolveRedirectTargetFallsBackToSourceQuery(): void {
+    $source = 'old-page-fallback-' . $this->randomMachineName();
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect('/search');
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $source . '?foo=1');
+
+    $this->assertTrue($resolved['changed']);
+    $this->assertSame('/search?foo=1', $resolved['target_path']);
+  }
+
+  /**
    * Tests looped redirects do not cause infinite processing.
    */
   public function testRedirectLoopIsSafelyIgnored(): void {

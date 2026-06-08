@@ -169,17 +169,19 @@ class RedirectLinkResolver {
    * Follows redirect chain and returns the final local path.
    */
   public function resolveRedirectTarget(string $url, int $maxDepth = 10): array {
-    $parsed = parse_url($url) ?: [];
-    $sourcePath = $this->extractLocalPath($url);
-    if (!$sourcePath) {
+    $sourceParts = $this->parseLocalUrlParts($url);
+    if (!$sourceParts) {
       return ['changed' => FALSE];
     }
 
-    $query = empty($parsed['query']) ? '' : '?' . $parsed['query'];
-    $fragment = empty($parsed['fragment']) ? '' : '#' . $parsed['fragment'];
+    $sourcePath = $sourceParts['path'];
+    $sourceQuery = $sourceParts['query'];
+    $sourceFragment = $sourceParts['fragment'];
 
     $current = ltrim($sourcePath, '/');
     $visited = [];
+    $destinationQuery = '';
+    $destinationFragment = '';
 
     for ($i = 0; $i < $maxDepth; $i++) {
       if (isset($visited[$current])) {
@@ -192,16 +194,23 @@ class RedirectLinkResolver {
         break;
       }
 
-      $next = $this->extractLocalPath($redirect->getRedirectUrl()->toString());
-      if (!$next) {
+      $redirectUri = (string) $redirect->get('redirect_redirect')->uri;
+      $uriParts = $this->parseLocalUrlParts($redirectUri);
+      $resolvedParts = $this->parseLocalUrlParts($redirect->getRedirectUrl()->toString());
+      if (!$resolvedParts) {
         break;
       }
-      $current = ltrim($next, '/');
+      $current = ltrim($resolvedParts['path'], '/');
+      // Query/fragment live on the stored redirect URI; path uses alias resolution.
+      $destinationQuery = $uriParts !== NULL ? $uriParts['query'] : '';
+      $destinationFragment = $uriParts !== NULL ? $uriParts['fragment'] : '';
     }
 
     $finalPath = '/' . ltrim($current, '/');
+    $query = $destinationQuery !== '' ? $destinationQuery : $sourceQuery;
+    $fragment = $destinationFragment !== '' ? $destinationFragment : $sourceFragment;
     $targetPath = $finalPath . $query . $fragment;
-    $sourceNormalized = '/' . ltrim($sourcePath, '/') . $query . $fragment;
+    $sourceNormalized = $sourcePath . $sourceQuery . $sourceFragment;
     if ($targetPath === $sourceNormalized) {
       return ['changed' => FALSE];
     }
@@ -322,6 +331,35 @@ class RedirectLinkResolver {
       }
     }
     return NULL;
+  }
+
+  /**
+   * Parses a local URL/URI into path, query, and fragment components.
+   *
+   * @return array{path: string, query: string, fragment: string}|null
+   *   Local URL parts, or NULL when the URL is not local.
+   */
+  private function parseLocalUrlParts(string $url): ?array {
+    $path = $this->extractLocalPath($url);
+    if ($path === NULL) {
+      return NULL;
+    }
+
+    $parseTarget = $url;
+    if (str_starts_with($url, 'internal:')) {
+      $parseTarget = substr($url, strlen('internal:'));
+    }
+    if ($parseTarget !== '' && !str_starts_with($parseTarget, '/')) {
+      $parseTarget = '/' . ltrim($parseTarget, '/');
+    }
+
+    $parsed = parse_url($parseTarget) ?: [];
+
+    return [
+      'path' => $path,
+      'query' => empty($parsed['query']) ? '' : '?' . $parsed['query'],
+      'fragment' => empty($parsed['fragment']) ? '' : '#' . $parsed['fragment'],
+    ];
   }
 
   /**
