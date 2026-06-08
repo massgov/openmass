@@ -5,6 +5,7 @@ namespace Drupal\mass_redirect_normalizer;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityChangedInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Entity\RevisionableInterface;
@@ -359,6 +360,14 @@ class RedirectLinkNormalizationManager {
    * Sets revision data if the entity supports revisions.
    */
   private function prepareRevision(ContentEntityInterface $entity, string $message): void {
+    $changedTime = NULL;
+    if ($entity instanceof EntityChangedInterface) {
+      $changedTime = $entity->getChangedTime();
+    }
+
+    // Automated sweeps should not bump "last updated" or trigger sync side-effects.
+    $entity->setSyncing(TRUE);
+
     if ($entity instanceof RevisionableInterface) {
       $entity->setNewRevision();
     }
@@ -367,6 +376,9 @@ class RedirectLinkNormalizationManager {
       $entity->setRevisionUserId(1);
       $entity->setRevisionLogMessage($message);
       $entity->setRevisionCreationTime($this->time->getRequestTime());
+    }
+    if ($changedTime !== NULL) {
+      $entity->setChangedTime($changedTime);
     }
   }
 

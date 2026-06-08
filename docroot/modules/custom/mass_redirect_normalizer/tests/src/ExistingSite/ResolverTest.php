@@ -753,6 +753,54 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests automated revisions preserve the entity changed timestamp.
+   */
+  public function testAutomatedRevisionPreservesChangedTimestamp(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $node = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'body' => [
+        'value' => '<p><a href="/' . $sourceStart . '">Needs normalization</a></p>',
+        'format' => 'full_html',
+      ],
+    ]);
+
+    $pastChanged = strtotime('-1 year');
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($node);
+    $node->setChangedTime($pastChanged);
+    $node->setSyncing(TRUE);
+    $node->save();
+
+    $entity = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($entity);
+    $entity->setOriginal(clone $entity);
+    $entity->set('body', [
+      'value' => '<p><a href="/' . $sourceStart . '">Needs normalization</a></p>',
+      'format' => 'full_html',
+    ]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($entity, TRUE);
+    $this->assertTrue($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($node->id());
+    $this->assertNotNull($reloaded);
+    $this->assertSame($pastChanged, (int) $reloaded->getChangedTime());
+  }
+
+  /**
    * Tests automated URL-fix revisions are attributed to admin user.
    */
   public function testAutomatedRevisionUsesAdminAsRevisionAuthor(): void {
