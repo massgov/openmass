@@ -61,6 +61,57 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests Html::load()/serialize() round-trip preserves non-link rich text.
+   *
+   * Redirect rewriting re-serializes the entire field value. Accented text,
+   * Cyrillic, &nbsp;, and embedded <drupal-media> must survive byte-for-byte
+   * outside the rewritten anchor.
+   */
+  public function testRichTextNormalizationPreservesNonAsciiContentAndMediaEmbed(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    [$sourceStart] = $this->createRedirectChain($target);
+
+    $media = $this->createDocumentMedia('rich-text-' . $this->randomMachineName());
+    $mediaTag = '<drupal-media data-entity-type="media" data-entity-uuid="' . $media->uuid() . '" data-view-mode="default"></drupal-media>';
+    $originalLink = '<a href="/' . $sourceStart . '">redirecting link</a>';
+    $before = '<p>Café résumé — Москва&nbsp;and ' . $mediaTag . ' before ' . $originalLink . ' after.</p>';
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $normalized = $service->normalizeRedirectLinksInText($before);
+
+    $this->assertTrue($normalized['changed']);
+
+    $parts = explode($originalLink, $before, 2);
+    $this->assertCount(2, $parts, 'Fixture must contain a single redirecting link.');
+    $this->assertSame(
+      $parts[0],
+      substr($normalized['text'], 0, strlen($parts[0])),
+      'Non-link prefix must survive byte-for-byte through DOM round-trip.'
+    );
+    $this->assertSame(
+      $parts[1],
+      substr($normalized['text'], -strlen($parts[1])),
+      'Non-link suffix must survive byte-for-byte through DOM round-trip.'
+    );
+
+    $linkStart = strlen($parts[0]);
+    $linkEnd = strlen($normalized['text']) - strlen($parts[1]);
+    $rewrittenLink = substr($normalized['text'], $linkStart, $linkEnd - $linkStart);
+    $targetPath = $target->toUrl()->toString();
+    $this->assertStringContainsString('href="' . $targetPath . '"', $rewrittenLink);
+    $this->assertStringContainsString('data-entity-type="node"', $rewrittenLink);
+    $this->assertStringContainsString('data-entity-substitution="canonical"', $rewrittenLink);
+    $this->assertStringContainsString('data-entity-uuid="' . $target->uuid() . '"', $rewrittenLink);
+    $this->assertStringContainsString('>redirecting link</a>', $rewrittenLink);
+  }
+
+  /**
    * Tests link-field URI normalization to final internal path.
    */
   public function testNormalizeRedirectLinkUri(): void {
