@@ -53,23 +53,35 @@ class BackfillRunner {
   ) {}
 
   /**
-   * Runs (or resumes) the backfill until both queues are empty.
+   * Runs (or resumes) the backfill for a single entity type.
+   *
+   * Nodes and media are processed independently — one type per invocation —
+   * so a long media run and a node run can proceed separately. Each keeps its
+   * own resumable cursor in the shared State key.
    *
    * @param \Symfony\Component\Console\Output\OutputInterface $output
    *   Drush output for live progress.
+   * @param string $entity_type
+   *   Which entity type to back-fill: 'node' or 'media'.
    * @param string|null $log_uri
    *   Stream-wrapper URI of the log file (e.g. private://moab.log). Appended
    *   to. NULL falls back to DEFAULT_LOG_URI.
    * @param bool $reset
    *   If TRUE, clears all stored progress and recomputes totals from scratch.
    */
-  public function run(OutputInterface $output, ?string $log_uri = NULL, bool $reset = FALSE): void {
+  public function run(OutputInterface $output, string $entity_type, ?string $log_uri = NULL, bool $reset = FALSE): void {
+    if (!in_array($entity_type, ['node', 'media'], TRUE)) {
+      throw new \InvalidArgumentException('Entity type must be "node" or "media".');
+    }
 
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     $log_uri = $log_uri ?: self::DEFAULT_LOG_URI;
     $this->prepareLogFile($log_uri, $output);
-    $this->ensureMediaIconPlaceholders($output, $log_uri);
+    // Icon placeholders only matter for media thumbnails.
+    if ($entity_type === 'media') {
+      $this->ensureMediaIconPlaceholders($output, $log_uri);
+    }
 
     if ($reset) {
       $this->resetProgress();
@@ -78,20 +90,26 @@ class BackfillRunner {
 
     $progress = $this->loadProgress();
     $this->log($output, $log_uri, sprintf(
-      "=== Run started %s ===\nNodes: %d / %d processed (last NID: %d)\nMedia: %d / %d processed (last MID: %d)",
+      "=== Run started %s (%s) ===\n%s: %d / %d processed (last %s: %d)",
       $this->now(),
-      $progress['node_processed'], $progress['node_total'], $progress['node_last_id'],
-      $progress['media_processed'], $progress['media_total'], $progress['media_last_id']
+      $entity_type,
+      ucfirst($entity_type),
+      $progress[$entity_type . '_processed'],
+      $progress[$entity_type . '_total'],
+      $entity_type === 'node' ? 'NID' : 'MID',
+      $progress[$entity_type . '_last_id']
     ));
 
-    $this->processQueue('node', $progress, $output, $log_uri);
-    $this->processQueue('media', $progress, $output, $log_uri);
+    $this->processQueue($entity_type, $progress, $output, $log_uri);
 
     $this->log($output, $log_uri, sprintf(
-      "=== Run completed %s ===\nNodes total: %d / %d (%d skipped)\nMedia total: %d / %d (%d skipped)",
+      "=== Run completed %s (%s) ===\n%s total: %d / %d (%d skipped)",
       $this->now(),
-      $progress['node_processed'], $progress['node_total'], $progress['node_skipped'],
-      $progress['media_processed'], $progress['media_total'], $progress['media_skipped']
+      $entity_type,
+      ucfirst($entity_type),
+      $progress[$entity_type . '_processed'],
+      $progress[$entity_type . '_total'],
+      $progress[$entity_type . '_skipped']
     ));
   }
 
