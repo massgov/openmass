@@ -66,6 +66,41 @@ class MassOrgAccessCommands extends DrushCommands {
   }
 
   /**
+   * Queue field_content_organization backfill for one entity type.
+   *
+   * Fills the "mass_org_access_backfill" queue with one item per in-scope
+   * entity (org_page excluded), then exits. Drain it manually — and in bounded
+   * passes so a single long process does not accumulate memory:
+   * `drush queue:run mass_org_access_backfill --time-limit=600`. Re-run to
+   * continue; the queue persists. This is the queued counterpart of `moab`
+   * and runs in parallel with it.
+   *
+   * @command mass-org-access:backfill-queue
+   * @aliases moab-queue
+   * @option entity_type
+   *   Which entity type to enqueue: "node" or "media". Required.
+   * @option reset
+   *   Empty the queue before filling it.
+   * @usage drush mass-org-access:backfill-queue --entity_type=media
+   *   Queue every in-scope media item for backfill.
+   * @usage drush mass-org-access:backfill-queue --entity_type=node --reset
+   *   Empty the queue, then queue every in-scope node.
+   */
+  public function backfillQueue(array $options = ['entity_type' => NULL, 'reset' => FALSE]): void {
+    $entity_type = is_string($options['entity_type']) ? $options['entity_type'] : '';
+    if (!in_array($entity_type, ['node', 'media'], TRUE)) {
+      throw new \InvalidArgumentException('The --entity_type option is required and must be "node" or "media".');
+    }
+    $queued = $this->backfillRunner->enqueue($entity_type, (bool) $options['reset'], $this->output());
+    $this->output()->writeln(sprintf(
+      '<info>Queued %d %s item(s).</info> Process with: drush queue:run %s --time-limit=600',
+      $queued,
+      $entity_type,
+      BackfillRunner::QUEUE_NAME
+    ));
+  }
+
+  /**
    * Dev helper to sync the first 100 nodes and 100 media.document entities.
    *
    * Prints entity IDs with the resulting field_content_organization term

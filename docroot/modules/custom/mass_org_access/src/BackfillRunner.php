@@ -10,8 +10,10 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\State\StateInterface;
 use Drupal\media\MediaInterface;
+use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -41,6 +43,13 @@ class BackfillRunner {
    */
   public const DEFAULT_LOG_URI = 'private://mass_org_access/backfill.log';
 
+  /**
+   * Queue that holds one in-scope entity per item for the queued backfill.
+   *
+   * Must match the @QueueWorker id on BackfillQueueWorker.
+   */
+  public const QUEUE_NAME = 'mass_org_access_backfill';
+
   public function __construct(
     private readonly EntityTypeManagerInterface $entityTypeManager,
     private readonly EntityFieldManagerInterface $entityFieldManager,
@@ -50,6 +59,7 @@ class BackfillRunner {
     private readonly StageFileFetcher $stageFileFetcher,
     private readonly ConfigFactoryInterface $configFactory,
     private readonly ModuleExtensionList $moduleExtensionList,
+    private readonly QueueFactory $queueFactory,
   ) {}
 
   /**
@@ -80,7 +90,13 @@ class BackfillRunner {
     $this->prepareLogFile($log_uri, $output);
     // Icon placeholders only matter for media thumbnails.
     if ($entity_type === 'media') {
-      $this->ensureMediaIconPlaceholders($output, $log_uri);
+      $created = $this->ensureMediaIconPlaceholders();
+      if ($created) {
+        $this->log($output, $log_uri, sprintf(
+          'Created %d missing media-icon placeholder(s) from the generic icon.',
+          $created
+        ));
+      }
     }
 
     if ($reset) {
@@ -111,6 +127,80 @@ class BackfillRunner {
       $progress[$entity_type . '_total'],
       $progress[$entity_type . '_skipped']
     ));
+  }
+
+  /**
+   * Queues every in-scope entity of one type for the queued backfill.
+   *
+   * The queue analog of run(): instead of processing inline it pushes one
+   * item per entity onto the QUEUE_NAME queue, to be drained later with
+   * `drush queue:run mass_org_access_backfill`. Reuses the exact same in-scope
+   * query as the sync run (org_page excluded), so both paths cover the same
+   * universe. No State cursor — the queue itself is the progress.
+   *
+   * @param string $entity_type
+   *   Which entity type to enqueue: 'node' or 'media'.
+   * @param bool $reset
+   *   If TRUE, empties the queue before filling it.
+   * @param \Symfony\Component\Console\Output\OutputInterface|null $output
+   *   When given, a live progress bar is rendered as the queue fills.
+   *
+   * @return int
+   *   The number of entities enqueued.
+   */
+  public function enqueue(string $entity_type, bool $reset = FALSE, ?OutputInterface $output = NULL): int {
+    if (!in_array($entity_type, ['node', 'media'], TRUE)) {
+      throw new \InvalidArgumentException('Entity type must be "node" or "media".');
+    }
+
+    $queue = $this->queueFactory->get(self::QUEUE_NAME);
+    if ($reset) {
+      $queue->deleteQueue();
+    }
+    // Make sure the icon placeholders exist before the workers start saving.
+    if ($entity_type === 'media') {
+      $this->ensureMediaIconPlaceholders();
+    }
+
+    $id_key = $entity_type === 'node' ? 'nid' : 'mid';
+    $total = (int) ($entity_type === 'node' ? $this->buildNodeQuery() : $this->buildMediaQuery())
+      ->count()
+      ->execute();
+
+    $bar = NULL;
+    if ($output !== NULL) {
+      $bar = new ProgressBar($output, $total);
+      $bar->setFormat(" Queuing %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%\n");
+      $bar->start();
+    }
+
+    $last_id = 0;
+    $queued = 0;
+    while (TRUE) {
+      $query = $entity_type === 'node' ? $this->buildNodeQuery() : $this->buildMediaQuery();
+      $ids = $query
+        ->condition($id_key, $last_id, '>')
+        ->sort($id_key)
+        ->range(0, self::BATCH_SIZE)
+        ->execute();
+      if (empty($ids)) {
+        break;
+      }
+      foreach ($ids as $id) {
+        // One entity per queue item, per requirement.
+        $queue->createItem(['entity_type' => $entity_type, 'id' => (int) $id]);
+        $last_id = (int) $id;
+        $queued++;
+      }
+      $bar?->advance(count($ids));
+    }
+
+    $bar?->finish();
+    if ($output !== NULL) {
+      $output->writeln('');
+    }
+
+    return $queued;
   }
 
   /**
@@ -291,19 +381,19 @@ class BackfillRunner {
    * while regenerating the thumbnail. Copy the media module's generic icon
    * over each referenced-but-missing icon so the fallback resolves cleanly.
    *
-   * @param \Symfony\Component\Console\Output\OutputInterface $output
-   *   Drush output for the summary line.
-   * @param string $log_uri
-   *   Log file URI.
+   * Public so both the sync runner and the queue worker can self-heal icons.
+   *
+   * @return int
+   *   The number of placeholder icons created.
    */
-  private function ensureMediaIconPlaceholders(OutputInterface $output, string $log_uri): void {
+  public function ensureMediaIconPlaceholders(): int {
     $icon_base = (string) $this->configFactory->get('media.settings')->get('icon_base_uri');
     if ($icon_base === '') {
-      return;
+      return 0;
     }
     $placeholder = $this->moduleExtensionList->getPath('media') . '/images/icons/generic.png';
     if (!is_file($placeholder)) {
-      return;
+      return 0;
     }
     $this->fileSystem->prepareDirectory($icon_base, FileSystemInterface::CREATE_DIRECTORY);
 
@@ -329,12 +419,7 @@ class BackfillRunner {
       }
     }
 
-    if ($created) {
-      $this->log($output, $log_uri, sprintf(
-        'Created %d missing media-icon placeholder(s) from the generic icon.',
-        $created
-      ));
-    }
+    return $created;
   }
 
   /**

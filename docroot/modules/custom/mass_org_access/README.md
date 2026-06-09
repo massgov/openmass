@@ -155,9 +155,14 @@ since that is the one bundle where authors edit the field by hand.
 |------------|-------|------|
 | `mass_org_access.settings` | `OrgAccessSettings` | Reads env + State for the feature switch and debug mode |
 | `mass_org_access.org_access_checker` | `OrgAccessChecker` | Access intersection + `ownerGroupTermsForOrg` (shared direct lookup: copies the org_page's own curated Permission Groups) + `populateOwnerGroupsFromOrganizations` (backfill) |
-| `mass_org_access.backfill_runner` | `BackfillRunner` | Resumable drush backfill driver |
+| `mass_org_access.backfill_runner` | `BackfillRunner` | Resumable drush backfill driver (`run()`) + queue filler (`enqueue()`) — see [Queue variant](#queue-variant-moab-queue) |
+| `mass_org_access.stage_file_fetcher` | `StageFileFetcher` | Pulls a missing `public://` file from the stage_file_proxy origin on demand (optional dependency; no-op on prod) |
 | `mass_org_access.mapping_importer` | `OrgMappingImporter` | CSV parse + per-org_page Permission Groups writer (admin UI batches) |
 | `mass_org_access.route_subscriber` | `Routing\RouteSubscriber` | Side-door route hardening |
+
+`Plugin\QueueWorker\BackfillQueueWorker` (queue id `mass_org_access_backfill`)
+processes the queued backfill — one entity per item, calling the same
+`BackfillRunner::backfillEntity()` as the sync run.
 
 The endpoint is served by `Controller\OrgLookupController::lookup`
 (route `mass_org_access.lookup_user_orgs`). Access: any authenticated
@@ -229,12 +234,16 @@ non-`org_page` bundles (unless debug mode is on).
 
 ## Drush
 
+The backfill runs **one entity type per invocation** — `--entity_type` is
+required (`node` or `media`):
+
 ```sh
-drush mass-org-access:backfill        # alias: moab
-drush moab --reset                    # wipe stored progress, rescan all
-drush moab --log=private://moab.log   # custom log location
-drush mass-org-access:backfill-dev    # alias: moab-dev — first 100 nodes
-                                      # + 100 media, prints assigned TIDs
+drush mass-org-access:backfill --entity_type=node    # alias: moab
+drush moab --entity_type=media                       # nodes and media are separate runs
+drush moab --entity_type=media --reset               # wipe stored progress, rescan
+drush moab --entity_type=node --log=private://moab.log
+drush mass-org-access:backfill-dev                   # alias: moab-dev — first 100
+                                                     # nodes + 100 media, prints TIDs
 ```
 
 Resumable via the `mass_org_access.backfill` State key (totals + last
@@ -255,7 +264,62 @@ direct lookup, the same derivation the live edit form uses. The org_page
 - Saves use `setNewRevision(FALSE)` and `setSyncing(TRUE)` to skip
   revision bloat and mass_validation overrides; mass_flagging "Watch"
   notification emails are suppressed (`MASS_FLAGGING_BYPASS`).
+- A single entity that fails (e.g. a media item whose source file is
+  missing both locally and on the proxy origin) is logged as `SKIPPED`
+  and the run continues — one bad row never aborts the backfill.
 - Timestamps land in `private://mass_org_access/backfill.log`.
+
+### Missing files on prod-copied databases
+
+When the run saves a `media` item it regenerates the thumbnail from the
+source file. On a database copied from production the rows exist but the
+files do not, which would throw a `FileNotExistsException`. `BackfillRunner`
+guards against this:
+
+- `StageFileFetcher` (`mass_org_access.stage_file_fetcher`) pulls each
+  missing `public://` source file from the `stage_file_proxy` origin first —
+  the same mechanism stage_file_proxy uses over HTTP, triggered
+  programmatically since a drush save makes no HTTP request. No-op on the
+  `prod` Acquia environment and when stage_file_proxy is not installed.
+- `ensureMediaIconPlaceholders()` copies the media module's generic icon over
+  any missing `media-icons/generic/*.png` thumbnail fallback (those icons live
+  in the files dir, not in code, and the origin does not serve them).
+- A file that is genuinely gone from the origin too (a 404 — an orphaned
+  reference) cannot be fetched; that media is logged `SKIPPED` and the run
+  moves on.
+
+## Queue variant (`moab-queue`)
+
+The same backfill is also available **through Drupal's core queue**, running
+in parallel with the synchronous `moab` — useful for draining the work in
+controlled, restartable passes instead of one long-running drush process.
+
+```sh
+# Fill the queue with one item per in-scope entity (org_page excluded).
+# --entity_type is required; --reset empties the queue first. A progress
+# bar shows the fill (≈440k single inserts for media takes tens of minutes).
+drush mass-org-access:backfill-queue --entity_type=media   # alias: moab-queue
+drush moab-queue --entity_type=node --reset
+
+# Drain it manually, in bounded passes so a long process doesn't accumulate
+# memory. Re-run to continue — the queue persists.
+drush queue:run mass_org_access_backfill --time-limit=600   # ~10 min then exit
+drush queue:run mass_org_access_backfill --items-limit=5000 # or cap by count
+```
+
+- **One entity per queue item** — payload is `['entity_type' => …, 'id' => …]`.
+  The `mass_org_access_backfill` queue table therefore holds ~138k (node) or
+  ~440k (media) rows per fill.
+- `BackfillQueueWorker` (`@QueueWorker` id `mass_org_access_backfill`,
+  **no cron** — manual drain only) loads each entity and calls the exact same
+  `BackfillRunner::backfillEntity()` the sync command uses, so the two paths
+  cannot diverge. It sets `MASS_FLAGGING_BYPASS`, self-heals the media-icon
+  placeholders once per process, and logs a `SKIPPED` warning (channel
+  `mass_org_access`) on any per-entity error — never re-throwing (which would
+  requeue the item forever). `backfillEntity()` is idempotent, so reprocessing
+  is safe.
+- The queue **is** the progress for this path — no State cursor. Re-filling
+  just re-enqueues.
 
 ## Bundles in scope
 
@@ -310,7 +374,10 @@ JS tests require the `selenium-chrome` DDEV add-on and a correct
    `org_page` nodes — via the **Edit mappings** matrix / **Import
    mappings** CSV admin tabs, or by hand. Org pages go first because
    every other entity copies its Permission Groups from them.
-3. `drush moab` on prod (resumable, hours).
+3. Backfill on prod (resumable, hours) — run per entity type, either
+   synchronously (`drush moab --entity_type=node`, then `--entity_type=media`)
+   or via the queue (`drush moab-queue --entity_type=…` + `drush queue:run
+   mass_org_access_backfill --time-limit=…`).
 4. Wait ≥1 week, identify users who would lose edit access.
 5. Flip switch on (`drush sset mass_org_access.enforce 1` or set the env
    var). Hooks start enforcing; in Release 2 the widget also opens up to
