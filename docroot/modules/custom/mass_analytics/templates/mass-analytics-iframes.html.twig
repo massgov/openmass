@@ -1,13 +1,28 @@
 {#
 /**
  * @file
- * Theme override to display iframes for route_iframes module.
+ * Render a button that opens the Power BI analytics dashboard in a popup
+ * window. Embedding via iframe requires user click on Power BI "Sign in"
+ * because of third-party cookie restrictions, so we delegate auth to a
+ * standalone window where it works seamlessly.
  */
 #}
-<iframe
-  width="100%"
-  height="{{ iframe_height }}"
-  seamless
-  frameBorder="0"
-  src="{{ config }}">
-</iframe>
+<div class="mass-analytics-launcher" style="padding:2rem;text-align:center;">
+  <h2 style="margin-bottom:.5rem;">Analytics dashboard{% if node_title %}: {{ node_title }}{% endif %}</h2>
+  <p style="margin-bottom:1.5rem;color:#555;">
+    The analytics report opens in a new window. You may be asked to sign in to Power BI on first use.
+  </p>
+  <a
+    href="{{ config }}"
+    class="button button--primary mass-analytics-launcher__btn"
+    target="mass_analytics_report"
+    rel="noopener"
+    onclick="window.open(this.href,'mass_analytics_report','noopener,noreferrer,width=1400,height=900,resizable=yes,scrollbars=yes');return false;"
+    style="display:inline-block;padding:.85rem 1.5rem;background:#14558f;color:#fff;text-decoration:none;border-radius:4px;font-weight:600;">
+    Open Analytics Dashboard
+  </a>
+  <p style="margin-top:1.25rem;font-size:.9rem;color:#777;">
+    If the popup is blocked, allow popups for this site or
+    <a href="{{ config }}" target="_blank" rel="noopener">open the report in a new tab</a>.
+  </p>
+</div>
