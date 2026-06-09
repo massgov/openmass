@@ -43,4 +43,26 @@ class InlineMessageFilterTest extends MassInlineMessageExistingSiteTestBase {
     $this->assertStringContainsString('Note', $filtered);
   }
 
+  /**
+   * Tests disallowed body markup is stripped when the message box is rendered.
+   */
+  public function testFilterStripsDisallowedBodyMarkup(): void {
+    $html = '<mass-inline-message data-title="Note" data-type="info"><blockquote><p>Quote</p></blockquote><h2>Title</h2><p>Body.</p></mass-inline-message>';
+    $filtered = check_markup($html, 'basic_html');
+    $this->assertStringContainsString('Body.', $filtered);
+    $this->assertStringNotContainsString('blockquote', $filtered);
+    $this->assertStringNotContainsString('<h2', $filtered);
+  }
+
+  /**
+   * Tests nested message box tags in body are stripped on display.
+   */
+  public function testFilterStripsNestedMessageBoxInBody(): void {
+    $html = '<mass-inline-message data-title="Outer" data-type="info"><mass-inline-message data-title="Inner" data-type="warning"><p>Nested</p></mass-inline-message><p>Outer body.</p></mass-inline-message>';
+    $filtered = check_markup($html, 'basic_html');
+    $this->assertStringContainsString('Outer body.', $filtered);
+    $this->assertStringNotContainsString('<mass-inline-message', $filtered);
+    $this->assertStringNotContainsString('ma__inline-message--warning', $filtered);
+  }
+
 }

@@ -5,6 +5,7 @@
 - `InlineMessageNormalizeTest` — body HTML normalization (`MessageBoxBody`)
 - `InlineMessagePreviewTest` — renderer + filter output
 - `InlineMessageFilterTest` — `filter_mass_inline_message`
+- `InlineMessageMessageBoxBodyFormatTest` — `message_box_body` text format
 - `InlineMessageConstraintValidationTest` — save-time constraint rules
 
 ## ExistingSiteJavascript (Selenium)

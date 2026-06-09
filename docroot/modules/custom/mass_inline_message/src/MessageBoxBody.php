@@ -8,6 +8,11 @@ namespace Drupal\mass_inline_message;
 final class MessageBoxBody {
 
   /**
+   * Text format ID for the Message box body rich text field.
+   */
+  public const FORMAT_ID = 'message_box_body';
+
+  /**
    * Unwraps a single CKEditor-exported div wrapper around message body HTML.
    */
   public static function unwrapCkeditorDiv(string $body_html): string {

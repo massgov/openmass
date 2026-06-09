@@ -50,7 +50,7 @@ class MassInlineMessagePreviewController extends ControllerBase {
     if ($body_raw !== '') {
       $filtered_body = check_markup(
         MessageBoxBody::normalize($body_raw),
-        $filter_format->id()
+        MessageBoxBody::FORMAT_ID
       );
       if (MessageBoxBody::hasRenderableContent($filtered_body)) {
         $body_for_render = $filtered_body;

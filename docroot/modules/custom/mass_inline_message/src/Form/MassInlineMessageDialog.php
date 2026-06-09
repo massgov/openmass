@@ -32,7 +32,10 @@ class MassInlineMessageDialog extends FormBase {
    * Checks access for the dialog route.
    */
   public static function access(FilterFormat $filter_format, AccountInterface $account): AccessResult {
-    return AccessResult::allowedIf($account->hasPermission('use text format ' . $filter_format->id()));
+    return AccessResult::allowedIf(
+      $account->hasPermission('use text format ' . $filter_format->id())
+      && $account->hasPermission('use text format ' . MessageBoxBody::FORMAT_ID)
+    );
   }
 
   /**
@@ -91,16 +94,15 @@ class MassInlineMessageDialog extends FormBase {
     ];
 
     $body_default = $editor_object['body'] ?? '';
-    $format_id = $filter_format->id();
+    $body_format_id = MessageBoxBody::FORMAT_ID;
     $form['body'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Message text'),
       '#default_value' => $body_default,
-      '#format' => $format_id,
-      '#allowed_formats' => [$format_id],
+      '#format' => $body_format_id,
+      '#allowed_formats' => [$body_format_id],
       '#rows' => 4,
-      '#description' => $this->t('Optional. Uses the same editor as the parent field (@format). Up to @count characters (plain text, not including HTML).', [
-        '@format' => $filter_format->label(),
+      '#description' => $this->t('Optional. Up to @count characters (plain text, not including HTML).', [
         '@count' => self::BODY_MAX_LENGTH,
       ]),
     ];
@@ -196,9 +198,10 @@ class MassInlineMessageDialog extends FormBase {
     }
     $body_html = '';
     if ($body_raw !== '') {
-      // Keep the authoring HTML from the nested editor so media/embed elements
-      // remain editable; rendering sanitization happens in text format filters.
-      $body_html = MessageBoxBody::normalize($body_raw);
+      $normalized = MessageBoxBody::normalize($body_raw);
+      if ($normalized !== '') {
+        $body_html = check_markup($normalized, MessageBoxBody::FORMAT_ID);
+      }
     }
 
     $response->addCommand(new EditorDialogSave([

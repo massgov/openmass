@@ -3,8 +3,7 @@
  * Message box dialog Save/Cancel inside the Ajax modal (Drupal behavior).
  *
  * Pairs with dialog-open.js in the CKEditor plugin. That file opens the
- * dialog; this file makes Save use Ajax and blocks nested Message box buttons
- * in the body field editor.
+ * dialog; this file makes Save use Ajax inside the modal.
  */
 (function ($, Drupal, drupalSettings) {
   'use strict';
@@ -45,52 +44,6 @@
         editor.updateSourceElement();
       }
     });
-  }
-
-  function disableNestedMessageBoxInDialog(form) {
-    if (!form || !Drupal.CKEditor5Instances) {
-      return;
-    }
-    form.querySelectorAll('textarea[data-ckeditor5-id]').forEach(function (textarea) {
-      var editorId = textarea.getAttribute('data-ckeditor5-id');
-      var editor = Drupal.CKEditor5Instances.get(editorId);
-      if (!editor) {
-        return;
-      }
-
-      var command = editor.commands && editor.commands.get
-        ? editor.commands.get('insertMassInlineMessage')
-        : null;
-      if (command && command.forceDisabled) {
-        command.forceDisabled('massInlineMessageDialog');
-      }
-
-      var toolbarButtons = form.querySelectorAll('.ck-toolbar .ck-button');
-      toolbarButtons.forEach(function (button) {
-        var label = (
-          button.getAttribute('aria-label') ||
-          button.getAttribute('data-cke-tooltip-text') ||
-          button.getAttribute('title') ||
-          button.textContent ||
-          ''
-        ).toLowerCase().trim();
-        if (label.indexOf('message box') !== -1) {
-          button.style.display = 'none';
-          button.setAttribute('aria-hidden', 'true');
-          button.setAttribute('tabindex', '-1');
-        }
-      });
-    });
-  }
-
-  function scheduleDialogEditorGuards(form, attempts) {
-    if (!form || attempts <= 0) {
-      return;
-    }
-    disableNestedMessageBoxInDialog(form);
-    window.setTimeout(function () {
-      scheduleDialogEditorGuards(form, attempts - 1);
-    }, 150);
   }
 
   function setFormInFlightState($form, isInFlight) {
@@ -190,24 +143,6 @@
     return $submitters.first();
   }
 
-  function isMessageBoxToolbarButton(target) {
-    if (!(target instanceof Element)) {
-      return false;
-    }
-    var button = target.closest('.ck-toolbar .ck-button');
-    if (!button) {
-      return false;
-    }
-    var label = (
-      button.getAttribute('aria-label') ||
-      button.getAttribute('data-cke-tooltip-text') ||
-      button.getAttribute('title') ||
-      button.textContent ||
-      ''
-    ).toLowerCase().trim();
-    return label.indexOf('message box') !== -1;
-  }
-
   function bindGlobalHandlers() {
     if (handlersBound) {
       return;
@@ -227,13 +162,6 @@
 
       var $form = $dialog.find('form.mass-inline-message-dialog-form');
       if (!$form.length) {
-        return;
-      }
-
-      // Never allow nested Message box insertion inside the dialog body editor.
-      if (target.closest('form.mass-inline-message-dialog-form') && isMessageBoxToolbarButton(target)) {
-        event.preventDefault();
-        event.stopImmediatePropagation();
         return;
       }
 
@@ -304,7 +232,6 @@
     var form = dialogContent.querySelector('form.mass-inline-message-dialog-form');
     if (form) {
       Drupal.attachBehaviors(form, drupalSettings);
-      scheduleDialogEditorGuards(form, 12);
     }
   }
 
@@ -312,10 +239,6 @@
     attach: function (context) {
       ensureMassInlineMessageModalContainer();
       bindGlobalHandlers();
-
-      $(context).find('form.mass-inline-message-dialog-form').each(function () {
-        scheduleDialogEditorGuards(this, 4);
-      });
 
       if (context instanceof Element || context === document) {
         var root = context === document ? document : context;
