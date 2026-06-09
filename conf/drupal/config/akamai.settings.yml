@@ -18,7 +18,23 @@ action_v3:
   delete: false
   invalidate: true
 log_requests: true
-edge_cache_tag_header: false
+edge_cache_tag_header: true
 purge_urls_with_hostname: false
-edge_cache_tag_header_blacklist: {  }
+edge_cache_tag_header_blacklist:
+  - 4xx-response
+  - theme_registry
+  - route_match
+  - routes
+  - 'config:'
+  - user
+  - migration_
+  - local_
+  - entity_
+  - workflow_
+  - element_
+  - contextual_links_
+  - link_relation_
+  - content_moderation_
+  - webform_submission_list
+  - redirect_list
 edgescape_support: false
