@@ -1,13 +1,71 @@
 {#
 /**
  * @file
- * Theme override to display iframes for route_iframes module.
+ * Power BI analytics dashboard launcher. Short iframe (220px) with a
+ * manual Expand/Collapse toggle, duplicated above and below the iframe
+ * so the controls are reachable from either side.
  */
 #}
-<iframe
-  width="100%"
-  height="{{ iframe_height }}"
-  seamless
-  frameBorder="0"
-  src="{{ config }}">
-</iframe>
+<div class="mass-analytics-launcher" style="padding:1rem 0;">
+  {% if node_title %}
+    <h2 style="margin:0 0 .5rem 0;">Analytics dashboard: {{ node_title }}</h2>
+  {% endif %}
+  <p style="margin:0 0 1rem 0;color:#555;">
+    Sign in to Power BI in the frame below, then click <strong>Expand</strong> to view the full dashboard.
+  </p>
+
+  {% set controls %}
+    <div class="mass-analytics-controls" style="margin:1rem 0;display:flex;gap:1rem;align-items:center;flex-wrap:wrap;">
+      <button
+        type="button"
+        class="mass-analytics-expand-btn"
+        aria-expanded="false"
+        style="padding:.6rem 1.2rem;background:#14558f;color:#fff;border:0;border-radius:4px;cursor:pointer;font-weight:600;">
+        Expand to full size
+      </button>
+      <a href="{{ config }}" target="_blank" rel="noopener" style="color:#14558f;">
+        Or open the report in a new tab
+      </a>
+    </div>
+  {% endset %}
+
+  {{ controls }}
+
+  <iframe
+    id="mass-analytics-iframe"
+    width="100%"
+    height="220"
+    seamless
+    frameBorder="0"
+    src="{{ config }}"
+    data-collapsed-height="220"
+    data-expanded-height="{{ iframe_height }}"
+    style="border:1px solid #ccc;display:block;transition:height .3s ease;"></iframe>
+
+  {{ controls }}
+</div>
+
+<script>
+(function () {
+  var iframe = document.getElementById('mass-analytics-iframe');
+  if (!iframe) return;
+  var btns = document.querySelectorAll('.mass-analytics-expand-btn');
+  var COLLAPSED = parseInt(iframe.dataset.collapsedHeight, 10);
+  var EXPANDED = parseInt(iframe.dataset.expandedHeight, 10);
+
+  function applyState(expanded) {
+    iframe.height = expanded ? EXPANDED : COLLAPSED;
+    btns.forEach(function (b) {
+      b.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      b.textContent = expanded ? 'Collapse' : 'Expand to full size';
+    });
+  }
+
+  btns.forEach(function (b) {
+    b.addEventListener('click', function () {
+      var nowExpanded = b.getAttribute('aria-expanded') !== 'true';
+      applyState(nowExpanded);
+    });
+  });
+})();
+</script>
