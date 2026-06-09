@@ -324,20 +324,6 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     $query->addWhere(0, $or);
   }
 
-  if ($view->id() == 'report_orphaned_documents') {
-
-    // Get the numeric media IDs that need to be excluded.
-    $media_ids = _mass_views_helper_get_numeric_media_ids_from_redirect_table();
-
-    if (!empty($media_ids)) {
-      // Exclude media items that match any of the media IDs in the extracted list.
-      $media_ids_list = implode(',', $media_ids);
-
-      // Add a where expression to exclude media items that have a matching redirect.
-      $query->addWhereExpression(0, "media_field_data.mid NOT IN ($media_ids_list)");
-    }
-  }
-
   if ($view->id() == 'report_orphaned_documents_redirects') {
     // Get the numeric media IDs that need to be excluded.
     $media_ids = _mass_views_helper_get_numeric_media_ids_from_redirect_table();
