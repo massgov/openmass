@@ -138,77 +138,84 @@
     {# Google Translate JS #}
     <script>
       (function () {
-        var stableRoot = document.documentElement;
-
-        function isLiveGoogTeWrapper(node) {
-          if (!node) {
-            return false;
-          }
-          var mount = node.querySelector('#google_translate_element');
-          return mount && (mount.classList.contains('has-rendered') || mount.querySelector('.goog-te-gadget'));
+        {# Utility nav is rendered twice (wide + narrow). Dedupe before Google Translate inits. #}
+        {# Keep the first copy; Mayflower mainNavHamburger moves it into the mobile menu and #}
+        {# caches a reference to the wide-nav translate trigger for menu open/close logic. #}
+        var translateWrappers = document.querySelectorAll('[data-utility-nav-modal="translate"]');
+        for (var i = 1; i < translateWrappers.length; i++) {
+          translateWrappers[i].remove();
         }
-
-        function findSiblingGoogTeWrapper(wrapper) {
-          var children = wrapper.children;
-          for (var i = 0; i < children.length; i++) {
-            if (children[i].classList && children[i].classList.contains('ma__goog-te-wrapper')) {
-              return children[i];
-            }
-          }
-          return null;
-        }
-
-        function ensureMountOutsideOverlay(wrapper) {
-          var overlay = wrapper.querySelector('.ma__modal-overlay');
-          if (!overlay) {
-            return;
-          }
-
-          var inner = overlay.querySelector('.ma__goog-te-wrapper');
-          var outer = findSiblingGoogTeWrapper(wrapper);
-
-          if (inner && outer && inner !== outer && !isLiveGoogTeWrapper(inner)) {
-            inner.remove();
-            inner = overlay.querySelector('.ma__goog-te-wrapper');
-          }
-
-          var active = outer || inner;
-          if (!active) {
-            return;
-          }
-
-          if (inner && !outer) {
-            wrapper.appendChild(inner);
-            active = inner;
-          }
-
-          if (active.parentElement !== stableRoot) {
-            stableRoot.appendChild(active);
-          }
-
-          inner = overlay.querySelector('.ma__goog-te-wrapper');
-          if (inner && inner !== active && !isLiveGoogTeWrapper(inner)) {
-            inner.remove();
-          }
-        }
-
-        document.querySelectorAll('[data-utility-nav-modal="translate"]').forEach(ensureMountOutsideOverlay);
 
         if (!document.documentElement.dataset.massThemeTranslateClickGuard) {
           document.documentElement.dataset.massThemeTranslateClickGuard = 'true';
-          document.addEventListener('click', function (event) {
-            var target = event.target;
-            if (!target || !target.closest) {
-              return;
+          (function () {
+            function isTranslateUi(target) {
+              return target.closest('[data-utility-nav-modal="translate"]') ||
+                target.closest('.ma__modal--translate.ma__active') ||
+                target.closest('.ma__goog-te-wrapper') ||
+                target.closest('.goog-te-gadget');
             }
-            if (
-              target.closest('[data-utility-nav-modal="translate"]') ||
-              target.closest('.ma__modal--translate.ma__active') ||
-              target.closest('.ma__goog-te-wrapper')
-            ) {
+
+            function clearGoogtransCookies() {
+              var hostname = window.location.hostname;
+              var cookieDomain = null;
+              if (hostname !== 'localhost' && !/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
+                var parts = hostname.split('.');
+                cookieDomain = parts.length <= 2 ? '.' + hostname : '.' + parts.slice(-2).join('.');
+              }
+              document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+              document.cookie = 'googtrans=; path=/; domain=' + hostname + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+              if (cookieDomain) {
+                document.cookie = 'googtrans=; path=/; domain=' + cookieDomain + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+              }
+            }
+
+            function isolateTranslateClick(event) {
+              if (event.massThemeTranslateClickRedispatched) {
+                return;
+              }
+              var target = event.target;
+              if (!target || !target.closest || !isTranslateUi(target)) {
+                return;
+              }
+
+              var resetButton = target.closest('#ma__translate-reset, .ma__translate-reset-button');
+              if (resetButton) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                clearGoogtransCookies();
+                window.location.reload();
+                return;
+              }
+
+              event.preventDefault();
               event.stopPropagation();
+              event.stopImmediatePropagation();
+
+              var trigger = target.closest('[data-modal-trigger]');
+              if (trigger && !target.closest('.ma__modal--translate.ma__active')) {
+                var modalId = trigger.getAttribute('data-modal-trigger');
+                if (modalId && window.modals && window.modals[modalId]) {
+                  window.modals[modalId].open(trigger);
+                  return;
+                }
+              }
+
+              var dispatchTarget = target.closest(
+                'button, select, [data-modal-trigger], .ma__modal-close, a[href]'
+              ) || target;
+              var redispatched = new MouseEvent('click', {
+                bubbles: false,
+                cancelable: true,
+                view: window
+              });
+              redispatched.massThemeTranslateClickRedispatched = true;
+              dispatchTarget.dispatchEvent(redispatched);
             }
-          }, false);
+
+            document.addEventListener('click', isolateTranslateClick, true);
+          })();
         }
       })();
       function googleTranslateElementInit() {
