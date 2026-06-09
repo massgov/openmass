@@ -1,5 +1,8 @@
 <?php
 
+// Tugboat preview hostnames.
+$settings['trusted_host_patterns'][] = '^.+\.tugboatqa\.com$';
+
 /**
  * No longer needed as per https://docs.tugboatqa.com/faq/common-questions/#can-i-password-protect-my-preview-urls.
  *
