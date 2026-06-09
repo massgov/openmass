@@ -1,0 +1,225 @@
+uuid: f47ac10b-58cc-4372-a567-0e02b2c3d479
+langcode: en
+status: true
+dependencies:
+  module:
+    - csv_serialization
+    - mass_redirect_normalizer
+    - rest
+    - serialization
+    - views_data_export
+id: redirect_link_normalizer_report
+label: 'Redirect link normalization report'
+module: views
+description: 'Change log and failures from redirect link normalization.'
+tag: ''
+base_table: mass_redirect_normalizer_change_log
+base_field: id
+display:
+  default:
+    id: default
+    display_title: Default
+    display_plugin: default
+    position: 0
+    display_options:
+      title: 'Redirect link normalization report'
+      fields:
+        changed_at:
+          id: changed_at
+          table: mass_redirect_normalizer_change_log
+          field: changed_at
+          relationship: none
+          plugin_id: field
+          label: Changed
+        status:
+          id: status
+          table: mass_redirect_normalizer_change_log
+          field: status
+          relationship: none
+          plugin_id: field
+          label: Status
+        source:
+          id: source
+          table: mass_redirect_normalizer_change_log
+          field: source
+          relationship: none
+          plugin_id: field
+          label: Source
+        entity_type:
+          id: entity_type
+          table: mass_redirect_normalizer_change_log
+          field: entity_type
+          relationship: none
+          plugin_id: field
+          label: 'Entity type'
+        entity_id:
+          id: entity_id
+          table: mass_redirect_normalizer_change_log
+          field: entity_id
+          relationship: none
+          plugin_id: field
+          label: 'Entity ID'
+        bundle:
+          id: bundle
+          table: mass_redirect_normalizer_change_log
+          field: bundle
+          relationship: none
+          plugin_id: field
+          label: Bundle
+        field_name:
+          id: field_name
+          table: mass_redirect_normalizer_change_log
+          field: field_name
+          relationship: none
+          plugin_id: field
+          label: Field
+        delta:
+          id: delta
+          table: mass_redirect_normalizer_change_log
+          field: delta
+          relationship: none
+          plugin_id: field
+          label: Delta
+        kind:
+          id: kind
+          table: mass_redirect_normalizer_change_log
+          field: kind
+          relationship: none
+          plugin_id: field
+          label: Kind
+        before_value:
+          id: before_value
+          table: mass_redirect_normalizer_change_log
+          field: before_value
+          relationship: none
+          plugin_id: field
+          label: Before
+        after_value:
+          id: after_value
+          table: mass_redirect_normalizer_change_log
+          field: after_value
+          relationship: none
+          plugin_id: field
+          label: After
+        error_message:
+          id: error_message
+          table: mass_redirect_normalizer_change_log
+          field: error_message
+          relationship: none
+          plugin_id: field
+          label: Error
+      pager:
+        type: full
+        options:
+          items_per_page: 50
+      exposed_form:
+        type: basic
+      access:
+        type: perm
+        options:
+          perm: 'view mass redirect normalizer report'
+      cache:
+        type: none
+        options: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: true
+          content: 'No changes logged yet.'
+          tokenize: false
+      sorts:
+        id:
+          id: id
+          table: mass_redirect_normalizer_change_log
+          field: id
+          order: DESC
+      style:
+        type: table
+      row:
+        type: fields
+      query:
+        type: views_query
+        options:
+          disable_sql_rewrite: false
+      display_extenders: {  }
+    cache_metadata:
+      max-age: 0
+      contexts:
+        - 'languages:language_interface'
+        - url.query_args
+        - user.permissions
+      tags: {  }
+  data_export_1:
+    id: data_export_1
+    display_title: 'Data export'
+    display_plugin: data_export
+    position: 1
+    display_options:
+      access:
+        type: perm
+        options:
+          perm: 'export mass redirect normalizer report'
+      style:
+        type: data_export
+        options:
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+            use_serializer_encode_only: false
+      display_extenders: {  }
+      path: admin/reports/redirect-link-normalizer/export
+      displays:
+        page_1: page_1
+        default: '0'
+      filename: redirect-link-normalizer-report.csv
+      automatic_download: true
+      store_in_public_file_directory: false
+      redirect_to_display: page_1
+      include_query_params: false
+    cache_metadata:
+      max-age: 0
+      contexts:
+        - 'languages:language_interface'
+        - request_format
+        - user.permissions
+      tags: {  }
+  page_1:
+    id: page_1
+    display_title: Page
+    display_plugin: page
+    position: 2
+    display_options:
+      defaults:
+        header: false
+      header:
+        area_actions:
+          id: area
+          table: views
+          field: area
+          plugin_id: text
+          empty: true
+          content:
+            value: '<p><a href="/admin/reports/redirect-link-normalizer/export" class="button">Export CSV</a> <a href="/admin/reports/redirect-link-normalizer/clear" class="button button--danger">Clear all records</a></p>'
+            format: full_html
+      display_extenders: {  }
+      path: admin/reports/redirect-link-normalizer
+    cache_metadata:
+      max-age: 0
+      contexts:
+        - 'languages:language_interface'
+        - url.query_args
+        - user.permissions
+      tags: {  }
