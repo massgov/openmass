@@ -9,19 +9,14 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 /**
  * Tests the Tableau embed settings (DP-47145) on node edit forms.
  *
- * Covers the paragraph reference fields from
- * \Drupal\mass_content\Hook\TableauEmbedFormHooks that can actually host a
- * tableau_embed paragraph:
+ * Covers every form path where a tableau_embed paragraph can be edited:
  * - org_page: field_organization_sections > org_section_long_form >
- *   field_section_long_form_content (classic nested paragraphs widget).
+ *   field_section_long_form_content (classic nested paragraphs widget,
+ *   handled by the field widget hooks in TableauEmbedFormHooks).
  * - service_page: field_service_sections (layout paragraphs builder).
- * - info_details: field_info_details_sections > section_long_form >
- *   field_section_long_form_content (layout paragraphs builder).
- *
- * The remaining fields in that list (field_header, field_sections,
- * field_info_details_header_media, field_location_details_sections,
- * field_microsites_key_message) do not allow tableau_embed paragraphs, so
- * there is nothing to assert on those forms.
+ * - info_details: field_info_details_sections (layout paragraphs builder).
+ * Both builder forms are handled by the
+ * form_layout_paragraphs_component_form_alter hook.
  */
 class TableauEmbedSettingsTest extends ExistingSiteSelenium2DriverTestBase {
 

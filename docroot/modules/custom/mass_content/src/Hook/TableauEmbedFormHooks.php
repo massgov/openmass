@@ -17,17 +17,16 @@ class TableauEmbedFormHooks {
 
   /**
    * Paragraph reference fields whose widgets may host a tableau_embed.
+   *
+   * These are the only paragraph reference fields edited through the classic
+   * paragraphs widgets that allow tableau_embed in their target bundles.
+   * Fields managed by the layout paragraphs builder (field_service_sections,
+   * field_info_details_sections) are handled by the
+   * form_layout_paragraphs_component_form_alter hook instead.
    */
   protected const PARAGRAPH_REFERENCE_FIELDS = [
-    'field_service_sections',
-    'field_header',
-    'field_info_details_header_media',
-    'field_organization_sections',
-    'field_location_details_sections',
-    'field_service_section_content',
-    'field_sections',
     'field_section_long_form_content',
-    'field_microsites_key_message',
+    'field_service_section_content',
   ];
 
   #[Hook('field_widget_single_element_paragraphs_form_alter')]
