@@ -1577,29 +1577,6 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
           ],
         ];
       }
-      // The toolbar setting only applies to "Connected Apps" embeds.
-      if (isset($form['field_tableau_embed_type'], $form['field_tableau_toolbar'])) {
-        $form['field_tableau_toolbar']['#states'] = [
-          'visible' => [
-            ':input[name="field_tableau_embed_type"]' => ['!value' => 'default'],
-          ],
-        ];
-      }
-      // Data details and Share options are toolbar buttons, so they only
-      // matter when the toolbar is actually displayed.
-      foreach (['field_tableau_data_details', 'field_tableau_share_options'] as $tableau_setting_field) {
-        if (isset($form['field_tableau_embed_type'], $form['field_tableau_toolbar'], $form[$tableau_setting_field])) {
-          $form[$tableau_setting_field]['#states'] = [
-            'visible' => [
-              ':input[name="field_tableau_embed_type"]' => ['!value' => 'default'],
-              ':input[name="field_tableau_toolbar"]' => [
-                ['value' => 'bottom'],
-                ['value' => 'top'],
-              ],
-            ],
-          ];
-        }
-      }
       break;
     case 'collection_search':
       $form['#validate'][] = '_mass_validation_validate_layout_paragraphs_custom_search';
