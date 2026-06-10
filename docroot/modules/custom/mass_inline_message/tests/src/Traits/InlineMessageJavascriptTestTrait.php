@@ -68,8 +68,84 @@ trait InlineMessageJavascriptTestTrait {
   }
 
   /**
-   * Clicks Save in the Message box configuration dialog only.
+   * Simulates entity embed dialog save (must not insert an empty Message box).
    */
+  protected function triggerEntityEmbedEditorDialogSave(): void {
+    $this->inlineMessageSession()->executeScript(
+      "(function(){
+        if (!window.jQuery) { return; }
+        window.jQuery(window).trigger('editor:dialogsave', [{
+          attributes: {
+            'data-entity-type': 'media',
+            'data-entity-uuid': '00000000-0000-0000-0000-000000000001',
+            'data-embed-button': 'media_entity_download'
+          }
+        }]);
+      })();",
+    );
+  }
+
+  /**
+   * Clicks the embed/media toolbar button in the Message box body CKEditor.
+   */
+  protected function clickMessageBoxBodyEmbedToolbarButton(): void {
+    $this->inlineMessageSession()->executeScript(
+      "(function(){
+        var textarea = document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"]')
+          || document.querySelector('.ui-dialog textarea[name=\"body[value]\"]');
+        if (!textarea || !window.Drupal || !Drupal.CKEditor5Instances) { return; }
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        if (!editor) { return; }
+        var toolbarItems = ['file_browser', 'mediaEntityDownload'];
+        for (var i = 0; i < toolbarItems.length; i++) {
+          try {
+            var button = editor.ui.componentFactory.create(toolbarItems[i]);
+            if (button) {
+              button.fire('execute');
+              return;
+            }
+          }
+          catch (e) {
+            // Try the next toolbar item.
+          }
+        }
+        var form = document.querySelector('#mass-inline-message-dialog-form');
+        var dialog = form ? form.closest('.ui-dialog') : null;
+        if (!dialog) { return; }
+        var selectors = [
+          '.ck-toolbar button[aria-label*=\"image\" i]',
+          '.ck-toolbar button[aria-label*=\"embed\" i]',
+          '.ck-toolbar button[aria-label*=\"document\" i]',
+        ];
+        for (var s = 0; s < selectors.length; s++) {
+          var domButton = dialog.querySelector(selectors[s]);
+          if (domButton) {
+            domButton.click();
+            return;
+          }
+        }
+      })();",
+    );
+  }
+
+  /**
+   * Sets HTML in the Message box dialog body CKEditor and syncs the textarea.
+   */
+  protected function setMessageBoxDialogBodyHtml(string $html): void {
+    $this->inlineMessageSession()->executeScript(
+      "(function(){
+        var textarea = document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"]')
+          || document.querySelector('.ui-dialog textarea[name=\"body[value]\"]');
+        if (!textarea) { return; }
+        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
+        if (editor) {
+          editor.setData(" . json_encode($html) . ");
+          editor.updateSourceElement();
+        }
+      })();",
+    );
+  }
+
   protected function clickMessageBoxDialogSave(): void {
     $this->inlineMessageSession()->executeScript(
       "(function(){

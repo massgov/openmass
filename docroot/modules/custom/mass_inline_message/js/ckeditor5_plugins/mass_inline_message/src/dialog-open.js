@@ -24,16 +24,27 @@ function ensureMassInlineMessageModalContainer() {
 /**
  * Preserve Message box save callback when nested embed/media dialogs close.
  */
+function getMessageBoxEditorDialogSaveHandler() {
+  if (window.MassInlineMessageDialog && window.MassInlineMessageDialog.editorDialogSaveHandler) {
+    return window.MassInlineMessageDialog.editorDialogSaveHandler;
+  }
+  return (values) => {
+    if (window.MassInlineMessageDialog && window.MassInlineMessageDialog.invokeSaveCallback) {
+      window.MassInlineMessageDialog.invokeSaveCallback(values);
+    }
+  };
+}
+
 function bindMessageBoxDialogLifecycle(saveCallback) {
   window.__massInlineMessageSaveCallback = saveCallback;
-  Drupal.ckeditor5.saveCallback = saveCallback;
+  Drupal.ckeditor5.saveCallback = getMessageBoxEditorDialogSaveHandler();
 
   const restoreSaveCallback = () => {
     if (
       document.querySelector('#mass-inline-message-dialog-form') &&
       window.__massInlineMessageSaveCallback
     ) {
-      Drupal.ckeditor5.saveCallback = window.__massInlineMessageSaveCallback;
+      Drupal.ckeditor5.saveCallback = getMessageBoxEditorDialogSaveHandler();
     }
   };
   window.addEventListener('dialog:afterclose', restoreSaveCallback);
@@ -63,9 +74,9 @@ export function openMassInlineMessageDialog(url, editorObject, saveCallback, dia
   bindMessageBoxDialogLifecycle(saveCallback);
 
   const attachDialogBehaviors = () => {
-    const dialogContent = document.querySelector(
-      '#mass-inline-message-modal .ui-dialog-content:has(#mass-inline-message-dialog-form)',
-    ) || document.querySelector('#mass-inline-message-dialog-form')?.closest('.ui-dialog-content');
+    const dialogContent = document.querySelector('#mass-inline-message-dialog-form')
+      ?.closest('.ui-dialog-content')
+      || document.querySelector('#mass-inline-message-modal .ui-dialog-content');
     if (dialogContent && window.Drupal && window.Drupal.attachBehaviors) {
       window.Drupal.attachBehaviors(dialogContent, window.drupalSettings);
     }
@@ -92,17 +103,8 @@ export function openMassInlineMessageDialog(url, editorObject, saveCallback, dia
   dialogSettings.autoResize = window.matchMedia('(min-width: 600px)').matches;
   dialogSettings.width = dialogSettings.width || 'auto';
 
-  const nestedDialog = (() => {
-    const dialogs = document.querySelectorAll('.ui-dialog');
-    for (const dialog of dialogs) {
-      if (dialog.offsetParent !== null && dialog.querySelector('.ck-editor')) {
-        return true;
-      }
-    }
-    return false;
-  })();
-
-  const progressType = nestedDialog ? 'fullscreen' : 'throbber';
+  // Fullscreen progress can block Layout Paragraphs modals; throbber is enough.
+  const progressType = 'throbber';
 
   const ckeditorAjaxDialog = Drupal.ajax({
     dialog: dialogSettings,

@@ -69,6 +69,90 @@ class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestB
   }
 
   /**
+   * Entity embed can open on top of Message box inside Layout Paragraphs Rich text.
+   */
+  public function testEntityEmbedOpensInsideMessageBoxInLayoutParagraph(): void {
+    $admin = $this->createAdministrator();
+    $this->drupalLogin($admin);
+    $service_page = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Message box LP embed test ' . $this->randomMachineName(8),
+      'uid' => $admin->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->visit($service_page->toUrl()->toString() . '/edit');
+    $this->openServiceRichTextEditorInLayoutParagraph();
+    $session = $this->inlineMessageSession();
+
+    $this->fireMessageBoxToolbarInLayoutParagraph();
+    $this->waitForMessageBoxDialogOpen();
+    $session->getPage()->fillField('attributes[data-title]', 'LP embed test');
+    $this->setMessageBoxDialogBodyHtml('<p>Text before image.</p>');
+    $session->wait(
+      10000,
+      "document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"][data-ckeditor5-id]') !== null",
+    );
+
+    $this->clickMessageBoxBodyEmbedToolbarButton();
+    $session->wait(
+      20000,
+      "(function(){
+        return document.querySelector('form.entity-embed-dialog') !== null
+          || document.querySelector('input[name^=\"entity_browser_select[\"]') !== null;
+      })()",
+    );
+
+    $has_embed_dialog = (bool) $session->evaluateScript(
+      "document.querySelector('form.entity-embed-dialog') !== null
+        || document.querySelector('input[name^=\"entity_browser_select[\"]') !== null",
+    );
+    $this->assertTrue($has_embed_dialog, 'Entity embed dialog should open above the Message box in LP.');
+
+    $lp_editor_data = $this->getLayoutParagraphRichTextEditorData();
+    $this->assertStringNotContainsString('<mass-inline-message', $lp_editor_data);
+
+    $this->assertNotNull(
+      $session->getPage()->find('css', '#mass-inline-message-dialog-form'),
+      'Message box dialog should remain open while entity embed is active.',
+    );
+  }
+
+  /**
+   * Text and image body survives Message box save inside Layout Paragraphs.
+   */
+  public function testMessageBoxWithImageBodyInLayoutParagraph(): void {
+    $admin = $this->createAdministrator();
+    $this->drupalLogin($admin);
+    $title = 'LP image body ' . $this->randomMachineName(6);
+    $service_page = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Message box LP image test ' . $this->randomMachineName(8),
+      'uid' => $admin->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->visit($service_page->toUrl()->toString() . '/edit');
+    $this->openServiceRichTextEditorInLayoutParagraph();
+
+    $this->fireMessageBoxToolbarInLayoutParagraph();
+    $this->waitForMessageBoxDialogOpen();
+
+    $this->inlineMessageSession()->getPage()->fillField('attributes[data-title]', $title);
+    $this->setMessageBoxDialogBodyHtml(
+      '<p>Intro text.</p><img src="/sites/default/files/chart.jpg" alt="Chart" width="200" height="100">',
+    );
+    $this->triggerEntityEmbedEditorDialogSave();
+    $this->clickMessageBoxDialogSave();
+    $this->waitForMessageBoxDialogClosed();
+
+    $editor_data = $this->getLayoutParagraphRichTextEditorData();
+    $this->assertStringContainsString('data-title="' . $title . '"', $editor_data);
+    $this->assertStringContainsString('Intro text', $editor_data);
+    $this->assertMatchesRegularExpression('/<img\b/i', $editor_data);
+  }
+
+  /**
    * Tests inserting a Message box via dialog save stays in the LP Ajax flow.
    */
   public function testMessageBoxInsertAndSaveInLayoutParagraphRichText(): void {

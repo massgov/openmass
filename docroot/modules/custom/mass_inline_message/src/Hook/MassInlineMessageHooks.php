@@ -50,4 +50,30 @@ class MassInlineMessageHooks {
     $form['#attached']['library'][] = 'mass_inline_message/dialog';
   }
 
+  #[Hook('form_node_form_alter')]
+  public function formNodeFormAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    if (!self::formHasLayoutParagraphsWidget($form)) {
+      return;
+    }
+    $form['#attached']['library'][] = 'mass_inline_message/dialog';
+  }
+
+  /**
+   * Whether a form tree contains a Layout Paragraphs field widget.
+   */
+  private static function formHasLayoutParagraphsWidget(array $form): bool {
+    foreach ($form as $key => $element) {
+      if (!is_array($element)) {
+        continue;
+      }
+      if (($element['#type'] ?? '') === 'layout_paragraphs_builder') {
+        return TRUE;
+      }
+      if (self::formHasLayoutParagraphsWidget($element)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
 }

@@ -48,4 +48,32 @@ class InlineMessageNormalizeTest extends MassInlineMessageExistingSiteTestBase {
     $this->assertStringContainsString('<drupal-media', $normalized);
   }
 
+  /**
+   * Tests image and embed-only bodies are preserved (no plain text).
+   */
+  public function testPreservesImageAndEmbedOnlyBodies(): void {
+    $cases = [
+      '<img src="/sites/default/files/chart.jpg" alt="Chart">',
+      '<figure class="image"><img src="/sites/default/files/chart.jpg" alt="Chart"></figure>',
+      '<drupal-media data-entity-type="media" data-entity-uuid="abc"></drupal-media>',
+      '<drupal-entity data-entity-type="media" data-entity-uuid="abc" data-embed-button="media_entity_download"></drupal-entity>',
+      '<p><img src="/sites/default/files/chart.jpg" alt="Chart"></p>',
+    ];
+    foreach ($cases as $html) {
+      $this->assertTrue(MessageBoxBody::hasRenderableContent($html), $html);
+      $this->assertNotSame('', MessageBoxBody::normalize($html), $html);
+    }
+  }
+
+  /**
+   * Tests dialog save path retains image markup through message_box_body filters.
+   */
+  public function testMessageBoxBodyFormatPreservesImageMarkup(): void {
+    $html = '<p>Caption</p><drupal-entity data-entity-type="media" data-entity-uuid="abc" data-embed-button="media_entity_download"></drupal-entity>';
+    $normalized = MessageBoxBody::normalize($html);
+    $filtered = check_markup($normalized, MessageBoxBody::FORMAT_ID);
+    $this->assertStringContainsString('Caption', $filtered);
+    $this->assertStringContainsString('drupal-entity', $filtered);
+  }
+
 }

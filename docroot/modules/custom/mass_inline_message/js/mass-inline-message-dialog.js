@@ -13,10 +13,37 @@
   var DIALOG_ROUTE_FRAGMENT = '/mass-inline-message/dialog/';
 
   /**
+   * Whether Ajax values are from the Message box dialog (not entity embed, etc.).
+   */
+  function isMessageBoxDialogSaveValues(values) {
+    if (!values || typeof values !== 'object') {
+      return false;
+    }
+    if (!Object.prototype.hasOwnProperty.call(values, 'body')) {
+      return false;
+    }
+    var attrs = values.attributes;
+    if (!attrs || typeof attrs !== 'object') {
+      return false;
+    }
+    if (
+      Object.prototype.hasOwnProperty.call(attrs, 'data-entity-type')
+      || Object.prototype.hasOwnProperty.call(attrs, 'data-entity-uuid')
+    ) {
+      return false;
+    }
+    return Object.prototype.hasOwnProperty.call(attrs, 'data-title')
+      && (attrs['data-type'] === 'info' || attrs['data-type'] === 'warning');
+  }
+
+  /**
    * Runs the CKEditor save callback once (survives dialog:afterclose races).
    */
   function invokeMessageBoxSaveCallback(values) {
     if (!window.__massInlineMessageSaveCallback) {
+      return false;
+    }
+    if (!isMessageBoxDialogSaveValues(values)) {
       return false;
     }
     var callback = window.__massInlineMessageSaveCallback;
@@ -29,7 +56,16 @@
   }
 
   /**
+   * Core CKEditor save handler: only apply Message box values to the parent editor.
+   */
+  function messageBoxEditorDialogSaveHandler(values) {
+    invokeMessageBoxSaveCallback(values);
+  }
+
+  /**
    * Ensures editor:dialogsave and Ajax backup handlers are registered once.
+   *
+   * Values are filtered so entity embed saves do not insert an empty widget.
    */
   function bindMessageBoxSaveListeners() {
     if (saveListenersBound) {
@@ -62,6 +98,142 @@
       }
     });
   }
+
+  window.MassInlineMessageDialog = window.MassInlineMessageDialog || {};
+  window.MassInlineMessageDialog.invokeSaveCallback = invokeMessageBoxSaveCallback;
+  window.MassInlineMessageDialog.isMessageBoxDialogSaveValues = isMessageBoxDialogSaveValues;
+  window.MassInlineMessageDialog.editorDialogSaveHandler = messageBoxEditorDialogSaveHandler;
+
+  /**
+   * Stubs dialog('instance') until jQuery UI has opened the modal.
+   */
+  function guardDialogElement(element) {
+    if (!element) {
+      return;
+    }
+    var $dialog = $(element);
+    if (typeof $dialog.dialog !== 'function' || $dialog.data('massInlineMessageDialogGuard')) {
+      return;
+    }
+    var originalDialog = $dialog.dialog;
+    $dialog.dialog = function (option) {
+      if (option === 'instance') {
+        var instance = originalDialog.call($dialog, option);
+        if (!instance) {
+          return {
+            _focusedElement: null,
+            _focusTabbable: function () {},
+          };
+        }
+        return instance;
+      }
+      return originalDialog.apply($dialog, arguments);
+    };
+    $dialog.data('massInlineMessageDialogGuard', true);
+  }
+
+  /**
+   * Guards every modal root that can receive nested CKEditor dialog content.
+   */
+  function guardDialogElementsForContext(context) {
+    if (!context || context === document || !context.closest) {
+      return;
+    }
+    var dialogEl = context.closest('.ui-dialog-content');
+    if (dialogEl) {
+      guardDialogElement(dialogEl);
+    }
+    var drupalModal = context.closest('#drupal-modal');
+    if (drupalModal) {
+      guardDialogElement(drupalModal);
+    }
+    var messageModal = context.closest('#mass-inline-message-modal');
+    if (messageModal) {
+      guardDialogElement(messageModal);
+    }
+  }
+
+  function guardKnownModalRoots() {
+    guardDialogElement(document.getElementById('drupal-modal'));
+    guardDialogElement(document.getElementById('mass-inline-message-modal'));
+  }
+
+  /**
+   * Guards core dialog.attach when nested modals attach before jQuery UI opens.
+   *
+   * Layout Paragraphs + Message box + entity embed calls attachBehaviors on
+   * #drupal-modal content before dialog('instance') exists; core then throws
+   * when setting _focusedElement on undefined.
+   */
+  function patchDialogAttachFocusGuard() {
+    if (!Drupal.behaviors.dialog || Drupal.behaviors.dialog.__massInlineMessageAttachPatched) {
+      return;
+    }
+    var originalAttach = Drupal.behaviors.dialog.attach.bind(Drupal.behaviors.dialog);
+
+    Drupal.behaviors.dialog.attach = function (context, settings) {
+      settings = settings || drupalSettings || {};
+      settings.dialog = settings.dialog || {};
+      guardDialogElementsForContext(context);
+      guardKnownModalRoots();
+      originalAttach(context, settings);
+    };
+
+    Drupal.behaviors.dialog.__massInlineMessageAttachPatched = true;
+    Drupal.behaviors.dialog.__massInlineMessageOriginalAttach = originalAttach;
+  }
+
+  /**
+   * entity-embed-dialog-alter.js calls attachBehaviors during embed steps.
+   */
+  function patchAttachBehaviorsGuard() {
+    if (!Drupal.attachBehaviors || Drupal.attachBehaviors.__massInlineMessagePatched) {
+      return;
+    }
+    var originalAttachBehaviors = Drupal.attachBehaviors;
+    Drupal.attachBehaviors = function (context, settings) {
+      patchDialogAttachFocusGuard();
+      guardDialogElementsForContext(context);
+      guardKnownModalRoots();
+      return originalAttachBehaviors.call(this, context, settings);
+    };
+    Drupal.attachBehaviors.__massInlineMessagePatched = true;
+  }
+
+  /**
+   * Ensures the dialog.attach guard is active before nested CKEditor dialogs open.
+   */
+  function patchCkeditor5OpenDialog() {
+    if (!Drupal.ckeditor5 || Drupal.ckeditor5.__massInlineMessageOpenDialogPatched) {
+      return;
+    }
+    var originalOpenDialog = Drupal.ckeditor5.openDialog.bind(Drupal.ckeditor5);
+    Drupal.ckeditor5.openDialog = function (url, saveCallback, dialogSettings) {
+      patchDialogAttachFocusGuard();
+      return originalOpenDialog(url, saveCallback, dialogSettings);
+    };
+    Drupal.ckeditor5.__massInlineMessageOpenDialogPatched = true;
+  }
+
+  function syncNestedDialogStackClasses() {
+    var hasMessageBox = !!document.querySelector('#mass-inline-message-dialog-form');
+    document.body.classList.toggle('mass-inline-message-dialog-open', hasMessageBox);
+    document.body.classList.toggle(
+      'mass-inline-message-embed-open',
+      hasMessageBox && !!document.querySelector('#drupal-modal .ui-dialog-content, #drupal-modal form.entity-embed-dialog, #drupal-modal form.media-entity-download-dialog'),
+    );
+  }
+
+  patchDialogAttachFocusGuard();
+  patchAttachBehaviorsGuard();
+  patchCkeditor5OpenDialog();
+  guardKnownModalRoots();
+
+  window.addEventListener('dialog:beforecreate', function () {
+    patchDialogAttachFocusGuard();
+    patchAttachBehaviorsGuard();
+    guardKnownModalRoots();
+  });
 
   function ensureMassInlineMessageModalContainer() {
     if (document.getElementById('mass-inline-message-modal')) {
@@ -285,10 +457,15 @@
     if (form) {
       Drupal.attachBehaviors(form, drupalSettings);
     }
+
+    syncNestedDialogStackClasses();
   }
 
   Drupal.behaviors.massInlineMessageDialog = {
     attach: function (context) {
+      patchDialogAttachFocusGuard();
+      patchAttachBehaviorsGuard();
+      guardKnownModalRoots();
       ensureMassInlineMessageModalContainer();
       bindMessageBoxSaveListeners();
       bindGlobalHandlers();
@@ -305,7 +482,18 @@
   window.addEventListener('dialog:aftercreate', function (event) {
     if (event.target) {
       wireDialogContent(event.target);
+      if (event.target.id === 'drupal-modal' || event.target.querySelector('form.entity-embed-dialog, form.media-entity-download-dialog')) {
+        var embedWrapper = event.target.closest('.ui-dialog');
+        if (embedWrapper) {
+          embedWrapper.classList.add('mass-inline-message-embed-dialog');
+        }
+        syncNestedDialogStackClasses();
+      }
     }
+  });
+
+  window.addEventListener('dialog:afterclose', function () {
+    window.requestAnimationFrame(syncNestedDialogStackClasses);
   });
 
   window.addEventListener('dialogButtonsChange', function (event) {

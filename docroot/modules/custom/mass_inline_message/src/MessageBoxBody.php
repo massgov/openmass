@@ -61,16 +61,30 @@ final class MessageBoxBody {
   }
 
   /**
-   * Whether body HTML has plain-text content worth passing to the theme.
+   * Whether body HTML has content worth passing to the theme.
    *
    * CKEditor "empty" bodies are often "<p></p>", "<p><br></p>", or "&nbsp;"
    * which are non-empty strings but should not enable richText in the template.
+   * Image and media embed markup has no plain text but is still renderable.
    */
   public static function hasRenderableContent(?string $body_html): bool {
     if ($body_html === NULL || $body_html === '') {
       return FALSE;
     }
-    return self::plainText($body_html) !== '';
+    if (self::plainText($body_html) !== '') {
+      return TRUE;
+    }
+    return self::hasEmbeddedMediaMarkup($body_html);
+  }
+
+  /**
+   * Whether body HTML contains image or embed markup without plain text.
+   */
+  public static function hasEmbeddedMediaMarkup(string $body_html): bool {
+    if (preg_match('/<(img|drupal-entity|drupal-media)\b/i', $body_html)) {
+      return TRUE;
+    }
+    return (bool) preg_match('/<figure\b[^>]*>[\s\S]*?<img\b/i', $body_html);
   }
 
   /**

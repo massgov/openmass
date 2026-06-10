@@ -10,11 +10,23 @@
 /* Message box uses its own modal wrapper; editor embeds use #drupal-modal on top. */
 #mass-inline-message-modal {
   position: relative;
-  z-index: 1250;
 }
 
-#drupal-modal {
-  z-index: 1260;
+/*
+ * Layout Paragraphs modals use z-index up to 9100/99999 (see layout-paragraphs.css).
+ * Stack Message box and entity embed above LP when nested inside Rich text.
+ * Body classes are toggled in mass-inline-message-dialog.js.
+ */
+body.mass-inline-message-dialog-open .ui-dialog.lpb-dialog {
+  z-index: 9000 !important;
+}
+
+body.mass-inline-message-dialog-open .ui-dialog.mass-inline-message-dialog {
+  z-index: 100050 !important;
+}
+
+body.mass-inline-message-embed-open .ui-dialog.mass-inline-message-embed-dialog {
+  z-index: 100060 !important;
 }
 
 /* Claro title bar contrast for Message box and stacked CKEditor embed modals. */

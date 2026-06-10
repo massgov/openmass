@@ -35,6 +35,18 @@ class InlineMessageFilterTest extends MassInlineMessageExistingSiteTestBase {
   /**
    * Tests info message box renders without warning modifier.
    */
+
+  /**
+   * Tests image-only message box body is rendered in the content region.
+   */
+  public function testFilterRendersImageOnlyBody(): void {
+    $html = '<mass-inline-message data-title="Chart" data-type="info"><img src="/sites/default/files/chart.jpg" alt="Energy chart"></mass-inline-message>';
+    $filtered = check_markup($html, 'basic_html');
+    $this->assertStringContainsString('Chart', $filtered);
+    $this->assertStringContainsString('ma__inline-message__content', $filtered);
+    $this->assertMatchesRegularExpression('/<img\b/i', $filtered);
+  }
+
   public function testFilterRendersInfoType(): void {
     $html = '<mass-inline-message data-title="Note" data-type="info"></mass-inline-message>';
     $filtered = check_markup($html, 'basic_html');

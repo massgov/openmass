@@ -80,6 +80,72 @@ class InlineMessageCKEditorTest extends MassInlineMessageJavascriptTestBase {
   /**
    * Edits an existing widget via the Edit toolbar control.
    */
+
+  /**
+   * Entity embed save inside the dialog must not insert an empty Message box.
+   */
+  public function testEntityEmbedDialogSaveDoesNotInsertEmptyMessageBox(): void {
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+    $this->waitForBodyFieldEditor();
+
+    $this->fireMessageBoxToolbarButton(self::BODY_FIELD_EDITOR_SELECTOR);
+    $this->waitForMessageBoxDialogOpen();
+
+    $session = $this->inlineMessageSession();
+    $session->getPage()->fillField('attributes[data-title]', 'Chart message');
+    $this->setMessageBoxDialogBodyHtml('<p>Intro text before image.</p><img src="/sites/default/files/chart.jpg" alt="Chart">');
+
+    $this->triggerEntityEmbedEditorDialogSave();
+
+    $editor_data = $this->getCkeditorData(self::BODY_FIELD_EDITOR_SELECTOR);
+    $this->assertStringNotContainsString('<mass-inline-message', $editor_data);
+
+    $this->clickMessageBoxDialogSave();
+    $this->waitForMessageBoxDialogClosed();
+
+    $editor_data = $this->getCkeditorData(self::BODY_FIELD_EDITOR_SELECTOR);
+    $this->assertStringContainsString('data-title="Chart message"', $editor_data);
+    $this->assertStringContainsString('Intro text before image', $editor_data);
+    $this->assertMatchesRegularExpression('/<img\b/i', $editor_data);
+  }
+
+  /**
+   * Saves a Message box whose body contains only image markup (no plain text).
+   */
+  public function testSaveMessageBoxWithImageBodyViaDialog(): void {
+    $this->drupalLogin($this->createAdministrator());
+    $node_id = $this->createBasicPageWithBody();
+    $this->drupalGet('node/' . $node_id . '/edit');
+    $this->waitForBodyFieldEditor();
+
+    $image_body = '<p>Energy chart</p><img src="/sites/default/files/chart.jpg" alt="Energy chart" width="200" height="100">';
+
+    $this->fireMessageBoxToolbarButton(self::BODY_FIELD_EDITOR_SELECTOR);
+    $this->waitForMessageBoxDialogOpen();
+
+    $session = $this->inlineMessageSession();
+    $session->getPage()->fillField('attributes[data-title]', 'Chart message');
+    $this->setMessageBoxDialogBodyHtml($image_body);
+    $this->clickMessageBoxDialogSave();
+    $this->waitForMessageBoxDialogClosed();
+
+    $editor_data = $this->getCkeditorData(self::BODY_FIELD_EDITOR_SELECTOR);
+    $this->assertStringContainsString('data-title="Chart message"', $editor_data);
+    $this->assertStringContainsString('<mass-inline-message', $editor_data);
+    $this->assertStringContainsString('Energy chart', $editor_data);
+    $this->assertMatchesRegularExpression('/<img\b/i', $editor_data);
+
+    $session->getPage()->pressButton('Save');
+    $session->wait(5000);
+
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($node_id);
+    $stored = $node->get('body')->value;
+    $this->assertStringContainsString('Chart message', $stored);
+    $this->assertMatchesRegularExpression('/<img\b/i', $stored);
+  }
+
   public function testEditMessageBoxViaWidgetToolbar(): void {
     $this->drupalLogin($this->createAdministrator());
     $node_id = $this->createBasicPageWithBody();

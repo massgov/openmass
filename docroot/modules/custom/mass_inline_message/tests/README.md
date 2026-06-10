@@ -10,7 +10,7 @@
 
 ## ExistingSiteJavascript (Selenium)
 
-- `InlineMessageCKEditorTest` — insert via dialog, edit via widget toolbar (node body)
+- `InlineMessageCKEditorTest` — insert via dialog, image body save, edit via widget toolbar (node body)
 - `InlineMessageInfoDetailsOverviewTest` — info_details Overview field save/load
 - `InlineMessageLayoutParagraphsTest` — LP Rich text insert (nested + top-level) + widget toolbar in modal
 
