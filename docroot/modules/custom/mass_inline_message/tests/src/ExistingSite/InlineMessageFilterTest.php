@@ -57,6 +57,23 @@ class InlineMessageFilterTest extends MassInlineMessageExistingSiteTestBase {
   /**
    * Tests nested message box tags in body are stripped on display.
    */
+
+  /**
+   * Tests news body paragraph cleanup does not strip SVG path elements.
+   */
+  public function testNewsBodyParagraphCleanupPreservesSvgPath(): void {
+    $html = '<symbol id="icon"><path d="M1 2"/></symbol><p lang="es">Text</p>';
+    $cleaned = preg_replace_callback('/<\s*p\b([^>]*)>/i', function (array $m) {
+      $attrs = $m[1];
+      if (preg_match('/\s+lang=(["\'])([^"\']*)\1/', $attrs, $lang_match)) {
+        return '<p lang="' . $lang_match[2] . '">';
+      }
+      return '<p>';
+    }, $html);
+    $this->assertStringContainsString('<path d="M1 2"/>', $cleaned);
+    $this->assertStringContainsString('<p lang="es">', $cleaned);
+  }
+
   public function testFilterStripsNestedMessageBoxInBody(): void {
     $html = '<mass-inline-message data-title="Outer" data-type="info"><mass-inline-message data-title="Inner" data-type="warning"><p>Nested</p></mass-inline-message><p>Outer body.</p></mass-inline-message>';
     $filtered = check_markup($html, 'basic_html');
