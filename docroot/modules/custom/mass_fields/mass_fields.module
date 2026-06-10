@@ -1250,6 +1250,16 @@ function _mass_fields_conditions_for_paragraphs(&$element, FormStateInterface $f
               $selector => ['value' => 'connected_apps'],
             ],
           ];
+          $element['subform']['field_tableau_data_details']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'connected_apps'],
+            ],
+          ];
+          $element['subform']['field_tableau_share_options']['#states'] = [
+            'visible' => [
+              $selector => ['value' => 'connected_apps'],
+            ],
+          ];
           break;
         case 'key_message_section':
           $dependee_field_name = 'field_background_type';

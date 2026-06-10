@@ -14,6 +14,8 @@
         var url = $placeholder.data('tableau-url');
         var tokenUrl = $placeholder.data('token-url');
         var toolbar = $placeholder.data('toolbar') || 'hidden';
+        var dataDetails = $placeholder.data('data-details');
+        var shareOptions = $placeholder.data('share-options');
         var id = $placeholder.attr('id');
 
         if (!tokenUrl) {
@@ -35,6 +37,18 @@
                 'hide-tabs': '',
                 'token': data.token
               });
+
+              if (dataDetails === 'show' || dataDetails === 'hide') {
+                tableauViz.append($('<custom-parameter>')
+                  .attr('name', ':dataDetails')
+                  .attr('value', dataDetails === 'hide' ? 'no' : 'yes'));
+              }
+
+              if (shareOptions === 'show' || shareOptions === 'hide') {
+                tableauViz.append($('<custom-parameter>')
+                  .attr('name', ':showShareOptions')
+                  .attr('value', shareOptions === 'hide' ? 'false' : 'true'));
+              }
 
               $placeholder.replaceWith(tableauViz);
             }

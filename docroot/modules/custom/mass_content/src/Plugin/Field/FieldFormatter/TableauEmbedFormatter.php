@@ -48,6 +48,14 @@ class TableauEmbedFormatter extends LinkFormatter {
     if ($paragraph->hasField('field_tableau_toolbar') && !$paragraph->get('field_tableau_toolbar')->isEmpty()) {
       $toolbar = $paragraph->get('field_tableau_toolbar')->value;
     }
+    $data_details = NULL;
+    if ($paragraph->hasField('field_tableau_data_details') && !$paragraph->get('field_tableau_data_details')->isEmpty()) {
+      $data_details = $paragraph->get('field_tableau_data_details')->value;
+    }
+    $share_options = NULL;
+    if ($paragraph->hasField('field_tableau_share_options') && !$paragraph->get('field_tableau_share_options')->isEmpty()) {
+      $share_options = $paragraph->get('field_tableau_share_options')->value;
+    }
 
     foreach ($items as $delta => $item) {
       $id = bin2hex(random_bytes(8));
@@ -60,6 +68,8 @@ class TableauEmbedFormatter extends LinkFormatter {
         '#embed_type' => $embed_type,
         '#token_url' => ($embed_type === 'connected_apps' && $token_url) ? $token_url : NULL,
         '#toolbar' => $toolbar,
+        '#data_details' => $data_details,
+        '#share_options' => $share_options,
       ];
     }
 

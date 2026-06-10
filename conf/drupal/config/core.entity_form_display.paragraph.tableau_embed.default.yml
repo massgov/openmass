@@ -8,7 +8,9 @@ dependencies:
     - field.field.paragraph.tableau_embed.field_tabl_caption
     - field.field.paragraph.tableau_embed.field_tabl_display_size
     - field.field.paragraph.tableau_embed.field_tabl_wrapping
+    - field.field.paragraph.tableau_embed.field_tableau_data_details
     - field.field.paragraph.tableau_embed.field_tableau_embed_type
+    - field.field.paragraph.tableau_embed.field_tableau_share_options
     - field.field.paragraph.tableau_embed.field_tableau_toolbar
     - field.field.paragraph.tableau_embed.field_tableau_url_token
     - field.field.paragraph.tableau_embed.field_url
@@ -25,7 +27,7 @@ mode: default
 content:
   field_tabl_administrative_title:
     type: string_textfield
-    weight: 3
+    weight: 6
     region: content
     settings:
       size: 60
@@ -33,14 +35,14 @@ content:
     third_party_settings: {  }
   field_tabl_alignment:
     type: options_buttons
-    weight: 6
+    weight: 9
     region: content
     settings: {  }
     third_party_settings:
       conditional_fields: {  }
   field_tabl_caption:
     type: text_textarea
-    weight: 4
+    weight: 7
     region: content
     settings:
       rows: 5
@@ -56,19 +58,31 @@ content:
         maxlength_js_truncate_html: true
   field_tabl_display_size:
     type: options_select
-    weight: 5
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   field_tabl_wrapping:
     type: options_buttons
-    weight: 7
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_tableau_data_details:
+    type: options_select
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   field_tableau_embed_type:
     type: options_select
     weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_tableau_share_options:
+    type: options_select
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -88,7 +102,7 @@ content:
     third_party_settings: {  }
   field_url:
     type: link_default
-    weight: 2
+    weight: 5
     region: content
     settings:
       placeholder_url: ''
