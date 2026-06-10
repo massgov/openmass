@@ -9,7 +9,59 @@
   'use strict';
 
   var handlersBound = false;
+  var saveListenersBound = false;
   var DIALOG_ROUTE_FRAGMENT = '/mass-inline-message/dialog/';
+
+  /**
+   * Runs the CKEditor save callback once (survives dialog:afterclose races).
+   */
+  function invokeMessageBoxSaveCallback(values) {
+    if (!window.__massInlineMessageSaveCallback) {
+      return false;
+    }
+    var callback = window.__massInlineMessageSaveCallback;
+    delete window.__massInlineMessageSaveCallback;
+    if (window.Drupal && window.Drupal.ckeditor5) {
+      window.Drupal.ckeditor5.saveCallback = null;
+    }
+    callback(values);
+    return true;
+  }
+
+  /**
+   * Ensures editor:dialogsave and Ajax backup handlers are registered once.
+   */
+  function bindMessageBoxSaveListeners() {
+    if (saveListenersBound) {
+      return;
+    }
+    saveListenersBound = true;
+
+    $(window).on('editor:dialogsave.massInlineMessage', function (event, values) {
+      invokeMessageBoxSaveCallback(values);
+    });
+
+    $(document).on('ajaxComplete.massInlineMessageSave', function (event, xhr, settings) {
+      var url = (settings && settings.url) || '';
+      if (url.indexOf(DIALOG_ROUTE_FRAGMENT) === -1 || !window.__massInlineMessageSaveCallback) {
+        return;
+      }
+      try {
+        var response = JSON.parse(xhr.responseText);
+        if (!Array.isArray(response)) {
+          return;
+        }
+        response.forEach(function (command) {
+          if (command.command === 'editorDialogSave') {
+            invokeMessageBoxSaveCallback(command.values);
+          }
+        });
+      }
+      catch (e) {
+        // Ignore non-JSON responses.
+      }
+    });
+  }
 
   function ensureMassInlineMessageModalContainer() {
     if (document.getElementById('mass-inline-message-modal')) {
@@ -238,6 +290,7 @@
   Drupal.behaviors.massInlineMessageDialog = {
     attach: function (context) {
       ensureMassInlineMessageModalContainer();
+      bindMessageBoxSaveListeners();
       bindGlobalHandlers();
 
       if (context instanceof Element || context === document) {

@@ -123,4 +123,38 @@ trait InlineMessageLayoutParagraphsTestTrait {
     return $this->getCkeditorData(self::LP_RICH_TEXT_EDITOR_SELECTOR);
   }
 
+  /**
+   * Opens the first top-level Rich text paragraph on a service page edit form.
+   */
+  protected function openTopLevelServiceRichTextEditorInLayoutParagraph(): void {
+    $session = $this->inlineMessageSession();
+    $page = $session->getPage();
+
+    $session->executeScript(
+      "document.querySelector('a[href^=\"#edit-group-content\"]').scrollIntoView({block: 'center'});",
+    );
+    $page->find('css', '.horizontal-tab-button a[href="#edit-group-content"]')->click();
+    $session->wait(1500);
+
+    $session->executeScript(
+      "(function(){
+        var edit = document.querySelector('.lpb-component.type-service_rich_text a.lpb-edit.use-ajax')
+          || document.querySelector('a.lpb-edit.use-ajax[href*=\"/edit/\"]');
+        if (edit) {
+          try { edit.scrollIntoView({block: 'center'}); } catch (e) {}
+          edit.click();
+        }
+      })();",
+    );
+
+    $session->wait(
+      15000,
+      "document.querySelector('.ui-dialog .ui-dialog-title') && document.querySelector('.ui-dialog .ui-dialog-title').textContent.toLowerCase().indexOf('rich text') !== -1",
+    );
+    $session->wait(
+      15000,
+      "document.querySelector('.ui-dialog .ck-editor [contenteditable=true]') !== null",
+    );
+  }
+
 }

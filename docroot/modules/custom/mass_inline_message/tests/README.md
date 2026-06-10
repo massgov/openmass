@@ -12,6 +12,6 @@
 
 - `InlineMessageCKEditorTest` — insert via dialog, edit via widget toolbar (node body)
 - `InlineMessageInfoDetailsOverviewTest` — info_details Overview field save/load
-- `InlineMessageLayoutParagraphsTest` — LP Rich text insert + widget toolbar in modal
+- `InlineMessageLayoutParagraphsTest` — LP Rich text insert (nested + top-level) + widget toolbar in modal
 
 Shared helpers live in `src/Traits/`.

@@ -13,6 +13,62 @@ class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestB
   use InlineMessageLayoutParagraphsTestTrait;
 
   /**
+   * Tests dialog button-pane Save inserts a Message box in top-level Rich text.
+   *
+   * Mirrors service pages like About DOER where Rich text is not nested in a
+   * Service Section.
+   */
+  public function testMessageBoxInsertViaDialogButtonPaneInTopLevelRichText(): void {
+    $user = $this->createContentEditor();
+    $title = 'Top-level LP alert ' . $this->randomMachineName(6);
+    $rich_text = $this->container->get('entity_type.manager')
+      ->getStorage('paragraph')
+      ->create([
+        'type' => 'service_rich_text',
+        'field_section_body' => [
+          'value' => '<p>Initial rich text.</p>',
+          'format' => 'basic_html',
+        ],
+      ]);
+    $rich_text->save();
+    $service_page = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Message box top-level LP ' . $this->randomMachineName(8),
+      'uid' => $user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+      'field_service_sections' => [
+        [
+          'target_id' => $rich_text->id(),
+          'target_revision_id' => $rich_text->getRevisionId(),
+        ],
+      ],
+    ]);
+
+    $this->drupalLogin($user);
+    $this->visit($service_page->toUrl()->toString() . '/edit');
+    $this->openTopLevelServiceRichTextEditorInLayoutParagraph();
+    $page = $this->inlineMessageSession()->getPage();
+
+    $this->fireMessageBoxToolbarInLayoutParagraph();
+    $this->waitForMessageBoxDialogOpen();
+
+    $page->fillField('attributes[data-title]', $title);
+    $this->clickMessageBoxDialogSave();
+    $this->waitForMessageBoxDialogClosed();
+    $this->assertMessageBoxSaveDidNotRedirectToDialogRoute();
+
+    $editor_data = $this->getLayoutParagraphRichTextEditorData();
+    $this->assertStringContainsString('data-title="' . $title . '"', $editor_data);
+    $this->assertStringContainsString('<mass-inline-message', $editor_data);
+
+    $this->clickLayoutParagraphDialogSave();
+    $this->inlineMessageSession()->wait(
+      10000,
+      "document.querySelector('.ui-dialog .ui-dialog-title') === null || document.querySelector('.ui-dialog .ui-dialog-title').textContent.toLowerCase().indexOf('rich text') === -1",
+    );
+  }
+
+  /**
    * Tests inserting a Message box via dialog save stays in the LP Ajax flow.
    */
   public function testMessageBoxInsertAndSaveInLayoutParagraphRichText(): void {

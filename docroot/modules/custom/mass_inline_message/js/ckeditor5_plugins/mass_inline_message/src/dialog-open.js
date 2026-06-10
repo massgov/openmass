@@ -44,10 +44,11 @@ function bindMessageBoxDialogLifecycle(saveCallback) {
     }
     window.removeEventListener('dialog:afterclose', restoreSaveCallback);
     window.removeEventListener('dialog:afterclose', onMessageBoxClose);
-    delete window.__massInlineMessageSaveCallback;
-    if (Drupal.ckeditor5) {
-      Drupal.ckeditor5.saveCallback = null;
-    }
+
+    // Do not clear __massInlineMessageSaveCallback here. Core CKEditor clears
+    // Drupal.ckeditor5.saveCallback on dialog:afterclose before the Message
+    // box Ajax response returns; mass-inline-message-dialog.js applies the
+    // saved values via editor:dialogsave and Ajax backup handlers instead.
 
     window.requestAnimationFrame(() => {
       refreshAllCkeditor5Viewports();

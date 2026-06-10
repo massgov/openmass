@@ -77,15 +77,15 @@ trait InlineMessageJavascriptTestTrait {
         if (!form) { return; }
         var dialog = form.closest('.ui-dialog');
         if (!dialog) { return; }
-        var buttons = dialog.querySelectorAll('.ui-dialog-buttonpane .form-actions .js-form-submit, .ui-dialog-buttonpane .form-actions input[type=\"submit\"]');
-        for (var i = 0; i < buttons.length; i++) {
-          var label = (buttons[i].value || buttons[i].textContent || '').trim().toLowerCase();
+        var paneButtons = dialog.querySelectorAll('.ui-dialog-buttonpane button, .ui-dialog-buttonpane input[type=\"submit\"]');
+        for (var i = 0; i < paneButtons.length; i++) {
+          var label = (paneButtons[i].value || paneButtons[i].textContent || '').trim().toLowerCase();
           if (label === 'save') {
-            buttons[i].click();
+            paneButtons[i].click();
             return;
           }
         }
-        var fallback = form.querySelector('input[type=\"submit\"], button[type=\"submit\"]');
+        var fallback = form.querySelector('.form-actions input[type=\"submit\"], .form-actions button[type=\"submit\"]');
         if (fallback) { fallback.click(); }
       })();",
     );
