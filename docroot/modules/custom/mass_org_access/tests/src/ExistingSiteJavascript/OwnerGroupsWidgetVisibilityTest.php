@@ -10,12 +10,13 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  * Verifies Permission Groups widget visibility per role and bundle.
  *
  * Release 1 rule: the Permission Groups field (field_content_organization)
- * is shown only to users who can manage it — admins and content admins
- * (the `bypass org access` permission) on every bundle, plus anyone editing
- * an Organization page. For authors/editors on every other bundle the field
- * is hidden, but it stays in the form (in a `.oog-hidden-from-author`
- * wrapper) so its value still derives from Organization(s) and saves. So
- * "hidden" means present-but-not-visible, never removed.
+ * is shown only to administrators (the `view permission groups field`
+ * permission, which Content Administrators do NOT have) on every bundle, plus
+ * anyone editing an Organization page. For everyone else — Content
+ * Administrators, editors, authors — on every other bundle the field is
+ * hidden, but it stays in the form (in a `.oog-hidden-from-author` wrapper) so
+ * its value still derives from Organization(s) and saves. So "hidden" means
+ * present-but-not-visible, never removed.
  */
 class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBase {
 
@@ -36,18 +37,15 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
 
   /**
    * Roles that may see/manage Permission Groups on every bundle.
+   *
+   * Only administrators — Content Administrators are intentionally excluded.
    */
-  private const MANAGER_ROLES = ['administrator', 'content_team'];
+  private const MANAGER_ROLES = ['administrator'];
 
   /**
    * Whether the test stored a previous enforcement value to restore.
    */
   private ?bool $previousEnforce;
-
-  /**
-   * Whether the test stored a previous debug-mode value to restore.
-   */
-  private ?bool $previousDebug;
 
   /**
    * {@inheritdoc}
@@ -57,11 +55,8 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
     $state = \Drupal::state();
     $this->previousEnforce = $state->get('mass_org_access.enforce');
     $state->delete('mass_org_access.enforce');
-    // Debug mode would reveal the field to every editor; keep it off so the
-    // hidden-from-author assertions are deterministic regardless of the
-    // developer's local toggle.
-    $this->previousDebug = $state->get('mass_org_access.debug_mode');
-    $state->delete('mass_org_access.debug_mode');
+    // Debug mode is gated by a URL secret these tests never pass, so the
+    // hidden-from-author assertions stay deterministic with no extra setup.
   }
 
   /**
@@ -70,9 +65,6 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   protected function tearDown(): void {
     if ($this->previousEnforce !== NULL) {
       \Drupal::state()->set('mass_org_access.enforce', $this->previousEnforce);
-    }
-    if ($this->previousDebug !== NULL) {
-      \Drupal::state()->set('mass_org_access.debug_mode', $this->previousDebug);
     }
     parent::tearDown();
   }
@@ -211,8 +203,8 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   /**
    * Bundles × roles for the node add form.
    *
-   * Visible when the role is a manager (admin / content admin) OR the bundle
-   * is the Organization page. 28 bundles × 4 roles = 112 cases.
+   * Visible when the role is a manager (administrator) OR the bundle is the
+   * Organization page. 28 bundles × 4 roles = 112 cases.
    */
   public static function nodeWidgetVisibilityProvider(): array {
     $bundles = [
@@ -265,11 +257,13 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
 
   /**
    * Roles for the media.document add form (no Organization page bundle).
+   *
+   * Only administrators see it; Content Administrators are now excluded.
    */
   public static function mediaDocumentVisibilityProvider(): array {
     return [
       'administrator-visible' => ['administrator', TRUE],
-      'content_team-visible' => ['content_team', TRUE],
+      'content_team-hidden' => ['content_team', FALSE],
       'editor-hidden' => ['editor', FALSE],
       'author-hidden' => ['author', FALSE],
     ];

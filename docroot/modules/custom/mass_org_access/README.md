@@ -49,11 +49,11 @@ form validator, and login warning. **Off by default.**
   propagates between PHPUnit and webserver processes during DTT tests.
 
 The Permission Groups widget itself is **not gated by the switch** — its
-Release 1 visibility rules (hidden from authors/editors except on
-`org_page`; see "Owner Groups widget" below) apply whether enforcement is
-on or off. A separate **debug mode** (State `mass_org_access.debug_mode`,
-toggled on the settings form) reveals the field to every editor for
-troubleshooting; off by default, never enable on prod.
+Release 1 visibility rules (hidden from everyone except administrators and
+on `org_page`; see "Owner Groups widget" below) apply whether enforcement is
+on or off. A separate **debug mode** reveals the field for troubleshooting:
+append `?debug_show_pg=<secret>` to an edit URL, where `<secret>` matches the
+`MASS_ORG_ACCESS_DEBUG_SECRET` env var (no secret set → always off).
 
 **Off:** access hooks return neutral. Editors can save anything they
 can already save, and the JS auto-populates Permission Groups so the
@@ -93,7 +93,7 @@ OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 | `node_access` / `media_access` | The access decision above. |
 | `entity_field_access` | Locks `field_user_org` to `administer users` (prevents self-promotion). Permission Groups itself is not field-restricted. |
 | `form_node_form_alter` | Adds `validateOrgAccess` callback (static method — closures break paragraphs AJAX). Defense-in-depth: surfaces an error if a save reaches form validation despite `node_access` already denying it. |
-| `field_widget_complete_form_alter` | Renders Permission Groups as a read-only list + attaches both JS libraries. Release 1: hides the field (CSS wrapper `.oog-hidden-from-author`) from anyone without `bypass org access` unless the bundle is `org_page` or debug mode is on; the field stays in the form so its value still derives from Organization(s) and saves. |
+| `field_widget_complete_form_alter` | Renders Permission Groups as a read-only list + attaches both JS libraries. Release 1: hides the field (CSS wrapper `.oog-hidden-from-author`) from anyone without `view permission groups field` (admins only — Content Administrators excluded) unless the bundle is `org_page` or the debug URL secret is present; the field stays in the form so its value still derives from Organization(s) and saves. |
 | `user_login` | At login, warns editor/author roles without `field_user_org`. Silent while switch is off. |
 
 ## Routing
@@ -108,13 +108,14 @@ OOP hooks (Drupal 11.3+ `#[Hook(...)]`) in `src/Hook/MassOrgAccessHooks.php`.
 ## Owner Groups "widget"
 
 **Release 1 visibility.** The field is shown only to users with
-`bypass org access` (admins + content admins) on every bundle, plus anyone
-editing an `org_page`. For everyone else it is wrapped in
-`.oog-hidden-from-author` (`display:none`) — present in the DOM (so the
-JS-derived value still submits and the org-taxonomy permission data stays
-populated) but not visible. Drop the wrapper in Release 2 to restore
-visibility. Debug mode (settings form) skips the wrapper so the field is
-visible to everyone while it is on.
+`view permission groups field` — administrators only; **Content
+Administrators are excluded** — on every bundle, plus anyone editing an
+`org_page`. For everyone else (Content Administrators, editors, authors) it
+is wrapped in `.oog-hidden-from-author` (`display:none`) — present in the DOM
+(so the JS-derived value still submits and the org-taxonomy permission data
+stays populated) but not visible. Drop the wrapper in Release 2 to restore
+visibility. The debug URL secret (`?debug_show_pg=<secret>` matching
+`MASS_ORG_ACCESS_DEBUG_SECRET`) skips the wrapper for that request.
 
 Two JS layers on `field_content_organization`:
 
@@ -144,7 +145,8 @@ picks because jQuery UI's `.val()` doesn't fire events.
 
 Placement: `field_content_organization` is weighted to be first inside
 the **Page Info** field group on all 28 node form displays. Help text on
-all bundles except `org_page` says the field is populated automatically
+all bundles except `org_page` warns "DO NOT CHANGE unless approved by
+Product Manager / DEV team" and that the field is populated automatically
 from the Organizations on the item; `org_page` carries its own
 author-facing help text (Browse organizations, parents auto-added),
 since that is the one bundle where authors edit the field by hand.
@@ -153,7 +155,7 @@ since that is the one bundle where authors edit the field by hand.
 
 | Service ID | Class | Role |
 |------------|-------|------|
-| `mass_org_access.settings` | `OrgAccessSettings` | Reads env + State for the feature switch and debug mode |
+| `mass_org_access.settings` | `OrgAccessSettings` | Feature switch (env + State) and debug mode (URL secret `debug_show_pg` vs `MASS_ORG_ACCESS_DEBUG_SECRET` env) |
 | `mass_org_access.org_access_checker` | `OrgAccessChecker` | Access intersection + `ownerGroupTermsForOrg` (shared direct lookup: copies the org_page's own curated Permission Groups) + `populateOwnerGroupsFromOrganizations` (backfill) |
 | `mass_org_access.backfill_runner` | `BackfillRunner` | Resumable drush backfill driver (`run()`) + queue filler (`enqueue()`) — see [Queue variant](#queue-variant-moab-queue) |
 | `mass_org_access.stage_file_fetcher` | `StageFileFetcher` | Pulls a missing `public://` file from the stage_file_proxy origin on demand (optional dependency; no-op on prod) |
@@ -181,7 +183,7 @@ on the ~1000 `org_page` nodes — the values everything else derives from.
 
 | Tab | Route | What it does |
 |-----|-------|--------------|
-| **Settings** | `/admin/config/content/mass-org-access` | "Permission Groups debug mode" toggle (State `mass_org_access.debug_mode`, default off) — shows the field to every editor while on. |
+| **Settings** | `/admin/config/content/mass-org-access` | Documents debug mode — no stored toggle; append `?debug_show_pg=<secret>` (matching `MASS_ORG_ACCESS_DEBUG_SECRET`) to an edit URL to reveal the field for that request. |
 | **Edit mappings** | `…/matrix` | Matrix editor: one Select2 multi-picker per org_page ("State organization" terms), paged (50/100/500/all via `?items=`). **Save** persists to State `mass_org_access.matrix` (merges page-by-page, resumable); **Apply to nodes** batch-writes the whole saved matrix onto the org_pages (force overwrite); **Download CSV** exports the saved matrix; two **Clear** buttons re-seed from nodes or start fresh. |
 | **Import mappings** | `…/import` | Upload a `nodeid,termid` CSV (header required; one row per node–term pair) → batch sets each org_page's `field_content_organization`. "Force override" checkbox — off skips org_pages that already have Permission Groups. CSV template + detailed downloadable run log. |
 
@@ -224,13 +226,18 @@ org_page nodes mapped from the user's permission groups
 Editors may remove or change pre-filled values before the first save; nothing
 is enforced on submit.
 
-## Permission
+## Permissions
 
 `bypass org access` — granted to `content_team`, inherited by
 `administrator` via `is_admin: true`. Skips the org gate (allows
-update/delete regardless of org match). Also gates Release 1 widget
-visibility: only bypass users see the Permission Groups field on
-non-`org_page` bundles (unless debug mode is on).
+update/delete regardless of org match).
+
+`view permission groups field` — granted to **no role**, so only
+`administrator` has it (via `is_admin: true`); **Content Administrators do
+not**. Gates Release 1 widget visibility: only holders see the Permission
+Groups field on non-`org_page` bundles (the debug URL secret aside). Kept
+separate from `bypass org access` on purpose — Content Administrators still
+bypass the access gate, they just no longer see the field.
 
 ## Drush
 

@@ -3,6 +3,7 @@
 namespace Drupal\mass_org_access;
 
 use Drupal\Core\State\StateInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Toggles mass_org_access enforcement.
@@ -24,12 +25,21 @@ class OrgAccessSettings {
   public const STATE_KEY = 'mass_org_access.enforce';
 
   /**
-   * State key for the Permission Groups debug switch.
+   * URL query parameter that reveals the Permission Groups field.
+   *
+   * The field shows when this parameter's value matches the secret in
+   * DEBUG_SECRET_ENV, e.g. /node/123/edit?debug_show_pg=<secret>.
    */
-  public const DEBUG_STATE_KEY = 'mass_org_access.debug_mode';
+  public const DEBUG_QUERY_PARAM = 'debug_show_pg';
+
+  /**
+   * Env var holding the secret the debug query parameter must equal.
+   */
+  public const DEBUG_SECRET_ENV = 'MASS_ORG_ACCESS_DEBUG_SECRET';
 
   public function __construct(
     private readonly StateInterface $state,
+    private readonly RequestStack $requestStack,
   ) {}
 
   /**
@@ -44,14 +54,25 @@ class OrgAccessSettings {
   }
 
   /**
-   * Returns TRUE when the Permission Groups field is shown to all editors.
+   * Returns TRUE when the Permission Groups field should be revealed.
    *
-   * A troubleshooting aid: dropping the author-hiding wrapper lets editors
-   * see which organizations are attached to a page. State-only (no env
-   * layer) and OFF by default; toggled from the settings form.
+   * A troubleshooting aid for admins/devs: append
+   * `?debug_show_pg=<secret>` to an edit URL, where `<secret>` matches the
+   * MASS_ORG_ACCESS_DEBUG_SECRET environment variable. The secret in the URL
+   * is the switch — there is no stored toggle. No secret configured (or an
+   * empty/mismatched parameter) → always off. Compared in constant time.
    */
   public function isDebugModeEnabled(): bool {
-    return (bool) $this->state->get(self::DEBUG_STATE_KEY, FALSE);
+    $secret = getenv(self::DEBUG_SECRET_ENV);
+    if ($secret === FALSE || $secret === '') {
+      return FALSE;
+    }
+    $request = $this->requestStack->getCurrentRequest();
+    if ($request === NULL) {
+      return FALSE;
+    }
+    $provided = (string) $request->query->get(self::DEBUG_QUERY_PARAM, '');
+    return $provided !== '' && hash_equals($secret, $provided);
   }
 
 }

@@ -125,13 +125,14 @@ class MassOrgAccessHooks {
    * server-rendered from the entity's referenced terms; after saving
    * the form Drupal rebuilds it with the fresh values.
    *
-   * Release 1 visibility: only admins / content admins (`bypass org access`)
-   * and anyone editing an Organization page may see the field. For everyone
-   * else it is hidden with CSS — the field stays in the form so the value
-   * still derives from Organization(s) (via the oog_from_organizations JS)
-   * and saves, keeping the org-taxonomy permission data populated; the
-   * author just never sees or touches it. Release 2 can drop the wrapper to
-   * restore visibility.
+   * Release 1 visibility: only administrators (`view permission groups field`,
+   * which Content Administrators do NOT have) and anyone editing an
+   * Organization page may see the field. For everyone else — including Content
+   * Administrators on non-Organization bundles — it is hidden with CSS. The
+   * field stays in the form so the value still derives from Organization(s)
+   * (via the oog_from_organizations JS) and saves, keeping the org-taxonomy
+   * permission data populated; the user just never sees or touches it.
+   * Release 2 can drop the wrapper to restore visibility.
    */
   #[Hook('field_widget_complete_form_alter')]
   public function fieldWidgetCompleteFormAlter(array &$field_widget_complete_form, FormStateInterface $form_state, array $context): void {
@@ -139,7 +140,7 @@ class MassOrgAccessHooks {
       return;
     }
     $entity = $context['items']->getEntity();
-    $can_see = $this->currentUser->hasPermission('bypass org access')
+    $can_see = $this->currentUser->hasPermission('view permission groups field')
       || $entity->bundle() === 'org_page';
     // Debug mode (settings form) reveals the field to everyone so editors can
     // verify which organizations are attached; otherwise authors/editors get

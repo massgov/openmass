@@ -126,7 +126,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    */
   protected function tearDown(): void {
     \Drupal::state()->delete('mass_org_access.enforce');
-    \Drupal::state()->delete(OrgAccessSettings::DEBUG_STATE_KEY);
+    putenv(OrgAccessSettings::DEBUG_SECRET_ENV);
     parent::tearDown();
   }
 
@@ -924,28 +924,50 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Debug mode reveals the Permission Groups field to non-admin editors.
+   * The debug URL secret reveals the Permission Groups field to non-admins.
    *
-   * Off by default the field is wrapped in the author-hiding div for editors;
-   * the settings-form switch drops that wrapper so they can see which
-   * organizations are attached to the content.
+   * Without the secret the field is wrapped in the author-hiding div for
+   * editors; appending ?debug_show_pg=<secret> (matching the env var) drops
+   * that wrapper so they can see which organizations are attached.
    */
-  public function testDebugModeRevealsPermissionGroupsToEditors(): void {
+  public function testDebugSecretRevealsPermissionGroupsToEditors(): void {
     \Drupal::currentUser()->setAccount($this->userA);
 
-    \Drupal::state()->delete(OrgAccessSettings::DEBUG_STATE_KEY);
+    // No secret configured / no query parameter → hidden.
+    putenv(OrgAccessSettings::DEBUG_SECRET_ENV);
     $this->assertStringContainsString(
       'oog-hidden-from-author',
       $this->permissionGroupsWidgetPrefix('info_details'),
-      'Permission Groups must be hidden from editors when debug mode is off.'
+      'Permission Groups must be hidden from editors without the debug secret.'
     );
 
-    \Drupal::state()->set(OrgAccessSettings::DEBUG_STATE_KEY, TRUE);
-    $this->assertStringNotContainsString(
-      'oog-hidden-from-author',
-      $this->permissionGroupsWidgetPrefix('info_details'),
-      'Permission Groups must be visible to editors when debug mode is on.'
-    );
+    // Matching secret in the URL → revealed. Duplicate the live request (so it
+    // keeps its session, which FormBuilder needs) with the query parameter set.
+    $secret = 'dbg-' . $this->randomMachineName(16);
+    putenv(OrgAccessSettings::DEBUG_SECRET_ENV . '=' . $secret);
+    $stack = \Drupal::requestStack();
+    $current = $stack->getCurrentRequest();
+    $stack->push($current->duplicate([OrgAccessSettings::DEBUG_QUERY_PARAM => $secret]));
+    try {
+      $this->assertStringNotContainsString(
+        'oog-hidden-from-author',
+        $this->permissionGroupsWidgetPrefix('info_details'),
+        'Permission Groups must be visible when the debug secret matches.'
+      );
+
+      // A wrong value with the secret configured must NOT reveal it.
+      $stack->pop();
+      $stack->push($current->duplicate([OrgAccessSettings::DEBUG_QUERY_PARAM => 'wrong']));
+      $this->assertStringContainsString(
+        'oog-hidden-from-author',
+        $this->permissionGroupsWidgetPrefix('info_details'),
+        'A non-matching debug parameter must not reveal the field.'
+      );
+    }
+    finally {
+      $stack->pop();
+      putenv(OrgAccessSettings::DEBUG_SECRET_ENV);
+    }
   }
 
   /**
