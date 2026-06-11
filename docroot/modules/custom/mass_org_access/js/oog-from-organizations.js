@@ -195,6 +195,11 @@
   /**
    * Injects (once) the inline lockout notice + confirmation checkbox.
    *
+   * Built as an alertdialog and given focus when it appears so keyboard and
+   * screen-reader users are taken to it (a sighted-only scroll is not enough).
+   * The title labels the dialog and the explanation describes it; focusing the
+   * dialog announces both, so no aria-live is used (it would double-announce).
+   *
    * @param {HTMLElement} button The Save button that was blocked.
    */
   function showLockoutConfirm(button) {
@@ -204,7 +209,25 @@
     if (!box) {
       box = document.createElement('div');
       box.className = 'oog-lockout-confirm messages messages--warning';
-      box.setAttribute('role', 'alert');
+      // A confirmation that blocks the save until the user responds.
+      box.setAttribute('role', 'alertdialog');
+      box.setAttribute('tabindex', '-1');
+      box.setAttribute('aria-labelledby', 'oog-lockout-title');
+      box.setAttribute('aria-describedby', 'oog-lockout-desc');
+
+      const title = document.createElement('p');
+      title.className = 'oog-lockout-confirm__title';
+      const titleStrong = document.createElement('strong');
+      titleStrong.id = 'oog-lockout-title';
+      titleStrong.textContent = 'Warning: saving may lock you out of this content';
+      title.appendChild(titleStrong);
+
+      const text = document.createElement('p');
+      text.id = 'oog-lockout-desc';
+      text.textContent =
+        'None of your permission groups are on this content. Once organization-based '
+        + 'editing permissions are enforced you will not be able to edit it again.';
+
       const label = document.createElement('label');
       const checkbox = document.createElement('input');
       checkbox.type = 'checkbox';
@@ -212,15 +235,16 @@
       label.appendChild(document.createTextNode(
         ' Save anyway — I understand I may lose the ability to edit this content.'
       ));
-      const text = document.createElement('p');
-      text.textContent =
-        'None of your permission groups are on this content. Once organization-based '
-        + 'editing permissions are enforced you will not be able to edit it again.';
+
+      box.appendChild(title);
       box.appendChild(text);
       box.appendChild(label);
       anchor.parentNode.insertBefore(box, anchor);
     }
     box.scrollIntoView({behavior: 'smooth', block: 'center'});
+    // Move focus to the dialog so it is announced and reachable, not just
+    // scrolled into view. preventScroll avoids fighting the smooth scroll.
+    box.focus({preventScroll: true});
   }
 
   /**
