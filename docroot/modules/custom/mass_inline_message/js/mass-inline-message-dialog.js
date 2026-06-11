@@ -122,7 +122,7 @@
         if (!instance) {
           return {
             _focusedElement: null,
-            _focusTabbable: function () {},
+            _focusTabbable: function () {}
           };
         }
         return instance;
@@ -220,7 +220,7 @@
     document.body.classList.toggle('mass-inline-message-dialog-open', hasMessageBox);
     document.body.classList.toggle(
       'mass-inline-message-embed-open',
-      hasMessageBox && !!document.querySelector('#drupal-modal .ui-dialog-content, #drupal-modal form.entity-embed-dialog, #drupal-modal form.media-entity-download-dialog'),
+      hasMessageBox && !!document.querySelector('#drupal-modal .ui-dialog-content, #drupal-modal form.entity-embed-dialog, #drupal-modal form.media-entity-download-dialog')
     );
   }
 
