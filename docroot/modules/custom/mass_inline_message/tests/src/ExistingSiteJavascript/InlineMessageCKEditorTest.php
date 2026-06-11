@@ -23,7 +23,7 @@ class InlineMessageCKEditorTest extends MassInlineMessageJavascriptTestBase {
     $this->waitForMessageBoxDialogOpen();
 
     $page = $session->getPage();
-    $page->fillField('attributes[data-title]', 'Test alert title');
+    $this->fillMessageBoxDialogTitle('Test alert title');
     $warning_radio = $page->find('css', '#mass-inline-message-dialog-form input[name="attributes[data-type]"][value="warning"]')
       ?: $page->find('css', '.ui-dialog input[name="attributes[data-type]"][value="warning"]');
     $this->assertNotNull($warning_radio);
@@ -53,7 +53,7 @@ class InlineMessageCKEditorTest extends MassInlineMessageJavascriptTestBase {
     $this->fireMessageBoxToolbarButton(self::BODY_FIELD_EDITOR_SELECTOR);
     $this->waitForMessageBoxDialogOpen();
 
-    $this->inlineMessageSession()->getPage()->fillField('attributes[data-title]', 'Chart message');
+    $this->fillMessageBoxDialogTitle('Chart message');
     $this->setMessageBoxDialogBodyHtml('<p>Intro text before image.</p><img src="/sites/default/files/chart.jpg" alt="Chart">');
     $this->triggerEntityEmbedEditorDialogSave();
 

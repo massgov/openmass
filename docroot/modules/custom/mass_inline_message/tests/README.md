@@ -10,7 +10,7 @@ ddev exec vendor/bin/phpunit docroot/modules/custom/mass_inline_message/tests/sr
 
 ## ExistingSiteJavascript (Selenium) — optional smoke tests
 
-Four browser smoke tests only. Deeper behavior (rendering, image bodies, info_details save, widget toolbar) is covered by ExistingSite tests.
+Four browser smoke tests only (LP tests use the LP builder UI to create Service Section + Rich text). Deeper behavior is covered by ExistingSite tests.
 
 ```bash
 ddev exec vendor/bin/phpunit docroot/modules/custom/mass_inline_message/tests/src/ExistingSiteJavascript

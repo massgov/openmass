@@ -45,12 +45,33 @@ trait InlineMessageJavascriptTestTrait {
    * Waits until the Message box configuration dialog title field is visible.
    */
   protected function waitForMessageBoxDialogOpen(): void {
-    $this->inlineMessageSession()->wait(
+    $opened = $this->inlineMessageSession()->wait(
       self::JS_WAIT_LONG,
       "(function(){
-        return document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]')
+        var input = document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]')
           || document.querySelector('.ui-dialog input[name=\"attributes[data-title]\"]');
+        if (!input) { return false; }
+        var rect = input.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0;
       })()",
+    );
+    $this->assertNotEmpty($opened, 'Message box dialog title field did not become visible.');
+  }
+
+  /**
+   * Sets the Message box dialog title (Mink fillField is unreliable in nested modals).
+   */
+  protected function fillMessageBoxDialogTitle(string $title): void {
+    $this->inlineMessageSession()->executeScript(
+      "(function(){
+        var input = document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]')
+          || document.querySelector('.ui-dialog input[name=\"attributes[data-title]\"]');
+        if (!input) { return; }
+        input.focus();
+        input.value = " . json_encode($title) . ";
+        input.dispatchEvent(new Event('input', { bubbles: true }));
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      })();",
     );
   }
 

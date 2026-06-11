@@ -15,22 +15,20 @@ class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestB
    * Inserts a Message box in LP Rich text and verifies editor markup.
    */
   public function testMessageBoxInsertInLayoutParagraphRichText(): void {
-    $user = $this->createContentEditor();
+    $admin = $this->createAdministrator();
     $title = 'LP section alert ' . $this->randomMachineName(6);
-    $service_page = $this->createServicePageWithRichTextInSection([
-      'uid' => $user->id(),
+    $service_page = $this->createEmptyServicePage([
+      'uid' => $admin->id(),
       'title' => 'Message box LP insert test ' . $this->randomMachineName(8),
     ]);
 
-    $this->drupalLogin($user);
-    $this->visit($service_page->toUrl()->toString() . '/edit');
+    $this->drupalLogin($admin);
+    $this->drupalGet($service_page->toUrl()->toString() . '/edit');
     $this->openServiceRichTextEditorInLayoutParagraph();
 
     $this->fireMessageBoxToolbarInLayoutParagraph();
     $this->waitForMessageBoxDialogOpen();
-
-    $page = $this->inlineMessageSession()->getPage();
-    $page->fillField('attributes[data-title]', $title);
+    $this->fillMessageBoxDialogTitle($title);
     $this->clickMessageBoxDialogSave();
     $this->waitForMessageBoxDialogClosed();
     $this->assertMessageBoxSaveDidNotRedirectToDialogRoute();
@@ -46,17 +44,17 @@ class InlineMessageLayoutParagraphsTest extends MassInlineMessageJavascriptTestB
   public function testEntityEmbedOpensInsideMessageBoxInLayoutParagraph(): void {
     $admin = $this->createAdministrator();
     $this->drupalLogin($admin);
-    $service_page = $this->createServicePageWithRichTextInSection([
+    $service_page = $this->createEmptyServicePage([
       'uid' => $admin->id(),
       'title' => 'Message box LP embed test ' . $this->randomMachineName(8),
     ]);
 
-    $this->visit($service_page->toUrl()->toString() . '/edit');
+    $this->drupalGet($service_page->toUrl()->toString() . '/edit');
     $this->openServiceRichTextEditorInLayoutParagraph();
 
     $this->fireMessageBoxToolbarInLayoutParagraph();
     $this->waitForMessageBoxDialogOpen();
-    $this->inlineMessageSession()->getPage()->fillField('attributes[data-title]', 'LP embed test');
+    $this->fillMessageBoxDialogTitle('LP embed test');
     $this->setMessageBoxDialogBodyHtml('<p>Text before image.</p>');
     $this->waitForMessageBoxBodyEditor();
 

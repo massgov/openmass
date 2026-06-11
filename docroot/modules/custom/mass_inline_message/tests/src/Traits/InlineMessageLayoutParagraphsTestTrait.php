@@ -16,44 +16,13 @@ trait InlineMessageLayoutParagraphsTestTrait {
   protected const LP_RICH_TEXT_EDITOR_SELECTOR = '.ui-dialog textarea[data-ckeditor5-id]';
 
   /**
-   * Creates a service page with a Service Section containing a Rich text paragraph.
+   * Creates an empty service page for Layout Paragraphs UI setup.
    */
-  protected function createServicePageWithRichTextInSection(array $overrides = []): NodeInterface {
-    $paragraph_storage = $this->container->get('entity_type.manager')->getStorage('paragraph');
-
-    $rich_text = $paragraph_storage->create([
-      'type' => 'service_rich_text',
-      'field_section_body' => [
-        'value' => '<p>Initial rich text.</p>',
-        'format' => 'basic_html',
-      ],
-    ]);
-    $rich_text->save();
-
-    $service_section = $paragraph_storage->create([
-      'type' => 'service_section',
-      'field_service_section_heading' => 'Test section',
-      'field_section_style' => 'simple',
-      'field_hide_heading' => 0,
-      'field_service_section_content' => [
-        [
-          'target_id' => $rich_text->id(),
-          'target_revision_id' => $rich_text->getRevisionId(),
-        ],
-      ],
-    ]);
-    $service_section->save();
-
+  protected function createEmptyServicePage(array $overrides = []): NodeInterface {
     $defaults = [
       'type' => 'service_page',
       'title' => 'Message box LP ' . $this->randomMachineName(8),
       'moderation_state' => MassModeration::PUBLISHED,
-      'field_service_sections' => [
-        [
-          'target_id' => $service_section->id(),
-          'target_revision_id' => $service_section->getRevisionId(),
-        ],
-      ],
     ];
 
     return $this->createNode(array_merge($defaults, $overrides));
@@ -72,7 +41,7 @@ trait InlineMessageLayoutParagraphsTestTrait {
     $page->find('css', '.horizontal-tab-button a[href="#edit-group-content"]')->click();
     $session->wait(
       self::JS_WAIT_DEFAULT,
-      "document.querySelector('.lpb-component') !== null || document.querySelector('[data-drupal-selector^=\"edit-field-service-sections\"]') !== null",
+      "document.querySelector('[data-drupal-selector^=\"edit-field-service-sections\"]') !== null",
     );
   }
 
@@ -81,32 +50,97 @@ trait InlineMessageLayoutParagraphsTestTrait {
    */
   protected function waitForLayoutParagraphRichTextEditor(): void {
     $session = $this->inlineMessageSession();
-    $session->wait(
-      self::JS_WAIT_DEFAULT,
-      "document.querySelector('.ui-dialog .ui-dialog-title') && document.querySelector('.ui-dialog .ui-dialog-title').textContent.toLowerCase().indexOf('rich text') !== -1",
+    $ready = $session->wait(
+      self::JS_WAIT_LONG,
+      "(function(){
+        var title = document.querySelector('.ui-dialog .ui-dialog-title');
+        if (!title || title.textContent.toLowerCase().indexOf('rich text') === -1) {
+          return false;
+        }
+        return document.querySelector('.ui-dialog .ck-editor [contenteditable=true]') !== null;
+      })()",
     );
-    $session->wait(
-      self::JS_WAIT_DEFAULT,
-      "document.querySelector('.ui-dialog .ck-editor [contenteditable=true]') !== null",
-    );
+    $this->assertNotEmpty($ready, 'Layout Paragraphs Rich text editor did not open.');
   }
 
   /**
-   * Opens Rich text inside a pre-created Service Section.
+   * Adds Service Section + Rich text via the LP builder, then opens Rich text.
    */
   protected function openServiceRichTextEditorInLayoutParagraph(): void {
+    $page = $this->inlineMessageSession()->getPage();
+    $session = $this->inlineMessageSession();
+
     $this->openLayoutParagraphsContentTab();
-    $this->inlineMessageSession()->executeScript(
+
+    $addSection = $page->find(
+      'css',
+      '[data-drupal-selector="edit-field-service-sections-layout-paragraphs-builder"] a.lpb-btn.use-ajax.center.js-lpb-ui[href*="/choose-component"]',
+    );
+    $this->assertNotNull($addSection, 'Layout Paragraphs add section button not found.');
+    $addSection->click();
+
+    $session->wait(self::JS_WAIT_DEFAULT, "document.querySelector('.ui-dialog.lpb-dialog') !== null");
+    $session->executeScript(
       "(function(){
-        var edit = document.querySelector('.layout.layout--onecol-mass-service-section .lpb-component.type-service_rich_text a.lpb-edit.use-ajax')
-          || document.querySelector('.lpb-component.type-service_rich_text a.lpb-edit.use-ajax');
-        if (edit) {
-          try { edit.scrollIntoView({block: 'center'}); } catch (e) {}
-          edit.click();
+        var el = document.querySelector('.ui-dialog .ui-dialog-content a.use-ajax[href*=\"/insert/service_section\"]');
+        if (el) {
+          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
+          el.click();
         }
       })();",
     );
+
+    $session->wait(
+      self::JS_WAIT_DEFAULT,
+      "document.querySelector('.ui-dialog .ui-dialog-title') && document.querySelector('.ui-dialog .ui-dialog-title').textContent.indexOf('Create new Service Section') !== -1",
+    );
+    $this->clickLayoutParagraphDialogSave();
+    $session->wait(self::JS_WAIT_DEFAULT, "document.querySelector('.ui-dialog.lpb-dialog') === null");
+
+    $session->wait(
+      self::JS_WAIT_DEFAULT,
+      "document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax[href*=\"choose-component?parent_uuid\"]') !== null",
+    );
+    $session->executeScript(
+      "(function(){
+        var el = document.querySelector('.layout.layout--onecol-mass-service-section .js-lpb-region.layout__region--content a.lpb-btn--add.use-ajax[href*=\"choose-component?parent_uuid\"]');
+        if (el) {
+          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
+          el.click();
+        }
+      })();",
+    );
+
+    $session->wait(
+      self::JS_WAIT_DEFAULT,
+      "document.querySelector('.ui-dialog .lpb-component-list__item.type-service_rich_text a.use-ajax') !== null",
+    );
+    $session->executeScript(
+      "(function(){
+        var el = document.querySelector('.ui-dialog .lpb-component-list__item.type-service_rich_text a.use-ajax');
+        if (el) {
+          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
+          el.click();
+        }
+      })();",
+    );
+
     $this->waitForLayoutParagraphRichTextEditor();
+  }
+
+  /**
+   * Clicks the LPB Save button in the active Layout Paragraphs dialog.
+   */
+  protected function clickLayoutParagraphDialogSave(): void {
+    $this->inlineMessageSession()->executeScript(
+      "(function(){
+        var el = document.querySelector('.ui-dialog .ui-dialog-buttonpane button.lpb-btn--save');
+        if (el) {
+          try { el.scrollIntoView({block: 'center'}); } catch (e) {}
+          el.click();
+        }
+      })();",
+    );
   }
 
   /**
@@ -121,6 +155,24 @@ trait InlineMessageLayoutParagraphsTestTrait {
    */
   protected function getLayoutParagraphRichTextEditorData(): string {
     return $this->getCkeditorData(self::LP_RICH_TEXT_EDITOR_SELECTOR);
+  }
+
+  /**
+   * Opens the first top-level Rich text paragraph on a service page edit form.
+   */
+  protected function openTopLevelServiceRichTextEditorInLayoutParagraph(): void {
+    $this->openLayoutParagraphsContentTab();
+    $this->inlineMessageSession()->executeScript(
+      "(function(){
+        var edit = document.querySelector('.lpb-component.type-service_rich_text a.lpb-edit.use-ajax')
+          || document.querySelector('a.lpb-edit.use-ajax[href*=\"/edit/\"]');
+        if (edit) {
+          try { edit.scrollIntoView({block: 'center'}); } catch (e) {}
+          edit.click();
+        }
+      })();",
+    );
+    $this->waitForLayoutParagraphRichTextEditor();
   }
 
 }
