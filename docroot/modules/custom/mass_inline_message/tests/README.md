@@ -1,17 +1,27 @@
 # mass_inline_message tests
 
-## ExistingSite (PHP, no browser)
+## ExistingSite (PHP, no browser) — run by default
 
-- `InlineMessageNormalizeTest` — body HTML normalization (`MessageBoxBody`)
-- `InlineMessagePreviewTest` — renderer + filter output
-- `InlineMessageFilterTest` — `filter_mass_inline_message`
-- `InlineMessageMessageBoxBodyFormatTest` — `message_box_body` text format
-- `InlineMessageConstraintValidationTest` — save-time constraint rules
+Fast tests (~seconds). Covers normalization, filter output, validation, preview, and `message_box_body` format.
 
-## ExistingSiteJavascript (Selenium)
+```bash
+ddev exec vendor/bin/phpunit docroot/modules/custom/mass_inline_message/tests/src/ExistingSite
+```
 
-- `InlineMessageCKEditorTest` — insert via dialog, image body save, edit via widget toolbar (node body)
-- `InlineMessageInfoDetailsOverviewTest` — info_details Overview field save/load
-- `InlineMessageLayoutParagraphsTest` — LP Rich text insert (nested + top-level) + widget toolbar in modal
+## ExistingSiteJavascript (Selenium) — optional smoke tests
+
+Four browser smoke tests only. Deeper behavior (rendering, image bodies, info_details save, widget toolbar) is covered by ExistingSite tests.
+
+```bash
+ddev exec vendor/bin/phpunit docroot/modules/custom/mass_inline_message/tests/src/ExistingSiteJavascript
+```
+
+## Full module path
+
+Runs both suites (slow because of Selenium):
+
+```bash
+ddev exec vendor/bin/phpunit docroot/modules/custom/mass_inline_message/tests
+```
 
 Shared helpers live in `src/Traits/`.

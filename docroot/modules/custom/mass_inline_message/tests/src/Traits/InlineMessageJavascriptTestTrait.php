@@ -15,6 +15,16 @@ trait InlineMessageJavascriptTestTrait {
   protected const BODY_FIELD_EDITOR_SELECTOR = '[name="body[0][value]"][data-ckeditor5-id]';
 
   /**
+   * Default max wait for CKEditor / dialog UI (milliseconds).
+   */
+  protected const JS_WAIT_DEFAULT = 10000;
+
+  /**
+   * Longer max wait for LP modal stacks (milliseconds).
+   */
+  protected const JS_WAIT_LONG = 12000;
+
+  /**
    * Returns the active Mink session.
    */
   protected function inlineMessageSession(): Session {
@@ -26,7 +36,7 @@ trait InlineMessageJavascriptTestTrait {
    */
   protected function waitForBodyFieldEditor(string $selector = self::BODY_FIELD_EDITOR_SELECTOR): void {
     $this->inlineMessageSession()->wait(
-      10000,
+      self::JS_WAIT_DEFAULT,
       'document.querySelector(' . json_encode($selector) . ') !== null',
     );
   }
@@ -36,7 +46,7 @@ trait InlineMessageJavascriptTestTrait {
    */
   protected function waitForMessageBoxDialogOpen(): void {
     $this->inlineMessageSession()->wait(
-      20000,
+      self::JS_WAIT_LONG,
       "(function(){
         return document.querySelector('#mass-inline-message-dialog-form input[name=\"attributes[data-title]\"]')
           || document.querySelector('.ui-dialog input[name=\"attributes[data-title]\"]');
@@ -49,12 +59,35 @@ trait InlineMessageJavascriptTestTrait {
    */
   protected function waitForMessageBoxDialogClosed(): void {
     $this->inlineMessageSession()->wait(
-      20000,
+      self::JS_WAIT_LONG,
       "(function(){
         if (window.location.href.indexOf('/mass-inline-message/dialog/') !== -1) {
           return false;
         }
         return document.querySelector('#mass-inline-message-dialog-form') === null;
+      })()",
+    );
+  }
+
+  /**
+   * Waits until the Message box body CKEditor is ready inside the dialog.
+   */
+  protected function waitForMessageBoxBodyEditor(): void {
+    $this->inlineMessageSession()->wait(
+      self::JS_WAIT_DEFAULT,
+      "document.querySelector('#mass-inline-message-dialog-form textarea[name=\"body[value]\"][data-ckeditor5-id]') !== null",
+    );
+  }
+
+  /**
+   * Waits until entity embed or file browser UI is visible.
+   */
+  protected function waitForEntityEmbedDialogOpen(): void {
+    $this->inlineMessageSession()->wait(
+      self::JS_WAIT_LONG,
+      "(function(){
+        return document.querySelector('form.entity-embed-dialog') !== null
+          || document.querySelector('input[name^=\"entity_browser_select[\"]') !== null;
       })()",
     );
   }
@@ -214,69 +247,6 @@ trait InlineMessageJavascriptTestTrait {
         var button = editor.ui.componentFactory.create('messageBox');
         if (button) {
           button.fire('execute');
-        }
-      })();",
-    );
-  }
-
-  /**
-   * Programmatically inserts a message box at the document end.
-   */
-  protected function insertMessageBoxAtEnd(string $textareaSelector, string $title, string $type, string $bodyHtml): void {
-    $this->inlineMessageSession()->executeScript(
-      "(function(){
-        var textarea = document.querySelector(" . json_encode($textareaSelector) . ");
-        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
-        editor.model.change(function(writer) {
-          writer.setSelection(writer.createPositionAt(editor.model.document.getRoot(), 'end'));
-        });
-        editor.commands.get('insertMassInlineMessage')._insert({
-          attributes: {'data-title': " . json_encode($title) . ", 'data-type': " . json_encode($type) . "},
-          body: " . json_encode($bodyHtml) . ",
-        });
-      })();",
-    );
-  }
-
-  /**
-   * Selects the first Message box widget in a CKEditor instance.
-   */
-  protected function selectFirstMessageBoxWidget(string $textareaSelector): bool {
-    return (bool) $this->inlineMessageSession()->evaluateScript(
-      "(function(){
-        var textarea = document.querySelector(" . json_encode($textareaSelector) . ");
-        if (!textarea) { return false; }
-        var editor = Drupal.CKEditor5Instances.get(textarea.getAttribute('data-ckeditor5-id'));
-        var found = null;
-        editor.model.change(function(writer) {
-          for (var child of editor.model.document.getRoot().getChildren()) {
-            if (child.name === 'massInlineMessage') {
-              found = child;
-              writer.setSelection(child, 'on');
-              break;
-            }
-          }
-        });
-        editor.editing.view.focus();
-        editor.ui.update();
-        return !!found;
-      })();",
-    );
-  }
-
-  /**
-   * Clicks the floating widget toolbar Edit button.
-   */
-  protected function clickMessageBoxWidgetEditButton(): void {
-    $this->inlineMessageSession()->executeScript(
-      "(function(){
-        var buttons = document.querySelectorAll('.ck-body-wrapper .ck-toolbar .ck-button');
-        for (var i = 0; i < buttons.length; i++) {
-          var tip = (buttons[i].getAttribute('data-cke-tooltip-text') || buttons[i].getAttribute('aria-label') || '').toLowerCase();
-          if (tip === 'edit') {
-            buttons[i].click();
-            return;
-          }
         }
       })();",
     );
