@@ -12,11 +12,11 @@ use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
 
 /**
- * Verifies UserDefaults service + entity_prepare_form hook + deploy hook.
+ * Verifies UserDefaults service + entity_prepare_form hook.
  *
  * Covers the "Default organizations" and "Default labels" user fields,
- * the new-entity pre-fill (nodes and media.document), the
- * permission-group fallback for media, and the deploy migration.
+ * the new-entity pre-fill (nodes and media.document), and the
+ * permission-group fallback for media.
  *
  * @group mass_utility
  */
@@ -79,45 +79,6 @@ class UserDefaultsTest extends MassExistingSiteBase {
       $author->get('field_user_org')->access('edit', $author),
       'Author must not edit permission groups on their own profile.'
     );
-  }
-
-  /**
-   * Deploy hook copies permission-group org pages into default organizations.
-   */
-  public function testDeployHookPopulatesDefaultOrganizations(): void {
-    require_once DRUPAL_ROOT . '/modules/custom/mass_utility/mass_utility.deploy.php';
-
-    $user = $this->createUser();
-    $user->addRole('editor');
-    $user->set('field_user_org', $this->termA->id());
-    $user->set('field_default_organizations', []);
-    $user->activate();
-    $user->save();
-
-    $sandbox = [];
-    do {
-      mass_utility_deploy_populate_user_default_orgs($sandbox);
-    } while (($sandbox['#finished'] ?? 0) < 1);
-
-    $user = \Drupal::entityTypeManager()->getStorage('user')->load($user->id());
-    $org_nids = array_filter(array_column(
-      $user->get('field_default_organizations')->getValue(),
-      'target_id'
-    ));
-    $this->assertEqualsCanonicalizing(
-      [(string) $this->orgPageA->id()],
-      array_map('strval', $org_nids)
-    );
-    $this->assertEmpty(
-      array_filter(array_column($user->get('field_default_labels')->getValue(), 'target_id')),
-      'Deploy hook must not set default labels.'
-    );
-
-    $before = $user->get('field_default_organizations')->getValue();
-    $changed = \Drupal::service('mass_utility.user_defaults_hooks')
-      ->populateFromPermissionGroups($user);
-    $this->assertFalse($changed, 'Populate must no-op when defaults already exist.');
-    $this->assertEquals($before, $user->get('field_default_organizations')->getValue());
   }
 
   /**

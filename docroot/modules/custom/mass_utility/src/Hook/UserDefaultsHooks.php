@@ -22,10 +22,6 @@ use Drupal\user\UserInterface;
  * labels from their user profile (field_default_organizations and
  * field_default_labels). One OOP hook class per feature — owns both
  * the hook wiring and the domain logic.
- *
- * Also exposes populateFromPermissionGroups() for the deploy hook so
- * existing active users get their default organizations seeded from
- * their permission groups at rollout.
  */
 class UserDefaultsHooks {
 
@@ -100,35 +96,6 @@ class UserDefaultsHooks {
         array_map(fn(int $tid) => ['target_id' => $tid], $label_tids)
       );
     }
-  }
-
-  /**
-   * Sets field_default_organizations from permission groups when still empty.
-   *
-   * Used by the deploy hook for existing active users at rollout.
-   *
-   * @return bool
-   *   TRUE if the user entity was updated (caller should save).
-   */
-  public function populateFromPermissionGroups(UserInterface $user): bool {
-    if (!$user->hasField('field_default_organizations')) {
-      return FALSE;
-    }
-    if ($this->fieldHasPopulatedReferences('field_default_organizations', $user)) {
-      return FALSE;
-    }
-
-    $nids = $this->resolveOrgPageNidsFromUserOrgTerms($this->referenceTargetIds($user, 'field_user_org'));
-    if (empty($nids)) {
-      return FALSE;
-    }
-
-    sort($nids);
-    $user->set(
-      'field_default_organizations',
-      array_map(fn(int $nid) => ['target_id' => $nid], $nids)
-    );
-    return TRUE;
   }
 
   /**
