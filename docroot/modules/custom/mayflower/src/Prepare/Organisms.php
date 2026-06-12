@@ -10,6 +10,7 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Provides variable structure for mayflower organisms using prepare functions.
@@ -1398,6 +1399,37 @@ class Organisms {
     }
 
     return ['items' => $items];
+  }
+
+  public static function prepareNumberedSteps(ParagraphInterface $entity, array $options = []) {
+    $map = [
+      'reference' => ['field_step'],
+    ];
+
+    $fields = Helper::getMappedFields($entity, $map);
+    if (empty($fields['reference'])) {
+      return [];
+    }
+
+    $items = Helper::getReferencedEntitiesFromField($entity, $fields['reference']);
+
+    $referenced_field_map = [
+      'title' => ['field_next_step_title'],
+      'richText' => ['field_next_step_details'],
+      'documents' => ['field_step_documents'],
+      'more_link' => ['field_next_step_link'],
+    ];
+
+    $referenced_fields = Helper::getMappedReferenceFields($items, $referenced_field_map);
+
+    $steps = [];
+    if (!empty($items)) {
+      foreach ($items as $id => $item) {
+        $steps[] = Molecules::prepareNumberedStep($item, $referenced_fields);
+      }
+    }
+
+    return $steps;
   }
 
   /**
