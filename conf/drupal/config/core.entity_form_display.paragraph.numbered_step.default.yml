@@ -10,6 +10,7 @@ dependencies:
     - paragraphs.paragraphs_type.numbered_step
   module:
     - link
+    - maxlength
     - paragraphs
     - text
 id: paragraph.numbered_step.default
@@ -40,7 +41,11 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 100
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
   field_step_documents:
     type: paragraphs
     weight: 2
