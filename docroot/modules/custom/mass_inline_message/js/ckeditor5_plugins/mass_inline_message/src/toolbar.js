@@ -4,6 +4,7 @@ import { ButtonView } from 'ckeditor5/src/ui';
 import { openMassInlineMessageEditDialog } from './utils';
 import {
   isEditorInsideDialog,
+  isMessageBoxConfigDialogOpen,
   pinMassInlineMessageToolbarBalloon,
   refreshEditorViewportAndToolbars,
 } from './viewport';
@@ -94,6 +95,9 @@ export default class MassInlineMessageToolbar extends Plugin {
     const { editor } = this;
 
     const reposition = () => {
+      if (isMessageBoxConfigDialogOpen()) {
+        return;
+      }
       if (editor.model.document.selection.getSelectedElement()?.name !== 'massInlineMessage') {
         return;
       }
@@ -115,6 +119,9 @@ export default class MassInlineMessageToolbar extends Plugin {
     }
 
     this.listenTo(editor.ui, 'update', () => {
+      if (isMessageBoxConfigDialogOpen()) {
+        return;
+      }
       if (editor.model.document.selection.getSelectedElement()?.name === 'massInlineMessage') {
         pinMassInlineMessageToolbarBalloon(editor);
       }

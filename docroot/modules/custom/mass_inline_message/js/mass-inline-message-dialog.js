@@ -459,6 +459,15 @@
     }
 
     syncNestedDialogStackClasses();
+
+    if (Drupal.CKEditor5Instances && Drupal.displace) {
+      Drupal.CKEditor5Instances.forEach(function (editor) {
+        jQuery(document).trigger('drupalViewportOffsetChange', [Drupal.displace.offsets]);
+        if (editor.ui) {
+          editor.ui.update();
+        }
+      });
+    }
   }
 
   Drupal.behaviors.massInlineMessageDialog = {

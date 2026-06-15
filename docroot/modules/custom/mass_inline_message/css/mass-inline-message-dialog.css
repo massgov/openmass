@@ -17,7 +17,8 @@
  * Stack Message box and entity embed above LP when nested inside Rich text.
  * Body classes are toggled in mass-inline-message-dialog.js.
  */
-body.mass-inline-message-dialog-open .ui-dialog.lpb-dialog {
+body.mass-inline-message-dialog-open .ui-dialog.lpb-dialog,
+body.mass-inline-message-dialog-open .ui-dialog:has(form.layout-paragraphs-component-form) {
   z-index: 9000 !important;
 }
 
@@ -35,11 +36,14 @@ body.mass-inline-message-embed-open .ui-dialog.mass-inline-message-embed-dialog 
  * default balloon z-index (~18915) is hidden behind this dialog.
  */
 body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_visible,
-body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
+body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow,
+html:has([data-fullscreen="fullscreenoverlay"]) body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_visible,
+html:has([data-fullscreen="fullscreenoverlay"]) body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
   z-index: 100055 !important;
 }
 
-body.mass-inline-message-dialog-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible {
+body.mass-inline-message-dialog-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible,
+html:has([data-fullscreen="fullscreenoverlay"]) body.mass-inline-message-dialog-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible {
   z-index: 100055 !important;
 }
 

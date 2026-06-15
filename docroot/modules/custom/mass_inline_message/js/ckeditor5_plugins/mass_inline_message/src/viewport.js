@@ -13,7 +13,16 @@ export function refreshAllCkeditor5Viewports() {
 }
 
 /**
- * Finds the visible Message box widget toolbar balloon (not Powered-by, etc.).
+ * Whether the Message box configuration dialog is open.
+ */
+export function isMessageBoxConfigDialogOpen() {
+  return !!document.querySelector('#mass-inline-message-dialog-form');
+}
+
+/**
+ * Finds the visible Message box widget Edit toolbar balloon.
+ *
+ * Do not match generic ck-toolbar-container panels (table, image, link, etc.).
  */
 export function getMassInlineMessageToolbarBalloon() {
   const panels = document.querySelectorAll(
@@ -23,9 +32,6 @@ export function getMassInlineMessageToolbarBalloon() {
   for (const panel of panels) {
     if (panel.classList.contains('ck-powered-by-balloon')) {
       continue;
-    }
-    if (panel.classList.contains('ck-toolbar-container')) {
-      return panel;
     }
     if (panel.querySelector(
       '.ck-button[data-cke-tooltip-text="Edit"], .ck-button[aria-label="Edit"]',
@@ -49,7 +55,7 @@ export function isEditorInsideDialog(editor) {
  * Pins the Message box widget toolbar balloon above the widget in modal editors.
  */
 export function pinMassInlineMessageToolbarBalloon(editor, retriesLeft = 2) {
-  if (!isEditorInsideDialog(editor)) {
+  if (!isEditorInsideDialog(editor) || isMessageBoxConfigDialogOpen()) {
     return;
   }
 
@@ -83,7 +89,7 @@ export function pinMassInlineMessageToolbarBalloon(editor, retriesLeft = 2) {
   balloon.style.left = `${Math.max(8, left)}px`;
   balloon.style.right = 'auto';
   balloon.style.bottom = 'auto';
-  balloon.style.zIndex = 'calc(var(--ck-z-modal) * 15)';
+  balloon.style.zIndex = '100055';
 }
 
 /**
