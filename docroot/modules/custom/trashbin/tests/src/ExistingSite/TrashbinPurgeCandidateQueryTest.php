@@ -115,6 +115,25 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
   }
 
   /**
+   * Restored (non-trash) entities fail the pre-delete eligibility check.
+   */
+  public function testRestoredEntityIsNotEligible() {
+    $this->drupalLogin($this->createUser([], NULL, TRUE));
+
+    $cutoff = 50000;
+    $nid = $this->createTrashedOrgPageWithActivity(10000);
+
+    $query = $this->createPurgeCandidateQuery();
+    $this->assertTrue($query->isEntityEligible('node', $nid, $cutoff));
+
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    $node->set('moderation_state', 'published');
+    $node->save();
+
+    $this->assertFalse($query->isEntityEligible('node', $nid, $cutoff));
+  }
+
+  /**
    * Builds the query helper the same way the container would.
    */
   private function createPurgeCandidateQuery(): TrashbinPurgeCandidateQuery {
