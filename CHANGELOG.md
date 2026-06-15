@@ -1,5 +1,21 @@
 
 
+## [0.482.0] - June 9, 2026
+
+### Added
+  - DP-43633: Warn authors when unpublishing or trashing a document that has published pages linking here.
+  
+### Changed
+  - DP-45831: Update internal links on mass.gov that are redirects.
+  - DP-46121: Include the nearest microsite name in the HTML meta title for pages within a microsite.
+  - DP-46592: CSV Table / Datatables changes - round 3.
+  
+### Fixed
+  - DP-47343: Prevent ordered list numbers from being clipped for leading-zero styles and lists with a start attribute, including on info-details pages.
+  - DP-47348: Remove green decorative underline from H3 and H4 in the rich text editor so editor preview matches the published page.
+  
+
+
 ## [0.481.0] - June 2, 2026
 
 ### Changed
