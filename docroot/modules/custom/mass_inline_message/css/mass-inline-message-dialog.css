@@ -29,6 +29,29 @@ body.mass-inline-message-embed-open .ui-dialog.mass-inline-message-embed-dialog 
   z-index: 100060 !important;
 }
 
+/*
+ * Nested Message text editor: table/image balloon toolbars must sit above the
+ * Message box modal (100050). Core CKEditor uses --ck-z-modal (1261), so the
+ * default balloon z-index (~18915) is hidden behind this dialog.
+ */
+body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_visible,
+body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
+  z-index: 100055 !important;
+}
+
+body.mass-inline-message-dialog-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible {
+  z-index: 100055 !important;
+}
+
+body.mass-inline-message-embed-open .ck.ck-balloon-panel.ck-balloon-panel_visible,
+body.mass-inline-message-embed-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
+  z-index: 100065 !important;
+}
+
+body.mass-inline-message-embed-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible {
+  z-index: 100065 !important;
+}
+
 /* Claro title bar contrast for Message box and stacked CKEditor embed modals. */
 .ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar,
 .ui-dialog.entity-select-dialog > .ui-dialog-titlebar,

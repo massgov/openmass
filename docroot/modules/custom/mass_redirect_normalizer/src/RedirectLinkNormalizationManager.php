@@ -383,3 +383,4 @@ class RedirectLinkNormalizationManager {
   }
 
 }
+

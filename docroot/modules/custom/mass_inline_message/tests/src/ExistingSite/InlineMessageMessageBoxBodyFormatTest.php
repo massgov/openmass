@@ -23,6 +23,8 @@ class InlineMessageMessageBoxBodyFormatTest extends MassInlineMessageExistingSit
     $this->assertStringNotContainsString('blockquote', $allowed_html);
     $this->assertStringNotContainsString('<h2', $allowed_html);
     $this->assertStringNotContainsString('mass-inline-message', $allowed_html);
+    $this->assertStringContainsString('<th', $allowed_html);
+    $this->assertStringContainsString('<thead', $allowed_html);
 
     $editor = Editor::load(MessageBoxBody::FORMAT_ID);
     $this->assertNotNull($editor);
@@ -30,6 +32,7 @@ class InlineMessageMessageBoxBodyFormatTest extends MassInlineMessageExistingSit
     $this->assertNotContains('blockQuote', $toolbar_items);
     $this->assertNotContains('messageBox', $toolbar_items);
     $this->assertNotContains('heading', $toolbar_items);
+    $this->assertContains('insertTable', $toolbar_items);
   }
 
   /**
