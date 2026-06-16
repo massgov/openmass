@@ -6,6 +6,7 @@ namespace Drupal\Tests\mass_views\Unit\Plugin\Action;
 
 use Drupal\mass_views\Plugin\Action\PreIncidentRevisionRollbackTrait;
 use Drupal\Tests\UnitTestCase;
+use Drupal\views\ViewExecutable;
 
 /**
  * @coversDefaultClass \Drupal\mass_views\Plugin\Action\PreIncidentRevisionRollbackTrait
@@ -20,56 +21,34 @@ class PreIncidentRevisionRollbackTraitTest extends UnitTestCase {
    * @dataProvider revisionLogMessageProvider
    */
   public function testBuildRollbackRevisionLogMessage(int $target_vid, ?string $target_log, string $expected): void {
-    $object = new class {
-
-      use PreIncidentRevisionRollbackTrait;
-
-      public function expose(int $target_vid, ?string $target_log): string {
-        return $this->buildRollbackRevisionLogMessage($target_vid, $target_log);
-      }
-
-    };
-
-    $this->assertSame($expected, $object->expose($target_vid, $target_log));
+    $object = new PreIncidentRevisionRollbackTraitTestDouble();
+    $this->assertSame($expected, $object->exposeRollbackLogMessage($target_vid, $target_log));
   }
 
   /**
    * @covers ::getExposedFilterInput
    */
   public function testGetExposedFilterInputPrefersVboContextOverStrippedView(): void {
-    $view = $this->createMock(\Drupal\views\ViewExecutable::class);
+    $view = $this->createMock(ViewExecutable::class);
     $view->method('getExposedInput')->willReturn([
       '_views_bulk_operations_override' => TRUE,
     ]);
 
-    $object = new class($view) {
-
-      use PreIncidentRevisionRollbackTrait;
-
-      protected array $context;
-
-      public function __construct($view) {
-        $this->view = $view;
-        $this->context = [
-          'exposed_input' => [
-            'revision_uid' => '42',
-            'changed_from' => '2026-06-16',
-            'changed_to' => '2026-06-16',
-          ],
-        ];
-      }
-
-      public function expose(): array {
-        return $this->getExposedFilterInput();
-      }
-
-    };
+    $object = new PreIncidentRevisionRollbackTraitTestDouble();
+    $object->setViewForTest($view);
+    $object->setContextForTest([
+      'exposed_input' => [
+        'revision_uid' => '42',
+        'changed_from' => '2026-06-16',
+        'changed_to' => '2026-06-16',
+      ],
+    ]);
 
     $this->assertSame([
       'revision_uid' => '42',
       'changed_from' => '2026-06-16',
       'changed_to' => '2026-06-16',
-    ], $object->expose());
+    ], $object->exposeExposedFilterInput());
   }
 
   /**
@@ -98,6 +77,61 @@ class PreIncidentRevisionRollbackTraitTest extends UnitTestCase {
         'Rollback to revision #15923441',
       ],
     ];
+  }
+
+}
+
+/**
+ * Test double exposing protected trait methods.
+ */
+class PreIncidentRevisionRollbackTraitTestDouble {
+
+  use PreIncidentRevisionRollbackTrait;
+
+  /**
+   * The processed view.
+   */
+  protected ViewExecutable $view;
+
+  /**
+   * Action context from VBO.
+   *
+   * @var array<string, mixed>
+   */
+  protected array $context = [];
+
+  /**
+   * Sets the view for testing.
+   */
+  public function setViewForTest(ViewExecutable $view): void {
+    $this->view = $view;
+  }
+
+  /**
+   * Sets the action context for testing.
+   *
+   * @param array<string, mixed> $context
+   *   The action context.
+   */
+  public function setContextForTest(array $context): void {
+    $this->context = $context;
+  }
+
+  /**
+   * Exposes buildRollbackRevisionLogMessage for testing.
+   */
+  public function exposeRollbackLogMessage(int $target_vid, ?string $target_log): string {
+    return $this->buildRollbackRevisionLogMessage($target_vid, $target_log);
+  }
+
+  /**
+   * Exposes getExposedFilterInput for testing.
+   *
+   * @return array<string, mixed>
+   *   Exposed filter input values.
+   */
+  public function exposeExposedFilterInput(): array {
+    return $this->getExposedFilterInput();
   }
 
 }

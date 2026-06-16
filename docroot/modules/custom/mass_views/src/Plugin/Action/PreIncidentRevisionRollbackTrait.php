@@ -25,6 +25,7 @@ trait PreIncidentRevisionRollbackTrait {
    * User IDs from the revision author exposed filter.
    *
    * @return int[]
+   *   Revision author user IDs from the exposed filter.
    */
   protected function parseIncidentUserIds(): array {
     $input = $this->getExposedFilterInput();
