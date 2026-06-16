@@ -10,9 +10,30 @@ declare(strict_types=1);
 use Drupal\Core\Database\Database;
 
 /**
- * Create/replace the MySQL 8 recursive CTE views used for top-org relationships.
+ * Implements hook_install().
+ */
+function mass_views_install(array &$install_info): void {
+  createOrReplaceTopOrgViews();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function mass_views_uninstall(): void {
+  deleteTopOrgViews();
+}
+
+/**
+ * Implements hook_update_N().
  */
 function mass_views_update_10001(): void {
+  createOrReplaceTopOrgViews();
+}
+
+/**
+ * Create/replace the MySQL 8 recursive CTE views used for top-org relationships.
+ */
+function createOrReplaceTopOrgViews(): void {
   $connection = Database::getConnection();
 
   // Only supported for MySQL 8+ in this implementation.
@@ -116,4 +137,18 @@ SQL;
   // Execute both statements.
   $connection->query($sql_node_view);
   $connection->query($sql_media_view);
+}
+
+/**
+ * Delete the MySQL top-org relationship views.
+ */
+function deleteTopOrgViews(): void {
+  $connection = Database::getConnection();
+
+  if ($connection->databaseType() !== 'mysql') {
+    return;
+  }
+
+  $connection->query('DROP VIEW IF EXISTS mass_views_node_top_org_map');
+  $connection->query('DROP VIEW IF EXISTS mass_views_media_top_org_map');
 }
