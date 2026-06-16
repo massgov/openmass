@@ -3,7 +3,9 @@
 namespace Drupal\mass_views\Plugin\views\join;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\views\Plugin\views\join\JoinPluginBase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Joins ed11y_action table and groups by pid.
@@ -12,7 +14,7 @@ use Drupal\views\Plugin\views\join\JoinPluginBase;
  *
  * @ViewsJoin("ed11y_pid_count_join")
  */
-class Ed11yPidCountJoin extends JoinPluginBase {
+class Ed11yPidCountJoin extends JoinPluginBase implements ContainerFactoryPluginInterface {
 
   /**
    * The database connection.
@@ -27,6 +29,18 @@ class Ed11yPidCountJoin extends JoinPluginBase {
   public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->database = $database;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('database')
+    );
   }
 
   /**
