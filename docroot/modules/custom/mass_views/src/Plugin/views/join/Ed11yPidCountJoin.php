@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_views\Plugin\views\join;
 
+use Drupal\Core\Database\Connection;
 use Drupal\views\Plugin\views\join\JoinPluginBase;
 
 /**
@@ -14,13 +15,28 @@ use Drupal\views\Plugin\views\join\JoinPluginBase;
 class Ed11yPidCountJoin extends JoinPluginBase {
 
   /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * Constructs an Ed11yPidCountJoin object.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $database) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->database = $database;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildJoin($select_query, $table, $view_query) {
     $pseudoTableAlias = $this->table . '_' . $this->leftTable;
 
     /** @var \Drupal\mysql\Driver\Database\mysql\Select $subQuery */
-    $subQuery = \Drupal::database()->select($this->table, $pseudoTableAlias);
+    $subQuery = $this->database->select($this->table, $pseudoTableAlias);
     $subQuery->addField($pseudoTableAlias, 'pid', 'pid');
 
     // Only filter dismissals (ed11y_action), not results (ed11y_result).
