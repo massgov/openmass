@@ -3,7 +3,7 @@
  * autocomplete input. After the "Browse organizations" popup updates
  * the input's value, JS re-renders the visible <ul>.
  *
- * @param {Drupal} Drupal Drupal global object providing behaviors registry.
+ * @param {Drupal} Drupal global object providing behaviors registry.
  * @param {Function} once Core/once helper for one-time element processing.
  */
 
