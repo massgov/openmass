@@ -13,27 +13,27 @@ use Drupal\Core\Database\Database;
  * Implements hook_install().
  */
 function mass_views_install(): void {
-  create_or_replace_top_org_views();
+  _mass_views_create_or_replace_top_org_views();
 }
 
 /**
  * Implements hook_uninstall().
  */
 function mass_views_uninstall(): void {
-  delete_top_org_views();
+  _mass_views_delete_top_org_views();
 }
 
 /**
  * Implements hook_update_N().
  */
 function mass_views_update_10001(): void {
-  create_or_replace_top_org_views();
+  _mass_views_create_or_replace_top_org_views();
 }
 
 /**
  * Create/replace the MySQL 8 recursive CTE views used for top-org relationships.
  */
-function create_or_replace_top_org_views(): void {
+function _mass_views_create_or_replace_top_org_views(): void {
   $connection = Database::getConnection();
 
   // Only supported for MySQL 8+ in this implementation.
@@ -142,7 +142,7 @@ SQL;
 /**
  * Delete the MySQL top-org relationship views.
  */
-function delete_top_org_views(): void {
+function _mass_views_delete_top_org_views(): void {
   $connection = Database::getConnection();
 
   if ($connection->databaseType() !== 'mysql') {
