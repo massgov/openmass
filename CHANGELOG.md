@@ -1,5 +1,15 @@
 
 
+## [0.483.0] - June 16, 2026
+
+### Added
+  - DP-46864: Adds a Message box toolbar button to Basic HTML CKEditor for informational and alert inline messages rendered with Mayflower inline-message.
+  
+### Fixed
+  - DP-47109: Fix JS error with mobile translate component.
+  
+
+
 ## [0.482.0] - June 9, 2026
 
 ### Added
