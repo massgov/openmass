@@ -3,3 +3,9 @@ services:
     class: Drupal\mass_media\Routing\MassMediaRouteSubscriber
     tags:
       - { name: event_subscriber }
+  mass_media.stage_file_proxy_helper:
+    class: Drupal\mass_media\StageFileProxyHelper
+    arguments: ['@file_system', '@config.factory', '@logger.channel.mass_media', '@?stage_file_proxy.download_manager']
+  logger.channel.mass_media:
+    parent: logger.channel_base
+    arguments: ['mass_media']

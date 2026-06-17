@@ -9,6 +9,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\mass_media\StageFileProxyHelper;
 use Drupal\media\MediaInterface;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -41,11 +42,19 @@ class RevertPreIncidentMediaAction extends ViewsBulkOperationsActionBase impleme
   protected array $processedMids = [];
 
   /**
+   * Stage file proxy helper.
+   *
+   * @var \Drupal\mass_media\StageFileProxyHelper
+   */
+  protected StageFileProxyHelper $stageFileProxyHelper;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->mediaStorage = $container->get('entity_type.manager')->getStorage('media');
+    $instance->stageFileProxyHelper = $container->get('mass_media.stage_file_proxy_helper');
     return $instance;
   }
 
@@ -79,6 +88,7 @@ class RevertPreIncidentMediaAction extends ViewsBulkOperationsActionBase impleme
     $reverted->setRevisionUserId(\Drupal::currentUser()->id());
     $reverted->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $reverted->setChangedTime(\Drupal::time()->getRequestTime());
+    $this->ensureMediaFilesExistLocally($reverted);
     $reverted->save();
 
     $this->processedMids[$mid] = TRUE;
@@ -110,6 +120,20 @@ class RevertPreIncidentMediaAction extends ViewsBulkOperationsActionBase impleme
     );
 
     return $previous_vid ? $this->getMediaStorage()->loadRevision($previous_vid) : NULL;
+  }
+
+  /**
+   * Fetches missing document files from the Stage File Proxy origin.
+   */
+  protected function ensureMediaFilesExistLocally(MediaInterface $media): void {
+    if ($media->bundle() !== 'document' || !$media->hasField('field_upload_file') || $media->get('field_upload_file')->isEmpty()) {
+      return;
+    }
+
+    $file = $media->get('field_upload_file')->entity;
+    if ($file) {
+      $this->stageFileProxyHelper->ensureLocalFile($file);
+    }
   }
 
   /**

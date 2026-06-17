@@ -251,6 +251,8 @@ function mass_media_media_presave(MediaInterface $entity) {
     /** @var \Drupal\file\Entity\File $file */
     $file = File::load($entity->getUploadFile()->target_id);
     if ($file) {
+      \Drupal::service('mass_media.stage_file_proxy_helper')->ensureLocalFile($file);
+
       $file_uri = $file->getFileUri();
       /** @var \Drupal\Core\File\FileSystem $file_system */
       $file_system = \Drupal::service('file_system');

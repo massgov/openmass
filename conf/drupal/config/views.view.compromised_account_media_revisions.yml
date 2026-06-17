@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - media.type.document
     - system.menu.admin
   module:
     - better_exposed_filters
@@ -541,12 +542,6 @@ display:
               secondary_open: false
               reset_button_always_show: false
             filter:
-              bundle:
-                plugin_id: default
-                advanced:
-                  collapsible: false
-                  collapsible_disable_automatic_open: false
-                  is_secondary: false
               changed_from:
                 plugin_id: bef_datepicker
                 advanced:
@@ -597,16 +592,10 @@ display:
           entity_field: bundle
           plugin_id: bundle
           operator: in
-          value: {  }
+          value:
+            document: document
           group: 1
-          exposed: true
-          expose:
-            operator_id: bundle_op
-            label: Type
-            identifier: type
-            required: false
-            remember: false
-            multiple: true
+          exposed: false
         changed_from:
           id: changed_from
           table: media_field_revision
