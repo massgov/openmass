@@ -3486,7 +3486,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $body = Helper::fieldFullView($node, $field['body']);
     $body_string = \Drupal::service('renderer')->renderRoot($body);
     // Remove attributes on <p> markup except lang (for accessibility/translations).
-    $body_string = preg_replace_callback('/<\s*p([^>]*)>/', function (array $m) {
+    $body_string = preg_replace_callback('/<\s*p\b([^>]*)>/i', function (array $m) {
       $attrs = $m[1];
       if (preg_match('/\s+lang=(["\'])([^"\']*)\1/', $attrs, $lang_match)) {
         return '<p lang="' . $lang_match[2] . '">';
