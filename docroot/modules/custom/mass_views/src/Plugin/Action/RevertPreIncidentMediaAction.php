@@ -119,8 +119,9 @@ class RevertPreIncidentMediaAction extends ViewsBulkOperationsActionBase impleme
     if ($object instanceof MediaInterface) {
       $account = $account ?: \Drupal::currentUser();
       $bundle = $object->bundle();
-      $can_revert = $account->hasPermission('administer media')
-        || $account->hasPermission("revert any {$bundle} media revisions");
+      $can_revert = $this->canRollbackCompromisedAccountRevisions($account)
+        && ($account->hasPermission('administer media')
+          || $account->hasPermission("revert any {$bundle} media revisions"));
 
       $access = $object->access('update', $account, TRUE);
       $access = $access->andIf($can_revert

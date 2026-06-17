@@ -25,7 +25,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
 
   private const NODE_EXPOSED_FORM_ID = 'views-exposed-form-compromised-account-revisions-page-1';
 
-  protected User $developer;
+  protected User $admin;
 
   /**
    * {@inheritdoc}
@@ -33,11 +33,28 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $this->developer = $this->createUser();
-    $this->developer->addRole('developer');
-    $this->developer->activate();
-    $this->developer->save();
-    $this->drupalLogin($this->developer);
+    $this->admin = $this->createUser();
+    $this->admin->addRole('administrator');
+    $this->admin->activate();
+    $this->admin->save();
+    $this->drupalLogin($this->admin);
+  }
+
+  /**
+   * Non-administrators cannot access the rollback views.
+   */
+  public function testNonAdminCannotAccessRollbackViews(): void {
+    $editor = $this->createUser();
+    $editor->addRole('editor');
+    $editor->activate();
+    $editor->save();
+    $this->drupalLogin($editor);
+
+    $this->drupalGet(self::NODE_VIEW_PATH);
+    $this->assertContains($this->getSession()->getStatusCode(), [403, 404]);
+
+    $this->drupalGet(self::MEDIA_VIEW_PATH);
+    $this->assertContains($this->getSession()->getStatusCode(), [403, 404]);
   }
 
   /**
@@ -71,7 +88,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
 
     $this->drupalGet(self::NODE_VIEW_PATH);
     $this->submitForm(
-      ['revision_uid' => $this->developerAutocompleteValue()],
+      ['revision_uid' => $this->adminAutocompleteValue()],
       'Filter',
       self::NODE_EXPOSED_FORM_ID,
     );
@@ -89,7 +106,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
 
     $this->drupalGet(self::NODE_VIEW_PATH);
     $this->submitForm(
-      ['revision_uid' => $this->developerAutocompleteValue()],
+      ['revision_uid' => $this->adminAutocompleteValue()],
       'Filter',
       self::NODE_EXPOSED_FORM_ID,
     );
@@ -107,7 +124,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
     $title = 'DP-47148 default revision access ' . $this->randomMachineName(8);
     $this->createNodeWithRevisions($title);
 
-    $view = $this->executeNodeViewWithDeveloperFilter();
+    $view = $this->executeNodeViewWithAdminFilter();
     $this->assertNotEmpty($view->result);
 
     $action = \Drupal::service('plugin.manager.action')
@@ -122,7 +139,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
       }
       $default_row_found = TRUE;
       $this->assertTrue(
-        $action->access($revision, $this->developer),
+        $action->access($revision, $this->admin),
         'Bulk rollback must be allowed on default revision rows.',
       );
       break;
@@ -148,7 +165,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
       'status' => 1,
     ]);
     $node->set('moderation_state', MassModeration::PUBLISHED);
-    $node->setRevisionUserId($this->developer->id());
+    $node->setRevisionUserId($this->admin->id());
     $node->setRevisionLogMessage('known good revision');
     $node->setRevisionCreationTime($before_incident);
     $node->setChangedTime($before_incident);
@@ -158,7 +175,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
     $node = $storage->load($node->id());
     $node->setTitle($bad_title);
     $node->setNewRevision(TRUE);
-    $node->setRevisionUserId($this->developer->id());
+    $node->setRevisionUserId($this->admin->id());
     $node->setRevisionLogMessage('compromised revision');
     $node->setRevisionCreationTime($incident_time);
     $node->setChangedTime($incident_time);
@@ -168,7 +185,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
     $this->assertNotNull($view);
     $view->setDisplay('page_1');
     $view->setExposedInput([
-      'revision_uid' => (string) $this->developer->id(),
+      'revision_uid' => (string) $this->admin->id(),
       'changed_from' => date('Y-m-d', $incident_time - 60),
       'changed_to' => date('Y-m-d', $incident_time + 60),
     ]);
@@ -180,7 +197,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
     $action->setView($view);
     $context = [
       'exposed_input' => [
-        'revision_uid' => (string) $this->developer->id(),
+        'revision_uid' => (string) $this->admin->id(),
         'changed_from' => date('Y-m-d', $incident_time - 60),
         'changed_to' => date('Y-m-d', $incident_time + 60),
       ],
@@ -216,7 +233,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
       'status' => 1,
     ]);
     $node->set('moderation_state', MassModeration::PUBLISHED);
-    $node->setRevisionUserId($this->developer->id());
+    $node->setRevisionUserId($this->admin->id());
     $node->setRevisionLogMessage(NULL);
     $node->setRevisionCreationTime($before_incident);
     $node->setChangedTime($before_incident);
@@ -226,7 +243,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
     $node = $storage->load($node->id());
     $node->setTitle($bad_title);
     $node->setNewRevision(TRUE);
-    $node->setRevisionUserId($this->developer->id());
+    $node->setRevisionUserId($this->admin->id());
     $node->setRevisionLogMessage('compromised revision');
     $node->setRevisionCreationTime($incident_time);
     $node->setChangedTime($incident_time);
@@ -242,7 +259,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
     $action->setView($view);
     $context = [
       'exposed_input' => [
-        'revision_uid' => (string) $this->developer->id(),
+        'revision_uid' => (string) $this->admin->id(),
         'changed_from' => date('Y-m-d', $incident_time - 60),
         'changed_to' => date('Y-m-d', $incident_time + 60),
       ],
@@ -282,7 +299,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
   }
 
   /**
-   * Media rollback view is reachable for users with administer media permission.
+   * Media rollback view is reachable for administrators.
    */
   public function testMediaViewIsReachableWithDatePickers(): void {
     $this->drupalGet(self::MEDIA_VIEW_PATH);
@@ -293,7 +310,7 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
   }
 
   /**
-   * Creates a node with two revisions attributed to the developer account.
+   * Creates a node with two revisions attributed to the admin account.
    */
   private function createNodeWithRevisions(string $title): Node {
     $node = $this->createNode([
@@ -302,13 +319,13 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
       'status' => 1,
     ]);
-    $node->setRevisionUserId($this->developer->id());
+    $node->setRevisionUserId($this->admin->id());
     $node->setRevisionLogMessage('DP-47148 initial revision');
     $node->save();
 
     $node->setTitle($title . ' updated');
     $node->setNewRevision(TRUE);
-    $node->setRevisionUserId($this->developer->id());
+    $node->setRevisionUserId($this->admin->id());
     $node->setRevisionLogMessage('DP-47148 compromised revision');
     $node->save();
 
@@ -316,24 +333,24 @@ class CompromisedAccountRevisionsViewTest extends MassExistingSiteBase {
   }
 
   /**
-   * Executes the node view filtered to the developer account.
+   * Executes the node view filtered to the admin account.
    */
-  private function executeNodeViewWithDeveloperFilter(): ViewExecutable {
+  private function executeNodeViewWithAdminFilter(): ViewExecutable {
     $view = Views::getView('compromised_account_revisions');
     $this->assertNotNull($view);
     $view->setDisplay('page_1');
     $view->setExposedInput([
-      'revision_uid' => $this->developerAutocompleteValue(),
+      'revision_uid' => $this->adminAutocompleteValue(),
     ]);
     $view->execute();
     return $view;
   }
 
   /**
-   * Autocomplete value for the developer revision author filter.
+   * Autocomplete value for the admin revision author filter.
    */
-  private function developerAutocompleteValue(): string {
-    return $this->developer->getDisplayName() . ' (' . $this->developer->id() . ')';
+  private function adminAutocompleteValue(): string {
+    return $this->admin->getDisplayName() . ' (' . $this->admin->id() . ')';
   }
 
 }

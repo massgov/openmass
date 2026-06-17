@@ -119,9 +119,10 @@ class RevertPreIncidentNodeAction extends ViewsBulkOperationsActionBase implemen
     if ($object instanceof NodeInterface) {
       $account = $account ?: \Drupal::currentUser();
       $bundle = $object->bundle();
-      $can_revert = $account->hasPermission('administer nodes')
-        || $account->hasPermission('revert all revisions')
-        || $account->hasPermission("revert {$bundle} revisions");
+      $can_revert = $this->canRollbackCompromisedAccountRevisions($account)
+        && ($account->hasPermission('administer nodes')
+          || $account->hasPermission('revert all revisions')
+          || $account->hasPermission("revert {$bundle} revisions"));
 
       // Core denies the "revert revision" operation on the default revision,
       // but this action rolls the live revision back via createRevision().

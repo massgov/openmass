@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_views\Plugin\Action;
 
+use Drupal\Core\Session\AccountInterface;
+
 /**
  * Shared logic for rolling back to the revision before an incident window.
  */
@@ -70,6 +72,14 @@ trait PreIncidentRevisionRollbackTrait {
     }
     $timestamp = strtotime($input['changed_to'] . ' 23:59:59');
     return $timestamp === FALSE ? NULL : $timestamp;
+  }
+
+  /**
+   * Whether the account may use compromised account rollback.
+   */
+  protected function canRollbackCompromisedAccountRevisions(?AccountInterface $account = NULL): bool {
+    $account = $account ?: \Drupal::currentUser();
+    return $account->hasPermission('rollback compromised account revisions');
   }
 
   /**
