@@ -88,7 +88,9 @@ class RevertPreIncidentMediaAction extends ViewsBulkOperationsActionBase impleme
     $reverted->setRevisionUserId(\Drupal::currentUser()->id());
     $reverted->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $reverted->setChangedTime(\Drupal::time()->getRequestTime());
-    $this->ensureMediaFilesExistLocally($reverted);
+    if (!$this->ensureMediaFilesExistLocally($reverted)) {
+      return $this->t('Skipped @label: document file not found locally or on origin.', ['@label' => $entity->label()]);
+    }
     $reverted->save();
 
     $this->processedMids[$mid] = TRUE;
@@ -124,16 +126,22 @@ class RevertPreIncidentMediaAction extends ViewsBulkOperationsActionBase impleme
 
   /**
    * Fetches missing document files from the Stage File Proxy origin.
+   *
+   * @return bool
+   *   FALSE when a required upload file is missing locally and on the origin.
    */
-  protected function ensureMediaFilesExistLocally(MediaInterface $media): void {
+  protected function ensureMediaFilesExistLocally(MediaInterface $media): bool {
     if ($media->bundle() !== 'document' || !$media->hasField('field_upload_file') || $media->get('field_upload_file')->isEmpty()) {
-      return;
+      return TRUE;
     }
 
     $file = $media->get('field_upload_file')->entity;
-    if ($file) {
-      $this->stageFileProxyHelper->ensureLocalFile($file);
+    if (!$file) {
+      return TRUE;
     }
+
+    $this->stageFileProxyHelper->ensureLocalFile($file);
+    return $this->stageFileProxyHelper->fileExistsLocally($file->getFileUri());
   }
 
   /**

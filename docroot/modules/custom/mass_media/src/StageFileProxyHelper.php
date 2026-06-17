@@ -91,6 +91,13 @@ class StageFileProxyHelper {
   }
 
   /**
+   * Whether a file URI exists on the local filesystem.
+   */
+  public function fileExistsLocally(string $uri): bool {
+    return $this->localFileExists($uri);
+  }
+
+  /**
    * Whether Stage File Proxy is configured to fetch from an origin.
    */
   protected function isEnabled(): bool {

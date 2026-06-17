@@ -139,6 +139,22 @@ class StageFileProxyHelperTest extends UnitTestCase {
   }
 
   /**
+   * @covers ::fileExistsLocally
+   */
+  public function testFileExistsLocallyReturnsFalseWhenFileIsMissing(): void {
+    $file_system = $this->createMock(FileSystemInterface::class);
+    $file_system->method('realpath')->willReturn(FALSE);
+
+    $helper = new StageFileProxyHelper(
+      $file_system,
+      $this->createMock(ConfigFactoryInterface::class),
+      $this->createMock(LoggerInterface::class),
+    );
+
+    $this->assertFalse($helper->fileExistsLocally('private://documents/missing.pdf'));
+  }
+
+  /**
    * Creates a temporary file path for filesystem assertions.
    */
   private function createTempFile(string $name): string {
