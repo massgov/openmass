@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Drupal\Tests\mass_bulk_file_replace\ExistingSiteJavascript;
 
 use Drupal\Core\File\FileExists;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\media\MediaInterface;
+use Drupal\Tests\mass_bulk_file_replace\Traits\BulkFileReplaceTestTrait;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
@@ -16,26 +16,15 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 /**
  * Browser tests for bulk file replace upload and mismatch verification UI.
  *
+ * @see \Drupal\Tests\mass_bulk_file_replace\ExistingSite\BulkFileReplaceTest::testProcessBatchReplacesMismatchUpload()
+ *   Persistence after ReplaceMismatchForm::processBatch().
+ *
  * @group existing-site
  */
 class BulkFileReplaceUiTest extends ExistingSiteSelenium2DriverTestBase {
 
+  use BulkFileReplaceTestTrait;
   use MediaCreationTrait;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function tearDown(): void {
-    if (isset($this->bulkReplaceUserId)) {
-      $account = User::load($this->bulkReplaceUserId);
-      if ($account) {
-        \Drupal::currentUser()->setAccount($account);
-      }
-      $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-      $store->delete('mismatch_files_' . $this->bulkReplaceUserId);
-    }
-    parent::tearDown();
-  }
 
   /**
    * User id for tempstore cleanup (set when a bulk-replace user is created).
@@ -43,6 +32,45 @@ class BulkFileReplaceUiTest extends ExistingSiteSelenium2DriverTestBase {
    * @var int|null
    */
   protected ?int $bulkReplaceUserId = NULL;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function registerFileForCleanup(File $file): void {
+    $this->markEntityForCleanup($file);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function tearDown(): void {
+    if (isset($this->bulkReplaceUserId)) {
+      $this->useBulkReplaceTestUser($this->bulkReplaceUserId);
+      $this->clearMismatchTempstore($this->bulkReplaceUserId);
+    }
+    parent::tearDown();
+  }
+
+  /**
+   * Sets the Drupal current user for tempstore operations.
+   */
+  private function useBulkReplaceTestUser(int $uid): void {
+    $account = User::load($uid);
+    if ($account) {
+      \Drupal::currentUser()->setAccount($account);
+    }
+  }
+
+  /**
+   * Seeds mismatch tempstore for the bulk-replace test user.
+   *
+   * @param int[] $fids
+   *   File entity ids.
+   */
+  private function seedMismatchTempstoreForUser(int $uid, array $fids): void {
+    $this->useBulkReplaceTestUser($uid);
+    $this->seedMismatchTempstore($uid, $fids);
+  }
 
   /**
    * Creates an editor with bulk replace permission and logs in.
@@ -83,23 +111,6 @@ class BulkFileReplaceUiTest extends ExistingSiteSelenium2DriverTestBase {
     $this->markEntityForCleanup($media);
 
     return $media;
-  }
-
-  /**
-   * Seeds the mismatch review tempstore for the current user.
-   *
-   * @param int $uid
-   *   User id that owns the tempstore namespace.
-   * @param int[] $fids
-   *   File entity ids.
-   */
-  private function seedMismatchTempstore(int $uid, array $fids): void {
-    $account = User::load($uid);
-    if ($account) {
-      \Drupal::currentUser()->setAccount($account);
-    }
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $store->set('mismatch_files_' . $uid, $fids);
   }
 
   /**
@@ -154,18 +165,6 @@ JS
   }
 
   /**
-   * Ensures the temporary mismatch upload directory exists in all environments.
-   */
-  private function ensureMismatchTempDirectory(): void {
-    /** @var \Drupal\Core\File\FileSystemInterface $fs */
-    $fs = \Drupal::service('file_system');
-    $flags = FileSystemInterface::CREATE_DIRECTORY
-      | FileSystemInterface::MODIFY_PERMISSIONS;
-    $directory = 'temporary://mass_bulk_file_replace';
-    $fs->prepareDirectory($directory, $flags);
-  }
-
-  /**
    * Upload form shows accessibility radios and dropzone.
    */
   public function testUploadFormRendersAccessibilityRadios(): void {
@@ -187,12 +186,8 @@ JS
     $this->createBulkReplaceUser();
     $uid = $this->bulkReplaceUserId;
     $this->assertNotNull($uid);
-    $account = User::load($uid);
-    if ($account) {
-      \Drupal::currentUser()->setAccount($account);
-    }
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $store->delete('mismatch_files_' . $uid);
+    $this->useBulkReplaceTestUser($uid);
+    $this->clearMismatchTempstore($uid);
 
     $media = $this->createDocumentMediaWithFile('housing-proposal.pdf', 'before');
     $mid = (int) $media->id();
@@ -215,13 +210,13 @@ JS
     $this->getSession()->wait(5000);
 
     $this->getSession()->getPage()->pressButton('Start replacement');
-    $wait_js = "document.body && (document.body.innerText.indexOf(" .
-      "'All uploaded files were successfully replaced.') !== -1 || " .
-      "document.body.innerText.indexOf('Some uploaded files need') !== -1 || " .
-      "document.body.innerText.indexOf('No files were uploaded') !== -1)";
-    $this->getSession()->wait(120000, $wait_js);
+    $success = "document.body && document.body.innerText.indexOf(" .
+      "'All uploaded files were successfully replaced.') !== -1";
+    $this->getSession()->wait(120000, $success);
 
     $page_text = $this->getSession()->getPage()->getText();
+    $this->assertStringContainsString('All uploaded files were successfully replaced.', $page_text);
+    $this->assertStringNotContainsString('Some uploaded files need', $page_text);
     $this->assertStringNotContainsString('No files were uploaded', $page_text);
 
     // Primary assertion: file entity updated after batch (avoids fragile status messages).
@@ -254,39 +249,16 @@ JS
     $media = $this->createDocumentMediaWithFile('report.pdf');
     $mid = (int) $media->id();
 
-    /** @var \Drupal\Core\File\FileSystemInterface $fs */
-    $fs = \Drupal::service('file_system');
-    $this->ensureMismatchTempDirectory();
-    $uri_token = 'temporary://mass_bulk_file_replace/bulk-ui-token-' . $this->randomMachineName() . '.pdf';
-    $fs->saveData('token-upload', $uri_token, FileExists::Replace);
-    $file_token = File::create([
-      'uri' => $uri_token,
-      'filename' => 'brand-new_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $mid . '.pdf',
-      'status' => 0,
-    ]);
-    $file_token->save();
-    $this->markEntityForCleanup($file_token);
+    $file_token = $this->createMismatchUploadFile($mid, 'brand-new', 'token-upload', 'bulk-ui-token');
+    $file_orphan = $this->createMismatchUploadFile($mid, 'orphan', 'orphan-upload', 'bulk-ui-orphan', FALSE);
 
-    $uri_orphan = 'temporary://mass_bulk_file_replace/bulk-ui-orphan-' . $this->randomMachineName() . '.pdf';
-    $fs->saveData('orphan-upload', $uri_orphan, FileExists::Replace);
-    $file_orphan = File::create([
-      'uri' => $uri_orphan,
-      'filename' => 'orphan.pdf',
-      'status' => 0,
-    ]);
-    $file_orphan->save();
-    $this->markEntityForCleanup($file_orphan);
-
-    $this->seedMismatchTempstore($uid, [(int) $file_token->id(), (int) $file_orphan->id()]);
+    $this->seedMismatchTempstoreForUser($uid, [(int) $file_token->id(), (int) $file_orphan->id()]);
 
     $this->drupalGet('admin/ma-dash/download-documents/mismatch');
 
     $this->assertSession()->pageTextNotContains('DO_NOT_CHANGE_THIS_MEDIA_ID_');
     $this->assertSession()->pageTextContains('brand-new.pdf');
-
-    $page_text = $this->getSession()->getPage()->getText();
-    $this->assertStringContainsString('brand-new.pdf', $page_text);
-    $this->assertStringContainsString('No match', $page_text);
+    $this->assertSession()->pageTextContains('No match');
 
     $this->assertSession()->elementExists('xpath', '//table//tr[contains(., "orphan.pdf")]//input[@type="checkbox"][@disabled]');
     $this->assertSession()->elementExists('xpath', '//table//tr[contains(., "brand-new.pdf")]//input[@type="checkbox"][not(@disabled)]');
@@ -302,6 +274,7 @@ JS
 JS
     );
     $this->assertTrue((bool) $checked, 'Matched mismatch row is selected by default.');
+    $this->assertSession()->buttonExists('Replace Approved Files');
   }
 
   /**
@@ -314,20 +287,8 @@ JS
     $media = $this->createDocumentMediaWithFile('report-cancel.pdf');
     $mid = (int) $media->id();
 
-    /** @var \Drupal\Core\File\FileSystemInterface $fs */
-    $fs = \Drupal::service('file_system');
-    $this->ensureMismatchTempDirectory();
-    $uri_token = 'temporary://mass_bulk_file_replace/bulk-ui-cancel-' . $this->randomMachineName() . '.pdf';
-    $fs->saveData('x', $uri_token, FileExists::Replace);
-    $file_token = File::create([
-      'uri' => $uri_token,
-      'filename' => 'diff_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $mid . '.pdf',
-      'status' => 0,
-    ]);
-    $file_token->save();
-    $this->markEntityForCleanup($file_token);
-
-    $this->seedMismatchTempstore($uid, [(int) $file_token->id()]);
+    $file_token = $this->createMismatchUploadFile($mid, 'diff', 'x', 'bulk-ui-cancel');
+    $this->seedMismatchTempstoreForUser($uid, [(int) $file_token->id()]);
 
     $this->drupalGet('admin/ma-dash/download-documents/mismatch');
     $this->getSession()->getPage()->pressButton('Cancel');
@@ -335,11 +296,8 @@ JS
     $this->getSession()->wait(10000, "window.location.pathname.indexOf('/admin/ma-dash/download-documents/replace') !== -1");
     $this->assertStringEndsWith('/admin/ma-dash/download-documents/replace', parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH) ?? '');
 
-    $account = User::load($uid);
-    $this->assertNotNull($account);
-    \Drupal::currentUser()->setAccount($account);
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $this->assertNull($store->get('mismatch_files_' . $uid));
+    $this->useBulkReplaceTestUser($uid);
+    $this->assertMismatchTempstoreUnset($uid);
   }
 
 }

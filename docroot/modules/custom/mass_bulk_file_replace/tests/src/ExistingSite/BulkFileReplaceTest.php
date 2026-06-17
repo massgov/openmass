@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Drupal\Tests\mass_bulk_file_replace\ExistingSite;
 
 use Drupal\Core\File\FileExists;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\file\Entity\File;
-use Drupal\media\MediaInterface;
 use Drupal\mass_bulk_file_replace\FilenameMediaMatchTrait;
+use Drupal\mass_bulk_file_replace\Form\ReplaceMismatchForm;
 use Drupal\mass_bulk_file_replace\Form\ReplaceUploadForm;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\media\MediaInterface;
+use Drupal\Tests\mass_bulk_file_replace\Traits\BulkFileReplaceTestTrait;
 use Drupal\user\UserInterface;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -23,7 +24,15 @@ use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
  */
 class BulkFileReplaceTest extends MassExistingSiteBase {
 
+  use BulkFileReplaceTestTrait;
   use MediaCreationTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function registerFileForCleanup(File $file): void {
+    $this->cleanupEntities[] = $file;
+  }
 
   /**
    * Exposes FilenameMediaMatchTrait helpers for assertions.
@@ -69,23 +78,13 @@ class BulkFileReplaceTest extends MassExistingSiteBase {
   }
 
   /**
-   * Clears mismatch tempstore keys for a user.
-   */
-  private function clearMismatchTempstore(int $uid): void {
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $store->delete('mismatch_files_' . $uid);
-  }
-
-  /**
    * Saves binary data to a URI under temporary bulk replace dir.
    */
   private function writeTempUpload(string $relative_name, string $contents): string {
     /** @var \Drupal\Core\File\FileSystemInterface $fs */
     $fs = \Drupal::service('file_system');
-    $dir = 'temporary://mass_bulk_file_replace';
-    $flags = FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS;
-    $fs->prepareDirectory($dir, $flags);
-    $uri = $dir . '/' . $relative_name;
+    $this->ensureBulkReplaceTempDirectory();
+    $uri = $this->bulkReplaceTempDirectory() . '/' . $relative_name;
     $fs->saveData($contents, $uri, FileExists::Replace);
     $real = $fs->realpath($uri);
     $this->assertNotFalse($real);
@@ -118,6 +117,20 @@ class BulkFileReplaceTest extends MassExistingSiteBase {
     $this->cleanupEntities[] = $media;
 
     return $media;
+  }
+
+  /**
+   * Resolves the expected public URI directory for a document media file field.
+   */
+  private function expectedMediaFileDirectory(MediaInterface $media): string {
+    $field_definition = $media->getFieldDefinition('field_upload_file');
+    $settings = $field_definition->getSettings();
+    $file_directory = $settings['file_directory'] ?? '';
+    if ($file_directory === '') {
+      return 'public://';
+    }
+    $file_directory = \Drupal::token()->replace($file_directory, ['media' => $media]);
+    return 'public://' . $file_directory;
   }
 
   /**
@@ -155,9 +168,7 @@ class BulkFileReplaceTest extends MassExistingSiteBase {
       'path' => $path,
     ], $uid, 'tester', 'verified_accessible', $context);
 
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $mismatch = $store->get('mismatch_files_' . $uid) ?? [];
-    $this->assertSame([], $mismatch);
+    $this->assertMismatchTempstoreUnset($uid);
 
     $reloaded = \Drupal::entityTypeManager()->getStorage('media')->load($mid);
     $this->assertNotNull($reloaded);
@@ -187,9 +198,7 @@ class BulkFileReplaceTest extends MassExistingSiteBase {
       'path' => $path,
     ], $uid, 'tester', '', $context);
 
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $mismatch = $store->get('mismatch_files_' . $uid) ?? [];
-    $this->assertSame([], $mismatch);
+    $this->assertMismatchTempstoreUnset($uid);
 
     $reloaded = \Drupal::entityTypeManager()->getStorage('media')->load($mid);
     $this->assertNotNull($reloaded);
@@ -217,15 +226,11 @@ class BulkFileReplaceTest extends MassExistingSiteBase {
       'path' => $path,
     ], $uid, 'tester', '', $context);
 
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $mismatch = $store->get('mismatch_files_' . $uid) ?? [];
-    $this->assertCount(1, $mismatch);
+    $mismatch = $this->assertMismatchTempstoreCount($uid, 1);
     $this->assertArrayHasKey(0, $mismatch);
-    $fid = $mismatch[0];
-    $uploaded = File::load($fid);
+    $uploaded = File::load($mismatch[0]);
     $this->assertInstanceOf(File::class, $uploaded);
     $this->assertSame($upload_name, $uploaded->getFilename());
-    $this->cleanupEntities[] = $uploaded;
   }
 
   /**
@@ -244,14 +249,48 @@ class BulkFileReplaceTest extends MassExistingSiteBase {
       'path' => $path,
     ], $uid, 'tester', '', $context);
 
-    $store = \Drupal::service('tempstore.private')->get('mass_bulk_file_replace');
-    $mismatch = $store->get('mismatch_files_' . $uid) ?? [];
-    $this->assertCount(1, $mismatch);
+    $mismatch = $this->assertMismatchTempstoreCount($uid, 1);
     $this->assertArrayHasKey(0, $mismatch);
-    $fid = $mismatch[0];
-    $uploaded = File::load($fid);
+    $uploaded = File::load($mismatch[0]);
     $this->assertInstanceOf(File::class, $uploaded);
-    $this->cleanupEntities[] = $uploaded;
+  }
+
+  /**
+   * ReplaceMismatchForm::processBatch replaces file, strips token, clears tempstore.
+   */
+  public function testProcessBatchReplacesMismatchUpload(): void {
+    $user = $this->createTestUser();
+    $uid = (int) $user->id();
+    $this->clearMismatchTempstore($uid);
+
+    $media = $this->createDocumentMedia('report.pdf', 'original-content');
+    $mid = (int) $media->id();
+    $revision_before = (int) $media->getRevisionId();
+
+    $upload_contents = 'replaced-mismatch-content';
+    $stripped_filename = 'brand-new.pdf';
+    $file = $this->createMismatchUploadFile($mid, 'brand-new', $upload_contents, 'bulk-replace-mismatch');
+    $fid = (int) $file->id();
+    $this->seedMismatchTempstore($uid, [$fid]);
+
+    $context = [];
+    ReplaceMismatchForm::processBatch($fid, 'tester', $context);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('media')->load($mid);
+    $this->assertNotNull($reloaded);
+    $this->assertInstanceOf(MediaInterface::class, $reloaded);
+    $this->assertGreaterThan($revision_before, (int) $reloaded->getRevisionId());
+
+    $replaced = $reloaded->get('field_upload_file')->entity;
+    $this->assertNotNull($replaced);
+    $this->assertSame($stripped_filename, $replaced->getFilename());
+    $this->assertStringStartsWith($this->expectedMediaFileDirectory($reloaded), $replaced->getFileUri());
+
+    $real = \Drupal::service('file_system')->realpath($replaced->getFileUri());
+    $this->assertNotFalse($real);
+    $this->assertSame($upload_contents, (string) file_get_contents($real));
+
+    $this->assertSame([], $this->bulkReplaceTempstore()->get($this->mismatchTempstoreKey($uid)));
   }
 
   /**
