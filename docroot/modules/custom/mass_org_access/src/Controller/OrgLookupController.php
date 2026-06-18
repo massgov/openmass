@@ -38,16 +38,43 @@ class OrgLookupController extends ControllerBase {
   }
 
   /**
-   * Endpoint access — authenticated users with `access content` only.
+   * Endpoint access — bound to the host entity the caller is editing.
    *
-   * Mirrors the widget itself, which is visible to any role that can
-   * edit a host entity. Anonymous traffic is blocked.
-   *
-   * @todo Should we check "update" access for the entity instead?
+   * The lookup exposes org-page → Permission Group mappings, so it must not
+   * be open to any authenticated user. The JS passes the entity it is editing
+   * (entity_type + entity_id, or entity_type + bundle for new content); access
+   * is granted only when the caller can actually update that entity (or create
+   * that bundle). Only node and media are accepted.
    */
-  public function access(AccountInterface $account): AccessResultInterface {
-    return AccessResult::allowedIf($account->isAuthenticated() && $account->hasPermission('access content'))
-      ->cachePerPermissions();
+  public function access(AccountInterface $account, Request $request): AccessResultInterface {
+    $deny = AccessResult::forbidden()->addCacheContexts(['url.query_args', 'user.permissions']);
+
+    if (!$account->isAuthenticated()) {
+      return $deny;
+    }
+    $entity_type = (string) $request->query->get('entity_type', '');
+    if (!in_array($entity_type, ['node', 'media'], TRUE)) {
+      return $deny;
+    }
+
+    $entity_id = $request->query->get('entity_id');
+    if ($entity_id !== NULL && $entity_id !== '') {
+      $entity = $this->entityTypeManager()->getStorage($entity_type)->load($entity_id);
+      if (!$entity) {
+        return $deny;
+      }
+      return $entity->access('update', $account, TRUE)->addCacheContexts(['url.query_args']);
+    }
+
+    // New content: require create access to the requested bundle.
+    $bundle = (string) $request->query->get('bundle', '');
+    if ($bundle === '') {
+      return $deny;
+    }
+    return $this->entityTypeManager()
+      ->getAccessControlHandler($entity_type)
+      ->createAccess($bundle, $account, [], TRUE)
+      ->addCacheContexts(['url.query_args']);
   }
 
   /**

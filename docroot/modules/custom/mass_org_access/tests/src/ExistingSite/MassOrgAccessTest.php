@@ -8,12 +8,14 @@ use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mass_org_access\Controller\OrgLookupController;
 use Drupal\mass_org_access\OrgAccessSettings;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
 use MassGov\Dtt\MassExistingSiteBase;
+use Symfony\Component\HttpFoundation\Request;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
 
@@ -968,6 +970,61 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       $stack->pop();
       putenv(OrgAccessSettings::DEBUG_SECRET_ENV);
     }
+  }
+
+  /**
+   * The lookup endpoint grants access only to who can edit the host entity.
+   *
+   * Anonymous and users without update/create access to the entity passed in
+   * the request are denied; only node and media are accepted.
+   */
+  public function testLookupEndpointBindsToEntityAccess(): void {
+    \Drupal::state()->delete('mass_org_access.enforce');
+    $controller = OrgLookupController::create(\Drupal::getContainer());
+    $req = fn(array $query): Request => Request::create('/mass-org-access/lookup-user-orgs', 'GET', $query);
+
+    // Anonymous — always denied.
+    $this->assertFalse(
+      $controller->access(new AnonymousUserSession(), $req(['entity_type' => 'node', 'bundle' => 'info_details']))->isAllowed(),
+      'Anonymous must be denied.'
+    );
+
+    // Authenticated but without create access to the bundle — denied.
+    $plain = $this->createUser();
+    $this->assertFalse(
+      $controller->access($plain, $req(['entity_type' => 'node', 'bundle' => 'info_details']))->isAllowed(),
+      'A user without create access must be denied for new content.'
+    );
+
+    // Authenticated with create access to the bundle — allowed.
+    $creator = $this->createUser(['create info_details content']);
+    $this->assertTrue(
+      $controller->access($creator, $req(['entity_type' => 'node', 'bundle' => 'info_details']))->isAllowed(),
+      'A user who can create the bundle must be allowed for new content.'
+    );
+
+    // Only node and media are accepted.
+    $this->assertFalse(
+      $controller->access($creator, $req(['entity_type' => 'taxonomy_term', 'bundle' => 'user_organization']))->isAllowed(),
+      'Entity types other than node/media must be rejected.'
+    );
+
+    // Existing entity: the endpoint mirrors the entity's update access.
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Lookup access ' . $this->randomMachineName(),
+    ]);
+    $this->assertFalse($node->access('update', $plain), 'Precondition: plain user cannot update the node.');
+    $this->assertFalse(
+      $controller->access($plain, $req(['entity_type' => 'node', 'entity_id' => $node->id()]))->isAllowed(),
+      'A user who cannot update the entity must be denied.'
+    );
+    $updater = $this->createUser(['bypass node access']);
+    $this->assertTrue($node->access('update', $updater), 'Precondition: bypass-node-access user can update the node.');
+    $this->assertTrue(
+      $controller->access($updater, $req(['entity_type' => 'node', 'entity_id' => $node->id()]))->isAllowed(),
+      'A user who can update the entity must be allowed.'
+    );
   }
 
   /**

@@ -369,9 +369,20 @@
    * @return {Promise<Object<string,Array<{tid:number,label:string}>>>} Map.
    */
   async function fetchTermsForOrgs(nids) {
-    const params = nids
+    let params = nids
       .map(function (n) { return 'org_page_nids%5B%5D=' + encodeURIComponent(n); })
       .join('&');
+    // Identify the host entity so the endpoint can bind access to it.
+    const settings = (window.drupalSettings && drupalSettings.massOrgAccess) || {};
+    if (settings.hostEntityType) {
+      params += '&entity_type=' + encodeURIComponent(settings.hostEntityType);
+      if (settings.hostEntityId) {
+        params += '&entity_id=' + encodeURIComponent(settings.hostEntityId);
+      }
+      if (settings.hostBundle) {
+        params += '&bundle=' + encodeURIComponent(settings.hostBundle);
+      }
+    }
     const response = await fetch(ENDPOINT + '?' + params, {
       headers: {Accept: 'application/json'},
       credentials: 'same-origin'

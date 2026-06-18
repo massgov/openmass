@@ -190,6 +190,11 @@ class MassOrgAccessHooks {
     $field_widget_complete_form['#attached']['drupalSettings']['massOrgAccess'] = [
       'userPermissionGroupTids' => array_values($user_tids),
       'warnOnSelfLockout' => !$this->currentUser->hasPermission('bypass org access') && !empty($user_tids),
+      // Host entity context so the lookup endpoint can bind access to it
+      // (update access for an existing entity, create access for a new one).
+      'hostEntityType' => $entity->getEntityTypeId(),
+      'hostEntityId' => $entity->isNew() ? NULL : (string) $entity->id(),
+      'hostBundle' => $entity->bundle(),
     ];
   }
 
