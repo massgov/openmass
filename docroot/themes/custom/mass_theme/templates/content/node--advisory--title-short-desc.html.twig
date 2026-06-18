@@ -66,22 +66,22 @@
  * @see template_preprocess_node()
  */
 #}
-{% include "@molecules/image-promo.twig" with {
-  "imagePromo": {
-    "title": {
-      "text": node.title.value,
-      "href": url,
-      "info": ""
+{{ include('@molecules/image-promo.twig', {
+  imagePromo: {
+    title: {
+      text: node.title.value,
+      href: url,
+      info: '',
     },
-    "description": {
-      "rteElements": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": content|render
-          }
-        }
-      }]
+    description: {
+      rteElements: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: content|render,
+          },
+        },
+      }],
     },
-  }
-} %}
+  },
+}) }}

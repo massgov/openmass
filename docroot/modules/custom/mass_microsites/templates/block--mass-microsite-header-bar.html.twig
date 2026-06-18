@@ -96,7 +96,7 @@
 
       {# Link to Mass.gov homepage (only visible within microsites) #}
       <a href="/" class="ma__header__hamburger__menu-home-link">
-        {% include directory ~ "/templates/includes/atoms-svg.html.twig" with {'iconName': 'home'} %}
+        {{ include(directory ~ '/templates/includes/atoms-svg.html.twig', {iconName: 'home'}) }}
         <span>Mass.gov</span>
       </a>
 
@@ -122,11 +122,15 @@
     {# Mobile Fly-out area #}
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
       <div class="ma__header__hamburger__logo ma__header__hamburger__logo--mobile">
-        {% include "@atoms/09-media/site-logo.twig" with {...microsite_info, sealImage} only %}
+        {{ include(
+          '@atoms/09-media/site-logo.twig',
+          {...microsite_info, sealImage: sealImage},
+          with_context: false,
+        ) }}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__hamburger__nav-search js-header__nav-search">
-          {% include "@molecules/header-search.twig" %}
+          {{ include('@molecules/header-search.twig') }}
         </div>
       {% endif %}
       <div class="ma__header__hamburger__main-nav">

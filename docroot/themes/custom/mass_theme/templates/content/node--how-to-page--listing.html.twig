@@ -74,41 +74,41 @@
 {% set headingLevel = 3 %}
 {# Initalize the contents array for the component. #}
 {% set contents = [{
-  "path": "@atoms/11-text/paragraph.twig",
-  "data": {
-    "paragraph": {
-      "text": node.field_how_to_lede.value ?: ""
-    }
-  }
+  path: '@atoms/11-text/paragraph.twig',
+  data: {
+    paragraph: {
+      text: node.field_how_to_lede.value ?: '',
+    },
+  },
 }] %}
 
 {# Add only the links that exist to the components array. #}
 {% for item in quick_action_links %}
   {% set decorative_link = {
-    "path": "@atoms/decorative-link.twig",
-    "data": {
-      "decorativeLink": {
-        "href": item.url,
-        "text": item.text,
-        "chevron": true,
-        "label": ""
-      }
-    }
+    path: '@atoms/decorative-link.twig',
+    data: {
+      decorativeLink: {
+        href: item.url,
+        text: item.text,
+        chevron: true,
+        label: '',
+      },
+    },
   } %}
   {% set contents = contents|merge([decorative_link]) %}
 {% endfor %}
 
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: url,
+      text: label,
+      info: '',
+      property: '',
     },
-    "level": headingLevel,
-    "emphasizedText": "",
-    "tags": "",
-    "contents": contents
-  }
-} %}
+    level: headingLevel,
+    emphasizedText: '',
+    tags: '',
+    contents: contents,
+  },
+}) }}

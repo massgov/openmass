@@ -1,0 +1,144 @@
+diff --git a/.cspell-project-words.txt b/.cspell-project-words.txt
+index 639dfec4bb0025d6e84d5e6b48409708ad966da1..7f6585956d4a6d89aabc180816d304332e9ec7c7 100644
+--- a/.cspell-project-words.txt
++++ b/.cspell-project-words.txt
+@@ -3,3 +3,4 @@ tinycon
+ mrfelton
+ isholgueras
+ trackleft2
++colour
+\ No newline at end of file
+diff --git a/src/Service/EnvironmentIndicator.php b/src/Service/EnvironmentIndicator.php
+index cef2f0bb5a3e0a40f57af71c4017075dbd8065a8..d94d45a1599d8d8d173e357ff7832cab20728f44 100644
+--- a/src/Service/EnvironmentIndicator.php
++++ b/src/Service/EnvironmentIndicator.php
+@@ -154,10 +154,10 @@ class EnvironmentIndicator {
+   protected function getVersionIdentifier(string $type): ?string {
+     switch ($type) {
+       case 'environment_indicator_current_release':
+-        return (string) $this->state->get('environment_indicator.current_release');
++        return !empty($this->state->get('environment_indicator.current_release')) ? (string) $this->state->get('environment_indicator.current_release') : NULL;
+
+       case 'deployment_identifier':
+-        return (string) $this->settings->get('deployment_identifier');
++        return !empty($this->settings->get('deployment_identifier')) ? (string) $this->settings->get('deployment_identifier') : NULL;
+
+       case 'drupal_version':
+         return \Drupal::VERSION;
+diff --git a/tests/src/Functional/EnvironmentIndicatorServiceTest.php b/tests/src/Functional/EnvironmentIndicatorServiceTest.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..7f548bda215a50e19ca01befae740b66d6e47c0a
+--- /dev/null
++++ b/tests/src/Functional/EnvironmentIndicatorServiceTest.php
+@@ -0,0 +1,111 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\environment_indicator\Functional;
++
++use Drupal\Tests\BrowserTestBase;
++
++/**
++ * Functional tests for the EnvironmentIndicator service.
++ *
++ * Tests the actual behavior of the service to validate that empty values
++ * are properly handled (should return NULL, not empty strings).
++ */
++class EnvironmentIndicatorServiceTest extends BrowserTestBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  protected static $modules = [
++    'environment_indicator',
++  ];
++
++  /**
++   * {@inheritdoc}
++   */
++  protected $defaultTheme = 'stark';
++
++  /**
++   * The environment indicator service.
++   *
++   * @var \Drupal\environment_indicator\Service\EnvironmentIndicator
++   */
++  protected $environmentIndicatorService;
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp(): void {
++    parent::setUp();
++    $this->environmentIndicatorService = $this->container->get('environment_indicator.indicator');
++  }
++
++  /**
++   * Tests that empty state values are handled correctly.
++   *
++   * This test validates the behavior of getVersionIdentifier when
++   * environment_indicator.current_release is set to an empty string.
++   */
++  public function testEmptyStateValue(): void {
++    // Set empty string in state.
++    \Drupal::state()->set('environment_indicator.current_release', '');
++    // Create a user with permission.
++    $user = $this->drupalCreateUser(['view environment indicator current release']);
++    $this->drupalLogin($user);
++    $result = $this->environmentIndicatorService->getCurrentRelease();
++    // This assertion will FAIL with current implementation (returns '')
++    // and PASS after applying the fix (returns NULL)
++    $this->assertNull($result, 'Empty state value should return NULL, not empty string');
++  }
++
++  /**
++   * Tests that zero values are handled correctly.
++   *
++   * This test validates the behavior when state contains integer 0.
++   */
++  public function testZeroStateValue(): void {
++    // Set integer 0 in state.
++    \Drupal::state()->set('environment_indicator.current_release', 0);
++    // Create a user with permission.
++    $user = $this->drupalCreateUser(['view environment indicator current release']);
++    $this->drupalLogin($user);
++    $result = $this->environmentIndicatorService->getCurrentRelease();
++    $this->assertNull($result, 'Zero value should be treated as empty and return NULL');
++  }
++
++  /**
++   * Tests permission handling.
++   */
++  public function testPermissionHandling(): void {
++    // Set a value in state.
++    \Drupal::state()->set('environment_indicator.current_release', 'v1.0.0');
++    // Create a user WITHOUT the required permission.
++    $user = $this->drupalCreateUser([]);
++    $this->drupalLogin($user);
++    $result = $this->environmentIndicatorService->getCurrentRelease();
++    $this->assertNull($result, 'Should return NULL when user lacks permission');
++  }
++
++  /**
++   * Tests deployment_identifier with empty value.
++   *
++   * This test validates that empty deployment_identifier returns NULL.
++   */
++  public function testEmptyDeploymentIdentifier(): void {
++    // Configure to use deployment_identifier as primary.
++    $this->config('environment_indicator.settings')
++      ->set('version_identifier', 'deployment_identifier')
++      ->set('version_identifier_fallback', 'drupal_version')
++      ->save();
++    // Create a user with permission.
++    $user = $this->drupalCreateUser(['view environment indicator current release']);
++    $this->drupalLogin($user);
++    $result = $this->environmentIndicatorService->getCurrentRelease();
++    // Since deployment_identifier will be empty in test environment,
++    // this should fall back to drupal_version and return that.
++    $this->assertIsString($result, 'Should fall back to drupal_version when deployment_identifier is empty');
++    $this->assertNotEmpty($result, 'Drupal version should not be empty');
++  }
++
++}

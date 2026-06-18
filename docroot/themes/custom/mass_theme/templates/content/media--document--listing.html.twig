@@ -13,43 +13,43 @@
  */
 #}
 {% set headingLevel = 3 %}
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser": {
-    "title": {
-      "href": "",
-      "text": "",
-      "info": "",
-      "property": ""
+{{ include('@molecules/general-teaser.twig', {
+  generalTeaser: {
+    title: {
+      href: '',
+      text: '',
+      info: '',
+      property: '',
     },
-    "level": headingLevel,
-    "emphasizedText": "",
-    "tags": "",
-    "contents": [{
-      "path": "@molecules/download-link.twig",
-      "data": {
-        "downloadLink": {
-          "iconSize": '',
-          "icon": content.extra_file_icon['#markup'],
-          "decorativeLink": {
-            "href": url('media_entity_download.download', {'media': elements['#media'].mid.value}),
-            "text": content.field_title|field_value,
-            "info": '',
-            "property": '',
+    level: headingLevel,
+    emphasizedText: '',
+    tags: '',
+    contents: [{
+      path: '@molecules/download-link.twig',
+      data: {
+        downloadLink: {
+          iconSize: '',
+          icon: content.extra_file_icon['#markup'],
+          decorativeLink: {
+            href: url('media_entity_download.download', {media: elements['#media'].mid.value}),
+            text: content.field_title|field_value,
+            info: '',
+            property: '',
           },
-          "size": content.calculated_file_size,
-          "format": content.extra_file_extension,
-          "description": {
-            "rteElements": [{
-              "path": "@atoms/11-text/paragraph.twig",
-              "data": {
-                "paragraph": {
-                  "text": content.field_document_listing_desc,
-                }
-              }
-            }]
-          }
-        }
-      }
-    }]
-  }
-} %}
+          size: content.calculated_file_size,
+          format: content.extra_file_extension,
+          description: {
+            rteElements: [{
+              path: '@atoms/11-text/paragraph.twig',
+              data: {
+                paragraph: {
+                  text: content.field_document_listing_desc,
+                },
+              },
+            }],
+          },
+        },
+      },
+    }],
+  },
+}) }}

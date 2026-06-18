@@ -44,29 +44,29 @@
 {% set link = {} %}
 {% if content.field_featured_message_link[0] is defined %}
   {% set link = {
-    "text": content.field_featured_message_link[0]['#title'],
-    "href": content.field_featured_message_link[0]['#url']
+    text: content.field_featured_message_link[0]['#title'],
+    href: content.field_featured_message_link[0]['#url'],
   } %}
 {% endif %}
 
-{% include "@organisms/by-author/callout-message.twig" with {
-  "calloutMessage": {
-    "theme": "white",
-    "message": {
-      "compHeading": {
-        "title": content.field_featured_message_heading,
-        "level": 2,
-        "sub": false
+{{ include('@organisms/by-author/callout-message.twig', {
+  calloutMessage: {
+    theme: 'white',
+    message: {
+      compHeading: {
+        title: content.field_featured_message_heading,
+        level: 2,
+        sub: false,
       },
-      "rteElements": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": content.field_featured_message_content
-          }
-        }
-      }]
+      rteElements: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: content.field_featured_message_content,
+          },
+        },
+      }],
     },
-    "link": link
-  }
-} %}
+    link: link,
+  },
+}) }}

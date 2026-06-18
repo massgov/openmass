@@ -137,10 +137,32 @@ class MassMediaDownloadController extends ControllerBase {
     $uri = $file->getFileUri();
     $scheme = $this->streamWrapperManager->getScheme($uri);
 
-    // If the file doesn't exist locally on non-production environments,
-    // try fetching it from the configured Stage File Proxy origin.
-    if (!$this->streamWrapperManager->isValidScheme($scheme)) {
-      throw new NotFoundHttpException("The file {$uri} does not exist.");
+    // Catches stray metadata not handled properly by file_create_url().
+    // @see https://www.drupal.org/project/drupal/issues/2867355
+    $context = new RenderContext();
+    $callback = function () use ($uri) {
+      return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+    };
+    if (\Fiber::getCurrent() !== NULL) {
+      $uri = $callback();
+    }
+    else {
+      try {
+        $uri = $this->renderer->executeInRenderContext($context, $callback);
+      }
+      catch (\FiberError) {
+        $uri = $callback();
+      }
+    }
+
+    // Returns a 301 Moved Permanently redirect response.
+    $response = new TrustedRedirectResponse($uri, 301);
+    // Adds cache metadata.
+    $response->getCacheableMetadata()->addCacheContexts(['url.site']);
+    $response->addCacheableDependency($media);
+    $response->addCacheableDependency($file);
+    if (!$context->isEmpty()) {
+      $response->addCacheableDependency($context->pop());
     }
 
     if (!file_exists($uri)) {

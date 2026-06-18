@@ -6,6 +6,7 @@ dependencies:
     - filter.format.basic_html
   module:
     - ckeditor5
+    - mass_inline_message
 format: basic_html
 editor: ckeditor5
 settings:
@@ -23,6 +24,7 @@ settings:
       - numberedList
       - '|'
       - blockQuote
+      - messageBox
       - file_browser
       - insertTable
       - '|'
@@ -96,6 +98,7 @@ settings:
       properties:
         reversed: false
         startIndex: true
+        styles: false
       multiBlock: true
     ckeditor5_paste_filter_pasteFilter:
       enabled: true
@@ -187,6 +190,7 @@ settings:
         - '<h5 id>'
         - '<h6 id>'
         - '<drupal-entity data-entity-type data-entity-substitution data-embed-button>'
+        - '<mass-inline-message data-title data-type>'
         - '<kbd>'
         - '<samp>'
     ckeditor5_style:

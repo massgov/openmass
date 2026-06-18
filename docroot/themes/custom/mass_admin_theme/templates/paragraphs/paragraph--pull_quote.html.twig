@@ -41,7 +41,7 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
@@ -49,14 +49,14 @@
     {% block content %}
       {%
         set callOut = {
-        "text": content.field_quote|field_value,
-        "author": content.field_name,
-        "title": content.field_title
+        text: content.field_quote|field_value,
+        author: content.field_name,
+        title: content.field_title,
       }
 
       %}
 
-      {% include "@organisms/by-author/callout.twig" %}
+      {{ include('@organisms/by-author/callout.twig') }}
     {% endblock %}
   </div>
 {% endblock paragraph %}

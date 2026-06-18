@@ -4,22 +4,22 @@
   {% for link in flexible_link.links %}
     {% set content = link.download_link ?
       {
-        "iconSize": "",
-        "icon": link.download_link.extra_file_icon['#markup'],
-        "decorativeLink": {
-        "text": link.download_link.file_title,
-        "href": url('media_entity_download.download', {'media': link.download_link.mid}),
-        "info": ""
+        iconSize: '',
+        icon: link.download_link.extra_file_icon['#markup'],
+        decorativeLink: {
+        text: link.download_link.file_title,
+        href: url('media_entity_download.download', {media: link.download_link.mid}),
+        info: '',
       },
-        "size": link.download_link.calculated_file_size,
-        "language": link.download_link.language,
-        "format": link.download_link.extra_file_extension,
-        "inlineLinks": link.download_link.translationLinks
+        size: link.download_link.calculated_file_size,
+        language: link.download_link.language,
+        format: link.download_link.extra_file_extension,
+        inlineLinks: link.download_link.translationLinks,
       }
       :
       {
-        "text": link.text,
-        "href": link.href
+        text: link.text,
+        href: link.href,
       }
     %}
 
@@ -27,19 +27,19 @@
   {% endfor %}
 
   {% set linkList = {
-    "stacked": true,
-    "links": links,
-    "hideBullets": true
+    stacked: true,
+    links: links,
+    hideBullets: true,
   } %}
 
   {% if flexible_link.title is not empty %}
     {% set linkList = linkList|merge({
-      "compHeading": {
-        "title": flexible_link.title,
-        "level": 3
-      }
+      compHeading: {
+        title: flexible_link.title,
+        level: 3,
+      },
     }) %}
   {% endif %}
 
-  {% include "@organisms/by-author/link-list.twig" with {"linkList": linkList} %}
+  {{ include('@organisms/by-author/link-list.twig', {linkList: linkList}) }}
 {% endfor %}

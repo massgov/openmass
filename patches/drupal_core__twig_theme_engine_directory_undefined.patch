@@ -1,0 +1,14 @@
+diff --git a/lib/Drupal/Core/Template/TwigThemeEngine.php b/lib/Drupal/Core/Template/TwigThemeEngine.php
+index 6b2c71185d3..b8d7c49e2af 100644
+--- a/lib/Drupal/Core/Template/TwigThemeEngine.php
++++ b/lib/Drupal/Core/Template/TwigThemeEngine.php
+@@ -112,7 +112,8 @@ public function renderTemplate(string $template_file, array $variables): string|
+       // Check if the template_file belongs to a custom theme.
+       $template_override_status_output = "BEGIN OUTPUT";
+       $template_override_suffix_output = "END OUTPUT";
+-      if (str_starts_with($template_file, $variables['directory'])) {
++      $directory = $variables['directory'] ?? '';
++      if ($directory !== '' && str_starts_with($template_file, $directory)) {
+         $template_override_status_output = "💡 BEGIN CUSTOM TEMPLATE OUTPUT";
+         $template_override_suffix_output = "END CUSTOM TEMPLATE OUTPUT";
+       }

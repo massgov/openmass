@@ -74,11 +74,11 @@ in the following block to this.
 
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
       <div class="ma__header__hamburger__logo ma__header__hamburger__logo--mobile">
-        {% include "@atoms/09-media/site-logo.twig" %}
+        {{ include('@atoms/09-media/site-logo.twig') }}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__nav-search js-header__nav-search" >
-          {% include "@molecules/header-search.twig" %}
+          {{ include('@molecules/header-search.twig') }}
         </div>
       {% endif %}
 

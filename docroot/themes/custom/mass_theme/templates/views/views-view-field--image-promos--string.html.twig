@@ -23,11 +23,11 @@
 
 {%
   set bundle_field_map = {
-    'guide_page': 'field_guide_page_lede',
-    'how_to_page': 'field_how_to_lede',
-    'service_details': 'field_service_detail_lede',
-    'service_page': 'field_service_lede',
-    'news': 'field_news_lede',
+    guide_page: 'field_guide_page_lede',
+    how_to_page: 'field_how_to_lede',
+    service_details: 'field_service_detail_lede',
+    service_page: 'field_service_lede',
+    news: 'field_news_lede',
   }
 %}
 {% set bundle = node.bundle() %}
@@ -35,15 +35,15 @@
   {% set lede = node.get(bundle_field_map[bundle]).value|drupal_escape %}
   {%
     set richText = {
-      'rteElements': [{
-        'path': '@atoms/11-text/raw-html.twig',
-        'data': {
-          'rawHtml': {
-            'content': lede
-          }
-        }
-      }]
+      rteElements: [{
+        path: '@atoms/11-text/raw-html.twig',
+        data: {
+          rawHtml: {
+            content: lede,
+          },
+        },
+      }],
     }
   %}
-  {% include "@organisms/by-author/rich-text.twig" %}
+  {{ include('@organisms/by-author/rich-text.twig') }}
 {% endif %}

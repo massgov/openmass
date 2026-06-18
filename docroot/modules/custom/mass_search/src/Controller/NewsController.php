@@ -5,6 +5,7 @@ namespace Drupal\mass_search\Controller;
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\RevisionableStorageInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +34,9 @@ class NewsController extends ControllerBase {
     $response_array = [];
     $node_storage = $this->entityTypeManager()->getStorage('node');
 
+    /** @var \Drupal\Core\Entity\RevisionableStorageInterface $paragraph_storage */
+    $paragraph_storage = $this->entityTypeManager()->getStorage('paragraph');
+
     // Create UTC timezone variable for later (re)use.
     $utc_timezone = new \DateTimeZone('UTC');
 
@@ -60,9 +64,7 @@ class NewsController extends ControllerBase {
 
       // Format each signee_name given the available data for each one.
       foreach ($entity->get('field_news_signees')->getValue() as $signee) {
-        $paragraph = $this->entityTypeManager()
-          ->getStorage('paragraph')
-          ->loadRevision($signee['target_revision_id']);
+        $paragraph = $paragraph_storage->loadRevision($signee['target_revision_id']);
 
         // External and State Organizations use different fields to store names.
         switch ($paragraph->bundle()) {

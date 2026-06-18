@@ -4,18 +4,18 @@
  * Theme override to display the Link only view mode of nodes.
  */
  #}
-{% include "@molecules/download-link.twig" with {
-  "downloadLink": {
-    "iconSize": "",
-    "icon": "",
-    "decorativeLink": {
-      "text": label,
-      "href": url,
-      "info": "",
-      "property": ""
+{{ include('@molecules/download-link.twig', {
+  downloadLink: {
+    iconSize: '',
+    icon: '',
+    decorativeLink: {
+      text: label,
+      href: url,
+      info: '',
+      property: '',
     },
-    "size": "",
-    "format": "form",
-  }
-} %}
+    size: '',
+    format: 'form',
+  },
+}) }}
 {{ content }}

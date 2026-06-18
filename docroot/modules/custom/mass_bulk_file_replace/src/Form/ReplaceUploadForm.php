@@ -5,6 +5,7 @@ namespace Drupal\mass_bulk_file_replace\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\Core\File\FileExists;
 use Drupal\file\Entity\File;
 use Drupal\mass_bulk_file_replace\FilenameMediaMatchTrait;
 use Drupal\media\Entity\Media;
@@ -279,7 +280,7 @@ If any filenames do not match, you will be redirected to a review screen to conf
       $destination_uri = rtrim($destination, '/') . '/' . $clean_name;
 
       // Copy uploaded file into final destination, overwriting any existing file.
-      $copied = $file_system->copy($path, $destination_uri, FileSystemInterface::EXISTS_REPLACE);
+      $copied = $file_system->copy($path, $destination_uri, FileExists::Replace);
       if (!$copied) {
         \Drupal::logger('mass_bulk_file_replace')->error('Failed to copy uploaded file "@file" to "@dest".', ['@file' => $path, '@dest' => $destination_uri]);
         return;
