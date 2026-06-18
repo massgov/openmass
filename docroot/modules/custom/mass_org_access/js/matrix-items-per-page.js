@@ -1,7 +1,7 @@
 /**
  * Reloads the org mapping matrix when the "items per page" select changes.
  *
- * @param {Drupal} Drupal Drupal global object providing behaviors registry.
+ * @param {Drupal} Drupal global object providing behaviors registry.
  * @param {Function} once Core/once helper for one-time element processing.
  */
 
