@@ -124,8 +124,6 @@ class MassOrgAccessCommands extends DrushCommands {
       ->range(0, 100)
       ->execute());
 
-    $node_ids = [];
-
     $media_ids = array_values($entity_type_manager->getStorage('media')
       ->getQuery()
       ->accessCheck(FALSE)
