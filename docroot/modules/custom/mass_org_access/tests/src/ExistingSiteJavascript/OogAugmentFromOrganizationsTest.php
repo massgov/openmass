@@ -611,11 +611,21 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
           return \Drupal\node\Entity\Node::load((int) reset($existing));
         }
       }
-      return $this->createNode([
+      $node = $this->createNode([
         'type' => $bundle,
         'title' => 'OOG Augment ' . $bundle . ' ' . $this->randomMachineName(6),
         'status' => 1,
       ] + $extra);
+      // The reconcile presave derives field_content_organization from the
+      // entity's organizations on save, wiping any manually-seeded Permission
+      // Groups a test stages here. Re-apply them with a syncing save (which the
+      // presave skips) so the edit form starts in the intended fixture state.
+      if (array_key_exists('field_content_organization', $extra)) {
+        $node->set('field_content_organization', $extra['field_content_organization']);
+        $node->setSyncing(TRUE);
+        $node->save();
+      }
+      return $node;
     }
     $existing = \Drupal::entityQuery('media')
       ->accessCheck(FALSE)

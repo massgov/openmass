@@ -110,6 +110,10 @@ class OrgAccessChecker {
     if (!$entity->hasField('field_organizations') || $entity->get('field_organizations')->isEmpty()) {
       return FALSE;
     }
+    // field_organizations->getValue() is a list of reference items, each
+    // shaped like ['target_id' => '123']. Turn it into a plain list of
+    // org_page node IDs: pull each target_id as an int (0 if missing), drop
+    // the empty/zero ones, de-duplicate, then reindex to [123, 456, ...].
     $org_nids = array_values(array_unique(array_filter(array_map(
       fn(array $item) => (int) ($item['target_id'] ?? 0),
       $entity->get('field_organizations')->getValue()
@@ -119,6 +123,60 @@ class OrgAccessChecker {
     }
     $new_tids = $this->ownerGroupTidsForOrgs($org_nids);
     if (empty($new_tids)) {
+      return FALSE;
+    }
+    $entity->set(
+      'field_content_organization',
+      array_map(fn($tid) => ['target_id' => $tid], $new_tids)
+    );
+    return TRUE;
+  }
+
+  /**
+   * Reconciles field_content_organization to match the entity's Organizations.
+   *
+   * The authoritative, server-side derivation: recomputes Permission Groups as
+   * the union of each referenced org_page's curated terms and REPLACES whatever
+   * is on the entity (unlike populateOwnerGroupsFromOrganizations(), which only
+   * fills an empty field). Run on presave so the saved value never depends on
+   * the client-side JS having succeeded — removing an organization drops its
+   * terms, and an entity with no organizations (or organizations without
+   * Permission Groups) ends up empty (admin-only-editable).
+   *
+   * Reads field_organizations, which mass_validation has already populated from
+   * the bundle-specific source fields (binder/decision/person) by presave time.
+   * Skips org_page (its field is the hand-curated source) and any entity
+   * without both field_content_organization and field_organizations.
+   *
+   * @return bool
+   *   TRUE if the field value changed.
+   */
+  public function reconcileOwnerGroupsFromOrganizations(EntityInterface $entity): bool {
+    if (!$entity->hasField('field_content_organization')) {
+      return FALSE;
+    }
+    if ($entity instanceof NodeInterface && $entity->bundle() === 'org_page') {
+      return FALSE;
+    }
+    if (!$entity->hasField('field_organizations')) {
+      return FALSE;
+    }
+
+    // field_organizations->getValue() is a list of reference items, each
+    // shaped like ['target_id' => '123']. Turn it into a plain list of
+    // org_page node IDs: pull each target_id as an int (0 if missing), drop
+    // the empty/zero ones, de-duplicate, then reindex to [123, 456, ...].
+    $org_nids = array_values(array_unique(array_filter(array_map(
+      fn(array $item) => (int) ($item['target_id'] ?? 0),
+      $entity->get('field_organizations')->getValue()
+    ))));
+
+    $new_tids = $org_nids ? $this->ownerGroupTidsForOrgs($org_nids) : [];
+
+    $current = array_values(array_unique(array_map('intval', $this->getEntityOrgTids($entity))));
+    sort($current);
+    // $new_tids is already sorted + unique from ownerGroupTidsForOrgs().
+    if ($current === $new_tids) {
       return FALSE;
     }
     $entity->set(

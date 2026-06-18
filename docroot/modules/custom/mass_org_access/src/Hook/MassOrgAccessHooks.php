@@ -11,6 +11,7 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Hook\Order\OrderAfter;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -270,23 +271,37 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Warns a user who is about to save content that locks them out of it.
+   * Derives Permission Groups server-side, then warns on self-lockout.
    *
-   * If none of the Permission Groups being saved on a node or media entity
-   * match the saving user's own Permission Groups, that user will not be able
-   * to edit the entity again once org-based permissions are enforced. This
-   * adds a non-blocking warning (the save still goes through) so they can
-   * adjust the Organization(s) if it was a mistake. Runs on every real save
-   * via entity_presave — paragraph AJAX rebuilds don't save, so it does not
-   * fire mid-edit. Skips: backfill/sync saves, users with `bypass org access`
-   * (never locked out), and users with no Permission Groups of their own
-   * (the login warning already covers them).
+   * The authoritative derivation lives here, not in the client-side JS: on
+   * every real (non-syncing) save we recompute field_content_organization from
+   * the entity's Organization(s) so the saved value cannot be left stale or
+   * empty by a fast submit, disabled JS, a failed lookup, or a crafted POST —
+   * and it covers media and bulk/programmatic saves, not just node edit forms.
+   * The JS stays as a live preview. Runs after mass_validation, which has by
+   * then mirrored the bundle-specific org fields into field_organizations.
+   *
+   * Then, if the resulting Permission Groups no longer include any of the
+   * saving user's own, a non-blocking warning is shown (the save still goes
+   * through) so they can fix the Organization(s) if it was a mistake.
    */
-  #[Hook('entity_presave')]
-  public function entityPresaveWarnSelfLockout(EntityInterface $entity): void {
+  #[Hook('entity_presave', order: new OrderAfter(modules: ['mass_validation']))]
+  public function entityPresave(EntityInterface $entity): void {
     if (!$entity instanceof ContentEntityInterface || $entity->isSyncing()) {
       return;
     }
+    $this->orgAccessChecker->reconcileOwnerGroupsFromOrganizations($entity);
+    $this->warnOnSelfLockout($entity);
+  }
+
+  /**
+   * Warns the saving user when the derived Permission Groups exclude their own.
+   *
+   * Skips entities without the field, users with `bypass org access` (never
+   * locked out), and users with no Permission Groups of their own (the login
+   * warning already covers them).
+   */
+  private function warnOnSelfLockout(EntityInterface $entity): void {
     if (!$entity->hasField('field_content_organization')) {
       return;
     }

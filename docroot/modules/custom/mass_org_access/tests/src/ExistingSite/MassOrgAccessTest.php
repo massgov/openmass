@@ -1083,8 +1083,13 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'type' => 'info_details',
       'title' => 'Curated ' . $this->randomMachineName(),
       'field_organizations' => [$this->orgPageA->id()],
-      'field_content_organization' => [$manualTerm->id()],
     ]);
+    // Put a hand-curated Owner Groups value (not derived from the orgs) in
+    // place with a syncing save so the presave reconcile leaves it untouched,
+    // mimicking an admin edit the backfill must not clobber.
+    $node->set('field_content_organization', [$manualTerm->id()]);
+    $node->setSyncing(TRUE);
+    $node->save();
 
     $changed = \Drupal::service('mass_org_access.org_access_checker')
       ->populateOwnerGroupsFromOrganizations($node);
@@ -1102,6 +1107,55 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       $tids,
       'Manual Owner Groups value must survive backfill untouched.'
     );
+  }
+
+  /**
+   * The server derives Permission Groups from Organizations on every save.
+   *
+   * Proves the authoritative derivation no longer depends on the client-side
+   * JS: a save that submits the wrong Owner Groups is corrected server-side,
+   * the value is the union of all Organizations, and removing every
+   * Organization clears it (admin-only-editable).
+   */
+  public function testServerSideReconcileDerivesOwnerGroupsOnSave(): void {
+    $oogTids = fn(NodeInterface $n): array => (function (array $t): array {
+      sort($t);
+      return $t;
+    })(array_map('intval', array_column($n->get('field_content_organization')->getValue(), 'target_id')));
+
+    // A submit with the WRONG Owner Groups but a real Organization is fixed.
+    $bogus = $this->createTerm(
+      Vocabulary::load('user_organization'),
+      ['name' => 'Bogus ' . $this->randomMachineName()]
+    );
+    $node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Reconcile ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageA->id()],
+      'field_content_organization' => [$bogus->id()],
+    ]);
+    $this->assertSame(
+      [(int) $this->termA->id()],
+      $oogTids($node),
+      'On save the server must derive Owner Groups from Organizations, ignoring the submitted value.'
+    );
+
+    // Two organizations → union of both their Permission Groups.
+    $termB = $this->getUserTermForOrg($this->orgPageB);
+    $node->set('field_organizations', [$this->orgPageA->id(), $this->orgPageB->id()]);
+    $node->save();
+    $expected = [(int) $this->termA->id(), (int) $termB->id()];
+    sort($expected);
+    $this->assertSame(
+      $expected,
+      $oogTids($node),
+      'Owner Groups must be the union of every referenced organization.'
+    );
+
+    // Removing all organizations clears the derived Owner Groups.
+    $node->set('field_organizations', []);
+    $node->save();
+    $this->assertSame([], $oogTids($node), 'No organizations must clear Owner Groups.');
   }
 
   /**
@@ -1293,14 +1347,15 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * Saving content with no matching Permission Groups warns the user.
    */
   public function testLockoutWarningWhenPermissionGroupsDisjoint(): void {
-    $term_b = $this->getUserTermForOrg($this->orgPageB);
     \Drupal::messenger()->deleteAll();
     \Drupal::currentUser()->setAccount($this->userA);
 
+    // Reconcile derives Owner Groups [termB] from orgPageB, which userA (termA)
+    // does not share — saving it locks userA out, so they must be warned.
     $this->createNode([
       'type' => 'info_details',
       'title' => 'Lockout ' . $this->randomMachineName(),
-      'field_content_organization' => [$term_b->id()],
+      'field_organizations' => [$this->orgPageB->id()],
     ]);
 
     $this->assertNotEmpty(
@@ -1316,10 +1371,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     \Drupal::messenger()->deleteAll();
     \Drupal::currentUser()->setAccount($this->userA);
 
+    // Reconcile derives Owner Groups [termA] from orgPageA, which userA shares.
     $this->createNode([
       'type' => 'info_details',
       'title' => 'No lockout ' . $this->randomMachineName(),
-      'field_content_organization' => [$this->termA->id()],
+      'field_organizations' => [$this->orgPageA->id()],
     ]);
 
     $this->assertEmpty(
