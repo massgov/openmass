@@ -1,19 +1,34 @@
 
+## [0.483.1] - June 18, 2026
+
+### Security
+- DP-47680: Drupal core update 11.3.12.
+
+
+## [0.483.0] - June 16, 2026
+
+### Added
+  - DP-46864: Adds a Message box toolbar button to Basic HTML CKEditor for informational and alert inline messages rendered with Mayflower inline-message.
+
+### Fixed
+  - DP-47109: Fix JS error with mobile translate component.
+
+
 
 ## [0.482.0] - June 9, 2026
 
 ### Added
   - DP-43633: Warn authors when unpublishing or trashing a document that has published pages linking here.
-  
+
 ### Changed
   - DP-45831: Update internal links on mass.gov that are redirects.
   - DP-46121: Include the nearest microsite name in the HTML meta title for pages within a microsite.
   - DP-46592: CSV Table / Datatables changes - round 3.
-  
+
 ### Fixed
   - DP-47343: Prevent ordered list numbers from being clipped for leading-zero styles and lists with a start attribute, including on info-details pages.
   - DP-47348: Remove green decorative underline from H3 and H4 in the rich text editor so editor preview matches the published page.
-  
+
 
 
 ## [0.481.0] - June 2, 2026
@@ -22,15 +37,15 @@
   - DP-44689: Use the info icon and standard callout spacing for the decision tree disclaimer.
   - DP-46912: Enable item count selection in all content and advanced content reports.
   - DP-46922: Small updates to purge oversized header logger.
-  
+
 ### Fixed
   - DP-45426: Fixed bullet list alignment issues.
   - DP-47000: Fix csv export for all documents to respect value of accessibility status filter
   - DP-47095: Restrict user approval fields to users with administer users permission and normalize editor profile form spacing after the fields are hidden.
-  
+
 ### Added
   - DP-45952: Added top down org hierarchy view report.
-  
+
 
 
 ## [0.480.1] - May 20, 2026
