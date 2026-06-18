@@ -8,11 +8,11 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\media\MediaInterface;
 use Drupal\stage_file_proxy\DownloadManagerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -134,38 +134,10 @@ class MassMediaDownloadController extends ControllerBase {
       throw new NotFoundHttpException("The requested file id {$fid} could not be found.");
     }
 
-    $uri = $file->getFileUri();
-    $scheme = $this->streamWrapperManager->getScheme($uri);
+    $file_uri = $file->getFileUri();
+    $scheme = $this->streamWrapperManager->getScheme($file_uri);
 
-    // Catches stray metadata not handled properly by file_create_url().
-    // @see https://www.drupal.org/project/drupal/issues/2867355
-    $context = new RenderContext();
-    $callback = function () use ($uri) {
-      return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
-    };
-    if (\Fiber::getCurrent() !== NULL) {
-      $uri = $callback();
-    }
-    else {
-      try {
-        $uri = $this->renderer->executeInRenderContext($context, $callback);
-      }
-      catch (\FiberError) {
-        $uri = $callback();
-      }
-    }
-
-    // Returns a 301 Moved Permanently redirect response.
-    $response = new TrustedRedirectResponse($uri, 301);
-    // Adds cache metadata.
-    $response->getCacheableMetadata()->addCacheContexts(['url.site']);
-    $response->addCacheableDependency($media);
-    $response->addCacheableDependency($file);
-    if (!$context->isEmpty()) {
-      $response->addCacheableDependency($context->pop());
-    }
-
-    if (!file_exists($uri)) {
+    if (!$this->fileExists($file_uri)) {
       // Stage File Proxy is intended for public assets; private files should
       // remain non-public and must not be fetched from origin.
       if ($scheme === 'public') {
@@ -177,7 +149,7 @@ class MassMediaDownloadController extends ControllerBase {
         // Only fetch when we are not on mass.gov production host.
         if (!empty($originHost) && strcasecmp($requestHost, $originHost) !== 0) {
           $originDir = trim((string) ($stageConfig->get('origin_dir') ?? 'files'));
-          $relativePath = str_replace('public://', '', $uri);
+          $relativePath = str_replace('public://', '', $file_uri);
           $options = ['verify' => (bool) $stageConfig->get('verify')];
 
           $this->stageFileProxyDownloadManager->fetch(
@@ -191,27 +163,23 @@ class MassMediaDownloadController extends ControllerBase {
     }
 
     // Still missing on disk: return 404.
-    if (!file_exists($uri)) {
-      throw new NotFoundHttpException("The file {$uri} does not exist.");
+    if (!$this->fileExists($file_uri)) {
+      throw new NotFoundHttpException("The file {$file_uri} does not exist.");
     }
 
     // Let other modules provide headers and controls access to the file.
-    $headers = $this->moduleHandler()->invokeAll('file_download', [$uri]);
+    $headers = $this->moduleHandler()->invokeAll('file_download', [$file_uri]);
     foreach ($headers as $result) {
       if ($result == -1) {
         throw new AccessDeniedHttpException();
       }
     }
 
-    $response = new BinaryFileResponse($uri, Response::HTTP_OK, $headers, $scheme !== 'private');
+    $response = new BinaryFileResponse($file_uri, Response::HTTP_OK, $headers, $scheme !== 'private');
 
     if (empty($headers['Content-Disposition'])) {
-      if ($request_query->has(ResponseHeaderBag::DISPOSITION_INLINE)) {
-        $disposition = ResponseHeaderBag::DISPOSITION_INLINE;
-      }
-      else {
-        $disposition = ResponseHeaderBag::DISPOSITION_ATTACHMENT;
-      }
+      $mime_type = $file->getMimeType() ?: 'application/octet-stream';
+      $disposition = $this->resolveContentDisposition($mime_type, $request_query);
       $response->setContentDisposition($disposition, $file->getFilename());
     }
 
@@ -220,6 +188,46 @@ class MassMediaDownloadController extends ControllerBase {
     }
 
     return $response;
+  }
+
+  /**
+   * Determines whether a file exists at the given stream-wrapper URI.
+   */
+  private function fileExists(string $file_uri): bool {
+    $realpath = $this->fileSystem->realpath($file_uri);
+    if ($realpath) {
+      return file_exists($realpath);
+    }
+
+    return file_exists($file_uri);
+  }
+
+  /**
+   * Resolves the Content-Disposition header for a download response.
+   */
+  private function resolveContentDisposition(string $mime_type, $request_query): string {
+    if ($request_query->has('attachment')) {
+      return ResponseHeaderBag::DISPOSITION_ATTACHMENT;
+    }
+    if ($request_query->has(ResponseHeaderBag::DISPOSITION_INLINE)) {
+      return ResponseHeaderBag::DISPOSITION_INLINE;
+    }
+    if ($this->isBrowserViewableMimeType($mime_type)) {
+      return ResponseHeaderBag::DISPOSITION_INLINE;
+    }
+
+    return ResponseHeaderBag::DISPOSITION_ATTACHMENT;
+  }
+
+  /**
+   * Whether a MIME type should be displayed inline in the browser by default.
+   */
+  private function isBrowserViewableMimeType(string $mime_type): bool {
+    if ($mime_type === 'application/pdf' || $mime_type === 'text/plain') {
+      return TRUE;
+    }
+
+    return str_starts_with($mime_type, 'image/');
   }
 
 }

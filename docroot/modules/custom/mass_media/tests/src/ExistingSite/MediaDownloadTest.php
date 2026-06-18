@@ -51,6 +51,102 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $content_type = $this->getSession()->getResponseHeader('Content-Type');
     $this->assertNotEmpty($content_type);
     $this->assertStringContainsString('text/plain', $content_type);
+
+    $disposition = $this->getSession()->getResponseHeader('Content-Disposition');
+    $this->assertNotEmpty($disposition);
+    $this->assertStringContainsString('inline', $disposition);
+  }
+
+  /**
+   * PDF downloads should display inline in the browser by default.
+   */
+  public function testMediaDownloadPdfServesInlineDisposition(): void {
+    $destination = 'public://llama-download.pdf';
+    file_put_contents($destination, '%PDF-1.4 llama');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Llama PDF',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->visit($media->toUrl()->toString() . '/download');
+
+    $content_type = $this->getSession()->getResponseHeader('Content-Type');
+    $this->assertNotEmpty($content_type);
+    $this->assertStringContainsString('application/pdf', $content_type);
+
+    $disposition = $this->getSession()->getResponseHeader('Content-Disposition');
+    $this->assertNotEmpty($disposition);
+    $this->assertStringContainsString('inline', $disposition);
+    $this->assertStringNotContainsString('attachment', $disposition);
+  }
+
+  /**
+   * Non-viewable file types should download by default.
+   */
+  public function testMediaDownloadZipServesAttachmentDisposition(): void {
+    $destination = 'public://llama-download.zip';
+    file_put_contents($destination, 'PK llama');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Llama ZIP',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->visit($media->toUrl()->toString() . '/download');
+
+    $disposition = $this->getSession()->getResponseHeader('Content-Disposition');
+    $this->assertNotEmpty($disposition);
+    $this->assertStringContainsString('attachment', $disposition);
+  }
+
+  /**
+   * The attachment query parameter should force a download.
+   */
+  public function testMediaDownloadAttachmentQueryParam(): void {
+    $destination = 'public://llama-download-attachment.pdf';
+    file_put_contents($destination, '%PDF-1.4 llama');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Llama PDF attachment',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->visit($media->toUrl()->toString() . '/download?attachment');
+
+    $disposition = $this->getSession()->getResponseHeader('Content-Disposition');
+    $this->assertNotEmpty($disposition);
+    $this->assertStringContainsString('attachment', $disposition);
   }
 
   /**
