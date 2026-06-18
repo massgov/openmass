@@ -273,7 +273,7 @@ jobs:
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
       # Lint Twig
-      - run: composer twigcs -- --no-interaction
+      - run: vendor/bin/twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction
 
   test:
     parameters:
@@ -670,8 +670,14 @@ jobs:
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
-      - run: docker push << parameters.instance >>
+      - run:
+          name: Commit mysql image
+          command: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
+          no_output_timeout: 60m
+      - run:
+          name: Push mysql image
+          command: docker push << parameters.instance >>
+          no_output_timeout: 60m
 
   pending_security:
     working_directory: /tmp/code
