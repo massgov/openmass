@@ -194,7 +194,7 @@ JS
     // Basename must match token + id; Dropzone posts this name to the server.
     $upload_basename = 'housing-proposal_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $mid . '.pdf';
     $dir = sys_get_temp_dir() . '/bulk-replace-ui-' . $this->randomMachineName();
-    mkdir($dir, 0777, TRUE);
+    $this->assertTrue(mkdir($dir, 0777, TRUE) || is_dir($dir), "Failed to create $dir");
     $disk_path = $dir . '/' . $upload_basename;
     $this->writeDiskFile($disk_path, 'after-replace');
 
