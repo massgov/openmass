@@ -110,14 +110,7 @@ class OrgAccessChecker {
     if (!$entity->hasField('field_organizations') || $entity->get('field_organizations')->isEmpty()) {
       return FALSE;
     }
-    // field_organizations->getValue() is a list of reference items, each
-    // shaped like ['target_id' => '123']. Turn it into a plain list of
-    // org_page node IDs: pull each target_id as an int (0 if missing), drop
-    // the empty/zero ones, de-duplicate, then reindex to [123, 456, ...].
-    $org_nids = array_values(array_unique(array_filter(array_map(
-      fn(array $item) => (int) ($item['target_id'] ?? 0),
-      $entity->get('field_organizations')->getValue()
-    ))));
+    $org_nids = $this->referencedOrgNids($entity);
     if (empty($org_nids)) {
       return FALSE;
     }
@@ -162,14 +155,7 @@ class OrgAccessChecker {
       return FALSE;
     }
 
-    // field_organizations->getValue() is a list of reference items, each
-    // shaped like ['target_id' => '123']. Turn it into a plain list of
-    // org_page node IDs: pull each target_id as an int (0 if missing), drop
-    // the empty/zero ones, de-duplicate, then reindex to [123, 456, ...].
-    $org_nids = array_values(array_unique(array_filter(array_map(
-      fn(array $item) => (int) ($item['target_id'] ?? 0),
-      $entity->get('field_organizations')->getValue()
-    ))));
+    $org_nids = $this->referencedOrgNids($entity);
 
     $new_tids = $org_nids ? $this->ownerGroupTidsForOrgs($org_nids) : [];
 
@@ -235,6 +221,27 @@ class OrgAccessChecker {
     $result = array_map('intval', array_keys($tids));
     sort($result);
     return $result;
+  }
+
+  /**
+   * The org_page node IDs an entity references via field_organizations.
+   *
+   * Drupal returns field_organizations->getValue() as a list of reference
+   * items, each shaped like ['target_id' => '123']. This collapses that into a
+   * plain, de-duplicated list of org_page node IDs as ints — each target_id
+   * cast to int (0 if missing), the empty/zero ones dropped, then reindexed to
+   * [123, 456, ...].
+   *
+   * Callers must have already confirmed the field exists.
+   *
+   * @return int[]
+   *   org_page node IDs.
+   */
+  private function referencedOrgNids(EntityInterface $entity): array {
+    return array_values(array_unique(array_filter(array_map(
+      fn(array $item) => (int) ($item['target_id'] ?? 0),
+      $entity->get('field_organizations')->getValue()
+    ))));
   }
 
 }
