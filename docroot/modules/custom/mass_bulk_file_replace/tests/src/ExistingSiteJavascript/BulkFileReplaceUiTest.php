@@ -56,9 +56,8 @@ class BulkFileReplaceUiTest extends ExistingSiteSelenium2DriverTestBase {
    */
   private function useBulkReplaceTestUser(int $uid): void {
     $account = User::load($uid);
-    if ($account) {
-      \Drupal::currentUser()->setAccount($account);
-    }
+    $this->assertNotNull($account, "Bulk replace test user $uid must exist before switching account.");
+    \Drupal::currentUser()->setAccount($account);
   }
 
   /**
