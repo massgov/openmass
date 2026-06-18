@@ -20,7 +20,7 @@
  * Nothing is persisted before form submit — the change lives in the
  * hidden OOG autocomplete input until the user saves.
  *
- * @param {Drupal} Drupal Drupal global object providing behaviors registry.
+ * @param {Drupal} Drupal global object providing behaviors registry.
  * @param {Function} once Core/once helper for one-time element processing.
  */
 
