@@ -7,6 +7,7 @@ dependencies:
     - entity_embed
     - linkit
     - mass_fields
+    - mass_inline_message
     - pathologic
 _core:
   default_config_hash: hewPmBgni9jlDK_IjLxUx1HsTbinK-hdl0lOwjbteIY
@@ -58,6 +59,12 @@ filters:
     provider: filter
     status: true
     weight: 10
+    settings: {  }
+  filter_mass_inline_message:
+    id: filter_mass_inline_message
+    provider: mass_inline_message
+    status: true
+    weight: 5
     settings: {  }
   filter_pathologic:
     id: filter_pathologic
