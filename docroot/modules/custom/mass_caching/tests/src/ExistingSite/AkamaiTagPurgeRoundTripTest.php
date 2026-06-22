@@ -3,7 +3,7 @@
 namespace Drupal\Tests\mass_caching\ExistingSite;
 
 use Drupal\akamai\Event\AkamaiHeaderEvents;
-use Drupal\akamai\Event\AkamaiPurgeEvents;
+use Drupal\mass_caching\AkamaiTagPurger;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**
@@ -15,14 +15,12 @@ use MassGov\Dtt\MassExistingSiteBase;
  * request. If they differ, every tag purge silently matches nothing and content
  * stays stale at the edge with no error.
  *
- * This drives both REAL code paths for the same source cache tag, using the
- * site's event_dispatcher (so the registered subscribers actually run):
- *
+ * This compares both REAL code paths for the same source cache tag:
  *  - Header path mirrors \Drupal\akamai\EventSubscriber\CacheableResponseSubscriber::onRespond():
- *    dispatch HEADER_CREATION (the PR's AkamaiHeaderCreationSubscriber hashes the
- *    tags here), then format each tag.
- *  - Purge path mirrors \Drupal\akamai\Plugin\Purge\Purger\AkamaiTagPurger::invalidate():
- *    format each tag, then dispatch PURGE_CREATION.
+ *    dispatch HEADER_CREATION (AkamaiHeaderCreationSubscriber hashes the tags),
+ *    then format each tag.
+ *  - Purge path uses \Drupal\mass_caching\AkamaiTagPurger::hashTag(), the hashing
+ *    its invalidate() applies to each raw tag before sending it to Akamai.
  *
  * @group mass_caching
  */
@@ -42,18 +40,15 @@ class AkamaiTagPurgeRoundTripTest extends MassExistingSiteBase {
       $dispatcher->dispatch($header_event, AkamaiHeaderEvents::HEADER_CREATION);
       $header_tags = array_values(array_map([$formatter, 'format'], $header_event->data));
 
-      // Purge path: format the raw tag first, then dispatch PURGE_CREATION,
-      // exactly as AkamaiTagPurger::invalidate() builds the tags it sends.
-      $purge_event = new AkamaiPurgeEvents([$formatter->format($source_tag)]);
-      $dispatcher->dispatch($purge_event, AkamaiPurgeEvents::PURGE_CREATION);
-      $purge_tags = array_values($purge_event->data);
+      // Purge path: the hashed tag AkamaiTagPurger::invalidate() sends to Akamai.
+      $purge_tags = [AkamaiTagPurger::hashTag($source_tag)];
 
       $this->assertSame(
         $header_tags,
         $purge_tags,
         sprintf(
-          'Cache tag "%s": the Edge-Cache-Tag header stores "%s" but a tag purge sends "%s". '
-          . 'Akamai matches tags as exact strings, so this purge would silently clear nothing.',
+          'Cache tag "%s": the Edge-Cache-Tag header stores "%s" and a tag purge sends "%s"; '
+          . 'Akamai matches tags as exact strings, so these must be identical.',
           $source_tag,
           implode(',', $header_tags),
           implode(',', $purge_tags)

@@ -4,6 +4,7 @@ use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\file\FileInterface;
 use Drupal\mass_caching\AkamaiPurger;
+use Drupal\mass_caching\AkamaiTagPurger;
 use Drupal\media\MediaInterface;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
@@ -24,6 +25,13 @@ function mass_caching_purge_purgers_alter(array &$definitions): void {
     if (isset($definitions['akamai'])) {
       $definitions['akamai']['class'] = AkamaiPurger::class;
     }
+  }
+
+  // Hash Akamai tag-purge requests so they match the hashed Edge-Cache-Tag
+  // header set by AkamaiHeaderCreationSubscriber. Without this, tag purges would
+  // send unhashed strings that never match the hashed tags stored at Akamai.
+  if (isset($definitions['akamai_tag'])) {
+    $definitions['akamai_tag']['class'] = AkamaiTagPurger::class;
   }
 
   // Change handled types depending on env. Start with disabled for both purgers.
