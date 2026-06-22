@@ -314,6 +314,33 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Asserts the CSV table search control alignment class on the DataTables wrapper.
+   */
+  private function assertCsvTableSearchAlignment(string $expected_alignment): void {
+    $selector = $expected_alignment === 'left'
+      ? '.dt-container.dt-search-left-aligned, .dataTables_wrapper.dt-search-left-aligned'
+      : '.dt-container.dt-search-right-aligned, .dataTables_wrapper.dt-search-right-aligned';
+    $this->assertSession()->elementExists('css', $selector);
+  }
+
+  /**
+   * Asserts whether the page-length control is visible in the CSV table.
+   */
+  private function assertCsvTableLengthControlVisible(bool $visible): void {
+    $length_control = $this->getSession()->getPage()->find('css', '.dt-length, .dataTables_length');
+    if ($visible) {
+      $this->assertNotNull($length_control, 'Expected CSV table length control to be present.');
+      $this->assertTrue($length_control->isVisible(), 'Expected CSV table length control to be visible.');
+      return;
+    }
+
+    if ($length_control === NULL) {
+      return;
+    }
+    $this->assertFalse($length_control->isVisible(), 'Expected CSV table length control to be hidden.');
+  }
+
+  /**
    * Creates an org page node containing a CSV table paragraph.
    */
   private function createOrgPageWithCsvTable(Paragraph $section, string $title) {
@@ -511,10 +538,14 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
     $this->assertStringContainsString('"hideSearchingData":1', $settings);
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->assertCsvTableSearchAlignment('left');
+    $this->assertCsvTableLengthControlVisible(FALSE);
 
     $this->searchCsvTable('Unique Agency', 'Alpha Office');
     $assert->pageTextContains('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->assertCsvTableLengthControlVisible(TRUE);
+    $this->assertCsvTableSearchAlignment('right');
   }
 
   /**
@@ -899,6 +930,7 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $this->drupalGet('node/' . $node->id());
     $this->waitForCsvTableReady();
+    $this->assertCsvTableSearchAlignment('right');
 
     $assert = $this->assertSession();
     $assert->elementExists('css', 'button.csv-field-search-submit');
@@ -932,14 +964,17 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $assert = $this->assertSession();
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->assertCsvTableLengthControlVisible(FALSE);
 
     $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
     $search_input->setValue('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'), 'Typing alone must not reveal rows when hide-until-search is enabled.');
+    $this->assertCsvTableLengthControlVisible(FALSE);
 
     $this->searchCsvTable('Unique Agency');
     $assert->pageTextContains('Unique Agency');
     $this->assertTrue($this->csvTableBodyContainsText('Unique Agency'));
+    $this->assertCsvTableLengthControlVisible(TRUE);
   }
 
   /**
