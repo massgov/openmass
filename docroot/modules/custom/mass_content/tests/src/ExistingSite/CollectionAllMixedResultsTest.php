@@ -51,14 +51,15 @@ class CollectionAllMixedResultsTest extends MassExistingSiteBase {
    */
   private function createDocumentMedia(string $title, int $collection_tid): void {
     $destination = 'public://' . $this->randomMachineName(12) . '.txt';
+    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
+    $file_system = \Drupal::service('file_system');
+    $file_system->copy($src, $destination, TRUE);
+
     $file = File::create([
       'uri' => $destination,
     ]);
     $file->setPermanent();
     $file->save();
-
-    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
-    \Drupal::service('file_system')->copy($src, $destination, TRUE);
 
     $this->createMedia([
       'bundle' => 'document',
