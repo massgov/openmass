@@ -505,7 +505,12 @@ function mass_views_views_pre_render(ViewExecutable $view) {
       // Media rows are unioned into this node-based view in mass_content.module.
       // Unset node-only fields so Views does not try to load node entities/fields
       // for media rows (e.g. description fields used by the keyword search filter).
+      // Match on $field->table here is the Views YAML "table:" value at pre_render,
+      // not the runtime query tableAlias. Any field whose table starts with "node"
+      // is node-specific; excluded fields are only needed for query-time search.
       foreach ($view->field as $field_id => $field) {
+        // rendered_entity_mixed is registered on table "node" (mass_content.module)
+        // but must be kept: it renders both node and media rows via entity_type.
         if ($field_id === 'rendered_entity_mixed') {
           continue;
         }
