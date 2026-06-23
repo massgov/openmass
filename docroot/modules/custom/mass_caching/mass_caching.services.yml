@@ -23,5 +23,6 @@ services:
       - { name: event_subscriber }
   mass_caching.akamai_header_creation_subscriber:
     class: Drupal\mass_caching\EventSubscriber\AkamaiHeaderCreationSubscriber
+    arguments: ['@akamai.helper.cachetagformatter']
     tags:
       - { name: event_subscriber }

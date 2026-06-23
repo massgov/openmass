@@ -76,7 +76,7 @@ class AkamaiCacheableResponseSubscriberTest extends MassExistingSiteBase {
     $tags = $this->getEdgeCacheTags($response);
     $this->assertContains('l2u0', $tags);
     $this->assertContains('80b8', $tags);
-    $this->assertContains('us5v', $tags);
+    $this->assertContains('1tle', $tags);
     $this->assertStringNotContainsString(' ', $response->headers->get('Edge-Cache-Tag'));
     $this->assertStringNotContainsString('rendered', $response->headers->get('Edge-Cache-Tag'));
 
@@ -94,7 +94,7 @@ class AkamaiCacheableResponseSubscriberTest extends MassExistingSiteBase {
     $tags = $this->getEdgeCacheTags($response);
     $this->assertContains('l2u0', $tags);
     $this->assertContains('80b8', $tags);
-    $this->assertNotContains('us5v', $tags);
+    $this->assertNotContains('1tle', $tags);
 
     $event_dispatcher = \Drupal::getContainer()->get('event_dispatcher');
     $event_dispatcher->addListener(AkamaiHeaderEvents::HEADER_CREATION, function ($event): void {
