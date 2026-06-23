@@ -11,7 +11,7 @@ field_name: field_content_organization
 entity_type: node
 bundle: org_page
 label: 'Permission Groups'
-description: "The permission groups whose members can edit this organization page once organization-based editing is enforced. Required for organization pages. Use \"Browse organizations\" to choose the group(s); selecting a group automatically adds its parent groups, so higher-level teams keep access."
+description: 'The permission groups whose members can edit this organization page once organization-based editing is enforced. Required for organization pages. Use "Browse organizations" to choose the group(s); selecting a group automatically adds its parent groups, so higher-level teams keep access.<br><br><strong>Important:</strong> If you change the permisson groups for an existing organization, the permissions for existing related pages will not automatically change. Make a <a href="https://www.mass.gov/massgovsupport">ServiceNow Request</a> for assistance and include a link to this page.'
 required: true
 translatable: true
 default_value: {  }
@@ -23,6 +23,7 @@ settings:
       user_organization: user_organization
     sort:
       field: _none
+      direction: asc
     auto_create: false
     auto_create_bundle: ''
 field_type: entity_reference
