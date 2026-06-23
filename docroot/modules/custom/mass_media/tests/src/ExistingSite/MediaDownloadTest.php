@@ -238,28 +238,49 @@ class MediaDownloadTest extends MassExistingSiteBase {
 
     $this->visit($media->toUrl()->toString() . '/download');
 
-    $this->assertNotEquals(200, $this->getSession()->getStatusCode());
+    // Pin the exact denial code instead of "anything but 200": a 500 (controller
+    // fatal) would also satisfy assertNotEquals() and silently mask a broken
+    // access contract. Access to an unpublished document is denied at the route
+    // (_entity_access: media.view); Mass.gov surfaces that denial as a 404 to
+    // avoid disclosing that the document exists, rather than a bare 403.
+    $this->assertEquals(404, $this->getSession()->getStatusCode());
     $this->assertStringNotContainsString('UNPUBLISHED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
   }
 
   /**
-   * Restricted documents should be viewable only by their owner.
+   * Restricted documents are downloadable only by their (non-admin) owner.
    *
-   * Anonymous users must not be able to download private files for those
-   * documents.
+   * Exercises the actual access contract instead of relying on an incidental
+   * core "-1" for any private file: the owning author gets the bytes (200),
+   * while a different authenticated non-admin user and anonymous users are
+   * denied. The owner must NOT be an administrator, because
+   * mass_media_media_access() lets administrators bypass the restriction, which
+   * would make an admin owner unable to prove the owner-only path.
+   *
+   * A "restricted" moderation state is unpublished (status 0) with its file
+   * kept in private://, so the owner needs "view own unpublished media" to read
+   * it. We grant that via the existing "author" role ("download media" comes
+   * from the authenticated role) rather than a freshly created role: in an
+   * ExistingSite test the web server serving the request does not reliably see
+   * the permissions of a role created moments earlier in the test process.
+   * Denials surface as 404 (Mass.gov hides the existence of the document), not
+   * a bare 403.
    */
-  public function testMediaDownloadPrivateFileDeniedForRestrictedDocument(): void {
-    // Login as author so we can create a restricted media owned by them.
-    $admin = $this->createUser();
-    $admin->addRole('administrator');
-    $admin->activate();
-    $admin->save();
-    $this->drupalLogin($admin);
+  public function testMediaDownloadRestrictedDocumentOwnerOnly(): void {
+    // Non-admin author who owns the restricted document.
+    $owner = $this->createUser();
+    $owner->addRole('author');
+    $owner->save();
+    // A different non-admin user with the same role but who is not the owner.
+    $other = $this->createUser();
+    $other->addRole('author');
+    $other->save();
 
     $destination = 'private://llama-download-private-restricted.txt';
     file_put_contents($destination, 'RESTRICTED PRIVATE BYTES');
     $file = File::create([
       'uri' => $destination,
+      'uid' => $owner->id(),
     ]);
     $file->setPermanent();
     $file->save();
@@ -267,6 +288,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $media = $this->createMedia([
       'title' => 'Restricted document download',
       'bundle' => 'document',
+      'uid' => $owner->id(),
       'field_upload_file' => [
         'target_id' => $file->id(),
       ],
@@ -274,11 +296,25 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'moderation_state' => 'restricted',
     ]);
 
+    $download_url = $media->toUrl()->toString() . '/download';
+
+    // Owner: allowed, receives the actual file bytes.
+    $this->drupalLogin($owner);
+    $this->visit($download_url);
+    $this->assertEquals(200, $this->getSession()->getStatusCode());
+    $this->assertStringContainsString('RESTRICTED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
     $this->drupalLogout();
 
-    $this->visit($media->toUrl()->toString() . '/download');
+    // Different authenticated non-admin user: denied (not the owner).
+    $this->drupalLogin($other);
+    $this->visit($download_url);
+    $this->assertEquals(404, $this->getSession()->getStatusCode());
+    $this->assertStringNotContainsString('RESTRICTED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
+    $this->drupalLogout();
 
-    $this->assertNotEquals(200, $this->getSession()->getStatusCode());
+    // Anonymous user: denied.
+    $this->visit($download_url);
+    $this->assertEquals(404, $this->getSession()->getStatusCode());
     $this->assertStringNotContainsString('RESTRICTED PRIVATE BYTES', $this->getSession()->getPage()->getContent());
   }
 
