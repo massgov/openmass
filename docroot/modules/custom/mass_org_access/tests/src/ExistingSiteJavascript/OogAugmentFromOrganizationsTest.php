@@ -37,6 +37,12 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
     \Drupal::state()->delete('mass_org_access.enforce');
   }
 
+  protected function tearDown(): void {
+    // Never leave enforcement on for a shared environment (a test may flip it).
+    \Drupal::state()->delete('mass_org_access.enforce');
+    parent::tearDown();
+  }
+
   /**
    * Adding then removing an org_page syncs the mapped term into and out of OOG.
    *
@@ -465,6 +471,10 @@ class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBas
     $user->set('field_user_org', $userTerm->id());
     $user->activate();
     $user->save();
+
+    // The self-lockout confirmation is gated on the enforcement switch, which
+    // ships off in Release 1; turn it on so the warning path is active.
+    \Drupal::state()->set('mass_org_access.enforce', TRUE);
 
     $entity = $this->createEntityForBundle($entityType, $bundle, []);
     $this->drupalLogin($user);

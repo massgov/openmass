@@ -185,12 +185,16 @@ class MassOrgAccessHooks {
     $field_widget_complete_form['#attached']['library'][] = 'mass_org_access/oog_from_organizations';
     // Pass the current user's own permission groups so the same JS can warn
     // before a save that would strip the author's access (their groups not
-    // among the content's). Off for bypass users and users with no groups
-    // (the login warning already covers the latter).
+    // among the content's). Gated on the enforcement switch so Release 1 (gate
+    // off) shows no warning — nothing is locked yet. Also off for bypass users
+    // and users with no groups (the login warning already covers the latter).
     $user_tids = $this->orgAccessChecker->getUserOrgTids($this->currentUser);
+    $warn_on_lockout = $this->settings->isEnforcementEnabled()
+      && !$this->currentUser->hasPermission('bypass org access')
+      && !empty($user_tids);
     $field_widget_complete_form['#attached']['drupalSettings']['massOrgAccess'] = [
       'userPermissionGroupTids' => array_values($user_tids),
-      'warnOnSelfLockout' => !$this->currentUser->hasPermission('bypass org access') && !empty($user_tids),
+      'warnOnSelfLockout' => $warn_on_lockout,
       // Host entity context so the lookup endpoint can bind access to it
       // (update access for an existing entity, create access for a new one).
       'hostEntityType' => $entity->getEntityTypeId(),
@@ -297,11 +301,17 @@ class MassOrgAccessHooks {
   /**
    * Warns the saving user when the derived Permission Groups exclude their own.
    *
-   * Skips entities without the field, users with `bypass org access` (never
-   * locked out), and users with no Permission Groups of their own (the login
-   * warning already covers them).
+   * Gated on the enforcement switch (MASS_ORG_ACCESS_ENFORCE / the
+   * mass_org_access.enforce State key): with the gate off — as in Release 1 —
+   * nothing is actually locked, so the warning would only be noise. Also skips
+   * entities without the field, users with `bypass org access` (never locked
+   * out), and users with no Permission Groups of their own (the login warning
+   * already covers them).
    */
   private function warnOnSelfLockout(EntityInterface $entity): void {
+    if (!$this->settings->isEnforcementEnabled()) {
+      return;
+    }
     if (!$entity->hasField('field_content_organization')) {
       return;
     }

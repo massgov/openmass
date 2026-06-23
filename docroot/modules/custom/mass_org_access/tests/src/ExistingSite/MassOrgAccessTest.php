@@ -1406,6 +1406,36 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * No lockout warning while enforcement is off (Release 1).
+   *
+   * Same disjoint setup as testLockoutWarningWhenPermissionGroupsDisjoint(),
+   * but with the gate off nothing is actually locked, so the warning is
+   * suppressed. Reconcile still derives the Owner Groups — only the warning is
+   * gated.
+   */
+  public function testNoLockoutWarningWhenEnforcementOff(): void {
+    \Drupal::state()->set('mass_org_access.enforce', FALSE);
+    \Drupal::messenger()->deleteAll();
+    \Drupal::currentUser()->setAccount($this->userA);
+
+    // Owner Groups derive to [termB] from orgPageB, which userA (termA) does
+    // not share — this would warn if enforcement were on.
+    $this->createNode([
+      'type' => 'info_details',
+      'title' => 'No warn off ' . $this->randomMachineName(),
+      'field_organizations' => [$this->orgPageB->id()],
+    ]);
+
+    $this->assertEmpty(
+      $this->lockoutWarnings(),
+      'No lockout warning while enforcement is off, even with disjoint Permission Groups.'
+    );
+
+    // Restore the value setUp() established for the rest of the run.
+    \Drupal::state()->set('mass_org_access.enforce', TRUE);
+  }
+
+  /**
    * Returns the queued lockout warning messages, as strings.
    */
   private function lockoutWarnings(): array {
