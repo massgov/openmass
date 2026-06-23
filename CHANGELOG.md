@@ -1,4 +1,22 @@
 
+
+## [0.484.0] - June 23, 2026
+
+### Added
+  - DP-43727: Tests for Bulk document import enhancements to validation/verification.
+  
+### Changed
+  - DP-44915: Added views for viewing accessibility information by top-level organization.
+  - DP-44915: Upgraded Editoria11y to the latest version.
+  - DP-44915: Added last revised by to editoria11y report.
+  - DP-47028: Clean calculation logic for Related Organizations to avoid log noise.
+  - DP-47145: Add Toolbar (Hidden, Bottom, Top), Data details and Share options settings to the Tableau embed paragraph for "Connected Apps" embeds, so these are no longer hardcoded. Toolbar defaults to hidden.
+  - DP-47675: Require image in the image paragraph for header image.
+  
+### Fixed
+  - DP-47635: Resolve inline message warning message icon color contrast issue and match font styles to design.
+  
+
 ## [0.483.1] - June 18, 2026
 
 ### Security
