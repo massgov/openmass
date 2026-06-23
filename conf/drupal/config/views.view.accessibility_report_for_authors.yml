@@ -14,9 +14,7 @@ dependencies:
     - serialization
     - taxonomy
     - user
-    - views_autocomplete_filters
     - views_data_export
-    - views_porter_stemmer
 _core:
   default_config_hash: JrHvNmgcbiQ4SSPwNfLlIwoML0Ug8o1Da8gElwFjNG8
 id: accessibility_report_for_authors
@@ -24,7 +22,7 @@ label: 'Accessibility report for authors'
 module: views
 description: ''
 tag: ''
-base_table: editoria11y_results
+base_table: ed11y_result
 base_field: id
 display:
   default:
@@ -35,11 +33,11 @@ display:
     display_options:
       title: 'Accessibility report for authors'
       fields:
-        entity_id:
-          id: entity_id
-          table: editoria11y_results
+        entity_id_1:
+          id: entity_id_1
+          table: ed11y_page
           field: entity_id
-          relationship: none
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -96,7 +94,7 @@ display:
           id: title
           table: node_field_data
           field: title
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -157,11 +155,11 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        entity_type:
-          id: entity_type
-          table: editoria11y_results
+        entity_type_1:
+          id: entity_type_1
+          table: ed11y_page
           field: entity_type
-          relationship: none
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: standard
@@ -210,7 +208,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -273,14 +271,298 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        result_name_count:
-          id: result_name_count
-          table: editoria11y_results
-          field: result_name_count
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: created
+          plugin_id: field
+          label: 'Authored on'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: short_date_only
+            custom_date_format: ''
+            timezone: ''
+            tooltip:
+              date_format: long
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
+              description: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        changed:
+          id: changed
+          table: node_field_data
+          field: changed
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: changed
+          plugin_id: field
+          label: Changed
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: short_date_only
+            custom_date_format: ''
+            timezone: ''
+            tooltip:
+              date_format: short_date_only
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
+              description: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: uid
+          plugin_id: field
+          label: 'Authored by'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        revision_uid:
+          id: revision_uid
+          table: node_revision
+          field: revision_uid
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: revision_uid
+          plugin_id: field
+          label: 'Last revised by'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: true
+          group_column: entity_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
           relationship: none
           group_type: sum
           admin_label: ''
-          plugin_id: editoria11y_issues_by_page_link
+          plugin_id: numeric
           label: 'Issue count'
           exclude: false
           alter:
@@ -326,7 +608,7 @@ display:
           precision: 0
           decimal: .
           separator: ','
-          format_plural: 0
+          format_plural: false
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
@@ -334,7 +616,7 @@ display:
           id: pageviews
           table: mass_bigquery_data
           field: pageviews
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -437,10 +719,10 @@ display:
           empty: true
           title: 'No known issues at this url'
       sorts:
-        result_name_count:
-          id: result_name_count
-          table: editoria11y_results
-          field: result_name_count
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
           relationship: none
           group_type: sum
           admin_label: ''
@@ -452,14 +734,14 @@ display:
           exposed: false
       arguments: {  }
       filters:
-        route_name:
-          id: route_name
-          table: editoria11y_results
+        route_name_1:
+          id: route_name_1
+          table: ed11y_page
           field: route_name
-          relationship: none
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
-          plugin_id: views_porter_stemmer_autocomplete_string
+          plugin_id: string
           operator: '='
           value: entity.node.canonical
           group: 1
@@ -480,13 +762,14 @@ display:
               authenticated: authenticated
             placeholder: ''
             autocomplete_filter: 0
-            autocomplete_min_chars: 0
-            autocomplete_items: 10
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
             autocomplete_field: ''
-            autocomplete_raw_suggestion: true
-            autocomplete_raw_dropdown: true
-            autocomplete_dependent: false
-            stem_query: false
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+            autocomplete_contextual: 0
+            autocomplete_autosubmit: 0
           is_grouped: false
           group_info:
             label: ''
@@ -499,11 +782,11 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        entity_type:
-          id: entity_type
-          table: editoria11y_results
+        entity_type_1:
+          id: entity_type_1
+          table: ed11y_page
           field: entity_type
-          relationship: none
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: in_operator
@@ -513,7 +796,7 @@ display:
             Error: Error
             'External link for Collections': 'External link for Collections'
             Person: Person
-            'Stacked layout (prototype)': 'Stacked layout (prototype)'
+            'Stacked layout - prototype': 'Stacked layout - prototype'
           group: 1
           exposed: false
           expose:
@@ -547,7 +830,7 @@ display:
           id: node_org_filter
           table: node_field_data
           field: node_org_filter
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -558,7 +841,7 @@ display:
           exposed: true
           expose:
             operator_id: node_org_filter_op
-            label: Organization
+            label: 'Organization (direct match)'
             description: ''
             use_operator: false
             operator: node_org_filter_op
@@ -570,20 +853,45 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        node_parent_org_top_filter:
+          id: node_parent_org_top_filter
+          table: node_field_data
+          field: node_parent_org_top_filter
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_top_parent_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: node_parent_org_top_filter_op
+            label: 'Organization (including all suborganizations)'
+            description: 'using the parent organization field for each organization'
+            use_operator: false
+            operator: node_parent_org_top_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: node_parent_org_top_filter
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
           is_grouped: false
           group_info:
             label: ''
@@ -600,7 +908,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -624,20 +932,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -650,48 +944,34 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        result_name:
-          id: result_name
-          table: editoria11y_results
-          field: result_name
-          relationship: none
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
-          plugin_id: in_operator
+          entity_type: node
+          entity_field: uid
+          plugin_id: user_name
           operator: in
           value: {  }
           group: 1
           exposed: true
           expose:
-            operator_id: result_name_op
-            label: 'Issue type'
+            operator_id: uid_op
+            label: 'Authored by'
             description: ''
-            use_operator: true
-            operator: result_name_op
-            operator_limit_selection: true
-            operator_list:
-              in: in
-              'not in': 'not in'
-            identifier: result_name
+            use_operator: false
+            operator: uid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid
             required: false
-            remember: true
-            multiple: true
+            remember: false
+            multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -709,7 +989,7 @@ display:
           id: field_reusable_label_target_id
           table: node__field_reusable_label
           field: field_reusable_label_target_id
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           plugin_id: taxonomy_index_tid
@@ -731,20 +1011,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -764,6 +1030,151 @@ display:
           hierarchy: false
           limit: true
           error_message: true
+        result_key:
+          id: result_key
+          table: ed11y_result
+          field: result_key
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: in_operator
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: result_key_op
+            label: 'Alert type, linked'
+            description: ''
+            use_operator: false
+            operator: result_key_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: result_key
+            required: false
+            remember: true
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        changed:
+          id: changed
+          table: node_field_data
+          field: changed
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: changed
+          plugin_id: date
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
+          group: 1
+          exposed: true
+          expose:
+            operator_id: changed_op
+            label: 'Last modified'
+            description: 'Use mm/dd/yyyy format.'
+            use_operator: true
+            operator: changed_op
+            operator_limit_selection: true
+            operator_list:
+              '<=': '<='
+              '>=': '>='
+              between: between
+              'not between': 'not between'
+            identifier: changed
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: created
+          plugin_id: date
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
+          group: 1
+          exposed: true
+          expose:
+            operator_id: created_op
+            label: 'Authored on'
+            description: 'Use mm/dd/yyyy format.'
+            use_operator: true
+            operator: created_op
+            operator_limit_selection: true
+            operator_list:
+              '<=': '<='
+              '>=': '>='
+              between: between
+              'not between': 'not between'
+            identifier: created
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
       style:
         type: table
         options:
@@ -771,15 +1182,18 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            entity_id: entity_id
+            entity_id_1: entity_id_1
             title: title
-            entity_type: entity_type
+            entity_type_1: entity_type_1
             status: status
-            result_name_count: result_name_count
+            created: created
+            changed: changed
+            uid: uid
+            content_count: content_count
             pageviews: pageviews
           default: pageviews
           info:
-            entity_id:
+            entity_id_1:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -793,7 +1207,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            entity_type:
+            entity_type_1:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -807,7 +1221,28 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            result_name_count:
+            created:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            changed:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            uid:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            content_count:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -840,18 +1275,39 @@ display:
           query_comment: ''
           disable_sql_rewrite: false
           distinct: false
+          disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
       relationships:
-        entity_id:
-          id: entity_id
-          table: editoria11y_results
-          field: entity_id
+        editoria11y_result_to_page:
+          id: editoria11y_result_to_page
+          table: ed11y_result
+          field: editoria11y_result_to_page
           relationship: none
           group_type: group
-          admin_label: 'Entity ID'
+          admin_label: 'Editoria11y result to page'
+          plugin_id: standard
+          required: false
+        editoria11y_node_to_page:
+          id: editoria11y_node_to_page
+          table: ed11y_page
+          field: editoria11y_node_to_page
+          relationship: editoria11y_result_to_page
+          group_type: group
+          admin_label: 'Editoria11y page to node'
           plugin_id: standard
           required: true
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: User
+          entity_type: node
+          entity_field: uid
+          plugin_id: standard
+          required: false
       use_ajax: false
       group_by: true
       show_admin_links: false
@@ -861,8 +1317,21 @@ display:
       link_display: pages__page
       link_url: ''
       header: {  }
-      footer: {  }
-      display_extenders: {  }
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
     cache_metadata:
       max-age: -1
       contexts:
@@ -879,11 +1348,11 @@ display:
     position: 2
     display_options:
       fields:
-        entity_id:
-          id: entity_id
-          table: editoria11y_results
+        entity_id_1:
+          id: entity_id_1
+          table: ed11y_page
           field: entity_id
-          relationship: none
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -940,7 +1409,7 @@ display:
           id: title
           table: node_field_data
           field: title
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1001,11 +1470,11 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        entity_type:
-          id: entity_type
-          table: editoria11y_results
+        entity_type_1:
+          id: entity_type_1
+          table: ed11y_page
           field: entity_type
-          relationship: none
+          relationship: editoria11y_result_to_page
           group_type: group
           admin_label: ''
           plugin_id: standard
@@ -1054,7 +1523,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1117,14 +1586,14 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        result_name_count:
-          id: result_name_count
-          table: editoria11y_results
-          field: result_name_count
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
           relationship: none
           group_type: sum
           admin_label: ''
-          plugin_id: editoria11y_issues_by_page_link
+          plugin_id: numeric
           label: 'Issue count'
           exclude: false
           alter:
@@ -1170,7 +1639,7 @@ display:
           precision: 0
           decimal: .
           separator: ','
-          format_plural: 0
+          format_plural: false
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
@@ -1178,7 +1647,7 @@ display:
           id: pageviews
           table: mass_bigquery_data
           field: pageviews
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           plugin_id: numeric
@@ -1235,7 +1704,7 @@ display:
           id: view_node
           table: node
           field: view_node
-          relationship: entity_id
+          relationship: editoria11y_node_to_page
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1284,6 +1753,225 @@ display:
           text: view
           output_url_as_text: true
           absolute: true
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: uid
+          plugin_id: field
+          label: 'Authored by'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: true
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: created
+          plugin_id: field
+          label: 'Authored on'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: short_date_only
+            custom_date_format: ''
+            timezone: ''
+            tooltip:
+              date_format: long
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
+              description: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        changed:
+          id: changed
+          table: node_field_data
+          field: changed
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: changed
+          plugin_id: field
+          label: Changed
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: timestamp
+          settings:
+            date_format: short_date_only
+            custom_date_format: ''
+            timezone: ''
+            tooltip:
+              date_format: long
+              custom_date_format: ''
+            time_diff:
+              enabled: false
+              future_format: '@interval hence'
+              past_format: '@interval ago'
+              granularity: 2
+              refresh: 60
+              description: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       pager:
         type: some
         options:
@@ -1338,6 +2026,22 @@ display:
     display_plugin: page
     position: 9
     display_options:
+      defaults:
+        header: false
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: "<p>Caution: this data is based on real-time scans done when authors view pages while editing on edit.mass.gov. It should not be considered a complete report for the following reasons.</p>\r\n<ul>\r\n<li>Authors are able edit pages in a way that they never view the page after the edit. If they don't view it, it isn't checked.</li>\r\n<li>If Editoria11y finds no issue on a page, it stores nothing. In the data model, there is no way to tell the difference between a page that has no issues and a page that was never checked.</li>\r\n<li>If a page was not viewed by a logged-in author on edit.mass.gov after the Editoria11y feature was released 2/5/2024, it will not appear on the report.</li>\r\n</ul>\r\n<p>Consider using SiteImprove data for reports. It crawls all author created pages that are not hidden from search with the exception of news and events.</p>"
+            format: basic_html
+          tokenize: false
       display_extenders:
         metatag_display_extender:
           metatags: {  }

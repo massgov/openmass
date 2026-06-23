@@ -38,16 +38,16 @@
 #}
 {%
 set actionFinder = {
-  'actionFinder': {
-  'bgWide': bgWide,
-  'bgNarrow': file_url(content.field_image['#items'].entity.uri.value ?? ''),
-  'title': 'What Would You Like to Do?',
-  'featuredHeading': featuredHeading,
-  'generalHeading': generalHeading,
-  'seeAll': seeAll,
-  'featuredLinks': featuredLinks,
-  'links': links
-  }
+  actionFinder: {
+  bgWide: bgWide,
+  bgNarrow: file_url(content.field_image['#items'].entity.uri.value ?? ''),
+  title: 'What Would You Like to Do?',
+  featuredHeading: featuredHeading,
+  generalHeading: generalHeading,
+  seeAll: seeAll,
+  featuredLinks: featuredLinks,
+  links: links,
+  },
 }
 %}
-{% include '@organisms/by-author/action-finder.twig' with actionFinder %}
+{{ include('@organisms/by-author/action-finder.twig', actionFinder) }}

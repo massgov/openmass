@@ -8,17 +8,28 @@ custom_toolbar_styles:
       css/toolbar.theme.css: {}
       css/toolbar.menu.css: {}
       fontello/css/fontello.css: {}
+
 mass_admin_toolbar.toolbar:
-  version: 1.x
+  version: 1.0.1
   css:
     theme:
       css/mass_admin_toolbar.toolbar.css: {}
       css/horizontal-tabs.css: {}
       css/workbench-tabs.css: {}
-messages_tabs:
+
+tabs:
+  version: 1.0.1
   css:
     component:
-      css/mass_admin_toolbar.messages_tabs.css: {}
+      css/mass_admin_toolbar.tabs.css: {}
 
+messages:
+  version: 1.0.1
+  css:
+    component:
+      css/mass_admin_toolbar.messages.css: {}
   js:
-    js/mass_admin_toolbar.messages_tabs.js: {}
+    js/mass_admin_toolbar.messages.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

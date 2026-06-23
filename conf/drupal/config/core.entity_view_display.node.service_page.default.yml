@@ -33,7 +33,7 @@ dependencies:
     - field.field.node.service_page.field_short_title
     - node.type.service_page
   module:
-    - entity_reference_revisions
+    - layout_paragraphs
     - link
     - mass_formatters
     - metatag
@@ -44,14 +44,6 @@ targetEntityType: node
 bundle: service_page
 mode: default
 content:
-  computed_related_to:
-    type: entity_reference_label
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    weight: 15
-    region: content
   content_moderation_control:
     settings: {  }
     third_party_settings: {  }
@@ -218,7 +210,7 @@ content:
     weight: 6
     region: content
   field_service_sections:
-    type: entity_reference_revisions_entity_view
+    type: layout_paragraphs
     label: above
     settings:
       view_mode: default

@@ -158,8 +158,9 @@ module.exports = async (page, scenario, viewport) => {
   }
 
   // Wait for any layout shift that nudges the footer.
-  if (scenario.label !== '404') {
-    await page.waitForSelector('.ma__footer-new');
+
+  if (scenario.label !== '404' && scenario.label !== 'Document') {
+    await page.locator('.ma__footer-new').waitFor();
     await page.locator('.ma__footer-new__navlinks');
     await page.locator('.ma__footer-new__copyright');
     await page.locator('.ma__footer-new__logo');

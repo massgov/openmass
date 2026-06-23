@@ -7,10 +7,8 @@ dependencies:
     - field.storage.node.field_organizations
     - field.storage.node.field_primary_parent
     - field.storage.node.field_reusable_label
+    - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
-    - workflows.workflow.campaign_landing_page
-    - workflows.workflow.editorial
-    - workflows.workflow.topic_page
   module:
     - content_moderation
     - csv_serialization
@@ -22,11 +20,9 @@ dependencies:
     - serialization
     - taxonomy
     - user
-    - views_autocomplete_filters
     - views_data_export
-    - views_porter_stemmer
 id: advancedsearch
-label: 'Advanced Search'
+label: 'Advanced Search - pages'
 module: views
 description: 'Used for complex filtering'
 tag: ''
@@ -39,7 +35,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Advanced Search - Content'
+      title: 'Advanced Search - Pages'
       fields:
         title:
           id: title
@@ -844,16 +840,16 @@ display:
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 50
+          items_per_page: 25
           total_pages: null
           id: 0
           tags:
             next: Next
             previous: Previous
           expose:
-            items_per_page: false
+            items_per_page: true
             items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options: '25, 50, 100, 250'
             items_per_page_options_all: false
             items_per_page_options_all_label: '- All -'
             offset: false
@@ -931,37 +927,32 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        moderation_state:
-          id: moderation_state
+        node_revision_entity_ids_filter:
+          id: node_revision_entity_ids_filter
           table: node_field_revision
-          field: moderation_state
+          field: node_revision_entity_ids_filter
           relationship: none
           group_type: group
-          admin_label: ''
-          entity_type: node
-          plugin_id: moderation_state_filter
-          operator: 'not in'
-          value:
-            campaign_landing_page-trash: campaign_landing_page-trash
-            editorial-trash: editorial-trash
-            topic_page-trash: topic_page-trash
+          admin_label: 'Entity IDs'
+          plugin_id: mass_views_entity_ids_filter
+          operator: in
+          value: ''
           group: 1
-          exposed: false
+          exposed: true
           expose:
             operator_id: ''
-            label: ''
+            label: 'Paste Page IDs'
             description: ''
             use_operator: false
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
-            identifier: ''
+            identifier: entity_ids
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
-            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -974,6 +965,7 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+          filter_description: 'Paste in up to 300 Content IDs to filter for those pages only.'
         title:
           id: title
           table: node_field_revision
@@ -1015,22 +1007,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -1092,22 +1068,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -1132,7 +1092,7 @@ display:
           id: status
           table: node_field_revision
           field: status
-          relationship: none
+          relationship: nid
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1206,22 +1166,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1250,7 +1194,7 @@ display:
           exposed: true
           expose:
             operator_id: ''
-            label: 'Organization Filter'
+            label: 'Organization (direct match)'
             description: ''
             use_operator: false
             operator: node_org_filter_op
@@ -1262,22 +1206,45 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        node_parent_org_top_filter:
+          id: node_parent_org_top_filter
+          table: node_field_data
+          field: node_parent_org_top_filter
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_top_parent_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: node_parent_org_top_filter_op
+            label: 'Organization (including all suborganizations)'
+            description: 'using the parent organization field for each organization'
+            use_operator: false
+            operator: node_parent_org_top_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: node_parent_org_top_filter
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
           is_grouped: false
           group_info:
             label: ''
@@ -1316,20 +1283,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1377,22 +1330,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1434,22 +1371,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1504,22 +1425,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             min_placeholder: 'CCYY-MM-DD HH:MM:SS'
             max_placeholder: 'CCYY-MM-DD HH:MM:SS'
             placeholder: 'CCYY-MM-DD HH:MM:SS'
@@ -1576,22 +1481,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             min_placeholder: 'CCYY-MM-DD HH:MM:SS'
             max_placeholder: 'CCYY-MM-DD HH:MM:SS'
             placeholder: 'CCYY-MM-DD HH:MM:SS'
@@ -1636,22 +1525,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1692,20 +1565,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1745,20 +1604,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1799,20 +1644,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1825,6 +1656,65 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        field_collections_target_id:
+          id: field_collections_target_id
+          table: node__field_collections
+          field: field_collections_target_id
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_collections_target_id_op
+            label: Collections
+            description: ''
+            use_operator: true
+            operator: field_collections_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_collections_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: collections
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+        node_entity_ids_filter:
+          id: node_entity_ids_filter
+          table: node_field_data
+          field: node_entity_ids_filter
+          relationship: nid
+          entity_type: node
+          plugin_id: mass_views_entity_ids_filter
+        node_entity_ids_filter_1:
+          id: node_entity_ids_filter_1
+          table: node_field_data
+          field: node_entity_ids_filter
+          relationship: nid
+          entity_type: node
+          plugin_id: mass_views_entity_ids_filter
       filter_groups:
         operator: AND
         groups:
@@ -1836,7 +1726,6 @@ display:
           row_class: ''
           default_row_class: true
           columns:
-            node_bulk_form: node_bulk_form
             title: title
             nid: nid
             type: type
@@ -1849,14 +1738,9 @@ display:
             name: name
             moderation_state: moderation_state
             pageviews: pageviews
-            operations: operations
+            nos_per_1000_cleaned: nos_per_1000_cleaned
           default: changed
           info:
-            node_bulk_form:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
             title:
               sortable: true
               default_sort_order: asc
@@ -1884,7 +1768,7 @@ display:
               empty_column: false
               responsive: ''
             field_primary_parent:
-              sortable: false
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
@@ -1939,7 +1823,9 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            operations:
+            nos_per_1000_cleaned:
+              sortable: true
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
@@ -1962,7 +1848,8 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
+          disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
       relationships:
@@ -1999,9 +1886,35 @@ display:
           entity_field: revision_uid
           plugin_id: standard
           required: false
-      header: {  }
-      footer: {  }
-      display_extenders: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: '<p>Includes all content states including "trash".</p>'
+            format: basic_html
+          tokenize: false
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
     cache_metadata:
       max-age: -1
       contexts:
@@ -3210,7 +3123,7 @@ display:
       filename: 'massgov-advanced-export-[date:html_datetime].csv'
       automatic_download: false
       export_method: batch
-      export_batch_size: 1000
+      export_batch_size: 100
       store_in_public_file_directory: false
       custom_redirect_path: false
       redirect_to_display: page_1

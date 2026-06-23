@@ -1,0 +1,13 @@
+diff --git a/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php b/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
+index e04b9c31e317f6bc6c99ab8bf5dbcff53d35a646..006dfb5c4c1b280ae5f594002c40397d3643d007 100644
+--- a/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
++++ b/src/Plugin/Field/FieldWidget/InlineEntityFormComplex.php
+@@ -1012,7 +1012,7 @@ class InlineEntityFormComplex extends InlineEntityFormBase implements ContainerF
+     // has decided to delete.
+     if ($entity_id) {
+       $removed_reference = $remove_button['#removed_reference'];
+-      if ($removed_reference === self::REMOVED_DELETE || ($removed_reference === self::REMOVED_OPTIONAL && $form_values['delete'] === 1)) {
++      if ($removed_reference === self::REMOVED_DELETE || ($removed_reference === self::REMOVED_OPTIONAL && !empty($form_values['delete']) && $form_values['delete'] === 1)) {
+         $widget_state['delete'][] = $entity;
+       }
+     }

@@ -2,6 +2,7 @@
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -21,6 +22,7 @@ use Drupal\Core\Url;
 use Drupal\mass_fields\FormAlter\TopicPageFormAlter;
 use Drupal\mass_fields\Plugin\Field\FieldWidget\EntityReferenceEditLinkAutocompleteWidget;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
@@ -87,8 +89,17 @@ function mass_fields_get_tags_from_references(ContentEntityInterface $entity) {
   // for entities. We don't want to cause those queries to execute.
   foreach ($entity->getFields(FALSE) as $field_items) {
     if ($field_items instanceof EntityReferenceFieldItemListInterface) {
+      $target_type = $field_items->getFieldDefinition()->getSetting('target_type');
+      $target_ids = array_column($field_items->getValue(), 'target_id');
+      $target_ids = array_values(array_unique(array_filter($target_ids)));
+      if (!$target_type || !$target_ids) {
+        continue;
+      }
+      $entities = \Drupal::entityTypeManager()
+        ->getStorage($target_type)
+        ->loadMultiple($target_ids);
 
-      $referenced = array_merge($referenced, array_filter($field_items->referencedEntities(), function ($referencedEntity) {
+      $referenced = array_merge($referenced, array_filter($entities, function ($referencedEntity) {
         if ($referencedEntity->bundle() === 'org_page') {
           // These nodes are referenced by many pages, so lets not do such a wide cache invalidation.
           return FALSE;
@@ -277,7 +288,7 @@ function mass_fields_entity_base_field_info(EntityTypeInterface $entity_type) {
     ->setTranslatable(FALSE)
     ->setDisplayConfigurable('form', TRUE)
     ->setDisplayOptions('form', $options)
-    ->setDescription('If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
+    ->setDescription('Content can only be hidden from search if this option is selected <strong>before</strong> the content is first published and if no links point to it. If you later uncheck this option, it may take several days for the page to appear in search results. Selecting this option after the content has already been published will not work.');
   $nosnippet = BaseFieldDefinition::create('boolean')
     ->setLabel(t('Omit snippet in search results'))
     ->setDefaultValue(FALSE)
@@ -323,10 +334,19 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
   }
   // Get the sections field value.
   $field_organization_sections = $entity->get('field_organization_sections')->getValue();
+  $paragraph_storage = \Drupal::entityTypeManager()->getStorage('paragraph');
   // Loop through the sections.
   foreach ($field_organization_sections as $section_key => $section_value) {
     // Get the section entity.
-    $section_entity = $entity->get('field_organization_sections')[$section_key]->entity;
+    $section_revision_id = $section_value['target_revision_id'] ?? NULL;
+    $section_id = $section_value['target_id'] ?? NULL;
+    $section_entity = $section_revision_id ? $paragraph_storage->loadRevision($section_revision_id) : NULL;
+    if (!$section_entity && $section_id) {
+      $section_entity = $paragraph_storage->load($section_id);
+    }
+    if (!$section_entity) {
+      continue;
+    }
     // If the section content field is empty, continue to the next section.
     if ($section_entity->get('field_section_long_form_content')->isEmpty()) {
       continue;
@@ -336,7 +356,12 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
     // Loop through the section content paragraphs.
     foreach ($field_section_long_form_content as $content_key => $content_value) {
       // Get the content paragraph entity.
-      $content_entity = $section_entity->get('field_section_long_form_content')[$content_key]->entity;
+      $content_revision_id = $content_value['target_revision_id'] ?? NULL;
+      $content_id = $content_value['target_id'] ?? NULL;
+      $content_entity = $content_revision_id ? $paragraph_storage->loadRevision($content_revision_id) : NULL;
+      if (!$content_entity && $content_id) {
+        $content_entity = $paragraph_storage->load($content_id);
+      }
       // Get the paragraph type.
       if ($content_entity) {
         $paragraph_type = $content_entity->bundle();
@@ -626,9 +651,12 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     $more_links = [];
     foreach ($entity->field_service_detail_sections as $delta => $section) {
       $subtotal = 0;
-      if ($section->entity && $section->entity->bundle() === 'section') {
-        $subtotal += $section->entity->field_section_links->count();
-        $subtotal += $section->entity->field_section_downloads->count();
+      $section_entity = $section->target_id ? \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->load($section->target_id) : NULL;
+      if ($section_entity && $section_entity->bundle() === 'section') {
+        $subtotal += $section_entity->field_section_links->count();
+        $subtotal += $section_entity->field_section_downloads->count();
         $total += $subtotal;
       }
       if ($subtotal > 6) {
@@ -759,6 +787,48 @@ function mass_fields_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_field_group_form_process_build_alter().
+ */
+function mass_fields_field_group_form_process_build_alter(array &$element, FormStateInterface $form_state, &$complete_form) {
+  // Only apply to node forms.
+  $form_object = $form_state->getFormObject();
+  if ($form_object instanceof ContentEntityForm) {
+    $entity = $form_object->getEntity();
+    if ($entity instanceof NodeInterface) {
+      // Target Group name.
+      $target_group = 'group_page_info';
+      if (isset($complete_form['group_page_info'])) {
+        if (isset($complete_form['revision'])) {
+          $complete_form['revision']['#group'] = $target_group;
+          $complete_form['revision']['#weight'] = '-100';
+        }
+        if (isset($complete_form['revision_log'])) {
+          $complete_form['revision_log']['#group'] = 'footer';
+          $complete_form['revision_log']['#weight'] = '-99';
+        }
+        if (isset($complete_form['search_status'])) {
+          $complete_form['search_status']['#group'] = $target_group;
+        }
+        if (isset($complete_form['advanced'])) {
+          $complete_form['advanced']['#group'] = $target_group;
+          $complete_form['advanced']['#weight'] = '99';
+        }
+        if (isset($complete_form['meta'])) {
+          $complete_form['meta']['#group'] = $target_group;
+          $complete_form['meta']['#weight'] = '99';
+        }
+        // DO NOT ADD created or uid, handled in core.
+        if (isset($complete_form['author'])) {
+          $complete_form['author']['#group'] = $target_group;
+          $complete_form['author']['#weight'] = '100';
+        }
+        $complete_form['meta']['#access'] = FALSE;
+      }
+    }
+  }
 }
 
 /**
@@ -930,7 +1000,7 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
  */
 function _mass_fields_microsite_key_message_image_process($element, &$form_state, $form) {
   // Modify the help text
-  $element['#description'] = t("Recommended image size is 2560x600, with a files size that doesn't exceed 5MB. Allowed types: png, gif, jpg, jpeg. Choose a high quality, decorative image that does not need text explanation. No ALT text is provided for visitors using a screenreader. If there is any text in the image, it should be repeated within the Key Message row.");
+  $element['#description'] = t("Recommended image size is 2560x1280, with a files size that doesn't exceed 5MB. Allowed types: png, gif, jpg, jpeg. Choose a high quality, decorative image that does not need text explanation. No ALT text is provided for visitors using a screenreader. If there is any text in the image, it should be repeated within the Key Message row.");
   return $element;
 }
 

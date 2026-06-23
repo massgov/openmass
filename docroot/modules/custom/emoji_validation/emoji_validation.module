@@ -1,0 +1,137 @@
+<?php
+
+/**
+ * @file
+ * Emoji validation module to prevent emoji characters in text fields.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\emoji_validation\Plugin\Validation\Constraint\NoEmojiConstraint;
+
+/**
+ * Returns the list of text field types to validate.
+ */
+function _emoji_validation_text_field_types() {
+  return ['text', 'text_long', 'text_with_summary', 'string', 'string_long', 'list_string'];
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ *
+ * Attach NoEmojiConstraint to base fields (node.title, taxonomy_term.name, etc.).
+ */
+function emoji_validation_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  foreach ($fields as $field_definition) {
+    if (in_array($field_definition->getType(), _emoji_validation_text_field_types(), TRUE)) {
+      $constraints = $field_definition->getConstraints();
+      $constraints['NoEmojiConstraint'] = [];
+      $field_definition->setConstraints($constraints);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_bundle_field_info_alter().
+ *
+ * Attach NoEmojiConstraint to custom bundle fields (field_*).
+ */
+function emoji_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  foreach ($fields as $field_definition) {
+    if (in_array($field_definition->getType(), _emoji_validation_text_field_types(), TRUE)) {
+      $constraints = $field_definition->getConstraints();
+      $constraints['NoEmojiConstraint'] = [];
+      $field_definition->setConstraints($constraints);
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_single_element_form_alter().
+ *
+ * Attach ONLY to taxonomy term autocompletes that auto-create terms.
+ */
+
+/**
+ * Implements hook_field_widget_single_element_form_alter().
+ */
+function emoji_validation_field_widget_single_element_form_alter(array &$element, FormStateInterface $form_state, array $context) {
+  $plugin_id = $context['widget']->getPluginId();
+  if (!in_array($plugin_id, ['entity_reference_autocomplete', 'entity_reference_autocomplete_tags'], TRUE)) {
+    return;
+  }
+
+  // Target entity & handler settings for this field.
+  $field_def = $context['items']->getFieldDefinition();
+  $target_type = $field_def->getSetting('target_type');
+  $handler_settings = $field_def->getSetting('handler_settings') ?? [];
+
+  // Auto-create can also appear on the element; check both places.
+  $auto_create = !empty($handler_settings['auto_create']) || !empty($element['#autocreate']);
+
+  // Only the “labels/tags” style fields should be validated here.
+  if ($target_type !== 'taxonomy_term' || !$auto_create) {
+    return;
+  }
+
+  // Attach to the parent to avoid value-shape mismatches on multi-value items.
+  $element['#element_validate'][] = 'emoji_validation_autocomplete_validate';
+}
+
+/**
+ * Element validate: reuse existing NoEmojiConstraint on typed labels.
+ */
+function emoji_validation_autocomplete_validate(array &$element, FormStateInterface $form_state, array &$form): void {
+  // Prefer the current element value; fall back to raw user input.
+  $raw = $element['target_id']['#value'] ?? NestedArray::getValue($form_state->getUserInput(), $element['#parents']);
+  if ($raw === NULL || $raw === '') {
+    return;
+  }
+  // Widgets can send arrays or strings; normalize to a string.
+  if (is_array($raw) && isset($raw['target_id'])) {
+    $raw = (string) $raw['target_id'];
+  }
+  else {
+    $raw = (string) $raw;
+  }
+
+  // Split tags by comma, trim pieces, drop empties, then strip trailing
+  // parenthesized numeric IDs like " (123)" that Drupal adds to display labels.
+  // Example raw input: "Health, Flu (123),  , COVID (456)".
+  $labels = [];
+  if (is_string($raw)) {
+    $parts = explode(',', $raw);
+
+    // 1) trim each piece
+    $parts = array_map('trim', $parts);
+
+    // 2) drop empty strings that can appear from consecutive commas
+    $parts = array_values(array_filter($parts, static fn($p) => $p !== ''));
+
+    // 3) remove a trailing parenthesized ID (plus surrounding spaces) if present
+    foreach ($parts as $part) {
+      // Matches optional space, then a trailing numeric ID in parentheses, e.g. " (123)".
+      $labels[] = preg_replace('/\s*\(\d+\)\s*$/', '', $part);
+    }
+  }
+
+  if (!$labels) {
+    return;
+  }
+
+  $factory    = \Drupal::service('validation.basic_recursive_validator_factory');
+  $validator  = $factory->createValidator();
+  $constraint = new NoEmojiConstraint();
+
+  foreach ($labels as $label) {
+    if ($label === '') {
+      continue;
+    }
+    if (count($validator->validate($label, $constraint))) {
+      // IMPORTANT: set error on the textfield child we attached to.
+      $form_state->setError($element, t('Emoji characters are not allowed in “@value”.', ['@value' => $label]));
+      return;
+    }
+  }
+}

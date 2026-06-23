@@ -3,8 +3,10 @@ type: theme
 description: Custom theme for Mass.gov
 package: Custom
 core: 8.x
-core_version_requirement: ^8 || ^9 || ^10
+core_version_requirement: ^10 || ^11
 libraries:
+  - mayflower/modernizr
+  - mayflower/global
   - mass_theme/modernizr
   - mass_theme/global-styling
 
@@ -25,12 +27,7 @@ regions:
   footer: Footer
   footer_navigation: Footer Navigation
 libraries-override:
-  # Apply library overrides. This prevents duplicate versions of
-  # modernizr, jquery and picturefill from being added to the page.
-  core/modernizr: mayflower/modernizr
   core/jquery: mayflower/global
-  core/picturefill: mayflower/global
-
 
 libraries-extend:
   views/views.ajax: [mass_theme/views.ajax.extension]

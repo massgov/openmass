@@ -36,15 +36,15 @@
  * @ingroup themeable
  */
 #}
-{% include "@atoms/09-media/figure--image.twig" with {
-  "figure": {
-    "content": content.field_image,
-    "align": paragraph.field_image_alignment.value,
-    "size": paragraph.field_image_display_size.value,
-    "caption": paragraph.field_image_caption.value ? content.field_image_caption : null,
-    "wrap": paragraph.field_image_wrapping.value ? TRUE : FALSE,
-    "title": {
-      "text": paragraph.field_image_administrative_title.value
-    }
-  }
-} %}
+{{ include('@atoms/09-media/figure--image.twig', {
+  figure: {
+    content: content.field_image,
+    align: paragraph.field_image_alignment.value,
+    size: paragraph.field_image_display_size.value,
+    caption: paragraph.field_image_caption.value ? content.field_image_caption : null,
+    wrap: paragraph.field_image_wrapping.value ? TRUE : FALSE,
+    title: {
+      text: paragraph.field_image_administrative_title.value,
+    },
+  },
+}) }}

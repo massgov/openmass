@@ -36,12 +36,11 @@ Desktop horizontal main nav is added by themes/custom/mass_theme/templates/block
 in the following block to this.
 #}
 {# {% set ariaLabel = heading_id ?? 'main-navigation-heading' %} #}
-<nav class="ma__header__hamburger__nav" aria-label="main navigation" id="main-navigation-mobile">
+<nav class="ma__header__hamburger__nav" aria-label="main" id="main-navigation-mobile">
   <div class="ma__header__hamburger-wrapper">
 
     <div class="ma__header__hamburger__button-container js-sticky-header">
       <button type="button"
-              aria-label="Open the main menu for mass.gov"
               aria-expanded="false"
               class="ma__header__hamburger__menu-button js-header-menu-button">
         <span class="ma__header__hamburger__menu-icon"></span>
@@ -53,7 +52,7 @@ in the following block to this.
           Menu
         </span>
         <span class="ma__header__hamburger__menu-text--close js-header__menu-text--close">
-          Close
+          Close <span class="ma__visually-hidden">menu</span>
         </span>
       </button>
       {# Skip button to search. #}
@@ -75,11 +74,11 @@ in the following block to this.
 
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
       <div class="ma__header__hamburger__logo ma__header__hamburger__logo--mobile">
-        {% include "@atoms/09-media/site-logo.twig" %}
+        {{ include('@atoms/09-media/site-logo.twig') }}
       </div>
       {% if not search_header_suppression_flag %}
         <div class="ma__header__nav-search js-header__nav-search" >
-          {% include "@molecules/header-search.twig" %}
+          {{ include('@molecules/header-search.twig') }}
         </div>
       {% endif %}
 

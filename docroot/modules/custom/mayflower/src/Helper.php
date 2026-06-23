@@ -1729,31 +1729,27 @@ class Helper {
    *   Array of elements to create the page header.
    */
   public static function prepareViewsHeader(ViewExecutable $view) {
-    // Check if a NID has been passed as an argument to the view.
-    if (!empty($view->argument) && !empty($view->argument['nid'])) {
-      // Set subtitle of view display page.
-      // @see \Drupal\node\Plugin\views\argument\Nid
-      $parent_node_titles = $view->argument['nid']->titleQuery();
-      $link_title = reset($parent_node_titles);
-      // Uses reset to return only the one node id.
-      $nid = reset($view->argument['nid']->value);
-      $link = Link::createFromRoute($link_title, 'entity.node.canonical', ['node' => $nid]);
-      $link_render_array = $link->toRenderable();
-      $link_render_array['#prefix'] = t('For ');
+    if (!empty($view->mass_related_content_id)) {
+      $nid = (int) $view->mass_related_content_id;
+      if ($nid && ($node = Node::load($nid))) {
+        $link_title = $node->label();
+        $link = Link::createFromRoute($link_title, 'entity.node.canonical', ['node' => $nid]);
+        $link_render_array = $link->toRenderable();
+        $link_render_array['#prefix'] = t('For ');
 
-      // Collates data for relationship indicator to be displayed in page header.
-      return [
-        'subTitle' => $link_render_array,
-        'headerTags' => [
-          'label' => t('Related to:'),
-          'taxonomyTerms' => [
-            [
-              'href' => $link->getUrl()->toString(),
-              'text' => $link_title,
+        return [
+          'subTitle' => $link_render_array,
+          'headerTags' => [
+            'label' => t('Related to:'),
+            'taxonomyTerms' => [
+              [
+                'href' => $link->getUrl()->toString(),
+                'text' => $link_title,
+              ],
             ],
           ],
-        ],
-      ];
+        ];
+      }
     }
 
     return [];
@@ -1762,8 +1758,27 @@ class Helper {
   /**
    * Return the HTML to reference an SVG.
    */
-  public static function getSvgEmbed($hash) {
-    return sprintf('<svg aria-hidden="true" focusable="false"><use xlink:href="#%s"></use></svg>', $hash);
+  public static function getSvgEmbed($hash, $dimensions = []) {
+    // Build dimension attributes with defaults
+    $dimensionAttrs = '';
+
+    // Set default dimensions if not provided
+    $width = !empty($dimensions['width']) ? $dimensions['width'] : '24px';
+    $height = !empty($dimensions['height']) ? $dimensions['height'] : '24px';
+
+    $dimensionAttrs .= ' width="' . htmlspecialchars($width) . '"';
+    $dimensionAttrs .= ' height="' . htmlspecialchars($height) . '"';
+
+    // Add class if provided
+    if (!empty($dimensions['class'])) {
+      $dimensionAttrs .= ' class="' . htmlspecialchars($dimensions['class']) . '"';
+    }
+
+    return sprintf(
+      '<svg aria-hidden="true" focusable="false"%s><use href="#%s"></use></svg>',
+      $dimensionAttrs,
+      $hash
+    );
   }
 
   /**

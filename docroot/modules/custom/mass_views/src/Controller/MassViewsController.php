@@ -4,6 +4,7 @@ namespace Drupal\mass_views\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
+use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,7 +49,7 @@ class MassViewsController extends ControllerBase {
   private function generateView($view_name, Request $request) {
     // Load the view.
     $view = Views::getView($view_name);
-    if (is_object($view)) {
+    if ($view instanceof ViewExecutable) {
       // Set up the display and limit the number of items per page.
       $view->setDisplay('default');
       $items_per_page = 500;

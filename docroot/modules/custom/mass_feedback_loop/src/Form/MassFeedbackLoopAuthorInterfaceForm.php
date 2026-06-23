@@ -101,17 +101,16 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     // Adds help text for using Feedback Manager.
     $form['help_text_wrapper']['help_text'] = [
-      '#markup' => $this->t('<p>Find out how users are responding to your content. <a href="https://www.mass.gov/kb/feedback-manager">Learn how to use the Feedback Manager.</a></p><p>Also see: <a href="/admin/content/pages_with_negative_feedback">Pages with high negative feedback</a>.</p>'),
+      '#markup' => $this->t('<p>Find out how users are responding to your content. <a href="https://www.mass.gov/kb/feedback-manager">Learn how to use the Feedback Manager.</a></p><p>Also see: <a href="/admin/content/pages_with_negative_feedback">Pages with high negative feedback</a>.</p><p>When exporting feedback in a CSV, there is a limit of 15,000 entries per export.</p>'),
     ];
 
     $form['filter_by_org'] = [
-      '#type' => 'select',
+      '#type' => 'select2',
       '#multiple' => TRUE,
       '#title' => $this->t('Organization'),
       '#options' => $this->getOrgNids(),
       '#attributes' => [
         'placeholder' => "Start typing Organizations to filter by ...",
-        'class' => ['use-selectize-autocomplete'],
       ],
       // @todo split on comma, load array.
       '#default_value' => isset($feedback_api_params['org_id']) ? $feedback_api_params['org_id'] : NULL,
@@ -119,7 +118,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     // Builds "Filter by author" input.
     $form['filter_by_author'] = [
-      '#type' => 'select',
+      '#type' => 'select2',
       '#multiple' => TRUE,
       '#title' => $this->t('Author'),
       '#options' => $this->getAuthorUsernames(),
@@ -127,7 +126,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => isset($feedback_api_params['author_id']) ? $feedback_api_params['author_id'] : NULL,
       '#attributes' => [
         'placeholder' => "Start typing Author usernames ...",
-        'class' => ['use-selectize-autocomplete'],
       ],
     ];
 
@@ -170,16 +168,14 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     // Fetches labels.
     $labels = $this->getLabelTids();
-    $label_select_list = ['' => $this->t('- Select a label -')] + $labels;
     // Builds "Filter by label" input.
     $form['filter_by_label'] = [
-      '#type' => 'select',
+      '#type' => 'select2',
       '#multiple' => TRUE,
       '#title' => $this->t('Filter by page label'),
-      '#options' => $label_select_list,
+      '#options' => $labels,
       '#attributes' => [
         'placeholder' => "Start typing labels to filter by ...",
-        'class' => ['use-selectize-autocomplete'],
       ],
       // Updates form input with default value, if available.
       '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,

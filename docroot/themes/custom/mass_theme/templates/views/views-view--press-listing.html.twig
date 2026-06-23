@@ -33,16 +33,16 @@
  */
 #}
 
-{% include 'views-view--image-promos.html.twig' with {
-  'pageHeader': {
-    'category': '',
-    'divider': false,
-    'prefix': '',
-    'title': title,
-    'subTitle': subTitle,
-    'nested': nested,
-    'headerTags': null,
-    'optionalContents': null,
-    'widgets': null,
-  }
-} %}
+{{ include('views-view--image-promos.html.twig', {
+  pageHeader: {
+    category: '',
+    divider: false,
+    prefix: '',
+    title: title,
+    subTitle: subTitle,
+    nested: nested,
+    headerTags: null,
+    optionalContents: null,
+    widgets: null,
+  },
+}) }}

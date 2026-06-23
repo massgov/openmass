@@ -1,0 +1,12 @@
+uuid: 1967da88-3fef-45bb-8fa4-9e17da757f32
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: VdbIYlWRIXArYhauPxotaDkPzHyGeE6cdRQ0_G07pa8
+id: full
+label: 'Simple Full Prompt'
+description: ''
+prompt: "Read through the entirety of the page. \r\n\r\nGuidelines:\r\n\r\n\r\nConstraints (do not violate):\r\n1. Do not recommend that external links be labelled as external links.\r\n2. Do make recommendations related to a table of contents. It may be empty and you can assume that it is populated after page load and links to each H2 section. \r\n3. Do not make recommendations related to the the header, footer, global navigation (with id \"main-navigation\"), and the feedback form at the bottom of the page (id of \"feedback\"). Do not report issues for the header, footer, global navigation, or feedback components.\r\n4. Do not recommend that contact information should be more prominent unless soliciting that contact is a clear objective of the page.\r\n\r\nNote any MAJOR, MODERATE, MINOR or TRIVIAL problems you identify only on your scratch pad, it is okay if there are none, just say so. Do not include trivial problems. Use a header \"Thinking\" for this scratch pad. \r\n\r\n\r\nInstructions:\r\n\r\nOnce the above has been completed, and in under 3000 characters, Created a numbered List with only the recommendations that will fix the MAJOR, MODERATE, or MINOR problems that appear in your scratch pad analysis in a numbered list. Do not include recommendations for any TRIVIAL problems. Explain exactly what specific changes you recommend. Make sure that these recommendations don't violate any of the constraints listed above. Use a header \"Recommendations\" for this section and order them with the most important recommendations first.\r\n\r\nSample output:\r\n<h2>Thinking</h2>\r\n1. [problem description] ([Major, Moderate, Minor, Trivial])\r\n2. ...\r\n3....\r\n\r\n<h2>Recommendations</h2>\r\n1. [specific recommendation here that clearly states what exactly should change and what it should be changed to]"
+feedback_enabled: true
+minify_html: false

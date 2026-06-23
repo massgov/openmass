@@ -1,0 +1,598 @@
+<?php
+
+namespace Drupal\mass_bulk_file_replace\Plugin\Action;
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Action\Attribute\Action;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
+use Drupal\Core\Render\Markup;
+use Drupal\media\Entity\Media;
+use Drupal\Core\File\FileUrlGenerator;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\file\Entity\File;
+use Drupal\stage_file_proxy\DownloadManagerInterface;
+use Drupal\views\ViewExecutable;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsPreconfigurationInterface;
+
+/**
+ * Entity action to download files from media entities.
+ */
+#[Action(
+  id: "mass_bulk_file_replace_export_action",
+  label: new TranslatableMarkup('Download selected media as ZIP'),
+  type: 'media'
+)]
+class MassMediaExportAction extends ViewsBulkOperationsActionBase implements ViewsBulkOperationsPreconfigurationInterface, ContainerFactoryPluginInterface {
+
+  protected DownloadManagerInterface $downloadManager;
+
+  /**
+   * The file_system service.
+   *
+   * @var \Drupal\Core\File\FileSystem
+   */
+  protected $fileSystem;
+
+  /**
+   * The file URL generator service.
+   *
+   * @var \Drupal\Core\File\FileUrlGenerator
+   */
+  protected $fileUrlGenerator;
+
+  /**
+   * The messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * The time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $time;
+
+  /**
+   * The tempstore service.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStore
+   */
+  protected $tempStore;
+
+  /**
+   * The language manager service.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * The entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Failed files.
+   *
+   * @var array
+   */
+  protected $failedMediaTypes = [];
+
+  /**
+   * Constructs a NotFound object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\File\FileSystemInterface $fileSystem
+   *   The file system manager.
+   * @param \Drupal\Core\File\FileUrlGenerator $fileUrlGenerator
+   *   The file URL generator service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger service.
+   * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
+   *   The tempstore factory.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
+   *   The language manager service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager service.
+   */
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    FileSystemInterface $fileSystem,
+    FileUrlGenerator $fileUrlGenerator,
+    MessengerInterface $messenger,
+    PrivateTempStoreFactory $tempStoreFactory,
+    TimeInterface $time,
+    LanguageManagerInterface $languageManager,
+    EntityTypeManagerInterface $entityTypeManager,
+    DownloadManagerInterface $downloadManager,
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->fileSystem = $fileSystem;
+    $this->fileUrlGenerator = $fileUrlGenerator;
+    $this->messenger = $messenger;
+    $this->tempStore = $tempStoreFactory->get('download_media_action');
+    $this->time = $time;
+    $this->languageManager = $languageManager;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->downloadManager = $downloadManager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('file_system'),
+      $container->get('file_url_generator'),
+      $container->get('messenger'),
+      $container->get('tempstore.private'),
+      $container->get('datetime.time'),
+      $container->get('language_manager'),
+      $container->get('entity_type.manager'),
+      $container->get('stage_file_proxy.download_manager')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildPreConfigurationForm(array $form, array $values, FormStateInterface $form_state): array {
+    $media_types = $this->entityTypeManager
+      ->getStorage('media_type')
+      ->loadMultiple();
+
+    $form['field_config'] = [
+      '#type' => 'table',
+      '#caption' => $this->t('Select the media field you want to include in the export. Enter its machine name below.'),
+      '#header' => [
+        $this->t('Media type'),
+        $this->t('Field machine name'),
+      ],
+    ];
+
+    // Iterate over media types to populate rows.
+    foreach ($media_types as $media_type_id => $media_type) {
+      $form['field_config'][$media_type_id]['media_type'] = [
+        '#markup' => $media_type->label(),
+      ];
+
+      $form['field_config'][$media_type_id]['field_machine_name'] = [
+        '#type' => 'textfield',
+        '#default_value' => $values['field_config'][$media_type_id]['field_machine_name'] ?? '',
+        '#size' => 100,
+        // Add custom validation for machine name.
+        '#element_validate' => [
+          [get_class($this), 'validateFieldMachineName'],
+        ],
+        '#media_type_id' => $media_type_id,
+      ];
+    }
+
+    return $form;
+  }
+
+  /**
+   * Validate the field machine name.
+   */
+  public static function validateFieldMachineName(array &$element, FormStateInterface $form_state, array &$form) {
+    $media_type_id = $element['#media_type_id'];
+    $machine_name = $element['#value'];
+
+    if (!empty($machine_name)) {
+      // Load the media type and its fields.
+      $media_type = \Drupal::entityTypeManager()->getStorage('media_type')->load($media_type_id);
+      if ($media_type) {
+        $field_definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('media', $media_type_id);
+
+        // Check if the machine name exists in the fields.
+        if (!isset($field_definitions[$machine_name])) {
+          $form_state->setError($element, t('The machine name "%name" does not exist for the media type %type.', [
+            '%name' => $machine_name,
+            '%type' => $media_type->label(),
+          ]));
+        }
+      }
+    }
+  }
+
+  /**
+   * Helper to get the media field name based on media type.
+   */
+  protected function getMediaFieldName($media_type) {
+    if (isset($this->configuration['field_config'][$media_type]['field_machine_name'])) {
+      return $this->configuration['field_config'][$media_type]['field_machine_name'];
+    }
+    return '';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function executeMultiple(array $entities) {
+    $batch_id = $this->context['sandbox']['current_batch'] ?? 1;
+    // Ensure the sandbox context is initialized.
+    if (!isset($this->context['sandbox']['processed'])) {
+      $this->context['sandbox']['processed'] = 0;
+    }
+    $cid = $this->getCid($batch_id);
+
+    // Collect media file paths in the current batch.
+    $file_paths = [];
+    $failed_file_paths = [];
+
+    foreach ($entities as $entity) {
+      if ($entity instanceof Media) {
+        $info = $this->getMediaFilePath($entity);
+        // If getMediaFilePath returns NULL, mark as generic failure.
+        if ($info === NULL) {
+          $failed_file_paths[$entity->id()] = [
+            'file_path' => NULL,
+            'reason' => $this->t('Unknown error while preparing the file.'),
+          ];
+          continue;
+        }
+        // If getMediaFilePath surfaced an explicit error, record and continue.
+        if (!empty($info['error'])) {
+          $failed_file_paths[$entity->id()] = [
+            'file_path' => $info['file_path'] ?? ($info['file_uri'] ?? NULL),
+            'reason' => $info['error'],
+          ];
+          continue;
+        }
+
+        $media_real_file_path = $info['file_path'] ?? NULL;
+        if ($media_real_file_path && $this->validateMediaFilePath($media_real_file_path)) {
+          $file_paths[$entity->id()] = [
+            'file_path' => $media_real_file_path,
+            // Prefer the managed File entity's filename; fall back to the path basename.
+            'filename' => $info['filename'] ?? basename($media_real_file_path),
+          ];
+        }
+        else {
+          $failed_file_paths[$entity->id()] = [
+            'file_path' => $media_real_file_path,
+            'reason' => $this->t('File not found or not readable.'),
+          ];
+        }
+      }
+    }
+
+    // Save file paths to TempStore for this batch.
+    $this->tempStore->set($cid, $file_paths);
+    $this->tempStore->set($cid . '_failed', $failed_file_paths);
+
+    $this->context['sandbox']['processed'] = $this->context['sandbox']['processed'] ?? 0;
+    $processed = $this->context['sandbox']['processed'] + count($entities);
+
+    if (!isset($this->context['sandbox']['total']) || $processed >= $this->context['sandbox']['total']) {
+      $all_files = $this->getAllFilePaths();
+      $all_failed_files = $this->getAllFailedFilePaths();
+
+      $this->generateAndLinkZipFile($all_files, $all_failed_files);
+
+      // Clear TempStore for the next action run.
+      $this->clearTempStore();
+    }
+  }
+
+  /**
+   * Retrieve all file paths across batches from TempStore.
+   */
+  protected function getAllFilePaths() {
+    $all_files = [];
+    for ($i = 1; $i <= $this->context['sandbox']['current_batch']; $i++) {
+      $cid = $this->getCid($i);
+      $chunk = $this->tempStore->get($cid);
+      if ($chunk) {
+        $all_files += $chunk;
+        $this->tempStore->delete($cid);
+      }
+    }
+    return $all_files;
+  }
+
+  /**
+   * Retrieve all file paths across batches from TempStore.
+   */
+  protected function getAllFailedFilePaths() {
+    $all_files = [];
+    for ($i = 1; $i <= $this->context['sandbox']['current_batch']; $i++) {
+      $cid = $this->getCid($i);
+      $chunk = $this->tempStore->get($cid . '_failed');
+
+      if ($chunk) {
+        $all_files += $chunk;
+        // $all_files = array_merge($all_files, $chunk);
+        $this->tempStore->delete($cid . '_failed');
+      }
+    }
+    return $all_files;
+  }
+
+  /**
+   * Summary of validateMediaFilePath.
+   *
+   * @param mixed $media_file_path
+   *   The media file path.
+   *
+   * @return bool
+   *   True if the media file path is valid, false otherwise.
+   */
+  protected function validateMediaFilePath($media_file_path) {
+    return (file_exists($media_file_path) && is_readable($media_file_path));
+  }
+
+  /**
+   * Helper to retrieve the file path for a media entity.
+   */
+  protected function getMediaFilePath(Media $media) {
+    $target_media_field = $this->getMediaFieldName($media->bundle());
+    if (!$target_media_field) {
+      $this->failedMediaTypes[] = $media->bundle();
+      return [
+        'file_path' => NULL,
+        'file_uri' => NULL,
+        'error' => $this->t('No export field configured for media type "@type".', ['@type' => $media->bundle()]),
+      ];
+    }
+
+    if ($target_media_field && $media->get($target_media_field)->entity) {
+      $file = $media->get($target_media_field)->entity;
+      $uri = $file->getFileUri();
+
+      // Ensure file exists locally via Stage File Proxy.
+      if (!file_exists($this->fileSystem->realpath($uri))) {
+        $server = \Drupal::config('stage_file_proxy.settings')->get('origin');
+        $origin_dir = trim(\Drupal::config('stage_file_proxy.settings')->get('origin_dir') ?? 'sites/default/files');
+        $relative_path = str_replace('public://', '', $uri);
+        $options = ['verify' => \Drupal::config('stage_file_proxy.settings')->get('verify')];
+        try {
+          $this->downloadManager->fetch($server, $origin_dir, $relative_path, $options);
+        }
+        catch (\Throwable $e) {
+          \Drupal::logger('mass_bulk_file_replace')->warning('Failed to fetch "@rel" from origin via SFP: @msg', ['@rel' => $relative_path, '@msg' => $e->getMessage()]);
+          return [
+            'file_path' => NULL,
+            'file_uri' => $uri,
+            'error' => $this->t('Could not fetch the file from the origin server.'),
+          ];
+        }
+      }
+
+      return [
+        'file_path' => $this->fileSystem->realpath($file->getFileUri()),
+        'file_uri' => $file->getFileUri(),
+        'filename' => $file->getFilename(),
+      ];
+    }
+    return NULL;
+  }
+
+  /**
+   * Generates a ZIP file and creates a download link.
+   *
+   * This method creates a ZIP file from the given list of file
+   * paths and provides a download link for the generated ZIP.
+   *  If any files fail to be added to the
+   * ZIP, a warning message is displayed listing the failed files along with
+   * clickable links to their corresponding media entity pages.
+   *
+   * @param array $file_paths
+   *   An array keyed by media ID. Each value is either a string file path
+   *   or an array with 'file_path' and 'filename' keys.
+   * @param array $failed_file_paths
+   *   (optional) An associative array where the keys are media
+   *   entity IDs and the values are the file paths that failed
+   *   to be added to the ZIP.
+   *
+   * @return void
+   *   The method does not return any value but displays
+   *   success or warning messages using the messenger service.
+   */
+  protected function generateAndLinkZipFile(array $file_paths, array $failed_file_paths = []) {
+    // Ensure the private directory exists and is writable.
+    $private = 'public://';
+    if (!$this->fileSystem->prepareDirectory($private, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+      $this->messenger->addError($this->t('We couldn’t create the download on the server. Please try again. If this keeps happening, contact CMS Support.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('Private dir not writable/missing.');
+      return;
+    }
+
+    // Resolve the real filesystem path for ZipArchive operations.
+    $dir_real = $this->fileSystem->realpath($private);
+    if ($dir_real === FALSE) {
+      $this->messenger->addError($this->t('We couldn’t prepare the download folder. Please try again or contact CMS Support.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('realpath for public files directory returned FALSE.');
+      return;
+    }
+
+    // Build file paths for the ZIP: a real path for ZipArchive and a scheme path for linking.
+    $zip_filename = $this->getFilename();
+    // Actual file on disk
+    $zip_realpath = $dir_real . '/' . $zip_filename;
+    // Used to generate the link
+    $zip_scheme = 'public://' . $zip_filename;
+
+    $zip = new \ZipArchive();
+    if ($zip->open($zip_realpath, \ZipArchive::CREATE) !== TRUE) {
+      $this->messenger->addError($this->t('We couldn’t start building the ZIP. Please try again.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('ZipArchive->open() failed at @path', ['@path' => $zip_realpath]);
+      return;
+    }
+
+    foreach ($file_paths as $media_id => $data) {
+      // Support both the new structured form and the legacy string form.
+      if (is_array($data)) {
+        $file_path = $data['file_path'] ?? NULL;
+        $original_filename = $data['filename'] ?? NULL;
+      }
+      else {
+        $file_path = $data;
+        $original_filename = NULL;
+      }
+
+      if (is_string($file_path) && file_exists($file_path) && is_readable($file_path)) {
+        // If we don't have an explicit filename from the File entity,
+        // fall back to the basename of the path.
+        if ($original_filename === NULL || $original_filename === '') {
+          $original_filename = basename($file_path);
+        }
+
+        $custom_filename = $this->buildExportFilename($original_filename, (int) $media_id);
+        $zip->addFile($file_path, $custom_filename);
+      }
+    }
+
+    $zip->close();
+
+    // Confirm the ZIP exists on disk before linking.
+    if (!file_exists($zip_realpath)) {
+      $this->messenger->addError($this->t('Your download could not be created. This can happen if the media items you\'ve selected are missing, try accessing media items directly to verify files are in place. Please reload this page and try again. If it happens again, contact CMS Support with the time and number of documents you selected.'));
+      \Drupal::logger('mass_bulk_file_replace')->error('ZIP missing after close: @path', ['@path' => $zip_realpath]);
+      return;
+    }
+
+    // Register the ZIP as a managed temporary file so cron can clean it up.
+    $file_entity = File::create([
+      'uri' => $zip_scheme,
+      'status' => 0,
+      'filename' => basename($zip_scheme),
+    ]);
+    $file_entity->setTemporary();
+    $file_entity->save();
+
+    // Generate the download link using the stream wrapper path.
+    $download_url = $this->fileUrlGenerator->generateAbsoluteString($zip_scheme);
+    $total_count = count($file_paths);
+    $this->messenger->addStatus($this->t('Your ZIP is ready (:count items). <a href=":url">Download</a>. The link will expire automatically.', [
+      ':url' => $download_url,
+      ':count' => $total_count,
+    ]));
+
+    // Prepare and display the warning message for failed files.
+    if (!empty($failed_file_paths)) {
+      $failed_lines = [];
+      foreach ($failed_file_paths as $entity_id => $data) {
+        // Backwards compatibility: allow string path values.
+        if (is_string($data)) {
+          $file_path_basename = basename((string) $data);
+          $reason = $this->t('File not found or not readable.');
+        }
+        else {
+          $file_path_basename = basename((string) ($data['file_path'] ?? ''));
+          $reason = isset($data['reason']) ? $data['reason'] : $this->t('Skipped.');
+        }
+        $current_language = $this->languageManager->getCurrentLanguage()->getId();
+        $media_entity_url = Url::fromRoute('entity.media.edit_form', ['media' => $entity_id])
+          ->setOption('language', $this->languageManager->getLanguage($current_language));
+        $failed_lines[] = $this->t('<a href=":url">Media @entity_id</a> — @file — @reason', [
+          ':url' => $media_entity_url->toString(),
+          '@entity_id' => $entity_id,
+          '@file' => $file_path_basename ?: $this->t('(no file)'),
+          '@reason' => $reason,
+        ]);
+      }
+      $failed_output = implode('<br>', $failed_lines);
+      $this->messenger->addWarning($this->t('Some documents were skipped (:count). The ZIP was created without these items:<br>@list', [
+        ':count' => count($failed_file_paths),
+        '@list' => Markup::create($failed_output),
+      ]));
+    }
+  }
+
+  /**
+   * Builds the filename used inside the ZIP for a media file.
+   *
+   * The original filename is preserved exactly, with the
+   * DO_NOT_CHANGE_THIS_MEDIA_ID_{ID} token appended before the extension.
+   *
+   * @param string $original_filename
+   *   The original filename from the managed file entity.
+   * @param int $media_id
+   *   The media entity ID.
+   *
+   * @return string
+   *   The filename to use inside the ZIP.
+   */
+  protected function buildExportFilename(string $original_filename, int $media_id): string {
+    $parts = pathinfo($original_filename);
+    $ext = isset($parts['extension']) && $parts['extension'] !== '' ? ('.' . $parts['extension']) : '';
+    $base = $parts['filename'];
+
+    return $base . '_DO_NOT_CHANGE_THIS_MEDIA_ID_' . $media_id . $ext;
+  }
+
+  /**
+   * Clear TempStore after the ZIP file is generated.
+   */
+  protected function clearTempStore() {
+    for ($i = 1; $i <= $this->context['sandbox']['current_batch']; $i++) {
+      $this->tempStore->delete($this->getCid($i));
+    }
+  }
+
+  /**
+   * Helper to get the CID for the current batch.
+   */
+  protected function getCid($batch_id) {
+    if (!isset($this->context['sandbox']['cid_prefix'])) {
+      $this->context['sandbox']['cid_prefix'] = $this->context['view_id'] . ':'
+        . $this->context['display_id'] . ':' . $this->context['action_id'] . ':'
+        . md5(serialize(array_keys($this->context['list']))) . ':';
+    }
+    return $this->context['sandbox']['cid_prefix'] . $batch_id;
+  }
+
+  /**
+   * A method to get filename destination.
+   *
+   * @return string
+   *   The output file name.
+   */
+  protected function getFilename() {
+    $rand = substr(hash('ripemd160', uniqid()), 0, 8);
+    return $this->context['view_id'] . '_' . date('Y_m_d_H_i', $this->time->getRequestTime()) . '-media-' . $rand . '.zip';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function execute($entity = NULL) {
+    $this->executeMultiple([$entity]);
+  }
+
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
+    $access = $object->access('update', $account, TRUE)
+      ->andIf($object->status->access('update', $account, TRUE));
+
+    return $return_as_object ? $access : $access->isAllowed();
+  }
+
+}

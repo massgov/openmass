@@ -17,6 +17,28 @@ use Drupal\node\NodeInterface;
 class Organisms {
 
   /**
+   * Safely returns referenced entities from an entity reference field.
+   *
+   * @param object $entity
+   *   The parent entity object.
+   * @param string $field_name
+   *   The field machine name.
+   *
+   * @return array
+   *   Referenced entities, or an empty array when field is unavailable.
+   */
+  protected static function getReferencedEntities($entity, $field_name) {
+    if (empty($field_name) || !method_exists($entity, 'hasField') || !$entity->hasField($field_name)) {
+      return [];
+    }
+    $items = $entity->get($field_name);
+    if (!method_exists($items, 'referencedEntities')) {
+      return [];
+    }
+    return $items->referencedEntities();
+  }
+
+  /**
    * Returns the variables structure required to render a page header.
    *
    * @param object $entity
@@ -293,7 +315,7 @@ class Organisms {
 
     $now = new DrupalDateTime();
 
-    foreach ($entity->{$field}->referencedEntities() as $eventEntity) {
+    foreach (self::getReferencedEntities($entity, $field) as $eventEntity) {
       if ($eventEntity->isPublished()) {
         $has_past = $has_past || $eventEntity->field_event_date->end_value < $now;
         $has_upcoming = $has_upcoming || $eventEntity->field_event_date->end_value > $now;
@@ -679,43 +701,6 @@ class Organisms {
     if ($links) {
       return [
         'title' => $options['title'],
-        'links' => $links,
-      ];
-    }
-    else {
-      return [];
-    }
-  }
-
-  /**
-   * Returns the variables structure required to render an Inline Links.
-   *
-   * @param array $items
-   *   Items of the list.
-   * @param array $options
-   *   'ariaLabel' receives an optional aria-label to show.
-   *
-   * @see @organisms/by-template/inline-links.twig
-   *
-   * @return array
-   *   Returns a structured array of inline links with language info.
-   */
-  public static function prepareInlineLinksForLanguages(array $items, array $options) {
-    $links = [];
-
-    // Create the links data structure.
-    foreach ($items as $item) {
-
-      $links[] = [
-        'text' => $item['title'],
-        'href' => $item['url'],
-        'lang_label' => $item['lang_label'],
-      ];
-    }
-
-    if ($links) {
-      return [
-        'ariaLabel' => $options['ariaLabel'],
         'links' => $links,
       ];
     }
@@ -1215,7 +1200,7 @@ class Organisms {
     }
 
     if (!empty($fields['downloads']) && Helper::isFieldPopulated($entity, $fields['downloads'])) {
-      foreach ($entity->{$fields['downloads']}->referencedEntities() as $downloadEntity) {
+      foreach (self::getReferencedEntities($entity, $fields['downloads']) as $downloadEntity) {
         if (($options['maxItems'] != NULL) && ($num_items >= $options['maxItems'])) {
           break;
         }
@@ -1291,7 +1276,7 @@ class Organisms {
       ];
     }
 
-    foreach ($entity->get($fields['fees'])->referencedEntities() as $index => $feeEntity) {
+    foreach (self::getReferencedEntities($entity, $fields['fees']) as $index => $feeEntity) {
       $cache_tags = array_merge($cache_tags, $feeEntity->getCacheTags());
 
       // Determines which fieldnames to use from the map.
@@ -1369,7 +1354,7 @@ class Organisms {
     }
     else {
       $description = [];
-    };
+    }
 
     $table = [];
     if (!empty($items)) {
@@ -1591,9 +1576,10 @@ class Organisms {
       'online' => 'laptop',
       'phone' => 'phone',
       'mail' => 'mail',
-      'fax' => 'fax-icon',
+      'fax' => 'fax',
       'in person' => 'profile',
       'text' => 'message',
+      'by_email' => 'mail',
     ];
 
     // Roll up our action steps.

@@ -17,6 +17,8 @@ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
 use Drupal\media\MediaInterface;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Immediately delete any old file entity on this media entity.
@@ -54,7 +56,7 @@ function mass_media_media_update(EntityInterface $entity) {
   /** @var \Drupal\Core\File\FileSystem $file_system */
   $file_system = \Drupal::service('file_system');
   $file_scheme = StreamWrapperManager::getScheme($file_uri);
-  if ($file_scheme == 'private') {
+  if (!$entity->isPublished() || $file_scheme == 'private') {
     return;
   }
 
@@ -255,20 +257,34 @@ function mass_media_media_presave(MediaInterface $entity) {
       $file_scheme = StreamWrapperManager::getScheme($file_uri);
       $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
 
-      // Checks for unpublished Documents to ensure file is private.
-      // Checks for published Documents to ensure file is public.
-      if ($entity->isPublished() && $file_scheme == 'private') {
-        // Moves file from private to public.
+      $file_destination = NULL;
+
+      // Load the current default revision.
+      $default_revision = NULL;
+      if (!$entity->isNew()) {
+        $default_revision = \Drupal::entityTypeManager()->getStorage('media')->loadUnchanged($entity->id());
+      }
+
+      $same_file_as_default = $default_revision
+        && $default_revision->hasField('field_upload_file')
+        && !$default_revision->get('field_upload_file')->isEmpty()
+        && $default_revision->get('field_upload_file')->target_id === $entity->get('field_upload_file')->target_id;
+
+      if ($default_revision && $default_revision->isPublished() && $same_file_as_default) {
+        // File is still in use by published revision; do not move.
+        return;
+      }
+
+      if ($entity->isPublished() && $file_scheme === 'private') {
         $file_destination = 'public://' . $file_uri_target;
       }
-      elseif (!$entity->isPublished() && $file_scheme == 'public') {
+      elseif (!$entity->isPublished() && $file_scheme === 'public') {
         $file_destination = 'private://' . $file_uri_target;
       }
 
-      // Moves file as needed.
       if (!empty($file_destination)) {
         $dirname = $file_system->dirname($file_destination);
-        if (!\Drupal::service('file_system')->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+        if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
           throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
         }
         if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
@@ -276,6 +292,54 @@ function mass_media_media_presave(MediaInterface $entity) {
         }
       }
     }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for paragraph entities.
+ *
+ * When saving a 'list_item_document' paragraph, propagates reusable labels
+ * to all referenced media entities in 'field_liststaticdoc_item'.
+ *
+ * @param \Drupal\paragraphs\ParagraphInterface $paragraph
+ *   The paragraph entity being saved.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function mass_media_paragraph_presave(ParagraphInterface $paragraph) {
+  // Guard clause: only act on 'list_item_document' bundle.
+  if ($paragraph->bundle() !== 'list_item_document') {
+    return;
+  }
+
+  // Guard clause: skip if no reusable labels to propagate.
+  if ($paragraph->get('field_reusable_label')->isEmpty()) {
+    return;
+  }
+
+  $new_label_ids = array_column(
+    $paragraph->get('field_reusable_label')->getValue(),
+    'target_id'
+  );
+
+  foreach ($paragraph->get('field_liststaticdoc_item')->referencedEntities() as $media) {
+    if (!$media instanceof MediaInterface) {
+      continue;
+    }
+
+    // Merge new and existing term IDs on the media.
+    $existing_label_ids = array_column(
+      $media->get('field_document_label')->getValue(),
+      'target_id'
+    );
+    $merged_ids = array_unique(array_merge($existing_label_ids, $new_label_ids));
+
+    // Apply merged term IDs back to the media field.
+    $media->set('field_document_label', array_map(function ($tid) {
+      return ['target_id' => $tid];
+    }, $merged_ids));
+
+    $media->save();
   }
 }
 

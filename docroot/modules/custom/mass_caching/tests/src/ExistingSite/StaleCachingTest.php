@@ -11,6 +11,13 @@ use MassGov\Dtt\MassExistingSiteBase;
  */
 class StaleCachingTest extends MassExistingSiteBase {
 
+  protected static array $uncacheableDynamicPagePatterns = [
+    'admin/.*',
+    '/*edit.*',
+    'user/logout.*',
+    'user/reset/*',
+  ];
+
   /**
    * {@inheritdoc}
    */

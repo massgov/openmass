@@ -45,12 +45,12 @@
   {% set level = element['#level'] %}
 {% endif %}
 
-{% embed "@molecules/contact/contact-group.twig" with {
-  "contactGroup": {
-    "name": "Online",
-    "icon": "laptop",
-    "level": level
-  }
+{% embed '@molecules/contact/contact-group.twig' with {
+  contactGroup: {
+    name: 'Online',
+    icon: 'laptop',
+    level: level,
+  },
 } %}
   {% block groupItems %}
     {# Increase heading number by 1 from the parent heading. #}

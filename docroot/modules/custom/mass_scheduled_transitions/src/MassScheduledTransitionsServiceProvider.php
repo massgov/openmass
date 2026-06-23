@@ -15,7 +15,7 @@ class MassScheduledTransitionsServiceProvider extends ServiceProviderBase {
    */
   public function alter(ContainerBuilder $container) {
     // Overrides ScheduledTransitionsNewRevision event subscriber.
-    $definition = $container->getDefinition('scheduled_transitions.new_revision');
+    $definition = $container->getDefinition('Drupal\scheduled_transitions\EventSubscriber\ScheduledTransitionsNewRevision');
     $definition->setClass('\Drupal\mass_scheduled_transitions\EventSubscriber\MassScheduledTransitionsNewRevision');
   }
 

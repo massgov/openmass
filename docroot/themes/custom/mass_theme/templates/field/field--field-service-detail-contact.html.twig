@@ -44,24 +44,24 @@
   {% set level = element['#level'] %}
 {% endif %}
 
-{% embed "@organisms/contact/contact-list.twig" with {
-  "contactList": {
-    "viewSpecific": false,
-    "compHeading": {
-      "title": "Contact",
-      "sub": false,
-      "color": "",
-      "id": "",
-      "centered": "",
-      "titleContext": "",
-      "sidebar": true,
-      "level": level
+{% embed '@organisms/contact/contact-list.twig' with {
+  contactList: {
+    viewSpecific: false,
+    compHeading: {
+      title: 'Contact',
+      sub: false,
+      color: '',
+      id: '',
+      centered: '',
+      titleContext: '',
+      sidebar: true,
+      level: level,
     },
-    "contacts": {
-      "showMore": true,
-      "hideSecondary": not secondaryItems
-    }
-  }
+    contacts: {
+      showMore: true,
+      hideSecondary: not secondaryItems,
+    },
+  },
 } %}
   {% block contactListContacts %}
     {# Increase heading number by 1 from the parent heading. #}

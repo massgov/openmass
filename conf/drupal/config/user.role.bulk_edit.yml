@@ -1,0 +1,18 @@
+uuid: 2e716427-8fd9-4620-96ec-5b2e04a4c41c
+langcode: en
+status: true
+dependencies:
+  module:
+    - actions_permissions
+    - mass_bulk_file_replace
+    - views_bulk_edit
+id: bulk_edit
+label: 'Bulk Edit and Upload'
+weight: 10
+is_admin: null
+permissions:
+  - 'execute entity:save_action node'
+  - 'execute mass_bulk_file_replace_export_action media'
+  - 'execute views_bulk_edit all'
+  - 'use mass_bulk_file_replace'
+  - 'use views bulk edit'

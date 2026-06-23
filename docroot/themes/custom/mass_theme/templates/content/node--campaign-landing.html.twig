@@ -9,9 +9,9 @@
 
 {% block preContent %}
   {% if translationLinks %}
-    {% include "@organisms/by-author/inline-links-language.twig" with {
-      "inlineLinks": translationLinks
-    } %}
+    {{ include('@molecules/inline-links-language.twig', {
+      inlineLinks: translationLinks,
+    }) }}
   {% endif %}
   {{ content.field_header }}
 {% endblock %}

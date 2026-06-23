@@ -2,3 +2,7 @@ services:
   mass_views.node_argument_access:
     class: Drupal\mass_views\NodeArgumentAccessHandler
     arguments: ['@current_user', '@current_route_match']
+  mass_views.geo_request_sanitizer:
+    class: Drupal\mass_views\EventSubscriber\GeoRequestSanitizer
+    tags:
+      - { name: event_subscriber }

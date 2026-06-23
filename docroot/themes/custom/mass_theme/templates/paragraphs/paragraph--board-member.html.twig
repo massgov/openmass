@@ -56,27 +56,27 @@
   {% set eyebrow = paragraph.field_eyebrow.value %}
 
   {% set generalTeaser = {
-    "layout": layout,
-    "eyebrow": eyebrow,
-    "image": show_image,
-    "level": level,
-    "title": {
-      "href": '',
-      "text": name,
-      "info": "",
-      "property": "",
+    layout: layout,
+    eyebrow: eyebrow,
+    image: show_image,
+    level: level,
+    title: {
+      href: '',
+      text: name,
+      info: '',
+      property: '',
     },
   } %}
 
   {% if is_featured_board_member %}
-    {% include "@molecules/general-teaser.twig" with {
+    {{ include('@molecules/general-teaser.twig', {
       generalTeaser: generalTeaser,
-    } %}
+    }) }}
   {% else %}
     <li class="ma__teaser-listing__item">
-      {% include "@molecules/general-teaser.twig" with {
+      {{ include('@molecules/general-teaser.twig', {
         generalTeaser: generalTeaser,
-      } %}
+      }) }}
     </li>
   {% endif %}
 

@@ -47,6 +47,7 @@ third_party_settings:
         - group_advisory_overview
         - group_advisory_sections
         - group_advisory_related
+        - group_page_info
       label: 'Advisory Page Edit Form'
       region: content
       parent_name: ''
@@ -128,6 +129,26 @@ third_party_settings:
         id: ''
         description: ''
         required_fields: false
+    group_page_info:
+      children:
+        - field_advisory_metatags
+        - url_redirects
+        - simple_sitemap
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: content
+      parent_name: group_advisory_page_edit_form
+      weight: 15
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.advisory.default
 targetEntityType: node
 bundle: advisory
@@ -176,7 +197,7 @@ content:
     third_party_settings: {  }
   field_advisory_links:
     type: link_default
-    weight: 57
+    weight: 4
     region: content
     settings:
       placeholder_url: ''
@@ -195,7 +216,7 @@ content:
     weight: 2
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_advisory_overview:
@@ -214,7 +235,7 @@ content:
     third_party_settings: {  }
   field_advisory_ref_contact:
     type: entity_reference_autocomplete
-    weight: 56
+    weight: 3
     region: content
     settings:
       match_operator: CONTAINS
@@ -333,7 +354,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -356,20 +377,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 99
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 99
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -408,7 +429,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }

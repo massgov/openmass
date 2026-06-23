@@ -21,19 +21,19 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v16-{{ checksum "composer.lock" }}
+        - site-composer-v19-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v16-{{ checksum "composer.lock" }}
+      key: site-composer-v19-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
   yarn_install: &yarn_install
     node/install-packages:
       pkg-manager: yarn
-      cache-version: v1001
+      cache-version: v1002
 
   branch_ignore: &branch_ignore
     ignore:
@@ -75,7 +75,7 @@ executors:
           MYSQL_PASSWORD: circle
           MYSQL_DATABASE: circle
           MYSQL_RANDOM_ROOT_PASSWORD: 1
-        command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+        command: --datadir=/var/lib/mysql-no-volume --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
       - image: memcached:1-alpine
         command: memcached -m 128
       - image: seleniarm/standalone-chromium:4.1.4-20220429
@@ -273,7 +273,7 @@ jobs:
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
       # Lint Twig
-      - run: composer twigcs -- --no-interaction
+      - run: vendor/bin/twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction
 
   test:
     parameters:
@@ -297,6 +297,9 @@ jobs:
       - run:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Ensure files and DTT directories are writable by www-data
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run drush updatedb and cim.
       - run: drush deploy
       # Get an overview
@@ -308,21 +311,20 @@ jobs:
           name: Ensure no differences between between config on disk and config in Drupal.
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
-      # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run:
+          name: Generate PHPUnit test inventory
+          command: php scripts/list-tests.php
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
             - run:
                 # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
                 name: Run functional tests
                 command: |
-                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
-                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
+                  TESTS_TO_RUN=$(phpunit -c /var/www/code/phpunit.xml.dist --list-test-files --colors=never | sed -n 's/^ - //p')
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -I{} sh -c 'f=\"\$1\"; phpunit \"\$f\" --log-junit \"/tmp/test-results/dtt/\${f##*/}.xml\"' _ {}" --verbose --split-by=timings
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -459,55 +461,6 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
-  browserstack_percy_test:
-    parameters:
-      target:
-        type: string
-        default: test
-      list:
-        type: string
-        default: post-release
-      tugboat:
-        type: string
-        default: ""
-    working_directory: /tmp/code/browserstack
-    docker:
-      - image: cimg/php:8.3-node
-        environment:
-          BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
-          BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
-          BROWSERSTACK_LOCAL: false
-          BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
-          MASS_BYPASS_RATE_LIMIT: $MASS_BYPASS_RATE_LIMIT
-          PERCY_TOKEN: $PERCY_TOKEN
-          PERCY_TARGET: << parameters.target >>
-          PERCY_LIST: << parameters.list >>
-          PERCY_DO_NOT_CAPTURE_RESPONSIVE_ASSETS: true
-          PERCY_CLIENT_ERROR_LOGS: false
-    steps:
-      - attach_workspace: {at: /tmp}
-      - *vendor_bin_add_path
-      - *no_host_check
-      - *no_ssh_timeout
-      - *yarn_install
-      - when:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Percy on BrowserStack Automate test (Tugboat target)
-                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test || true
-      - unless:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Percy on BrowserStack Automate test (non Tugboat target)
-                command: npm run percy-snapshots-test || true
-                no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
   backstop_reference:
     parameters:
       target:
@@ -541,16 +494,7 @@ jobs:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            EXIT_CODE=0
-            backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-            # Retry
-            if [ "$EXIT_CODE" != "0" ]; then
-              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-            fi
-            # Retry
-            if [ "$EXIT_CODE" != "0" ]; then
-              backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
-            fi
+            backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
       - run:
           name: Archive Reference Screenshots
           command: |
@@ -617,37 +561,43 @@ jobs:
                 name: Capture Backstop Reference Screenshots
                 working_directory: backstop
                 command: |
-                  EXIT_CODE=0
-                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-                  # Retry
-                  if [ "$EXIT_CODE" != "0" ]; then
-                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js || EXIT_CODE=$?
-                  fi
-                  # Retry
-                  if [ "$EXIT_CODE" != "0" ]; then
-                    backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
-                  fi
+                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
       - unless:
           condition: << parameters.force-reference >>
           steps:
             - run:
                 name: Verify Artifacts
                 command: |
-                  wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+                  curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google-linux-signing-key.gpg
                   apt-get update
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
-                  if [ "${!BACKSTOP_REF}" == "" ]; then
+
+                  # Ensure the env var exists and is non-empty.
+                  if [ -z "${!BACKSTOP_REF:-}" ]; then
                     echo "No artifacts found for << parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
                     exit 1
                   fi
+
                   STOPPED_AT=$(curl --request GET \
                     --fail \
                     --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
-                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
-                  LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
+                    --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at // empty')
+
+                  if [ -z "$STOPPED_AT" ]; then
+                    echo "Could not read stopped_at for job ${!BACKSTOP_REF} (API returned empty/null)."
+                    exit 1
+                  fi
+
+                  LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s 2>/dev/null || true)
                   STALE_TIME=$(date -d "-168 hours" +%s)
-                  if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
+
+                  if [ -z "$LAST_SUCCESS" ]; then
+                    echo "Could not parse stopped_at as a date: STOPPED_AT='$STOPPED_AT'"
+                    exit 1
+                  fi
+
+                  if [ "$LAST_SUCCESS" -le "$STALE_TIME" ]; then
                     echo "Reference images are stale, please re-run the nightly_backstop_snapshot workflow or run `drush ma:ci:backstop-snapshot --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>` locally"
                     exit 1
                   fi
@@ -720,8 +670,14 @@ jobs:
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
-      - run: docker push << parameters.instance >>
+      - run:
+          name: Commit mysql image
+          command: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
+          no_output_timeout: 60m
+      - run:
+          name: Push mysql image
+          command: docker push << parameters.instance >>
+          no_output_timeout: 60m
 
   pending_security:
     working_directory: /tmp/code
@@ -825,14 +781,6 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [deploy-test-refresh-db]
-          target: test
-          list: all
-          filters:
-            branches:
-              only: /^release\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
           requires: [deploy-test-refresh-db]
@@ -889,14 +837,6 @@ workflows:
             requires: [deploy-test-no-refresh-db]
             target: test
             reference: prod
-            filters:
-              branches:
-                only: /^hotfix\/.*$/
-      - browserstack_percy_test:
-            name: browserstack-percy-test
-            requires: [deploy-test-no-refresh-db]
-            target: test
-            list: all
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -968,14 +908,6 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
-          filters:
-            branches:
-              only: /^mayflower\/.*$/
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [deploy-test-refresh-db]
-          target: test
-          list: all
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -1262,20 +1194,6 @@ workflows:
           tugboat: << pipeline.parameters.tugboat >>
           cachebuster: << pipeline.parameters.cachebuster >>
 
-  browserstack_percy_compare:
-    when:
-      and:
-        - not:
-            equal: [ webhook, << pipeline.trigger_source >> ]
-        - equal: [ browserstack_percy_compare, << pipeline.parameters.trigger_workflow >> ]
-    jobs:
-      - build
-      - browserstack_percy_test:
-          requires: [ build ]
-          target: << pipeline.parameters.target >>
-          list: << pipeline.parameters.list >>
-          tugboat: << pipeline.parameters.tugboat >>
-
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
@@ -1294,11 +1212,6 @@ workflows:
           requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [ deploy-cd-refresh-db ]
-          target: cd
-          list: all
       - crawl:
           name: crawl-deploy-450
           requires: [ deploy-cd-refresh-db ]

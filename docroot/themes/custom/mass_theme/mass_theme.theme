@@ -19,9 +19,9 @@ use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
-use Drupal\mass_content\EventsRendererOrgPages;
 use Drupal\mass_content\Entity\Bundle\node\GlossaryBundle;
 use Drupal\mass_utility\RelatedToHelper;
+use Drupal\mass_utility\RenderItemsGrouper;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
@@ -650,6 +650,7 @@ function mass_theme_preprocess_node_form_page(&$variables) {
       // Check if the platform is Gravity Forms.
       elseif ($node->isGravityForms()) {
         $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+        $variables['#attached']['library'][] = 'mass_theme/iframe_resizer_focus';
       }
     }
 
@@ -734,6 +735,9 @@ function mass_theme_preprocess_node_location(&$variables) {
     // Get the page title for title context.
     $page_title = $node->getTitle();
 
+    // Get the value of field_customize_header_text or set to FALSE by default.
+    $field_customize_header_text = ($node->hasField('field_customize_header_text') && intval($node->field_customize_header_text->value) == 1) ? TRUE : FALSE;
+
     if (Helper::isFieldPopulated($node, 'field_location_type')) {
       $locationType = $node->field_location_type->value;
     }
@@ -778,11 +782,20 @@ function mass_theme_preprocess_node_location(&$variables) {
     }
     // iFrames.
     if ($node->field_iframe->entity) {
+      $iframe_entity = $node->field_iframe->entity;
+      $iframe_title = '';
+      // Check if the accessibility title field exists and has a value.
+      if (Helper::isFieldPopulated($iframe_entity, 'field_iframe_accessibility_title')) {
+        $title_value = Helper::fieldValue($iframe_entity, 'field_iframe_accessibility_title');
+        if (!empty($title_value)) {
+          $iframe_title = ' title="' . Html::escape($title_value) . '"';
+        }
+      }
       $widgets[] = [
         'path' => '@atoms/11-text/raw-html.twig',
         'data' => [
           'rawHtml' => [
-            'content' => '<iframe src="' . $node->field_iframe->entity->field_url->uri . '" height="' . $node->field_iframe->entity->field_height->value . '" style="width:100%;"></iframe>',
+            'content' => '<iframe src="' . $node->field_iframe->entity->field_url->uri . '" height="' . $node->field_iframe->entity->field_height->value . '"' . $iframe_title . ' style="width:100%;"></iframe>',
           ],
         ],
       ];
@@ -973,7 +986,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $facilities_title = t('Facilities');
+      $facilities_title = ($field_customize_header_text && $node->hasField('field_facilities_header') && !$node->field_facilities_header->isEmpty()) ? $node->field_facilities_header->value : t('Facilities');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1001,7 +1014,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $services_title = t('Services');
+      $services_title = ($field_customize_header_text && $node->hasField('field_services_header') && !$node->field_services_header->isEmpty()) ? $node->field_services_header->value : t('Services');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1028,7 +1041,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $accessibility_title = t('Accessibility');
+      $accessibility_title = ($field_customize_header_text && $node->hasField('field_accessibility_header') && !$node->field_accessibility_header->isEmpty()) ? $node->field_accessibility_header->value : t('Accessibility');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1055,7 +1068,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $restrictions_title = t('Restrictions');
+      $restrictions_title = ($field_customize_header_text && $node->hasField('field_restrictions_header') && !$node->field_restrictions_header->isEmpty()) ? $node->field_restrictions_header->value : t('Restrictions');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -1082,7 +1095,7 @@ function mass_theme_preprocess_node_location(&$variables) {
       ];
 
       // Set up section title for heading, sticky nav.
-      $moreInfo_title = t('More info');
+      $moreInfo_title = ($field_customize_header_text && $node->hasField('field_more_info_header') && !$node->field_more_info_header->isEmpty()) ? $node->field_more_info_header->value : t('More info');
 
       // Set up heading for what you need.
       $compHeading_options = [
@@ -2611,7 +2624,6 @@ function mass_theme_preprocess_node_rules(&$variables) {
     'effective_date' => ['field_date_published'],
     'publish_state' => ['field_rules_status'],
     'courts' => ['field_rules_courts'],
-    'collections' => ['field_rules_related_collections'],
     'meta_tags' => ['field_rules_metatags'],
     'overview' => ['field_rules_overview'],
     'sources' => ['field_rules_referenced_sources'],
@@ -2621,27 +2633,10 @@ function mass_theme_preprocess_node_rules(&$variables) {
     'links' => ['field_rules_related'],
     'updates' => ['field_rules_updates'],
     'subheading' => ['field_rules_subheading'],
-    'related_to' => ['computed_related_to'],
   ];
 
   // Determines which field names to use from the map.
   $fields = Helper::getMappedFields($node, $map);
-
-  // Add any related content as determined by relationship indicators into the
-  // list of "Related to" links on the Rules of Court content type. Manually
-  // set links will be listed first followed by any links added through the
-  // Related To computed field.
-  if (!empty($fields['related_to']) && Helper::isFieldPopulated($node, $fields['related_to'])) {
-    if (!empty($fields['collections']) && Helper::isFieldPopulated($node, $fields['collections'])) {
-      if (isset($variables['content'][$fields['related_to']])) {
-        $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
-        $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
-      }
-    }
-    else {
-      $variables['content'][$fields['collections']] = $variables['content'][$fields['related_to']];
-    }
-  }
 
   if (!empty($fields['adopted_date']) && Helper::isFieldPopulated($node, $fields['adopted_date'])) {
     // Set up rich text elements for what you need.
@@ -3490,17 +3485,20 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   if (Helper::isFieldPopulated($node, $field['body'])) {
     $body = Helper::fieldFullView($node, $field['body']);
     $body_string = \Drupal::service('renderer')->renderRoot($body);
-    // Remove attributes on <p> markup.
-    $body_string = preg_replace("/<\s*p.*?>/", '<p>', $body_string);
+    // Remove attributes on <p> markup except lang (for accessibility/translations).
+    $body_string = preg_replace_callback('/<\s*p\b([^>]*)>/i', function (array $m) {
+      $attrs = $m[1];
+      if (preg_match('/\s+lang=(["\'])([^"\']*)\1/', $attrs, $lang_match)) {
+        return '<p lang="' . $lang_match[2] . '">';
+      }
+      return '<p>';
+    }, $body_string);
     if (Helper::isFieldPopulated($node, $field['location'])) {
       $location = Helper::fieldFullView($node, $field['location']);
       $location_string = \Drupal::service('renderer')->renderRoot($location);
       $location = '<span class="ma__rich-text__flame">' . $location_string . '</span> &mdash; ';
-      $body_array = explode('<p>', $body_string);
-      if (count($body_array) > 1) {
-        $body_array[1] = $location . $body_array[1];
-      }
-      $body_string = implode('<p>', $body_array);
+      // Prefix the first paragraph content, regardless of attributes like lang.
+      $body_string = preg_replace('/(<\s*p\b[^>]*>)/i', '$1' . $location, $body_string, 1);
     }
     if (Helper::fieldValue($node, $field['news_type']) == 'press_release') {
       $ap_conformity = TRUE;
@@ -3873,8 +3871,27 @@ function mass_theme_preprocess_menu(&$variables) {
   // Use this formatting for Utility nav.
   if (array_key_exists('menu_name', $variables) && $variables['menu_name'] == 'utility') {
     // Get Theme settings languages if available.
-    if (theme_get_setting('languages', 'mass_theme')) {
-      $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
+    $selected_languages = \Drupal::service('Drupal\Core\Extension\ThemeSettingsProvider')->getSetting('languages', 'mass_theme');
+    if ($selected_languages) {
+      $selected_languages = array_filter($selected_languages);
+      $google_translate_languages = [];
+      $available_languages = mass_theme_googletranslate_options_languages();
+
+      foreach ($selected_languages as $language) {
+        if (array_key_exists($language, $available_languages)) {
+          $google_translate_languages[$language] = $available_languages[$language];
+        }
+      }
+
+      $variables['availableLanguages'] = [];
+      foreach ($google_translate_languages as $language_code => $language) {
+        $english = $language['english'];
+        $native = $language['native'] ?? $english;
+
+        $variables['availableLanguages'][$language_code] = $english === $native ? $english : $english . ' - ' . $native;
+      }
+      $variables['languages'] = implode(',', $selected_languages);
+      $variables['#attached']['drupalSettings']['massTheme']['googleTranslateLanguages'] = $google_translate_languages;
     }
     foreach ($variables['items'] as &$item) {
       if ($item['url']->isRouted()) {
@@ -4584,6 +4601,71 @@ function mass_theme_preprocess_page(&$variables) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealBlackImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-black.png');
+
+  if ($route_name === 'view.collection_all.page_all') {
+    $cache_tags = [];
+    $route_match = \Drupal::routeMatch();
+    $collection = $route_match->getParameter('collection');
+
+    // Load the collection term from the slug used in the view path.
+    $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $terms = $storage->loadByProperties([
+      'vid' => 'collections',
+      'field_url_name' => $collection,
+    ]);
+    /** @var \Drupal\taxonomy\TermInterface|null $term */
+    $term = $terms ? reset($terms) : NULL;
+
+    if ($term) {
+      // Gather entities from both fields on the same term.
+      $org_entities = !$term->get('field_organizations')->isEmpty()
+        ? $term->get('field_organizations')->referencedEntities()
+        : [];
+
+      // Build one headerSearch array and merge suggested scopes from all entities.
+      $header_search = NULL;
+      $merged_scopes = [];
+
+      foreach ($org_entities as $orgs) {
+        $hs = Molecules::prepareHeaderSearch($orgs, $cache_tags);
+
+        // Use the first built headerSearch as the base.
+        if ($header_search === NULL) {
+          $header_search = $hs;
+        }
+
+        // Merge suggested scopes.
+        if (!empty($hs['suggestedScopes']) && is_array($hs['suggestedScopes'])) {
+          foreach ($hs['suggestedScopes'] as $scope) {
+            $type = $scope['type'] ?? '';
+            $value = $scope['value'] ?? '';
+            if ($type === '' || $value === '') {
+              continue;
+            }
+            $merged_scopes[$type . ':' . $value] = $scope;
+          }
+        }
+      }
+
+      // Fall back to default header search if nothing was built.
+      if ($header_search === NULL) {
+        $header_search = Molecules::prepareHeaderSearch();
+      }
+
+      // Apply merged scopes back onto the single headerSearch array.
+      $header_search['suggestedScopes'] = array_values($merged_scopes);
+      $header_search['hasSuggestions'] = !empty($header_search['suggestedScopes']);
+
+      $variables['headerSearch'] = $header_search;
+
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      CacheableMetadata::createFromRenderArray($variables)
+        ->addCacheTags($cache_tags)
+        ->applyTo($variables);
+    }
+  }
 
   if ($node = \Drupal::routeMatch()->getParameter('node')) {
     $node = $variables['node'];
@@ -4672,6 +4754,33 @@ function mass_theme_preprocess_page(&$variables) {
  */
 function mass_theme_preprocess_field(&$variables, $hook) {
   $element = $variables['element'];
+
+  // Process social media links fields
+  if (in_array($variables['field_name'], ['field_social_links', 'field_services_social_links'])
+      && $variables['entity_type'] == 'node') {
+
+    $entity = $variables['element']['#object'];
+
+    // Get the processed icon links using the prepareIconLinks function
+    $iconLinksData = Molecules::prepareIconLinks($entity);
+
+    // Add icon data to each item
+    if (isset($iconLinksData['iconLinks']['items'])) {
+      foreach ($iconLinksData['iconLinks']['items'] as $index => $iconLinkItem) {
+        if (isset($variables['items'][$index])) {
+          $variables['items'][$index]['icon'] = $iconLinkItem['icon'];
+
+          // Also convert the Url object to a string for the template
+          if (isset($variables['items'][$index]['content']['#url'])) {
+            $url = $variables['items'][$index]['content']['#url'];
+            if ($url instanceof Url) {
+              $variables['items'][$index]['content']['#url'] = $url->toString();
+            }
+          }
+        }
+      }
+    }
+  }
 
   if ($element['#field_name'] == 'field_binder_pages') {
     $variables['host_entity'] = $variables['element']['#object'];
@@ -4996,7 +5105,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
       // Do we have fax numbers? If so, display them under one icon.
       if (!empty($fax_details) && $value == 'fax') {
         $groups[] = [
-          'icon' => 'fax-icon',
+          'icon' => 'fax',
           'name' => 'Fax',
           'items' => $fax_details,
         ];
@@ -5070,46 +5179,6 @@ function mass_theme_preprocess_field(&$variables, $hook) {
     $variables['helpfulLinks'] = $helpful_links;
   }
 
-  // The first element of the featured items mosaic needs a slightly different template.
-  if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
-    // First image with an image style.
-    if ($highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight) {
-      if ($highlight->entity) {
-        $variables['items'][0]['content']['#view_mode'] = 'tall';
-      }
-    }
-  }
-
-  // Setup social link icons.
-  if (in_array($element['#field_name'], ['field_services_social_links', 'field_social_links'])) {
-    // Get icons for social links.
-    $services = [
-      'twitter',
-      'facebook',
-      'threads',
-      'flickr',
-      'blog',
-      'linkedin',
-      'google',
-      'instagram',
-      'medium',
-      'youtube',
-      'vimeo',
-      'bluesky'
-    ];
-
-    foreach ($variables['items'] as $index => &$item) {
-      $url = $item['content']['#url']->toString();
-      foreach ($services as $service) {
-        if (strpos($url, $service)) {
-          $item['icon'] = Helper::getIconPath($service);
-        }
-        elseif (strpos($url, 'bsky')) {
-          $item['icon'] = Helper::getIconPath('bluesky');
-        }
-      }
-    }
-  }
 }
 
 /**
@@ -5164,6 +5233,7 @@ function mass_theme_preprocess_paragraph__iframe(&$variables) {
     }
     if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
       $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+      $variables['#attached']['library'][] = 'mass_theme/iframe_resizer_focus';
       $variables['iframe_height'] = 'auto';
     }
   }
@@ -5197,19 +5267,6 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
     }
     $variables['sectionContent'][$numOfSections]['sectionThreeUp'] = $sections;
   }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Preprocess logic for the org_events paragraph.
- */
-function mass_theme_preprocess_paragraph__org_events(&$variables) {
-  $paragraph = $variables['paragraph'];
-  // Gather events associated with this node.
-  $eventManager = \Drupal::service('mass_content.event_manager');
-  $eventsRender = (new EventsRendererOrgPages($eventManager, $paragraph))->render();
-  $variables = array_merge($variables, $eventsRender);
 }
 
 /**
@@ -5255,42 +5312,10 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
 /**
  * Implements hook_preprocess_HOOK().
  *
- * Preprocess for org_locations paragraphs.
+ * Preprocess logic for the service_news paragraph.
  */
-function mass_theme_preprocess_paragraph__org_locations(&$variables) {
-  $paragraph = $variables['paragraph'];
-  $node = Helper::getParentNode($paragraph);
-
-  if (Helper::isFieldPopulated($paragraph, 'field_org_ref_locations')) {
-    $mappedLocations_options = [
-      'locationDetailsLink' => [
-        'display' => TRUE,
-        'nid' => $node ? $node->id() : '',
-        'path' => $node ? \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) : '',
-      ],
-    ];
-
-    // Use aside for the text that displays next to the map with the button.
-    $mappedLocations_options['aside'] = [
-      'button' => $paragraph->field_location_button_label->value,
-      'paragraph' => [
-        'text' => Helper::fieldFullView($paragraph, 'field_location_button_short_desc'),
-      ],
-    ];
-
-    $sections[] = [
-      'pageContent' => [
-        [
-          'path' => '@organisms/by-author/mapped-locations.twig',
-          'data' => [
-            'mappedLocations' => Organisms::prepareMappedLocations($paragraph->field_org_ref_locations->referencedEntities(), $mappedLocations_options),
-          ],
-        ],
-      ],
-    ];
-
-    $variables['stackedRowSections'] = $sections;
-  }
+function mass_theme_preprocess_paragraph__service_news(&$variables) {
+  mass_theme_preprocess_paragraph__org_news($variables);
 }
 
 /**
@@ -6626,154 +6651,83 @@ function mass_theme_preprocess_paragraph__icon_links(&$variables) {
  * Language config for Google translate.
  */
 function mass_theme_googletranslate_options_languages() {
+  $default_language_codes = mass_theme_googletranslate_default_languages();
+  return \Drupal::service('Drupal\Core\Extension\ThemeSettingsProvider')->getSetting('googletranslate_languages', 'mass_theme') ?: $default_language_codes;
+}
+
+/**
+ * Gets the default Google Translate language configuration.
+ */
+function mass_theme_googletranslate_default_languages() {
   $language_codes = [
-    'aa' => 'Afar',
-    'ab' => 'Abkhazian',
-    'af' => 'Afrikaans',
-    'am' => 'Amharic',
-    'ar' => 'Arabic',
-    'as' => 'Assamese',
-    'ay' => 'Aymara',
-    'az' => 'Azerbaijani',
-    'ba' => 'Bashkir',
-    'be' => 'Byelorussian',
-    'bg' => 'Bulgarian',
-    'bh' => 'Bihari',
-    'bi' => 'Bislama',
-    'bn' => 'Bengali/Bangla',
-    'bo' => 'Tibetan',
-    'br' => 'Breton',
-    'ca' => 'Catalan',
-    'cv' => 'Cape Verdean Creole',
-    'co' => 'Corsican',
-    'cs' => 'Czech',
-    'cy' => 'Welsh',
-    'da' => 'Danish',
-    'de' => 'German',
-    'dz' => 'Bhutani',
-    'el' => 'Greek',
-    'eo' => 'Esperanto',
-    'es' => 'Spanish',
-    'et' => 'Estonian',
-    'eu' => 'Basque',
-    'fa' => 'Persian',
-    'fi' => 'Finnish',
-    'fj' => 'Fiji',
-    'fo' => 'Faeroese',
-    'fr' => 'French',
-    'fy' => 'Frisian',
-    'ga' => 'Irish',
-    'gd' => 'Scots/Gaelic',
-    'gl' => 'Galician',
-    'gn' => 'Guarani',
-    'gu' => 'Gujarati',
-    'ha' => 'Hausa',
-    'hi' => 'Hindi',
-    'hr' => 'Croatian',
-    'hmn' => 'Hmong',
-    'hu' => 'Hungarian',
-    'ht' => 'Haitian Creole',
-    'hy' => 'Armenian',
-    'ia' => 'Interlingua',
-    'ie' => 'Interlingue',
-    'ik' => 'Inupiak',
-    'in' => 'Indonesian',
-    'is' => 'Icelandic',
-    'it' => 'Italian',
-    'iw' => 'Hebrew',
-    'ja' => 'Japanese',
-    'ji' => 'Yiddish',
-    'jw' => 'Javanese',
-    'ka' => 'Georgian',
-    'kk' => 'Kazakh',
-    'kl' => 'Greenlandic',
-    'km' => 'Cambodian',
-    'kn' => 'Kannada',
-    'ko' => 'Korean',
-    'ks' => 'Kashmiri',
-    'ku' => 'Kurdish',
-    'ky' => 'Kirghiz',
-    'la' => 'Latin',
-    'ln' => 'Lingala',
-    'lo' => 'Laothian',
-    'lt' => 'Lithuanian',
-    'lv' => 'Latvian/Lettish',
-    'mg' => 'Malagasy',
-    'mi' => 'Maori',
-    'mk' => 'Macedonian',
-    'ml' => 'Malayalam',
-    'mn' => 'Mongolian',
-    'mo' => 'Moldavian',
-    'mr' => 'Marathi',
-    'ms' => 'Malay',
-    'mt' => 'Maltese',
-    'my' => 'Burmese',
-    'na' => 'Nauru',
-    'ne' => 'Nepali',
-    'nl' => 'Dutch',
-    'no' => 'Norwegian',
-    'oc' => 'Occitan',
-    'om' => '(Afan)/Oromoor/Oriya',
-    'pa' => 'Punjabi',
-    'pl' => 'Polish',
-    'ps' => 'Pashto/Pushto',
-    'pt' => 'Portuguese',
-    'qu' => 'Quechua',
-    'rm' => 'Rhaeto-Romance',
-    'rn' => 'Kirundi',
-    'ro' => 'Romanian',
-    'ru' => 'Russian',
-    'rw' => 'Kinyarwanda',
-    'sa' => 'Sanskrit',
-    'sd' => 'Sindhi',
-    'sg' => 'Sangro',
-    'sh' => 'Serbo-Croatian',
-    'si' => 'Singhalese',
-    'sk' => 'Slovak',
-    'sl' => 'Slovenian',
-    'sm' => 'Samoan',
-    'sn' => 'Shona',
-    'so' => 'Somali',
-    'sq' => 'Albanian',
-    'sr' => 'Serbian',
-    'ss' => 'Siswati',
-    'st' => 'Sesotho',
-    'su' => 'Sundanese',
-    'sv' => 'Swedish',
-    'sw' => 'Swahili',
-    'ta' => 'Tamil',
-    'te' => 'Tegulu',
-    'tg' => 'Tajik',
-    'th' => 'Thai',
-    'ti' => 'Tigrinya',
-    'tk' => 'Turkmen',
-    'tl' => 'Tagalog',
-    'tn' => 'Setswana',
-    'to' => 'Tonga',
-    'tr' => 'Turkish',
-    'ts' => 'Tsonga',
-    'tt' => 'Tatar',
-    'tw' => 'Twi',
-    'uk' => 'Ukrainian',
-    'ur' => 'Urdu',
-    'uz' => 'Uzbek',
-    'vi' => 'Vietnamese',
-    'vo' => 'Volapuk',
-    'wo' => 'Wolof',
-    'xh' => 'Xhosa',
-    'yo' => 'Yoruba',
-    'zh-CN' => 'Chinese',
-    'zh-TW' => 'Chinese, Traditional',
-    'zu' => 'Zulu',
+    'en' => ['english' => 'English', 'native' => 'English', 'disclaimer' => 'Disclaimer: This feature uses the Google Translate Widget. Due to the limitation of machine translation, some pages or content may not be translated accurately.', 'translate_action' => 'Translate', 'show_original_action' => 'Show original'],
+    'af' => ['english' => 'Afrikaans', 'native' => 'Afrikaans', 'disclaimer' => 'Vrywaring: Hierdie funksie gebruik die Google Translate Widget. Weens die beperking van masjienvertaling, kan sommige bladsye of inhoud dalk nie akkuraat vertaal word nie.', 'translate_action' => 'Vertaal', 'show_original_action' => 'Wys oorspronklike'],
+    'sq' => ['english' => 'Albanian', 'native' => 'Shqip', 'disclaimer' => 'Mohim përgjegjësie: Kjo veçori përdor Google Translate Widget. Për shkak të kufizimeve të përkthimit automatik, disa faqe ose përmbajtje mund të mos përkthehen saktësisht.', 'translate_action' => 'Përkthe', 'show_original_action' => 'Shfaq origjinalin'],
+    'am' => ['english' => 'Amharic', 'native' => 'አማርኛ', 'disclaimer' => 'ማስተባበያ፦ ይህ ባህሪ Google Translate Widget ይጠቀማል። በማሽን ትርጉም ገደቦች ምክንያት፣ አንዳንድ ገጾች ወይም ይዘቶች በትክክል ላይተረጎሙ ይችላሉ።', 'translate_action' => 'ተርጉም', 'show_original_action' => 'ዋናውን አሳይ'],
+    'ar' => ['english' => 'Arabic', 'native' => 'العربية', 'disclaimer' => 'إخلاء مسؤولية: تستخدم هذه الميزة أداة Google Translate. نظرًا لقيود الترجمة الآلية، قد لا تتم ترجمة بعض الصفحات أو المحتوى بدقة.', 'translate_action' => 'ترجم', 'show_original_action' => 'إظهار النص الأصلي'],
+    'hy' => ['english' => 'Armenian', 'native' => 'Հայերեն', 'disclaimer' => 'Հրաժարում պատասխանատվությունից. Այս հնարավորությունը օգտագործում է Google Translate Widget-ը։ Մեքենայական թարգմանության սահմանափակումների պատճառով որոշ էջեր կամ բովանդակություն կարող են ճշգրիտ չթարգմանվել։', 'translate_action' => 'Թարգմանել', 'show_original_action' => 'Ցույց տալ բնօրինակը'],
+    'zh-CN' => ['english' => 'Chinese (Simplified)', 'native' => '简体中文', 'disclaimer' => '免责声明：此功能使用 Google Translate Widget。由于机器翻译的局限性，某些页面或内容可能无法被准确翻译。', 'translate_action' => '翻译', 'show_original_action' => '显示原文'],
+    'zh-TW' => ['english' => 'Chinese (Traditional)', 'native' => '繁體中文', 'disclaimer' => '免責聲明：此功能使用 Google Translate Widget。由於機器翻譯的限制，某些頁面或內容可能無法被準確翻譯。', 'translate_action' => '翻譯', 'show_original_action' => '顯示原文'],
+    'tl' => ['english' => 'Filipino', 'native' => 'Filipino', 'disclaimer' => 'Paunawa: Ginagamit ng tampok na ito ang Google Translate Widget. Dahil sa limitasyon ng machine translation, maaaring may ilang pahina o nilalaman na hindi maisalin nang tumpak.', 'translate_action' => 'Isalin', 'show_original_action' => 'Ipakita ang orihinal'],
+    'fr' => ['english' => 'French', 'native' => 'Français', 'disclaimer' => 'Avertissement : Cette fonctionnalité utilise le widget Google Traduction. En raison des limites de la traduction automatique, certaines pages ou certains contenus peuvent ne pas être traduits avec exactitude.', 'translate_action' => 'Traduire', 'show_original_action' => 'Afficher l’original'],
+    'de' => ['english' => 'German', 'native' => 'Deutsch', 'disclaimer' => 'Haftungsausschluss: Diese Funktion verwendet das Google Translate Widget. Aufgrund der Einschränkungen maschineller Übersetzung werden einige Seiten oder Inhalte möglicherweise nicht korrekt übersetzt.', 'translate_action' => 'Übersetzen', 'show_original_action' => 'Original anzeigen'],
+    'el' => ['english' => 'Greek', 'native' => 'Ελληνικά', 'disclaimer' => 'Αποποίηση ευθύνης: Αυτή η λειτουργία χρησιμοποιεί το Google Translate Widget. Λόγω των περιορισμών της μηχανικής μετάφρασης, ορισμένες σελίδες ή περιεχόμενο ενδέχεται να μην μεταφραστούν με ακρίβεια.', 'translate_action' => 'Μετάφραση', 'show_original_action' => 'Εμφάνιση πρωτοτύπου'],
+    'gu' => ['english' => 'Gujarati', 'native' => 'ગુજરાતી', 'disclaimer' => 'અસ્વીકરણ: આ સુવિધા Google Translate Widget નો ઉપયોગ કરે છે. મશીન અનુવાદની મર્યાદાઓને કારણે, કેટલીક પેજો અથવા સામગ્રીનું અનુવાદ ચોક્કસ રીતે ન થઈ શકે.', 'translate_action' => 'અનુવાદ કરો', 'show_original_action' => 'મૂળ બતાવો'],
+    'ht' => ['english' => 'Haitian Creole', 'native' => 'Kreyòl Ayisyen', 'disclaimer' => 'Avètisman: Fonksyon sa a itilize Google Translate Widget. Akòz limit tradiksyon machin, kèk paj oswa kontni ka pa tradui avèk presizyon.', 'translate_action' => 'Tradui', 'show_original_action' => 'Montre orijinal la'],
+    'iw' => ['english' => 'Hebrew', 'native' => 'עברית', 'disclaimer' => 'כתב ויתור: תכונה זו משתמשת ב-Google Translate Widget. בשל המגבלות של תרגום מכונה, ייתכן שחלק מהדפים או התוכן לא יתורגמו במדויק.', 'translate_action' => 'תרגם', 'show_original_action' => 'הצג מקור'],
+    'hi' => ['english' => 'Hindi', 'native' => 'हिन्दी', 'disclaimer' => 'अस्वीकरण: यह सुविधा Google Translate Widget का उपयोग करती है। मशीन अनुवाद की सीमाओं के कारण, कुछ पृष्ठों या सामग्री का अनुवाद सटीक रूप से नहीं हो सकता है।', 'translate_action' => 'अनुवाद करें', 'show_original_action' => 'मूल दिखाएं'],
+    'hmn' => ['english' => 'Hmong', 'native' => 'Hmoob', 'disclaimer' => 'Lus ceeb toom: Qhov no siv Google Translate Widget. Vim muaj kev txwv ntawm kev txhais lus tshuab, qee nplooj ntawv lossis cov ntsiab lus yuav tsis raug txhais kom raug.', 'translate_action' => 'Txhais', 'show_original_action' => 'Qhia qhov qub'],
+    'it' => ['english' => 'Italian', 'native' => 'Italiano', 'disclaimer' => 'Avviso di esclusione di responsabilità: Questa funzionalità utilizza il widget Google Translate. A causa dei limiti della traduzione automatica, alcune pagine o contenuti potrebbero non essere tradotti accuratamente.', 'translate_action' => 'Traduci', 'show_original_action' => 'Mostra originale'],
+    'ja' => ['english' => 'Japanese', 'native' => '日本語', 'disclaimer' => '免責事項: この機能は Google Translate Widget を使用しています。機械翻訳の制限により、一部のページまたはコンテンツが正確に翻訳されない場合があります。', 'translate_action' => '翻訳', 'show_original_action' => '原文を表示'],
+    'km' => ['english' => 'Khmer', 'native' => 'ភាសាខ្មែរ', 'disclaimer' => 'ការបដិសេធ: មុខងារនេះប្រើ Google Translate Widget។ ដោយសារការកំណត់របស់ការបកប្រែដោយម៉ាស៊ីន ទំព័រមួយចំនួន ឬមាតិកាខ្លះ អាចមិនត្រូវបានបកប្រែបានត្រឹមត្រូវទេ។', 'translate_action' => 'បកប្រែ', 'show_original_action' => 'បង្ហាញអត្ថបទដើម'],
+    'rw' => ['english' => 'Kinyarwanda', 'native' => 'Kinyarwanda', 'disclaimer' => 'Icyitonderwa: Iyi mikorere ikoresha Google Translate Widget. Kubera imipaka y\'ubuhinduzi bw\'imashini, hari impapuro cyangwa ibikubiyemo bishobora kudahindurwa neza.', 'translate_action' => 'Hindura', 'show_original_action' => 'Erekana umwimerere'],
+    'ko' => ['english' => 'Korean', 'native' => '한국어', 'disclaimer' => '면책 조항: 이 기능은 Google Translate Widget을 사용합니다. 기계 번역의 한계로 인해 일부 페이지나 콘텐츠가 정확하게 번역되지 않을 수 있습니다.', 'translate_action' => '번역', 'show_original_action' => '원문 보기'],
+    'lo' => ['english' => 'Lao', 'native' => 'ລາວ', 'disclaimer' => 'ຂໍ້ປະຕິເສດ: ຄຸນສົມບັດນີ້ໃຊ້ Google Translate Widget. ເນື່ອງຈາກຂໍ້ຈຳກັດຂອງການແປພາສາດ້ວຍເຄື່ອງ ບາງໜ້າ ຫຼື ເນື້ອຫາ ອາດຈະບໍ່ຖືກແປຢ່າງຖືກຕ້ອງ.', 'translate_action' => 'ແປ', 'show_original_action' => 'ສະແດງຕົ້ນສະບັບ'],
+    'ml' => ['english' => 'Malayalam', 'native' => 'മലയാളം', 'disclaimer' => 'നിരാകരണം: ഈ സവിശേഷത Google Translate Widget ഉപയോഗിക്കുന്നു. മെഷീൻ വിവർത്തനത്തിന്റെ പരിമിതികളുടെ കാരണം, ചില പേജുകളോ ഉള്ളടക്കങ്ങളോ കൃത്യമായി വിവർത്തനം ചെയ്യപ്പെടാതിരിക്കാം.', 'translate_action' => 'പരിഭാഷപ്പെടുത്തുക', 'show_original_action' => 'മൂലം കാണിക്കുക'],
+    'my' => ['english' => 'Myanmar (Burmese)', 'native' => 'မြန်မာ', 'disclaimer' => 'ရှင်းလင်းချက်: ဤလုပ်ဆောင်ချက်သည် Google Translate Widget ကို အသုံးပြုပါသည်။ စက်ဖြင့်ဘာသာပြန်ခြင်း၏ ကန့်သတ်ချက်များကြောင့် စာမျက်နှာများ သို့မဟုတ် အကြောင်းအရာအချို့ကို တိကျစွာ ဘာသာပြန်နိုင်မည်မဟုတ်ပါ။', 'translate_action' => 'ဘာသာပြန်ရန်', 'show_original_action' => 'မူရင်းကိုပြပါ'],
+    'ne' => ['english' => 'Nepali', 'native' => 'नेपाली', 'disclaimer' => 'अस्वीकरण: यो सुविधाले Google Translate Widget प्रयोग गर्छ। मेशिन अनुवादको सीमितताका कारण केही पृष्ठ वा सामग्री सही रूपमा अनुवाद नहुन सक्छ।', 'translate_action' => 'अनुवाद गर्नुहोस्', 'show_original_action' => 'मूल देखाउनुहोस्'],
+    'ps' => ['english' => 'Pashto', 'native' => 'پښتو', 'disclaimer' => 'خبرتیا: دا ځانګړنه د Google Translate Widget کاروي. د ماشيني ژباړې د محدوديتونو له امله، ځینې پاڼې يا منځپانګه ښايي په سمه توګه ژباړل شوې نه وي.', 'translate_action' => 'ژباړه', 'show_original_action' => 'اصلي وښایئ'],
+    'fa' => ['english' => 'Persian', 'native' => 'فارسی', 'disclaimer' => 'سلب مسئولیت: این قابلیت از Google Translate Widget استفاده می‌کند. به دلیل محدودیت‌های ترجمه ماشینی، ممکن است برخی از صفحات یا محتوا به‌طور دقیق ترجمه نشوند.', 'translate_action' => 'ترجمه', 'show_original_action' => 'نمایش متن اصلی'],
+    'pl' => ['english' => 'Polish', 'native' => 'Polski', 'disclaimer' => 'Zastrzeżenie: Ta funkcja korzysta z Google Translate Widget. Ze względu na ograniczenia tłumaczenia maszynowego niektóre strony lub treści mogą nie zostać przetłumaczone dokładnie.', 'translate_action' => 'Przetłumacz', 'show_original_action' => 'Pokaż oryginał'],
+    'pt' => ['english' => 'Portuguese (Brazil)', 'native' => 'Português', 'disclaimer' => 'Aviso legal: Este recurso usa o Google Translate Widget. Devido às limitações da tradução automática, algumas páginas ou conteúdos podem não ser traduzidos com precisão.', 'translate_action' => 'Traduzir', 'show_original_action' => 'Mostrar original'],
+    'ro' => ['english' => 'Romanian', 'native' => 'Română', 'disclaimer' => 'Declinare a responsabilității: Această funcție folosește Google Translate Widget. Din cauza limitărilor traducerii automate, este posibil ca unele pagini sau conținut să nu fie traduse cu acuratețe.', 'translate_action' => 'Tradu', 'show_original_action' => 'Arată originalul'],
+    'ru' => ['english' => 'Russian', 'native' => 'Русский', 'disclaimer' => 'Отказ от ответственности: Эта функция использует Google Translate Widget. Из-за ограничений машинного перевода некоторые страницы или материалы могут быть переведены неточно.', 'translate_action' => 'Перевести', 'show_original_action' => 'Показать оригинал'],
+    'so' => ['english' => 'Somali', 'native' => 'Soomaali', 'disclaimer' => 'Afeef: Sifadan waxay isticmaashaa Google Translate Widget. Sababo la xiriira xaddidaadaha turjumaadda mashiinka, bogag ama waxyaabo qaar si sax ah looma turjumi karo.', 'translate_action' => 'Tarjum', 'show_original_action' => 'Muuji asalka'],
+    'es' => ['english' => 'Spanish', 'native' => 'Español', 'disclaimer' => 'Descargo de responsabilidad: Esta función utiliza el widget de Google Translate. Debido a las limitaciones de la traducción automática, es posible que algunas páginas o contenidos no se traduzcan con precisión.', 'translate_action' => 'Traducir', 'show_original_action' => 'Mostrar original'],
+    'sw' => ['english' => 'Swahili', 'native' => 'Kiswahili', 'disclaimer' => 'Kanusho: Kipengele hiki kinatumia Google Translate Widget. Kutokana na mipaka ya tafsiri ya mashine, baadhi ya kurasa au maudhui huenda yasitafsiriwe kwa usahihi.', 'translate_action' => 'Tafsiri', 'show_original_action' => 'Onyesha asili'],
+    'ta' => ['english' => 'Tamil', 'native' => 'தமிழ்', 'disclaimer' => 'பொறுப்புத்துறப்பு: இந்த அம்சம் Google Translate Widget-ஐ பயன்படுத்துகிறது. இயந்திர மொழிபெயர்ப்பின் வரம்புகள் காரணமாக, சில பக்கங்கள் அல்லது உள்ளடக்கம் துல்லியமாக மொழிபெயர்க்கப்படாமல் இருக்கலாம்.', 'translate_action' => 'மொழிபெயர்க்க', 'show_original_action' => 'அசலைக் காட்டு'],
+    'te' => ['english' => 'Telugu', 'native' => 'తెలుగు', 'disclaimer' => 'నిరాకరణ: ఈ ఫీచర్ Google Translate Widget ను ఉపయోగిస్తుంది. యంత్ర అనువాద పరిమితుల కారణంగా, కొన్ని పేజీలు లేదా కంటెంట్ ఖచ్చితంగా అనువదించబడకపోవచ్చు.', 'translate_action' => 'అనువదించు', 'show_original_action' => 'అసలును చూపు'],
+    'th' => ['english' => 'Thai', 'native' => 'ไทย', 'disclaimer' => 'ข้อจำกัดความรับผิดชอบ: ฟีเจอร์นี้ใช้ Google Translate Widget เนื่องจากข้อจำกัดของการแปลด้วยเครื่อง บางหน้าหรือเนื้อหาอาจไม่ได้รับการแปลอย่างถูกต้อง', 'translate_action' => 'แปล', 'show_original_action' => 'แสดงต้นฉบับ'],
+    'ti' => ['english' => 'Tigrinya', 'native' => 'ትግርኛ', 'disclaimer' => 'ሓላፍነት ምእላይ: እዚ ባህሪ Google Translate Widget ይጥቀም። ብምኽንያት ውሱንነት ማሽን ትርጉም፣ ገለ ገጻት ወይ ይዘት ብትኽክል ኣይትርጎምን ክኸውን ይኽእል።', 'translate_action' => 'ተርጉም', 'show_original_action' => 'መበቆላዊ ኣርእይ'],
+    'tr' => ['english' => 'Turkish', 'native' => 'Türkçe', 'disclaimer' => 'Sorumluluk reddi: Bu özellik Google Translate Widget kullanır. Makine çevirisinin sınırlamaları nedeniyle bazı sayfalar veya içerikler doğru şekilde çevrilmeyebilir.', 'translate_action' => 'Çevir', 'show_original_action' => 'Orijinali göster'],
+    'uk' => ['english' => 'Ukrainian', 'native' => 'Українська', 'disclaimer' => 'Застереження: Ця функція використовує Google Translate Widget. Через обмеження машинного перекладу деякі сторінки або вміст можуть бути перекладені неточно.', 'translate_action' => 'Перекласти', 'show_original_action' => 'Показати оригінал'],
+    'ur' => ['english' => 'Urdu', 'native' => 'اردو', 'disclaimer' => 'اعلانِ لاتعلقی: یہ فیچر Google Translate Widget استعمال کرتا ہے۔ مشینی ترجمے کی حدود کی وجہ سے، کچھ صفحات یا مواد درست طور پر ترجمہ نہیں ہو سکتے۔', 'translate_action' => 'ترجمہ کریں', 'show_original_action' => 'اصل دکھائیں'],
+    'vi' => ['english' => 'Vietnamese', 'native' => 'Tiếng Việt', 'disclaimer' => 'Tuyên bố miễn trừ trách nhiệm: Tính năng này sử dụng Google Translate Widget. Do hạn chế của dịch máy, một số trang hoặc nội dung có thể không được dịch chính xác.', 'translate_action' => 'Dịch', 'show_original_action' => 'Hiển thị bản gốc'],
   ];
   return $language_codes;
+}
+
+/**
+ * Gets the editable Google Translate override field labels.
+ */
+function mass_theme_googletranslate_override_fields() {
+  return [
+    'translate_action' => t('Translate'),
+    'show_original_action' => t('Show original'),
+    'disclaimer' => t('Disclaimer'),
+  ];
 }
 
 /**
  * Add languages to theme settings.
  */
 function mass_theme_form_system_theme_settings_alter(&$form, $form_state) {
+  $language_list = [];
+  $default_languages = mass_theme_googletranslate_default_languages();
   $languages = mass_theme_googletranslate_options_languages();
+  foreach ($languages as $language_code => $language) {
+    $language_list[$language_code] = $language['english'];
+  }
 
   $form['mass_theme_settings'] = [
     '#type' => 'details',
@@ -6783,10 +6737,81 @@ function mass_theme_form_system_theme_settings_alter(&$form, $form_state) {
 
   $form['mass_theme_settings']['languages'] = [
     '#type' => 'checkboxes',
-    '#options' => $languages,
+    '#options' => $language_list,
     '#title' => t('Choose google translate languages?'),
     '#default_value' => theme_get_setting('languages', 'mass_theme'),
   ];
+
+  $form['mass_theme_settings']['googletranslate_languages'] = [
+    '#type' => 'details',
+    '#title' => t('Translated strings'),
+    '#description' => t('Update the text used for the selected Google Translate languages. Clearing a field resets it to the default value.'),
+    '#open' => FALSE,
+    '#tree' => TRUE,
+  ];
+
+  $override_fields = mass_theme_googletranslate_override_fields();
+  foreach ($languages as $language_code => $language) {
+    $form['mass_theme_settings']['googletranslate_languages'][$language_code] = [
+      '#type' => 'details',
+      '#title' => t('@language (@code)', [
+        '@language' => $language['english'],
+        '@code' => $language_code,
+      ]),
+      '#open' => FALSE,
+      '#states' => [
+        'visible' => [
+          ':input[name="languages[' . $language_code . ']"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    foreach ($override_fields as $field_name => $field_title) {
+      $field = [
+        '#type' => $field_name === 'disclaimer' ? 'textarea' : 'textfield',
+        '#title' => $field_title,
+        '#default_value' => $language[$field_name],
+        '#placeholder' => $default_languages[$language_code][$field_name],
+      ];
+
+      if ($field_name === 'disclaimer') {
+        $field['#rows'] = 3;
+      }
+
+      $form['mass_theme_settings']['googletranslate_languages'][$language_code][$field_name] = $field;
+    }
+  }
+
+  $form['#submit'][] = 'mass_theme_googletranslate_theme_settings_submit';
+}
+
+/**
+ * Merges Google Translate theme setting edits into the canonical language map.
+ */
+function mass_theme_googletranslate_theme_settings_submit($form, $form_state) {
+  $submitted_languages = $form_state->getValue('googletranslate_languages') ?: [];
+  $languages = mass_theme_googletranslate_options_languages();
+  $default_languages = mass_theme_googletranslate_default_languages();
+  $editable_fields = array_keys(mass_theme_googletranslate_override_fields());
+
+  foreach ($submitted_languages as $language_code => $updates) {
+    if (!isset($languages[$language_code]) || !is_array($updates)) {
+      continue;
+    }
+
+    foreach ($editable_fields as $field_name) {
+      if (!array_key_exists($field_name, $updates)) {
+        continue;
+      }
+
+      $value = $updates[$field_name];
+      $languages[$language_code][$field_name] = $value === '' || $value === NULL
+        ? $default_languages[$language_code][$field_name]
+        : $value;
+    }
+  }
+
+  $form_state->setValue('googletranslate_languages', $languages);
 }
 
 /**
@@ -6941,107 +6966,6 @@ function mass_theme_preprocess_media_document(array &$variables) {
 
 /**
  * Implements hook_preprocess_HOOK().
- *
- * Prepare collection_search values for template.
- */
-function mass_theme_preprocess_paragraph__collection_search(&$variables) {
-  $variables['searchBoxWithLinks'] = [];
-  $variables['searchBoxWithLinks']['form'] = [];
-
-  $p = $variables['paragraph'];
-  $variables['searchBoxWithLinks']['form']['headingText'] = $p->field_search_heading->value;
-  $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
-
-  switch ($p->field_search_type->value) {
-    case 'external':
-      if ($param_name = $p->field_search_query_param_name->value) {
-        $parsed_url = UrlHelper::parse($p->field_search_site_url->value);
-        if (array_key_exists($param_name, $parsed_url['query'])) {
-          unset($parsed_url['query'][$param_name]);
-        }
-        $action_url = Url::fromUri($parsed_url['path'], [
-          'query' => $parsed_url['query'],
-          'absolute' => TRUE,
-          'https' => TRUE,
-        ]);
-        $variables['searchBoxWithLinks']['form']['actionUrl'] = $action_url->toString();
-        $variables['searchBoxWithLinks']['form']['inputName'] = $param_name;
-      }
-      break;
-
-    case 'collection':
-      // In some rare cases field_url_name might be missing, so we set
-      // default value to avoid warnings.
-      $collection_url = '/';
-      if ($p->field_collection->referencedEntities()[0]->field_url_name) {
-        $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
-      }
-      $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
-      $variables['searchBoxWithLinks']['form']['inputName'] = t('title');
-
-      break;
-  }
-
-  $variables['searchBoxWithLinks']['form']['footerText'] = [
-    'rteElements' => [
-      Atoms::prepareTextField($p, 'field_search_footer'),
-    ],
-  ];
-
-  if (!$p->field_search_related_info->isEmpty()) {
-    $variables['searchBoxWithLinks']['secondary']['relatedInfo'] = [
-      'rteElements' => [
-        Atoms::prepareTextField($p, 'field_search_related_info'),
-      ],
-    ];
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Prepare video values for template.
- */
-function mass_theme_preprocess_paragraph__video(&$variables) {
-  $variables['video'] = Helper::getVideoAtomData($variables['paragraph']);
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Prepares icon value for each social link item.
- */
-function mass_theme_preprocess_field__node__field_social_links(&$variables) {
-  // Get icons for social links.
-  $services = [
-    'twitter',
-    'facebook',
-    'threads',
-    'flickr',
-    'blog',
-    'linkedin',
-    'google',
-    'instagram',
-    'medium',
-    'youtube',
-    'bluesky',
-  ];
-
-  foreach ($variables['items'] as $index => &$item) {
-    $url = $item['content']['#url']->toString();
-    foreach ($services as $service) {
-      if (strpos($url, $service)) {
-        $item['icon'] = Helper::getIconPath($service);
-      }
-      elseif (strpos($url, 'bsky')) {
-        $item['icon'] = Helper::getIconPath('bluesky');
-      }
-    }
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
  */
 function mass_theme_preprocess_paragraph__board_member(&$variables) {
   $paragraph = $variables['paragraph'];
@@ -7111,61 +7035,37 @@ function mass_theme_campaign_landing_paragraph_set_header_level(array &$variable
 }
 
 /**
- * Implements hook_preprocess_HOOK().
+ * Determines the parent heading level for a video paragraph.
+ *
+ * @param \Drupal\paragraphs\Entity\Paragraph $paragraph
+ *   The video paragraph entity.
+ *
+ * @return int
+ *   The parent heading level (1-6).
  */
-function mass_theme_preprocess_paragraph__key_message(array &$variables) {
-  mass_theme_build_key_message_component($variables);
+function mass_theme_get_video_parent_heading_level($paragraph) {
+  $parent_level = 2;
+  if (!$paragraph->hasField('parent_field_name') || $paragraph->parent_field_name->isEmpty()) {
+    return $parent_level;
+  }
+  $parent_field = $paragraph->parent_field_name->value;
+  if ($parent_field === 'field_info_details_header_media' || $parent_field === 'field_header') {
+    $parent_level = 1;
+  }
+  elseif ($parent_field === 'field_info_details_sections' || strpos($parent_field, 'section') !== FALSE) {
+    $parent_level = 2;
+  }
+  return $parent_level;
 }
 
 /**
  * Implements hook_preprocess_HOOK().
  */
-function mass_theme_preprocess_paragraph__key_message_section(array &$variables) {
-  mass_theme_build_key_message_component($variables);
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function mass_theme_build_key_message_component(array &$variables) {
-  mass_theme_campaign_landing_paragraph_set_header_level($variables);
+function mass_theme_preprocess_paragraph__video(array &$variables) {
   $paragraph = $variables['paragraph'];
-  $variables['button'] = [];
-  // Color mapping to their appropriate styles.
-  $colors = [
-    'dark_blue' => 'c-primary',
-    'light_blue' => 'c-primary-lightest',
-    'dark_green' => 'c-primary-alt',
-    'light_green' => 'c-primary-alt-lightest',
-    'white' => 'c-white',
-    'light_grey' => 'c-gray-lightest',
-  ];
-  // @todo Setup the button style to pass through once the designs are ready.
-  if (!empty($paragraph->field_button->title)) {
-    $button = $variables['elements']['field_button'][0];
-    $variables['button']['text'] = $button['#title'];
-    $variables['button']['href'] = $button['#url']->toString();
-  }
-
-  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
-
-  if (!empty($paragraph->field_text_overlay_color->value)) {
-    $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
-  }
-  if (!empty($paragraph->field_section_text_overlay_color->value)) {
-    $variables['textOverlaySection'] = isset($colors[$paragraph->field_section_text_overlay_color->value]) ? $colors[$paragraph->field_section_text_overlay_color->value] : '';
-  }
-  $variables['backgroundColor'] = '';
-  if (!empty($paragraph->field_background_type->value)) {
-    if (!empty($paragraph->field_background_color->value)) {
-      $variables['backgroundColor'] = isset($colors[$paragraph->field_background_color->value]) ? $colors[$paragraph->field_background_color->value] : '';
-    }
-    if (!empty($paragraph->field_section_background_color->value)) {
-      $variables['backgroundColor'] = isset($colors[$paragraph->field_section_background_color->value]) ? $colors[$paragraph->field_section_background_color->value] : '';
-    }
-
-    $variables['componentId'] = 'ID' . $paragraph->id();
-  }
+  $parent_heading_level = mass_theme_get_video_parent_heading_level($paragraph);
+  $variables['parent_heading_level'] = $parent_heading_level;
+  $variables['video_heading_level'] = $parent_heading_level + 1;
 }
 
 /**
@@ -7178,7 +7078,7 @@ function mass_theme_preprocess_paragraph__video_with_header(array &$variables) {
   $bg_color = $paragraph->get('field_video_header_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**
@@ -7190,7 +7090,7 @@ function mass_theme_preprocess_paragraph__video_with_section(array &$variables) 
   $bg_color = $paragraph->get('field_video_section_bg_color')->getValue();
   $variables['backgroundColor'] = $bg_color[0]['value'];
   $variables['componentId'] = 'ID' . $paragraph->id();
-  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']);
+  $variables['videoData'] = Helper::getVideoAtomData($variables['paragraph']) ?? [];
 }
 
 /**
@@ -7229,36 +7129,26 @@ function mass_theme_preprocess_paragraph__campaign_features(&$variables) {
   }
   $view_builder = \Drupal::entityTypeManager()->getViewBuilder('paragraph');
   $large_card_entity = $paragraph->field_full_width_featured_item->entity;
-  $large_card_render_array = $view_builder->build($view_builder->view($large_card_entity));
-  $large_card_theme_values = mass_theme_featured_content_cards($large_card_render_array);
-  $componentId = 'ID' . $paragraph->id();
-  $features['campaignFullWidthFeature'] = $large_card_theme_values + [
-    'id' => $componentId,
-    'bgImage' => '',
-    'mobileBgImage' => '',
-    'level' => $level,
-    'text' => $large_card_render_array['field_rich_text_description'],
-  ];
-  $small_cards = [];
-  foreach ($paragraph->field_2up_featured_item as $small_card) {
-    $small_card_render_array = $view_builder->build($view_builder->view($small_card->entity));
-    $small_theme_values = mass_theme_featured_content_cards($small_card_render_array);
-    $small_cards[] = $small_theme_values + [
+  if ($large_card_entity) {
+    $large_card_render_array = $view_builder->build($view_builder->view($large_card_entity));
+    $features['campaignFullWidthFeature'] = mass_theme_featured_content_cards($large_card_render_array) + [
       'bgImage' => '',
       'mobileBgImage' => '',
       'level' => $level,
-      'text' => $small_card_render_array['field_rich_text_description'],
+      'text' => $large_card_render_array['field_rich_text_description'],
     ];
   }
-  foreach ($paragraph->field_2up_featured_item_2 as $small_card) {
-    $small_card_render_array = $view_builder->build($view_builder->view($small_card->entity));
-    $small_theme_values = mass_theme_featured_content_cards($small_card_render_array);
-    $small_cards[] = $small_theme_values + [
-      'bgImage' => '',
-      'mobileBgImage' => '',
-      'level' => $level,
-      'text' => $small_card_render_array['field_rich_text_description'],
-    ];
+  $small_cards = [];
+  foreach ([$paragraph->field_2up_featured_item, $paragraph->field_2up_featured_item_2] as $field) {
+    if ($small_card_entity = $field->entity) {
+      $small_card_render_array = $view_builder->build($view_builder->view($small_card_entity));
+      $small_cards[] = mass_theme_featured_content_cards($small_card_render_array) + [
+        'bgImage' => '',
+        'mobileBgImage' => '',
+        'level' => $level,
+        'text' => $small_card_render_array['field_rich_text_description'],
+      ];
+    }
   }
   $features['campaignFeature2up'] = $small_cards;
 
@@ -7281,6 +7171,7 @@ function mass_theme_featured_content_cards(&$variables) {
     $return_array = [
       'link' => '#',
       'thumbnail' => '',
+      'id' => 'ID' . $paragraph->id(),
     ];
 
     if (is_object($paragraph->field_image->entity)) {
@@ -7318,26 +7209,6 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
 }
 
 /**
- * Fetch social links from parent org node.
- */
-function mass_theme_preprocess_paragraph__social_media(&$variables) {
-  $level = "2";
-  $paragraph = $variables['paragraph'];
-  if ($paragraph->parent_field_name->value == 'field_service_section_content') {
-    if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
-      if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
-        $level = "3";
-      }
-    }
-  }
-  $node = Helper::getParentNode($paragraph);
-  $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
-  $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
-    $node->$social_field_name->view() : [];
-  $variables['level'] = $level;
-}
-
-/**
  * Fetch contact info and logo from parent org node.
  */
 function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables) {
@@ -7346,46 +7217,6 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
   $variables['current_node_url'] = $node->toUrl()->toString();
   $variables['contactNode'] = $node->get('field_ref_contact_info_1')->referencedEntities()[0] ?? NULL;
   $variables['org_logo'] = $node->get('field_sub_brand')->view('logo_link');
-}
-
-/**
- * Fetch contact info from parent service node.
- */
-function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
-  $cache_tags = [];
-  $paragraph = $variables['paragraph'];
-  $node = Helper::getParentNode($paragraph);
-
-  // Prepare the Contact Us field, if it's populated.
-  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
-    // Set up options for contact list.
-    $contact_list_options = [
-      'heading' => [
-        'title' => '',
-      ],
-      'groups' => [
-        'accordion' => TRUE,
-        'isExpanded' => FALSE,
-      ],
-    ];
-
-    // Prepare the contactList data object.
-    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
-    if ($paragraph->parent_field_name->value == 'field_service_section_content' && $paragraph->parent_type->value == 'paragraph') {
-      if ($paragraph->parent_id->value) {
-        if ($parent_paragraph = Paragraph::load($paragraph->parent_id->value)) {
-          if (!$parent_paragraph->field_hide_heading->isEmpty() && $parent_paragraph->field_hide_heading->value != 1) {
-            $variables['contactList']['level'] = 3;
-          }
-        }
-      }
-    }
-    // Bubble cache tag to the current render. Based on template_preprocess_pager()
-    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-    CacheableMetadata::createFromRenderArray($variables)
-      ->addCacheTags($cache_tags)
-      ->applyTo($variables);
-  }
 }
 
 /**
@@ -7505,53 +7336,29 @@ function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_grou
       continue;
     }
 
-    $variables[$component_name][$first][0]->subsequent_links[] = $link_group[0];
+    // Avoid duplicating subsequent links if preprocessing runs multiple times
+    // on the same paragraph object within a request.
+    $first_paragraph = $variables[$component_name][$first][0] ?? NULL;
+    $next_paragraph = $link_group[0] ?? NULL;
+    if ($first_paragraph && $next_paragraph) {
+      $existing_ids = [];
+      if (!empty($first_paragraph->subsequent_links) && is_array($first_paragraph->subsequent_links)) {
+        foreach ($first_paragraph->subsequent_links as $existing) {
+          if (is_object($existing) && method_exists($existing, 'id')) {
+            $existing_ids[(int) $existing->id()] = TRUE;
+          }
+        }
+      }
+      $next_id = method_exists($next_paragraph, 'id') ? (int) $next_paragraph->id() : NULL;
+      if ($next_id && empty($existing_ids[$next_id])) {
+        $first_paragraph->subsequent_links[] = $next_paragraph;
+      }
+    }
 
     // Empty elements included previously.
     $variables[$component_name][$key] = FALSE;
   }
   $links_group = [];
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Groups different components together when necessary.
- */
-function mass_theme_preprocess_paragraph__service_section(&$variables) {
-  $variables["service_components"] =
-    _mass_theme_preprocess_paragraph_sections($variables, 'field_service_section_content');
-
-  /** @var \Drupal\paragraphs\Entity\Paragraph */
-  $container = $variables['paragraph'];
-  $variables['section_style'] = $container->field_section_style->value;
-  $variables['hide_heading'] = $container->field_hide_heading->value;
-
-  $links_group = [];
-  foreach ($variables['service_components'] as $key => &$service_component) {
-    /** @var Drupal\paragraphs\Entity\Paragraph */
-    $service_component_paragraph = &$service_component[0];
-    if (
-      is_object($service_component_paragraph) &&
-      $service_component_paragraph->getType() == 'flexible_link_group' &&
-      $service_component_paragraph->field_display_type->value == 'links'
-    ) {
-      $links_group[$key] = $service_component;
-    }
-    else {
-      _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
-      $links_group = [];
-    }
-  }
-
-  _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
-
-  // Removing elements included previously.
-  foreach ($variables['service_components'] as $key => &$service_component) {
-    if ($service_component === FALSE) {
-      unset($variables['service_components'][$key]);
-    }
-  }
 }
 
 /**
@@ -7694,4 +7501,68 @@ function mass_theme_preprocess_pager__collection_all(&$variables) {
   $param = \Drupal::request()->query->get('sort_bef_combine');
   $default_sort = $param ?? $collection->field_default_sort->value ?? 'title_ASC';
   _mass_theme_override_sort_bef_combine($variables['items'], $default_sort);
+}
+
+/**
+ * Check whether a paragraph has any of the given wrapping flags set.
+ */
+function _mass_theme_paragraphs_sections_check_wrapping_field($paragraph, array $fields): bool {
+  if (!($paragraph instanceof Paragraph)) {
+    return FALSE;
+  }
+  foreach ($fields as $field_name) {
+    if ($paragraph->hasField($field_name) && !$paragraph->get($field_name)->isEmpty()) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Implements hook_preprocess_paragraph__service_section().
+ */
+function mass_theme_preprocess_paragraph__service_section(array &$variables) {
+  $paragraph = $variables['paragraph'];
+  $variables['section_style'] = $paragraph->field_section_style->value;
+
+  // 1) First, merge contiguous flexible_link_group:links into subsequent_links.
+  if (!empty($variables['content']['regions']['content'])) {
+    $items =& $variables['content']['regions']['content'];
+    $group = [];
+    foreach (array_keys($items) as $key) {
+      $render = $items[$key];
+      $p = $render['#paragraph'] ?? NULL;
+      $is_link = (
+        $p instanceof Paragraph &&
+        $p->bundle() === 'flexible_link_group' &&
+        $p->get('field_display_type')->value === 'links'
+      );
+      if ($is_link) {
+        $group[] = $key;
+        continue;
+      }
+      if (count($group) > 1) {
+        $first = array_shift($group);
+        foreach ($group as $sub) {
+          $items[$first]['#paragraph']->subsequent_links[] = $items[$sub]['#paragraph'];
+          unset($items[$sub]);
+        }
+      }
+      $group = [];
+    }
+    if (count($group) > 1) {
+      $first = array_shift($group);
+      foreach ($group as $sub) {
+        $items[$first]['#paragraph']->subsequent_links[] = $items[$sub]['#paragraph'];
+        unset($items[$sub]);
+      }
+    }
+
+    // 2) Now build service_components from the cleaned list.
+    $items = array_values($items);
+    $grouper = \Drupal::classResolver(RenderItemsGrouper::class);
+    $variables['service_components'] = $grouper->groupRenderItems($items);
+    // 3) Prevent Drupal from auto-rendering the old regions.
+    unset($variables['content']['regions']['content']);
+  }
 }

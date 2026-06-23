@@ -38,13 +38,13 @@
 #}
 
 {% for stackedRowSection in stackedRowSections %}
-  {% set stackedRowSection = stackedRowSection|merge({'level': level}) %}
-  {% include "@organisms/by-author/stacked-row-section.twig" %}
+  {% set stackedRowSection = stackedRowSection|merge({level: level}) %}
+  {{ include('@organisms/by-author/stacked-row-section.twig') }}
 {% endfor %}
-{% if content.field_component_add_separator|field_value|render == "True" %}
-  {% include "@atoms/divider.twig" with {
-    "divider": {
-      "thin": true
-    }
-  } %}
+{% if content.field_component_add_separator|field_value|render == 'True' %}
+  {{ include('@atoms/divider.twig', {
+    divider: {
+      thin: true,
+    },
+  }) }}
 {% endif %}

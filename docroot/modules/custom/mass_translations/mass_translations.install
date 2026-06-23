@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the mass_translations module.
+ */
+
+/**
+ * Enable the content_translation module.
+ */
+function mass_translations_update_10001() {
+  \Drupal::service('module_installer')->install(['content_translation']);
+  return t('The content_translation module has been enabled.');
+}

@@ -15,6 +15,7 @@ use Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle;
 use Drupal\mass_content\Entity\Bundle\node\ActionBundle;
 use Drupal\mass_content\Entity\Bundle\node\AdvisoryBundle;
 use Drupal\mass_content\Entity\Bundle\node\AlertBundle;
+use Drupal\mass_content\Entity\Bundle\node\ApiServiceCardBundle;
 use Drupal\mass_content\Entity\Bundle\node\BinderBundle;
 use Drupal\mass_content\Entity\Bundle\node\CampaignLandingBundle;
 use Drupal\mass_content\Entity\Bundle\node\ContactInformationBundle;
@@ -135,226 +136,6 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
         ->setClass('\Drupal\mass_content\Field\PageFlipperLink')
         ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
         ->setDisplayConfigurable('view', TRUE);
-    }
-
-    // Handle all of the related to relationship indicators.
-    // The related to config controls the creation of the field.
-    // In most instances, this is finding content that
-    // references the current node in specific link fields or reference fields.
-    // See additional comments for the
-    // exceptions to this in the definition for a specific content type.
-    // For these types, specific fields are used with the RelatedNodes class
-    // that queries for referencing services.
-    $related_to_config = [
-      'advisory' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'binder' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'curated_list' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'decision' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'decision_tree' => [
-        'settings' => [
-          'fields' => [
-            'field_service_ref_services_6',
-          ],
-          'linkFields' => [
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      // Event uses a field on the event content type but must have
-      // orgs filtered out. Org pages must remain an
-      // option for this field because the field also
-      // controls how events are shown on org pages.
-      'event' => [
-        'settings' => [
-          'fields' => [
-            'field_event_ref_parents',
-          ],
-          'linkFields' => [
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'executive_order' => [
-        'settings' => [
-          'linkFields' => [
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'form_page' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'guide_page' => [
-        'settings' => [
-          'linkFields' => [
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-          'referenceFields' => [
-            'field_service_ref_guide_page_1',
-          ],
-        ],
-      ],
-      'how_to_page' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'info_details' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-          'referenceFields' => [
-            'field_service_eligibility_info',
-          ],
-        ],
-      ],
-      'location' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-          'referenceFields' => [],
-        ],
-      ],
-      'location_details' => [
-        'settings' => [
-          'linkFields' => [
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-          'referenceFields' => [
-            'field_location_activity_detail.entity.field_ref_location_details_page',
-          ],
-        ],
-      ],
-      'news' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'person' => [
-        'settings' => [
-          'linkFields' => [
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'regulation' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'rules' => [
-        'settings' => [
-          'linkFields' => [
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-        ],
-      ],
-      'service_details' => [
-        'settings' => [
-          'linkFields' => [
-            'field_guide_page_sections.entity.field_guide_section_links_4',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_card.entity.field_card_link',
-            'field_info_details_sections.entity.field_section_long_form_content.entity.field_link',
-          ],
-          'referenceFields' => [
-            'field_service_eligibility_info',
-          ],
-        ],
-      ],
-      'service_page' => [
-        'settings' => [
-          'linkFields' => [
-            'field_topic_content_cards.entity.field_content_card_link_cards',
-          ],
-        ],
-      ],
-    ];
-
-    if (in_array($bundle, array_keys($related_to_config))) {
-      // A field to hold referencing services.
-      $field_definition = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(t('Computed Related To'))
-        ->setComputed(TRUE)
-        ->setSetting('target_type', 'node')
-        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
-        ->setDisplayConfigurable('view', TRUE);
-
-      if (!empty($related_to_config[$bundle]['settings'])) {
-        foreach ($related_to_config[$bundle]['settings'] as $setting => $value) {
-          $field_definition->setSetting($setting, $value);
-        }
-      }
-
-      if (!empty($related_to_config[$bundle]['class'])) {
-        $field_definition->setClass($related_to_config[$bundle]['class']);
-      }
-      else {
-        $field_definition->setClass('\Drupal\mass_content\Field\RelatedNodes');
-      }
-      $fields['computed_related_to'] = $field_definition;
     }
 
     if ($bundle === 'org_page') {
@@ -481,7 +262,7 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
         ->setClass('\Drupal\mass_content\Field\DynamicDirectoryByLabel')
         ->setDisplayConfigurable('view', TRUE);
     }
-    elseif ($bundle === 'org_news') {
+    elseif (in_array($bundle, ['org_news', 'service_news'])) {
       $fields['recent_news'] = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Recent news'))
         ->setComputed(TRUE)
@@ -533,7 +314,12 @@ function mass_content_field_info_alter(&$info) {
 function mass_content_paragraph_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   // Attach taxonomy term cache tags to dynamic lists.
   if ($entity->bundle() === 'list_dynamic') {
-    foreach ($entity->field_listdynamic_label->referencedEntities() as $term) {
+    $term_ids = array_column($entity->get('field_listdynamic_label')->getValue(), 'target_id');
+    $term_ids = array_values(array_filter($term_ids));
+    $terms = $term_ids ? \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadMultiple($term_ids) : [];
+    foreach ($terms as $term) {
       $cache_tags[] = sprintf('taxonomy_term:%d', $term->id());
     }
     $fields = [
@@ -560,6 +346,9 @@ function mass_content_theme() {
         'randId' => NULL,
         'embed_type' => 'default',
         'token_url' => NULL,
+        'toolbar' => 'hidden',
+        'data_details' => NULL,
+        'share_options' => NULL,
       ],
     ],
   ];
@@ -858,142 +647,13 @@ function mass_content_preprocess_paragraph__links_downloads_flexible(&$variables
 }
 
 /**
- * Implements hook_preprocess_HOOK().
- */
-function mass_content_preprocess_paragraph__flexible_link_group(&$variables) {
-  /** @var \Drupal\paragraphs\Entity\Paragraph */
-  $flexible_lg = $variables['paragraph'];
-
-  $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
-
-  unset($flexible_lg->subsequent_links);
-
-  foreach ($all_flexible_links as $key => $flexible_lg) {
-
-    $base = 'flexible_links_group';
-    $variables['display_type'] = $flexible_lg->field_display_type->value;
-
-    $variables[$base][$key]['title'] = $flexible_lg->field_flexible_link_group_title->value;
-    $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
-    $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
-    $variables[$base][$key]['links'] = [];
-    $variables[$base][$key]['expanded'] = (bool) intval($flexible_lg->field_group_expanded->value);
-
-    $links = &$variables[$base][$key]['links'];
-    foreach ($flexible_lg->field_link_group as $index => $item) {
-      if (empty($item->entity)) {
-        continue;
-      }
-      switch ($item->entity->bundle()) {
-        case 'link_group_link':
-          if (empty($item->entity->field_link_group_link)) {
-            break;
-          }
-          /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
-          $link = $item->entity->field_link_group_link[0];
-          if (empty($link->get('computed_title'))) {
-            break;
-          }
-          $computed_title = $link->get('computed_title')->getValue();
-          $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
-          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
-          break;
-
-        case 'link_group_document':
-          if (empty($item->entity->field_file_download_single)) {
-            break;
-          }
-          /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
-          $media = $item->entity->field_file_download_single[0]->entity;
-          if ($media) {
-
-            if ($variables['display_type'] == "buttons") {
-              $original_file = $media->field_upload_file->entity;
-              $links[$index]['file_size'] = strtoupper(ByteSizeMarkup::create($original_file->getSize())->render());
-              $file_info = new \SplFileInfo($original_file->getFilename());
-              $file_extension = strtoupper($file_info->getExtension());
-              $file_icon = 'doc-' . strtolower($file_extension);
-              if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
-                $file_icon = 'doc-generic';
-              }
-              $links[$index]['file_icon'] = $file_icon;
-              $links[$index]['downloadable_file'] = TRUE;
-              $links[$index]['file_extension'] = $file_extension;
-              if (!$media->field_title->isEmpty()) {
-                $links[$index]['file_title'] = $media->field_title->value;
-              }
-              else {
-                $links[$index]['file_title'] = $media->label();
-              }
-              $links[$index]['mid'] = $media->id();
-
-            }
-            else {
-              // Check if the media entity has the 'field_upload_file' field and it's not empty.
-              if ($media->hasField('field_upload_file') && !$media->get('field_upload_file')->isEmpty()) {
-                $file_media = $media->get('field_upload_file')->entity;
-
-                if ($file_media) {
-                  // Initialize the render array.
-                  $render_array = [];
-
-                  // Manually add calculated file size.
-                  $file_size = strtoupper(ByteSizeMarkup::create($file_media->getSize())->render());
-                  $render_array['calculated_file_size'] = [
-                    '#type' => 'markup',
-                    '#markup' => $file_size,
-                  ];
-
-                  // Manually add extra file extension and icon.
-                  $file_info = new \SplFileInfo($file_media->getFilename());
-                  $file_extension = strtoupper($file_info->getExtension());
-                  $file_icon = 'doc-' . strtolower($file_extension);
-
-                  if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
-                    $file_icon = 'doc-generic';
-                  }
-
-                  $render_array['extra_file_extension'] = [
-                    '#type' => 'markup',
-                    '#markup' => $file_extension,
-                  ];
-
-                  $render_array['extra_file_icon'] = [
-                    '#type' => 'markup',
-                    '#markup' => $file_icon,
-                  ];
-                  if (!$media->field_title->isEmpty()) {
-                    $render_array['file_title'] = $media->field_title->value;
-                  }
-                  else {
-                    $render_array['file_title'] = $media->label();
-                  }
-                  $render_array['mid'] = $media->id();
-                  $render_array['media'] = $media;
-                  $language = $media->language();
-
-                  // Get the human-readable language name
-                  $language_name = $language instanceof LanguageInterface ? $language->getName() : t('English');
-                  $render_array['language'] = $language_name;
-                  _mass_translations_media_helper($render_array);
-                  $links[$index]['download_link'] = $render_array;
-                }
-              }
-            }
-            $links[$index]['href'] = $media->toURL()->setAbsolute()->toString();
-            $links[$index]['text'] = $media->label();
-          }
-          break;
-      }
-    }
-  }
-}
-
-/**
  * Implements hook_entity_view_mode_alter().
  */
 function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
 
+  if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'section_header' && $entity->parent_field_name->value == 'field_service_sections') {
+    $view_mode = 'stacked_row_section';
+  }
   // Display cards or compact cards depending on the settings.
   if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
     if ($entity->hasField('field_topic_name_only') && $entity->field_topic_name_only->value == 1) {
@@ -1312,6 +972,9 @@ function mass_content_views_data() {
  * Implements hook_entity_bundle_info_alter().
  */
 function mass_content_entity_bundle_info_alter(array &$bundles): void {
+  if (isset($bundles['node']['api_service_card'])) {
+    $bundles['node']['api_service_card']['class'] = ApiServiceCardBundle::class;
+  }
   if (isset($bundles['node']['action'])) {
     $bundles['node']['action']['class'] = ActionBundle::class;
   }

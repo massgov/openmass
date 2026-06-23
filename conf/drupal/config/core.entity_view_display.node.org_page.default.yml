@@ -8,6 +8,8 @@ dependencies:
     - field.field.node.org_page.field_bg_wide
     - field.field.node.org_page.field_billing_organization
     - field.field.node.org_page.field_career_opportunities
+    - field.field.node.org_page.field_collection_description
+    - field.field.node.org_page.field_collections
     - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
@@ -34,6 +36,7 @@ dependencies:
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_title
+    - field.field.node.org_page.field_show_custom_collection_des
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_sub_brand
     - field.field.node.org_page.field_sub_title
@@ -49,6 +52,7 @@ dependencies:
     - link
     - mass_content
     - options
+    - text
     - user
 id: node.org_page.default
 targetEntityType: node
@@ -190,6 +194,21 @@ content:
       target: ''
     third_party_settings: {  }
     weight: 24
+    region: content
+  field_collection_description:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 139
+    region: content
+  field_collections:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 137
     region: content
   field_get_updates_links:
     type: dynamic_link_separate
@@ -342,6 +361,16 @@ content:
       link: true
     third_party_settings: {  }
     weight: 12
+    region: content
+  field_show_custom_collection_des:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 138
     region: content
   field_social_links:
     type: link_separate

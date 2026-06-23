@@ -72,6 +72,8 @@ $settings['mass_caching.hosts'] = [
 $config['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
 $settings['queue_service_entity_usage_tracker'] = 'queue_unique.database';
 
+require $app_root . '/' . $site_path . '/settings.aws-bedrock.php';
+
 // If in an Acquia Cloud environment
 if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   // if in acquia...

@@ -51,6 +51,137 @@ function mass_views_views_data() {
       'id' => 'cl_manual_lists_downloads',
     ],
   ];
+
+  // Adds a CTE-backed mapping table: node nid -> top org nid.
+  $data['mass_views_node_top_org_map']['table'] = [
+    'group' => t('Mass Views (computed)'),
+    'base' => [
+      'field' => 'content_nid',
+      'title' => t('Computed top org map (nodes)'),
+      'help' => t('Mapping of content node nid to its computed top-level org nid (MySQL 8 recursive CTE view).'),
+    ],
+  ];
+
+  // Adds relationship: node_field_data -> node mapping table.
+  $data['node_field_data']['mass_views_node_top_org_map_rel'] = [
+    'title' => t('Computed top org mapping'),
+    'help' => t('Join to computed mapping (node nid → top-level org nid).'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Computed top org map'),
+      'base' => 'mass_views_node_top_org_map',
+      'base field' => 'content_nid',
+      'field' => 'nid',
+    ],
+  ];
+
+  // Adds relationship: node mapping table -> top org node.
+  $data['mass_views_node_top_org_map']['top_org_nid'] = [
+    'title' => t('Top org nid'),
+    'help' => t('Computed top-level org nid.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Top-level organization (computed)'),
+      'base' => 'node_field_data',
+      'base field' => 'nid',
+      'field' => 'top_org_nid',
+    ],
+    'argument' => [
+      'id' => 'standard',
+    ]
+  ];
+
+  // Adds a CTE-backed mapping table: media mid -> top org nid.
+  $data['mass_views_media_top_org_map']['table'] = [
+    'group' => t('Mass Views (computed)'),
+    'base' => [
+      'field' => 'media_mid',
+      'title' => t('Computed top org map (media)'),
+      'help' => t('Mapping of media mid to its computed top-level org nid (MySQL 8 recursive CTE view).'),
+    ],
+  ];
+
+  // Adds relationship: media_field_data -> media mapping table.
+  $data['media_field_data']['mass_views_media_top_org_map_rel'] = [
+    'title' => t('Computed top org mapping'),
+    'help' => t('Join to computed mapping (media mid → top-level org nid).'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Computed top org map'),
+      'base' => 'mass_views_media_top_org_map',
+      'base field' => 'media_mid',
+      'field' => 'mid',
+    ],
+  ];
+
+  // Adds relationship: media mapping table -> top org node.
+  $data['mass_views_media_top_org_map']['top_org_nid'] = [
+    'title' => t('Top org nid'),
+    'help' => t('Computed top-level org nid.'),
+    'field' => [
+      'id' => 'numeric',
+    ],
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Top-level organization (computed)'),
+      'base' => 'node_field_data',
+      'base field' => 'nid',
+      'field' => 'top_org_nid',
+    ],
+    'argument' => [
+      'id' => 'standard',
+    ]
+  ];
+
+  // Adds a field for grouped count of PIDs from the ed11y_action table.
+  $data['ed11y_action']['pid_count'] = [
+    'title' => t('PID action count'),
+    'help' => t('Count of grouped PIDs from the ed11y_action table.'),
+    'field' => [
+      'id' => 'numeric',
+    ]
+  ];
+
+  // Adds relationship: ed11y_page -> ed11y_action table grouped by pid.
+  $data['ed11y_page']['ed11y_action_pid_grouped'] = [
+    'title' => t('Grouped Action PID'),
+    'help' => t('Join ed11y_action with ed11y_page table and count grouped PIDs.'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Grouped Action PID'),
+      'base' => 'ed11y_action',
+      'base field' => 'pid',
+      'field' => 'pid',
+      'join_id' => 'ed11y_pid_count_join',
+    ],
+  ];
+
+  // Adds a field for grouped count of PIDs from the ed11y_result table.
+  $data['ed11y_result']['pid_count'] = [
+    'title' => t('PID result count'),
+    'help' => t('Count of grouped PIDs from the ed11y_result table.'),
+    'field' => [
+      'id' => 'numeric',
+    ]
+  ];
+
+  // Adds relationship: ed11y_page -> ed11y_action table grouped by pid.
+  $data['ed11y_page']['ed11y_result_pid_grouped'] = [
+    'title' => t('Grouped Result PID'),
+    'help' => t('Join ed11y_result with ed11y_page table and count grouped PIDs.'),
+    'relationship' => [
+      'id' => 'standard',
+      'label' => t('Grouped Result PID'),
+      'base' => 'ed11y_result',
+      'base field' => 'pid',
+      'field' => 'pid',
+      'join_id' => 'ed11y_pid_count_join',
+    ],
+  ];
+
   return $data;
 }
 
@@ -115,6 +246,26 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds an org top parent filter for nodes.
+  $data['node_field_data']['node_parent_org_top_filter'] = [
+    'title' => 'Organization Top Parent Filter',
+    'filter' => [
+      'title' => t('Organization Top Parent Filter'),
+      'field' => 'nid',
+      'id' => 'mass_views_node_org_top_parent_filter',
+    ],
+  ];
+
+  // Adds an org top parent filter for nodes.
+  $data['media_field_data']['media_parent_org_top_filter'] = [
+    'title' => 'Organization Top Parent Filter',
+    'filter' => [
+      'title' => t('Organization Top Parent Filter'),
+      'field' => 'nid',
+      'id' => 'mass_views_media_org_top_parent_filter',
+    ],
+  ];
+
   // Adds an org filter for nodes.
   $data['node_field_data']['node_billing_org_filter'] = [
     'title' => 'Billing Organization Filter',
@@ -126,12 +277,66 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds an entity IDs filter for nodes.
+  $data['node_field_data']['node_entity_ids_filter'] = [
+    'title' => t('Entity IDs Filter'),
+    'filter' => [
+      'title' => t('Entity IDs Filter'),
+      'help' => t('Filter nodes by a list of node IDs entered via a popup textarea.'),
+      'field' => 'nid',
+      'id' => 'mass_views_entity_ids_filter',
+    ],
+  ];
+
+  // Adds an entity IDs filter for node revisions (for views using
+  // node_field_revision as base table).
+  $data['node_field_revision']['node_revision_entity_ids_filter'] = [
+    'title' => t('Entity IDs Filter'),
+    'filter' => [
+      'title' => t('Entity IDs Filter'),
+      'help' => t('Filter node revisions by a list of node IDs entered via a popup textarea.'),
+      'field' => 'nid',
+      'id' => 'mass_views_entity_ids_filter',
+    ],
+  ];
+
+  // Adds an entity IDs filter for media.
+  $data['media_field_data']['media_entity_ids_filter'] = [
+    'title' => t('Entity IDs Filter'),
+    'filter' => [
+      'title' => t('Entity IDs Filter'),
+      'help' => t('Filter media by a list of media IDs entered via a popup textarea.'),
+      'field' => 'mid',
+      'id' => 'mass_views_entity_ids_filter',
+    ],
+  ];
+
   // Adds a linked from Parent field.
   $data['node_field_data']['linked_from_parent'] = [
     'title' => t('Linked from parent'),
     'field' => [
       'title' => t('Linked from Parent'),
       'id' => 'linked_from_parent',
+    ],
+  ];
+
+  // Adds a "Latest Revision" relationship for media entities.
+  // This allows fields to access data from the latest revision
+  // rather than the default (current/published) revision.
+  $data['media_field_data']['media_latest_revision'] = [
+    'title' => t('Media Latest Revision'),
+    'help' => t('Relates a media entity to its latest revision data.'),
+    'relationship' => [
+      'id' => 'standard',
+      'base' => 'media_field_revision',
+      'base field' => 'mid',
+      'relationship field' => 'mid',
+      'label' => t('Media latest revision'),
+      'join_id' => 'latest_revision_join',
+      'revision_table' => 'media_revision',
+      'entity_id_field' => 'mid',
+      'revision_id_field' => 'vid',
+      'langcode_field' => 'langcode',
     ],
   ];
 

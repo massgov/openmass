@@ -5,6 +5,7 @@ dependencies:
   module:
     - editor
     - entity_embed
+    - filter_empty_tags
     - linkit
     - mass_fields
     - pathologic
@@ -42,6 +43,16 @@ filters:
     status: true
     weight: 8
     settings: {  }
+  filter_empty_tags:
+    id: filter_empty_tags
+    provider: filter_empty_tags
+    status: true
+    weight: 0
+    settings:
+      do_not_consider_empty: 'button canvas drupal-media drupal-entity iframe object script svg textarea td th p span'
+      filter_spaces: true
+      filter_nbsp: true
+      filter_br: false
   filter_html:
     id: filter_html
     provider: filter
@@ -67,6 +78,7 @@ filters:
       local_settings:
         protocol_style: full
         local_paths: ''
+        keep_language_prefix: false
   filter_richtext:
     id: filter_richtext
     provider: mass_fields
@@ -80,3 +92,4 @@ filters:
     weight: -11
     settings:
       title: false
+      media_substitution: metadata

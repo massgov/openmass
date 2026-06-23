@@ -1,0 +1,917 @@
+diff --git a/config/schema/views_bulk_operations.views.schema.yml b/config/schema/views_bulk_operations.views.schema.yml
+index 4e1c4723c6e41bf3476eaeb48231cbc9306c1718..5cd2542baa0b1f0a090064d5adee9e4ae2f36e17 100644
+--- a/config/schema/views_bulk_operations.views.schema.yml
++++ b/config/schema/views_bulk_operations.views.schema.yml
+@@ -23,9 +23,22 @@ views.field.views_bulk_operations_bulk_form:
+     clear_on_exposed:
+       type: boolean
+       label: 'Clear selection when exposed filters change'
+-    force_selection_info:
+-      type: boolean
+-      label: 'Should the selection information always be displayed?'
++    show_multipage_selection_box:
++      type: string
++      label: 'Show an "Items selected" details element'
++      constraints:
++        Choice:
++          - default
++          - always_show
++          - always_hide
++    show_select_all:
++      type: string
++      label: 'Show a "Select / Deselect all results (all pages)" checkbox'
++      constraints:
++        Choice:
++          - default
++          - always_show
++          - always_hide
+     selected_actions:
+       type: sequence
+       label: 'Selected actions data array'
+diff --git a/src/Plugin/views/field/ViewsBulkOperationsBulkForm.php b/src/Plugin/views/field/ViewsBulkOperationsBulkForm.php
+index ba10d3ed44b16973242fb26c82f45cfdfb6ab54c..15870ae92e4c911a3afbfd4cd1f3efa7761e349b 100644
+--- a/src/Plugin/views/field/ViewsBulkOperationsBulkForm.php
++++ b/src/Plugin/views/field/ViewsBulkOperationsBulkForm.php
+@@ -14,6 +14,7 @@ use Drupal\views\Attribute\ViewsField;
+ use Drupal\views\Plugin\views\display\DisplayPluginBase;
+ use Drupal\views\Plugin\views\field\FieldPluginBase;
+ use Drupal\views\Plugin\views\field\UncacheableFieldHandlerTrait;
++use Drupal\views\Plugin\views\style\StylePluginBase;
+ use Drupal\views\Plugin\views\style\Table;
+ use Drupal\views\ResultRow;
+ use Drupal\views\ViewExecutable;
+@@ -346,7 +347,8 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
+     $options['clear_on_exposed'] = ['default' => TRUE];
+     $options['action_title'] = ['default' => $this->t('Action')];
+     $options['selected_actions'] = ['default' => []];
+-    $options['force_selection_info'] = ['default' => FALSE];
++    $options['show_multipage_selection_box'] = ['default' => 'default'];
++    $options['show_select_all'] = ['default' => 'default'];
+     return $options;
+   }
+
+@@ -414,11 +416,28 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
+       '#default_value' => $this->options['clear_on_exposed'],
+     ];
+
+-    $form['force_selection_info'] = [
+-      '#type' => 'checkbox',
+-      '#title' => $this->t('Always show selection info'),
+-      '#default_value' => $this->options['force_selection_info'],
+-      '#description' => $this->t('Should the selection info fieldset be shown above the view even if there is only one page of results and full selection can be seen in the view itself?'),
++    $form['show_multipage_selection_box'] = [
++      '#type' => 'select',
++      '#title' => $this->t('Show an "Items selected" details element'),
++      '#description' => $this->t('The default behavior shows this control when there are multiple pages of results, or when VBO is not configured to clear selected items when exposed filters are changed and exposed filters are set.'),
++      '#default_value' => $this->options['show_multipage_selection_box'],
++      '#options' => [
++        'default' => $this->t('Default'),
++        'always_show' => $this->t('Always show'),
++        'always_hide' => $this->t('Always hide'),
++      ],
++    ];
++
++    $form['show_select_all'] = [
++      '#type' => 'select',
++      '#title' => $this->t('Show a "Select / Deselect all results (all pages)" checkbox'),
++      '#description' => $this->t('The default behavior shows this checkbox when Format is not set to Table, when there are multiple pages of results, or when VBO is not configured to clear selected items when exposed filters are changed and exposed filters are set.'),
++      '#default_value' => $this->options['show_select_all'],
++      '#options' => [
++        'default' => $this->t('Default'),
++        'always_show' => $this->t('Always show'),
++        'always_hide' => $this->t('Always hide'),
++      ],
+     ];
+
+     $form['action_title'] = [
+@@ -799,28 +818,8 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
+       }
+     }
+
+-    // Selection info: displayed if exposed filters are set and selection
+-    // is not cleared when they change or "select all" element display
+-    // conditions are met. Also displayed by default if VBO field has such
+-    // configuration set.
+-    if ($this->options['force_selection_info']) {
+-      $display_select_all = TRUE;
+-    }
+-    else {
+-      $display_select_all = (
+-        !$this->options['clear_on_exposed'] &&
+-        !empty($this->view->getExposedInput())
+-      ) ||
+-      (
+-        isset($pagerData) &&
+-        (
+-          $pagerData['more'] ||
+-          $pagerData['current'] > 0
+-        )
+-      );
+-    }
+-
+-    if ($display_select_all) {
++    // Optionally show a details element with a list of the selected items.
++    if ($this->shouldShowMultipageSelectionBox()) {
+       $count = empty($this->tempStoreData['exclude_mode']) ? \count($this->tempStoreData['list']) : $this->tempStoreData['total_results'] - \count($this->tempStoreData['list']);
+       $form['header'][$this->options['id']]['multipage'] = [
+         '#type' => 'details',
+@@ -849,8 +848,8 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
+       ];
+     }
+
+-    // Select all results checkbox. Always display on non-table displays.
+-    if ($display_select_all || !($this->view->style_plugin instanceof Table)) {
++    // Optionally show a checkbox to select / deselect all results on all pages.
++    if ($this->shouldShowSelectAllCheckbox()) {
+       $form['header'][$this->options['id']]['select_all'] = [
+         '#type' => 'checkbox',
+         '#title' => $this->t('Select / deselect all results (all pages, @count total)', [
+@@ -1103,4 +1102,99 @@ class ViewsBulkOperationsBulkForm extends FieldPluginBase implements CacheableDe
+     return $errors;
+   }
+
++  /**
++   * Determine if exposed filters are currently set on the view.
++   *
++   * @return bool
++   *   TRUE if the exposed input array is not empty; FALSE otherwise.
++   */
++  protected function areExposedFiltersSet(): bool {
++    // Exposed filters are set if the exposed input array is not empty.
++    return !empty($this->view->getExposedInput());
++  }
++
++  /**
++   * Determine if there are multiple pages of results.
++   *
++   * @return bool
++   *   TRUE if we're on a page > 0, or if the pager says that it has more
++   *   records; FALSE otherwise.
++   */
++  protected function areMultiplePagesOfResults(): bool {
++    // There are multiple pages of results if we are on a page > 0, OR if
++    // the pager says that it has more records.
++    return $this->view->pager->getCurrentPage() > 0
++      || $this->view->pager->hasMoreRecords();
++  }
++
++  /**
++   * Determine if we should show the Multipage Selection box or not.
++   *
++   * This function will return:
++   * 1. TRUE if the configuration setting to show it is 'always_show';
++   * 2. FALSE if the configuration setting to show it is 'always_hide';
++   * 3. TRUE if (exposed filters are set AND VBO is not configured to clear the
++   *    selection when exposed filters change) OR if there are multiple pages of
++   *    results.
++   *
++   * @return bool
++   *   TRUE if we should show the Multipage Selection box; FALSE if we should
++   *   not.
++   */
++  protected function shouldShowMultipageSelectionBox(): bool {
++    $config = $this->options['show_multipage_selection_box'];
++    if ($config === 'always_show') {
++      return TRUE;
++    }
++    if ($config === 'always_hide') {
++      return FALSE;
++    }
++
++    // If we get here, then the config is set to 'default'. In this case,
++    // display the multipage selection box...
++    // 1. If exposed filters are set and VBO is not configured to clear the
++    //    selection when exposed filters change; or;
++    // 2. If there are multiple pages of results.
++    return (!$this->options['clear_on_exposed'] && $this->areExposedFiltersSet())
++      || $this->areMultiplePagesOfResults();
++  }
++
++  /**
++   * Determine if we should show the "Select / Deselect All" checkbox or not.
++   *
++   * This function will return:
++   * 1. TRUE if the configuration setting to show it is 'always_show';
++   * 2. FALSE if the configuration setting to show it is 'always_hide';
++   * 3. TRUE if the view's style plugin is not a table;
++   * 3. TRUE if (exposed filters are set AND VBO is not configured to clear the
++   *    selection when exposed filters change) OR if there are multiple pages of
++   *    results.
++   *
++   * @return bool
++   *   TRUE if we should show the Select / Deselect all results checkbox; FALSE
++   *   if we should not.
++   */
++  protected function shouldShowSelectAllCheckbox(): bool {
++    $config = $this->options['show_select_all'];
++    if ($config === 'always_show') {
++      return TRUE;
++    }
++    if ($config === 'always_hide') {
++      return FALSE;
++    }
++
++    // Always display on non-table displays.
++    if (!($this->view->style_plugin instanceof Table)) {
++      return TRUE;
++    }
++
++    // If we get here, then the config is set to 'default'. In this case,
++    // display the "Select / Deselect all results on all pages" checkbox...
++    // 1. If exposed filters are set and VBO is not configured to clear the
++    //    selection when exposed filters change; or;
++    // 2. If there are multiple pages of results.
++    return (!$this->options['clear_on_exposed'] && $this->areExposedFiltersSet())
++      || $this->areMultiplePagesOfResults();
++  }
++
+ }
+diff --git a/tests/fixtures/update/views_bulk_operations-8035.php b/tests/fixtures/update/views_bulk_operations-8035.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..7547fa8773e6ff54f8d9a5843fa490676cc1475e
+--- /dev/null
++++ b/tests/fixtures/update/views_bulk_operations-8035.php
+@@ -0,0 +1,129 @@
++<?php
++
++/**
++ * @file
++ * A database agnostic dump for testing purposes.
++ *
++ * This file was generated by the Drupal 11.1.6 db-tools.php script.
++ */
++
++// phpcs:ignoreFile
++// cspell:disable
++
++use Drupal\Core\Database\Database;
++
++$connection = Database::getConnection();
++
++$extensions = $connection->select('config')
++  ->fields('config', ['data'])
++  ->condition('collection', '')
++  ->condition('name', 'core.extension')
++  ->execute()
++  ->fetchField();
++$extensions = unserialize($extensions);
++$extensions['module']['views_bulk_operations'] = 0;
++$connection->update('config')
++  ->fields(['data' => serialize($extensions)])
++  ->condition('collection', '')
++  ->condition('name', 'core.extension')
++  ->execute();
++
++$connection->insert('config')
++  ->fields([
++    'collection',
++    'name',
++    'data',
++  ])
++  ->values([
++    'collection' => '',
++    'name' => 'views.view.views_bulk_operations_test_1',
++    'data' => 'a:13:{s:4:"uuid";s:36:"f0c7cedc-006b-4f27-8aac-b3396dfc66ef";s:8:"langcode";s:2:"en";s:6:"status";b:1;s:12:"dependencies";a:1:{s:6:"module";a:3:{i:0;s:4:"node";i:1;s:4:"user";i:2;s:21:"views_bulk_operations";}}s:5:"_core";a:1:{s:19:"default_config_hash";s:43:"d7p-wwJZ_Wmz1gnvla9jDtRsjOaWAhPoIoW9w3vo4R4";}s:2:"id";s:28:"views_bulk_operations_test_1";s:5:"label";s:28:"views_bulk_operations_test_1";s:6:"module";s:4:"node";s:11:"description";s:24:"Find and manage content.";s:3:"tag";s:7:"default";s:10:"base_table";s:15:"node_field_data";s:10:"base_field";s:3:"nid";s:7:"display";a:2:{s:7:"default";a:6:{s:2:"id";s:7:"default";s:13:"display_title";s:7:"Default";s:14:"display_plugin";s:7:"default";s:8:"position";i:0;s:15:"display_options";a:17:{s:5:"title";s:7:"Content";s:6:"fields";a:5:{s:31:"views_bulk_operations_bulk_form";a:31:{s:2:"id";s:31:"views_bulk_operations_bulk_form";s:5:"table";s:5:"views";s:5:"field";s:31:"views_bulk_operations_bulk_form";s:12:"relationship";s:4:"none";s:10:"group_type";s:5:"group";s:11:"admin_label";s:0:"";s:9:"plugin_id";s:31:"views_bulk_operations_bulk_form";s:5:"label";s:21:"Views bulk operations";s:7:"exclude";b:0;s:5:"alter";a:26:{s:10:"alter_text";b:0;s:4:"text";s:0:"";s:9:"make_link";b:0;s:4:"path";s:0:"";s:8:"absolute";b:0;s:8:"external";b:0;s:14:"replace_spaces";b:0;s:9:"path_case";s:4:"none";s:15:"trim_whitespace";b:0;s:3:"alt";s:0:"";s:3:"rel";s:0:"";s:10:"link_class";s:0:"";s:6:"prefix";s:0:"";s:6:"suffix";s:0:"";s:6:"target";s:0:"";s:5:"nl2br";b:0;s:10:"max_length";i:0;s:13:"word_boundary";b:1;s:8:"ellipsis";b:1;s:9:"more_link";b:0;s:14:"more_link_text";s:0:"";s:14:"more_link_path";s:0:"";s:10:"strip_tags";b:0;s:4:"trim";b:0;s:13:"preserve_tags";s:0:"";s:4:"html";b:0;}s:12:"element_type";s:0:"";s:13:"element_class";s:0:"";s:18:"element_label_type";s:0:"";s:19:"element_label_class";s:0:"";s:19:"element_label_colon";b:1;s:20:"element_wrapper_type";s:0:"";s:21:"element_wrapper_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:5:"batch";b:1;s:10:"batch_size";i:10;s:9:"form_step";b:1;s:11:"ajax_loader";b:0;s:7:"buttons";b:0;s:12:"action_title";s:6:"Action";s:16:"clear_on_exposed";b:1;s:20:"force_selection_info";s:1:"0";s:16:"selected_actions";a:2:{i:0;a:2:{s:9:"action_id";s:28:"entity:unpublish_action:node";s:16:"preconfiguration";a:3:{s:16:"add_confirmation";b:0;s:17:"confirm_help_text";s:0:"";s:16:"message_override";s:0:"";}}i:1;a:2:{s:9:"action_id";s:26:"entity:publish_action:node";s:16:"preconfiguration";a:3:{s:16:"add_confirmation";b:0;s:17:"confirm_help_text";s:0:"";s:16:"message_override";s:0:"";}}}}s:5:"title";a:17:{s:2:"id";s:5:"title";s:5:"table";s:15:"node_field_data";s:5:"field";s:5:"title";s:11:"entity_type";s:4:"node";s:12:"entity_field";s:5:"title";s:9:"plugin_id";s:5:"field";s:5:"label";s:5:"Title";s:7:"exclude";b:0;s:5:"alter";a:1:{s:10:"alter_text";b:0;}s:13:"element_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:4:"type";s:6:"string";s:8:"settings";a:1:{s:14:"link_to_entity";b:1;}}s:4:"type";a:37:{s:2:"id";s:4:"type";s:5:"table";s:15:"node_field_data";s:5:"field";s:4:"type";s:12:"relationship";s:4:"none";s:10:"group_type";s:5:"group";s:11:"admin_label";s:0:"";s:11:"entity_type";s:4:"node";s:12:"entity_field";s:4:"type";s:9:"plugin_id";s:5:"field";s:5:"label";s:12:"Content type";s:7:"exclude";b:0;s:5:"alter";a:26:{s:10:"alter_text";b:0;s:4:"text";s:0:"";s:9:"make_link";b:0;s:4:"path";s:0:"";s:8:"absolute";b:0;s:8:"external";b:0;s:14:"replace_spaces";b:0;s:9:"path_case";s:4:"none";s:15:"trim_whitespace";b:0;s:3:"alt";s:0:"";s:3:"rel";s:0:"";s:10:"link_class";s:0:"";s:6:"prefix";s:0:"";s:6:"suffix";s:0:"";s:6:"target";s:0:"";s:5:"nl2br";b:0;s:10:"max_length";i:0;s:13:"word_boundary";b:1;s:8:"ellipsis";b:1;s:9:"more_link";b:0;s:14:"more_link_text";s:0:"";s:14:"more_link_path";s:0:"";s:10:"strip_tags";b:0;s:4:"trim";b:0;s:13:"preserve_tags";s:0:"";s:4:"html";b:0;}s:12:"element_type";s:0:"";s:13:"element_class";s:0:"";s:18:"element_label_type";s:0:"";s:19:"element_label_class";s:0:"";s:19:"element_label_colon";b:1;s:20:"element_wrapper_type";s:0:"";s:21:"element_wrapper_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:17:"click_sort_column";s:9:"target_id";s:4:"type";s:22:"entity_reference_label";s:8:"settings";a:1:{s:4:"link";b:0;}s:12:"group_column";s:9:"target_id";s:13:"group_columns";a:0:{}s:10:"group_rows";b:1;s:11:"delta_limit";i:0;s:12:"delta_offset";i:0;s:14:"delta_reversed";b:0;s:16:"delta_first_last";b:0;s:10:"multi_type";s:9:"separator";s:9:"separator";s:2:", ";s:17:"field_api_classes";b:0;}s:6:"status";a:17:{s:2:"id";s:6:"status";s:5:"table";s:15:"node_field_data";s:5:"field";s:6:"status";s:11:"entity_type";s:4:"node";s:12:"entity_field";s:6:"status";s:9:"plugin_id";s:5:"field";s:5:"label";s:6:"Status";s:7:"exclude";b:0;s:5:"alter";a:1:{s:10:"alter_text";b:0;}s:13:"element_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:4:"type";s:7:"boolean";s:8:"settings";a:3:{s:6:"format";s:6:"custom";s:19:"format_custom_false";s:11:"Unpublished";s:18:"format_custom_true";s:9:"Published";}}s:10:"operations";a:23:{s:2:"id";s:10:"operations";s:5:"table";s:4:"node";s:5:"field";s:10:"operations";s:12:"relationship";s:4:"none";s:10:"group_type";s:5:"group";s:11:"admin_label";s:0:"";s:9:"plugin_id";s:17:"entity_operations";s:5:"label";s:10:"Operations";s:7:"exclude";b:0;s:5:"alter";a:26:{s:10:"alter_text";b:0;s:4:"text";s:0:"";s:9:"make_link";b:0;s:4:"path";s:0:"";s:8:"absolute";b:0;s:8:"external";b:0;s:14:"replace_spaces";b:0;s:9:"path_case";s:4:"none";s:15:"trim_whitespace";b:0;s:3:"alt";s:0:"";s:3:"rel";s:0:"";s:10:"link_class";s:0:"";s:6:"prefix";s:0:"";s:6:"suffix";s:0:"";s:6:"target";s:0:"";s:5:"nl2br";b:0;s:10:"max_length";i:0;s:13:"word_boundary";b:1;s:8:"ellipsis";b:1;s:9:"more_link";b:0;s:14:"more_link_text";s:0:"";s:14:"more_link_path";s:0:"";s:10:"strip_tags";b:0;s:4:"trim";b:0;s:13:"preserve_tags";s:0:"";s:4:"html";b:0;}s:12:"element_type";s:0:"";s:13:"element_class";s:0:"";s:18:"element_label_type";s:0:"";s:19:"element_label_class";s:0:"";s:19:"element_label_colon";b:1;s:20:"element_wrapper_type";s:0:"";s:21:"element_wrapper_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:11:"destination";b:1;}}s:5:"pager";a:2:{s:4:"type";s:4:"full";s:7:"options";a:8:{s:6:"offset";i:0;s:24:"pagination_heading_level";s:2:"h4";s:14:"items_per_page";i:4;s:11:"total_pages";N;s:2:"id";i:0;s:4:"tags";a:4:{s:4:"next";s:8:"Next ›";s:8:"previous";s:12:"‹ Previous";s:5:"first";s:8:"« First";s:4:"last";s:7:"Last »";}s:6:"expose";a:7:{s:14:"items_per_page";b:0;s:20:"items_per_page_label";s:14:"Items per page";s:22:"items_per_page_options";s:13:"5, 10, 25, 50";s:26:"items_per_page_options_all";b:0;s:32:"items_per_page_options_all_label";s:7:"- All -";s:6:"offset";b:0;s:12:"offset_label";s:6:"Offset";}s:8:"quantity";i:9;}}s:12:"exposed_form";a:2:{s:4:"type";s:5:"basic";s:7:"options";a:7:{s:13:"submit_button";s:6:"Filter";s:12:"reset_button";b:1;s:18:"reset_button_label";s:5:"Reset";s:19:"exposed_sorts_label";s:7:"Sort by";s:17:"expose_sort_order";b:1;s:14:"sort_asc_label";s:3:"Asc";s:15:"sort_desc_label";s:4:"Desc";}}s:6:"access";a:2:{s:4:"type";s:4:"perm";s:7:"options";a:1:{s:4:"perm";s:23:"access content overview";}}s:5:"cache";a:1:{s:4:"type";s:3:"tag";}s:5:"empty";a:1:{s:16:"area_text_custom";a:6:{s:2:"id";s:16:"area_text_custom";s:5:"table";s:5:"views";s:5:"field";s:16:"area_text_custom";s:9:"plugin_id";s:11:"text_custom";s:5:"empty";b:1;s:7:"content";s:21:"No content available.";}}s:5:"sorts";a:0:{}s:9:"arguments";a:0:{}s:7:"filters";a:1:{s:12:"status_extra";a:9:{s:2:"id";s:12:"status_extra";s:5:"table";s:15:"node_field_data";s:5:"field";s:12:"status_extra";s:11:"entity_type";s:4:"node";s:9:"plugin_id";s:11:"node_status";s:8:"operator";s:1:"=";s:5:"value";b:0;s:5:"group";i:1;s:6:"expose";a:2:{s:24:"operator_limit_selection";b:0;s:13:"operator_list";a:0:{}}}}s:13:"filter_groups";a:2:{s:8:"operator";s:3:"AND";s:6:"groups";a:1:{i:1;s:3:"AND";}}s:5:"style";a:2:{s:4:"type";s:5:"table";s:7:"options";a:12:{s:8:"grouping";a:0:{}s:9:"row_class";s:0:"";s:17:"default_row_class";b:1;s:7:"columns";a:10:{s:14:"node_bulk_form";s:14:"node_bulk_form";s:5:"title";s:5:"title";s:4:"type";s:4:"type";s:4:"name";s:4:"name";s:6:"status";s:6:"status";s:7:"changed";s:7:"changed";s:9:"edit_node";s:9:"edit_node";s:11:"delete_node";s:11:"delete_node";s:10:"dropbutton";s:10:"dropbutton";s:9:"timestamp";s:5:"title";}s:7:"default";s:7:"changed";s:4:"info";a:10:{s:14:"node_bulk_form";a:4:{s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:5:"title";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:4:"type";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:4:"name";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:12:"priority-low";}s:6:"status";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:7:"changed";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:4:"desc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:12:"priority-low";}s:9:"edit_node";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:11:"delete_node";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:10:"dropbutton";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:9:"timestamp";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}}s:8:"override";b:1;s:6:"sticky";b:1;s:7:"summary";s:0:"";s:11:"empty_table";b:1;s:7:"caption";s:0:"";s:11:"description";s:0:"";}}s:3:"row";a:1:{s:4:"type";s:6:"fields";}s:5:"query";a:1:{s:4:"type";s:11:"views_query";}s:13:"relationships";a:0:{}s:16:"show_admin_links";b:0;s:17:"display_extenders";a:0:{}}s:14:"cache_metadata";a:3:{s:7:"max-age";i:0;s:8:"contexts";a:6:{i:0;s:26:"languages:language_content";i:1;s:28:"languages:language_interface";i:2;s:14:"url.query_args";i:3;s:4:"user";i:4;s:21:"user.node_grants:view";i:5;s:16:"user.permissions";}s:4:"tags";a:0:{}}}s:6:"page_1";a:6:{s:2:"id";s:6:"page_1";s:13:"display_title";s:4:"Page";s:14:"display_plugin";s:4:"page";s:8:"position";i:1;s:15:"display_options";a:4:{s:17:"display_extenders";a:0:{}s:4:"path";s:35:"views_bulk_operations_test_1_page_1";s:4:"menu";a:8:{s:4:"type";s:4:"none";s:5:"title";s:7:"Content";s:11:"description";s:0:"";s:6:"weight";i:-10;s:8:"expanded";b:0;s:9:"menu_name";s:5:"admin";s:6:"parent";s:0:"";s:7:"context";s:1:"0";}s:11:"tab_options";a:5:{s:4:"type";s:6:"normal";s:5:"title";s:7:"Content";s:11:"description";s:23:"Find and manage content";s:6:"weight";i:-10;s:9:"menu_name";s:5:"admin";}}s:14:"cache_metadata";a:3:{s:7:"max-age";i:0;s:8:"contexts";a:6:{i:0;s:26:"languages:language_content";i:1;s:28:"languages:language_interface";i:2;s:14:"url.query_args";i:3;s:4:"user";i:4;s:21:"user.node_grants:view";i:5;s:16:"user.permissions";}s:4:"tags";a:0:{}}}}}',
++  ])
++  ->values([
++    'collection' => '',
++    'name' => 'views.view.views_bulk_operations_test_2',
++    'data' => 'a:13:{s:4:"uuid";s:36:"4287e51b-9920-47c0-9e6e-86cbb5ed9215";s:8:"langcode";s:2:"en";s:6:"status";b:1;s:12:"dependencies";a:1:{s:6:"module";a:3:{i:0;s:4:"node";i:1;s:4:"user";i:2;s:21:"views_bulk_operations";}}s:5:"_core";a:1:{s:19:"default_config_hash";s:43:"d7p-wwJZ_Wmz1gnvla9jDtRsjOaWAhPoIoW9w3vo4R4";}s:2:"id";s:28:"views_bulk_operations_test_2";s:5:"label";s:28:"views_bulk_operations_test_2";s:6:"module";s:4:"node";s:11:"description";s:24:"Find and manage content.";s:3:"tag";s:7:"default";s:10:"base_table";s:15:"node_field_data";s:10:"base_field";s:3:"nid";s:7:"display";a:2:{s:7:"default";a:6:{s:2:"id";s:7:"default";s:13:"display_title";s:7:"Default";s:14:"display_plugin";s:7:"default";s:8:"position";i:0;s:15:"display_options";a:17:{s:5:"title";s:7:"Content";s:6:"fields";a:5:{s:31:"views_bulk_operations_bulk_form";a:31:{s:2:"id";s:31:"views_bulk_operations_bulk_form";s:5:"table";s:5:"views";s:5:"field";s:31:"views_bulk_operations_bulk_form";s:12:"relationship";s:4:"none";s:10:"group_type";s:5:"group";s:11:"admin_label";s:0:"";s:9:"plugin_id";s:31:"views_bulk_operations_bulk_form";s:5:"label";s:21:"Views bulk operations";s:7:"exclude";b:0;s:5:"alter";a:26:{s:10:"alter_text";b:0;s:4:"text";s:0:"";s:9:"make_link";b:0;s:4:"path";s:0:"";s:8:"absolute";b:0;s:8:"external";b:0;s:14:"replace_spaces";b:0;s:9:"path_case";s:4:"none";s:15:"trim_whitespace";b:0;s:3:"alt";s:0:"";s:3:"rel";s:0:"";s:10:"link_class";s:0:"";s:6:"prefix";s:0:"";s:6:"suffix";s:0:"";s:6:"target";s:0:"";s:5:"nl2br";b:0;s:10:"max_length";i:0;s:13:"word_boundary";b:1;s:8:"ellipsis";b:1;s:9:"more_link";b:0;s:14:"more_link_text";s:0:"";s:14:"more_link_path";s:0:"";s:10:"strip_tags";b:0;s:4:"trim";b:0;s:13:"preserve_tags";s:0:"";s:4:"html";b:0;}s:12:"element_type";s:0:"";s:13:"element_class";s:0:"";s:18:"element_label_type";s:0:"";s:19:"element_label_class";s:0:"";s:19:"element_label_colon";b:1;s:20:"element_wrapper_type";s:0:"";s:21:"element_wrapper_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:5:"batch";b:1;s:10:"batch_size";i:10;s:9:"form_step";b:1;s:11:"ajax_loader";b:0;s:7:"buttons";b:0;s:12:"action_title";s:6:"Action";s:16:"clear_on_exposed";b:1;s:20:"force_selection_info";s:1:"1";s:16:"selected_actions";a:2:{i:0;a:2:{s:9:"action_id";s:28:"entity:unpublish_action:node";s:16:"preconfiguration";a:3:{s:16:"add_confirmation";b:0;s:17:"confirm_help_text";s:0:"";s:16:"message_override";s:0:"";}}i:1;a:2:{s:9:"action_id";s:26:"entity:publish_action:node";s:16:"preconfiguration";a:3:{s:16:"add_confirmation";b:0;s:17:"confirm_help_text";s:0:"";s:16:"message_override";s:0:"";}}}}s:5:"title";a:17:{s:2:"id";s:5:"title";s:5:"table";s:15:"node_field_data";s:5:"field";s:5:"title";s:11:"entity_type";s:4:"node";s:12:"entity_field";s:5:"title";s:9:"plugin_id";s:5:"field";s:5:"label";s:5:"Title";s:7:"exclude";b:0;s:5:"alter";a:1:{s:10:"alter_text";b:0;}s:13:"element_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:4:"type";s:6:"string";s:8:"settings";a:1:{s:14:"link_to_entity";b:1;}}s:4:"type";a:37:{s:2:"id";s:4:"type";s:5:"table";s:15:"node_field_data";s:5:"field";s:4:"type";s:12:"relationship";s:4:"none";s:10:"group_type";s:5:"group";s:11:"admin_label";s:0:"";s:11:"entity_type";s:4:"node";s:12:"entity_field";s:4:"type";s:9:"plugin_id";s:5:"field";s:5:"label";s:12:"Content type";s:7:"exclude";b:0;s:5:"alter";a:26:{s:10:"alter_text";b:0;s:4:"text";s:0:"";s:9:"make_link";b:0;s:4:"path";s:0:"";s:8:"absolute";b:0;s:8:"external";b:0;s:14:"replace_spaces";b:0;s:9:"path_case";s:4:"none";s:15:"trim_whitespace";b:0;s:3:"alt";s:0:"";s:3:"rel";s:0:"";s:10:"link_class";s:0:"";s:6:"prefix";s:0:"";s:6:"suffix";s:0:"";s:6:"target";s:0:"";s:5:"nl2br";b:0;s:10:"max_length";i:0;s:13:"word_boundary";b:1;s:8:"ellipsis";b:1;s:9:"more_link";b:0;s:14:"more_link_text";s:0:"";s:14:"more_link_path";s:0:"";s:10:"strip_tags";b:0;s:4:"trim";b:0;s:13:"preserve_tags";s:0:"";s:4:"html";b:0;}s:12:"element_type";s:0:"";s:13:"element_class";s:0:"";s:18:"element_label_type";s:0:"";s:19:"element_label_class";s:0:"";s:19:"element_label_colon";b:1;s:20:"element_wrapper_type";s:0:"";s:21:"element_wrapper_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:17:"click_sort_column";s:9:"target_id";s:4:"type";s:22:"entity_reference_label";s:8:"settings";a:1:{s:4:"link";b:0;}s:12:"group_column";s:9:"target_id";s:13:"group_columns";a:0:{}s:10:"group_rows";b:1;s:11:"delta_limit";i:0;s:12:"delta_offset";i:0;s:14:"delta_reversed";b:0;s:16:"delta_first_last";b:0;s:10:"multi_type";s:9:"separator";s:9:"separator";s:2:", ";s:17:"field_api_classes";b:0;}s:6:"status";a:17:{s:2:"id";s:6:"status";s:5:"table";s:15:"node_field_data";s:5:"field";s:6:"status";s:11:"entity_type";s:4:"node";s:12:"entity_field";s:6:"status";s:9:"plugin_id";s:5:"field";s:5:"label";s:6:"Status";s:7:"exclude";b:0;s:5:"alter";a:1:{s:10:"alter_text";b:0;}s:13:"element_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:4:"type";s:7:"boolean";s:8:"settings";a:3:{s:6:"format";s:6:"custom";s:19:"format_custom_false";s:11:"Unpublished";s:18:"format_custom_true";s:9:"Published";}}s:10:"operations";a:23:{s:2:"id";s:10:"operations";s:5:"table";s:4:"node";s:5:"field";s:10:"operations";s:12:"relationship";s:4:"none";s:10:"group_type";s:5:"group";s:11:"admin_label";s:0:"";s:9:"plugin_id";s:17:"entity_operations";s:5:"label";s:10:"Operations";s:7:"exclude";b:0;s:5:"alter";a:26:{s:10:"alter_text";b:0;s:4:"text";s:0:"";s:9:"make_link";b:0;s:4:"path";s:0:"";s:8:"absolute";b:0;s:8:"external";b:0;s:14:"replace_spaces";b:0;s:9:"path_case";s:4:"none";s:15:"trim_whitespace";b:0;s:3:"alt";s:0:"";s:3:"rel";s:0:"";s:10:"link_class";s:0:"";s:6:"prefix";s:0:"";s:6:"suffix";s:0:"";s:6:"target";s:0:"";s:5:"nl2br";b:0;s:10:"max_length";i:0;s:13:"word_boundary";b:1;s:8:"ellipsis";b:1;s:9:"more_link";b:0;s:14:"more_link_text";s:0:"";s:14:"more_link_path";s:0:"";s:10:"strip_tags";b:0;s:4:"trim";b:0;s:13:"preserve_tags";s:0:"";s:4:"html";b:0;}s:12:"element_type";s:0:"";s:13:"element_class";s:0:"";s:18:"element_label_type";s:0:"";s:19:"element_label_class";s:0:"";s:19:"element_label_colon";b:1;s:20:"element_wrapper_type";s:0:"";s:21:"element_wrapper_class";s:0:"";s:23:"element_default_classes";b:1;s:5:"empty";s:0:"";s:10:"hide_empty";b:0;s:10:"empty_zero";b:0;s:16:"hide_alter_empty";b:1;s:11:"destination";b:1;}}s:5:"pager";a:2:{s:4:"type";s:4:"full";s:7:"options";a:8:{s:6:"offset";i:0;s:24:"pagination_heading_level";s:2:"h4";s:14:"items_per_page";i:4;s:11:"total_pages";N;s:2:"id";i:0;s:4:"tags";a:4:{s:4:"next";s:8:"Next ›";s:8:"previous";s:12:"‹ Previous";s:5:"first";s:8:"« First";s:4:"last";s:7:"Last »";}s:6:"expose";a:7:{s:14:"items_per_page";b:0;s:20:"items_per_page_label";s:14:"Items per page";s:22:"items_per_page_options";s:13:"5, 10, 25, 50";s:26:"items_per_page_options_all";b:0;s:32:"items_per_page_options_all_label";s:7:"- All -";s:6:"offset";b:0;s:12:"offset_label";s:6:"Offset";}s:8:"quantity";i:9;}}s:12:"exposed_form";a:2:{s:4:"type";s:5:"basic";s:7:"options";a:7:{s:13:"submit_button";s:6:"Filter";s:12:"reset_button";b:1;s:18:"reset_button_label";s:5:"Reset";s:19:"exposed_sorts_label";s:7:"Sort by";s:17:"expose_sort_order";b:1;s:14:"sort_asc_label";s:3:"Asc";s:15:"sort_desc_label";s:4:"Desc";}}s:6:"access";a:2:{s:4:"type";s:4:"perm";s:7:"options";a:1:{s:4:"perm";s:23:"access content overview";}}s:5:"cache";a:1:{s:4:"type";s:3:"tag";}s:5:"empty";a:1:{s:16:"area_text_custom";a:6:{s:2:"id";s:16:"area_text_custom";s:5:"table";s:5:"views";s:5:"field";s:16:"area_text_custom";s:9:"plugin_id";s:11:"text_custom";s:5:"empty";b:1;s:7:"content";s:21:"No content available.";}}s:5:"sorts";a:0:{}s:9:"arguments";a:0:{}s:7:"filters";a:1:{s:12:"status_extra";a:9:{s:2:"id";s:12:"status_extra";s:5:"table";s:15:"node_field_data";s:5:"field";s:12:"status_extra";s:11:"entity_type";s:4:"node";s:9:"plugin_id";s:11:"node_status";s:8:"operator";s:1:"=";s:5:"value";b:0;s:5:"group";i:1;s:6:"expose";a:2:{s:24:"operator_limit_selection";b:0;s:13:"operator_list";a:0:{}}}}s:13:"filter_groups";a:2:{s:8:"operator";s:3:"AND";s:6:"groups";a:1:{i:1;s:3:"AND";}}s:5:"style";a:2:{s:4:"type";s:5:"table";s:7:"options";a:12:{s:8:"grouping";a:0:{}s:9:"row_class";s:0:"";s:17:"default_row_class";b:1;s:7:"columns";a:10:{s:14:"node_bulk_form";s:14:"node_bulk_form";s:5:"title";s:5:"title";s:4:"type";s:4:"type";s:4:"name";s:4:"name";s:6:"status";s:6:"status";s:7:"changed";s:7:"changed";s:9:"edit_node";s:9:"edit_node";s:11:"delete_node";s:11:"delete_node";s:10:"dropbutton";s:10:"dropbutton";s:9:"timestamp";s:5:"title";}s:7:"default";s:7:"changed";s:4:"info";a:10:{s:14:"node_bulk_form";a:4:{s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:5:"title";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:4:"type";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:4:"name";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:12:"priority-low";}s:6:"status";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:7:"changed";a:6:{s:8:"sortable";b:1;s:18:"default_sort_order";s:4:"desc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:12:"priority-low";}s:9:"edit_node";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:11:"delete_node";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:10:"dropbutton";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}s:9:"timestamp";a:6:{s:8:"sortable";b:0;s:18:"default_sort_order";s:3:"asc";s:5:"align";s:0:"";s:9:"separator";s:0:"";s:12:"empty_column";b:0;s:10:"responsive";s:0:"";}}s:8:"override";b:1;s:6:"sticky";b:1;s:7:"summary";s:0:"";s:11:"empty_table";b:1;s:7:"caption";s:0:"";s:11:"description";s:0:"";}}s:3:"row";a:1:{s:4:"type";s:6:"fields";}s:5:"query";a:1:{s:4:"type";s:11:"views_query";}s:13:"relationships";a:0:{}s:16:"show_admin_links";b:0;s:17:"display_extenders";a:0:{}}s:14:"cache_metadata";a:3:{s:7:"max-age";i:0;s:8:"contexts";a:6:{i:0;s:26:"languages:language_content";i:1;s:28:"languages:language_interface";i:2;s:14:"url.query_args";i:3;s:4:"user";i:4;s:21:"user.node_grants:view";i:5;s:16:"user.permissions";}s:4:"tags";a:0:{}}}s:6:"page_1";a:6:{s:2:"id";s:6:"page_1";s:13:"display_title";s:4:"Page";s:14:"display_plugin";s:4:"page";s:8:"position";i:1;s:15:"display_options";a:4:{s:17:"display_extenders";a:0:{}s:4:"path";s:35:"views_bulk_operations_test_2_page_1";s:4:"menu";a:8:{s:4:"type";s:4:"none";s:5:"title";s:7:"Content";s:11:"description";s:0:"";s:6:"weight";i:-10;s:8:"expanded";b:0;s:9:"menu_name";s:5:"admin";s:6:"parent";s:0:"";s:7:"context";s:1:"0";}s:11:"tab_options";a:5:{s:4:"type";s:6:"normal";s:5:"title";s:7:"Content";s:11:"description";s:23:"Find and manage content";s:6:"weight";i:-10;s:9:"menu_name";s:5:"admin";}}s:14:"cache_metadata";a:3:{s:7:"max-age";i:0;s:8:"contexts";a:6:{i:0;s:26:"languages:language_content";i:1;s:28:"languages:language_interface";i:2;s:14:"url.query_args";i:3;s:4:"user";i:4;s:21:"user.node_grants:view";i:5;s:16:"user.permissions";}s:4:"tags";a:0:{}}}}}',
++  ])
++  ->execute();
++
++$connection->insert('key_value')
++  ->fields([
++    'collection',
++    'name',
++    'value',
++  ])
++  ->values([
++    'collection' => 'config.entity.key_store.view',
++    'name' => 'uuid:f0c7cedc-006b-4f27-8aac-b3396dfc66ef',
++    'value' => 'a:1:{i:0;s:39:"views.view.views_bulk_operations_test_1";}',
++  ])
++    ->values([
++      'collection' => 'config.entity.key_store.view',
++      'name' => 'uuid:4287e51b-9920-47c0-9e6e-86cbb5ed9215',
++      'value' => 'a:1:{i:0;s:39:"views.view.views_bulk_operations_test_2";}',
++    ])
++  ->values([
++    'collection' => 'system.schema',
++    'name' => 'views_bulk_operations',
++    'value' => 'i:8035;',
++  ])
++  ->execute();
++
++$connection->insert('router')
++  ->fields([
++    'name',
++    'path',
++    'pattern_outline',
++    'fit',
++    'route',
++    'number_parts',
++  ])
++  ->values([
++    'name' => 'view.views_bulk_operations_test_1.page_1',
++    'path' => '/views_bulk_operations_test_1_page_1',
++    'pattern_outline' => '/views_bulk_operations_test_1_page_1',
++    'fit' => '1',
++    'route' => 'O:31:"Symfony\Component\Routing\Route":9:{s:4:"path";s:36:"/views_bulk_operations_test_1_page_1";s:4:"host";s:0:"";s:8:"defaults";a:5:{s:11:"_controller";s:47:"Drupal\views\Routing\ViewPageController::handle";s:15:"_title_callback";s:49:"Drupal\views\Routing\ViewPageController::getTitle";s:7:"view_id";s:28:"views_bulk_operations_test_1";s:10:"display_id";s:6:"page_1";s:30:"_view_display_show_admin_links";b:0;}s:12:"requirements";a:2:{s:11:"_permission";s:23:"access content overview";s:7:"_format";s:4:"html";}s:7:"options";a:8:{s:14:"compiler_class";s:33:"Drupal\Core\Routing\RouteCompiler";s:18:"_view_argument_map";a:0:{}s:23:"_view_display_plugin_id";s:4:"page";s:26:"_view_display_plugin_class";s:38:"Drupal\views\Plugin\views\display\Page";s:30:"_view_display_show_admin_links";b:0;s:16:"returns_response";b:0;s:4:"utf8";b:1;s:14:"_access_checks";a:1:{i:0;s:23:"access_check.permission";}}s:7:"schemes";a:0:{}s:7:"methods";a:2:{i:0;s:3:"GET";i:1;s:4:"POST";}s:9:"condition";s:0:"";s:8:"compiled";O:33:"Drupal\Core\Routing\CompiledRoute":11:{s:4:"vars";a:0:{}s:11:"path_prefix";s:0:"";s:10:"path_regex";s:43:"{^/views_bulk_operations_test_1_page_1$}sDu";s:11:"path_tokens";a:1:{i:0;a:2:{i:0;s:4:"text";i:1;s:36:"/views_bulk_operations_test_1_page_1";}}s:9:"path_vars";a:0:{}s:10:"host_regex";N;s:11:"host_tokens";a:0:{}s:9:"host_vars";a:0:{}s:3:"fit";i:1;s:14:"patternOutline";s:36:"/views_bulk_operations_test_1_page_1";s:8:"numParts";i:1;}}',
++    'number_parts' => '1',
++  ])
++  ->values([
++    'name' => 'view.views_bulk_operations_test_2.page_1',
++    'path' => '/views_bulk_operations_test_2_page_1',
++    'pattern_outline' => '/views_bulk_operations_test_2_page_1',
++    'fit' => '1',
++    'route' => 'O:31:"Symfony\Component\Routing\Route":9:{s:4:"path";s:36:"/views_bulk_operations_test_2_page_1";s:4:"host";s:0:"";s:8:"defaults";a:5:{s:11:"_controller";s:47:"Drupal\views\Routing\ViewPageController::handle";s:15:"_title_callback";s:49:"Drupal\views\Routing\ViewPageController::getTitle";s:7:"view_id";s:28:"views_bulk_operations_test_1";s:10:"display_id";s:6:"page_1";s:30:"_view_display_show_admin_links";b:0;}s:12:"requirements";a:2:{s:11:"_permission";s:23:"access content overview";s:7:"_format";s:4:"html";}s:7:"options";a:8:{s:14:"compiler_class";s:33:"Drupal\Core\Routing\RouteCompiler";s:18:"_view_argument_map";a:0:{}s:23:"_view_display_plugin_id";s:4:"page";s:26:"_view_display_plugin_class";s:38:"Drupal\views\Plugin\views\display\Page";s:30:"_view_display_show_admin_links";b:0;s:16:"returns_response";b:0;s:4:"utf8";b:1;s:14:"_access_checks";a:1:{i:0;s:23:"access_check.permission";}}s:7:"schemes";a:0:{}s:7:"methods";a:2:{i:0;s:3:"GET";i:1;s:4:"POST";}s:9:"condition";s:0:"";s:8:"compiled";O:33:"Drupal\Core\Routing\CompiledRoute":11:{s:4:"vars";a:0:{}s:11:"path_prefix";s:0:"";s:10:"path_regex";s:43:"{^/views_bulk_operations_test_1_page_1$}sDu";s:11:"path_tokens";a:1:{i:0;a:2:{i:0;s:4:"text";i:1;s:36:"/views_bulk_operations_test_1_page_1";}}s:9:"path_vars";a:0:{}s:10:"host_regex";N;s:11:"host_tokens";a:0:{}s:9:"host_vars";a:0:{}s:3:"fit";i:1;s:14:"patternOutline";s:36:"/views_bulk_operations_test_1_page_1";s:8:"numParts";i:1;}}',
++    'number_parts' => '1',
++  ])
++  ->values([
++    'name' => 'views_bulk_operations.confirm',
++    'path' => '/views-bulk-operations/confirm/{view_id}/{display_id}',
++    'pattern_outline' => '/views-bulk-operations/confirm/%/%',
++    'fit' => '12',
++    'route' => 'O:31:"Symfony\Component\Routing\Route":9:{s:4:"path";s:53:"/views-bulk-operations/confirm/{view_id}/{display_id}";s:4:"host";s:0:"";s:8:"defaults";a:2:{s:5:"_form";s:48:"\Drupal\views_bulk_operations\Form\ConfirmAction";s:6:"_title";s:39:"Views Bulk Operations confirm execution";}s:12:"requirements";a:1:{s:28:"_views_bulk_operation_access";s:4:"TRUE";}s:7:"options";a:4:{s:14:"compiler_class";s:33:"Drupal\Core\Routing\RouteCompiler";s:12:"_admin_route";b:1;s:4:"utf8";b:1;s:14:"_access_checks";a:1:{i:0;s:28:"views_bulk_operations.access";}}s:7:"schemes";a:0:{}s:7:"methods";a:2:{i:0;s:3:"GET";i:1;s:4:"POST";}s:9:"condition";s:0:"";s:8:"compiled";O:33:"Drupal\Core\Routing\CompiledRoute":11:{s:4:"vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:11:"path_prefix";s:0:"";s:10:"path_regex";s:82:"{^/views\-bulk\-operations/confirm/(?P<view_id>[^/]++)/(?P<display_id>[^/]++)$}sDu";s:11:"path_tokens";a:3:{i:0;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:10:"display_id";i:4;b:1;}i:1;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:7:"view_id";i:4;b:1;}i:2;a:2:{i:0;s:4:"text";i:1;s:30:"/views-bulk-operations/confirm";}}s:9:"path_vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:10:"host_regex";N;s:11:"host_tokens";a:0:{}s:9:"host_vars";a:0:{}s:3:"fit";i:12;s:14:"patternOutline";s:34:"/views-bulk-operations/confirm/%/%";s:8:"numParts";i:4;}}',
++    'number_parts' => '4',
++  ])
++  ->values([
++    'name' => 'views_bulk_operations.execute_batch',
++    'path' => '/views-bulk-operations/execute/{view_id}/{display_id}',
++    'pattern_outline' => '/views-bulk-operations/execute/%/%',
++    'fit' => '12',
++    'route' => 'O:31:"Symfony\Component\Routing\Route":9:{s:4:"path";s:53:"/views-bulk-operations/execute/{view_id}/{display_id}";s:4:"host";s:0:"";s:8:"defaults";a:2:{s:11:"_controller";s:79:"\Drupal\views_bulk_operations\Controller\ViewsBulkOperationsController::execute";s:6:"_title";s:35:"Views Bulk Operations batch starter";}s:12:"requirements";a:1:{s:28:"_views_bulk_operation_access";s:4:"TRUE";}s:7:"options";a:4:{s:14:"compiler_class";s:33:"Drupal\Core\Routing\RouteCompiler";s:12:"_admin_route";b:1;s:4:"utf8";b:1;s:14:"_access_checks";a:1:{i:0;s:28:"views_bulk_operations.access";}}s:7:"schemes";a:0:{}s:7:"methods";a:2:{i:0;s:3:"GET";i:1;s:4:"POST";}s:9:"condition";s:0:"";s:8:"compiled";O:33:"Drupal\Core\Routing\CompiledRoute":11:{s:4:"vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:11:"path_prefix";s:0:"";s:10:"path_regex";s:82:"{^/views\-bulk\-operations/execute/(?P<view_id>[^/]++)/(?P<display_id>[^/]++)$}sDu";s:11:"path_tokens";a:3:{i:0;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:10:"display_id";i:4;b:1;}i:1;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:7:"view_id";i:4;b:1;}i:2;a:2:{i:0;s:4:"text";i:1;s:30:"/views-bulk-operations/execute";}}s:9:"path_vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:10:"host_regex";N;s:11:"host_tokens";a:0:{}s:9:"host_vars";a:0:{}s:3:"fit";i:12;s:14:"patternOutline";s:34:"/views-bulk-operations/execute/%/%";s:8:"numParts";i:4;}}',
++    'number_parts' => '4',
++  ])
++  ->values([
++    'name' => 'views_bulk_operations.execute_configurable',
++    'path' => '/views-bulk-operations/configure/{view_id}/{display_id}',
++    'pattern_outline' => '/views-bulk-operations/configure/%/%',
++    'fit' => '12',
++    'route' => 'O:31:"Symfony\Component\Routing\Route":9:{s:4:"path";s:55:"/views-bulk-operations/configure/{view_id}/{display_id}";s:4:"host";s:0:"";s:8:"defaults";a:2:{s:5:"_form";s:50:"\Drupal\views_bulk_operations\Form\ConfigureAction";s:6:"_title";s:36:"Views Bulk Operations configure step";}s:12:"requirements";a:1:{s:28:"_views_bulk_operation_access";s:4:"TRUE";}s:7:"options";a:4:{s:14:"compiler_class";s:33:"Drupal\Core\Routing\RouteCompiler";s:12:"_admin_route";b:1;s:4:"utf8";b:1;s:14:"_access_checks";a:1:{i:0;s:28:"views_bulk_operations.access";}}s:7:"schemes";a:0:{}s:7:"methods";a:2:{i:0;s:3:"GET";i:1;s:4:"POST";}s:9:"condition";s:0:"";s:8:"compiled";O:33:"Drupal\Core\Routing\CompiledRoute":11:{s:4:"vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:11:"path_prefix";s:0:"";s:10:"path_regex";s:84:"{^/views\-bulk\-operations/configure/(?P<view_id>[^/]++)/(?P<display_id>[^/]++)$}sDu";s:11:"path_tokens";a:3:{i:0;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:10:"display_id";i:4;b:1;}i:1;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:7:"view_id";i:4;b:1;}i:2;a:2:{i:0;s:4:"text";i:1;s:32:"/views-bulk-operations/configure";}}s:9:"path_vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:10:"host_regex";N;s:11:"host_tokens";a:0:{}s:9:"host_vars";a:0:{}s:3:"fit";i:12;s:14:"patternOutline";s:36:"/views-bulk-operations/configure/%/%";s:8:"numParts";i:4;}}',
++    'number_parts' => '4',
++  ])
++  ->values([
++    'name' => 'views_bulk_operations.update_selection',
++    'path' => '/views-bulk-operations/ajax/{view_id}/{display_id}',
++    'pattern_outline' => '/views-bulk-operations/ajax/%/%',
++    'fit' => '12',
++    'route' => 'O:31:"Symfony\Component\Routing\Route":9:{s:4:"path";s:50:"/views-bulk-operations/ajax/{view_id}/{display_id}";s:4:"host";s:0:"";s:8:"defaults";a:2:{s:11:"_controller";s:87:"\Drupal\views_bulk_operations\Controller\ViewsBulkOperationsController::updateSelection";s:6:"_title";s:36:"Views Bulk Operations multipage AJAX";}s:12:"requirements";a:1:{s:28:"_views_bulk_operation_access";s:4:"TRUE";}s:7:"options";a:3:{s:14:"compiler_class";s:33:"Drupal\Core\Routing\RouteCompiler";s:4:"utf8";b:1;s:14:"_access_checks";a:1:{i:0;s:28:"views_bulk_operations.access";}}s:7:"schemes";a:0:{}s:7:"methods";a:2:{i:0;s:3:"GET";i:1;s:4:"POST";}s:9:"condition";s:0:"";s:8:"compiled";O:33:"Drupal\Core\Routing\CompiledRoute":11:{s:4:"vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:11:"path_prefix";s:0:"";s:10:"path_regex";s:79:"{^/views\-bulk\-operations/ajax/(?P<view_id>[^/]++)/(?P<display_id>[^/]++)$}sDu";s:11:"path_tokens";a:3:{i:0;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:10:"display_id";i:4;b:1;}i:1;a:5:{i:0;s:8:"variable";i:1;s:1:"/";i:2;s:6:"[^/]++";i:3;s:7:"view_id";i:4;b:1;}i:2;a:2:{i:0;s:4:"text";i:1;s:27:"/views-bulk-operations/ajax";}}s:9:"path_vars";a:2:{i:0;s:7:"view_id";i:1;s:10:"display_id";}s:10:"host_regex";N;s:11:"host_tokens";a:0:{}s:9:"host_vars";a:0:{}s:3:"fit";i:12;s:14:"patternOutline";s:31:"/views-bulk-operations/ajax/%/%";s:8:"numParts";i:4;}}',
++    'number_parts' => '4',
++  ])
++  ->execute();
+diff --git a/tests/src/Functional/ConfigureMultipageSelectionBoxTest.php b/tests/src/Functional/ConfigureMultipageSelectionBoxTest.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..330114e12a76c0c0fa2ef497084ff71ad91f2563
+--- /dev/null
++++ b/tests/src/Functional/ConfigureMultipageSelectionBoxTest.php
+@@ -0,0 +1,85 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\views_bulk_operations\Functional;
++
++use Drupal\Core\Url;
++
++/**
++ * Test that we can configure the Multipage Selection Box.
++ *
++ * @group views_bulk_operations
++ */
++class ConfigureMultipageSelectionBoxTest extends ConfigureSelectionInfoTestBase {
++
++  /**
++   * Data provider for testShowMultipageSelectionBox().
++   *
++   * @return array[]
++   *   An array of argument-arrays to pass to a test function. Each array should
++   *   contain:
++   *   1. the value to set 'force_selection_info' to;
++   *   2. the number of 'select_all' checkboxes that we should expect to see on
++   *      the view when there are 0 results;
++   *   3. the number of 'select_all' checkboxes that we should expect to see on
++   *      the view when there is 1 page of results; and;
++   *   4. the number of 'select_all' checkboxes that we should expect to see on
++   *      thew view when there are 2 pages of results.
++   */
++  public static function dataShowMultipageSelectionBox(): array {
++    return [
++      'Default' => ['default', 0, 0, 1],
++      'Always show' => ['always_show', 0, 1, 1],
++      'Always hide' => ['always_hide', 0, 0, 0],
++    ];
++  }
++
++  /**
++   * Test 'show_multipage_selection_box' when there are 0; 1 page, 2 pages.
++   *
++   * @dataProvider dataShowMultipageSelectionBox
++   */
++  public function testShowMultipageSelectionBox(string $settingValue, int $countWhenZeroResults, int $countWhen1PageOfResults, int $countWhen2PageOfResults): void {
++    // Setup: Always show the Select All Results checkbox in this test, to
++    // demonstrate its independence from the Multipage Selection Box setting.
++    $this->setSelectAllVisibilityConfiguration($this->testViewConfiguration, 'always_show');
++
++    // Setup: Modify the view configuration.
++    $this->setMultipageSelectionBoxVisibility($this->testViewConfiguration, $settingValue);
++
++    // Sanity-check the number of nodes. Navigate to the
++    // views_bulk_operations_test view's page_1 display. Check the number of
++    // multipage selection boxes that we see on the page. A "Select all results"
++    // checkbox should never be visible when there are 0 results.
++    $this->assertEquals(0, $this->countNumberOfNodesInSystem(), 'Should be 0 nodes (0 pages) when test starts');
++    $this->drupalGet(Url::fromRoute('view.views_bulk_operations_test.page_1'));
++    $this->assertCount($countWhenZeroResults, $this->findMultipageSelectionBoxOnPage(), 'Checking number of multipage selection boxes when there are 0 nodes');
++    $this->assertCount(0, $this->findSelectAllCheckboxesOnPage());
++
++    // Setup: Create one page of results.
++    $this->createPageNodes($this->numberOfResultsPerPage);
++
++    // Sanity-check the number of nodes. Navigate to the
++    // views_bulk_operations_test view's page_1 display again. Check the number
++    // of multipage selection boxes that we see on the page. A "Select all
++    // results" checkbox should always be visible during this test.
++    $this->assertEquals($this->numberOfResultsPerPage * 1, $this->countNumberOfNodesInSystem(), 'Should be 1 page of nodes');
++    $this->drupalGet(Url::fromRoute('view.views_bulk_operations_test.page_1'));
++    $this->assertCount($countWhen1PageOfResults, $this->findMultipageSelectionBoxOnPage(), 'Checking number of multipage selection boxes when there is 1 page of nodes');
++    $this->assertCount(1, $this->findSelectAllCheckboxesOnPage());
++
++    // Setup: Create a second page of results.
++    $this->createPageNodes($this->numberOfResultsPerPage);
++
++    // Sanity-check the number of nodes. Navigate to the
++    // views_bulk_operations_test view's page_1 display again. Check the number
++    // of multipage selection boxes that we see on the page. A "Select all
++    // results" checkbox should always be visible during this test.
++    $this->assertEquals($this->numberOfResultsPerPage * 2, $this->countNumberOfNodesInSystem(), 'Should be 2 pages of nodes');
++    $this->drupalGet(Url::fromRoute('view.views_bulk_operations_test.page_1'));
++    $this->assertCount($countWhen2PageOfResults, $this->findMultipageSelectionBoxOnPage(), 'Checking number of multipage selection boxes when there are 2 pages of nodes');
++    $this->assertCount(1, $this->findSelectAllCheckboxesOnPage());
++  }
++
++}
+diff --git a/tests/src/Functional/ConfigureSelectAllResultsAllPagesTest.php b/tests/src/Functional/ConfigureSelectAllResultsAllPagesTest.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..b2e00b7356cdd5af721b29c797b419145cf9f1c0
+--- /dev/null
++++ b/tests/src/Functional/ConfigureSelectAllResultsAllPagesTest.php
+@@ -0,0 +1,85 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\views_bulk_operations\Functional;
++
++use Drupal\Core\Url;
++
++/**
++ * Test that we can configure "Select / Deselect all results (all pages)".
++ *
++ * @group views_bulk_operations
++ */
++class ConfigureSelectAllResultsAllPagesTest extends ConfigureSelectionInfoTestBase {
++
++  /**
++   * Data provider for testShowSelectAll().
++   *
++   * @return array[]
++   *   An array of argument-arrays to pass to a test function. Each array should
++   *   contain:
++   *   1. the value to set 'force_selection_info' to;
++   *   2. the number of 'select_all' checkboxes that we should expect to see on
++   *      the view when there are 0 results;
++   *   3. the number of 'select_all' checkboxes that we should expect to see on
++   *      the view when there is 1 page of results; and;
++   *   4. the number of 'select_all' checkboxes that we should expect to see on
++   *      thew view when there are 2 pages of results.
++   */
++  public static function dataProviderShowSelectAll(): array {
++    return [
++      'Default' => ['default', 0, 0, 1],
++      'Always show' => ['always_show', 0, 1, 1],
++      'Always hide' => ['always_hide', 0, 0, 0],
++    ];
++  }
++
++  /**
++   * Test 'show_select_all' when there are 0; 1 page, 2 pages of results.
++   *
++   * @dataProvider dataProviderShowSelectAll
++   */
++  public function testShowSelectAll(string $settingValue, int $countWhenZeroResults, int $countWhen1PageOfResults, int $countWhen2PageOfResults): void {
++    // Setup: Always show the Multipage Selection Box in this test, to
++    // demonstrate its independence from the Select All Results checkbox.
++    $this->setMultipageSelectionBoxVisibility($this->testViewConfiguration, 'always_show');
++
++    // Setup: Modify the view configuration.
++    $this->setSelectAllVisibilityConfiguration($this->testViewConfiguration, $settingValue);
++
++    // Sanity-check the number of nodes. Navigate to the
++    // views_bulk_operations_test view's page_1 display. Check the number of
++    // 'select_all' checkboxes that we see on the page. The Multipage Selection
++    // Box should never be visible when there are 0 results.
++    $this->assertEquals(0, $this->countNumberOfNodesInSystem(), 'Should be 0 nodes (0 pages) when test starts');
++    $this->drupalGet(Url::fromRoute('view.views_bulk_operations_test.page_1'));
++    $this->assertCount($countWhenZeroResults, $this->findSelectAllCheckboxesOnPage(), 'Checking number of "select_all" checkboxes when there are 0 nodes');
++    $this->assertCount(0, $this->findMultipageSelectionBoxOnPage(), 'We al');
++
++    // Setup: Create one page of results.
++    $this->createPageNodes($this->numberOfResultsPerPage);
++
++    // Sanity-check the number of nodes. Navigate to the
++    // views_bulk_operations_test view's page_1 display again. Check the number
++    // of 'select_all' checkboxes that we see on the page. The Multipage
++    // Selection Box should always be visible during this test.
++    $this->assertEquals($this->numberOfResultsPerPage * 1, $this->countNumberOfNodesInSystem(), 'Should be 1 page of nodes');
++    $this->drupalGet(Url::fromRoute('view.views_bulk_operations_test.page_1'));
++    $this->assertCount($countWhen1PageOfResults, $this->findSelectAllCheckboxesOnPage(), 'Checking number of "select_all" checkboxes when there is 1 page of nodes');
++    $this->assertCount(1, $this->findMultipageSelectionBoxOnPage());
++
++    // Setup: Create a second page of results.
++    $this->createPageNodes($this->numberOfResultsPerPage);
++
++    // Sanity-check the number of nodes. Navigate to the
++    // views_bulk_operations_test view's page_1 display again. Check the number
++    // of 'select_all' checkboxes that we see on the page. The Multipage
++    // Selection Box should always be visible during this test.
++    $this->assertEquals($this->numberOfResultsPerPage * 2, $this->countNumberOfNodesInSystem(), 'Should be 2 pages of nodes');
++    $this->drupalGet(Url::fromRoute('view.views_bulk_operations_test.page_1'));
++    $this->assertCount($countWhen2PageOfResults, $this->findSelectAllCheckboxesOnPage(), 'Checking number of "select_all" checkboxes when there are 2 pages of nodes');
++    $this->assertCount(1, $this->findMultipageSelectionBoxOnPage());
++  }
++
++}
+diff --git a/tests/src/Functional/ConfigureSelectionInfoTestBase.php b/tests/src/Functional/ConfigureSelectionInfoTestBase.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..ae4b59782509c4198b0e534d56029b977d4b1b0c
+--- /dev/null
++++ b/tests/src/Functional/ConfigureSelectionInfoTestBase.php
+@@ -0,0 +1,132 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\views_bulk_operations\Functional;
++
++use Drupal\Core\Config\Config;
++use Drupal\Tests\BrowserTestBase;
++
++/**
++ * Base class for tests for the Selection Info controls.
++ */
++abstract class ConfigureSelectionInfoTestBase extends BrowserTestBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  protected static $modules = ['views_bulk_operations_test'];
++
++  /**
++   * {@inheritdoc}
++   */
++  protected $defaultTheme = 'stark';
++
++  /**
++   * The number of results per page that the test view is configured to show.
++   *
++   * @var int
++   */
++  protected int $numberOfResultsPerPage;
++
++  /**
++   * The configuration of the view we are testing with.
++   *
++   * @var \Drupal\Core\Config\Config
++   */
++  protected Config $testViewConfiguration;
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp(): void {
++    parent::setUp();
++
++    // Setup: Log in as a user that can access the views_bulk_operations_test
++    // view's page_1 display.
++    $this->drupalLogin($this->createUser([
++      'access content',
++    ]));
++
++    $this->testViewConfiguration = $this->config('views.view.views_bulk_operations_test');
++    $this->numberOfResultsPerPage = $this->testViewConfiguration->get('display.default.display_options.pager.options.items_per_page');
++  }
++
++  /**
++   * Count the number of nodes in content storage.
++   *
++   * @return int
++   *   The number of nodes in content storage.
++   */
++  protected function countNumberOfNodesInSystem(): int {
++    $query = $this->container->get('entity_type.manager')->getStorage('node')->getQuery();
++    $query->count();
++    $query->accessCheck();
++    $result = $query->execute();
++    $this->assertIsInt($result, 'Node count query sanity check');
++    return $result;
++  }
++
++  /**
++   * Create an arbitrary number of random 'page' nodes.
++   *
++   * @param int $numToCreate
++   *   The number of pages to create.
++   */
++  protected function createPageNodes(int $numToCreate): void {
++    for ($i = 0; $i < $numToCreate; $i++) {
++      $this->drupalCreateNode(['type' => 'page']);
++    }
++  }
++
++  /**
++   * Find all 'show_multipage_selection_box' boxes on the page.
++   *
++   * @return \Behat\Mink\Element\NodeElement[]
++   *   All 'show_multipage_selection_box' boxes currently on the page.
++   */
++  protected function findMultipageSelectionBoxOnPage(): array {
++    return $this->getSession()->getPage()
++      ->findAll('css', 'details.vbo-multipage-selector');
++  }
++
++  /**
++   * Find all 'select_all' checkboxes on the page.
++   *
++   * @return \Behat\Mink\Element\NodeElement[]
++   *   All 'select_all' checkboxes currently on the page.
++   */
++  protected function findSelectAllCheckboxesOnPage(): array {
++    return $this->xpath('//input[@type="checkbox"][@name="select_all"]');
++  }
++
++  /**
++   * Set a given view's default display's 'show_multipage_selection_box' config.
++   *
++   * @param \Drupal\Core\Config\Config $viewConfig
++   *   The configuration of the view we are testing with.
++   * @param string $newValue
++   *   The new value for the 'show_multipage_selection_box' configuration
++   *   option.
++   */
++  protected function setMultipageSelectionBoxVisibility(Config $viewConfig, string $newValue): void {
++    $viewConfig->set('display.default.display_options.fields.views_bulk_operations_bulk_form.show_multipage_selection_box', $newValue);
++    $viewConfig->set('display.default.display_options.title', \sprintf('show_multipage_selection_box: "%s"', $newValue));
++    $viewConfig->save();
++  }
++
++  /**
++   * Set a given view's default display's 'show_select_all' config option.
++   *
++   * @param \Drupal\Core\Config\Config $viewConfig
++   *   The configuration of the view we are testing with.
++   * @param string $newValue
++   *   The new value for the 'show_select_all' configuration option.
++   */
++  protected function setSelectAllVisibilityConfiguration(Config $viewConfig, string $newValue): void {
++    $viewConfig->set('display.default.display_options.fields.views_bulk_operations_bulk_form.show_select_all', $newValue);
++    $viewConfig->set('display.default.display_options.title', \sprintf('show_select_all: "%s"', $newValue));
++    $viewConfig->save();
++  }
++
++}
+diff --git a/tests/src/Functional/Update/VboUpdateHookTest.php b/tests/src/Functional/Update/VboUpdateHookTest.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..1469f781f9d246f987e4c9cae02a0ec07921a304
+--- /dev/null
++++ b/tests/src/Functional/Update/VboUpdateHookTest.php
+@@ -0,0 +1,87 @@
++<?php
++
++declare(strict_types=1);
++
++namespace Drupal\Tests\views_bulk_operations\Functional\Update;
++
++use Drupal\FunctionalTests\Update\UpdatePathTestBase;
++
++/**
++ * Tests database updates to the views_bulk_operations module.
++ *
++ * @group Update
++ * @group views_bulk_operations
++ */
++class VboUpdateHookTest extends UpdatePathTestBase {
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setDatabaseDumpFiles(): void {
++    $this->databaseDumpFiles = [
++      $this->root . '/core/modules/system/tests/fixtures/update/drupal-10.3.0.filled.standard.php.gz',
++      __DIR__ . '/../../../fixtures/update/views_bulk_operations-8035.php',
++    ];
++  }
++
++  /**
++   * Test that the update hook to fix force_selection_info configuration works.
++   */
++  public function testUpdateHook8036(): void {
++    // Setup: Look at the schema version.
++    $this->assertEquals(8035, $this->getSchemaVersion('views_bulk_operations'));
++
++    // Assert: Before the update hook runs, the first view should have
++    // 'force_selection_info' set to '0' and the second view should have
++    // 'force_selection_info' set to '1'.
++    $this->assertSame('0', $this->config('views.view.views_bulk_operations_test_1')
++      ->get('display.default.display_options.fields.views_bulk_operations_bulk_form.force_selection_info')
++    );
++    $this->assertSame('1', $this->config('views.view.views_bulk_operations_test_2')
++      ->get('display.default.display_options.fields.views_bulk_operations_bulk_form.force_selection_info')
++    );
++
++    // System under test: Run updates.
++    $this->runUpdates();
++
++    // Assert: Check that the schema version has changed.
++    $this->assertEquals(8036, $this->getSchemaVersion('views_bulk_operations'));
++
++    // Assert: After the update hook runs, the first view should have
++    // 'show_multipage_selection_box' and 'show_select_all' set to 'default'; and
++    // the second view should have 'show_multipage_selection_box'  and
++    // 'show_select_all' set to 'show'.
++    $this->assertSame('default', $this->config('views.view.views_bulk_operations_test_1')
++      ->get('display.default.display_options.fields.views_bulk_operations_bulk_form.show_multipage_selection_box')
++    );
++    $this->assertSame('default', $this->config('views.view.views_bulk_operations_test_1')
++      ->get('display.default.display_options.fields.views_bulk_operations_bulk_form.show_select_all')
++    );
++    $this->assertSame('show', $this->config('views.view.views_bulk_operations_test_2')
++      ->get('display.default.display_options.fields.views_bulk_operations_bulk_form.show_multipage_selection_box')
++    );
++    $this->assertSame('show', $this->config('views.view.views_bulk_operations_test_2')
++      ->get('display.default.display_options.fields.views_bulk_operations_bulk_form.show_select_all')
++    );
++
++    // Assert: After the update hook runs, neither view should have a
++    // 'force_selection_info' key anymore.
++    $this->assertNull($this->config('views.view.views_bulk_operations_test_2')
++      ->get('display.default.display_options.fields.views_bulk_operations_bulk_form.force_selection_info')
++    );
++  }
++
++  /**
++   * Get the installed schema version of a module.
++   *
++   * @param string $module
++   *   The module to get the installed schema version of.
++   *
++   * @return int|null
++   *   The schema version of the given module.
++   */
++  protected function getSchemaVersion(string $module): ?int {
++    return $this->container->get('update.update_hook_registry')->getInstalledVersion($module);
++  }
++
++}
+diff --git a/tests/views_bulk_operations_test/config/install/views.view.batch_with_date_default_tablesort.yml b/tests/views_bulk_operations_test/config/install/views.view.batch_with_date_default_tablesort.yml
+index 67631a8dc22e7af8417226cdf7f7980c155df581..9e6d1dbc14597ed4894770721d0e1b57cd243860 100644
+--- a/tests/views_bulk_operations_test/config/install/views.view.batch_with_date_default_tablesort.yml
++++ b/tests/views_bulk_operations_test/config/install/views.view.batch_with_date_default_tablesort.yml
+@@ -77,7 +77,8 @@ display:
+           buttons: false
+           action_title: Action
+           clear_on_exposed: true
+-          force_selection_info: false
++          show_multipage_selection_box: default
++          show_select_all: default
+           selected_actions:
+             3:
+               action_id: node_make_sticky_action
+diff --git a/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test.yml b/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test.yml
+index 8b78ea902134248181a90b3758c9bcc2165d0f14..16eefb6181f54019ee5a345be8766f366bcb15e4 100644
+--- a/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test.yml
++++ b/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test.yml
+@@ -170,7 +170,8 @@ display:
+           buttons: true
+           action_title: Action
+           clear_on_exposed: true
+-          force_selection_info: false
++          show_multipage_selection_box: default
++          show_select_all: default
+           selected_actions:
+             -
+               action_id: views_bulk_operations_simple_test_action
+diff --git a/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test_advanced.yml b/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test_advanced.yml
+index 6c7900c2686bba879f6e5611489e95f0368f4993..11505a52733e411840796921a8fbe9de186b47ca 100644
+--- a/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test_advanced.yml
++++ b/tests/views_bulk_operations_test/config/install/views.view.views_bulk_operations_test_advanced.yml
+@@ -124,7 +124,8 @@ display:
+           buttons: false
+           action_title: Action
+           clear_on_exposed: false
+-          force_selection_info: false
++          show_multipage_selection_box: default
++          show_select_all: default
+           selected_actions:
+             -
+               action_id: views_bulk_operations_simple_test_action
+diff --git a/views_bulk_operations.install b/views_bulk_operations.install
+index a95958f1de092119473fe5f185ca899f0248e4ba..3c70ab036413d543ff9787e12f475ba0130c6e7e 100644
+--- a/views_bulk_operations.install
++++ b/views_bulk_operations.install
+@@ -7,6 +7,94 @@
+
+ use Drupal\Core\StringTranslation\TranslatableMarkup;
+
++/**
++ * Update force_selection_info configuration.
++ */
++function views_bulk_operations_update_8036(&$sandbox): ?TranslatableMarkup {
++  /** @var \Drupal\Core\Entity\EntityStorageInterface $viewsStorage */
++  $viewsStorage = \Drupal::service('entity_type.manager')->getStorage('view');
++
++  if (!isset($sandbox['current'])) {
++    $sandbox['total'] = $viewsStorage->getQuery()->accessCheck(FALSE)->count()->execute();
++    $sandbox['current'] = 0;
++    $sandbox['converted'] = 0;
++    $sandbox['#finished'] = 0;
++  }
++
++  $query = $viewsStorage->getQuery()->accessCheck(FALSE);
++  $query->condition('display.*.display_options.fields.views_bulk_operations_bulk_form.plugin_id', 'views_bulk_operations_bulk_form');
++
++  // Process 10 view configs at a time.
++  $query->range($sandbox['current'], 10);
++  $results = $query->execute();
++  if (!empty($results)) {
++    foreach ($results as $view_id) {
++      $view = $viewsStorage->load($view_id);
++      $displays = $view->get('display');
++      $converted = FALSE;
++
++      foreach ($displays as &$display) {
++        if (!empty($display['display_options']['fields'])) {
++          foreach ($display['display_options']['fields'] as &$field) {
++            if ($field['plugin_id'] === 'views_bulk_operations_bulk_form') {
++              // The value of '1' is equivalent to 'show'. If someone had an old
++              // patch from [#3109367] already applied, their config might
++              // already be set to the value 'show'.
++              if (isset($field['force_selection_info'])
++                && ($field['force_selection_info'] === '1' || $field['force_selection_info'] === 'show')
++              ) {
++                $field['show_multipage_selection_box'] = 'show';
++                $field['show_select_all'] = 'show';
++                unset($field['force_selection_info']);
++              }
++              // If someone had an old patch from [#3109367] already applied,
++              // their config might already be set to the value 'hide'.
++              elseif (isset($field['force_selection_info'])
++                && $field['force_selection_info'] === 'hide'
++              ) {
++                $field['show_multipage_selection_box'] = 'hide';
++                $field['show_select_all'] = 'hide';
++                unset($field['force_selection_info']);
++              }
++              // For all other values (including '0'), assume we want the
++              // default behavior.
++              else {
++                $field['show_multipage_selection_box'] = 'default';
++                $field['show_select_all'] = 'default';
++                unset($field['force_selection_info']);
++              }
++              $converted = TRUE;
++            }
++          }
++        }
++      }
++
++      if ($converted) {
++        $view->set('display', $displays);
++        $view->save();
++        $sandbox['converted']++;
++      }
++
++      $sandbox['current']++;
++      $sandbox['#finished'] = $sandbox['current'] / $sandbox['total'];
++    }
++  }
++  else {
++    $sandbox['#finished'] = 1;
++  }
++
++  if ($sandbox['#finished'] >= 1) {
++    if ($sandbox['converted']) {
++      return t('@count view configs updated with the new force_selection_info.', ['@count' => $sandbox['converted']]);
++    }
++    else {
++      return t('No conversions were required by Views Bulk Operations.');
++    }
++  }
++
++  return NULL;
++}
++
+ /**
+  * Add field ajax_loader to config.
+  */

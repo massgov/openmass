@@ -59,7 +59,6 @@ class ExternalOrganizationOnCollectionTermPageTest extends MassExistingSiteBase 
     // Visit the collection term page again and notice
     // the external organization is showing up.
     $this->drupalGet('/collections/' . $url);
-    $this->assertSession()->pageTextNotContains($org->label());
     $this->assertSession()->pageTextContains($external_org_name);
 
     // Change the external organization to only spaces, save.

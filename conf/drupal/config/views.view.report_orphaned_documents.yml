@@ -11,7 +11,6 @@ dependencies:
     - taxonomy.vocabulary.label
   module:
     - csv_serialization
-    - datetime
     - entity_usage
     - file
     - mass_views
@@ -20,10 +19,8 @@ dependencies:
     - serialization
     - taxonomy
     - user
-    - views_autocomplete_filters
     - views_bulk_operations
     - views_data_export
-    - views_porter_stemmer
 id: report_orphaned_documents
 label: 'report orphaned documents'
 module: views
@@ -92,27 +89,37 @@ display:
           batch: true
           batch_size: 10
           form_step: true
+          ajax_loader: false
           buttons: false
           action_title: Action
           clear_on_exposed: true
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
-            3:
+            -
               action_id: mass_media_publish
               preconfiguration:
                 add_confirmation: true
-            4:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: mass_media_restricted
               preconfiguration:
                 add_confirmation: true
-            5:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: mass_media_trash
               preconfiguration:
                 add_confirmation: true
-            6:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: mass_media_unpublish
               preconfiguration:
                 add_confirmation: true
+                confirm_help_text: ''
+                message_override: ''
         mid:
           id: mid
           table: media_field_revision
@@ -719,20 +726,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -741,7 +734,6 @@ display:
             autocomplete_raw_suggestion: 1
             autocomplete_raw_dropdown: 1
             autocomplete_dependent: 0
-            stem_query: 0
           is_grouped: false
           group_info:
             label: ''
@@ -782,20 +774,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -804,7 +782,6 @@ display:
             autocomplete_raw_suggestion: 1
             autocomplete_raw_dropdown: 1
             autocomplete_dependent: 0
-            stem_query: 0
           is_grouped: false
           group_info:
             label: ''
@@ -848,23 +825,338 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        latest_revision:
+          id: latest_revision
+          table: media_revision
+          field: latest_revision
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          plugin_id: latest_revision
+          operator: '='
+          value: ''
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        status:
+          id: status
+          table: media_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          entity_field: status
+          plugin_id: boolean
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: 'Published?'
+            description: ''
+            use_operator: false
+            operator: status_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: status
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        media_org_filter:
+          id: media_org_filter
+          table: media_field_data
+          field: media_org_filter
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          plugin_id: mass_views_media_org_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: 'Organization (direct match)'
+            description: ''
+            use_operator: false
+            operator: media_org_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: media_org_filter
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        media_parent_org_top_filter:
+          id: media_parent_org_top_filter
+          table: media_field_data
+          field: media_parent_org_top_filter
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          plugin_id: mass_views_media_org_top_parent_filter
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: media_parent_org_top_filter_op
+            label: 'Organization (including all suborganizations)'
+            description: 'using the parent organization field for each organization'
+            use_operator: false
+            operator: media_parent_org_top_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: media_parent_org_top_filter
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        langcode:
+          id: langcode
+          table: media_field_data
+          field: langcode
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          entity_field: langcode
+          plugin_id: language
+          operator: in
+          value:
+            '***LANGUAGE_site_default***': '***LANGUAGE_site_default***'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: langcode_op
+            label: Language
+            description: ''
+            use_operator: false
+            operator: langcode_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: langcode
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: true
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        field_document_label_target_id:
+          id: field_document_label_target_id
+          table: media__field_document_label
+          field: field_document_label_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_document_label_target_id_op
+            label: Label(s)
+            description: ''
+            use_operator: false
+            operator: field_document_label_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_document_label_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: label
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+        field_collections_target_id:
+          id: field_collections_target_id
+          table: media__field_collections
+          field: field_collections_target_id
+          relationship: vid
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: empty
+          value: {  }
+          group: 1
+          exposed: false
+          expose:
+            operator_id: field_collections_target_id_op
+            label: 'Collections (field_collections)'
+            description: null
+            use_operator: false
+            operator: field_collections_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_collections_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: collections
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+        search:
+          id: search
+          table: media_field_data
+          field: search
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          entity_field: search
+          plugin_id: boolean
+          operator: '='
+          value: All
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: 'Exclude from search'
+            description: ''
+            use_operator: false
+            operator: search_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: search
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
           is_grouped: false
           group_info:
             label: ''
@@ -965,366 +1257,70 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        latest_revision:
-          id: latest_revision
-          table: media_revision
-          field: latest_revision
+        field_accessibility_self_rpt_value:
+          id: field_accessibility_self_rpt_value
+          table: media__field_accessibility_self_rpt
+          field: field_accessibility_self_rpt_value
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: media
-          plugin_id: latest_revision
+          plugin_id: string
           operator: '='
           value: ''
           group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        status:
-          id: status
-          table: media_field_data
-          field: status
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: media
-          entity_field: status
-          plugin_id: boolean
-          operator: '='
-          value: '1'
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: 'Published?'
-            description: ''
-            use_operator: false
-            operator: status_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: status
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        media_org_filter:
-          id: media_org_filter
-          table: media_field_data
-          field: media_org_filter
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: media
-          plugin_id: mass_views_media_org_filter
-          operator: '='
-          value: null
-          group: 1
           exposed: true
           expose:
-            operator_id: ''
-            label: Organization
-            description: ''
-            use_operator: false
-            operator: media_org_filter_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: media_org_filter
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        langcode:
-          id: langcode
-          table: media_field_data
-          field: langcode
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: media
-          entity_field: langcode
-          plugin_id: language
-          operator: in
-          value:
-            '***LANGUAGE_site_default***': '***LANGUAGE_site_default***'
-          group: 1
-          exposed: false
-          expose:
-            operator_id: langcode_op
-            label: Language
-            description: ''
-            use_operator: false
-            operator: langcode_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: langcode
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: true
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        field_document_label_target_id:
-          id: field_document_label_target_id
-          table: media__field_document_label
-          field: field_document_label_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: taxonomy_index_tid
-          operator: or
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_document_label_target_id_op
-            label: Label(s)
-            description: ''
-            use_operator: false
-            operator: field_document_label_target_id_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: field_document_label_target_id
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: label
-          type: textfield
-          hierarchy: false
-          limit: true
-          error_message: true
-        field_collections_target_id:
-          id: field_collections_target_id
-          table: media__field_collections
-          field: field_collections_target_id
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: taxonomy_index_tid
-          operator: empty
-          value: {  }
-          group: 1
-          exposed: false
-          expose:
-            operator_id: field_collections_target_id_op
-            label: 'Collections (field_collections)'
+            operator_id: field_accessibility_self_rpt_value_op
+            label: 'Accessibility Status (self-reported) (field_accessibility_self_rpt)'
             description: null
             use_operator: false
-            operator: field_collections_target_id_op
+            operator: field_accessibility_self_rpt_value_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: field_collections_target_id
+            identifier: field_accessibility_self_rpt_value
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
-            reduce: false
-          is_grouped: false
+            placeholder: null
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+            autocomplete_contextual: 0
+            autocomplete_autosubmit: 0
+          is_grouped: true
           group_info:
-            label: ''
+            label: 'Accessibility Status (self-reported)'
             description: ''
-            identifier: ''
+            identifier: field_accessibility_self_rpt_value
             optional: true
             widget: select
             multiple: false
             remember: false
             default_group: All
             default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: collections
-          type: textfield
-          hierarchy: false
-          limit: true
-          error_message: true
-        search:
-          id: search
-          table: media_field_data
-          field: search
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: media
-          entity_field: search
-          plugin_id: boolean
-          operator: '='
-          value: All
-          group: 1
-          exposed: true
-          expose:
-            operator_id: ''
-            label: 'Exclude from search'
-            description: ''
-            use_operator: false
-            operator: search_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: search
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
+            group_items:
+              1:
+                title: 'Verified accessible'
+                operator: '='
+                value: verified_accessible
+              2:
+                title: 'Unverified or not accessible'
+                operator: '='
+                value: unverified_or_not_accessible_yet
+              3:
+                title: Exception
+                operator: '='
+                value: exception
+              4:
+                title: blank
+                operator: empty
+                value: ''
       filter_groups:
         operator: AND
         groups:
@@ -1426,7 +1422,7 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: false
+          distinct: true
           disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
@@ -1452,7 +1448,7 @@ display:
           entity_type: media
           entity_field: revision_user
           plugin_id: standard
-          required: true
+          required: false
         media_to_usage_entity:
           id: media_to_usage_entity
           table: media
@@ -2122,27 +2118,37 @@ display:
           batch: true
           batch_size: 10
           form_step: true
+          ajax_loader: false
           buttons: false
           action_title: Action
           clear_on_exposed: true
-          force_selection_info: false
+          show_multipage_selection_box: default
+          show_select_all: always_hide
           selected_actions:
-            3:
+            -
               action_id: mass_media_publish
               preconfiguration:
                 add_confirmation: true
-            4:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: mass_media_restricted
               preconfiguration:
                 add_confirmation: true
-            5:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: mass_media_trash
               preconfiguration:
                 add_confirmation: true
-            6:
+                confirm_help_text: ''
+                message_override: ''
+            -
               action_id: mass_media_unpublish
               preconfiguration:
                 add_confirmation: true
+                confirm_help_text: ''
+                message_override: ''
         mid:
           id: mid
           table: media_field_revision
@@ -2657,6 +2663,18 @@ display:
           destination: false
       defaults:
         fields: false
+        footer: false
+      footer:
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
       display_extenders:
         metatag_display_extender:
           metatags: {  }

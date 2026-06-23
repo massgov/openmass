@@ -10,7 +10,6 @@ use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface;
@@ -23,21 +22,14 @@ use Drupal\Core\Url;
  * Implements hook_ENTITY_TYPE_update().
  */
 function mass_microsites_node_update(NodeInterface $node) {
-  $original = $node->original;
 
-  // Update microsite menu on short title change, if needed.
-  if (
-    $node->hasField('field_short_title') &&
-    $node->get('field_short_title')->value !== $original->get('field_short_title')->value
-  ) {
-    /** @var ChildOfMicrositeLookup */
-    $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
+  /** @var ChildOfMicrositeLookup */
+  $microsite_lookup = \Drupal::service('entity_hierarchy_microsite.microsite_lookup');
 
-    if ($microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
-      /** @var MenuRebuildProcessor */
-      $menu_rebuild_processor = \Drupal::service('entity_hierarchy_microsite.menu_rebuild_processor');
-      $menu_rebuild_processor->markRebuildNeeded();
-    }
+  if ($microsite_lookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
+    /** @var MenuRebuildProcessor */
+    $menu_rebuild_processor = \Drupal::service('entity_hierarchy_microsite.menu_rebuild_processor');
+    $menu_rebuild_processor->markRebuildNeeded();
   }
 }
 
@@ -237,6 +229,9 @@ function mass_microsites_field_widget_single_element_entity_reference_hierarchy_
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function _mass_microsites_field_widget_single_element_entity_reference_hierarchy_autocomplete_form_alter_after_build(array $element, FormStateInterface $form_state) {
+  if (!method_exists($form_state->getFormObject(), 'getEntity')) {
+    return $element;
+  }
   $entity = $form_state->getFormObject()->getEntity();
 
   // Hide the relationship weight by default.
@@ -262,8 +257,12 @@ function _mass_microsites_field_widget_single_element_entity_reference_hierarchy
     $parent_id = $entity->get('field_primary_parent')->target_id;
   }
 
-  /** @var \Drupal\node\NodeInterface $parent */
-  $parent = \Drupal::entityTypeManager()->getStorage('node')->load($parent_id);
+  /** @var \Drupal\node\NodeInterface|null $parent */
+  static $loadedParents = [];
+  if (!array_key_exists($parent_id, $loadedParents)) {
+    $loadedParents[$parent_id] = \Drupal::entityTypeManager()->getStorage('node')->load($parent_id);
+  }
+  $parent = $loadedParents[$parent_id];
 
   if (!$parent) {
     return $element;
@@ -314,6 +313,10 @@ function mass_microsites_theme_suggestions_block_alter(array &$suggestions, arra
  * Implements hook_theme_suggestions_HOOK_alter().
  */
 function mass_microsites_theme_suggestions_page_alter(array &$suggestions, array &$variables) {
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.node.edit_form') {
+    return;
+  }
+
   $node = _mass_microsites_get_node();
 
   if ($node && _mass_microsites_get_microsite()) {
@@ -340,13 +343,21 @@ function mass_microsites_theme_suggestions_page_alter(array &$suggestions, array
  *   The microsite object or FALSE if no microsite is found.
  */
 function _mass_microsites_get_microsite() {
-  if ($node = _mass_microsites_get_node()) {
-    /** @var Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface */
-    $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
-    if ($microsite) {
-      return $microsite;
-    }
+  static $micrositeCache = [];
+
+  if (!$node = _mass_microsites_get_node()) {
+    return FALSE;
   }
+
+  $nid = (int) $node->id();
+  if (array_key_exists($nid, $micrositeCache)) {
+    return $micrositeCache[$nid];
+  }
+
+  /** @var \Drupal\entity_hierarchy_microsite\Entity\MicrositeInterface|false $microsite */
+  $microsite = \Drupal::service('mass_microsites.nearest_microsite_lookup')->getNearestMicrosite($node);
+  $micrositeCache[$nid] = $microsite ?: FALSE;
+  return $micrositeCache[$nid];
 }
 
 /**
@@ -356,7 +367,15 @@ function _mass_microsites_get_microsite() {
  *   The node object or FALSE if no node is found.
  */
 function _mass_microsites_get_node() {
-  $params = \Drupal::routeMatch()->getParameters();
+  static $cachedNodeComputed = FALSE;
+  static $cachedNode = NULL;
+
+  if ($cachedNodeComputed) {
+    return $cachedNode;
+  }
+
+  $route_match = \Drupal::routeMatch();
+  $params = $route_match->getParameters();
 
   $node_full_view_routes = [
     'entity.node.canonical',
@@ -364,12 +383,33 @@ function _mass_microsites_get_node() {
     'entity.node.preview',
   ];
 
-  $route_name = \Drupal::routeMatch()->getRouteName();
+  $route_name = $route_match->getRouteName();
 
-  if (in_array($route_name, $node_full_view_routes)) {
+  if (in_array($route_name, $node_full_view_routes, TRUE)) {
     $node = $route_name === 'entity.node.preview' ? $params->get('node_preview') : $params->get('node');
-    return $node;
+    $cachedNode = $node ?: FALSE;
   }
+  elseif ($params->has('node')) {
+    // Support views and other routes with a node parameter in the path
+    // (e.g. node/%node/locations).
+    $node = $params->get('node');
+    if ($node instanceof NodeInterface) {
+      $cachedNode = $node;
+    }
+    elseif (is_numeric($node)) {
+      $cachedNode = \Drupal::entityTypeManager()->getStorage('node')->load($node);
+      $cachedNode = $cachedNode ?: FALSE;
+    }
+    else {
+      $cachedNode = FALSE;
+    }
+  }
+  else {
+    $cachedNode = FALSE;
+  }
+
+  $cachedNodeComputed = TRUE;
+  return $cachedNode;
 }
 
 /**

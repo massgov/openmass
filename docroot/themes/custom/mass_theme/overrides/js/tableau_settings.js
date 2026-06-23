@@ -32,7 +32,15 @@
 
           var id = $tableauItem.attr('id');
           var url = $tableauItem.data('tableau-url');
-          var options = {device: deviceType};
+          const needsRefresh = $tableauContainer.closest('.tableau-needs-refresh').length > 0;
+          var options = {
+            device: deviceType,
+            onFirstInteractive: function () {
+              if (needsRefresh) {
+                window.dispatchEvent(new Event('resize'));
+              }
+            }
+          };
 
           /* eslint-disable */
           new tableau.Viz(document.getElementById(id), url, options);

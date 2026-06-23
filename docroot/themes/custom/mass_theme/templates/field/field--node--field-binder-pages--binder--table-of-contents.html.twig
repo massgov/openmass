@@ -1,15 +1,16 @@
-{% embed "@organisms/by-template/table-of-contents-hierarchy.twig" with {
-  "tableOfContentsHierarchy": {
-    "title": {
-      "text": "Table of Contents",
-      "titleContext": "for the " ~ (host_entity.field_binder_binder_type ? host_entity.field_binder_binder_type.entity.name.value|lower) ~ ", " ~ host_entity.label
-    }
-  }
+{% embed '@organisms/by-template/table-of-contents-hierarchy.twig' with {
+  tableOfContentsHierarchy: {
+    title: {
+      text: 'Table of Contents',
+      titleContext: 'for the ' ~ (host_entity.field_binder_binder_type ? host_entity.field_binder_binder_type.entity.name.value|lower) ~ ', ' ~ host_entity.label,
+    },
+  },
 } %}
-
   {% block binderSection %}
     {% for item in items %}
-      {{ item.content }}
+      {% set item_content = item.content|render %}
+      {% set modified_content = item_content|replace({'<li>': '<li class="ma__toc--hierarchy__link">'}, 1) %}
+      {{ modified_content|raw }}
     {% endfor %}
   {% endblock %}
 {% endembed %}

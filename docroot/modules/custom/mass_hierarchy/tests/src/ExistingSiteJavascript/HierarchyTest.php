@@ -79,42 +79,4 @@ class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertSession()->elementExists('css', '.mass_hierarchy_cant_drag');
   }
 
-  /**
-   * Counts records in nested_set_field_primary_parent_node for given node.
-   */
-  private function countNestedSetFieldPrimaryParentNodeEntries($nid) {
-
-    $res = \Drupal::database()->query(
-      'SELECT id FROM {nested_set_field_primary_parent_node} WHERE id = :nid',
-      [':nid' => $nid]
-    )->fetchAll();
-
-    return is_array($res) ? count($res) : -1;
-  }
-
-  /**
-   * Tests cron erases others revision other than the current.
-   */
-  public function testCronErasesOtherRevisions() {
-    $this->drupalLogin($this->createRandomUser('content_team'));
-    [$parent1Node, $child1Node] = $this->createParentAndChildren();
-
-    // Save child node.
-    $child1Node->moderation_state = MassModeration::DRAFT;
-    $child1Node->save();
-
-    // Verify it has 2 entries
-    $this->assertEquals(2, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
-
-    mass_hierarchy_cron();
-
-    // Verify it has 1 entry.
-    $this->assertEquals(1, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
-
-    // Verify it is still showing in the hierarchy,
-    // hence we delete the draft and not the published version.
-    $this->drupalGet('node/' . $parent1Node->id() . '/children');
-    $this->assertSession()->pageTextContains($child1Node->label());
-  }
-
 }

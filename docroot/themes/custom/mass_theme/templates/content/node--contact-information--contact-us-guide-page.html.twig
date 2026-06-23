@@ -82,7 +82,7 @@
   content.field_ref_address|merge({'#level': level + 1}),
   content.field_ref_phone_number|merge({'#level': level + 1}),
   content.field_ref_fax_number|merge({'#level': level + 1}),
-  content.field_ref_links|merge({'#level': level + 1})
+  content.field_ref_links|merge({'#level': level + 1}),
 ] %}
 {% set availableContactGroups = [] %}
 {% for contactInfoField in contactInfoFields %}
@@ -94,18 +94,18 @@
 {% if availableContactGroups|length > 2 %}
   {% set secondaryItems = true %}
 {% endif %}
-{% embed "@organisms/contact/contact-us.twig" with {
-  "contactUs": {
-    "accordion": false,
-    "isExpanded": false,
-    "columns": false,
-    "showMore": true,
-    "hideSecondary": not secondaryItems,
-    "level": level,
-    "subTitle": {
-      "text": node.field_display_title.value
-    }
-  }
+{% embed '@organisms/contact/contact-us.twig' with {
+  contactUs: {
+    accordion: false,
+    isExpanded: false,
+    columns: false,
+    showMore: true,
+    hideSecondary: not secondaryItems,
+    level: level,
+    subTitle: {
+      text: node.field_display_title.value,
+    },
+  },
 } %}
 
   {% block primaryContactGroups %}
@@ -125,14 +125,14 @@
       {% endif %}
       {% if node.field_contact_more_info_link is not empty %}
         <div class="ma__contact-us__more-info">
-          {% include "@atoms/decorative-link.twig" with {
-            "decorativeLink": {
-              "href": content.field_contact_more_info_link[0]['#url_title'],
-              "text": "Learn more about this organization",
-              "info": "",
-              "labelContext": node.field_display_title.value
-            }
-          } %}
+          {{ include('@atoms/decorative-link.twig', {
+            decorativeLink: {
+              href: content.field_contact_more_info_link[0]['#url_title'],
+              text: 'Learn more about this organization',
+              info: '',
+              labelContext: node.field_display_title.value,
+            },
+          }) }}
         </div>
       {% endif %}
     {% endif %}

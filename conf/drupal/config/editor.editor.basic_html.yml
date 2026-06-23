@@ -6,6 +6,7 @@ dependencies:
     - filter.format.basic_html
   module:
     - ckeditor5
+    - mass_inline_message
 format: basic_html
 editor: ckeditor5
 settings:
@@ -23,6 +24,7 @@ settings:
       - numberedList
       - '|'
       - blockQuote
+      - messageBox
       - file_browser
       - insertTable
       - '|'
@@ -30,10 +32,61 @@ settings:
       - style
       - '|'
       - Fullscreen
+      - codeBlock
       - specialCharacters
       - removeFormat
       - sourceEditing
   plugins:
+    ckeditor5_codeBlock:
+      languages:
+        -
+          label: 'Plain text'
+          language: plaintext
+        -
+          label: C
+          language: c
+        -
+          label: 'C#'
+          language: cs
+        -
+          label: C++
+          language: cpp
+        -
+          label: CSS
+          language: css
+        -
+          label: Diff
+          language: diff
+        -
+          label: HTML
+          language: html
+        -
+          label: Java
+          language: java
+        -
+          label: JavaScript
+          language: javascript
+        -
+          label: PHP
+          language: php
+        -
+          label: Python
+          language: python
+        -
+          label: Ruby
+          language: ruby
+        -
+          label: TypeScript
+          language: typescript
+        -
+          label: XML
+          language: xml
+        -
+          label: SQL
+          language: sql
+        -
+          label: JSON
+          language: json
     ckeditor5_heading:
       enabled_headings:
         - heading2
@@ -45,6 +98,7 @@ settings:
       properties:
         reversed: false
         startIndex: true
+        styles: false
       multiBlock: true
     ckeditor5_paste_filter_pasteFilter:
       enabled: true
@@ -136,6 +190,9 @@ settings:
         - '<h5 id>'
         - '<h6 id>'
         - '<drupal-entity data-entity-type data-entity-substitution data-embed-button>'
+        - '<mass-inline-message data-title data-type>'
+        - '<kbd>'
+        - '<samp>'
     ckeditor5_style:
       styles:
         -

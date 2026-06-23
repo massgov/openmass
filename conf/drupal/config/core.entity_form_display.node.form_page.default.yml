@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.form_page.field_collections
     - field.field.node.form_page.field_english_version
     - field.field.node.form_page.field_form_embed
+    - field.field.node.form_page.field_form_include_querystring
     - field.field.node.form_page.field_form_lede
     - field.field.node.form_page.field_form_listing_desc
     - field.field.node.form_page.field_form_platform
@@ -38,6 +39,7 @@ third_party_settings:
     group_form_page_edit_form:
       children:
         - group_form_page
+        - group_page_info
       label: 'Form page edit form'
       region: content
       parent_name: ''
@@ -57,6 +59,7 @@ third_party_settings:
         - field_form_ref_contacts_3
         - field_form_platform
         - field_form_url
+        - field_form_include_querystring
         - field_form_embed
         - field_hide_feedback_component
         - field_primary_parent
@@ -79,6 +82,26 @@ third_party_settings:
         formatter: open
         description: "<p>See our <a href=\"https://www.mass.gov/kb/forms\">Forms page in the knowledge base</a> for more information.</p>\r\n\r\n<p>There are important <a href=\"https://www.mass.gov/kb/form-use-policy\">acceptable use guidelines</a> that MUST be followed for all forms. <strong>Do not collect, transmit, or store any personal information unless your legal and IT leadership review and approve</strong>.</p>"
         required_fields: true
+    group_page_info:
+      children:
+        - field_metatags
+        - simple_sitemap
+        - url_redirects
+        - search
+        - search_nosnippet
+      label: 'Page Info'
+      region: hidden
+      parent_name: group_form_page_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        classes: ''
+        show_empty_fields: true
+        id: ''
+        label_as_html: false
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.form_page.default
 targetEntityType: node
 bundle: form_page
@@ -86,7 +109,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 23
+    weight: 24
     region: content
     settings:
       theme: default
@@ -104,7 +127,7 @@ content:
     third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 21
+    weight: 22
     region: content
     settings:
       match_operator: CONTAINS
@@ -132,7 +155,7 @@ content:
             selector: ''
   field_form_embed:
     type: form_embed
-    weight: 15
+    weight: 16
     region: content
     settings: {  }
     third_party_settings:
@@ -170,6 +193,32 @@ content:
             value_form:
               -
                 value: formstack
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_form_include_querystring:
+    type: boolean_checkbox
+    weight: 15
+    region: content
+    settings:
+      display_label: true
+    third_party_settings:
+      conditional_fields:
+        c5dfdf97-5260-45ec-93af-9573d7576978:
+          entity_type: node
+          bundle: form_page
+          dependee: field_form_platform
+          settings:
+            state: visible
+            reset: false
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: gravity_forms
             effect: show
             effect_options: {  }
             selector: ''
@@ -260,7 +309,7 @@ content:
     third_party_settings: {  }
   field_glossaries:
     type: entity_reference_autocomplete
-    weight: 24
+    weight: 25
     region: content
     settings:
       match_operator: CONTAINS
@@ -270,14 +319,14 @@ content:
     third_party_settings: {  }
   field_hide_feedback_component:
     type: boolean_checkbox
-    weight: 16
+    weight: 17
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 19
+    weight: 20
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -286,12 +335,12 @@ content:
     weight: 2
     region: content
     settings:
-      sidebar: true
+      sidebar: false
       use_details: true
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 18
+    weight: 19
     region: content
     settings:
       match_operator: CONTAINS
@@ -301,7 +350,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 17
+    weight: 18
     region: content
     settings:
       match_operator: CONTAINS
@@ -312,7 +361,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 22
+    weight: 23
     region: content
     settings:
       match_operator: CONTAINS
@@ -330,7 +379,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 20
+    weight: 21
     region: content
     settings:
       include_locked: false
@@ -360,14 +409,14 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 7
+    weight: 6
     region: content
     settings:
       display_label: true
@@ -412,7 +461,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

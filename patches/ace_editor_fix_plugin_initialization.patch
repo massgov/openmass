@@ -1,0 +1,115 @@
+diff --git a/ace_editor.libraries.yml b/ace_editor.libraries.yml
+index 1deaf510713a227267e8f7441b4cad67e40a6fe4..5cba497402d10918254029f4d9e7dd90e96b6538 100644
+--- a/ace_editor.libraries.yml
++++ b/ace_editor.libraries.yml
+@@ -1,5 +1,14 @@
+ # Path to Ace library is defined using hook_library_info_alter().
+ # See ace_editor.module
++# Take care of global settings that apply to all cases that might
++# insert the editor behavior.
++setup:
++  version: VERSION
++  js:
++    js/setup.js: {}
++  dependencies:
++    - core/drupalSettings
++
+ primary:
+   version: VERSION
+   js:
+@@ -12,6 +21,7 @@ primary:
+     - core/drupal
+     - core/drupalSettings
+     - editor/drupal.editor
++    - ace_editor/setup
+ 
+ formatter:
+   version: VERSION
+@@ -24,6 +34,7 @@ formatter:
+     - core/jquery
+     - core/drupal
+     - core/drupalSettings
++    - ace_editor/setup
+ 
+ filter:
+   version: VERSION
+@@ -36,3 +47,4 @@ filter:
+     - core/jquery
+     - core/drupal
+     - core/drupalSettings
++    - ace_editor/setup
+diff --git a/ace_editor.module b/ace_editor.module
+index 2e42215f6e8ef79eee9219f8e68fa16d2d1fb27c..a9ea08f2891372b4cc0a4eeb52a7da56ca95aeee 100644
+--- a/ace_editor.module
++++ b/ace_editor.module
+@@ -4,6 +4,8 @@
+  * @file
+  * This file is used to write hooks that used in the module.
+  */
++
++use Drupal\Core\Asset\AttachedAssetsInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ 
+ /**
+@@ -35,6 +37,12 @@ function ace_editor_help($route_name, RouteMatchInterface $route_match) {
+  * For preserving backwards compatibility, ace_editor/libraries is also checked.
+  */
+ function ace_editor_lib_path() {
++  $cid = 'ace_editor_library_path';
++  $cache = \Drupal::cache('discovery');
++  $cached_path = $cache->get($cid);
++  if ($cached_path) {
++    return $cached_path->data;
++  }
+ 
+   $paths_to_check = [
+     '/libraries/ace',
+@@ -50,7 +58,9 @@ function ace_editor_lib_path() {
+ 
+     $found = \Drupal::service('file_system')->scanDirectory(DRUPAL_ROOT . $path, '/^ace\.js/', ['recurse' => TRUE]);
+     if ($found) {
+-      return substr(preg_replace('/ace\.js/', '', reset($found)->uri), strlen(DRUPAL_ROOT));
++      $use_path = substr(preg_replace('/ace\.js/', '', reset($found)->uri), strlen(DRUPAL_ROOT));
++      $cache->set($cid, $use_path);
++      return $use_path;
+     }
+   }
+   return FALSE;
+@@ -103,3 +113,21 @@ function ace_editor_library_info_alter(&$libraries, $extension) {
+     $libraries['filter']['js'][$library_path . 'ace.js'] = ['weight' => -2];
+   }
+ }
++
++/**
++ * Implements hook_js_settings_alter().
++ */
++function ace_editor_js_settings_alter(array &$settings, AttachedAssetsInterface $assets) {
++  // Ensure aggregated js knows where to find library files.
++  $path = ace_editor_lib_path();
++  $libraries = $assets->getLibraries();
++  $ace_libraries = [
++    'ace_editor/primary',
++    'ace_editor/formatter',
++    'ace_editor/filter',
++  ];
++
++  if (!empty(array_intersect($ace_libraries, $libraries))) {
++    $settings['ace_editor']['base_path'] = $path;
++  }
++}
+diff --git a/js/setup.js b/js/setup.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..102b17ac55c0fefd73b85d6104c9cc394162e7e9
+--- /dev/null
++++ b/js/setup.js
+@@ -0,0 +1,10 @@
++(function (drupalSettings, ace) {
++  'use strict';
++
++  if (drupalSettings.ace_editor && drupalSettings.ace_editor.base_path) {
++    ace.config.set('basePath', drupalSettings.ace_editor.base_path)
++    ace.config.set('modePath', drupalSettings.ace_editor.base_path)
++    ace.config.set('themePath', drupalSettings.ace_editor.base_path)
++    ace.config.set('workerPath', drupalSettings.ace_editor.base_path);
++  }
++})(drupalSettings, ace);

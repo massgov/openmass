@@ -43,7 +43,7 @@ dependencies:
   module:
     - datetime_range
     - image
-    - link
+    - mass_schema_metatag
     - metatag
     - text
     - user
@@ -114,26 +114,20 @@ content:
     weight: 3
     region: content
   field_event_link_sign_up:
-    type: link
+    type: mass_link_name_url_objects
     label: above
     settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
+      absolute: true
+      name_source: title
+      skip_empty_name: false
     third_party_settings: {  }
     weight: 12
     region: content
   field_event_links:
-    type: link
+    type: mass_link_absolute_urls
     label: above
     settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
+      absolute: true
     third_party_settings: {  }
     weight: 11
     region: content
@@ -221,7 +215,6 @@ content:
     weight: 0
     region: content
 hidden:
-  computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
   field_collections: true

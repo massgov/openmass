@@ -2,8 +2,7 @@
 
 namespace Drupal\mass_microsites;
 
-use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
-use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
+use Drupal\entity_hierarchy\Storage\QueryBuilderFactory;
 use Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup;
 use Drupal\node\NodeInterface;
 
@@ -12,29 +11,23 @@ use Drupal\node\NodeInterface;
  */
 class NearestMicrositeLookup {
 
-  protected NestedSetStorageFactory $nestedSetStorageFactory;
-
-  protected NestedSetNodeKeyFactory $nestedSetNodeKeyFactory;
+  protected QueryBuilderFactory $queryBuilderStorageFactory;
 
   protected ChildOfMicrositeLookup $micrositeLookup;
 
   /**
    * Constructs a new NearestMicrositeLookup object.
    *
-   * @param NestedSetStorageFactory $nested_set_storage_factory
+   * @param QueryBuilderFactory $query_builder_storage_factory
    *   The nested set storage factory.
-   * @param NestedSetNodeKeyFactory $nested_set_node_key_factory
-   *   The nested set node key factory.
    * @param ChildOfMicrositeLookup $microsite_lookup
    *   The child of microsite lookup.
    */
   public function __construct(
-    \Drupal\entity_hierarchy\Storage\NestedSetStorageFactory $nested_set_storage_factory,
-    \Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory $nested_set_node_key_factory,
+    \Drupal\entity_hierarchy\Storage\QueryBuilderFactory $query_builder_storage_factory,
     \Drupal\entity_hierarchy_microsite\ChildOfMicrositeLookup $microsite_lookup,
   ) {
-    $this->nestedSetStorageFactory = $nested_set_storage_factory;
-    $this->nestedSetNodeKeyFactory = $nested_set_node_key_factory;
+    $this->queryBuilderStorageFactory = $query_builder_storage_factory;
     $this->micrositeLookup = $microsite_lookup;
   }
 
@@ -59,21 +52,18 @@ class NearestMicrositeLookup {
       $microsites_by_home_id[$microsite->getHome()->id()] = $microsite;
     }
 
-    if (count($microsites_by_home_id)) {
-      $nestedSetStorage = $this->nestedSetStorageFactory->get('field_primary_parent', 'node');
-      $key = $this->nestedSetNodeKeyFactory->fromEntity($node);
+    if (!empty($microsites_by_home_id)) {
+      $queryBuilderStorage = $this->queryBuilderStorageFactory->get('field_primary_parent', 'node');
 
-      // Array of ancestors in hierarchy, starting with field_primary_parent and climbing upward.
-      /** @var \PNX\NestedSet\Node[] */
-      $ancestors = array_reverse($nestedSetStorage->findAncestors($key));
-      if ($ancestors) {
+      // Ancestors ordered nearest-first: parent (field_primary_parent) up to root.
+      $ancestors = array_reverse($queryBuilderStorage->findAncestors($node)->getRecords());
+      if (!empty($ancestors)) {
         foreach ($ancestors as $ancestor) {
-          $ancestor_id = $ancestor->getNodeKey()->getId();
-          if (
-            !$nearest_microsite &&
-            isset($microsites_by_home_id[$ancestor_id])
-          ) {
-            $nearest_microsite = $microsites_by_home_id[$ancestor_id];
+          /** @var \Drupal\entity_hierarchy\Storage\Record $ancestor */
+          $ancestor_id = $ancestor->getId();
+          if (isset($microsites_by_home_id[$ancestor_id])) {
+            // Immediate bailout: the first match is the nearest microsite.
+            return $microsites_by_home_id[$ancestor_id];
           }
         }
       }
@@ -92,9 +82,22 @@ class NearestMicrositeLookup {
    *   The nearest microsite, or NULL if no microsite is found.
    */
   public function getNearestMicrosite(NodeInterface $node) {
-    if ($microsites = $this->micrositeLookup->findMicrositesForNodeAndField($node, 'field_primary_parent')) {
-      return $this->selectNearestMicrosite($microsites, $node);
+    static $nearestCache = [];
+
+    $nid = (int) $node->id();
+    if (isset($nearestCache[$nid])) {
+      return $nearestCache[$nid];
     }
+
+    $result = NULL;
+    $microsites = $this->micrositeLookup->findMicrositesForNodeAndField($node, 'field_primary_parent');
+    if (!empty($microsites)) {
+      $result = $this->selectNearestMicrosite($microsites, $node);
+    }
+
+    // Cache the result (including NULL) for subsequent calls in the same request.
+    $nearestCache[$nid] = $result;
+    return $result;
   }
 
 }

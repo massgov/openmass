@@ -308,44 +308,68 @@ class Atoms {
 
     $video = NULL;
     $video_render_array = Helper::fieldFullView($entity, 'field_media_video_embed_field');
+    $embed = self::extractVideoEmbedData($entity, $video_render_array);
 
-    if (isset($video_render_array['children'])) {
-      if (array_key_exists('#url', $video_render_array['children'])) {
-        $name = $entity->get('name')->value;
-        $src = $video_render_array['children']['#url'];
+    if (!empty($embed['src'])) {
+      $name = $entity->get('name')->value;
+      $video = [
+        'label' => $name,
+        'src' => $embed['src'],
+        'height' => (isset($options['height']) && !empty($options['height'])) ? $options['height'] : $embed['height'],
+        'width' => (isset($options['width']) && !empty($options['width'])) ? $options['width'] : $embed['width'],
+        'position' => (isset($options['position']) && !empty($options['position'])) ? $options['position'] : NULL,
+      ];
 
-        $video = [
-          'label' => $name,
-          'src' => $src,
-          'height' => (isset($options['height']) && !empty($options['height'])) ? $options['height'] : $video_render_array['children']['#attributes']['height'],
-          'width' => (isset($options['width']) && !empty($options['width'])) ? $options['width'] : $video_render_array['children']['#attributes']['width'],
-          'position' => (isset($options['position']) && !empty($options['position'])) ? $options['position'] : NULL,
+      // Only add the link if field_video_description has content in it.
+      if (!empty($entity->get('field_video_description')->value)) {
+        $video['link'] = [
+          'href' => Url::fromRoute('entity.media.canonical', ['media' => $entity->id()])->toString(),
+          'property' => '',
+          'info' => empty($entity->get('name')->value) ? '' : ' for ' . $name,
+          'labelContext' => empty($entity->get('name')->value) ? '' : ' of ' . $name,
+          'text' => 'View transcript',
         ];
+      }
 
-        // Only add the link if field_video_description has content in it.
-        if (!empty($entity->get('field_video_description')->value)) {
-          $video['link'] = [
-            'href' => Url::fromRoute('entity.media.canonical', ['media' => $entity->id()])->toString(),
-            'property' => '',
-            'info' => empty($entity->get('name')->value) ? '' : ' for ' . $name,
-            'labelContext' => empty($entity->get('name')->value) ? '' : ' of ' . $name,
-            'text' => 'View transcript',
-          ];
-        }
-
-        if (Helper::isFieldPopulated($entity, 'field_video_transcript')) {
-          $info = ' for ' . $name;
-          $video['link'] = [
-            'href' => Url::fromUri($entity->field_video_transcript->uri),
-            'text' => 'View transcript',
-            'info' => $info,
-            'labelContext' => empty($entity->get('name')->value) ? '' : ' of ' . $name,
-          ];
-        }
+      if (Helper::isFieldPopulated($entity, 'field_video_transcript')) {
+        $info = ' for ' . $name;
+        $video['link'] = [
+          'href' => Url::fromUri($entity->field_video_transcript->uri),
+          'text' => 'View transcript',
+          'info' => $info,
+          'labelContext' => empty($entity->get('name')->value) ? '' : ' of ' . $name,
+        ];
       }
     }
 
     return $video;
+  }
+
+  /**
+   * Extract embed URL + dimensions from field render or raw value.
+   */
+  private static function extractVideoEmbedData($entity, array $video_render_array): array {
+    if (isset($video_render_array['children']['#url'])) {
+      return [
+        'src' => $video_render_array['children']['#url'],
+        'height' => $video_render_array['children']['#attributes']['height'] ?? '',
+        'width' => $video_render_array['children']['#attributes']['width'] ?? '',
+      ];
+    }
+
+    $field_value = (string) ($entity->get('field_media_video_embed_field')->value ?? '');
+    if ($field_value === '') {
+      return [];
+    }
+
+    // Support legacy YouTube URLs like youtube.com/watch/<id>.
+    if (preg_match('@^https?://(?:www\.)?youtube\.com/watch/([0-9A-Za-z_-]+)(?:\?.*)?$@', $field_value, $matches)) {
+      return [
+        'src' => 'https://www.youtube.com/embed/' . $matches[1],
+      ];
+    }
+
+    return [];
   }
 
 }

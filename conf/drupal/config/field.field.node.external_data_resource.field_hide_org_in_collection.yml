@@ -1,0 +1,21 @@
+uuid: dbe9dfdb-30f8-4563-a135-6457f4deabfc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_hide_org_in_collection
+    - node.type.external_data_resource
+id: node.external_data_resource.field_hide_org_in_collection
+field_name: field_hide_org_in_collection
+entity_type: node
+bundle: external_data_resource
+label: "Don't display the organization"
+description: "If this link is directly to an external organization page or to a resource managed by the organization that manages the collection, then you likely don't want to show the organization with the link as it will be duplicative or not helpful."
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

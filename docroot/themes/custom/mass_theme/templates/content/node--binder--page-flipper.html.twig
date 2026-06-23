@@ -7,53 +7,53 @@
 {% set prev = false %}
 {% set next = false %}
 {% if content.page_flipper_previous[0]['#url_title'] %}
-  {% set arrowPrevInfo = "Previous page, " ~ content.page_flipper_previous[0]['#title'] %}
+  {% set arrowPrevInfo = 'Previous page, ' ~ content.page_flipper_previous[0]['#title'] %}
   {% set prev = {
-    "arrowButton": {
-      "href": content.page_flipper_previous[0]['#url_title'],
-      "info": arrowPrevInfo,
-      "direction": "left",
-      "ariaHidden": true
+    arrowButton: {
+      href: content.page_flipper_previous[0]['#url_title'],
+      info: arrowPrevInfo,
+      direction: 'left',
+      ariaHidden: true,
     },
-    "label": "Previous",
-    "title": "",
-    "link": {
-      "href": content.page_flipper_previous[0]['#url_title'],
-      "text": content.page_flipper_previous[0]['#title'],
-      "info": ""
-    }
+    label: 'Previous',
+    title: '',
+    link: {
+      href: content.page_flipper_previous[0]['#url_title'],
+      text: content.page_flipper_previous[0]['#title'],
+      info: '',
+    },
   } %}
 {% endif %}
 {% if content.page_flipper_next[0]['#url_title'] %}
-  {% set arrowNextInfo = "Next page, " ~ content.page_flipper_next[0]['#title'] %}
+  {% set arrowNextInfo = 'Next page, ' ~ content.page_flipper_next[0]['#title'] %}
   {% set next = {
-    "arrowButton": {
-      "href": content.page_flipper_next[0]['#url_title'],
-      "info": arrowNextInfo,
-      "direction": "right",
-      "ariaHidden": true
+    arrowButton: {
+      href: content.page_flipper_next[0]['#url_title'],
+      info: arrowNextInfo,
+      direction: 'right',
+      ariaHidden: true,
     },
-    "label": "Next",
-    "title": "",
-    "link": {
-      "href": content.page_flipper_next[0]['#url_title'],
-      "text": content.page_flipper_next[0]['#title'],
-      "info": ""
-    }
+    label: 'Next',
+    title: '',
+    link: {
+      href: content.page_flipper_next[0]['#url_title'],
+      text: content.page_flipper_next[0]['#title'],
+      info: '',
+    },
   } %}
 {% endif %}
-{% include "@organisms/by-author/page-flipper.twig" with {
-  "pageFlipper": {
-    "context": {
-      "label": "This is part of:",
-      "link": {
-        "href": url,
-        "info": "",
-        "text": label
-      }
+{{ include('@organisms/by-author/page-flipper.twig', {
+  pageFlipper: {
+    context: {
+      label: 'This is part of:',
+      link: {
+        href: url,
+        info: '',
+        text: label,
+      },
     },
-    "prev": prev,
-    "next": next
-  }
-} %}
+    prev: prev,
+    next: next,
+  },
+}) }}
 {{ content|without('page_flipper_previous', 'page_flipper_next') }}

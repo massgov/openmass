@@ -1,0 +1,76 @@
+diff --git a/core/misc/tableselect.js b/core/misc/tableselect.js
+index 650dca25a98..7f763c144ee 100644
+--- a/core/misc/tableselect.js
++++ b/core/misc/tableselect.js
+@@ -68,34 +68,43 @@
+ 
+     // Find all <th> with class select-all, and insert the check all checkbox.
+     $table
+-      .find('th.select-all')
+-      .prepend($(Drupal.theme('checkbox')).attr('title', strings.selectAll))
+-      .on('click', (event) => {
+-        if (event.target.matches('input[type="checkbox"]')) {
+-          // Loop through all checkboxes and set their state to the select all
+-          // checkbox' state.
+-          checkboxes.each(function () {
+-            const $checkbox = $(this);
+-            const stateChanged =
+-              $checkbox.prop('checked') !== event.target.checked;
+-
+-            /**
+-             * @checkbox {HTMLElement}
+-             */
+-            if (stateChanged) {
+-              $checkbox.prop('checked', event.target.checked).trigger('change');
+-            }
+-            // Either add or remove the selected class based on the state of the
+-            // check all checkbox.
+-
+-            /**
+-             * @checkbox {HTMLElement}
+-             */
+-            $checkbox.closest('tr').toggleClass('selected', this.checked);
+-          });
+-          // Update the title and the state of the check all box.
+-          updateSelectAll(event.target.checked);
+-        }
++      .find('th.select-all').each(function () {
++        const $this = $(this);
++        const $selectAllCheckbox = $(Drupal.theme('checkbox'))
++          .attr('title', strings.selectAll)
++          .attr('id', Math.random().toString(16).slice(2, 10));
++        const $selectAllLabel = $('<label>')
++            .attr('for', $selectAllCheckbox.attr('id'))
++            .html(`<span class="visually-hidden">${strings.selectAll}</span>`);
++        $this.prepend($selectAllCheckbox)
++          .prepend($selectAllLabel)
++          .on('click', (event) => {
++            if (event.target.matches('input[type="checkbox"]')) {
++            // Loop through all checkboxes and set their state to the select all
++            // checkbox' state.
++              checkboxes.each(function () {
++                const $checkbox = $(this);
++                const stateChanged =
++                  $checkbox.prop('checked') !== event.target.checked;
++
++                /**
++                 * @checkbox {HTMLElement}
++                 */
++                if (stateChanged) {
++                  $checkbox.prop('checked', event.target.checked).trigger('change');
++                }
++                // Either add or remove the selected class based on the state of the
++                // check all checkbox.
++
++                /**
++                 * @checkbox {HTMLElement}
++                 */
++                $checkbox.closest('tr').toggleClass('selected', this.checked);
++             });
++              // Update the title and the state of the check all box.
++             updateSelectAll(event.target.checked);
++           }
++        });
+       });
+ 
+     // For each of the checkboxes within the table that are not disabled.

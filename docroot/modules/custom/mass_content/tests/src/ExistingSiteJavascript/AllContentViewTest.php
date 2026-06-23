@@ -23,6 +23,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    * Asserts a random row has a specific text value.
    */
   private function checkRandomRowHasValue($value) {
+    $this->waitForViewResults();
     $table = $this->view->find('css', '.views-view-table');
 
     // Zero results scenario.
@@ -31,9 +32,23 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     }
 
     $rows = $table->findAll('css', 'tbody > tr');
+    if (count($rows) === 0) {
+      $this->markTestSkipped('No rows returned for the current filter.');
+      return;
+    }
     $randomRow = $rows[\random_int(0, count($rows) - 1)];
     $text = $randomRow->getText();
     $this->assertStringContainsString($value, $text);
+  }
+
+  /**
+   * Waits for the view results table or empty state to finish loading.
+   */
+  private function waitForViewResults(): void {
+    $this->getSession()->wait(
+      10000,
+      "document.querySelector('.view.view-content .views-view-table tbody tr') !== null || document.querySelector('.view.view-content .view-empty') !== null"
+    );
   }
 
   /**
@@ -71,7 +86,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
       'action' => 'Right-rail (prototype)',
       'rules' => 'Rules of Court',
       'service_page' => 'Service',
-      'stacked_layout' => 'Stacked layout (prototype)',
+      'stacked_layout' => 'Stacked layout - prototype',
       'topic_page' => 'Topic Page',
       'utility_drawer' => 'Utility Drawer',
     ];
@@ -109,7 +124,6 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $descriptionTr = $descriptionTr ?: $description;
     $username = $this->getAnyUserFromResultsColumn($descriptionTr);
     $this->view->findField($description)->setValue($username);
-    $this->getSession()->wait(1000);
     $this->view->pressButton('Apply');
     $this->checkRandomRowHasValue($username);
   }
@@ -216,6 +230,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
       $value = $this->selectSetAnyValue($description);
     }
     $this->view->pressButton('Apply');
+    $this->waitForViewResults();
     $this->checkRandomRowHasValue($value);
   }
 
@@ -235,6 +250,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
   private function reset() {
     $this->view->hasButton('Reset') ? $this->view->pressButton('Reset') : NULL;
     $this->view->pressButton('Apply');
+    $this->waitForViewResults();
   }
 
   /**

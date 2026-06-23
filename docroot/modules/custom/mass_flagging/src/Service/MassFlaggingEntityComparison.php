@@ -75,7 +75,10 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
   /**
    * {@inheritdoc}
    */
-  public function checkRevisionforImageSectionChanges(ContentEntityInterface $revision, ?ContentEntityInterface $previous_revision = NULL) {
+  public function checkRevisionforImageSectionChanges(?ContentEntityInterface $revision, ?ContentEntityInterface $previous_revision = NULL) {
+    if (!$revision || !$previous_revision) {
+      return FALSE;
+    }
     $elements = [];
 
     $mapping = [

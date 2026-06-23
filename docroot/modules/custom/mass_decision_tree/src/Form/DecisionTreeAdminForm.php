@@ -123,7 +123,8 @@ class DecisionTreeAdminForm extends FormBase {
       ],
     ];
 
-    if ($paragraph = $node->get('field_start_button')->entity) {
+    $paragraph = $this->loadParagraphFromFieldItem($node->get('field_start_button')->first());
+    if ($paragraph) {
       if ($start_branch = $paragraph->field_start_button_branch->target_id) {
         $info = [
           'child' => $start_branch,
@@ -235,7 +236,10 @@ class DecisionTreeAdminForm extends FormBase {
       // Check for children and pass them in recursively.
       if ($child_node->bundle() === 'decision_tree_branch') {
         foreach ($child_node->field_multiple_answers as $answers) {
-          $answer = $answers->entity;
+          $answer = $this->loadParagraphFromFieldItem($answers);
+          if (!$answer) {
+            continue;
+          }
 
           // Use now the entity to get the values you need.
           $answer_path = $answer->field_answer_path->target_id;
@@ -306,6 +310,30 @@ class DecisionTreeAdminForm extends FormBase {
       }
     }
     \Drupal::messenger()->addMessage($this->t('Your changes have been saved successfully!'), 'status');
+  }
+
+  /**
+   * Loads a paragraph by revision when available on the field item.
+   *
+   * @param \Drupal\Core\Field\FieldItemInterface|null $item
+   *   The field item from an entity_reference_revisions field.
+   *
+   * @return \Drupal\paragraphs\ParagraphInterface|null
+   *   The loaded paragraph entity, or NULL when unavailable.
+   */
+  protected function loadParagraphFromFieldItem($item) {
+    if (!$item) {
+      return NULL;
+    }
+    $revision_id = $item->target_revision_id ?? NULL;
+    if ($revision_id) {
+      $paragraph = $this->entityTypeManager->getStorage('paragraph')->loadRevision($revision_id);
+      if ($paragraph) {
+        return $paragraph;
+      }
+    }
+    $target_id = $item->target_id ?? NULL;
+    return $target_id ? $this->entityTypeManager->getStorage('paragraph')->load($target_id) : NULL;
   }
 
 }

@@ -1,0 +1,39 @@
+diff --git a/core/lib/Drupal/Component/Utility/UrlHelper.php b/core/lib/Drupal/Component/Utility/UrlHelper.php
+index c78a27450ee5eb1e96f47ec631f03a8b9e2b7aed..2030470af018d72dd9d7d04124e32ad6dd202f0e 100644
+--- a/core/lib/Drupal/Component/Utility/UrlHelper.php
++++ b/core/lib/Drupal/Component/Utility/UrlHelper.php
+@@ -50,7 +50,7 @@ public static function buildQuery(array $query, $parent = '') {
+         $params[] = static::buildQuery($value, $key);
+       }
+       // If a query parameter value is NULL, only append its key.
+-      elseif (!isset($value)) {
++      elseif (!isset($value) || $value == "" || strlen($value) == 0) {
+         $params[] = $key;
+       }
+       else {
+diff --git a/core/tests/Drupal/KernelTests/Core/File/FileUrlGeneratorTest.php b/core/tests/Drupal/KernelTests/Core/File/FileUrlGeneratorTest.php
+index a4a004c825f765743e78319a092b74def07e7d07..5dad51c0251fae8ce998ff47cc863c82fb99f52e 100644
+--- a/core/tests/Drupal/KernelTests/Core/File/FileUrlGeneratorTest.php
++++ b/core/tests/Drupal/KernelTests/Core/File/FileUrlGeneratorTest.php
+@@ -102,7 +102,7 @@ public function testShippedFileURL() {
+     \Drupal::state()->delete('file_test.hook_file_url_alter');
+     $filepath = 'core/misc/favicon.ico';
+     $url = $this->fileUrlGenerator->generateAbsoluteString($filepath . '?foo');
+-    $this->assertEquals($GLOBALS['base_url'] . '/' . $filepath . '?foo=', $url, 'Correctly generated URL. The query string is present.');
++    $this->assertEquals($GLOBALS['base_url'] . '/' . $filepath . '?foo', $url, 'Correctly generated URL. The query string is present.');
+     $url = $this->fileUrlGenerator->generateAbsoluteString($filepath . '?foo=bar');
+     $this->assertEquals($GLOBALS['base_url'] . '/' . $filepath . '?foo=bar', $url, 'Correctly generated URL. The query string is present.');
+     $url = $this->fileUrlGenerator->generateAbsoluteString($filepath . '#v1.2');
+diff --git a/core/tests/Drupal/Tests/Core/Routing/UrlGeneratorTest.php b/core/tests/Drupal/Tests/Core/Routing/UrlGeneratorTest.php
+index 23d39b0e2f046977692963c69f558b5fcbd198bb..951dac0e3a334575cd8ec34a46ae919272257d2d 100644
+--- a/core/tests/Drupal/Tests/Core/Routing/UrlGeneratorTest.php
++++ b/core/tests/Drupal/Tests/Core/Routing/UrlGeneratorTest.php
+@@ -524,7 +524,7 @@ public function providerTestNoPath() {
+       // Query parameters only.
+       [['query' => ['foo' => 'bar']], '?foo=bar'],
+       // Multiple query parameters.
+-      [['query' => ['foo' => 'bar', 'baz' => '']], '?foo=bar&baz='],
++      [['query' => ['foo' => 'bar', 'baz' => '']], '?foo=bar&baz'],
+       // Fragment only.
+       [['fragment' => 'foo'], '#foo'],
+       // Query parameters and fragment.

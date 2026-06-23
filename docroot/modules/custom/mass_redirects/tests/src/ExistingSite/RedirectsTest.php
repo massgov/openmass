@@ -75,7 +75,7 @@ class RedirectsTest extends MassExistingSiteBase {
     $this->assertEquals(200, $session->getStatusCode());
     $url = $this->orgNode->toUrl('redirects')->toString();
     $session->visit($url);
-    $this->assertEquals(403, $session->getStatusCode());
+    $this->assertEquals(404, $session->getStatusCode());
     $this->orgNode->setUnpublished()->set(MassModeration::FIELD_NAME, MassModeration::TRASH)->save();
     // Reload to get new state.
     $this->orgNode = Node::load($this->orgNode->id());
