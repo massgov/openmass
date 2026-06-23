@@ -20,17 +20,27 @@
 #}
 {# This will need to come from theme settings. #}
 {%
+set languageList = availableLanguages|sort
+%}
+
+{%
 set googleLanguages = languages
 %}
 
 {%
 set utilityNav = {
-  dropdown: {
-    labelText: 'Language:',
-    id: 'lang-select',
-    name: 'lang-select',
-  },
   items: items,
 }
 %}
+
+{%
+set modal = {
+  id: 'ma__translate',
+  icon: 'translate',
+  status: 'info',
+  title: 'Select language'|t,
+  buttonText: 'Language'|t,
+}
+%}
+
 {{ include('@organisms/by-template/utility-nav.twig') }}

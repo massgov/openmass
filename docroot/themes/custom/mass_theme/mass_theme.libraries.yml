@@ -30,11 +30,14 @@ global-styling:
   js:
     overrides/js/fixed-feedback-button.js: {}
     overrides/js/device.js: {}
+    overrides/js/google-translate-modal.js: {}
     overrides/js/table.js: {}
 
   dependencies:
     - mayflower/global
     - core/drupal
+    - core/drupalSettings
+    - core/once
 
 
 global-styling-lp:
@@ -69,11 +72,14 @@ global-styling-lp:
   js:
     overrides/js/fixed-feedback-button.js: {}
     overrides/js/device.js: {}
+    overrides/js/google-translate-modal.js: {}
     overrides/js/table.js: {}
 
   dependencies:
     - mayflower/layout_paragraphs
     - core/drupal
+    - core/drupalSettings
+    - core/once
 
 views-view--image-promos:
   css:
@@ -128,6 +134,7 @@ tableau:
     overrides/js/tableau_settings.js: {}
 
 tableau_connected_app:
+  version: 1.1
   js:
     https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.js: {
       type: external,
@@ -151,6 +158,9 @@ iframe_resizer_focus:
     - iframe_resizer/init
 
 glossaries:
+  css:
+    theme:
+      overrides/css/glossaries.css: {}
   js:
     overrides/js/glossaries.js: {}
   dependencies:

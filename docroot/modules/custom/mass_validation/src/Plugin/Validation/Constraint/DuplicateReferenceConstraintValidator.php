@@ -28,19 +28,10 @@ class DuplicateReferenceConstraintValidator extends ConstraintValidator {
       return $occurrences[$target_id] > 1;
     }));
 
-    $entities = [];
-    if ($target_type && $values) {
-      $entities = \Drupal::entityTypeManager()
-        ->getStorage($target_type)
-        ->loadMultiple(array_unique($values));
-    }
-
     foreach ($duplicate_keys as $key) {
-      $target_id = $values[$key] ?? NULL;
-      $entity = $target_id ? ($entities[$target_id] ?? NULL) : NULL;
-      $label = $entity ? EntityAutocomplete::getEntityLabels([$entity]) : (string) $target_id;
+      $entity = $value->get($key)->entity;
       $this->context->buildViolation($constraint->message)
-        ->setParameter('%label', $label)
+        ->setParameter('%label', EntityAutocomplete::getEntityLabels([$entity]))
         ->setInvalidValue($entity)
         ->atPath((string) $key . '.target_id')
         ->addViolation();

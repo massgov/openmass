@@ -1,14 +1,189 @@
 
+## [0.483.1] - June 18, 2026
+
+### Security
+- DP-47680: Drupal core update 11.3.12.
+
+
+## [0.483.0] - June 16, 2026
+
+### Added
+  - DP-46864: Adds a Message box toolbar button to Basic HTML CKEditor for informational and alert inline messages rendered with Mayflower inline-message.
+
+### Fixed
+  - DP-47109: Fix JS error with mobile translate component.
+
+
+
+## [0.482.0] - June 9, 2026
+
+### Added
+  - DP-43633: Warn authors when unpublishing or trashing a document that has published pages linking here.
+
+### Changed
+  - DP-45831: Update internal links on mass.gov that are redirects.
+  - DP-46121: Include the nearest microsite name in the HTML meta title for pages within a microsite.
+  - DP-46592: CSV Table / Datatables changes - round 3.
+
+### Fixed
+  - DP-47343: Prevent ordered list numbers from being clipped for leading-zero styles and lists with a start attribute, including on info-details pages.
+  - DP-47348: Remove green decorative underline from H3 and H4 in the rich text editor so editor preview matches the published page.
+
+
+
+## [0.481.0] - June 2, 2026
+
+### Changed
+  - DP-44689: Use the info icon and standard callout spacing for the decision tree disclaimer.
+  - DP-46912: Enable item count selection in all content and advanced content reports.
+  - DP-46922: Small updates to purge oversized header logger.
+
+### Fixed
+  - DP-45426: Fixed bullet list alignment issues.
+  - DP-47000: Fix csv export for all documents to respect value of accessibility status filter
+  - DP-47095: Restrict user approval fields to users with administer users permission and normalize editor profile form spacing after the fields are hidden.
+
+### Added
+  - DP-45952: Added top down org hierarchy view report.
+
+
+
+## [0.480.1] - May 20, 2026
+
+### Security
+  - DP-47058: Drupal security update 11.3.10
+
+## [0.480.0] - May 19, 2026
+
+### Fixed
+  - DP-45871: Glossary Terms Double-Defining Content and Not Recognizing Full-Term Matches.
+  - DP-46593: Improve keyboard focus visibility on the dark site header, brand banner, and utility navigation.
+  - DP-46594: Updates Mayflower artifacts to fix the global menu drawer edge showing through the translate modal on Android.
+  - DP-46676: Keyboard navigation focus not trapped within global navigation menu.
+  - DP-46853: CSV export from advanced search no longer times out with 503 errors for large organization filters.
+
+### Added
+  - DP-46855: Added a handler to more broadly purge by URL on saves to published content and when unpublishing content.
+
+### Changed
+  - DP-46954: Remove green decorative underline from H3 and H4 in rich text and component headings, and remove extra spacing reserved for that line.
+
+
+
+## [0.479.0] - May 12, 2026
+
+### Added
+  - DP-43779: Add tests for author created friendly URLs (redirects).
+  - DP-46580: Help text to feedback manager.
+  - DP-46681: Added logger for capturing oversized purger headers.
+
+### Fixed
+  - DP-46457: Fix Offered by tab order when show more/less is present.
+  - DP-46555: Fix org past-events pagination and initial results range; DP-39285 regression revert only affects events-page template changes, not the full PR.
+  - DP-46838: Bug - unable to add a new field to a new paragraph.
+
+
+
+## [0.478.0] - May 5, 2026
+
+### Removed
+  - DP-44256: Removed Percy/Browserstack.
+
+### Fixed
+  - DP-45856: Hide metadata related to robots noindex on the form.
+  - DP-46633: Ensure Threads social media icons render for both threads.com and threads.net URLs on organization pages.
+
+### Changed
+  - DP-45941: Allow Editors to Reference Blocked Users in “Authored By” Field for all report filters.
+
+### Security
+  - DP-46553: Document upload incorrectly flagged as virus: patch drupal/clamav to be more axplanatory why file cannot be uploaded
+
+
+
+## [0.477.0] - April 28, 2026
+
+### Added
+  - DP-45023: Added accessible translation widget.
+
+### Fixed
+  - DP-46271: Fix press release city injection to use the first paragraph even when the first p tag has attributes like lang.
+  - DP-46385: Fix icon duplicate id by cleaning up clipPath.
+  - DP-46544: Fixed issue with keyboard navigation getting trapped on global nav menu close button.
+
+### Changed
+  - DP-46332: Updated log processing class to address issues with missing and broken logs.
+
+### Security
+  - DP-46568: Drupal security update 11.3.8.
+
+
+
+## [0.476.0] - April 21, 2026
+
+### Changed
+  - DP-45228: CSV Table / Datatables changes
+
+### Fixed
+  - DP-46272: Fix missing tag number in environment indicator after D11 upgrade.
+  - DP-46444: After regenerate entity usage, many documents not showing actual relationships.
+
+### Security
+  - DP-46359: Updates Drupal core to 11.3.7 to address security advisories.
+
+
+## [0.475.1] - April 15, 2026
+
+### Fixed:
+- DP-46328: Restore asset_cache_bust module.
+
+
+## [0.475.0] - April 14, 2026
+
+### Removed
+  - DP-35638: Removed code and field storage related to Computed Related To fields.
+
+### Added
+  - DP-46226: Adds ExistingSite test after a bug where news releases could not be created due to a validation error about missing state organization.
+
+### Fixed
+  - DP-46263: Fix cell alignment when a CSV table has row headings.
+
+
+
+## [0.474.6] - April 13, 2026
+
+### Fixed:
+- DP-46254: Conditional fields fix.
+
+
+
+## [0.474.5] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.5] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
 
 ## [0.474.4] - April 9, 2026
 
 ### Fixed:
 - DP-44741: Hotfix to address Fiber-related issues.
 
+
+
 ## [0.474.3] - April 8, 2026
 
 ### Fixed:
 - DP-44741: Hotfix to address Fiber-related issues.
+
 
 
 ## [0.474.2] - April 8, 2026

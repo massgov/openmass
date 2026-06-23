@@ -19,12 +19,20 @@ use Drupal\Core\Entity\Plugin\Validation\Constraint\CompositeConstraintBase;
  * )
  */
 class PreventEmptyStateOrgConstraint extends CompositeConstraintBase {
+
+  /**
+   * The default violation message.
+   *
+   * @var string
+   */
+  public const MESSAGE = 'You must enter at least one State Organization.';
+
   /**
    * Message shown when a node has no state org.
    *
    * @var string
    */
-  public $message = 'You must enter at least one State Organization.';
+  public $message = self::MESSAGE;
 
   /**
    * {@inheritdoc}
