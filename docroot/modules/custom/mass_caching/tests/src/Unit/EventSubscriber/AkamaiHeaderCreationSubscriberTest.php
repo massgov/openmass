@@ -96,7 +96,7 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
         ['hashTags', -1000],
       ],
       AkamaiPurgeEvents::PURGE_CREATION => [
-        ['hashPurgeTags', -1000],
+        ['hashTags', -1000],
       ],
     ], AkamaiHeaderCreationSubscriber::getSubscribedEvents());
   }

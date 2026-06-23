@@ -43,23 +43,14 @@ class AkamaiHeaderCreationSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Hashes cache tags before Akamai writes them to the response header.
+   * Hashes cache tags before Akamai uses them in headers or purges.
    *
-   * @param \Drupal\akamai\Event\AkamaiHeaderEvents $event
-   *   The Akamai header creation event.
+   * @param \Drupal\akamai\Event\AkamaiHeaderEvents|\Drupal\akamai\Event\AkamaiPurgeEvents $event
+   *   The Akamai event containing cache tags.
    */
-  public function hashTags(AkamaiHeaderEvents $event): void {
-    $event->data = $this->hashFormattedTags($event->data);
-  }
-
-  /**
-   * Hashes cache tags before Akamai invalidation requests are sent.
-   *
-   * @param \Drupal\akamai\Event\AkamaiPurgeEvents $event
-   *   The Akamai purge creation event.
-   */
-  public function hashPurgeTags(AkamaiPurgeEvents $event): void {
-    $event->data = $this->hashFormattedTags($event->data);
+  public function hashTags(AkamaiHeaderEvents|AkamaiPurgeEvents $event): void {
+    $tags = array_map([$this->tagFormatter, 'format'], $event->data);
+    $event->data = Hash::cacheTags($tags);
   }
 
   /**
@@ -68,22 +59,8 @@ class AkamaiHeaderCreationSubscriber implements EventSubscriberInterface {
   public static function getSubscribedEvents(): array {
     $events[AkamaiHeaderEvents::HEADER_CREATION][] = ['onHeaderCreation', -100];
     $events[AkamaiHeaderEvents::HEADER_CREATION][] = ['hashTags', -1000];
-    $events[AkamaiPurgeEvents::PURGE_CREATION][] = ['hashPurgeTags', -1000];
+    $events[AkamaiPurgeEvents::PURGE_CREATION][] = ['hashTags', -1000];
     return $events;
-  }
-
-  /**
-   * Formats tags the same way Akamai does before hashing them.
-   *
-   * @param array $tags
-   *   The cache tags to format and hash.
-   *
-   * @return array
-   *   The formatted cache tag hashes.
-   */
-  private function hashFormattedTags(array $tags): array {
-    $tags = array_map([$this->tagFormatter, 'format'], $tags);
-    return Hash::cacheTags($tags);
   }
 
 }
