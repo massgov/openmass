@@ -67,6 +67,10 @@ class DecorativeImageWidgetTest extends ExistingSiteSelenium2DriverTestBase {
     // and configured for this field.
     $decorative_checkbox = $widget->find('css', 'input.decorative-checkbox[type="checkbox"]');
     $this->assertNotNull($decorative_checkbox, 'Decorative checkbox present on field_news_image widget.');
+
+    // Decorative checkbox should render inside the image widget meta column.
+    $decorative_item = $page->find('css', '.field--name-field-news-image .form-managed-file__meta-items .decorative-image-widget__decorative');
+    $this->assertNotNull($decorative_item, 'Decorative checkbox renders inside image widget meta items.');
   }
 
 }

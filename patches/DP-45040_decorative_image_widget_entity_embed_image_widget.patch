@@ -1,0 +1,531 @@
+diff --color -uNr a/css/decorative-image-widget.css b/css/decorative-image-widget.css
+--- a/css/decorative-image-widget.css	1970-01-01 04:00:00
++++ b/css/decorative-image-widget.css	2026-06-23 12:08:32
+@@ -0,0 +1,31 @@
++/**
++ * @file
++ * Decorative image widget alignment styles.
++ *
++ * Scoped to Claro image widgets only. Entity embed dialogs use default
++ * form styling and do not need these overrides.
++ */
++
++.form-managed-file__meta-items .decorative-image-widget__decorative.form-type--boolean {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  column-gap: var(--space-xs);
++  clear: none;
++  margin-inline-start: 0;
++}
++
++.form-managed-file__meta-items .decorative-image-widget__decorative .description,
++.form-managed-file__meta-items .decorative-image-widget__decorative .mass-description {
++  flex: 0 0 100%;
++  margin-inline-start: 0;
++}
++
++/* Reset Claro horizontal checkbox offsets; flex handles vertical alignment. */
++.form-managed-file__meta-items .decorative-image-widget__decorative.form-type--boolean .form-boolean {
++  position: static;
++  float: none;
++  margin-inline: 0;
++  transform: none;
++  flex: 0 0 auto;
++}
+diff --color -uNr a/decorative_image_widget.libraries.yml b/decorative_image_widget.libraries.yml
+--- a/decorative_image_widget.libraries.yml	2026-06-23 12:08:32
++++ b/decorative_image_widget.libraries.yml	2026-06-23 12:08:32
+@@ -1,6 +1,9 @@
+ decorative_image_widget:
+   js:
+     js/decorative-image-widget.js: {}
++  css:
++    theme:
++      css/decorative-image-widget.css: {}
+   dependencies:
+     - core/once
+     - core/drupal
+diff --color -uNr a/decorative_image_widget.module b/decorative_image_widget.module
+--- a/decorative_image_widget.module	2026-06-23 12:08:32
++++ b/decorative_image_widget.module	2026-06-23 12:08:32
+@@ -51,3 +51,40 @@
+     DecorativeImageWidgetHelper::alter($element, $context['widget']);
+   }
+ }
++
++
++/**
++ * Implements hook_theme().
++ */
++function decorative_image_widget_theme($existing, $type, $theme, $path) {
++  return [
++    'image_widget__decorative' => [
++      'render element' => 'element',
++      'base hook' => 'image_widget',
++    ],
++    'file_managed_file__decorative' => [
++      'render element' => 'element',
++      'base hook' => 'file_managed_file',
++    ],
++  ];
++}
++
++/**
++ * Implements hook_theme_suggestions_image_widget_alter().
++ */
++function decorative_image_widget_theme_suggestions_image_widget_alter(array &$suggestions, array $variables) {
++  if (!empty($variables['element']['decorative'])) {
++    $suggestions[] = 'image_widget__decorative';
++  }
++}
++
++/**
++ * Implements hook_entity_embed_display_plugins_alter().
++ */
++function decorative_image_widget_entity_embed_display_plugins_alter(array &$definitions) {
++  foreach ($definitions as &$definition) {
++    if (!empty($definition['class']) && $definition['class'] === 'Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay\ImageFieldFormatter') {
++      $definition['class'] = \Drupal\decorative_image_widget\Plugin\entity_embed\EntityEmbedDisplay\DecorativeImageFieldFormatter::class;
++    }
++  }
++}
+diff --color -uNr a/js/decorative-image-widget.js b/js/decorative-image-widget.js
+--- a/js/decorative-image-widget.js	2026-06-23 12:08:32
++++ b/js/decorative-image-widget.js	2026-06-23 12:08:32
+@@ -4,31 +4,27 @@
+  */
+ ((Drupal, once) => {
+   function enableOrDisableAltTextField(altTextField, enable) {
++    const parent = altTextField.parentElement;
+     if (!enable) {
+-      // Edit input field attributes
+-      altTextField.disabled = true;
++      altTextField.readOnly = true;
++      altTextField.setAttribute('readonly', 'readonly');
+       altTextField.removeAttribute('required');
+       altTextField.classList.remove('required');
+-      // Edit parent element classes
+-      const parent = altTextField.parentElement;
++      altTextField.value = '';
+       if (parent) {
+         parent.classList.add('form-disabled');
+-        // Edit label element
+         const label = parent.querySelector('label');
+         if (label) {
+           label.classList.remove('form-required');
+         }
+       }
+     } else {
+-      // Edit input field attributes
+-      altTextField.disabled = false;
++      altTextField.readOnly = false;
++      altTextField.removeAttribute('readonly');
+       altTextField.setAttribute('required', 'required');
+       altTextField.classList.add('required');
+-      // Edit parent element classes
+-      const parent = altTextField.parentElement;
+       if (parent) {
+         parent.classList.remove('form-disabled');
+-        // Edit label element
+         const label = parent.querySelector('label');
+         if (label) {
+           label.classList.add('form-required');
+@@ -37,21 +33,79 @@
+     }
+   }
+ 
++  /**
++   * Align the decorative checkbox with the alt text input in image widgets.
++   */
++  function alignDecorativeCheckbox(checkbox) {
++    const decorativeItem =
++      checkbox.closest('.decorative-image-widget__decorative') ||
++      checkbox.closest('.form-item[class*="-decorative"]');
++    const widget = checkbox.closest('.image-widget');
++    if (!decorativeItem || !widget) {
++      return;
++    }
++
++    // Claro image widgets render decorative inside meta-items via our template.
++    if (decorativeItem.closest('.form-managed-file__meta-items')) {
++      decorativeItem.style.marginInlineStart = '';
++      return;
++    }
++
++    const altTextField = widget.querySelector('.alt-textfield');
++    if (!altTextField) {
++      decorativeItem.style.marginInlineStart = '';
++      return;
++    }
++
++    const offset =
++      altTextField.getBoundingClientRect().left -
++      widget.getBoundingClientRect().left;
++    decorativeItem.style.marginInlineStart = `${Math.max(0, Math.round(offset))}px`;
++    decorativeItem.style.clear = 'none';
++  }
++
+   Drupal.behaviors.decorativeImageWidget = {
+     attach(context) {
+-      // When the decorative image checkbox is checked, disable the alt
+-      // text field.
+       once(
+         'decorative-image-widget',
+-        '.image-widget .decorative-checkbox',
++        '.decorative-checkbox',
+         context,
+-      ).forEach(function processCheckbox(checkbox) {
+-        const widget = checkbox.closest('.image-widget');
+-        const altTextField = widget.querySelector('.alt-textfield');
++      ).forEach((checkbox) => {
++        const imageWidget = checkbox.closest('.image-widget');
++        const formContext = imageWidget || checkbox.closest('form');
++        if (!formContext) {
++          return;
++        }
++        const altTextField = formContext.querySelector('.alt-textfield');
++        if (!altTextField) {
++          return;
++        }
++
++        const decorativeItem =
++          checkbox.closest('.decorative-image-widget__decorative') ||
++          checkbox.closest('.form-item[class*="-decorative"]');
++
++        const updateAlignment = () => {
++          if (imageWidget) {
++            alignDecorativeCheckbox(checkbox);
++          }
++        };
++
+         checkbox.addEventListener('change', (event) => {
+           enableOrDisableAltTextField(altTextField, !event.target.checked);
+         });
+         enableOrDisableAltTextField(altTextField, !checkbox.checked);
++        updateAlignment();
++
++        if (decorativeItem && imageWidget) {
++          window.addEventListener('resize', updateAlignment);
++
++          if (typeof ResizeObserver !== 'undefined') {
++            const resizeObserver = new ResizeObserver(updateAlignment);
++            resizeObserver.observe(imageWidget);
++            resizeObserver.observe(altTextField);
++          }
++        }
+       });
+     },
+   };
+diff --color -uNr a/src/DecorativeImageWidgetHelper.php b/src/DecorativeImageWidgetHelper.php
+--- a/src/DecorativeImageWidgetHelper.php	2026-06-23 12:08:32
++++ b/src/DecorativeImageWidgetHelper.php	2026-06-23 12:08:32
+@@ -122,7 +122,9 @@
+       // fields we want them to be explicit about clicking it.
+       // Checking if the default value for the form element has as file ID and
+       // and empty string set for alt seems to be reliable.
+-      $decorativeDefaultValue = !empty($element['#default_value']['target_id']) && isset($element['#default_value']['alt']) && empty($element['#default_value']['alt']);
++      $decorativeDefaultValue = !empty($element['#default_value']['target_id'])
++        && array_key_exists('alt', $element['#default_value'])
++        && $element['#default_value']['alt'] === '';
+       $element['decorative'] = [
+         '#type' => 'checkbox',
+         '#description' => t(
+@@ -130,9 +132,13 @@
+           ['@url' => 'https://www.w3.org/WAI/tutorials/images/decorative/']
+         ),
+         '#title' => t('Decorative'),
++        '#description_display' => 'after',
+         '#weight' => $element['alt']['#weight'],
+         '#access' => $element['alt']['#access'] ?? TRUE,
+         '#default_value' => $decorativeDefaultValue,
++        '#wrapper_attributes' => [
++          'class' => ['decorative-image-widget__decorative'],
++        ],
+         '#attributes' => [
+           'class' => ['decorative-checkbox'],
+         ],
+@@ -183,10 +189,77 @@
+       return;
+     }
+ 
+-    $missing_alt_text = empty($formState->getValue($element['#parents']));
+     $decorative_form_element = array_merge($parents, ['decorative']);
+     $decorative_checked = (bool) $formState->getValue($decorative_form_element);
+-    if ($missing_alt_text && !$decorative_checked) {
++
++    if ($decorative_checked) {
++      $formState->setValue($element['#parents'], '');
++      return;
++    }
++
++    $missing_alt_text = empty($formState->getValue($element['#parents']));
++    if ($missing_alt_text) {
++      $formState->setErrorByName(implode('][', $element['#parents']), t('You must provide alternative text or indicate the image is decorative.'));
++    }
++  }
++
++
++  /**
++   * Alters the entity embed dialog form to add a decorative checkbox.
++   */
++  public static function alterEntityEmbedDialogForm(array &$form, FormStateInterface $formState) {
++    if (empty($form['attributes']['alt']) || !is_array($form['attributes']['alt'])) {
++      return;
++    }
++
++    $alt =& $form['attributes']['alt'];
++    $alt_weight = $alt['#weight'] ?? 0;
++
++    $alt['#description'] = t("Alternative Text is read by screen readers and should be a concise description of the image's purpose. If the image is purely decorative, leave this field blank and check the \"decorative\" checkbox below.");
++
++    $decorative = [
++      '#type' => 'checkbox',
++      '#title' => t('Decorative'),
++      '#description' => t('This image is <a href="@url" target="_blank">decorative</a> and should be hidden from screen readers.', ['@url' => 'https://www.w3.org/WAI/tutorials/images/decorative/']),
++      '#description_display' => 'after',
++      '#default_value' => FALSE,
++      '#weight' => $alt_weight + 0.1,
++      '#attributes' => [
++        'class' => ['decorative-checkbox'],
++      ],
++    ];
++
++    if (isset($form['attributes']['title']) && is_array($form['attributes']['title'])) {
++      $form['attributes']['title']['#weight'] = $alt_weight + 1;
++    }
++
++    $form['attributes']['decorative'] = $decorative;
++    $alt['#attributes']['class'][] = 'alt-textfield';
++    $alt['#element_validate'][] = [static::class, 'validateEntityEmbedAlt'];
++    $form['#attached']['library'][] = 'decorative_image_widget/decorative_image_widget';
++  }
++
++  /**
++   * Validation for the entity embed dialog alt field.
++   */
++  public static function validateEntityEmbedAlt(array $element, FormStateInterface $formState) {
++    $alt_value = trim((string) ($formState->getValue($element['#parents']) ?? ''));
++    if ($alt_value === '""') {
++      $alt_value = '';
++      $formState->setValue($element['#parents'], '');
++    }
++
++    $decorative_parents = $element['#parents'];
++    array_pop($decorative_parents);
++    $decorative_parents[] = 'decorative';
++    $decorative_checked = (bool) $formState->getValue($decorative_parents);
++
++    if ($decorative_checked) {
++      $formState->setValue($element['#parents'], '');
++      $alt_value = '';
++    }
++
++    if ($alt_value === '' && !$decorative_checked) {
+       $formState->setErrorByName(implode('][', $element['#parents']), t('You must provide alternative text or indicate the image is decorative.'));
+     }
+   }
+diff --color -uNr a/src/Plugin/entity_embed/EntityEmbedDisplay/DecorativeImageFieldFormatter.php b/src/Plugin/entity_embed/EntityEmbedDisplay/DecorativeImageFieldFormatter.php
+--- a/src/Plugin/entity_embed/EntityEmbedDisplay/DecorativeImageFieldFormatter.php	1970-01-01 04:00:00
++++ b/src/Plugin/entity_embed/EntityEmbedDisplay/DecorativeImageFieldFormatter.php	2026-06-23 12:08:32
+@@ -0,0 +1,125 @@
++<?php
++
++namespace Drupal\decorative_image_widget\Plugin\entity_embed\EntityEmbedDisplay;
++
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\entity_embed\Plugin\entity_embed\EntityEmbedDisplay\ImageFieldFormatter;
++
++/**
++ * Entity embed image display with decorative checkbox support.
++ *
++ * This subclass adds the Decorative checkbox and validation to the entity
++ * embed image dialog, while reusing the core ImageFieldFormatter behavior.
++ */
++class DecorativeImageFieldFormatter extends ImageFieldFormatter {
++
++  /**
++   * Form value parents for the decorative setting in the embed dialog.
++   */
++  protected const DECORATIVE_SETTING_PARENTS = [
++    'attributes',
++    'data-entity-embed-display-settings',
++    'decorative',
++  ];
++
++  /**
++   * {@inheritdoc}
++   */
++  public function defaultConfiguration() {
++    return parent::defaultConfiguration() + [
++      'decorative' => FALSE,
++    ];
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
++    $form = parent::buildConfigurationForm($form, $form_state);
++
++    if (empty($form['alt']) || !is_array($form['alt'])) {
++      return $form;
++    }
++
++    $alt_weight = $form['alt']['#weight'] ?? 0;
++
++    $form['alt']['#required'] = FALSE;
++    $form['alt']['#description'] = $this->t("Alternative Text is read by screen readers and should be a concise description of the image's purpose. If the image is purely decorative, leave this field blank and check the \"decorative\" checkbox below.");
++    $form['alt']['#attributes']['class'][] = 'alt-textfield';
++    $form['alt']['#element_validate'][] = [static::class, 'validateAltOrDecorative'];
++
++    $decorative = [
++      '#type' => 'checkbox',
++      '#title' => $this->t('Decorative'),
++      '#description' => $this->t('This image is <a href=":url" target="_blank">decorative</a> and should be hidden from screen readers.', [
++        ':url' => 'https://www.w3.org/WAI/tutorials/images/decorative/',
++      ]),
++      '#description_display' => 'after',
++      '#default_value' => $this->getDecorativeDefaultValue(),
++      '#weight' => $alt_weight + 0.1,
++      '#attributes' => [
++        'class' => ['decorative-checkbox'],
++      ],
++    ];
++
++    // Place decorative directly below alt and before title.
++    if (isset($form['title']) && is_array($form['title'])) {
++      $title = $form['title'];
++      unset($form['title']);
++      $form['decorative'] = $decorative;
++      $title['#weight'] = $alt_weight + 1;
++      $form['title'] = $title;
++    }
++    else {
++      $form['decorative'] = $decorative;
++    }
++
++    try {
++      $library_discovery = \Drupal::service('library.discovery');
++      if ($library_discovery->getLibraryByName('decorative_image_widget', 'decorative_image_widget')) {
++        $form['#attached']['library'][] = 'decorative_image_widget/decorative_image_widget';
++      }
++    }
++    catch (\Exception $e) {
++      // If the library is not available, we still keep the validation behavior.
++    }
++
++    return $form;
++  }
++
++  /**
++   * Determines whether the decorative checkbox should be checked by default.
++   */
++  protected function getDecorativeDefaultValue(): bool {
++    return (bool) $this->getConfigurationValue('decorative', FALSE);
++  }
++
++  /**
++   * Validation callback requiring either alt text or decorative checkbox.
++   */
++  public static function validateAltOrDecorative(array $element, FormStateInterface $form_state, array &$complete_form) {
++    $parents = $element['#parents'];
++    $alt_value = trim((string) ($form_state->getValue($parents) ?? ''));
++
++    if ($alt_value === '""') {
++      $alt_value = '';
++      $form_state->setValue($parents, '');
++    }
++
++    $decorative_checked = (bool) $form_state->getValue(static::DECORATIVE_SETTING_PARENTS);
++
++    if ($decorative_checked) {
++      $form_state->setValue($parents, '');
++      $form_state->setValue(static::DECORATIVE_SETTING_PARENTS, 1);
++      $alt_value = '';
++    }
++    else {
++      $form_state->unsetValue(static::DECORATIVE_SETTING_PARENTS);
++    }
++
++    if ($alt_value === '' && !$decorative_checked) {
++      $form_state->setError($element, t('You must provide alternative text or indicate the image is decorative.'));
++    }
++  }
++
++}
+diff --color -uNr a/templates/file-managed-file--decorative.html.twig b/templates/file-managed-file--decorative.html.twig
+--- a/templates/file-managed-file--decorative.html.twig	1970-01-01 04:00:00
++++ b/templates/file-managed-file--decorative.html.twig	2026-06-23 12:08:32
+@@ -0,0 +1,55 @@
++{#
++/**
++ * @file
++ * Theme override to display a file form widget with decorative checkbox.
++ *
++ * Renders the decorative checkbox inside meta-items so it aligns with alt.
++ *
++ * @see claro/templates/content-edit/file-managed-file.html.twig
++ */
++#}
++{%
++  set classes = [
++    'js-form-managed-file',
++    'form-managed-file',
++    multiple ? 'is-multiple' : 'is-single',
++    upload ? 'has-upload' : 'no-upload',
++    has_value ? 'has-value' : 'no-value',
++    has_meta ? 'has-meta' : 'no-meta',
++  ]
++%}
++<div{{ attributes.addClass(classes).removeClass('clearfix') }}>
++  <div class="form-managed-file__main">
++    {{ main_items.filename }}
++    {{ main_items|without('filename') }}
++  </div>
++
++  {% if has_meta or data.preview %}
++  <div class="form-managed-file__meta-wrapper">
++    <div class="form-managed-file__meta">
++      {% if data.preview %}
++        <div class="form-managed-file__image-preview image-preview">
++          <div class="image-preview__img-wrapper">
++            {{ data.preview }}
++          </div>
++        </div>
++      {% endif %}
++
++      {% if data.description or display or data.alt or data.title or data.decorative %}
++        <div class="form-managed-file__meta-items">
++          {{ data.description }}
++          {% if display %}
++            {{ data.display }}
++          {% endif %}
++          {{ data.alt }}
++          {{ data.decorative }}
++          {{ data.title }}
++        </div>
++      {% endif %}
++    </div>
++  </div>
++  {% endif %}
++
++  {# Every third-party addition will be rendered here. #}
++  {{ data|without('preview', 'alt', 'title', 'description', 'display', 'decorative') }}
++</div>
+diff --color -uNr a/templates/image-widget--decorative.html.twig b/templates/image-widget--decorative.html.twig
+--- a/templates/image-widget--decorative.html.twig	1970-01-01 04:00:00
++++ b/templates/image-widget--decorative.html.twig	2026-06-23 12:08:32
+@@ -0,0 +1,12 @@
++{#
++/**
++ * @file
++ * Theme override for an image field widget with decorative checkbox.
++ *
++ * @see claro/templates/content-edit/image-widget.html.twig
++ */
++#}
++
++{% extends '@decorative_image_widget/file-managed-file--decorative.html.twig' %}
++
++{% set attributes = attributes.addClass('form-managed-file--image') %}
