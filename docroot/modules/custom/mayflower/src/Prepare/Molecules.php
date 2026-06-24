@@ -148,7 +148,7 @@ class Molecules {
 
         $downloads = Helper::getReferencedEntitiesFromField($document, 'field_file_download_multiple');
         foreach ($downloads as $download) {
-          $downloadLink = self::prepareDownloadLink($download);
+          $downloadLink = self::prepareDownloadLink($download, [], $cache_tags);
           if (!empty($downloadLink)) {
             $downloadLinks[] = $downloadLink;
           }
