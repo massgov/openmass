@@ -31,7 +31,7 @@ class RedirectsTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $user1 = $this->createUser();
+    $user1 = $this->createUser(['bypass org access']);
     $user1->addRole('editor');
     $user1->activate();
     $user1->save();
