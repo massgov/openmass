@@ -1,0 +1,13 @@
+diff --git a/src/EventSubscriber/CacheableResponseSubscriber.php b/src/EventSubscriber/CacheableResponseSubscriber.php
+index 63d3435243a451f681d1d1ae271092eef9e87f0e..b9710ed24d87d41ccea7aab58524ec05862bd006 100644
+--- a/src/EventSubscriber/CacheableResponseSubscriber.php
++++ b/src/EventSubscriber/CacheableResponseSubscriber.php
+@@ -83,7 +83,7 @@ class CacheableResponseSubscriber implements EventSubscriberInterface {
+       $blacklist = is_array($blacklist) ? $blacklist : [];
+       $tags = array_filter($tags, function ($tag) use ($blacklist) {
+         foreach ($blacklist as $prefix) {
+-          if (strpos($tag, $prefix) !== FALSE) {
++          if (str_starts_with($tag, $prefix) !== FALSE) {
+             return FALSE;
+           }
+         }
