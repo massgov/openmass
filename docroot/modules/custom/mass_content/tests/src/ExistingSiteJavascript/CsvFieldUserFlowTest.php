@@ -341,6 +341,146 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Asserts search appears before the page-length control in the DOM.
+   */
+  private function assertCsvTableSearchPrecedesLength(): void {
+    $result = $this->getSession()->evaluateScript(<<<'JS'
+      (function () {
+        const wrapper = document.querySelector('.dt-container, .dataTables_wrapper');
+        if (!wrapper) {
+          return { ok: false, reason: 'No DataTables wrapper found.' };
+        }
+        const search = wrapper.querySelector('.dt-search, .dataTables_filter');
+        const length = wrapper.querySelector('.dt-length, .dataTables_length');
+        if (!search || !length) {
+          return { ok: false, reason: 'Expected both search and page-length controls.' };
+        }
+        return {
+          ok: true,
+          searchFirst: !!(search.compareDocumentPosition(length) & Node.DOCUMENT_POSITION_FOLLOWING),
+        };
+      })();
+JS
+    );
+    $this->assertTrue($result['ok'] ?? FALSE, $result['reason'] ?? 'Control order check failed.');
+    $this->assertTrue($result['searchFirst'], 'Search control should appear before page length control.');
+  }
+
+  /**
+   * Asserts the search input and submit button share one horizontal row.
+   */
+  private function assertCsvTableSearchInputAndButtonOnSameLine(): void {
+    $result = $this->getSession()->evaluateScript(<<<'JS'
+      (function () {
+        const input = document.querySelector('.csv-field-search-control input[type="search"], .dt-search input[type="search"], .dataTables_filter input[type="search"]');
+        const button = document.querySelector('button.csv-field-search-submit');
+        if (!input || !button) {
+          return { ok: false, reason: 'Expected search input and submit button.' };
+        }
+        const inputRect = input.getBoundingClientRect();
+        const buttonRect = button.getBoundingClientRect();
+        return {
+          ok: true,
+          sameLine: Math.abs(inputRect.top - buttonRect.top) < 8,
+          buttonAfterInput: buttonRect.left >= inputRect.left,
+        };
+      })();
+JS
+    );
+    $this->assertTrue($result['ok'] ?? FALSE, $result['reason'] ?? 'Search control layout check failed.');
+    $this->assertTrue($result['sameLine'], 'Search input and button should stay on the same line.');
+    $this->assertTrue($result['buttonAfterInput'], 'Search button should appear beside the input.');
+  }
+
+  /**
+   * Asserts the search input stays a reasonable width on narrow/medium viewports.
+   */
+  private function assertCsvTableSearchInputWidthReasonable(): void {
+    $result = $this->getSession()->evaluateScript(<<<'JS'
+      (function () {
+        const input = document.querySelector('.csv-field-search-control input[type="search"], .dt-search input[type="search"], .dataTables_filter input[type="search"]');
+        if (!input) {
+          return { ok: false, reason: 'Expected search input.' };
+        }
+        const inputWidth = input.getBoundingClientRect().width;
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+        return {
+          ok: true,
+          reasonable: inputWidth <= 240 && inputWidth <= viewportWidth * 0.6,
+        };
+      })();
+JS
+    );
+    $this->assertTrue($result['ok'] ?? FALSE, $result['reason'] ?? 'Search input width check failed.');
+    $this->assertTrue($result['reasonable'], 'Search input should not stretch across the full row on medium widths.');
+  }
+
+  /**
+   * Asserts mobile controls stack left with search above page length.
+   */
+  private function assertCsvTableControlsLeftAlignedOnMobile(bool $expect_length_visible = TRUE): void {
+    $result = $this->getSession()->evaluateScript(<<<'JS'
+      (function (expectLengthVisible) {
+        const wrapper = document.querySelector('.dt-container.dt-search-left-aligned, .dataTables_wrapper.dt-search-left-aligned');
+        const search = document.querySelector('.dt-search, .dataTables_filter');
+        const length = document.querySelector('.dt-length, .dataTables_length');
+        if (!wrapper || !search) {
+          return { ok: false, reason: 'Expected left-aligned wrapper and search control.' };
+        }
+        if (expectLengthVisible && (!length || length.offsetParent === null)) {
+          return { ok: false, reason: 'Expected visible page-length control.' };
+        }
+        const row = wrapper.querySelector('.dt-layout-row:not(.dt-layout-table)');
+        const rowLeft = row ? row.getBoundingClientRect().left : 0;
+        const searchLeft = search.getBoundingClientRect().left;
+        const lengthLeft = length && length.offsetParent !== null ? length.getBoundingClientRect().left : searchLeft;
+        const searchAboveLength = !length || length.offsetParent === null
+          || search.getBoundingClientRect().top <= length.getBoundingClientRect().top;
+        return {
+          ok: true,
+          aligned: Math.abs(searchLeft - rowLeft) < 48 && Math.abs(lengthLeft - rowLeft) < 48,
+          searchAboveLength: searchAboveLength,
+        };
+      })(arguments[0]);
+JS
+      , $expect_length_visible
+    );
+    $this->assertTrue($result['ok'] ?? FALSE, $result['reason'] ?? 'Left alignment check failed.');
+    $this->assertTrue($result['aligned'], 'Table controls should be left-aligned.');
+    $this->assertTrue($result['searchAboveLength'], 'Search should appear above page length on mobile.');
+  }
+
+  /**
+   * Asserts wide viewports keep search left and page length right on one row.
+   */
+  private function assertCsvTableControlsSplitOnDesktop(): void {
+    $result = $this->getSession()->evaluateScript(<<<'JS'
+      (function () {
+        const row = document.querySelector('.dt-container .dt-layout-row:not(.dt-layout-table), .dataTables_wrapper .dt-layout-row:not(.dt-layout-table)');
+        const search = document.querySelector('.dt-search, .dataTables_filter');
+        const length = document.querySelector('.dt-length, .dataTables_length');
+        if (!row || !search || !length || length.offsetParent === null) {
+          return { ok: false, reason: 'Expected search and page-length controls on desktop.' };
+        }
+        const rowRect = row.getBoundingClientRect();
+        const searchRect = search.getBoundingClientRect();
+        const lengthRect = length.getBoundingClientRect();
+        return {
+          ok: true,
+          searchLeft: Math.abs(searchRect.left - rowRect.left) < 48,
+          lengthRight: Math.abs(lengthRect.right - rowRect.right) < 48,
+          sameRow: Math.abs(searchRect.top - lengthRect.top) < 24,
+        };
+      })();
+JS
+    );
+    $this->assertTrue($result['ok'] ?? FALSE, $result['reason'] ?? 'Desktop split layout check failed.');
+    $this->assertTrue($result['searchLeft'], 'Search should be left-aligned on desktop.');
+    $this->assertTrue($result['lengthRight'], 'Page length should be right-aligned on desktop.');
+    $this->assertTrue($result['sameRow'], 'Search and page length should share one row on desktop.');
+  }
+
+  /**
    * Creates an org page node containing a CSV table paragraph.
    */
   private function createOrgPageWithCsvTable(Paragraph $section, string $title) {
@@ -545,7 +685,51 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $assert->pageTextContains('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
     $this->assertCsvTableLengthControlVisible(TRUE);
-    $this->assertCsvTableSearchAlignment('right');
+    $this->assertCsvTableSearchAlignment('left');
+    $this->assertCsvTableSearchPrecedesLength();
+  }
+
+  /**
+   * Ensures mobile layout shows search before page length, left-aligned.
+   */
+  public function testCsvFlowMobileControlsOrderAndAlignment(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-mobile-controls.csv');
+    $csv_table = $this->createCsvTableParagraph($file, [
+      'searching' => 1,
+      'hideSearchingData' => 1,
+      'searchLabel' => 'Search by name or location',
+      'pageLength' => 5,
+      'lengthChange' => 1,
+      'responsive' => 'childRow',
+      'download' => 0,
+      'urls' => [
+        'autolink' => 0,
+      ],
+    ], 'Employee Lookup');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow Mobile Controls');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTableReady(FALSE);
+    $this->getSession()->resizeWindow(390, 844, 'current');
+    $this->assertCsvTableSearchAlignment('left');
+    $this->assertCsvTableSearchInputAndButtonOnSameLine();
+    $this->assertCsvTableSearchInputWidthReasonable();
+    $this->assertCsvTableControlsLeftAlignedOnMobile(FALSE);
+
+    $this->getSession()->resizeWindow(600, 900, 'current');
+    $this->assertCsvTableSearchInputAndButtonOnSameLine();
+    $this->assertCsvTableSearchInputWidthReasonable();
+
+    $this->getSession()->resizeWindow(320, 640, 'current');
+    $this->assertCsvTableSearchInputAndButtonOnSameLine();
+    $this->assertCsvTableSearchInputWidthReasonable();
+
+    $this->searchCsvTable('Unique Agency');
+    $this->assertCsvTableSearchPrecedesLength();
+    $this->assertCsvTableControlsLeftAlignedOnMobile(TRUE);
   }
 
   /**
@@ -930,7 +1114,9 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $this->drupalGet('node/' . $node->id());
     $this->waitForCsvTableReady();
-    $this->assertCsvTableSearchAlignment('right');
+    $this->assertCsvTableSearchAlignment('left');
+    $this->assertCsvTableSearchPrecedesLength();
+    $this->assertCsvTableControlsSplitOnDesktop();
 
     $assert = $this->assertSession();
     $assert->elementExists('css', 'button.csv-field-search-submit');
