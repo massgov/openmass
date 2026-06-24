@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.campaign_landing.field_campaign_landing_metatags
     - field.field.node.campaign_landing.field_collections
+    - field.field.node.campaign_landing.field_content_organization
     - field.field.node.campaign_landing.field_english_version
     - field.field.node.campaign_landing.field_header
     - field.field.node.campaign_landing.field_meta_description
@@ -79,6 +80,7 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - path
         - field_campaign_landing_metatags
         - url_redirects
@@ -128,6 +130,28 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 0
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
