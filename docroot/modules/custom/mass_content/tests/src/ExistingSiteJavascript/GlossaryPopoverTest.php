@@ -81,7 +81,7 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   private function createEditor() {
-    $editor = $this->createUser();
+    $editor = $this->createUser(['bypass org access']);
     $editor->addRole('editor');
     $editor->activate();
     $editor->save();
