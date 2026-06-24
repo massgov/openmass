@@ -1424,7 +1424,7 @@ class Organisms {
 
     $steps = [];
     if (!empty($items)) {
-      foreach ($items as $id => $item) {
+      foreach ($items as $item) {
         $steps[] = Molecules::prepareNumberedStep($item, $referenced_fields, $cache_tags);
       }
     }
