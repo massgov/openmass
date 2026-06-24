@@ -128,7 +128,7 @@ class Molecules {
     return array_merge($actionStep, $downloadLinks);
   }
 
-  public static function prepareNumberedStep($entity, array $referenced_fields) {
+  public static function prepareNumberedStep($entity, array $referenced_fields, array &$cache_tags = []) {
     $numberedStep = [
       'title' => Helper::fieldFullView($entity, $referenced_fields['title']),
       'richText' => [
