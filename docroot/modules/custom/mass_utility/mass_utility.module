@@ -337,31 +337,6 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
     $form['actions']['submit']['#submit'][] = 'mass_utility_media_document_redirect';
   }
 
-  if ($media_form->getOperation() === 'add') {
-    // Set the default value the same as the current user's org.
-    $user = User::load(\Drupal::currentUser()->id());
-    if (isset($user->field_user_org)) {
-      $term_ids = array_column($user->get('field_user_org')->getValue(), 'target_id');
-      $term_ids = array_values(array_filter($term_ids));
-      if ($term_ids) {
-        $terms = \Drupal::entityTypeManager()
-          ->getStorage('taxonomy_term')
-          ->loadMultiple($term_ids);
-        foreach ($terms as $term) {
-          $org_node_id = $term->get('field_state_organization')->target_id;
-          if ($org_node_id) {
-            $org_node = \Drupal::entityTypeManager()
-              ->getStorage('node')
-              ->load($org_node_id);
-            if (!empty($org_node)) {
-              $form['field_organizations']['widget'][0]['target_id']['#default_value'] = $org_node;
-            }
-          }
-        }
-      }
-    }
-  }
-
   // Hide the Temporary Unpublished Access form on the edit page for media items.
   if (isset($form['access_unpublished_settings'])) {
     $form['access_unpublished_settings']['#access'] = FALSE;
