@@ -7576,6 +7576,10 @@ function mass_theme_preprocess_paragraph__numbered_steps(&$variables) {
   $paragraph = $variables['paragraph'];
 
   if ($paragraph instanceof \Drupal\paragraphs\ParagraphInterface) {
-    $variables['processStepperSteps'] = Organisms::prepareNumberedSteps($paragraph);
+    $cache_tags = [];
+    $variables['processStepperSteps'] = Organisms::prepareNumberedSteps($paragraph, [], $cache_tags);
+    if (!empty($cache_tags)) {
+      $variables['#cache']['tags'] = Cache::mergeTags($variables['#cache']['tags'] ?? [], $cache_tags);
+    }
   }
 }
