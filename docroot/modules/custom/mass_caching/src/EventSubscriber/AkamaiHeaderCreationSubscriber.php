@@ -6,12 +6,18 @@ use Drupal\acquia_purge\AcquiaCloud\Hash;
 use Drupal\akamai\Event\AkamaiHeaderEvents;
 use Drupal\akamai\Event\AkamaiPurgeEvents;
 use Drupal\akamai\Helper\CacheTagFormatter;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Alters Akamai header cache tags before the header is created.
  */
 class AkamaiHeaderCreationSubscriber implements EventSubscriberInterface {
+
+  /**
+   * Akamai Edge-Cache-Tag response header tag count limit.
+   */
+  private const MAX_HEADER_TAGS = 128;
 
   /**
    * Akamai cache tag formatter.
@@ -21,13 +27,23 @@ class AkamaiHeaderCreationSubscriber implements EventSubscriberInterface {
   private CacheTagFormatter $tagFormatter;
 
   /**
+   * The logger channel.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  private LoggerInterface $logger;
+
+  /**
    * Constructs a new AkamaiHeaderCreationSubscriber.
    *
    * @param \Drupal\akamai\Helper\CacheTagFormatter $tag_formatter
    *   Akamai cache tag formatter.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger channel.
    */
-  public function __construct(CacheTagFormatter $tag_formatter) {
+  public function __construct(CacheTagFormatter $tag_formatter, LoggerInterface $logger) {
     $this->tagFormatter = $tag_formatter;
+    $this->logger = $logger;
   }
 
   /**
@@ -40,6 +56,15 @@ class AkamaiHeaderCreationSubscriber implements EventSubscriberInterface {
     $event->data = array_values(array_filter($event->data, static function ($tag): bool {
       return $tag !== 'node_list';
     }));
+    if (count($event->data) > self::MAX_HEADER_TAGS) {
+      $this->logger->warning(
+        'Akamai Edge-Cache-Tag header contains {count} tags, exceeding Akamai\'s {limit}-tag header limit. Akamai may reject or truncate the header.',
+        [
+          'count' => count($event->data),
+          'limit' => self::MAX_HEADER_TAGS,
+        ]
+      );
+    }
   }
 
   /**

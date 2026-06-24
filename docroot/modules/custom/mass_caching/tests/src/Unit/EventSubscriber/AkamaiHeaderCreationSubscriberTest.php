@@ -10,6 +10,8 @@ use Drupal\akamai\Plugin\Purge\Purger\AkamaiTagPurger;
 use Drupal\mass_caching\EventSubscriber\AkamaiHeaderCreationSubscriber;
 use Drupal\purge\Plugin\Purge\Invalidation\TagInvalidation;
 use Drupal\Tests\UnitTestCase;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
@@ -87,6 +89,43 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
   }
 
   /**
+   * Tests oversized header tag sets are logged.
+   */
+  public function testOversizedHeaderTagSetLogged(): void {
+    $tags = range(1, 129);
+    $tags = array_map(static fn ($tag): string => "node:$tag", $tags);
+    $event = new AkamaiHeaderEvents($tags);
+    $logger = $this->createMock(LoggerInterface::class);
+    $logger->expects($this->once())
+      ->method('warning')
+      ->with(
+        'Akamai Edge-Cache-Tag header contains {count} tags, exceeding Akamai\'s {limit}-tag header limit. Akamai may reject or truncate the header.',
+        [
+          'count' => 129,
+          'limit' => 128,
+        ]
+      );
+    $subscriber = $this->createSubscriber($logger);
+
+    $subscriber->onHeaderCreation($event);
+  }
+
+  /**
+   * Tests oversized tag sets are not logged while hashing purge events.
+   */
+  public function testOversizedPurgeTagSetNotLoggedWhileHashing(): void {
+    $tags = range(1, 129);
+    $tags = array_map(static fn ($tag): string => "node:$tag", $tags);
+    $event = new AkamaiPurgeEvents($tags);
+    $logger = $this->createMock(LoggerInterface::class);
+    $logger->expects($this->never())
+      ->method('warning');
+    $subscriber = $this->createSubscriber($logger);
+
+    $subscriber->hashTags($event);
+  }
+
+  /**
    * Tests the subscriber listens to Akamai header creation events.
    */
   public function testSubscribedEvents(): void {
@@ -104,8 +143,8 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
   /**
    * Creates the subscriber under test.
    */
-  private function createSubscriber(): AkamaiHeaderCreationSubscriber {
-    return new AkamaiHeaderCreationSubscriber(new CacheTagFormatter());
+  private function createSubscriber(?LoggerInterface $logger = NULL): AkamaiHeaderCreationSubscriber {
+    return new AkamaiHeaderCreationSubscriber(new CacheTagFormatter(), $logger ?? new NullLogger());
   }
 
   /**
