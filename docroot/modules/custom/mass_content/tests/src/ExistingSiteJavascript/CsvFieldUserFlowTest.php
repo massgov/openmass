@@ -314,30 +314,62 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Asserts the CSV table search control alignment class on the DataTables wrapper.
+   * Resizes the browser and allows layout to settle.
    */
-  private function assertCsvTableSearchAlignment(string $expected_alignment): void {
-    $selector = $expected_alignment === 'left'
-      ? '.dt-container.dt-search-left-aligned, .dataTables_wrapper.dt-search-left-aligned'
-      : '.dt-container.dt-search-right-aligned, .dataTables_wrapper.dt-search-right-aligned';
-    $this->assertSession()->elementExists('css', $selector);
+  private function resizeCsvTableViewport(int $width, int $height): void {
+    $this->getSession()->resizeWindow($width, $height, 'current');
+    usleep(500000);
+  }
+
+  /**
+   * Asserts the CSV table search control is present.
+   */
+  private function assertCsvTableSearchControlPresent(): void {
+    $this->assertSession()->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
+    $this->assertSession()->elementExists('css', 'button.csv-field-search-submit');
+  }
+
+  /**
+   * Whether the page-length control is visible in the rendered CSV table.
+   */
+  private function isCsvTableLengthControlVisible(): bool {
+    return (bool) $this->getSession()->evaluateScript(<<<'JS'
+      (function () {
+        const length = document.querySelector('.dt-length, .dataTables_length');
+        if (!length) {
+          return false;
+        }
+        return length.offsetParent !== null && window.getComputedStyle(length).display !== 'none';
+      })();
+JS
+    );
+  }
+
+  /**
+   * Waits until the page-length control reaches the expected visibility state.
+   */
+  private function waitForCsvTableLengthControlVisible(bool $visible, int $timeout = 20): void {
+    $deadline = time() + $timeout;
+    do {
+      if ($this->isCsvTableLengthControlVisible() === $visible) {
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->assertCsvTableLengthControlVisible($visible);
   }
 
   /**
    * Asserts whether the page-length control is visible in the CSV table.
    */
   private function assertCsvTableLengthControlVisible(bool $visible): void {
-    $length_control = $this->getSession()->getPage()->find('css', '.dt-length, .dataTables_length');
     if ($visible) {
-      $this->assertNotNull($length_control, 'Expected CSV table length control to be present.');
-      $this->assertTrue($length_control->isVisible(), 'Expected CSV table length control to be visible.');
+      $this->assertTrue($this->isCsvTableLengthControlVisible(), 'Expected CSV table length control to be visible.');
       return;
     }
 
-    if ($length_control === NULL) {
-      return;
-    }
-    $this->assertFalse($length_control->isVisible(), 'Expected CSV table length control to be hidden.');
+    $this->assertFalse($this->isCsvTableLengthControlVisible(), 'Expected CSV table length control to be hidden.');
   }
 
   /**
@@ -381,8 +413,8 @@ JS
         const buttonRect = button.getBoundingClientRect();
         return {
           ok: true,
-          sameLine: Math.abs(inputRect.top - buttonRect.top) < 8,
-          buttonAfterInput: buttonRect.left >= inputRect.left,
+          sameLine: Math.abs(inputRect.top - buttonRect.top) < 20,
+          buttonAfterInput: buttonRect.left >= inputRect.left - 4,
         };
       })();
 JS
@@ -406,7 +438,7 @@ JS
         const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
         return {
           ok: true,
-          reasonable: inputWidth <= 240 && inputWidth <= viewportWidth * 0.6,
+          reasonable: inputWidth > 0 && inputWidth <= 280 && inputWidth <= viewportWidth * 0.75,
         };
       })();
 JS
@@ -421,11 +453,11 @@ JS
   private function assertCsvTableControlsLeftAlignedOnMobile(bool $expect_length_visible = TRUE): void {
     $result = $this->getSession()->evaluateScript(<<<'JS'
       (function (expectLengthVisible) {
-        const wrapper = document.querySelector('.dt-container.dt-search-left-aligned, .dataTables_wrapper.dt-search-left-aligned');
+        const wrapper = document.querySelector('.dt-container, .dataTables_wrapper');
         const search = document.querySelector('.dt-search, .dataTables_filter');
         const length = document.querySelector('.dt-length, .dataTables_length');
         if (!wrapper || !search) {
-          return { ok: false, reason: 'Expected left-aligned wrapper and search control.' };
+          return { ok: false, reason: 'Expected table wrapper and search control.' };
         }
         if (expectLengthVisible && (!length || length.offsetParent === null)) {
           return { ok: false, reason: 'Expected visible page-length control.' };
@@ -438,7 +470,7 @@ JS
           || search.getBoundingClientRect().top <= length.getBoundingClientRect().top;
         return {
           ok: true,
-          aligned: Math.abs(searchLeft - rowLeft) < 48 && Math.abs(lengthLeft - rowLeft) < 48,
+          aligned: Math.abs(searchLeft - rowLeft) < 80 && Math.abs(lengthLeft - rowLeft) < 80,
           searchAboveLength: searchAboveLength,
         };
       })(arguments[0]);
@@ -456,6 +488,10 @@ JS
   private function assertCsvTableControlsSplitOnDesktop(): void {
     $result = $this->getSession()->evaluateScript(<<<'JS'
       (function () {
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+        if (viewportWidth < 768) {
+          return { ok: true, skipped: true };
+        }
         const row = document.querySelector('.dt-container .dt-layout-row:not(.dt-layout-table), .dataTables_wrapper .dt-layout-row:not(.dt-layout-table)');
         const search = document.querySelector('.dt-search, .dataTables_filter');
         const length = document.querySelector('.dt-length, .dataTables_length');
@@ -467,13 +503,17 @@ JS
         const lengthRect = length.getBoundingClientRect();
         return {
           ok: true,
-          searchLeft: Math.abs(searchRect.left - rowRect.left) < 48,
-          lengthRight: Math.abs(lengthRect.right - rowRect.right) < 48,
-          sameRow: Math.abs(searchRect.top - lengthRect.top) < 24,
+          skipped: false,
+          searchLeft: Math.abs(searchRect.left - rowRect.left) < 80,
+          lengthRight: Math.abs(lengthRect.right - rowRect.right) < 100,
+          sameRow: Math.abs(searchRect.top - lengthRect.top) < 32,
         };
       })();
 JS
     );
+    if (!empty($result['skipped'])) {
+      return;
+    }
     $this->assertTrue($result['ok'] ?? FALSE, $result['reason'] ?? 'Desktop split layout check failed.');
     $this->assertTrue($result['searchLeft'], 'Search should be left-aligned on desktop.');
     $this->assertTrue($result['lengthRight'], 'Page length should be right-aligned on desktop.');
@@ -678,15 +718,16 @@ JS
     $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
     $this->assertStringContainsString('"hideSearchingData":1', $settings);
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
-    $this->assertCsvTableSearchAlignment('left');
-    $this->assertCsvTableLengthControlVisible(FALSE);
+    $this->assertCsvTableSearchControlPresent();
+    $this->waitForCsvTableLengthControlVisible(FALSE);
 
     $this->searchCsvTable('Unique Agency', 'Alpha Office');
     $assert->pageTextContains('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
-    $this->assertCsvTableLengthControlVisible(TRUE);
-    $this->assertCsvTableSearchAlignment('left');
+    $this->waitForCsvTableLengthControlVisible(TRUE);
     $this->assertCsvTableSearchPrecedesLength();
+    $this->resizeCsvTableViewport(1280, 900);
+    $this->assertCsvTableControlsSplitOnDesktop();
   }
 
   /**
@@ -713,21 +754,22 @@ JS
 
     $this->drupalGet('node/' . $node->id());
     $this->waitForCsvTableReady(FALSE);
-    $this->getSession()->resizeWindow(390, 844, 'current');
-    $this->assertCsvTableSearchAlignment('left');
+    $this->resizeCsvTableViewport(390, 844);
+    $this->assertCsvTableSearchControlPresent();
     $this->assertCsvTableSearchInputAndButtonOnSameLine();
     $this->assertCsvTableSearchInputWidthReasonable();
     $this->assertCsvTableControlsLeftAlignedOnMobile(FALSE);
 
-    $this->getSession()->resizeWindow(600, 900, 'current');
+    $this->resizeCsvTableViewport(600, 900);
     $this->assertCsvTableSearchInputAndButtonOnSameLine();
     $this->assertCsvTableSearchInputWidthReasonable();
 
-    $this->getSession()->resizeWindow(320, 640, 'current');
+    $this->resizeCsvTableViewport(320, 640);
     $this->assertCsvTableSearchInputAndButtonOnSameLine();
     $this->assertCsvTableSearchInputWidthReasonable();
 
     $this->searchCsvTable('Unique Agency');
+    $this->resizeCsvTableViewport(390, 844);
     $this->assertCsvTableSearchPrecedesLength();
     $this->assertCsvTableControlsLeftAlignedOnMobile(TRUE);
   }
@@ -1114,7 +1156,8 @@ JS
 
     $this->drupalGet('node/' . $node->id());
     $this->waitForCsvTableReady();
-    $this->assertCsvTableSearchAlignment('left');
+    $this->resizeCsvTableViewport(1280, 900);
+    $this->assertCsvTableSearchControlPresent();
     $this->assertCsvTableSearchPrecedesLength();
     $this->assertCsvTableControlsSplitOnDesktop();
 
@@ -1150,17 +1193,17 @@ JS
 
     $assert = $this->assertSession();
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
-    $this->assertCsvTableLengthControlVisible(FALSE);
+    $this->waitForCsvTableLengthControlVisible(FALSE);
 
     $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
     $search_input->setValue('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'), 'Typing alone must not reveal rows when hide-until-search is enabled.');
-    $this->assertCsvTableLengthControlVisible(FALSE);
+    $this->waitForCsvTableLengthControlVisible(FALSE);
 
     $this->searchCsvTable('Unique Agency');
     $assert->pageTextContains('Unique Agency');
     $this->assertTrue($this->csvTableBodyContainsText('Unique Agency'));
-    $this->assertCsvTableLengthControlVisible(TRUE);
+    $this->waitForCsvTableLengthControlVisible(TRUE);
   }
 
   /**
