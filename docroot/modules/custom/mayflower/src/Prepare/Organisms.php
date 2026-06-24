@@ -1401,7 +1401,7 @@ class Organisms {
     return ['items' => $items];
   }
 
-  public static function prepareNumberedSteps(ParagraphInterface $entity, array $options = []) {
+  public static function prepareNumberedSteps(ParagraphInterface $entity, array $options = [], array &$cache_tags = []) {
     $map = [
       'reference' => ['field_step'],
     ];
