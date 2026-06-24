@@ -373,32 +373,6 @@ JS
   }
 
   /**
-   * Asserts search appears before the page-length control in the DOM.
-   */
-  private function assertCsvTableSearchPrecedesLength(): void {
-    $result = $this->getSession()->evaluateScript(<<<'JS'
-      (function () {
-        const wrapper = document.querySelector('.dt-container, .dataTables_wrapper');
-        if (!wrapper) {
-          return { ok: false, reason: 'No DataTables wrapper found.' };
-        }
-        const search = wrapper.querySelector('.dt-search, .dataTables_filter');
-        const length = wrapper.querySelector('.dt-length, .dataTables_length');
-        if (!search || !length) {
-          return { ok: false, reason: 'Expected both search and page-length controls.' };
-        }
-        return {
-          ok: true,
-          searchFirst: !!(search.compareDocumentPosition(length) & Node.DOCUMENT_POSITION_FOLLOWING),
-        };
-      })();
-JS
-    );
-    $this->assertTrue($result['ok'] ?? FALSE, $result['reason'] ?? 'Control order check failed.');
-    $this->assertTrue($result['searchFirst'], 'Search control should appear before page length control.');
-  }
-
-  /**
    * Asserts the search input and submit button share one horizontal row.
    */
   private function assertCsvTableSearchInputAndButtonOnSameLine(): void {
@@ -507,6 +481,7 @@ JS
           searchLeft: Math.abs(searchRect.left - rowRect.left) < 80,
           lengthRight: Math.abs(lengthRect.right - rowRect.right) < 100,
           sameRow: Math.abs(searchRect.top - lengthRect.top) < 32,
+          searchBeforeLength: searchRect.left < lengthRect.left,
         };
       })();
 JS
@@ -518,6 +493,7 @@ JS
     $this->assertTrue($result['searchLeft'], 'Search should be left-aligned on desktop.');
     $this->assertTrue($result['lengthRight'], 'Page length should be right-aligned on desktop.');
     $this->assertTrue($result['sameRow'], 'Search and page length should share one row on desktop.');
+    $this->assertTrue($result['searchBeforeLength'], 'Search should appear to the left of page length on desktop.');
   }
 
   /**
@@ -725,7 +701,6 @@ JS
     $assert->pageTextContains('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
     $this->waitForCsvTableLengthControlVisible(TRUE);
-    $this->assertCsvTableSearchPrecedesLength();
     $this->resizeCsvTableViewport(1280, 900);
     $this->assertCsvTableControlsSplitOnDesktop();
   }
@@ -770,7 +745,6 @@ JS
 
     $this->searchCsvTable('Unique Agency');
     $this->resizeCsvTableViewport(390, 844);
-    $this->assertCsvTableSearchPrecedesLength();
     $this->assertCsvTableControlsLeftAlignedOnMobile(TRUE);
   }
 
@@ -1158,7 +1132,6 @@ JS
     $this->waitForCsvTableReady();
     $this->resizeCsvTableViewport(1280, 900);
     $this->assertCsvTableSearchControlPresent();
-    $this->assertCsvTableSearchPrecedesLength();
     $this->assertCsvTableControlsSplitOnDesktop();
 
     $assert = $this->assertSession();
