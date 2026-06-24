@@ -38,8 +38,10 @@
  * @ingroup themeable
  */
 #}
-{{ include('@organisms/by-author/process-stepper.twig', {
-  processStepper: {
-    steps: processStepperSteps|default([]),
-  },
-}) }}
+{% if processStepperSteps %}
+  {{ include('@organisms/by-author/process-stepper.twig', {
+    processStepper: {
+      steps: processStepperSteps|default([]),
+    },
+  }) }}
+{% endif %}
