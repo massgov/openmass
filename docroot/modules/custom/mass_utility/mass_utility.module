@@ -569,6 +569,9 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
     elseif ($field_name == 'field_contact_directions_link') {
       return;
     }
+    elseif ($field_name == 'field_next_step_link') {
+      unset($element['title']['#description']);
+    }
     else {
       // Set link field descriptions for all other link fields.
       // Default description values.
