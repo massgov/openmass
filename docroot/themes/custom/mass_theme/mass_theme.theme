@@ -30,6 +30,7 @@ use Drupal\mayflower\Prepare\Schemas;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\paragraphs\ParagraphInterface;
 use Drupal\schema_metatag\SchemaMetatagManager;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DomCrawler\Crawler;
@@ -7575,7 +7576,7 @@ function mass_theme_preprocess_paragraph__service_section(array &$variables) {
 function mass_theme_preprocess_paragraph__numbered_steps(&$variables) {
   $paragraph = $variables['paragraph'];
 
-  if ($paragraph instanceof \Drupal\paragraphs\ParagraphInterface) {
+  if ($paragraph instanceof ParagraphInterface) {
     $cache_tags = [];
     $variables['processStepperSteps'] = Organisms::prepareNumberedSteps($paragraph, [], $cache_tags);
     if (!empty($cache_tags)) {
