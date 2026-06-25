@@ -1,0 +1,35 @@
+uuid: 0f837169-7a7c-4656-a770-55dfb7769e87
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.numbered_steps.field_step
+    - paragraphs.paragraphs_type.numbered_steps
+  module:
+    - paragraphs
+id: paragraph.numbered_steps.default
+targetEntityType: paragraph
+bundle: numbered_steps
+mode: default
+content:
+  field_step:
+    type: paragraphs
+    weight: 0
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

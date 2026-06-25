@@ -1,0 +1,30 @@
+uuid: d4e5f6a7-b8c9-4012-d345-6789abcdef01
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_default_labels
+    - taxonomy.vocabulary.label
+  module:
+    - user
+id: user.user.field_default_labels
+field_name: field_default_labels
+entity_type: user
+bundle: user
+label: 'Default labels'
+description: 'Optional. Labels pre-filled on new pages and documents you create. You can change or remove them on each new item before saving.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      label: label
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
