@@ -217,4 +217,75 @@ class EntityEmbedDecorativeImageTest extends MassExistingSiteBase {
     $this->assertContains('image_widget__decorative', $suggestions);
   }
 
+  /**
+   * Location banner image does not use the decorative checkbox.
+   */
+  public function testLocationBannerImageDecorativeCheckboxDisabled(): void {
+    /** @var \Drupal\Core\Entity\Entity\EntityFormDisplay $form_display */
+    $form_display = \Drupal::entityTypeManager()
+      ->getStorage('entity_form_display')
+      ->load('node.location.default');
+
+    $this->assertNotNull($form_display);
+    $component = $form_display->getComponent('field_bg_narrow');
+    $this->assertSame('image_focal_point', $component['type']);
+    $this->assertEmpty(
+      $component['third_party_settings']['decorative_image_widget']['use_decorative_checkbox'] ?? NULL,
+      'Location banner image must not enable the decorative checkbox.'
+    );
+  }
+
+  /**
+   * Image fields with decorative checkbox enabled are configured as expected.
+   */
+  public function testDecorativeCheckboxEnabledFormDisplays(): void {
+    $enabled_fields = [
+      ['node.news.default', 'field_news_image'],
+      ['node.event.default', 'field_event_image'],
+      ['node.event.default', 'field_event_logo'],
+      ['paragraph.image.default', 'field_image'],
+    ];
+
+    $storage = \Drupal::entityTypeManager()->getStorage('entity_form_display');
+
+    foreach ($enabled_fields as [$display_id, $field_name]) {
+      /** @var \Drupal\Core\Entity\Entity\EntityFormDisplay $form_display */
+      $form_display = $storage->load($display_id);
+      $this->assertNotNull($form_display, "Form display $display_id exists.");
+      $component = $form_display->getComponent($field_name);
+      $this->assertTrue(
+        !empty($component['third_party_settings']['decorative_image_widget']['use_decorative_checkbox']),
+        "$display_id:$field_name must enable the decorative checkbox."
+      );
+    }
+  }
+
+  /**
+   * Alt help text mentions the decorative checkbox only when it is enabled.
+   */
+  public function testAltHelpTextMatchesDecorativeCheckboxPresence(): void {
+    $form_state = new FormState();
+
+    $without_checkbox = [
+      'alt' => ['#required' => FALSE],
+    ];
+    $without_checkbox = _mass_fields_location_image_widget_alt_help_text_process($without_checkbox, $form_state, []);
+    $this->assertStringNotContainsString(
+      'checkbox',
+      (string) $without_checkbox['alt']['#description'],
+      'Location banner alt help must not mention a decorative checkbox.'
+    );
+
+    $with_checkbox = [
+      'alt' => ['#required' => FALSE],
+      '#decorative_image_widget' => ['use_decorative_checkbox' => TRUE],
+    ];
+    $with_checkbox = _mass_fields_event_image_widget_alt_help_text_process($with_checkbox, $form_state, []);
+    $this->assertStringContainsString(
+      'decorative" checkbox below',
+      (string) $with_checkbox['alt']['#description'],
+      'Event image alt help must mention the decorative checkbox when enabled.'
+    );
+  }
+
 }

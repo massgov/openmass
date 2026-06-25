@@ -233,7 +233,7 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     // Trim the HTML content to remove extra whitespace.
     $highlight_alt_description = trim($highlight_alt_description);
     $this->assertEquals(
-      'If the image conveys information that is not part of the link text, describe it here. Screen readers will read the alt text first, then the link text. If the image is purely decorative, leave it blank and check the "decorative" checkbox below.',
+      'If the image conveys information that is not part of the link text, describe it here. Screen readers will read the alt text first, then the link text. If the image is purely decorative, leave it blank.',
       $highlight_alt_description,
       'Alt text description for field_featured_item_highlight is correct.'
     );
@@ -242,7 +242,7 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     $item_alt_description = $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-image-0-alt--description')->getHtml();
     $item_alt_description = trim($item_alt_description);
     $this->assertEquals(
-      'If the image conveys information that is not part of the link text, describe it here. Screen readers will read the alt text first, then the link text. If the image is purely decorative, leave it blank and check the "decorative" checkbox below.',
+      'If the image conveys information that is not part of the link text, describe it here. Screen readers will read the alt text first, then the link text. If the image is purely decorative, leave it blank.',
       $item_alt_description,
       'Alt text description for field_featured_item_image is correct.'
     );
