@@ -382,16 +382,16 @@ class EntityUsageTest extends MassExistingSiteBase {
   }
 
   /**
-   * Ignores stale paragraph usage removed from the current node revision.
+   * Removes stale paragraph usage after the node update queue item runs.
    */
-  public function testUsagePageIgnoresDetachedParagraphSources() {
+  public function testDetachedParagraphUsageIsDeletedFromTable() {
     $media = $this->createDocumentMedia();
     $media_download_link = '<a href="' . $media->toUrl()->toString() . '/download">Download</a>';
     $org_node = $this->createOrganizationWithNestedParagraphs($media_download_link, MassModeration::PUBLISHED);
 
     $this->processEntityUsageQueues();
     $this->assertUsageRows($media, 1);
-    $this->assertGreaterThan(0, $this->countUsageRecords($media));
+    $this->assertSame(1, $this->countUsageRecords($media));
 
     $org_node = Node::load($org_node->id());
     $org_node->set('field_organization_sections', []);
@@ -399,8 +399,11 @@ class EntityUsageTest extends MassExistingSiteBase {
     $org_node->setNewRevision(TRUE);
     $org_node->save();
 
-    // Keep the stale entity_usage row in place to verify the UI filter.
+    // The stale row remains until the queue worker processes the node update.
     $this->assertGreaterThan(0, $this->countUsageRecords($media));
+
+    $this->processEntityUsageQueues();
+    $this->assertSame(0, $this->countUsageRecords($media));
     $this->assertUsageRows($media, 0);
   }
 

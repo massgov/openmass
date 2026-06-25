@@ -62,6 +62,8 @@ function mass_entity_usage_entity_usage_queue_tracking_should_remove_usage($enti
     return FALSE;
   }
 
+  _mass_entity_usage_delete_stale_paragraph_usage($entity);
+
   $content_moderation_state = \Drupal\content_moderation\Entity\ContentModerationState::loadFromModeratedEntity($entity);
   if (!$content_moderation_state instanceof \Drupal\content_moderation\Entity\ContentModerationStateInterface
     || $content_moderation_state->get('moderation_state')->isEmpty()) {
@@ -163,4 +165,44 @@ function _mass_entity_usage_get_nested_paragraph_ids(array $paragraph_ids) {
   }
 
   return array_keys($seen);
+}
+
+/**
+ * Deletes paragraph-source usage rows no longer reachable from a node.
+ *
+ * When a node revision replaces or removes a paragraph tree, older paragraph
+ * entities can remain in storage long enough for their entity_usage rows to
+ * persist. Compare all paragraph trees currently parented to the node against
+ * the node's active paragraph tree and delete usage rows for detached
+ * paragraphs.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $node
+ *   The node currently being processed by the usage tracker queue.
+ */
+function _mass_entity_usage_delete_stale_paragraph_usage($node) {
+  $current_ids = array_fill_keys(_mass_entity_usage_get_paragraph_ids_from_node($node), TRUE);
+
+  $root_ids = \Drupal::database()
+    ->select('paragraphs_item_field_data', 'pifd')
+    ->fields('pifd', ['id'])
+    ->condition('parent_type', 'node')
+    ->condition('parent_id', $node->id())
+    ->distinct()
+    ->execute()
+    ->fetchCol();
+
+  if (!$root_ids) {
+    return;
+  }
+
+  $candidate_ids = _mass_entity_usage_get_nested_paragraph_ids(array_map('intval', $root_ids));
+  $stale_ids = array_diff($candidate_ids, array_keys($current_ids));
+  if (!$stale_ids) {
+    return;
+  }
+
+  $usage = \Drupal::service('entity_usage.usage');
+  foreach ($stale_ids as $paragraph_id) {
+    $usage->deleteBySourceEntity((int) $paragraph_id, 'paragraph');
+  }
 }
