@@ -60,9 +60,16 @@ class ListUsageController extends ControllerBase {
   /**
    * All source rows for this target entity.
    *
-   * @var array
+   * @var array|null
    */
   protected $allRows;
+
+  /**
+   * Reachable paragraph IDs keyed by parent node ID.
+   *
+   * @var array<int, array<int, bool>>
+   */
+  protected array $reachableParagraphIdsByNode = [];
 
   /**
    * The Entity Usage settings config object.
@@ -150,7 +157,7 @@ class ListUsageController extends ControllerBase {
 
     $this->loadEntity($entity_type, $entity_id);
 
-    $total = $this->entityUsage->listUniqueSourcesCount($this->entity);
+    $total = count($this->getAllRows());
     if (!$total) {
       return $build;
     }
@@ -185,6 +192,9 @@ class ListUsageController extends ControllerBase {
         $source_entity = $type_storage->load($source_id);
         if (!$source_entity) {
           // If for some reason this record is broken, just skip it.
+          continue;
+        }
+        if (!$this->isReachableParagraphSource($source_entity)) {
           continue;
         }
         $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
@@ -270,8 +280,21 @@ class ListUsageController extends ControllerBase {
    */
   protected function getSubQueryRows($page, $num_per_page) {
     $offset = $page * $num_per_page;
-    $all_usages = $this->entityUsage->listSourcesPage($this->entity, $offset);
-    return $this->prepareRows($all_usages);
+    return array_slice($this->getAllRows(), $offset, $num_per_page);
+  }
+
+  /**
+   * Builds and caches the filtered usage rows for the current entity.
+   *
+   * @return array
+   *   The rows to render on the usage page.
+   */
+  protected function getAllRows() {
+    if (!isset($this->allRows)) {
+      $this->allRows = $this->prepareRows($this->entityUsage->listSources($this->entity));
+    }
+
+    return $this->allRows;
   }
 
   /**
@@ -316,6 +339,40 @@ class ListUsageController extends ControllerBase {
     }
 
     return $published;
+  }
+
+  /**
+   * Checks whether a paragraph source is still reachable on its parent node.
+   *
+   * Detached paragraph usage can linger in entity_usage after a newer node
+   * revision removes that paragraph tree. The usage page should only show
+   * paragraph sources reachable from the parent node's current revision.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $source_entity
+   *   The source entity from entity_usage.
+   *
+   * @return bool
+   *   TRUE when the source is not a paragraph or is reachable from the current
+   *   parent node revision, FALSE otherwise.
+   */
+  protected function isReachableParagraphSource(EntityInterface $source_entity): bool {
+    if ($source_entity->getEntityTypeId() !== 'paragraph') {
+      return TRUE;
+    }
+
+    /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
+    $parent_node = Helper::getParentNode($source_entity);
+    if (!$parent_node) {
+      return FALSE;
+    }
+
+    $parent_node_id = (int) $parent_node->id();
+    if (!isset($this->reachableParagraphIdsByNode[$parent_node_id])) {
+      $reachable_ids = _mass_entity_usage_get_paragraph_ids_from_node($parent_node);
+      $this->reachableParagraphIdsByNode[$parent_node_id] = array_fill_keys($reachable_ids, TRUE);
+    }
+
+    return isset($this->reachableParagraphIdsByNode[$parent_node_id][(int) $source_entity->id()]);
   }
 
   /**
