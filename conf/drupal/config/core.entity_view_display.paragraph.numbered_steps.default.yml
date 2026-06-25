@@ -1,0 +1,24 @@
+uuid: fb39dddc-fc3f-4301-9e16-b749272c0f3c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.numbered_steps.field_step
+    - paragraphs.paragraphs_type.numbered_steps
+  module:
+    - entity_reference_revisions
+id: paragraph.numbered_steps.default
+targetEntityType: paragraph
+bundle: numbered_steps
+mode: default
+content:
+  field_step:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }
