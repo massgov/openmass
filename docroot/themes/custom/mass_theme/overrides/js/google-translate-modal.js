@@ -1,12 +1,12 @@
-(function (Drupal, once, drupalSettings) {
+(function (Drupal, drupalSettings) {
   'use strict';
 
-  function applyTranslations(wrapper, translations, selectedLanguage) {
+  function applyTranslations(container, translations, selectedLanguage) {
     var fallback = translations.en || {};
     var language = translations[selectedLanguage] || fallback;
-    var disclaimer = wrapper.querySelector('#ma__translate-help p');
-    var translateAction = wrapper.querySelector('#ma__translate-apply');
-    var showOriginalAction = wrapper.querySelector('#ma__translate-reset');
+    var disclaimer = container.querySelector('#ma__translate-help p');
+    var translateAction = container.querySelector('#ma__translate-apply');
+    var showOriginalAction = container.querySelector('#ma__translate-reset');
 
     if (disclaimer && language.disclaimer) {
       disclaimer.textContent = language.disclaimer;
@@ -24,6 +24,14 @@
     }
   }
 
+  function applyTranslationsFromSelect(select, translations) {
+    var container = select.closest('.ma__translate-container');
+
+    if (container) {
+      applyTranslations(container, translations, select.value);
+    }
+  }
+
   Drupal.behaviors.massThemeGoogleTranslateModal = {
     attach: function (context) {
       var translations = drupalSettings.massTheme && drupalSettings.massTheme.googleTranslateLanguages;
@@ -31,19 +39,31 @@
         return;
       }
 
-      once('massThemeGoogleTranslateModal', '[data-utility-nav-modal="translate"]', context).forEach(function (wrapper) {
-        var select = wrapper.querySelector('.ma__translate-select');
+      var selects = Array.prototype.slice.call(context.querySelectorAll('.ma__translate-select'));
 
-        if (!select) {
-          return;
-        }
+      if (context.matches && context.matches('.ma__translate-select')) {
+        selects.unshift(context);
+      }
 
-        applyTranslations(wrapper, translations, select.value);
-
-        select.addEventListener('change', function (event) {
-          applyTranslations(wrapper, translations, event.target.value);
-        });
+      selects.forEach(function (select) {
+        applyTranslationsFromSelect(select, translations);
       });
+
+      if (!document.documentElement.dataset.massThemeGoogleTranslateModal) {
+        document.documentElement.dataset.massThemeGoogleTranslateModal = 'true';
+
+        document.addEventListener('change', function (event) {
+          if (event.target.matches('.ma__translate-select')) {
+            applyTranslationsFromSelect(event.target, translations);
+          }
+        });
+
+        document.addEventListener('input', function (event) {
+          if (event.target.matches('.ma__translate-select')) {
+            applyTranslationsFromSelect(event.target, translations);
+          }
+        });
+      }
     }
   };
-})(Drupal, once, drupalSettings);
+})(Drupal, drupalSettings);
