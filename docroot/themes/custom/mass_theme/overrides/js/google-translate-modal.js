@@ -49,16 +49,11 @@
         applyTranslationsFromSelect(select, translations);
       });
 
-      if (!document.documentElement.dataset.massThemeGoogleTranslateModal) {
-        document.documentElement.dataset.massThemeGoogleTranslateModal = 'true';
+      // Drupal behaviors can attach repeatedly; only bind the delegated listener once.
+      if (!document.documentElement.dataset.massThemeGoogleTranslateModalListener) {
+        document.documentElement.dataset.massThemeGoogleTranslateModalListener = 'true';
 
         document.addEventListener('change', function (event) {
-          if (event.target.matches('.ma__translate-select')) {
-            applyTranslationsFromSelect(event.target, translations);
-          }
-        });
-
-        document.addEventListener('input', function (event) {
           if (event.target.matches('.ma__translate-select')) {
             applyTranslationsFromSelect(event.target, translations);
           }
