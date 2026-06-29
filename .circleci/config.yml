@@ -632,11 +632,11 @@ jobs:
       - store_artifacts:
           path: backstop
 
-  # If you make changes to this job, consider pushing to a tag that's not 'latest'
-  # at Docker Hub. That way, your in-progress work does not interfere with build
-  # happening in the build_test workflow.
+  # If you make changes to this job, consider pushing to a tag that's not 'latest'.
+  # That way, your in-progress work does not interfere with build happening in the
+  # build_test workflow.
   populate:
-    description: "Sanitize a mysql database and push to Docker Hub"
+    description: "Sanitize a mysql database and push to ECR"
     parameters:
       sanitizeOption:
         type: string
@@ -664,7 +664,13 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
-      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+      - run: sudo apt-get update && sudo apt-get install -y awscli
+      - run:
+          name: Log in to ECR
+          command: |
+            AWS_ACCESS_KEY_ID="$PLACEHOLDER_AWS_ACCESS_KEY_ID" \
+            AWS_SECRET_ACCESS_KEY="$PLACEHOLDER_AWS_SECRET_ACCESS_KEY" \
+            aws ecr get-login-password --region PLACEHOLDER_AWS_REGION | docker login --username AWS --password-stdin PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
@@ -1117,23 +1123,23 @@ workflows:
           name: massgov.populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
-          instance: massgov/mysql-sanitized:latest
+          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:latest
       - populate:
           name: massgov.populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
-          instance: massgov/mysql-sanitized:super
+          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:super
       - populate:
           name: massgov.populate.arm --sanitize
           requires: [ build ]
           sanitizeOption: --sanitize
-          instance: massgov/mysql-sanitized:latest.arm
+          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:latest.arm
           resource_class: arm.large
       - populate:
           name: massgov.populate.arm --super-sanitize
           requires: [ build ]
           sanitizeOption: --super-sanitize
-          instance: massgov/mysql-sanitized:super.arm
+          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:super.arm
           resource_class: arm.large
 
   # Usually triggered by drush ma:release.

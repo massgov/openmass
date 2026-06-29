@@ -1,0 +1,141 @@
+name: MySQL Rebuild
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+env:
+  AWS_REGION: PLACEHOLDER_AWS_REGION
+  ECR_REPOSITORY: PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY
+
+jobs:
+  build:
+    name: Build code artifact
+    runs-on: ubuntu-latest
+    container: cimg/php:8.3-node
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Restore Composer cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            vendor
+            docroot/core
+            docroot/modules/contrib
+            docroot/themes/contrib
+          key: site-composer-v20-${{ hashFiles('composer.lock') }}
+
+      - name: Composer install
+        run: composer install --no-interaction --optimize-autoloader
+
+      - name: Install Yarn packages
+        run: yarn install --frozen-lockfile
+
+      - name: Enable Drupal HTTP debug cacheability headers
+        run: cp -f docroot/core/assets/scaffold/files/development.services.yml docroot/sites
+
+      - name: Upload code artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mysql-rebuild-code
+          path: |
+            .
+            !.git
+          include-hidden-files: true
+
+  populate:
+    name: ${{ matrix.name }}
+    needs: build
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: populate --sanitize
+            sanitize_option: --sanitize
+            image_tag: latest
+            runner: ubuntu-latest
+          - name: populate --super-sanitize
+            sanitize_option: --super-sanitize
+            image_tag: super
+            runner: ubuntu-latest
+          - name: populate.arm --sanitize
+            sanitize_option: --sanitize
+            image_tag: latest.arm
+            runner: ubuntu-24.04-arm
+          - name: populate.arm --super-sanitize
+            sanitize_option: --super-sanitize
+            image_tag: super.arm
+            runner: ubuntu-24.04-arm
+    defaults:
+      run:
+        working-directory: code/.circleci/mysql-rebuild
+    steps:
+      - name: Download code artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mysql-rebuild-code
+          path: code
+
+      - name: Fetch drush aliases
+        working-directory: code
+        env:
+          GITHUB_MASSGOV_BOT_TOKEN: ${{ secrets.PLACEHOLDER_GITHUB_MASSGOV_BOT_TOKEN }}
+        run: curl --create-dirs -f -o ./drush/sites/self.site.yml -L "https://${GITHUB_MASSGOV_BOT_TOKEN}@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ secrets.PLACEHOLDER_AWS_ROLE_TO_ASSUME }}
+
+      - name: Log in to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          registries: PLACEHOLDER_AWS_ACCOUNT_ID
+
+      - name: Start Docker Compose services
+        env:
+          AC_API_USER: ${{ secrets.PLACEHOLDER_AC_API_USER }}
+          AC_API2_KEY: ${{ secrets.PLACEHOLDER_AC_API2_KEY }}
+          AC_API2_SECRET: ${{ secrets.PLACEHOLDER_AC_API2_SECRET }}
+        run: docker compose up -d
+
+      - name: Copy code into Drupal container
+        run: docker cp "$GITHUB_WORKSPACE/code/." "$(docker compose ps -q drupal)":/var/www/html
+
+      - name: Wait for mysql
+        run: sleep 5
+
+      - name: Install grep in Drupal container
+        run: docker compose exec -T drupal sudo apk add --no-cache --upgrade grep
+
+      - name: Prepare database
+        run: docker compose exec -T drupal scripts/ma-refresh-local --db-prep-only
+        timeout-minutes: 60
+
+      - name: Sanitize database
+        run: docker compose exec -T drupal scripts/ma-refresh-local ${{ matrix.sanitize_option }}
+        timeout-minutes: 30
+
+      - name: Clear Drupal cache
+        run: docker compose exec -T drupal drush cr
+
+      - name: Stop mysql
+        run: docker compose stop --timeout 60 mysql
+
+      - name: Commit mysql image
+        env:
+          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
+        run: docker commit "$(docker compose ps --all -q mysql)" "$IMAGE_URI"
+        timeout-minutes: 60
+
+      - name: Push mysql image
+        env:
+          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ matrix.image_tag }}
+        run: docker push "$IMAGE_URI"
+        timeout-minutes: 60
