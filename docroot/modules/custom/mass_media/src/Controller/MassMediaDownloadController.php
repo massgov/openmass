@@ -4,7 +4,6 @@ namespace Drupal\mass_media\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\mass_media\CacheableBinaryFileResponse;
 use Drupal\media\MediaInterface;
@@ -45,13 +44,6 @@ class MassMediaDownloadController extends ControllerBase {
   private StreamWrapperManagerInterface $streamWrapperManager;
 
   /**
-   * Drupal filesystem service.
-   *
-   * @var \Drupal\Core\File\FileSystemInterface
-   */
-  private FileSystemInterface $fileSystem;
-
-  /**
    * Stage File Proxy download manager.
    *
    * @var \Drupal\stage_file_proxy\DownloadManagerInterface
@@ -64,13 +56,11 @@ class MassMediaDownloadController extends ControllerBase {
   public function __construct(
     RequestStack $request_stack,
     StreamWrapperManagerInterface $stream_wrapper_manager,
-    FileSystemInterface $file_system,
     DownloadManagerInterface $stage_file_proxy_download_manager,
     ConfigFactoryInterface $config_factory,
   ) {
     $this->requestStack = $request_stack;
     $this->streamWrapperManager = $stream_wrapper_manager;
-    $this->fileSystem = $file_system;
     $this->stageFileProxyDownloadManager = $stage_file_proxy_download_manager;
     $this->configFactory = $config_factory;
   }
@@ -82,7 +72,6 @@ class MassMediaDownloadController extends ControllerBase {
     return new static(
       $container->get('request_stack'),
       $container->get('stream_wrapper_manager'),
-      $container->get('file_system'),
       $container->get('stage_file_proxy.download_manager'),
       $container->get('config.factory')
     );
@@ -168,6 +157,11 @@ class MassMediaDownloadController extends ControllerBase {
 
     // Still missing on disk: return 404.
     if (!$this->fileExists($file_uri)) {
+      $this->getLogger('mass_media')->notice('Media download file not found for media @mid (file @fid): @uri', [
+        '@mid' => $media->id(),
+        '@fid' => $file->id(),
+        '@uri' => $file_uri,
+      ]);
       throw new NotFoundHttpException("The file {$file_uri} does not exist.");
     }
 
@@ -264,12 +258,7 @@ class MassMediaDownloadController extends ControllerBase {
    * Determines whether a file exists at the given stream-wrapper URI.
    */
   private function fileExists(string $file_uri): bool {
-    $realpath = $this->fileSystem->realpath($file_uri);
-    if ($realpath) {
-      return file_exists($realpath);
-    }
-
-    return file_exists($file_uri);
+    return is_file($file_uri);
   }
 
   /**
