@@ -5,6 +5,7 @@ namespace Drupal\Tests\mass_media\ExistingSite;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
+use weitzman\DrupalTestTraits\ConfigTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 
 /**
@@ -14,6 +15,7 @@ use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
  */
 class MediaDownloadTest extends MassExistingSiteBase {
 
+  use ConfigTrait;
   use MediaCreationTrait;
 
   /**
@@ -55,6 +57,18 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $disposition = $this->getSession()->getResponseHeader('Content-Disposition');
     $this->assertNotEmpty($disposition);
     $this->assertStringContainsString('inline', $disposition);
+
+    $cache_control = $this->getSession()->getResponseHeader('Cache-Control');
+    $this->assertNotEmpty($cache_control);
+    $this->assertStringContainsString('max-age=604800', $cache_control);
+    $this->assertStringContainsString('public', $cache_control);
+    $this->assertStringContainsString('s-maxage=604800', $cache_control);
+
+    $last_modified = $this->getSession()->getResponseHeader('Last-Modified');
+    $this->assertNotEmpty($last_modified);
+
+    $etag = $this->getSession()->getResponseHeader('ETag');
+    $this->assertNotEmpty($etag);
   }
 
   /**
@@ -187,9 +201,13 @@ class MediaDownloadTest extends MassExistingSiteBase {
 
     $download_path = ltrim($media->toUrl()->toString() . '/download', '/');
 
-    // First request should return v1 bytes.
+    // First request should return v1 bytes and cache validators.
     $content_v1 = $this->drupalGet($download_path);
     $this->assertStringContainsString('Version 1', $content_v1);
+    $etag_v1 = $this->getSession()->getResponseHeader('ETag');
+    $last_modified_v1 = $this->getSession()->getResponseHeader('Last-Modified');
+    $this->assertNotEmpty($etag_v1);
+    $this->assertNotEmpty($last_modified_v1);
 
     // Replace the file reference and create a new revision while staying
     // published. The controller should serve the new file bytes and Drupal
@@ -204,6 +222,59 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $content_v2 = $this->drupalGet($download_path);
     $this->assertStringContainsString('Version 2', $content_v2);
     $this->assertStringNotContainsString('Version 1', $content_v2);
+
+    $etag_v2 = $this->getSession()->getResponseHeader('ETag');
+    $last_modified_v2 = $this->getSession()->getResponseHeader('Last-Modified');
+    $this->assertNotEmpty($etag_v2);
+    $this->assertNotEmpty($last_modified_v2);
+    $this->assertNotEquals($etag_v1, $etag_v2, 'ETag must change when the underlying file is replaced.');
+  }
+
+  /**
+   * Public downloads expose Akamai Edge-Cache-Tag headers for invalidation.
+   */
+  public function testMediaDownloadExposesEdgeCacheTags(): void {
+    if (!\Drupal::moduleHandler()->moduleExists('akamai')) {
+      $this->markTestSkipped('The akamai module is not enabled.');
+    }
+
+    $this->setConfigValues([
+      'akamai.settings' => [
+        'edge_cache_tag_header' => TRUE,
+        'edge_cache_tag_header_blacklist' => [],
+      ],
+    ]);
+    $this->container->get('config.factory')->clearStaticCache();
+
+    $destination = 'public://llama-download-cache-tags.txt';
+    file_put_contents($destination, 'Cache tag test');
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Llama cache tags',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    try {
+      $this->visit($media->toUrl()->toString() . '/download');
+
+      $edge_cache_tag = $this->getSession()->getResponseHeader('Edge-Cache-Tag');
+      $this->assertNotEmpty($edge_cache_tag);
+      $this->assertStringNotContainsString(' ', $edge_cache_tag);
+    }
+    finally {
+      $this->restoreConfigValues();
+      $this->container->get('config.factory')->clearStaticCache();
+    }
   }
 
   /**
