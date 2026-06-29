@@ -1,29 +1,57 @@
 
 
+## [0.484.0] - June 24, 2026
+
+### Fixed
+  - DP-41032: Pin mayflower artifact to add vertical spacing for Highlight and callout components in rich text.
+  - DP-47635: Resolve inline message warning message icon color contrast issue and match font styles to design.
+  - DP-47707: Stop collection_all View from spamming the watchdog log.
+  
+### Added
+  - DP-43727: Tests for Bulk document import enhancements to validation/verification.
+  - DP-45788: Create mass_org_access module — restricts node/media UPDATE and DELETE to users within their assigned organization via hook_node_access/hook_media_access.
+  - DP-46788: Add user profile Default organizations and Default labels fields; pre-fill new node and document forms from profile defaults; deploy hook migrates default orgs from permission groups for active users.
+  - DP-47685: Added last revised by field to editoria11y csv export.
+  
+### Changed
+  - DP-44915: Added views for viewing accessibility information by top-level organization.
+  - DP-44915: Upgraded Editoria11y to the latest version.
+  - DP-44915: Added last revised by to editoria11y report.
+  - DP-47028: Clean calculation logic for Related Organizations to avoid log noise.
+  - DP-47145: Add Toolbar (Hidden, Bottom, Top), Data details and Share options settings to the Tableau embed paragraph for "Connected Apps" embeds, so these are no longer hardcoded. Toolbar defaults to hidden.
+  - DP-47675: Require image in the image paragraph for header image.
+  
+
+## [0.483.1] - June 18, 2026
+
+### Security
+- DP-47680: Drupal core update 11.3.12.
+
+
 ## [0.483.0] - June 16, 2026
 
 ### Added
   - DP-46864: Adds a Message box toolbar button to Basic HTML CKEditor for informational and alert inline messages rendered with Mayflower inline-message.
-  
+
 ### Fixed
   - DP-47109: Fix JS error with mobile translate component.
-  
+
 
 
 ## [0.482.0] - June 9, 2026
 
 ### Added
   - DP-43633: Warn authors when unpublishing or trashing a document that has published pages linking here.
-  
+
 ### Changed
   - DP-45831: Update internal links on mass.gov that are redirects.
   - DP-46121: Include the nearest microsite name in the HTML meta title for pages within a microsite.
   - DP-46592: CSV Table / Datatables changes - round 3.
-  
+
 ### Fixed
   - DP-47343: Prevent ordered list numbers from being clipped for leading-zero styles and lists with a start attribute, including on info-details pages.
   - DP-47348: Remove green decorative underline from H3 and H4 in the rich text editor so editor preview matches the published page.
-  
+
 
 
 ## [0.481.0] - June 2, 2026
@@ -32,15 +60,15 @@
   - DP-44689: Use the info icon and standard callout spacing for the decision tree disclaimer.
   - DP-46912: Enable item count selection in all content and advanced content reports.
   - DP-46922: Small updates to purge oversized header logger.
-  
+
 ### Fixed
   - DP-45426: Fixed bullet list alignment issues.
   - DP-47000: Fix csv export for all documents to respect value of accessibility status filter
   - DP-47095: Restrict user approval fields to users with administer users permission and normalize editor profile form spacing after the fields are hidden.
-  
+
 ### Added
   - DP-45952: Added top down org hierarchy view report.
-  
+
 
 
 ## [0.480.1] - May 20, 2026

@@ -18,7 +18,7 @@ class PublishChildWithUnpublishedParentConstraintTest extends MassExistingSiteBa
    */
   protected function setUp(): void {
     parent::setUp();
-    $user = $this->createUser();
+    $user = $this->createUser(['bypass org access']);
     $user->addRole('editor');
     $user->activate();
     $user->save();
