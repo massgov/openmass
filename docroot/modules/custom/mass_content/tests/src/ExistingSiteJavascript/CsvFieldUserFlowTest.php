@@ -314,6 +314,57 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Asserts the CSV table search control is present.
+   */
+  private function assertCsvTableSearchControlPresent(): void {
+    $this->assertSession()->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
+    $this->assertSession()->elementExists('css', 'button.csv-field-search-submit');
+  }
+
+  /**
+   * Whether the page-length control is visible in the rendered CSV table.
+   */
+  private function isCsvTableLengthControlVisible(): bool {
+    return (bool) $this->getSession()->evaluateScript(<<<'JS'
+      (function () {
+        const length = document.querySelector('.dt-length, .dataTables_length');
+        if (!length) {
+          return false;
+        }
+        return length.offsetParent !== null && window.getComputedStyle(length).display !== 'none';
+      })();
+JS
+    );
+  }
+
+  /**
+   * Waits until the page-length control reaches the expected visibility state.
+   */
+  private function waitForCsvTableLengthControlVisible(bool $visible, int $timeout = 20): void {
+    $deadline = time() + $timeout;
+    do {
+      if ($this->isCsvTableLengthControlVisible() === $visible) {
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->assertCsvTableLengthControlVisible($visible);
+  }
+
+  /**
+   * Asserts whether the page-length control is visible in the CSV table.
+   */
+  private function assertCsvTableLengthControlVisible(bool $visible): void {
+    if ($visible) {
+      $this->assertTrue($this->isCsvTableLengthControlVisible(), 'Expected CSV table length control to be visible.');
+      return;
+    }
+
+    $this->assertFalse($this->isCsvTableLengthControlVisible(), 'Expected CSV table length control to be hidden.');
+  }
+
+  /**
    * Creates an org page node containing a CSV table paragraph.
    */
   private function createOrgPageWithCsvTable(Paragraph $section, string $title) {
@@ -511,10 +562,46 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
     $this->assertStringContainsString('"hideSearchingData":1', $settings);
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->assertCsvTableSearchControlPresent();
+    $this->waitForCsvTableLengthControlVisible(FALSE);
 
     $this->searchCsvTable('Unique Agency', 'Alpha Office');
     $assert->pageTextContains('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->waitForCsvTableLengthControlVisible(TRUE);
+  }
+
+  /**
+   * Ensures hide-until-search behavior works on a narrow viewport.
+   */
+  public function testCsvFlowMobileHideUntilSearch(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-mobile-controls.csv');
+    $csv_table = $this->createCsvTableParagraph($file, [
+      'searching' => 1,
+      'hideSearchingData' => 1,
+      'searchLabel' => 'Search by name or location',
+      'pageLength' => 5,
+      'lengthChange' => 1,
+      'responsive' => 'childRow',
+      'download' => 0,
+      'urls' => [
+        'autolink' => 0,
+      ],
+    ], 'Employee Lookup');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow Mobile Controls');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->getSession()->resizeWindow(390, 844, 'current');
+    $this->waitForCsvTableReady(FALSE);
+    $this->assertCsvTableSearchControlPresent();
+    $this->waitForCsvTableLengthControlVisible(FALSE);
+
+    $this->searchCsvTable('Unique Agency');
+    $this->assertSession()->pageTextContains('Unique Agency');
+    $this->waitForCsvTableLengthControlVisible(TRUE);
   }
 
   /**
@@ -899,6 +986,7 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $this->drupalGet('node/' . $node->id());
     $this->waitForCsvTableReady();
+    $this->assertCsvTableSearchControlPresent();
 
     $assert = $this->assertSession();
     $assert->elementExists('css', 'button.csv-field-search-submit');
@@ -932,14 +1020,17 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $assert = $this->assertSession();
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->waitForCsvTableLengthControlVisible(FALSE);
 
     $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
     $search_input->setValue('Unique Agency');
     $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'), 'Typing alone must not reveal rows when hide-until-search is enabled.');
+    $this->waitForCsvTableLengthControlVisible(FALSE);
 
     $this->searchCsvTable('Unique Agency');
     $assert->pageTextContains('Unique Agency');
     $this->assertTrue($this->csvTableBodyContainsText('Unique Agency'));
+    $this->waitForCsvTableLengthControlVisible(TRUE);
   }
 
   /**
