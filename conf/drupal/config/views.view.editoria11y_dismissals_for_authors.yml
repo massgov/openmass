@@ -2,6 +2,8 @@ uuid: 787e2d29-e2a8-4615-8ba6-9feaf76bbabe
 langcode: en
 status: true
 dependencies:
+  config:
+    - taxonomy.vocabulary.label
   module:
     - csv_serialization
     - editoria11y
@@ -1181,6 +1183,45 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        entity_type:
+          id: entity_type
+          table: ed11y_page
+          field: entity_type
+          relationship: editoria11y_page_to_dismissals
+          group_type: group
+          admin_label: ''
+          plugin_id: in_operator
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: entity_type_op
+            label: 'Content type'
+            description: ''
+            use_operator: false
+            operator: entity_type_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: entity_type
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
         status:
           id: status
           table: node_field_data
@@ -1194,7 +1235,7 @@ display:
           operator: '='
           value: '1'
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: ''
             label: 'Published?'
@@ -1472,6 +1513,51 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        field_reusable_label_target_id:
+          id: field_reusable_label_target_id
+          table: node__field_reusable_label
+          field: field_reusable_label_target_id
+          relationship: editoria11y_node_to_page
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_reusable_label_target_id_op
+            label: Label(s)
+            description: ''
+            use_operator: false
+            operator: field_reusable_label_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_reusable_label_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: label
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
       filter_groups:
         operator: AND
         groups:
@@ -1483,27 +1569,28 @@ display:
           row_class: ''
           default_row_class: true
           columns:
+            pid: pid
             view_node: view_node
             view_taxonomy_term: view_taxonomy_term
             view_user: view_user
-            name_1: name_1
-            title: title
-            name_2: name_2
             page_path: page_path
             entity_id: entity_id
             page_title: page_title
             entity_type: entity_type
             result_key: result_key
-            action_type: action_type
             name: name
             created: created
             revision_uid: revision_uid
             changed: changed
-            uid: uid
-            pid: pid
-            id: id
-          default: created
+          default: changed
           info:
+            pid:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
             view_node:
               sortable: false
               default_sort_order: asc
@@ -1519,27 +1606,6 @@ display:
               empty_column: false
               responsive: ''
             view_user:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            name_1:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            title:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            name_2:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -1581,13 +1647,6 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            action_type:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
             name:
               sortable: true
               default_sort_order: asc
@@ -1611,28 +1670,7 @@ display:
               responsive: ''
             changed:
               sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            uid:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            pid:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            id:
-              sortable: false
-              default_sort_order: asc
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
@@ -1734,7 +1772,7 @@ display:
           plugin_id: text
           empty: false
           content:
-            value: "<p>\r\n  This report lists accessibility alerts that authors have dismissed using\r\n<strong>Mark OK</strong> while editing content on Edit.mass.gov. The alerts are\r\n  generated by real-time Editorially scans that run when pages are viewed in the\r\n  editing environment.\r\n</p>\r\n \r\n<p>\r\n  Alerts may appear in or be removed from this report under the following conditions:\r\n</p>\r\n \r\n<ul>\r\n<li>\r\n<strong>Mark OK</strong> &ndash; When an author dismisses an accessibility alert\r\n    using Mark OK, the alert is added to this report and removed from the\r\n    Editorially Issues Report.\r\n</li>\r\n<li>\r\n<strong>Restore Mark as OK</strong> &ndash; When an author restores a dismissed\r\n    alert using Restore Mark as OK, the alert is removed from this report and\r\n    returned to the Editorially Issues Report.\r\n</li>\r\n<li>\r\n<strong>Alert condition no longer detected</strong> &ndash; When an accessibility\r\n    error is corrected or when the underlying content state that caused an\r\n    accessibility warning no longer exists, the alert is automatically removed\r\n    from this report the next time the page is viewed on Edit.mass.gov.\r\n</li>\r\n</ul>"
+            value: "<p><strong>Note:</strong> This report includes published pages only.</p>\r\n<p>\r\n  This report lists accessibility alerts that authors have dismissed using\r\n<strong>Mark OK</strong> while editing content on Edit.mass.gov. The alerts are\r\n  generated by real-time Editorially scans that run when pages are viewed in the\r\n  editing environment.\r\n</p>\r\n \r\n<p>\r\n  Alerts may appear in or be removed from this report under the following conditions:\r\n</p>\r\n \r\n<ul>\r\n<li>\r\n<strong>Mark OK</strong> &ndash; When an author dismisses an accessibility alert\r\n    using Mark OK, the alert is added to this report and removed from the\r\n    Editorially Issues Report.\r\n</li>\r\n<li>\r\n<strong>Restore Mark as OK</strong> &ndash; When an author restores a dismissed\r\n    alert using Restore Mark as OK, the alert is removed from this report and\r\n    returned to the Editorially Issues Report.\r\n</li>\r\n<li>\r\n<strong>Alert condition no longer detected</strong> &ndash; When an accessibility\r\n    error is corrected or when the underlying content state that caused an\r\n    accessibility warning no longer exists, the alert is automatically removed\r\n    from this report the next time the page is viewed on Edit.mass.gov.\r\n</li>\r\n</ul>"
             format: basic_html
           tokenize: false
       footer:
