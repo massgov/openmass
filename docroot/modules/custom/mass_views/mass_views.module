@@ -297,6 +297,7 @@ function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$ar
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  _mass_views_fix_vbo_revision_base_field($view, $query);
 
   if ($view->id() == 'news_curated_list' && !empty($view->mass_related_content_id)) {
     $content_id = (int) $view->mass_related_content_id;
@@ -425,6 +426,53 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     $query->addWhere(0, 'node_field_data.nid', $args_to_pass, 'IN');
   }
 
+}
+
+/**
+ * Qualifies revision ID conditions added by VBO on revision-based views.
+ */
+function _mass_views_fix_vbo_revision_base_field(ViewExecutable $view, QueryPluginBase $query): void {
+  if (empty($view->views_bulk_operations_processor_built)) {
+    return;
+  }
+
+  $base_table = $view->storage->get('base_table');
+  $base_field = $view->storage->get('base_field');
+  if ($base_field !== 'vid') {
+    return;
+  }
+
+  $revision_base_tables = [
+    'node_field_revision' => 'node_field_revision.vid',
+    'media_field_revision' => 'media_field_revision.vid',
+  ];
+  if (!isset($revision_base_tables[$base_table])) {
+    return;
+  }
+
+  $qualified_field = $revision_base_tables[$base_table];
+  $changed = FALSE;
+
+  foreach ($query->where as &$condition_group) {
+    if (empty($condition_group['conditions']) || !is_array($condition_group['conditions'])) {
+      continue;
+    }
+    foreach ($condition_group['conditions'] as &$condition) {
+      if (!is_array($condition) || !isset($condition['field'])) {
+        continue;
+      }
+      if ($condition['field'] === $base_field || $condition['field'] === "\"$base_field\"") {
+        $condition['field'] = $qualified_field;
+        $changed = TRUE;
+      }
+    }
+  }
+
+  // VBO calls query->build() before query->alter(), so rebuild after fixing
+  // the unqualified base field condition added in populateQueue().
+  if ($changed) {
+    $query->build($view);
+  }
 }
 
 /**
