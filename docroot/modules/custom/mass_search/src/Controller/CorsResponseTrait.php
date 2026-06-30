@@ -28,7 +28,6 @@ trait CorsResponseTrait {
     $cache_metadata->addCacheContexts(['headers:Origin']);
     $response->setVary('Origin');
 
-    // If the string is found within the Origin header, it's an allowed origin.
     // Web and host.docker.internal are for backstop.
     $allowed_origins = [
       'localhost',
@@ -41,11 +40,23 @@ trait CorsResponseTrait {
       'stagesearch.digital.mass.gov',
     ];
 
-    foreach ($allowed_origins as $allowed_origin) {
-      if ($origin && preg_match('/^(https?:\/\/)?' . $allowed_origin . '(:\d{4})?\/?$/', $origin)) {
-        $response->headers->set('Access-Control-Allow-Origin', $origin);
-        break;
-      }
+    if (!$origin) {
+      return;
+    }
+
+    $origin_parts = parse_url($origin);
+    if (!$origin_parts || empty($origin_parts['scheme']) || empty($origin_parts['host'])) {
+      return;
+    }
+
+    $scheme = strtolower($origin_parts['scheme']);
+    if (!in_array($scheme, ['http', 'https'], TRUE)) {
+      return;
+    }
+
+    $host = strtolower($origin_parts['host']);
+    if (in_array($host, $allowed_origins, TRUE)) {
+      $response->headers->set('Access-Control-Allow-Origin', $origin);
     }
   }
 

@@ -32,6 +32,21 @@ $settings['config_sync_directory'] = '../conf/drupal/config';
 $settings['state_cache'] = TRUE;
 
 /**
+ * Restrict accepted HTTP host headers to trusted site domains.
+ */
+$settings['trusted_host_patterns'] = [
+  '^localhost$',
+  '^127\.0\.0\.1$',
+  '^web$',
+  '^mass-web$',
+  '^mass\.local$',
+  '^.+\.mass\.local$',
+  '^mass\.gov$',
+  '^.+\.mass\.gov$',
+  '^.+\.digital\.mass\.gov$',
+];
+
+/**
  * Page caching:
  *
  * By default, Drupal sends a "Vary: Cookie" HTTP header for anonymous page
