@@ -164,7 +164,7 @@
         "drupal/action": "^0.2",
         "drupal/address": "^2.0",
         "drupal/admin_toolbar": "^3.0",
-        "drupal/ai": "^1.1",
+        "drupal/ai": "~1.2.17",
         "drupal/ai_agents": "^1.1",
         "drupal/ai_content_advisor": "1.x-dev@dev",
         "drupal/ai_provider_aws_bedrock": "^1.1@beta",
@@ -182,9 +182,9 @@
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_ignore": "^3.3",
         "drupal/content_language_no_outbound": "1.0.0-rc1",
-        "drupal/core-composer-scaffold": "~11.3.7",
-        "drupal/core-project-message": "~11.3.7",
-        "drupal/core-recommended": "~11.3.7",
+        "drupal/core-composer-scaffold": "~11.3.12",
+        "drupal/core-project-message": "~11.3.12",
+        "drupal/core-recommended": "~11.3.12",
         "drupal/csv_field": "^3.0",
         "drupal/csv_serialization": "^4.0",
         "drupal/datalayer": "^2",
@@ -193,7 +193,7 @@
         "drupal/draggableviews": "^2.1",
         "drupal/dropzonejs": "^2",
         "drupal/dynamic_entity_reference": "^3.1",
-        "drupal/editoria11y": "2.1.22",
+        "drupal/editoria11y": "^3.0",
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
         "drupal/entity_embed": "^1.7",
@@ -307,7 +307,7 @@
         "typhonius/acquia-php-sdk-v2": "^3.7.3"
     },
     "require-dev": {
-        "drupal/core-dev": "~11.3.7",
+        "drupal/core-dev": "~11.3.12",
         "drupaltest/queue-runner-trait": "dev-master",
         "kint-php/kint": "^5",
         "palantirnet/drupal-rector": "^0.21.1",
@@ -323,7 +323,7 @@
     },
     "scripts": {
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
-        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom",
+        "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction",
         "remove-git": [
             "bash scripts/remove_vendor_git_folders.sh || :"
         ],
@@ -391,6 +391,9 @@
                 "Invalid argument supplied for foreach SettingsForm->prepareHeadersDisplay (https://www.drupal.org/project/access_unpublished/issues/3252499)": "https://www.drupal.org/files/issues/2021-12-03/3252499-warning-invalid-argument-2.patch",
                 "Hardcode preview links based on environment": "patches/access_unpublished/DP-25897_change_unpublish_preview_links_v2.patch",
                 "Call to a member function label() on null (https://www.drupal.org/project/access_unpublished/issues/3137890)": "patches/access_unpublished/access_unpublished_listing_fix.patch"
+            },
+            "drupal/akamai": {
+                "Blacklist not behaving as prefixes (https://www.drupal.org/project/akamai/issues/3527333)": "patches/akamai/3527333-blacklist-not-behaving.diff"
             },
             "drupal/core": {
                 "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577)": "https://www.drupal.org/files/issues/2022-07-12/2575577-38.patch",
@@ -482,6 +485,9 @@
                 "Add a setting to enable/disable inline editing of existing entities (https://www.drupal.org/project/inline_entity_form/issues/2913571#comment-12811088)": "https://www.drupal.org/files/issues/2018-10-11/ief_edit_existing_2913571_7.patch",
                 "Undefined array key delete (https://www.drupal.org/project/inline_entity_form/issues/3416328)": "patches/inline_entity_form/undefined-array-key-delete.patch"
             },
+            "drupal/maxlength": {
+                "Cursor jumps to beginning of text (https://www.drupal.org/project/maxlength/issues/3573209)": "https://www.drupal.org/files/issues/2026-02-13/maxlength-cursor_jumps_to_beginning_of_text-3573209-2.patch"
+            },
             "drupal/memcache": {
                 "Transaction support for cache (tags) invalidation (https://www.drupal.org/project/memcache/issues/2996615)": "https://www.drupal.org/files/issues/2026-02-11/memcache-2996615-mr-22-f003a844-2.7.patch"
             },
@@ -542,9 +548,6 @@
             },
             "drupal/ace_editor": {
                 "Fix the plugin initialization https://www.drupal.org/project/ace_editor/issues/3326303": "patches/ace_editor_fix_plugin_initialization.patch"
-            },
-            "drupal/editoria11y": {
-                "Fix result name options to use editoria11y_results table instead of editoria11y_dismissals (DP-42700)": "patches/editoria11y--result-name-options-results.patch"
             },
             "drupal/environment_indicator": {
                 "Fix getVersionIdentifier() to return NULL instead of empty string (https://www.drupal.org/project/environment_indicator/issues/3535382)": "patches/environment_indicator_getVersionIdentifier_return_null_3535382.patch"
