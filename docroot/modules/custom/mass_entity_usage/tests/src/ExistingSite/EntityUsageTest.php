@@ -12,7 +12,7 @@ use weitzman\DrupalTestTraits\ConfigTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 
 /**
- * Class EntityUsageTest.
+ * Tests Mass Entity Usage tracking behavior.
  */
 class EntityUsageTest extends MassExistingSiteBase {
 
@@ -382,7 +382,7 @@ class EntityUsageTest extends MassExistingSiteBase {
   }
 
   /**
-   * Removes stale paragraph usage after the node update queue item runs.
+   * Removes stale paragraph usage when the default node revision updates.
    */
   public function testDetachedParagraphUsageIsDeletedFromTable() {
     $media = $this->createDocumentMedia();
@@ -399,10 +399,6 @@ class EntityUsageTest extends MassExistingSiteBase {
     $org_node->setNewRevision(TRUE);
     $org_node->save();
 
-    // The stale row remains until the queue worker processes the node update.
-    $this->assertGreaterThan(0, $this->countUsageRecords($media));
-
-    $this->processEntityUsageQueues();
     $this->assertSame(0, $this->countUsageRecords($media));
     $this->assertUsageRows($media, 0);
   }
