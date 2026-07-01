@@ -180,9 +180,28 @@ function _mass_entity_usage_get_nested_paragraph_ids(array $paragraph_ids) {
  *   The node currently being processed by the usage tracker queue.
  */
 function _mass_entity_usage_delete_stale_paragraph_usage($node) {
-  $current_ids = array_fill_keys(_mass_entity_usage_get_paragraph_ids_from_node($node), TRUE);
+  // Cheap guard: collect the node's current root paragraph ids straight from
+  // the field values (no entity loads), and the root paragraphs still parented
+  // to this node in storage (one query). A paragraph has a single parent, so a
+  // root no longer referenced by the current revision means its whole subtree
+  // is detached. If no root is detached there is nothing stale and we skip the
+  // expensive tree walk entirely.
+  $current_root_ids = [];
+  foreach ($node->getFieldDefinitions() as $name => $definition) {
+    if ($definition->getType() !== 'entity_reference_revisions') {
+      continue;
+    }
+    if ($definition->getSetting('target_type') !== 'paragraph') {
+      continue;
+    }
+    foreach ($node->get($name) as $item) {
+      if ($item->target_id) {
+        $current_root_ids[(int) $item->target_id] = TRUE;
+      }
+    }
+  }
 
-  $root_ids = \Drupal::database()
+  $db_root_ids = \Drupal::database()
     ->select('paragraphs_item_field_data', 'pifd')
     ->fields('pifd', ['id'])
     ->condition('parent_type', 'node')
@@ -191,18 +210,32 @@ function _mass_entity_usage_delete_stale_paragraph_usage($node) {
     ->execute()
     ->fetchCol();
 
-  if (!$root_ids) {
+  $detached_roots = array_diff(array_map('intval', $db_root_ids), array_keys($current_root_ids));
+  if (!$detached_roots) {
     return;
   }
 
-  $candidate_ids = _mass_entity_usage_get_nested_paragraph_ids(array_map('intval', $root_ids));
-  $stale_ids = array_diff($candidate_ids, array_keys($current_ids));
-  if (!$stale_ids) {
-    return;
+  // Expand the detached subtrees via the storage table (parent_id back-refs)
+  // instead of loading every paragraph entity, then delete their usage.
+  $database = \Drupal::database();
+  $stale_ids = [];
+  $frontier = array_values($detached_roots);
+  while ($frontier) {
+    foreach ($frontier as $id) {
+      $stale_ids[$id] = TRUE;
+    }
+    $children = $database->select('paragraphs_item_field_data', 'pifd')
+      ->fields('pifd', ['id'])
+      ->condition('parent_type', 'paragraph')
+      ->condition('parent_id', $frontier, 'IN')
+      ->distinct()
+      ->execute()
+      ->fetchCol();
+    $frontier = array_diff(array_map('intval', $children), array_keys($stale_ids));
   }
 
   $usage = \Drupal::service('entity_usage.usage');
-  foreach ($stale_ids as $paragraph_id) {
+  foreach (array_keys($stale_ids) as $paragraph_id) {
     $usage->deleteBySourceEntity((int) $paragraph_id, 'paragraph');
   }
 }
