@@ -74,8 +74,36 @@ class AkamaiHeaderCreationSubscriber implements EventSubscriberInterface {
    *   The Akamai event containing cache tags.
    */
   public function hashTags(AkamaiHeaderEvents|AkamaiPurgeEvents $event): void {
+    if ($event instanceof AkamaiPurgeEvents && $this->containsUrlPurgePayload($event->data)) {
+      return;
+    }
+
     $tags = array_map([$this->tagFormatter, 'format'], $event->data);
     $event->data = Hash::cacheTags($tags);
+  }
+
+  /**
+   * Determines whether an Akamai purge event payload contains URLs or paths.
+   *
+   * AkamaiPurgeEvents is shared by tag and URL purgers, but URL payloads must
+   * not be processed as cache tags.
+   *
+   * @param array $payload
+   *   The purge event payload.
+   *
+   * @return bool
+   *   TRUE when the payload contains URL/path invalidations.
+   */
+  private function containsUrlPurgePayload(array $payload): bool {
+    foreach ($payload as $item) {
+      if (!is_string($item)) {
+        continue;
+      }
+      if (str_starts_with($item, '/') || preg_match('@^[a-z][a-z0-9+.-]*://@i', $item)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
   /**
