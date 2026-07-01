@@ -1,5 +1,20 @@
 
 
+## [0.485.0] - June 30, 2026
+
+### Added
+  - DP-46819: Added stepper component.
+  - DP-46854: Added Akamai cache tag invalidation.
+  
+### Fixed
+  - DP-47668: CSV table search box is right-aligned when no results are displayed.
+  - DP-47759: Editoria11y incorrectly flags news and announcements arrow icon as a manual check.
+  
+### Security
+  - DP-47903: Drupal core, Ai and Paragraphs update.
+  
+
+
 ## [0.484.0] - June 24, 2026
 
 ### Fixed

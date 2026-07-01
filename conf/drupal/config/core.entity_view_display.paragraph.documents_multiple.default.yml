@@ -1,0 +1,22 @@
+uuid: 7c4b8c4d-70d8-4bc6-8388-4ff92ca3469e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.documents_multiple.field_file_download_multiple
+    - paragraphs.paragraphs_type.documents_multiple
+id: paragraph.documents_multiple.default
+targetEntityType: paragraph
+bundle: documents_multiple
+mode: default
+content:
+  field_file_download_multiple:
+    type: entity_reference_entity_view
+    label: above
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }
