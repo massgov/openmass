@@ -367,38 +367,8 @@ class ListUsageController extends ControllerBase {
     // we will use the link to the parent's entity label instead.
     /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
     if ($source_entity->getEntityTypeId() == 'paragraph') {
-      // Paragraph items may be legitimately orphan, so even if this is a real
-      // usage, we will only show it on the UI if its parent is loadable and
-      // references the paragraph on its default revision.
       $parent = $source_entity->getParentEntity();
-      if (empty($parent)) {
-        $orphan = TRUE;
-      }
-      else {
-        $parent_field = $source_entity->get('parent_field_name')->value;
-        /** @var \Drupal\entity_reference_revisions\EntityReferenceRevisionsFieldItemList $values */
-        $values = $parent->{$parent_field};
-        if (empty($values->getValue())) {
-          // The field is empty or was removed.
-          $orphan = TRUE;
-        }
-        else {
-          // There are values in the field. Once paragraphs can have just been
-          // re-ordered, there is no other option apart from looping through all
-          // values and checking if any of them is this entity.
-          $orphan = TRUE;
-          foreach ($values as $value) {
-            if ($value->entity->id() == $source_entity->id()) {
-              $orphan = FALSE;
-              break;
-            }
-          }
-        }
-      }
-      if ($orphan) {
-        return FALSE;
-      }
-      else {
+      if ($parent) {
         return $this->getSourceEntityLink($parent, $link_text);
       }
     }

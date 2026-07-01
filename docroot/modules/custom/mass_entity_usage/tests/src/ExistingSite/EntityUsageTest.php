@@ -12,7 +12,7 @@ use weitzman\DrupalTestTraits\ConfigTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 
 /**
- * Tests entity usage tracking and cleanup behavior.
+ * Class EntityUsageTest.
  */
 class EntityUsageTest extends MassExistingSiteBase {
 
@@ -382,9 +382,9 @@ class EntityUsageTest extends MassExistingSiteBase {
   }
 
   /**
-   * Hides stale paragraph usage after the node update queue item runs.
+   * Removes stale paragraph usage after the node update queue item runs.
    */
-  public function testDetachedParagraphUsageIsHiddenFromUsagePage() {
+  public function testDetachedParagraphUsageIsDeletedFromTable() {
     $media = $this->createDocumentMedia();
     $media_download_link = '<a href="' . $media->toUrl()->toString() . '/download">Download</a>';
     $org_node = $this->createOrganizationWithNestedParagraphs($media_download_link, MassModeration::PUBLISHED);
@@ -403,37 +403,7 @@ class EntityUsageTest extends MassExistingSiteBase {
     $this->assertGreaterThan(0, $this->countUsageRecords($media));
 
     $this->processEntityUsageQueues();
-    $this->assertGreaterThan(0, $this->countUsageRecords($media));
-    $this->assertUsageRows($media, 0);
-  }
-
-  /**
-   * Hides stale paragraph usage when a nested paragraph is detached.
-   */
-  public function testDetachedNestedParagraphUsageIsHiddenFromUsagePage() {
-    $media = $this->createDocumentMedia();
-    $media_download_link = '<a href="' . $media->toUrl()->toString() . '/download">Download</a>';
-    $org_node = $this->createOrganizationWithNestedParagraphs($media_download_link, MassModeration::PUBLISHED);
-
-    $this->processEntityUsageQueues();
-    $this->assertUsageRows($media, 1);
-    $this->assertSame(1, $this->countUsageRecords($media));
-
-    $org_node = Node::load($org_node->id());
-    $section = Paragraph::load($org_node->get('field_organization_sections')->target_id);
-    $section->set('field_section_long_form_content', []);
-    $section->save();
-
-    $org_node->set('field_organization_sections', [$section]);
-    $org_node->set('moderation_state', MassModeration::PUBLISHED);
-    $org_node->setNewRevision(TRUE);
-    $org_node->save();
-
-    // The stale row remains until the queue worker processes the node update.
-    $this->assertGreaterThan(0, $this->countUsageRecords($media));
-
-    $this->processEntityUsageQueues();
-    $this->assertGreaterThan(0, $this->countUsageRecords($media));
+    $this->assertSame(0, $this->countUsageRecords($media));
     $this->assertUsageRows($media, 0);
   }
 
