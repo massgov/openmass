@@ -1,0 +1,32 @@
+/* Toolbar tray overlay */
+.toolbar-tray.is-active.toolbar-tray-vertical > nav.toolbar-lining {
+  padding-bottom: 60px;
+}
+
+html body .toolbar-tray-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 500;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  cursor: pointer;
+  display: block;
+}
+
+html body .toolbar-tray-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Prevent page scrolling when toolbar tray is open */
+html body.toolbar-tray-open {
+  overflow: hidden;
+  height: 100vh;
+  position: fixed;
+  width: 100%;
+}
