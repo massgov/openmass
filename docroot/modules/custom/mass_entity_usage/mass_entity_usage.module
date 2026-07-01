@@ -88,15 +88,15 @@ function mass_entity_usage_entity_usage_queue_tracking_should_remove_usage($enti
 }
 
 /**
- * Collects paragraph IDs referenced by a node (entity_reference_revisions).
+ * Collects root paragraph IDs referenced by a node.
  *
  * @param \Drupal\Core\Entity\EntityInterface $node
  *   The node entity.
  *
  * @return int[]
- *   Unique paragraph entity IDs (including nested child paragraphs).
+ *   Unique root paragraph entity IDs.
  */
-function _mass_entity_usage_get_paragraph_ids_from_node($node) {
+function _mass_entity_usage_get_root_paragraph_ids_from_node($node) {
   $root_ids = [];
   foreach ($node->getFieldDefinitions() as $name => $definition) {
     if ($definition->getType() !== 'entity_reference_revisions') {
@@ -107,16 +107,30 @@ function _mass_entity_usage_get_paragraph_ids_from_node($node) {
     }
     foreach ($node->get($name) as $item) {
       if ($item->target_id) {
-        $root_ids[$item->target_id] = TRUE;
+        $root_ids[(int) $item->target_id] = TRUE;
       }
     }
   }
 
+  return array_keys($root_ids);
+}
+
+/**
+ * Collects paragraph IDs referenced by a node (entity_reference_revisions).
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $node
+ *   The node entity.
+ *
+ * @return int[]
+ *   Unique paragraph entity IDs (including nested child paragraphs).
+ */
+function _mass_entity_usage_get_paragraph_ids_from_node($node) {
+  $root_ids = _mass_entity_usage_get_root_paragraph_ids_from_node($node);
   if (!$root_ids) {
     return [];
   }
 
-  return _mass_entity_usage_get_nested_paragraph_ids(array_keys($root_ids));
+  return _mass_entity_usage_get_nested_paragraph_ids($root_ids);
 }
 
 /**
@@ -168,6 +182,46 @@ function _mass_entity_usage_get_nested_paragraph_ids(array $paragraph_ids) {
 }
 
 /**
+ * Expands paragraph IDs using paragraph parent back-references in storage.
+ *
+ * @param int[] $paragraph_ids
+ *   Root paragraph entity IDs.
+ *
+ * @return int[]
+ *   All unique paragraph IDs in the detached trees, including roots.
+ */
+function _mass_entity_usage_get_nested_paragraph_ids_from_storage(array $paragraph_ids) {
+  $database = \Drupal::database();
+  $seen = [];
+  $frontier = array_values(array_unique(array_map('intval', $paragraph_ids)));
+
+  while ($frontier) {
+    foreach ($frontier as $id) {
+      $seen[$id] = TRUE;
+    }
+
+    $children = $database->select('paragraphs_item_field_data', 'pifd')
+      ->fields('pifd', ['id'])
+      ->condition('parent_type', 'paragraph')
+      ->condition('parent_id', $frontier, 'IN')
+      ->distinct()
+      ->execute()
+      ->fetchCol();
+
+    $next_ids = [];
+    foreach ($children as $child_id) {
+      $child_id = (int) $child_id;
+      if (!isset($seen[$child_id])) {
+        $next_ids[$child_id] = TRUE;
+      }
+    }
+    $frontier = array_keys($next_ids);
+  }
+
+  return array_keys($seen);
+}
+
+/**
  * Deletes paragraph-source usage rows no longer reachable from a node.
  *
  * When a node revision replaces or removes a paragraph tree, older paragraph
@@ -184,24 +238,14 @@ function _mass_entity_usage_delete_stale_paragraph_usage($node) {
   // the field values (no entity loads), and the root paragraphs still parented
   // to this node in storage (one query). A paragraph has a single parent, so a
   // root no longer referenced by the current revision means its whole subtree
-  // is detached. If no root is detached there is nothing stale and we skip the
-  // expensive tree walk entirely.
-  $current_root_ids = [];
-  foreach ($node->getFieldDefinitions() as $name => $definition) {
-    if ($definition->getType() !== 'entity_reference_revisions') {
-      continue;
-    }
-    if ($definition->getSetting('target_type') !== 'paragraph') {
-      continue;
-    }
-    foreach ($node->get($name) as $item) {
-      if ($item->target_id) {
-        $current_root_ids[(int) $item->target_id] = TRUE;
-      }
-    }
-  }
+  // is detached. If no root is detached there is nothing stale to delete.
+  $database = \Drupal::database();
+  $current_root_ids = array_fill_keys(
+    _mass_entity_usage_get_root_paragraph_ids_from_node($node),
+    TRUE
+  );
 
-  $db_root_ids = \Drupal::database()
+  $db_root_ids = $database
     ->select('paragraphs_item_field_data', 'pifd')
     ->fields('pifd', ['id'])
     ->condition('parent_type', 'node')
@@ -210,32 +254,20 @@ function _mass_entity_usage_delete_stale_paragraph_usage($node) {
     ->execute()
     ->fetchCol();
 
-  $detached_roots = array_diff(array_map('intval', $db_root_ids), array_keys($current_root_ids));
+  $detached_roots = [];
+  foreach ($db_root_ids as $root_id) {
+    $root_id = (int) $root_id;
+    if (!isset($current_root_ids[$root_id])) {
+      $detached_roots[] = $root_id;
+    }
+  }
   if (!$detached_roots) {
     return;
   }
 
-  // Expand the detached subtrees via the storage table (parent_id back-refs)
-  // instead of loading every paragraph entity, then delete their usage.
-  $database = \Drupal::database();
-  $stale_ids = [];
-  $frontier = array_values($detached_roots);
-  while ($frontier) {
-    foreach ($frontier as $id) {
-      $stale_ids[$id] = TRUE;
-    }
-    $children = $database->select('paragraphs_item_field_data', 'pifd')
-      ->fields('pifd', ['id'])
-      ->condition('parent_type', 'paragraph')
-      ->condition('parent_id', $frontier, 'IN')
-      ->distinct()
-      ->execute()
-      ->fetchCol();
-    $frontier = array_diff(array_map('intval', $children), array_keys($stale_ids));
-  }
-
   $usage = \Drupal::service('entity_usage.usage');
-  foreach (array_keys($stale_ids) as $paragraph_id) {
-    $usage->deleteBySourceEntity((int) $paragraph_id, 'paragraph');
+  $stale_ids = _mass_entity_usage_get_nested_paragraph_ids_from_storage($detached_roots);
+  foreach ($stale_ids as $paragraph_id) {
+    $usage->deleteBySourceEntity($paragraph_id, 'paragraph');
   }
 }
