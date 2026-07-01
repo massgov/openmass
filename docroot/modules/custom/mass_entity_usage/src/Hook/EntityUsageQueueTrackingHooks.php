@@ -15,6 +15,7 @@ use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\content_moderation\Entity\ContentModerationStateInterface;
 use Drupal\entity_usage\EntityUsageInterface;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\NodeInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -57,8 +58,6 @@ final class EntityUsageQueueTrackingHooks {
       return FALSE;
     }
 
-    $this->deleteStaleParagraphUsage($entity);
-
     $content_moderation_state = ContentModerationState::loadFromModeratedEntity($entity);
     if (!$content_moderation_state instanceof ContentModerationStateInterface
       || $content_moderation_state->get('moderation_state')->isEmpty()) {
@@ -79,6 +78,27 @@ final class EntityUsageQueueTrackingHooks {
     }
     $this->cacheTagsInvalidator->invalidateTags(['config:views.view.report_orphaned_documents']);
     return TRUE;
+  }
+
+  /**
+   * Deletes detached paragraph usage when a default node revision is updated.
+   */
+  #[Hook('entity_update')]
+  public function entityUpdate(EntityInterface $entity): void {
+    if (!$entity instanceof NodeInterface || !$entity instanceof FieldableEntityInterface) {
+      return;
+    }
+    if (!$entity->isDefaultRevision()) {
+      return;
+    }
+
+    $original = $entity->getOriginal();
+    if ($original instanceof FieldableEntityInterface
+      && $this->getRootParagraphIdsFromNode($entity) === $this->getRootParagraphIdsFromNode($original)) {
+      return;
+    }
+
+    $this->deleteStaleParagraphUsage($entity);
   }
 
   /**
@@ -106,7 +126,9 @@ final class EntityUsageQueueTrackingHooks {
       }
     }
 
-    return array_keys($root_ids);
+    $root_ids = array_keys($root_ids);
+    sort($root_ids);
+    return $root_ids;
   }
 
   /**
@@ -224,7 +246,7 @@ final class EntityUsageQueueTrackingHooks {
    * paragraphs.
    *
    * @param \Drupal\Core\Entity\FieldableEntityInterface $node
-   *   The node currently being processed by the usage tracker queue.
+   *   The updated node entity.
    */
   private function deleteStaleParagraphUsage(FieldableEntityInterface $node): void {
     // Cheap guard: collect the node's current root paragraph ids straight from
@@ -258,7 +280,22 @@ final class EntityUsageQueueTrackingHooks {
       return;
     }
 
-    $stale_ids = $this->getNestedParagraphIdsFromStorage($detached_roots);
+    // Narrow the detached paragraph tree to sources that still have usage
+    // rows. This adds one indexed lookup, but avoids no-op delete calls and
+    // misleading audit logs for detached paragraphs that have no tracked usage.
+    $stale_ids = $this->database->select('entity_usage', 'eu')
+      ->fields('eu', ['source_id'])
+      ->condition('source_type', 'paragraph')
+      ->condition('source_id', $this->getNestedParagraphIdsFromStorage($detached_roots), 'IN')
+      ->distinct()
+      ->execute()
+      ->fetchCol();
+    if (!$stale_ids) {
+      return;
+    }
+
+    $stale_ids = array_map('intval', $stale_ids);
+    sort($stale_ids);
     $this->logger->info('Deleting stale paragraph entity_usage records for node @node_id: @count paragraph source(s): @paragraph_ids.', [
       '@node_id' => $node->id(),
       '@count' => count($stale_ids),
