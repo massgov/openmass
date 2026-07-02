@@ -18,7 +18,59 @@ action_v3:
   delete: false
   invalidate: true
 log_requests: true
-edge_cache_tag_header: false
+edge_cache_tag_header: true
 purge_urls_with_hostname: false
-edge_cache_tag_header_blacklist: {  }
+edge_cache_tag_header_blacklist:
+  - 4xx-response
+  - theme_registry
+  - route_match
+  - routes
+  - 'config:'
+  - user
+  - migration_
+  - local_
+  - entity_
+  - workflow_
+  - element_
+  - contextual_links_
+  - link_relation_
+  - content_moderation_
+  - webform_submission_list
+  - redirect_list
+  - 'node_list:action'
+  - 'node_list:advisory'
+  - 'node_list:alert'
+  - 'node_list:api_service_card'
+  - 'node_list:binder'
+  - 'node_list:campaign_landing'
+  - 'node_list:contact_information'
+  - 'node_list:curated_list'
+  - 'node_list:decision'
+  - 'node_list:decision_tree'
+  - 'node_list:decision_tree_branch'
+  - 'node_list:decision_tree_conclusion'
+  - 'node_list:error_page'
+  - 'node_list:event'
+  - 'node_list:executive_order'
+  - 'node_list:external_data_resource'
+  - 'node_list:fee'
+  - 'node_list:form_page'
+  - 'node_list:glossary'
+  - 'node_list:guide_page'
+  - 'node_list:how_to_page'
+  - 'node_list:info_details'
+  - 'node_list:interstitial'
+  - 'node_list:location'
+  - 'node_list:location_details'
+  - 'node_list:news'
+  - 'node_list:org_page'
+  - 'node_list:page'
+  - 'node_list:person'
+  - 'node_list:regulation'
+  - 'node_list:rules'
+  - 'node_list:service_page'
+  - 'node_list:sitewide_alert'
+  - 'node_list:stacked_layout'
+  - 'node_list:topic_page'
+  - 'node_list:utility_drawer'
 edgescape_support: false
