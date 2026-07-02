@@ -1,18 +1,39 @@
 
 
+## [0.485.1] - July 1, 2026
+
+### Fixed
+  - DP-46854: Fixed issue causing Url purges to be marked as still processing.
+
+
+## [0.485.0] - June 30, 2026
+
+### Added
+  - DP-46819: Added stepper component.
+  - DP-46854: Added Akamai cache tag invalidation.
+
+### Fixed
+  - DP-47668: CSV table search box is right-aligned when no results are displayed.
+  - DP-47759: Editoria11y incorrectly flags news and announcements arrow icon as a manual check.
+
+### Security
+  - DP-47903: Drupal core, Ai and Paragraphs update.
+
+
+
 ## [0.484.0] - June 24, 2026
 
 ### Fixed
   - DP-41032: Pin mayflower artifact to add vertical spacing for Highlight and callout components in rich text.
   - DP-47635: Resolve inline message warning message icon color contrast issue and match font styles to design.
   - DP-47707: Stop collection_all View from spamming the watchdog log.
-  
+
 ### Added
   - DP-43727: Tests for Bulk document import enhancements to validation/verification.
   - DP-45788: Create mass_org_access module — restricts node/media UPDATE and DELETE to users within their assigned organization via hook_node_access/hook_media_access.
   - DP-46788: Add user profile Default organizations and Default labels fields; pre-fill new node and document forms from profile defaults; deploy hook migrates default orgs from permission groups for active users.
   - DP-47685: Added last revised by field to editoria11y csv export.
-  
+
 ### Changed
   - DP-44915: Added views for viewing accessibility information by top-level organization.
   - DP-44915: Upgraded Editoria11y to the latest version.
@@ -20,7 +41,7 @@
   - DP-47028: Clean calculation logic for Related Organizations to avoid log noise.
   - DP-47145: Add Toolbar (Hidden, Bottom, Top), Data details and Share options settings to the Tableau embed paragraph for "Connected Apps" embeds, so these are no longer hardcoded. Toolbar defaults to hidden.
   - DP-47675: Require image in the image paragraph for header image.
-  
+
 
 ## [0.483.1] - June 18, 2026
 
