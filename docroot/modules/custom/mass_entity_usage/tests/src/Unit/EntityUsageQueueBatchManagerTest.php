@@ -159,11 +159,13 @@ class EntityUsageQueueBatchManagerTest extends UnitTestCase {
    * @covers ::clearTrackedProgress
    */
   public function testClearTrackedProgressRemovesProgressAndCompletionKeys(): void {
-    $manager = $this->createManager([
+    $progress_keys = [
       'mass_entity_usage.queue_progress.node' => ['progress' => 1],
       'mass_entity_usage.queue_progress.paragraph' => ['progress' => 2],
       EntityUsageQueueBatchManager::ENQUEUE_COMPLETED_AT_KEY => 12345,
-    ]);
+    ];
+    $this->stateStore = $progress_keys;
+    $manager = $this->createManager($progress_keys);
 
     $manager->clearTrackedProgress();
 

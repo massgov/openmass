@@ -68,7 +68,7 @@ final class MassEntityUsageCommands extends DrushCommands {
       $this->notifyEnqueueRecentlyCompleted();
       return;
     }
-    elseif ($this->queueBatchManager->isAllEnqueueCompleted()) {
+    elseif ($this->queueBatchManager->getEnqueueCompletedAt() === NULL && $this->queueBatchManager->isAllEnqueueCompleted()) {
       $this->queueBatchManager->markEnqueueCompleted();
       $this->notifyEnqueueRecentlyCompleted();
       return;
