@@ -13,9 +13,9 @@ class MayflowerThemeHooks {
    * Forces an empty alt on mosaic featured item images.
    *
    * Mosaic images are decorative: the featured item link text carries the
-   * content, so screen readers must skip the image. Authors can no longer
-   * enter alt text for these fields, and alt values stored before that
-   * change must not render either.
+   * content, so screen readers must skip the image. The alt input is
+   * disabled on these fields (alt_field: false), but alt values may still
+   * exist in stored field data and must not render.
    */
   #[Hook('preprocess_responsive_image_formatter')]
   public function preprocessResponsiveImageFormatter(array &$variables): void {

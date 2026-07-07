@@ -8,12 +8,11 @@ use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
- * Tests image alt text descriptions across multiple content types and fields.
+ * Tests image alt text behavior across multiple content types and fields.
  *
- * This test class verifies the correct behavior of image alt text descriptions
- * across various content types, ensuring that the correct alt text description
- * is displayed and that fields are properly configured regarding the alt field
- * being required or not.
+ * This test class verifies how the alt text input is presented on node edit
+ * forms: which fields expose it, which fields hide it entirely, and that the
+ * displayed alt text descriptions match the expected values.
  *
  * The tests included cover the following:
  *
@@ -214,7 +213,7 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Verifies mosaic images expose no alt input and are marked decorative.
+   * Verifies mosaic image fields expose no alt input on the edit form.
    */
   public function testOrgPageImageAltTextDescriptions() {
     $this->drupalLogin($this->createAdmin());
@@ -228,15 +227,26 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     // Wait for the page to load and ensure we are on the right edit form.
     $page = $this->getSession()->getPage();
 
+    // Anchor on the rendered widgets first, so the alt-input assertions below
+    // cannot pass vacuously if the form structure changes.
+    $this->assertNotEmpty(
+      $page->findAll('css', 'input[name*="[field_featured_item_highlight]"]'),
+      'Highlight image widget is rendered.'
+    );
+    $this->assertNotEmpty(
+      $page->findAll('css', 'input[name*="[field_featured_item_image]"]'),
+      'Image widget is rendered.'
+    );
+
     // The alt input must not exist for `field_featured_item_highlight`.
     $this->assertNull(
-      $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-highlight-0-alt'),
+      $page->find('css', 'input[name*="[field_featured_item_highlight]"][name*="[alt]"]'),
       'Alt text input for field_featured_item_highlight is not present.'
     );
 
     // The alt input must not exist for `field_featured_item_image`.
     $this->assertNull(
-      $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-image-0-alt'),
+      $page->find('css', 'input[name*="[field_featured_item_image]"][name*="[alt]"]'),
       'Alt text input for field_featured_item_image is not present.'
     );
 
@@ -245,6 +255,13 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
       'must not include any content that is not in the link text',
       $page->getContent(),
       'Mosaic image help text explains the images are decorative.'
+    );
+
+    // The retired alt-specific help text must not come back.
+    $this->assertStringNotContainsString(
+      'If the image conveys information that is not part of the link text',
+      $page->getContent(),
+      'The old mosaic alt help text is gone.'
     );
 
     // Check field settings for alt_field.

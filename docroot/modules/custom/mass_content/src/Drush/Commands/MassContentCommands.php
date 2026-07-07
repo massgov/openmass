@@ -888,16 +888,17 @@ class MassContentCommands extends DrushCommands {
    * Lists mosaic featured item images that have alt text.
    *
    * Mosaic images are decorative, so any stored alt text is a non-decorative
-   * usage whose author needs to be notified. One row per non-empty alt value
-   * in the current (default) revision of the host node. Joins go through the
+   * usage. One row per non-empty alt value in the current (default) revision
+   * of the host node. The user columns hold the node owner's name and email
+   * (not the revision author who entered the alt text). Joins go through the
    * paragraph revision tables matching both target_id and target_revision_id,
    * so orphaned paragraphs that only belong to old node revisions are
    * excluded.
    *
    * @command ma:mosaic-alt-report
    * @field-labels
-   *   user_name: User name
-   *   user_email: User email
+   *   user_name: Owner name
+   *   user_email: Owner email
    *   page_url: Page URL
    *   nid: NID
    *   title: Title
@@ -939,11 +940,11 @@ class MassContentCommands extends DrushCommands {
       FROM (
         SELECT
           nss.entity_id AS nid,
-          'service_section (direct mosaic)' AS section_paragraph_type,
+          'featured_item_mosaic (direct)' AS section_paragraph_type,
           mi.field_featured_item_mosaic_items_target_id AS item_id,
           mi.field_featured_item_mosaic_items_target_revision_id AS item_rev
-        FROM node__field_service_sections nss
-        INNER JOIN {$mosaic_items} mi
+        FROM {node__field_service_sections} nss
+        INNER JOIN {{$mosaic_items}} mi
           ON mi.entity_id = nss.field_service_sections_target_id
           AND mi.revision_id = nss.field_service_sections_target_revision_id
         UNION ALL
@@ -952,11 +953,11 @@ class MassContentCommands extends DrushCommands {
           'service_section',
           mi.field_featured_item_mosaic_items_target_id,
           mi.field_featured_item_mosaic_items_target_revision_id
-        FROM node__field_service_sections nss
-        INNER JOIN {$service_section_content} ssc
+        FROM {node__field_service_sections} nss
+        INNER JOIN {{$service_section_content}} ssc
           ON ssc.entity_id = nss.field_service_sections_target_id
           AND ssc.revision_id = nss.field_service_sections_target_revision_id
-        INNER JOIN {$mosaic_items} mi
+        INNER JOIN {{$mosaic_items}} mi
           ON mi.entity_id = ssc.field_service_section_content_target_id
           AND mi.revision_id = ssc.field_service_section_content_target_revision_id
         UNION ALL
@@ -965,32 +966,32 @@ class MassContentCommands extends DrushCommands {
           'org_section_long_form',
           mi.field_featured_item_mosaic_items_target_id,
           mi.field_featured_item_mosaic_items_target_revision_id
-        FROM node__field_organization_sections nos
-        INNER JOIN {$long_form_content} slf
+        FROM {node__field_organization_sections} nos
+        INNER JOIN {{$long_form_content}} slf
           ON slf.entity_id = nos.field_organization_sections_target_id
           AND slf.revision_id = nos.field_organization_sections_target_revision_id
-        INNER JOIN {$mosaic_items} mi
+        INNER JOIN {{$mosaic_items}} mi
           ON mi.entity_id = slf.field_section_long_form_content_target_id
           AND mi.revision_id = slf.field_section_long_form_content_target_revision_id
       ) AS chains
       INNER JOIN (
         SELECT entity_id, revision_id, 'field_featured_item_image' AS image_field,
                field_featured_item_image_alt AS alt_text
-        FROM {$item_image}
+        FROM {{$item_image}}
         WHERE TRIM(COALESCE(field_featured_item_image_alt, '')) <> ''
         UNION ALL
         SELECT entity_id, revision_id, 'field_featured_item_highlight',
                field_featured_item_highlight_alt
-        FROM {$item_highlight}
+        FROM {{$item_highlight}}
         WHERE TRIM(COALESCE(field_featured_item_highlight_alt, '')) <> ''
       ) AS alts
         ON alts.entity_id = chains.item_id
         AND alts.revision_id = chains.item_rev
-      INNER JOIN node_field_data n ON n.nid = chains.nid AND n.default_langcode = 1
-      LEFT JOIN users_field_data u ON u.uid = n.uid
-      LEFT JOIN path_alias pa
+      INNER JOIN {node_field_data} n ON n.nid = chains.nid AND n.default_langcode = 1
+      LEFT JOIN {users_field_data} u ON u.uid = n.uid
+      LEFT JOIN {path_alias} pa
         ON pa.id = (
-          SELECT MAX(pa2.id) FROM path_alias pa2
+          SELECT MAX(pa2.id) FROM {path_alias} pa2
           WHERE pa2.path = CONCAT('/node/', chains.nid) AND pa2.status = 1
         )
       ORDER BY n.title, alts.image_field
