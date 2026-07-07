@@ -17,11 +17,11 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  *
  * The tests included cover the following:
  *
- * 1. **Org Page Alt Text Descriptions**:
- *    - Verifies the alt text descriptions for `field_featured_item_highlight`
- *      and `field_featured_item_image` within the `Org Page` content type.
- *    - Ensures that the alt text descriptions match the expected values for accessibility.
- *    - Asserts that the `alt_field_required` setting is false for both fields.
+ * 1. **Org Page Mosaic Decorative Images**:
+ *    - Verifies that `field_featured_item_highlight` and `field_featured_item_image`
+ *      within the `Org Page` mosaic no longer expose an alt text input, since
+ *      mosaic images are decorative and the link text carries the content.
+ *    - Asserts that the `alt_field` setting is false for both fields.
  *
  * 2. **Event Alt Text Descriptions**:
  *    - Verifies the alt text descriptions for `field_event_image` and `field_event_logo`
@@ -214,7 +214,7 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Verifies image alt text descriptions.
+   * Verifies mosaic images expose no alt input and are marked decorative.
    */
   public function testOrgPageImageAltTextDescriptions() {
     $this->drupalLogin($this->createAdmin());
@@ -222,39 +222,39 @@ class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
     // Create the Org Page.
     $org_page = $this->createOrgPage();
 
-    // Edit the Org Page to verify the alt text description for images.
+    // Edit the Org Page to verify mosaic image fields expose no alt input.
     $this->drupalGet($org_page->toUrl('edit-form')->toString());
 
     // Wait for the page to load and ensure we are on the right edit form.
     $page = $this->getSession()->getPage();
 
-    // Verify alt text description for `field_featured_item_highlight`.
-    $highlight_alt_description = $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-highlight-0-alt--description')->getHtml();
-    // Trim the HTML content to remove extra whitespace.
-    $highlight_alt_description = trim($highlight_alt_description);
-    $this->assertEquals(
-      'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.',
-      $highlight_alt_description,
-      'Alt text description for field_featured_item_highlight is correct.'
+    // The alt input must not exist for `field_featured_item_highlight`.
+    $this->assertNull(
+      $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-highlight-0-alt'),
+      'Alt text input for field_featured_item_highlight is not present.'
     );
 
-    // Verify alt text description for `field_featured_item_image`.
-    $item_alt_description = $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-image-0-alt--description')->getHtml();
-    $item_alt_description = trim($item_alt_description);
-    $this->assertEquals(
-      'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.',
-      $item_alt_description,
-      'Alt text description for field_featured_item_image is correct.'
+    // The alt input must not exist for `field_featured_item_image`.
+    $this->assertNull(
+      $page->find('css', '#edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-featured-item-mosaic-items-0-subform-field-featured-item-image-0-alt'),
+      'Alt text input for field_featured_item_image is not present.'
     );
 
-    // Check field settings for alt_field_required.
+    // The help text must tell authors the images are decorative.
+    $this->assertStringContainsString(
+      'must not include any content that is not in the link text',
+      $page->getContent(),
+      'Mosaic image help text explains the images are decorative.'
+    );
+
+    // Check field settings for alt_field.
     $field_definition = \Drupal::service('entity_field.manager')->getFieldDefinitions('paragraph', 'featured_item');
     $highlight_settings = $field_definition['field_featured_item_highlight']->getSettings();
     $image_settings = $field_definition['field_featured_item_image']->getSettings();
 
-    // Assert that alt_field_required is false for both fields.
-    $this->assertFalse($highlight_settings['alt_field_required'], 'Alt field for field_featured_item_highlight is not required.');
-    $this->assertFalse($image_settings['alt_field_required'], 'Alt field for field_featured_item_image is not required.');
+    // Assert that the alt field is disabled for both fields.
+    $this->assertFalse($highlight_settings['alt_field'], 'Alt field for field_featured_item_highlight is disabled.');
+    $this->assertFalse($image_settings['alt_field'], 'Alt field for field_featured_item_image is disabled.');
   }
 
   /**
