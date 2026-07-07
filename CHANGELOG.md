@@ -1,5 +1,15 @@
 
 
+## [0.486.0] - July 7, 2026
+
+### Fixed
+  - DP-47638: Fixed Google Translate modal translation of disclaimer and button text.
+  - DP-47763: Editoria11y Incorrectly Flags Heading Level Skip on Pages Using Glossary Component.
+  - DP-47818: Style issue with error in CMS.
+  - DP-47906: Use publish and event dates when sorting news and event items in automatic lists.
+  
+
+
 ## [0.485.1] - July 1, 2026
 
 ### Fixed
