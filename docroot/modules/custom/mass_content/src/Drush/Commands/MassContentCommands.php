@@ -4,6 +4,8 @@ namespace Drupal\mass_content\Drush\Commands;
 
 use Consolidation\OutputFormatters\StructuredData\RowsOfFields;
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\layout_paragraphs\LayoutParagraphsComponent;
@@ -26,6 +28,8 @@ class MassContentCommands extends DrushCommands {
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected LoggerChannelFactoryInterface $loggerChannelFactory,
+    protected EntityFieldManagerInterface $entityFieldManager,
+    protected Connection $database,
   ) {
     $this->externalDownloadMatch = '/(https:\/\/)(www.|)(mass.gov\/)(media\/([0-9]+)(\/download|\/|$)|files\/)/';
     parent::__construct();
@@ -878,6 +882,122 @@ class MassContentCommands extends DrushCommands {
     $entity->set('field_service_sections', $new_sections);
 
     return $entity;
+  }
+
+  /**
+   * Lists mosaic featured item images that have alt text.
+   *
+   * Mosaic images are decorative, so any stored alt text is a non-decorative
+   * usage whose author needs to be notified. One row per non-empty alt value
+   * in the current (default) revision of the host node. Joins go through the
+   * paragraph revision tables matching both target_id and target_revision_id,
+   * so orphaned paragraphs that only belong to old node revisions are
+   * excluded.
+   *
+   * @command ma:mosaic-alt-report
+   * @field-labels
+   *   user_name: User name
+   *   user_email: User email
+   *   page_url: Page URL
+   *   nid: NID
+   *   title: Title
+   *   node_type: Node type
+   *   node_status: Node status
+   *   section_paragraph_type: Section paragraph type
+   *   image_field: Image field
+   *   alt_text: Alt text
+   * @default-fields user_name,user_email,page_url,nid,title,node_type,node_status,section_paragraph_type,image_field,alt_text
+   * @aliases ma-mosaic-alt-report
+   * @usage drush ma:mosaic-alt-report --format=csv > mosaic-alt-report.csv
+   *   Export the report as CSV.
+   */
+  public function mosaicAltReport($options = ['format' => 'table']): RowsOfFields {
+    $paragraph_storage = $this->entityTypeManager->getStorage('paragraph');
+    $table_mapping = $paragraph_storage->getTableMapping();
+    $field_definitions = $this->entityFieldManager->getFieldStorageDefinitions('paragraph');
+
+    // Dedicated revision tables for long field names are hash-named, so they
+    // must be resolved through the table mapping.
+    $mosaic_items = $table_mapping->getDedicatedRevisionTableName($field_definitions['field_featured_item_mosaic_items']);
+    $long_form_content = $table_mapping->getDedicatedRevisionTableName($field_definitions['field_section_long_form_content']);
+    $service_section_content = $table_mapping->getDedicatedRevisionTableName($field_definitions['field_service_section_content']);
+    $item_image = $table_mapping->getDedicatedRevisionTableName($field_definitions['field_featured_item_image']);
+    $item_highlight = $table_mapping->getDedicatedRevisionTableName($field_definitions['field_featured_item_highlight']);
+
+    $sql = "
+      SELECT
+        u.name AS user_name,
+        u.mail AS user_email,
+        CONCAT('https://www.mass.gov', COALESCE(pa.alias, CONCAT('/node/', chains.nid))) AS page_url,
+        chains.nid,
+        n.title,
+        n.type AS node_type,
+        IF(n.status = 1, 'published', 'unpublished') AS node_status,
+        chains.section_paragraph_type,
+        alts.image_field,
+        alts.alt_text
+      FROM (
+        SELECT
+          nss.entity_id AS nid,
+          'service_section (direct mosaic)' AS section_paragraph_type,
+          mi.field_featured_item_mosaic_items_target_id AS item_id,
+          mi.field_featured_item_mosaic_items_target_revision_id AS item_rev
+        FROM node__field_service_sections nss
+        INNER JOIN {$mosaic_items} mi
+          ON mi.entity_id = nss.field_service_sections_target_id
+          AND mi.revision_id = nss.field_service_sections_target_revision_id
+        UNION ALL
+        SELECT
+          nss.entity_id,
+          'service_section',
+          mi.field_featured_item_mosaic_items_target_id,
+          mi.field_featured_item_mosaic_items_target_revision_id
+        FROM node__field_service_sections nss
+        INNER JOIN {$service_section_content} ssc
+          ON ssc.entity_id = nss.field_service_sections_target_id
+          AND ssc.revision_id = nss.field_service_sections_target_revision_id
+        INNER JOIN {$mosaic_items} mi
+          ON mi.entity_id = ssc.field_service_section_content_target_id
+          AND mi.revision_id = ssc.field_service_section_content_target_revision_id
+        UNION ALL
+        SELECT
+          nos.entity_id,
+          'org_section_long_form',
+          mi.field_featured_item_mosaic_items_target_id,
+          mi.field_featured_item_mosaic_items_target_revision_id
+        FROM node__field_organization_sections nos
+        INNER JOIN {$long_form_content} slf
+          ON slf.entity_id = nos.field_organization_sections_target_id
+          AND slf.revision_id = nos.field_organization_sections_target_revision_id
+        INNER JOIN {$mosaic_items} mi
+          ON mi.entity_id = slf.field_section_long_form_content_target_id
+          AND mi.revision_id = slf.field_section_long_form_content_target_revision_id
+      ) AS chains
+      INNER JOIN (
+        SELECT entity_id, revision_id, 'field_featured_item_image' AS image_field,
+               field_featured_item_image_alt AS alt_text
+        FROM {$item_image}
+        WHERE TRIM(COALESCE(field_featured_item_image_alt, '')) <> ''
+        UNION ALL
+        SELECT entity_id, revision_id, 'field_featured_item_highlight',
+               field_featured_item_highlight_alt
+        FROM {$item_highlight}
+        WHERE TRIM(COALESCE(field_featured_item_highlight_alt, '')) <> ''
+      ) AS alts
+        ON alts.entity_id = chains.item_id
+        AND alts.revision_id = chains.item_rev
+      INNER JOIN node_field_data n ON n.nid = chains.nid AND n.default_langcode = 1
+      LEFT JOIN users_field_data u ON u.uid = n.uid
+      LEFT JOIN path_alias pa
+        ON pa.id = (
+          SELECT MAX(pa2.id) FROM path_alias pa2
+          WHERE pa2.path = CONCAT('/node/', chains.nid) AND pa2.status = 1
+        )
+      ORDER BY n.title, alts.image_field
+    ";
+
+    $rows = $this->database->query($sql)->fetchAll(\PDO::FETCH_ASSOC);
+    return new RowsOfFields($rows);
   }
 
 }
