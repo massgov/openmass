@@ -126,6 +126,38 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
   }
 
   /**
+   * Tests URL purge payloads are not hashed as cache tags.
+   */
+  public function testPurgeUrlPayloadsAreNotHashed(): void {
+    $urls = [
+      'https://www.mass.gov/node/987181',
+      'https://www.mass.gov/orgs/massachusetts-department-of-transportation',
+    ];
+    $event = new AkamaiPurgeEvents($urls);
+    $subscriber = $this->createSubscriber();
+
+    $subscriber->hashTags($event);
+
+    $this->assertSame($urls, $event->data);
+  }
+
+  /**
+   * Tests path purge payloads are not hashed as cache tags.
+   */
+  public function testPurgePathPayloadsAreNotHashed(): void {
+    $paths = [
+      '/node/987181',
+      '/orgs/massachusetts-department-of-transportation',
+    ];
+    $event = new AkamaiPurgeEvents($paths);
+    $subscriber = $this->createSubscriber();
+
+    $subscriber->hashTags($event);
+
+    $this->assertSame($paths, $event->data);
+  }
+
+  /**
    * Tests the subscriber listens to Akamai header creation events.
    */
   public function testSubscribedEvents(): void {
