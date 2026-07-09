@@ -1,0 +1,13 @@
+diff --git a/src/TestNames.php b/src/TestNames.php
+--- a/src/TestNames.php
++++ b/src/TestNames.php
+@@ -419,8 +419,8 @@ class TestNames {
+ 
+     foreach ($results as $result) {
+-      if (!in_array($result->result_key, $names)) {
+-        if (in_array($result->result_key, $staticTests)) {
++      if (!array_key_exists($result->result_key, $names)) {
++        if (array_key_exists($result->result_key, $staticTests)) {
+           // Translatable value from known test.
+           $names[$result->result_key] = $staticTests[$result->result_key];
+         }
