@@ -81,6 +81,15 @@ class RedirectLinkResolver {
       ];
     }
 
+    // Untitled link fields derive titles via Helper::entityFromUrl(), which only
+    // works for node/media-backed routes. Skip Views routes like /collections/.
+    if (empty($resolved['entity'])) {
+      return [
+        'changed' => FALSE,
+        'uri' => $uri,
+      ];
+    }
+
     $query = (string) parse_url((string) $resolved['target_path'], PHP_URL_QUERY);
     $fragment = (string) parse_url((string) $resolved['target_path'], PHP_URL_FRAGMENT);
     if (
