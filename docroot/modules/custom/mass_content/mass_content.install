@@ -146,11 +146,11 @@ function mass_content_update_10006() {
   $bundles = ['featured_content_2up_item', 'featured_content_single_item'];
   $format = 'campaign_landing_basic';
 
-  // Collect affected paragraph IDs before updating, for cache invalidation.
+  // Select by bundle only (not by current format) so cache invalidation
+  // stays complete if the hook is re-run after a partial failure.
   $ids = $database->select('paragraph__field_rich_text_description', 'p')
     ->fields('p', ['entity_id'])
     ->condition('bundle', $bundles, 'IN')
-    ->condition('field_rich_text_description_format', $format, '<>')
     ->distinct()
     ->execute()
     ->fetchCol();
@@ -160,13 +160,21 @@ function mass_content_update_10006() {
     'paragraph_revision__field_rich_text_description',
   ];
   $updated = 0;
-  foreach ($tables as $table) {
-    $updated += $database->update($table)
-      ->fields(['field_rich_text_description_format' => $format])
-      ->condition('bundle', $bundles, 'IN')
-      ->condition('field_rich_text_description_format', $format, '<>')
-      ->execute();
+  $transaction = $database->startTransaction();
+  try {
+    foreach ($tables as $table) {
+      $updated += $database->update($table)
+        ->fields(['field_rich_text_description_format' => $format])
+        ->condition('bundle', $bundles, 'IN')
+        ->condition('field_rich_text_description_format', $format, '<>')
+        ->execute();
+    }
   }
+  catch (\Throwable $e) {
+    $transaction->rollBack();
+    throw $e;
+  }
+  unset($transaction);
 
   if ($ids) {
     \Drupal::entityTypeManager()->getStorage('paragraph')->resetCache($ids);
@@ -174,7 +182,7 @@ function mass_content_update_10006() {
     \Drupal\Core\Cache\Cache::invalidateTags($tags);
   }
 
-  return t('Updated @rows field rows across @count featured item paragraphs to the @format text format.', [
+  return t('Updated @rows field rows to the @format text format; invalidated caches for @count featured item paragraphs.', [
     '@rows' => $updated,
     '@count' => count($ids),
     '@format' => $format,
