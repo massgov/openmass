@@ -6,6 +6,8 @@ use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\media\MediaInterface;
+use Drupal\node\NodeInterface;
 use Drupal\path_alias\AliasManagerInterface;
 use Drupal\redirect\Entity\Redirect;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -221,6 +223,9 @@ class RedirectLinkResolver {
     }
 
     $finalPath = '/' . ltrim($current, '/');
+    if (!$this->isNormalizationTargetAllowed($finalPath)) {
+      return ['changed' => FALSE];
+    }
     $query = $destinationQuery !== '' ? $destinationQuery : $sourceQuery;
     $fragment = $destinationFragment !== '' ? $destinationFragment : $sourceFragment;
     $targetPath = $finalPath . $query . $fragment;
@@ -274,6 +279,9 @@ class RedirectLinkResolver {
     }
 
     $finalPath = '/' . ltrim($current, '/');
+    if (!$this->isNormalizationTargetAllowed($finalPath)) {
+      return ['changed' => FALSE, 'reason' => 'unpublished_target'];
+    }
     $entity = $this->resolvePathToEntity($finalPath);
     if (!$entity || $entity->getEntityTypeId() !== $targetType) {
       return ['changed' => FALSE, 'reason' => 'unresolved_or_wrong_type'];
@@ -345,6 +353,17 @@ class RedirectLinkResolver {
       }
     }
     return NULL;
+  }
+
+  /**
+   * Returns FALSE when the final path resolves to unpublished content.
+   */
+  private function isNormalizationTargetAllowed(string $path): bool {
+    $entity = $this->resolvePathToEntity($path);
+    if (!$entity instanceof NodeInterface && !$entity instanceof MediaInterface) {
+      return TRUE;
+    }
+    return $entity->isPublished();
   }
 
   /**

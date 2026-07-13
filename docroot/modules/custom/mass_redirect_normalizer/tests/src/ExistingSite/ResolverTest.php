@@ -134,6 +134,100 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests redirects to unpublished nodes are ignored for URL rewriting.
+   */
+  public function testRedirectToUnpublishedNodeIsIgnored(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+    $source = 'to-unpublished-' . $this->randomMachineName();
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect('/node/' . $target->id());
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(301);
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $href = '/' . $source . '?foo=1#bar';
+
+    $resolved = $service->resolveRedirectTarget($href);
+    $this->assertFalse($resolved['changed']);
+
+    $text = '<p><a href="' . $href . '">Unpublished</a></p>';
+    $normalizedText = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalizedText['changed']);
+    $this->assertStringContainsString($href, $normalizedText['text']);
+
+    $originalUri = 'internal:' . $href;
+    $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
+    $this->assertFalse($normalizedUri['changed']);
+    $this->assertSame($originalUri, $normalizedUri['uri']);
+  }
+
+  /**
+   * Tests aliased document download redirects are ignored for unpublished media.
+   */
+  public function testRedirectToUnpublishedAliasedDocumentIsIgnored(): void {
+    $destination = 'private://redirect-normalizer-unpublished-' . $this->randomMachineName() . '.txt';
+    $file = \Drupal\file\Entity\File::create(['uri' => $destination]);
+    $file->setPermanent();
+    $file->save();
+    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
+    \Drupal::service('file_system')->copy($src, $destination, TRUE);
+
+    $media = $this->createMedia([
+      'title' => 'Doc ' . $this->randomMachineName(),
+      'bundle' => 'document',
+      'field_upload_file' => ['target_id' => $file->id()],
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+
+    $aliasPath = '/doc/' . $this->randomMachineName() . '/download';
+    $alias = PathAlias::create([
+      'path' => '/media/' . $media->id() . '/download',
+      'alias' => $aliasPath,
+      'langcode' => 'en',
+      'status' => 1,
+    ]);
+    $alias->save();
+    $this->cleanupEntities[] = $alias;
+
+    $source = 'to-unpublished-doc-' . $this->randomMachineName();
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect($aliasPath);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(301);
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $href = '/' . $source . '?foo=1#bar';
+
+    $resolved = $service->resolveRedirectTarget($href);
+    $this->assertFalse($resolved['changed']);
+
+    $text = '<p><a href="' . $href . '">Unpublished doc</a></p>';
+    $normalizedText = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalizedText['changed']);
+    $this->assertStringContainsString($href, $normalizedText['text']);
+
+    $originalUri = 'internal:' . $href;
+    $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
+    $this->assertFalse($normalizedUri['changed']);
+    $this->assertSame($originalUri, $normalizedUri['uri']);
+  }
+
+  /**
    * Tests redirect destination query strings are preserved through resolution.
    */
   public function testResolveRedirectTargetPreservesDestinationQuery(): void {
@@ -733,6 +827,92 @@ class ResolverTest extends MassExistingSiteBase {
     $this->assertNotNull($reloaded);
     /** @var \Drupal\node\NodeInterface $reloaded */
     $this->assertSame((int) $sourcePerson->id(), (int) $reloaded->get('field_person_bio')->target_id);
+  }
+
+  /**
+   * Tests entity reference rewrite skips unpublished node targets.
+   */
+  public function testEntityReferenceRewriteSkipsUnpublishedNodeTarget(): void {
+    $sourcePerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $targetPerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+    $this->createRedirect('/node/' . $sourcePerson->id(), '/node/' . $targetPerson->id());
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_person_bio' => [
+        ['target_id' => $sourcePerson->id()],
+      ],
+    ]);
+    $org->set('field_person_bio', ['target_id' => $sourcePerson->id()]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($org, TRUE);
+    $this->assertFalse($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($org->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertSame((int) $sourcePerson->id(), (int) $reloaded->get('field_person_bio')->target_id);
+  }
+
+  /**
+   * Tests entity reference rewrite skips unpublished media targets.
+   */
+  public function testEntityReferenceRewriteSkipsUnpublishedMediaTarget(): void {
+    $sourceMedia = $this->createDocumentMedia('source-unpublished-' . $this->randomMachineName());
+
+    $destination = 'private://redirect-normalizer-target-' . $this->randomMachineName() . '.txt';
+    $file = \Drupal\file\Entity\File::create(['uri' => $destination]);
+    $file->setPermanent();
+    $file->save();
+    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
+    \Drupal::service('file_system')->copy($src, $destination, TRUE);
+
+    $targetMedia = $this->createMedia([
+      'title' => 'Doc ' . $this->randomMachineName(),
+      'bundle' => 'document',
+      'field_upload_file' => ['target_id' => $file->id()],
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+    $this->createRedirect('/media/' . $sourceMedia->id(), '/media/' . $targetMedia->id());
+
+    $binder = $this->createNode([
+      'type' => 'binder',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_downloads' => [
+        ['target_id' => $sourceMedia->id()],
+      ],
+    ]);
+    $binder->set('field_downloads', [
+      ['target_id' => $sourceMedia->id()],
+    ]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($binder, TRUE);
+    $this->assertFalse($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($binder->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertSame((int) $sourceMedia->id(), (int) $reloaded->get('field_downloads')->target_id);
   }
 
   /**
