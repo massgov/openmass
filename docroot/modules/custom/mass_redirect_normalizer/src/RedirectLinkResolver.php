@@ -234,6 +234,27 @@ class RedirectLinkResolver {
     if ($entity instanceof EntityPublishedInterface && !$entity->isPublished()) {
       return ['changed' => FALSE];
     }
+
+    // A stale redirect can share its source path with the alias of a live
+    // published page (e.g. the alias was later reused by another page). The
+    // link still reaches that live page, so rewriting it would swap the page
+    // for the redirect target. Canonical /node/N and /media/N paths are
+    // exempt: a redirect there is a deliberate merge, and the redirect wins
+    // at request time anyway.
+    $sourceEntity = $this->resolvePathToEntity($sourcePath);
+    if (
+      $sourceEntity instanceof EntityPublishedInterface
+      && $sourceEntity->isPublished()
+      && !$this->isCanonicalEntityPath($sourceEntity->getEntityTypeId(), (int) $sourceEntity->id(), $sourcePath)
+      && (
+        !$entity
+        || $entity->getEntityTypeId() !== $sourceEntity->getEntityTypeId()
+        || (int) $entity->id() !== (int) $sourceEntity->id()
+      )
+    ) {
+      return ['changed' => FALSE];
+    }
+
     $node = $entity && $entity->getEntityTypeId() === 'node' ? $entity : NULL;
 
     return [

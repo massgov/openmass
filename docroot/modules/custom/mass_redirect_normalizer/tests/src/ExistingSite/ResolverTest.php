@@ -256,6 +256,86 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests redirects shadowing a live page's alias are ignored.
+   *
+   * A stale redirect can share its source path with the alias of a live
+   * published page (e.g. the alias was reused by another page). Links to
+   * that URL still reach the live page, so they must not be rewritten to
+   * the redirect target.
+   */
+  public function testShadowRedirectOverLiveAliasIsIgnored(): void {
+    $livePage = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $aliasPath = '/reused-alias-' . strtolower($this->randomMachineName());
+    $alias = PathAlias::create([
+      'path' => '/node/' . $livePage->id(),
+      'alias' => $aliasPath,
+      'langcode' => 'en',
+      'status' => 1,
+    ]);
+    $alias->save();
+    $this->cleanupEntities[] = $alias;
+
+    $other = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect($aliasPath, '/node/' . $other->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+
+    $resolved = $service->resolveRedirectTarget($aliasPath);
+    $this->assertFalse($resolved['changed']);
+
+    $text = '<p><a href="' . $aliasPath . '">Live page</a></p>';
+    $normalizedText = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalizedText['changed']);
+    $this->assertStringContainsString($aliasPath, $normalizedText['text']);
+
+    $originalUri = 'internal:' . $aliasPath;
+    $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
+    $this->assertFalse($normalizedUri['changed']);
+    $this->assertSame($originalUri, $normalizedUri['uri']);
+  }
+
+  /**
+   * Tests a redirect from the canonical path of a live node still applies.
+   *
+   * A redirect placed on /node/N is a deliberate merge: the redirect
+   * intercepts the request before routing, so the old page is unreachable
+   * there and links should follow the redirect.
+   */
+  public function testRedirectFromCanonicalPathOfLiveNodeStillNormalizes(): void {
+    $old = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $new = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect('/node/' . $old->id(), '/node/' . $new->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/node/' . $old->id());
+    $this->assertTrue($resolved['changed']);
+    $this->assertNotEmpty($resolved['node']);
+    $this->assertEquals($new->id(), $resolved['node']->id());
+  }
+
+  /**
    * Tests redirect destination query strings are preserved through resolution.
    */
   public function testResolveRedirectTargetPreservesDestinationQuery(): void {
