@@ -144,14 +144,7 @@ class ResolverTest extends MassExistingSiteBase {
       'moderation_state' => 'draft',
     ]);
     $source = 'to-unpublished-' . $this->randomMachineName();
-
-    $redirect = Redirect::create();
-    $redirect->setSource($source);
-    $redirect->setRedirect('/node/' . $target->id());
-    $redirect->setLanguage('en');
-    $redirect->setStatusCode(301);
-    $redirect->save();
-    $this->cleanupEntities[] = $redirect;
+    $this->createRedirect($source, '/node/' . $target->id());
 
     /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
     $service = \Drupal::service('mass_redirect_normalizer.resolver');
@@ -172,20 +165,61 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests redirects to trashed nodes are ignored for URL rewriting.
+   */
+  public function testRedirectToTrashedNodeIsIgnored(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $target->set('moderation_state', 'trash');
+    $target->save();
+
+    $source = 'to-trashed-' . $this->randomMachineName();
+    $this->createRedirect($source, '/node/' . $target->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $source);
+    $this->assertFalse($resolved['changed']);
+  }
+
+  /**
+   * Tests a published node with a newer draft is still a valid target.
+   *
+   * The published default revision is what visitors see, so normalization
+   * must not be blocked by the existence of a forward (draft) revision.
+   */
+  public function testRedirectToPublishedNodeWithNewerDraftIsNormalized(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $target->setNewRevision(TRUE);
+    $target->set('moderation_state', 'draft');
+    $target->setTitle($target->getTitle() . ' draft');
+    $target->save();
+
+    $source = 'to-published-with-draft-' . $this->randomMachineName();
+    $this->createRedirect($source, '/node/' . $target->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $source);
+    $this->assertTrue($resolved['changed']);
+    $this->assertNotEmpty($resolved['node']);
+    $this->assertEquals($target->id(), $resolved['node']->id());
+  }
+
+  /**
    * Tests aliased document download redirects are ignored for unpublished media.
    */
   public function testRedirectToUnpublishedAliasedDocumentIsIgnored(): void {
-    $destination = 'private://redirect-normalizer-unpublished-' . $this->randomMachineName() . '.txt';
-    $file = \Drupal\file\Entity\File::create(['uri' => $destination]);
-    $file->setPermanent();
-    $file->save();
-    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
-    \Drupal::service('file_system')->copy($src, $destination, TRUE);
-
-    $media = $this->createMedia([
-      'title' => 'Doc ' . $this->randomMachineName(),
-      'bundle' => 'document',
-      'field_upload_file' => ['target_id' => $file->id()],
+    $media = $this->createDocumentMedia('unpublished-' . $this->randomMachineName(), [
       'status' => 0,
       'moderation_state' => 'draft',
     ]);
@@ -201,13 +235,7 @@ class ResolverTest extends MassExistingSiteBase {
     $this->cleanupEntities[] = $alias;
 
     $source = 'to-unpublished-doc-' . $this->randomMachineName();
-    $redirect = Redirect::create();
-    $redirect->setSource($source);
-    $redirect->setRedirect($aliasPath);
-    $redirect->setLanguage('en');
-    $redirect->setStatusCode(301);
-    $redirect->save();
-    $this->cleanupEntities[] = $redirect;
+    $this->createRedirect($source, $aliasPath);
 
     /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
     $service = \Drupal::service('mass_redirect_normalizer.resolver');
@@ -874,18 +902,7 @@ class ResolverTest extends MassExistingSiteBase {
    */
   public function testEntityReferenceRewriteSkipsUnpublishedMediaTarget(): void {
     $sourceMedia = $this->createDocumentMedia('source-unpublished-' . $this->randomMachineName());
-
-    $destination = 'private://redirect-normalizer-target-' . $this->randomMachineName() . '.txt';
-    $file = \Drupal\file\Entity\File::create(['uri' => $destination]);
-    $file->setPermanent();
-    $file->save();
-    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
-    \Drupal::service('file_system')->copy($src, $destination, TRUE);
-
-    $targetMedia = $this->createMedia([
-      'title' => 'Doc ' . $this->randomMachineName(),
-      'bundle' => 'document',
-      'field_upload_file' => ['target_id' => $file->id()],
+    $targetMedia = $this->createDocumentMedia('target-unpublished-' . $this->randomMachineName(), [
       'status' => 0,
       'moderation_state' => 'draft',
     ]);
