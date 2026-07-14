@@ -81,7 +81,7 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   private function createEditor() {
-    $editor = $this->createUser();
+    $editor = $this->createUser(['bypass org access']);
     $editor->addRole('editor');
     $editor->activate();
     $editor->save();
@@ -160,6 +160,9 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $dialog = $page->find('css', '.popover__dialog');
 
     $trigger->click();
+    $page->waitFor(10, function () use ($dialog) {
+      return $dialog->isVisible();
+    });
     $this->assertTrue($dialog->isVisible());
     $this->assertSession()->elementTextContains('css', '.popover__dialog', $this->definition);
   }
@@ -192,12 +195,13 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
       return $hasTemplate !== NULL;
     });
 
-    // Ensure text contains "Lorem".
+    // Ensure quoted glossary term is injected without added whitespace.
     $popover = $page->find('css', '.popover');
-    $popover_parent = $popover->getParent();
-    $popover_markup = $popover->getOuterHtml();
-    $parent_markup = $popover_parent->getOuterHtml();
-    $this->assertStringContainsString("\"" . $popover_markup . "\"", $parent_markup);
+    $nowrap_wrapper = $popover->getParent();
+    $container_markup = $nowrap_wrapper->getParent()->getOuterHtml();
+    $this->assertStringContainsString('Test definition popover "', $container_markup);
+    $this->assertStringContainsString('<span class="glossary-nowrap"', $container_markup);
+    $this->assertStringContainsString('>"</span>', $container_markup);
   }
 
   /**
@@ -246,6 +250,131 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
     $dialog = $page->find('css', '.popover__dialog');
     $this->assertNotNull($trigger);
     $this->assertNotNull($dialog);
+  }
+
+  /**
+   * Test that longer glossary terms win when overlaps exist.
+   */
+  public function testGlossaryPopoverOverlappingTerms() {
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Overlapping Terms Glossary',
+      'field_terms' => [
+        [
+          'key' => 'State House Notes',
+          'value' => 'Long definition',
+        ],
+        [
+          'key' => 'Note',
+          'value' => 'Short definition',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Overlapping Terms Service Page',
+      'field_service_body' => 'State House Notes are published annually.',
+      'moderation_state' => 'published',
+    ]);
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.popover__trigger') !== NULL;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(1, $triggers, 'Only the full term should be transformed.');
+    $this->assertEquals('State House Notes', $triggers[0]->getText());
+  }
+
+  /**
+   * Test that glossary terms containing parentheses still match.
+   */
+  public function testGlossaryPopoverTermWithParentheses() {
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Parens Terms Glossary',
+      'field_terms' => [
+        [
+          'key' => 'Bond Anticipation Note (BAN)',
+          'value' => 'Short-term debt instrument.',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Parens Terms Service Page',
+      'field_service_body' => 'Issuers may use a Bond Anticipation Note (BAN) for short-term needs.',
+      'moderation_state' => 'published',
+    ]);
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.popover__trigger') !== NULL;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(1, $triggers);
+    $this->assertEquals('Bond Anticipation Note (BAN)', $triggers[0]->getText());
+  }
+
+  /**
+   * Test middle-overlap terms keep one non-overlapping highlight.
+   */
+  public function testGlossaryPopoverMiddleOverlappingTerms() {
+    $glossary = $this->createNode([
+      'type' => 'glossary',
+      'title' => 'Middle Overlap Glossary',
+      'field_terms' => [
+        [
+          'key' => 'General Fund',
+          'value' => 'General fund definition',
+        ],
+        [
+          'key' => 'Fund Balance',
+          'value' => 'Fund balance definition',
+        ],
+      ],
+      'moderation_state' => 'published',
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Middle Overlap Service Page',
+      'field_service_body' => 'General Fund Balance is reported annually.',
+      'moderation_state' => 'published',
+    ]);
+    $node->set('field_glossaries', $glossary);
+    $node->save();
+
+    $this->drupalGet($node->toUrl()->toString());
+    $page = $this->getSession()->getPage();
+    $this->assertSession()->elementExists('css', '#glossary-popup-template');
+    $this->assertSession()->elementExists('css', '[data-drupal-selector="drupal-settings-json"]');
+
+    $page->waitFor(10, function () use ($page) {
+      return $page->find('css', '.popover__trigger') !== NULL;
+    });
+
+    $triggers = $page->findAll('css', '.popover__trigger');
+    $this->assertCount(1, $triggers, 'Only one overlapping term should be highlighted.');
+    $this->assertEquals('General Fund', $triggers[0]->getText());
   }
 
 }

@@ -30,6 +30,7 @@ use Drupal\mayflower\Prepare\Schemas;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\paragraphs\ParagraphInterface;
 use Drupal\schema_metatag\SchemaMetatagManager;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DomCrawler\Crawler;
@@ -3486,7 +3487,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $body = Helper::fieldFullView($node, $field['body']);
     $body_string = \Drupal::service('renderer')->renderRoot($body);
     // Remove attributes on <p> markup except lang (for accessibility/translations).
-    $body_string = preg_replace_callback('/<\s*p([^>]*)>/', function (array $m) {
+    $body_string = preg_replace_callback('/<\s*p\b([^>]*)>/i', function (array $m) {
       $attrs = $m[1];
       if (preg_match('/\s+lang=(["\'])([^"\']*)\1/', $attrs, $lang_match)) {
         return '<p lang="' . $lang_match[2] . '">';
@@ -7564,5 +7565,22 @@ function mass_theme_preprocess_paragraph__service_section(array &$variables) {
     $variables['service_components'] = $grouper->groupRenderItems($items);
     // 3) Prevent Drupal from auto-rendering the old regions.
     unset($variables['content']['regions']['content']);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * @see @organisms/by-author/process-stepper.twig
+ */
+function mass_theme_preprocess_paragraph__numbered_steps(&$variables) {
+  $paragraph = $variables['paragraph'];
+
+  if ($paragraph instanceof ParagraphInterface) {
+    $cache_tags = [];
+    $variables['processStepperSteps'] = Organisms::prepareNumberedSteps($paragraph, [], $cache_tags);
+    if (!empty($cache_tags)) {
+      $variables['#cache']['tags'] = Cache::mergeTags($variables['#cache']['tags'] ?? [], $cache_tags);
+    }
   }
 }

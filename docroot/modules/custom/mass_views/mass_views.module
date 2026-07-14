@@ -324,20 +324,6 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     $query->addWhere(0, $or);
   }
 
-  if ($view->id() == 'report_orphaned_documents') {
-
-    // Get the numeric media IDs that need to be excluded.
-    $media_ids = _mass_views_helper_get_numeric_media_ids_from_redirect_table();
-
-    if (!empty($media_ids)) {
-      // Exclude media items that match any of the media IDs in the extracted list.
-      $media_ids_list = implode(',', $media_ids);
-
-      // Add a where expression to exclude media items that have a matching redirect.
-      $query->addWhereExpression(0, "media_field_data.mid NOT IN ($media_ids_list)");
-    }
-  }
-
   if ($view->id() == 'report_orphaned_documents_redirects') {
     // Get the numeric media IDs that need to be excluded.
     $media_ids = _mass_views_helper_get_numeric_media_ids_from_redirect_table();
@@ -478,6 +464,7 @@ function mass_views_entity_insert($entity): void {
 function mass_views_do_invalidate($entity): void {
   if (method_exists($entity, 'getCollection') && $entity->getCollection() && !$entity->getCollection()->isEmpty()) {
     $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+    $tags = [];
     /** @var \Drupal\taxonomy\Entity\Term $referencedEntity */
     foreach ($entity->getCollection()->referencedEntities() as $referencedEntity) {
       $tags[] = 'taxonomy_term:' . $referencedEntity->id();
@@ -486,7 +473,9 @@ function mass_views_do_invalidate($entity): void {
         $tags[] = 'taxonomy_term:' . $parent->id();
       }
     }
-    Cache::invalidateTags($tags);
+    if (!empty($tags)) {
+      Cache::invalidateTags($tags);
+    }
   }
 }
 
@@ -507,22 +496,31 @@ function mass_views_views_pre_render(ViewExecutable $view) {
   }
 
   if ($view->id() == 'collection_all') {
+    $has_media_rows = FALSE;
     foreach ($view->result as $row) {
-      // Check if the row entity is a media entity
       if ($row->_entity == NULL && $row->entity_type == 'media') {
-        // If the $row is of type media we should unset the fields below, since the
-        // views system will try load the entity and access the fields that media entity
-        // doesn't have. This is a unique/complex view that is rendering 2 entities node/media
-        // (initially overridden here docroot/modules/custom/mass_content/mass_content.module:924)
-        foreach ($view->field as $field_id => $field) {
-          switch ($field_id) {
-            case 'title':
-            case 'field_news_lede':
-            case 'field_short_desc':
-            case 'field_how_to_lede':
-              unset($view->field[$field_id]);
-              break;
-          }
+        $has_media_rows = TRUE;
+        break;
+      }
+    }
+
+    if ($has_media_rows) {
+      // Media rows are unioned into this node-based view in mass_content.module.
+      // Unset node-only fields so Views does not try to load node entities/fields
+      // for media rows (e.g. description fields used by the keyword search filter).
+      // Match on $field->table here is the Views YAML "table:" value at pre_render,
+      // not the runtime query tableAlias. Any field whose table starts with "node"
+      // is node-specific; excluded fields are only needed for query-time search.
+      foreach ($view->field as $field_id => $field) {
+        // rendered_entity_mixed is registered on table "node" (mass_content.module)
+        // but must be kept: it renders both node and media rows via entity_type.
+        if ($field_id === 'rendered_entity_mixed') {
+          continue;
+        }
+        $table = $field->table ?? '';
+        $entity_type = $field->options['entity_type'] ?? '';
+        if (str_starts_with($table, 'node') || $entity_type === 'node') {
+          unset($view->field[$field_id]);
         }
       }
     }

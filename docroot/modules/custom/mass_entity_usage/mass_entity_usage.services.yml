@@ -1,3 +1,6 @@
+parameters:
+  mass_entity_usage.skip_procedural_hook_scan: true
+
 services:
   mass_entity_usage.route_subscriber:
     class: Drupal\mass_entity_usage\Routing\MassRouteSubscriber
@@ -10,4 +13,8 @@ services:
   mass_entity_usage.usage:
     class: Drupal\mass_entity_usage\MassEntityUsage
     arguments: [ '@database', '@event_dispatcher', '@config.factory', '@module_handler' , 'entity_usage']
+  mass_entity_usage.linking_pages_warning:
+    class: Drupal\mass_entity_usage\Form\LinkingPagesWarning
+    arguments: ['@mass_entity_usage.usage', '@string_translation']
+  Drupal\mass_entity_usage\Form\LinkingPagesWarning: '@mass_entity_usage.linking_pages_warning'
   Drupal\mass_entity_usage\EntityUsageQueueBatchManager: '@mass_entity_usage.queue_batch_manager'

@@ -13,3 +13,10 @@ services:
     arguments: ['@current_route_match']
   monolog.processor.backtrace_removal:
     class: Drupal\mass_utility\Logger\Processor\BacktraceRemovalProcessor
+  mass_utility.user_defaults_hooks:
+    class: Drupal\mass_utility\Hook\UserDefaultsHooks
+    arguments:
+      - '@entity_type.manager'
+      - '@current_user'
+    tags:
+      - { name: drupal.hook }

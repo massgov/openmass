@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.fee.field_content_organization
     - field.field.node.fee.field_fee_fee
     - field.field.node.fee.field_fee_name
     - field.field.node.fee.field_fee_unit
@@ -12,6 +13,7 @@ dependencies:
     - workflows.workflow.editorial
   module:
     - content_moderation
+    - entity_reference_tree
     - field_group
 third_party_settings:
   field_group:
@@ -49,6 +51,7 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - url_redirects
         - simple_sitemap
         - search
@@ -71,6 +74,28 @@ targetEntityType: node
 bundle: fee
 mode: default
 content:
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 1
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
+    third_party_settings: {  }
   field_fee_fee:
     type: string_textfield
     weight: 2

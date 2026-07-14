@@ -29,7 +29,7 @@ class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
     $active_author->activate();
     $active_author->save();
 
-    $editor = $this->createUser([], 'editor_user_' . $this->randomMachineName(6));
+    $editor = $this->createUser(['bypass org access'], 'editor_user_' . $this->randomMachineName(6));
     $editor->addRole('editor');
     $editor->save();
 
