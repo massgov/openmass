@@ -33,6 +33,7 @@ class ScaleNormalizationTest extends MassExistingSiteBase {
    */
   public function testBulkRunOverHundredNodes(): void {
     $this->purgeNormalizationQueue();
+    $this->ensureChangeLogTableExists();
     \Drupal::state()->delete('mass_redirect_normalizer.queue_pending_keys');
 
     // Shared fixtures: one target + redirect per category, linked from
@@ -138,6 +139,45 @@ class ScaleNormalizationTest extends MassExistingSiteBase {
     }
 
     $this->assertSame(0, \Drupal::queue('mass_redirect_normalizer_link_normalization')->numberOfItems());
+
+    // Every refused rewrite must be reported to the change log so the
+    // content team can find and clean up the stale redirects.
+    $expectedSkips = [
+      'unpublished' => 'unpublished_target',
+      'trashed' => 'unpublished_target',
+      'shadow' => 'live_source_page',
+    ];
+    foreach ($expectedSkips as $category => $reason) {
+      foreach ($nodes[$category] as $node) {
+        $rows = $this->loadChangeLogRows((int) $node->id());
+        $this->assertCount(1, $rows, "$category node {$node->id()} must have exactly one change log row");
+        $row = reset($rows);
+        $this->assertSame('skipped', $row->status);
+        $this->assertSame($reason, $row->error_message);
+        $this->assertSame($categories[$category], $row->before_value);
+        $this->assertNotSame('', (string) $row->after_value, 'Skip row must record the target the rewrite would have produced');
+      }
+    }
+    foreach ($nodes['rewrite'] as $node) {
+      $rows = $this->loadChangeLogRows((int) $node->id());
+      $this->assertCount(1, $rows);
+      $this->assertSame('succeeded', reset($rows)->status);
+    }
+    foreach ($nodes['plain'] as $node) {
+      $this->assertCount(0, $this->loadChangeLogRows((int) $node->id()));
+    }
+  }
+
+  /**
+   * Loads change log rows for one node.
+   */
+  private function loadChangeLogRows(int $nid): array {
+    return \Drupal::database()->select('mass_redirect_normalizer_change_log', 'c')
+      ->fields('c')
+      ->condition('entity_type', 'node')
+      ->condition('entity_id', $nid)
+      ->execute()
+      ->fetchAll();
   }
 
   /**

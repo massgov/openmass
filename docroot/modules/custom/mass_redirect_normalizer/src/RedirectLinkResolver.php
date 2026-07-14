@@ -38,6 +38,7 @@ class RedirectLinkResolver {
     $dom = Html::load($text);
     $xpath = new \DOMXPath($dom);
     $changed = FALSE;
+    $skips = [];
 
     foreach ($xpath->query('//a[@href]') as $anchor) {
       if (!$anchor instanceof \DOMElement) {
@@ -46,6 +47,13 @@ class RedirectLinkResolver {
       $href = (string) $anchor->getAttribute('href');
       $resolved = $this->resolveRedirectTarget($href);
       if (!$resolved['changed']) {
+        if (!empty($resolved['skip_reason'])) {
+          $skips[$href . '|' . $resolved['skip_reason']] = [
+            'before' => $href,
+            'after' => (string) ($resolved['skip_target'] ?? ''),
+            'reason' => (string) $resolved['skip_reason'],
+          ];
+        }
         continue;
       }
 
@@ -67,6 +75,7 @@ class RedirectLinkResolver {
     return [
       'changed' => $changed,
       'text' => Html::serialize($dom),
+      'skips' => array_values($skips),
     ];
   }
 
@@ -76,9 +85,18 @@ class RedirectLinkResolver {
   public function normalizeRedirectLinkUri(string $uri): array {
     $resolved = $this->resolveRedirectTarget($uri);
     if (!$resolved['changed']) {
+      $skips = [];
+      if (!empty($resolved['skip_reason'])) {
+        $skips[] = [
+          'before' => $uri,
+          'after' => (string) ($resolved['skip_target'] ?? ''),
+          'reason' => (string) $resolved['skip_reason'],
+        ];
+      }
       return [
         'changed' => FALSE,
         'uri' => $uri,
+        'skips' => $skips,
       ];
     }
 
@@ -124,6 +142,7 @@ class RedirectLinkResolver {
     }
 
     $matches = [];
+    $skips = [];
     foreach ($this->buildReferenceSourcePaths($targetType, $targetId) as $sourcePath) {
       // If this alias still resolves to the same entity, don't remap the ref.
       if (
@@ -134,13 +153,24 @@ class RedirectLinkResolver {
       }
       $resolved = $this->resolveStrictRedirectEntityTarget($sourcePath, $targetType, $maxDepth);
       if (!$resolved['changed']) {
+        if (($resolved['reason'] ?? '') === 'unpublished_target') {
+          $skips[] = [
+            'before' => $targetType . ':' . $targetId,
+            'after' => (string) ($resolved['target_path'] ?? ''),
+            'reason' => 'unpublished_target',
+          ];
+        }
         continue;
       }
       $matches[$resolved['target_entity_id']] = $resolved;
     }
 
     if (count($matches) !== 1) {
-      return ['changed' => FALSE, 'reason' => count($matches) > 1 ? 'ambiguous_target' : 'no_match'];
+      return [
+        'changed' => FALSE,
+        'reason' => count($matches) > 1 ? 'ambiguous_target' : 'no_match',
+        'skips' => $skips,
+      ];
     }
 
     $resolved = reset($matches);
@@ -232,7 +262,11 @@ class RedirectLinkResolver {
 
     $entity = $this->resolvePathToEntity($finalPath);
     if ($entity instanceof EntityPublishedInterface && !$entity->isPublished()) {
-      return ['changed' => FALSE];
+      return [
+        'changed' => FALSE,
+        'skip_reason' => 'unpublished_target',
+        'skip_target' => $targetPath,
+      ];
     }
 
     // A stale redirect can share its source path with the alias of a live
@@ -252,7 +286,11 @@ class RedirectLinkResolver {
         || (int) $entity->id() !== (int) $sourceEntity->id()
       )
     ) {
-      return ['changed' => FALSE];
+      return [
+        'changed' => FALSE,
+        'skip_reason' => 'live_source_page',
+        'skip_target' => $targetPath,
+      ];
     }
 
     $node = $entity && $entity->getEntityTypeId() === 'node' ? $entity : NULL;
@@ -304,7 +342,11 @@ class RedirectLinkResolver {
       return ['changed' => FALSE, 'reason' => 'unresolved_or_wrong_type'];
     }
     if ($entity instanceof EntityPublishedInterface && !$entity->isPublished()) {
-      return ['changed' => FALSE, 'reason' => 'unpublished_target'];
+      return [
+        'changed' => FALSE,
+        'reason' => 'unpublished_target',
+        'target_path' => $finalPath,
+      ];
     }
 
     return [
