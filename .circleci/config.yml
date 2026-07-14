@@ -1117,9 +1117,13 @@ workflows:
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
-    when:
-      and:
-        - equal: [ mysql_rebuild, << pipeline.parameters.trigger_workflow >> ]
+    filters:
+      branches:
+        only:
+          - feature/DP-47839_switch-image-repo
+#    when:
+#      and:
+#        - equal: [ mysql_rebuild, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - build
       - populate:
