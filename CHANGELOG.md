@@ -1,13 +1,25 @@
 
 
-## [0.486.0] - July 7, 2026
+## [0.486.0] - July 14, 2026
 
 ### Fixed
+  - DP-47774: Investigate 500 error caused by redirect normalization job.
+  - DP-47923: Remove breadcrumb text from See all news and announcements link accessible name.
+  - DP-47970: Editoria11y no longer flags Related Organizations logos as missing alt text.
+  - DP-47847: Fixed usages reported for detached paragraphs.
   - DP-47638: Fixed Google Translate modal translation of disclaimer and button text.
   - DP-47763: Editoria11y Incorrectly Flags Heading Level Skip on Pages Using Glossary Component.
   - DP-47818: Style issue with error in CMS.
   - DP-47906: Use publish and event dates when sorting news and event items in automatic lists.
-  
+
+### Changed
+  - DP-47265: Reduce spacing after pre-media on info details page.
+  - DP-48017: Updated editoria11y accessibility csv report to eliminate duplicate node ids
+
+### Added
+  - DP-47686: Added some additional filters to editoria11y dismissal report
+  - DP-47148: Enable and configure the Admin Audit Trail module.
+
 
 
 ## [0.485.1] - July 1, 2026
