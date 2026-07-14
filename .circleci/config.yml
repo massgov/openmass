@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   jira: circleci/jira@1.3.1
   node: circleci/node@4.9.0
+  aws-cli: circleci/aws-cli@5.4.1
 
 # YAML anchors/aliases. See;
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
@@ -665,13 +666,14 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
-      - run: sudo apt-get update && sudo apt-get install -y awscli
+      - aws-cli/setup:
+          role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
+          region: "$MYSQL_REBUILD_AWS_REGION"
+          session_duration: "3600"
       - run:
           name: Log in to ECR
           command: |
-            AWS_ACCESS_KEY_ID="$PLACEHOLDER_AWS_ACCESS_KEY_ID" \
-            AWS_SECRET_ACCESS_KEY="$PLACEHOLDER_AWS_SECRET_ACCESS_KEY" \
-            aws ecr get-login-password --region PLACEHOLDER_AWS_REGION | docker login --username AWS --password-stdin PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com
+            aws ecr get-login-password --region "$MYSQL_REBUILD_AWS_REGION" | docker login --username AWS --password-stdin "$MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com"
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
@@ -679,11 +681,11 @@ jobs:
       - run: docker-compose stop --timeout 60 mysql
       - run:
           name: Commit mysql image
-          command: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
+          command: docker commit "$(docker-compose ps --all -q mysql)" "<< parameters.instance >>"
           no_output_timeout: 60m
       - run:
           name: Push mysql image
-          command: docker push << parameters.instance >>
+          command: docker push "<< parameters.instance >>"
           no_output_timeout: 60m
 
   pending_security:
@@ -1124,23 +1126,23 @@ workflows:
           name: massgov.populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
-          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:latest
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:latest
       - populate:
           name: massgov.populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
-          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:super
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:super
       - populate:
           name: massgov.populate.arm --sanitize
           requires: [ build ]
           sanitizeOption: --sanitize
-          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:latest.arm
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:latest.arm
           resource_class: arm.large
       - populate:
           name: massgov.populate.arm --super-sanitize
           requires: [ build ]
           sanitizeOption: --super-sanitize
-          instance: PLACEHOLDER_AWS_ACCOUNT_ID.dkr.ecr.PLACEHOLDER_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:super.arm
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/PLACEHOLDER_ECR_MYSQL_SANITIZED_REPOSITORY:super.arm
           resource_class: arm.large
 
   # Usually triggered by drush ma:release.
