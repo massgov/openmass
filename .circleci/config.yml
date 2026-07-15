@@ -674,10 +674,10 @@ jobs:
           name: Log in to ECR
           command: |
             aws ecr get-login-password --region "$MYSQL_REBUILD_AWS_REGION" | docker login --username AWS --password-stdin "$MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com"
-      - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
-          no_output_timeout: 30m
-      - run: docker-compose exec drupal drush cr
+#      - run:
+#          command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
+#          no_output_timeout: 30m
+#      - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
       - run:
           name: Commit mysql image
