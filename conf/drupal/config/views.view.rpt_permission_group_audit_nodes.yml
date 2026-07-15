@@ -5,6 +5,8 @@ dependencies:
   config:
     - field.storage.node.field_content_organization
     - field.storage.user.field_user_org
+    - user.role.administrator
+    - user.role.content_team
   module:
     - user
 id: rpt_permission_group_audit_nodes
@@ -343,6 +345,50 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        roles_target_id:
+          id: roles_target_id
+          table: user__roles
+          field: roles_target_id
+          relationship: uid
+          group_type: group
+          admin_label: ''
+          entity_type: user
+          entity_field: roles
+          plugin_id: user_roles
+          operator: not
+          value:
+            content_team: content_team
+            administrator: administrator
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
       style:
         type: table
       row:
