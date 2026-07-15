@@ -251,6 +251,10 @@ function mass_media_media_presave(MediaInterface $entity) {
     /** @var \Drupal\file\Entity\File $file */
     $file = File::load($entity->getUploadFile()->target_id);
     if ($file) {
+      /** @var \Drupal\mass_media\StageFileProxyHelper $stage_file_proxy_helper */
+      $stage_file_proxy_helper = \Drupal::service('mass_media.stage_file_proxy_helper');
+      $stage_file_proxy_helper->ensureLocalFile($file);
+
       $file_uri = $file->getFileUri();
       /** @var \Drupal\Core\File\FileSystem $file_system */
       $file_system = \Drupal::service('file_system');
@@ -283,12 +287,27 @@ function mass_media_media_presave(MediaInterface $entity) {
       }
 
       if (!empty($file_destination)) {
+        if (!$stage_file_proxy_helper->fileExistsLocally($file_uri)) {
+          \Drupal::logger('mass_media')->warning('Skipping file move for media @mid: source file not found locally or on origin (@uri).', [
+            '@mid' => $entity->id(),
+            '@uri' => $file_uri,
+          ]);
+          return;
+        }
+
         $dirname = $file_system->dirname($file_destination);
         if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
-          throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
+          \Drupal::logger('mass_media')->warning("Skipping file move for media @mid: unable to prepare directory @dirname.", [
+            '@mid' => $entity->id(),
+            '@dirname' => $dirname,
+          ]);
+          return;
         }
         if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
-          throw new \RuntimeException("Unable to move file to '$file_destination'");
+          \Drupal::logger('mass_media')->warning("Skipping file move for media @mid: unable to move file to @destination.", [
+            '@mid' => $entity->id(),
+            '@destination' => $file_destination,
+          ]);
         }
       }
     }
