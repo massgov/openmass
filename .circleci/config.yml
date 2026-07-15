@@ -663,9 +663,9 @@ jobs:
           name: Wait for mysql
           command: sleep 5
       - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
-      - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
-          no_output_timeout: 60m
+#      - run:
+#          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+#          no_output_timeout: 60m
       - aws-cli/setup:
           role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
           region: "$MYSQL_REBUILD_AWS_REGION"
