@@ -1126,23 +1126,23 @@ workflows:
           name: massgov.populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/MYSQL_REBUILD_AWS_MYSQL_SANITIZED_REPOSITORY:latest
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
       - populate:
           name: massgov.populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/MYSQL_REBUILD_AWS_MYSQL_SANITIZED_REPOSITORY:super
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
       - populate:
           name: massgov.populate.arm --sanitize
           requires: [ build ]
           sanitizeOption: --sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/MYSQL_REBUILD_AWS_MYSQL_SANITIZED_REPOSITORY:latest.arm
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest.arm
           resource_class: arm.large
       - populate:
           name: massgov.populate.arm --super-sanitize
           requires: [ build ]
           sanitizeOption: --super-sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/MYSQL_REBUILD_AWS_MYSQL_SANITIZED_REPOSITORY:super.arm
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super.arm
           resource_class: arm.large
 
   # Usually triggered by drush ma:release.
