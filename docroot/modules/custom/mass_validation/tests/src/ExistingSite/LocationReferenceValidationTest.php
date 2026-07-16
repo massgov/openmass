@@ -7,7 +7,7 @@ use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**
- * Tests validation for the Map field on Organization pages.
+ * Tests validation for the Map field on Organization and Service pages.
  */
 class LocationReferenceValidationTest extends MassExistingSiteBase {
 
