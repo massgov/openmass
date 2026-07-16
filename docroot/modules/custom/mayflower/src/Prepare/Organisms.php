@@ -512,7 +512,7 @@ class Organisms {
           'href' => UrlHelper::filterBadProtocol($node->toUrl()->toString() . '/news'),
           'text' => t('See all news and announcements'),
           'chevron' => TRUE,
-          'labelContext' => t('for the @label', ['@label' => $entity->label()]),
+          'labelContext' => t('for the @label', ['@label' => $node->label()]),
         ];
         $moreLink = Molecules::prepareMoreLink($entity, $moreOptions);
       }
