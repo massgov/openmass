@@ -66,7 +66,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       // Just pick the first one since multiple unpublishes is super rare.
       $transition = array_shift($transitions);
       // Use the site date formatter so the email shows the same timezone as the
-      // CMS (e.g. America/New_York) instead of UTC (DP-43651).
+      // CMS (e.g. America/New_York) instead of UTC (DP-38034).
       $unpublish_date = \Drupal::service('date.formatter')->format(
         $transition->getTransitionDate()->getTimestamp(),
         'custom',
