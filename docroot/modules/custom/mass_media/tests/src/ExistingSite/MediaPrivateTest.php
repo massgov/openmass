@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_media\ExistingSite;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
@@ -41,6 +42,42 @@ class MediaPrivateTest extends MassExistingSiteBase {
 
     // Make sure the original public file is gone. See mass_caching_file_move().
     $this->assertFileDoesNotExist($file->getFileUri());
+  }
+
+  /**
+   * Directory-backed file entities are skipped instead of moved.
+   */
+  public function testDirectorySourceFileIsNotMovedToPrivate() {
+    /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+    $file_system = \Drupal::service('file_system');
+    $directory_uri = 'public://mass-media-directory-source-test';
+    $this->assertTrue($file_system->prepareDirectory($directory_uri, FileSystemInterface::CREATE_DIRECTORY));
+
+    $file = File::create([
+      'uri' => $directory_uri,
+      'filename' => 'mass-media-directory-source-test',
+    ]);
+    $file->setPermanent();
+    $file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Directory source file',
+      'bundle' => 'document',
+      'field_upload_file' => [$file],
+      'status' => 0,
+      'moderation_state' => MassModeration::DRAFT,
+    ]);
+    $this->markEntityForCleanup($media);
+    $this->cleanupEntities[] = $file;
+
+    $reloaded_file = File::load($file->id());
+    $this->assertEquals('public', StreamWrapperManager::getScheme($reloaded_file->getFileUri()));
+    $realpath = $file_system->realpath($reloaded_file->getFileUri());
+    $this->assertNotFalse($realpath);
+    $this->assertTrue(is_dir($realpath));
+    $this->assertFalse($file_system->realpath('private://mass-media-directory-source-test'));
+
+    $file_system->deleteRecursive($directory_uri);
   }
 
   /**
