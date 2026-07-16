@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_validation\ExistingSite;
 
+use Drupal\Core\Form\FormState;
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
 
@@ -60,6 +61,40 @@ class LocationReferenceValidationTest extends MassExistingSiteBase {
 
     $validation_text = 'Only location pages can be referenced in this field.';
     $this->assertStringContainsString($validation_text, $page->getContent(), 'Validation message for the Map field not found.');
+  }
+
+  /**
+   * Assert the service page Layout Paragraphs path rejects non-locations.
+   *
+   * Service pages edit the Map field through the Layout Paragraphs component
+   * form, whose #validate handler calls validateLayoutParagraphForm(). This
+   * exercises that path directly with both invalid and valid references.
+   */
+  public function testServicePageLayoutParagraphsPathRejectsNonLocationReference(): void {
+    $contact = $this->createNode([
+      'type' => 'contact_information',
+      'title' => 'Test Contact for Service Page Map Validation',
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    $location = $this->createNode([
+      'type' => 'location',
+      'title' => 'Test Location for Service Page Map Validation',
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $validator = \Drupal::service('mass_validation.location_reference_validator');
+
+    $form_state = new FormState();
+    $form_state->setValue('field_org_ref_locations', [['target_id' => $contact->id()]]);
+    $validator->validateLayoutParagraphForm($form_state);
+    $errors = $form_state->getErrors();
+    $this->assertCount(1, $errors, 'A non-location reference must be rejected on the service page path.');
+    $this->assertStringContainsString('Only location pages can be referenced in this field.', (string) reset($errors));
+
+    $form_state = new FormState();
+    $form_state->setValue('field_org_ref_locations', [['target_id' => $location->id()]]);
+    $validator->validateLayoutParagraphForm($form_state);
+    $this->assertCount(0, $form_state->getErrors(), 'A location reference must be accepted.');
   }
 
 }
