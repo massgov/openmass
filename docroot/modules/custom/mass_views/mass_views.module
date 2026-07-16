@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
@@ -267,6 +268,11 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
   // Only process URIs that start with 'internal:/media/'.
   $query->condition('redirect_redirect__uri', 'internal:/media/%', 'LIKE');
 
+  // Ignore legacy/system-generated document redirects whose source path starts
+  // with "doc/". These are typically old download URLs and should not prevent a
+  // document from showing up as orphaned when it has no usage.
+  $query->condition('redirect_source__path', 'doc/%', 'NOT LIKE');
+
   // Execute the query and fetch the results.
   $media_ids = $query->execute()->fetchCol();
 
@@ -278,22 +284,44 @@ function _mass_views_helper_get_numeric_media_ids_from_redirect_table() {
 }
 
 /**
+ * Implements hook_views_pre_view().
+ */
+function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'news_curated_list' && !empty($args[0]) && is_numeric($args[0])) {
+    $view->mass_related_content_id = (int) $args[0];
+    $args[0] = 'all';
+  }
+}
+
+/**
  * Implements hook_views_query_alter().
  */
 function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
 
-  if ($view->id() == 'report_orphaned_documents') {
+  if ($view->id() == 'news_curated_list' && !empty($view->mass_related_content_id)) {
+    $content_id = (int) $view->mass_related_content_id;
+    $connection = $query->getConnection();
 
-    // Get the numeric media IDs that need to be excluded.
-    $media_ids = _mass_views_helper_get_numeric_media_ids_from_redirect_table();
+    $org_exists = $connection->select('node__field_news_signees', 'news_signees');
+    $org_exists->addExpression('1');
+    $org_exists->join(
+      'paragraph__field_state_org_ref_org',
+      'org',
+      'org.entity_id = news_signees.field_news_signees_target_id'
+    );
+    $org_exists->where('news_signees.entity_id = node_field_data.nid');
+    $org_exists->condition('org.field_state_org_ref_org_target_id', $content_id);
 
-    if (!empty($media_ids)) {
-      // Exclude media items that match any of the media IDs in the extracted list.
-      $media_ids_list = implode(',', $media_ids);
+    $service_exists = $connection->select('node__field_related_service', 'related_service');
+    $service_exists->addExpression('1');
+    $service_exists->where('related_service.entity_id = node_field_data.nid');
+    $service_exists->condition('related_service.field_related_service_target_id', $content_id);
 
-      // Add a where expression to exclude media items that have a matching redirect.
-      $query->addWhereExpression(0, "media_field_data.mid NOT IN ($media_ids_list)");
-    }
+    $or = $connection->condition('OR')
+      ->exists($org_exists)
+      ->exists($service_exists);
+
+    $query->addWhere(0, $or);
   }
 
   if ($view->id() == 'report_orphaned_documents_redirects') {
@@ -396,6 +424,24 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
     $args_to_pass = array_merge($nids_empty, $nids_unpublished);
     $query->addWhere(0, 'node_field_data.nid', $args_to_pass, 'IN');
   }
+
+}
+
+/**
+ * Implements hook_query_TAGNAME_alter() for the all_documents_latest_rev view.
+ *
+ * The field_organizations relationship LEFT JOINs media_revision__field_organizations,
+ * which stores one row per delta (0, 1, 2…). A media item with N orgs produces
+ * N duplicate rows in the result. DISTINCT can't collapse them because each row
+ * has a different org NID in the SELECT, and GROUP BY fails because MySQL runs
+ * with ONLY_FULL_GROUP_BY. Restricting the JOIN to delta = 0 limits it to the
+ * first org per revision, eliminating the fan-out at the SQL level.
+ */
+function mass_views_query_views_all_documents_latest_rev_alter(AlterableInterface $query) {
+  $tables = &$query->getTables();
+  if (isset($tables['media_revision__field_organizations'])) {
+    $tables['media_revision__field_organizations']['condition'] .= ' AND media_revision__field_organizations.delta = 0';
+  }
 }
 
 /**
@@ -418,6 +464,7 @@ function mass_views_entity_insert($entity): void {
 function mass_views_do_invalidate($entity): void {
   if (method_exists($entity, 'getCollection') && $entity->getCollection() && !$entity->getCollection()->isEmpty()) {
     $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+    $tags = [];
     /** @var \Drupal\taxonomy\Entity\Term $referencedEntity */
     foreach ($entity->getCollection()->referencedEntities() as $referencedEntity) {
       $tags[] = 'taxonomy_term:' . $referencedEntity->id();
@@ -426,7 +473,9 @@ function mass_views_do_invalidate($entity): void {
         $tags[] = 'taxonomy_term:' . $parent->id();
       }
     }
-    Cache::invalidateTags($tags);
+    if (!empty($tags)) {
+      Cache::invalidateTags($tags);
+    }
   }
 }
 
@@ -436,23 +485,42 @@ function mass_views_do_invalidate($entity): void {
  * Unset the collections_all view field rendering if we are dealing with media entity.
  */
 function mass_views_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'news_curated_list' && !empty($view->mass_related_content_id)) {
+    $content_id = $view->mass_related_content_id;
+    $view->args[0] = $content_id;
+
+    if (!empty($view->argument['nid'])) {
+      $view->argument['nid']->argument = $content_id;
+      $view->argument['nid']->value = [$content_id];
+    }
+  }
+
   if ($view->id() == 'collection_all') {
+    $has_media_rows = FALSE;
     foreach ($view->result as $row) {
-      // Check if the row entity is a media entity
       if ($row->_entity == NULL && $row->entity_type == 'media') {
-        // If the $row is of type media we should unset the fields below, since the
-        // views system will try load the entity and access the fields that media entity
-        // doesn't have. This is a unique/complex view that is rendering 2 entities node/media
-        // (initially overridden here docroot/modules/custom/mass_content/mass_content.module:924)
-        foreach ($view->field as $field_id => $field) {
-          switch ($field_id) {
-            case 'title':
-            case 'field_news_lede':
-            case 'field_short_desc':
-            case 'field_how_to_lede':
-              unset($view->field[$field_id]);
-              break;
-          }
+        $has_media_rows = TRUE;
+        break;
+      }
+    }
+
+    if ($has_media_rows) {
+      // Media rows are unioned into this node-based view in mass_content.module.
+      // Unset node-only fields so Views does not try to load node entities/fields
+      // for media rows (e.g. description fields used by the keyword search filter).
+      // Match on $field->table here is the Views YAML "table:" value at pre_render,
+      // not the runtime query tableAlias. Any field whose table starts with "node"
+      // is node-specific; excluded fields are only needed for query-time search.
+      foreach ($view->field as $field_id => $field) {
+        // rendered_entity_mixed is registered on table "node" (mass_content.module)
+        // but must be kept: it renders both node and media rows via entity_type.
+        if ($field_id === 'rendered_entity_mixed') {
+          continue;
+        }
+        $table = $field->table ?? '';
+        $entity_type = $field->options['entity_type'] ?? '';
+        if (str_starts_with($table, 'node') || $entity_type === 'node') {
+          unset($view->field[$field_id]);
         }
       }
     }

@@ -128,6 +128,49 @@ class Molecules {
     return array_merge($actionStep, $downloadLinks);
   }
 
+  public static function prepareNumberedStep($entity, array $referenced_fields, array &$cache_tags = []) {
+    $numberedStep = [
+      'title' => Helper::fieldFullView($entity, $referenced_fields['title']),
+      'richText' => [
+        'rteElements' => [
+          Atoms::prepareTextField($entity, $referenced_fields['richText']),
+        ],
+      ],
+    ];
+
+    $downloadLinks = [];
+    if (array_key_exists('documents', $referenced_fields) && Helper::isFieldPopulated($entity, $referenced_fields['documents'])) {
+      $documents = Helper::getReferencedEntitiesFromField($entity, $referenced_fields['documents']);
+      foreach ($documents as $document) {
+        if ($document->bundle() !== 'documents_multiple' || !Helper::isFieldPopulated($document, 'field_file_download_multiple')) {
+          continue;
+        }
+
+        $downloads = Helper::getReferencedEntitiesFromField($document, 'field_file_download_multiple');
+        foreach ($downloads as $download) {
+          $downloadLink = self::prepareDownloadLink($download, [], $cache_tags);
+          if (!empty($downloadLink)) {
+            $downloadLinks[] = $downloadLink;
+          }
+        }
+      }
+      if (!empty($downloadLinks)) {
+        $numberedStep['downloadLinks'] = Helper::removeArrayDuplicates($downloadLinks);
+      }
+    }
+
+    if (array_key_exists('more_link', $referenced_fields) && Helper::isFieldPopulated($entity, $referenced_fields['more_link'])) {
+      $link = Helper::separatedLink($entity->get($referenced_fields['more_link'])[0]);
+      $numberedStep['button'] = [
+        'href' => $link['href'],
+        'text' => $link['text'],
+        'theme' => 'c-primary-alt',
+      ];
+    }
+
+    return $numberedStep;
+  }
+
   /**
    * Returns the imagePromo variable structure.
    *
@@ -296,6 +339,7 @@ class Molecules {
       'x.com' => 'x-logo',
       'facebook.com' => 'facebook-logo',
       'threads.net' => 'threads-logo',
+      'threads.com' => 'threads-logo',
       'flickr.com' => 'flickr-logo',
       'linkedin.com' => 'linkedin-logo',
       'instagram.com' => 'instagram-logo',
@@ -643,9 +687,13 @@ class Molecules {
 
         if (in_array($bundle, $bundles_using_email_fields)) {
           $link = Helper::separatedEmailLink($entity, $fields['link']);
-          $item['link'] = $link['href'];
-          $item['value'] = $link['text'];
+          $item['link'] = trim((string) ($link['href'] ?? ''));
+          $item['value'] = trim((string) ($link['text'] ?? ''));
           $item['type'] = 'email';
+
+          if (empty($item['link']) || empty($item['value'])) {
+            continue;
+          }
 
           // Respect first email address provided if present.
           if (!$contactInfo['email']) {
@@ -654,8 +702,11 @@ class Molecules {
         }
         else {
           $link = Helper::separatedLinks($entity, $fields['link']);
-          $item['link'] = $link[0]['href'];
-          $item['value'] = $link[0]['text'];
+          $item['link'] = trim((string) ($link[0]['href'] ?? ''));
+          $item['value'] = trim((string) ($link[0]['text'] ?? ''));
+          if (empty($item['link']) || empty($item['value'])) {
+            continue;
+          }
         }
       }
 

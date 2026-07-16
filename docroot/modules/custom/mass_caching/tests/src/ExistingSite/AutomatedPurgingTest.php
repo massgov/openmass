@@ -128,6 +128,99 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
   }
 
   /**
+   * Test published node save URL purging.
+   */
+  public function testPublishedNodeUpdateResultsInPurge() {
+    $node = $this->createNode([
+      'type' => 'page',
+      'title' => 'Published purge test',
+      'moderation_state' => 'published',
+      'path' => [
+        'alias' => '/published-purge-test',
+      ],
+    ]);
+    $this->markEntityForCleanup($node);
+
+    /** @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $queue */
+    $queue = \Drupal::service('purge.queue');
+    $queue->emptyQueue();
+
+    $node->setTitle('Published purge test updated');
+    $node->save();
+
+    $this->assertUrlInvalidationsForPath('/node/' . $node->id(), 2);
+    $this->assertUrlInvalidationsForPath('/published-purge-test', 2);
+  }
+
+  /**
+   * Test unpublished node save URL purging is skipped.
+   */
+  public function testUnpublishedNodeUpdateResultsInNoUrlPurge() {
+    $node = $this->createNode([
+      'type' => 'page',
+      'title' => 'Unpublished purge test',
+      'moderation_state' => 'draft',
+      'path' => [
+        'alias' => '/unpublished-purge-test',
+      ],
+    ]);
+    $this->markEntityForCleanup($node);
+
+    /** @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $queue */
+    $queue = \Drupal::service('purge.queue');
+    $queue->emptyQueue();
+
+    $node->setTitle('Unpublished purge test updated');
+    $node->save();
+
+    $this->assertUrlInvalidationsForPath('/node/' . $node->id(), 0);
+    $this->assertUrlInvalidationsForPath('/unpublished-purge-test', 0);
+  }
+
+  /**
+   * Test published node alias changes purge old and new URLs.
+   */
+  public function testPublishedNodeAliasUpdatePurgesOldAndNewUrls() {
+    $node = $this->createNode([
+      'type' => 'page',
+      'title' => 'Published alias purge test',
+      'moderation_state' => 'published',
+      'path' => [
+        'alias' => '/published-alias-old',
+      ],
+    ]);
+    $this->markEntityForCleanup($node);
+
+    /** @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $queue */
+    $queue = \Drupal::service('purge.queue');
+    $queue->emptyQueue();
+
+    $node->path->alias = '/published-alias-new';
+    $node->save();
+
+    $this->assertUrlInvalidationsForPath('/published-alias-old', 2);
+    $this->assertUrlInvalidationsForPath('/published-alias-new', 2);
+  }
+
+  /**
+   * Assert URL invalidations for a path across configured hosts and schemes.
+   */
+  private function assertUrlInvalidationsForPath($path, $expected_count) {
+    $schemas = Settings::get('mass_caching.schemes', [
+      parse_url(\Drupal::request()->getUri(), PHP_URL_SCHEME),
+    ]);
+    $hosts = Settings::get('mass_caching.hosts');
+    $invalidations = [];
+    foreach ($schemas as $schema) {
+      foreach ($hosts as $host) {
+        $absolute = sprintf('%s://%s%s', $schema, $host, $path);
+        $invalidations = array_merge($invalidations, $this->getInvalidations('url', $absolute));
+      }
+    }
+    $this->assertCount($expected_count, $invalidations);
+  }
+
+  /**
    * Get the invalidations matching a type and expression.
    */
   private function getInvalidations($type, $expression) {

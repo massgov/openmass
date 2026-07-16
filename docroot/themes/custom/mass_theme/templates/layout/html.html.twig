@@ -30,8 +30,8 @@
 <html{{ html_attributes }} >
   <head>
 
-    {% include directory ~ "/templates/alerts/polyfills.html.twig" %}
-    {% include directory ~ "/templates/alerts/fetch.html.twig" %}
+    {{ include(directory ~ '/templates/alerts/polyfills.html.twig') }}
+    {{ include(directory ~ '/templates/alerts/fetch.html.twig') }}
 
     {# New Relic loader setup #}
     {% verbatim %}
@@ -107,7 +107,7 @@
     <title>{{ head_title|safe_join(' | ') }}</title>
     <css-placeholder token="{{ placeholder_token|raw }}">
     <js-placeholder token="{{ placeholder_token|raw }}">
-    {% include directory ~ "/templates/includes/page-meta.html.twig" %}
+    {{ include(directory ~ '/templates/includes/page-meta.html.twig') }}
     {# Update the version '?version=1' when changes occurs to the font files for caching. #}
     <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSans-VF-subset.woff2?version=1') }}" as="font" crossorigin/>
 
@@ -122,21 +122,106 @@
 
     {% if _context['#attached'].drupalSettings.glossaries %}
       {% set popoverContext = {
-          "tooltip": {
-            "controlId": "uniqueID",
-            "openText": "Term",
-            "closeText": "Close",
-            "title": "Definition",
-            "level": "2",
-            "message": "definition here."
-          }
+          tooltip: {
+            controlId: 'uniqueID',
+            openText: 'Term',
+            closeText: 'Close',
+            title: 'Definition',
+            level: '2',
+            message: 'definition here.',
+          },
         }
       %}
-      <template id="glossary-popup-template">{% include '@molecules/popover.twig' with popoverContext %}</template>
+      <template id="glossary-popup-template">{{ include('@molecules/popover.twig', popoverContext) }}</template>
     {% endif %}
 
     {# Google Translate JS #}
     <script>
+      (function () {
+        {# Utility nav is rendered twice (wide + narrow). Dedupe before Google Translate inits. #}
+        {# Keep the first copy; Mayflower mainNavHamburger moves it into the mobile menu and #}
+        {# caches a reference to the wide-nav translate trigger for menu open/close logic. #}
+        var translateWrappers = document.querySelectorAll('[data-utility-nav-modal="translate"]');
+        for (var i = 1; i < translateWrappers.length; i++) {
+          translateWrappers[i].remove();
+        }
+
+        if (!document.documentElement.dataset.massThemeTranslateClickGuard) {
+          document.documentElement.dataset.massThemeTranslateClickGuard = 'true';
+          (function () {
+            function isTranslateUi(target) {
+              return target.closest('[data-utility-nav-modal="translate"]') ||
+                target.closest('.ma__modal--translate.ma__active') ||
+                target.closest('.ma__goog-te-wrapper') ||
+                target.closest('.goog-te-gadget');
+            }
+
+            function clearGoogtransCookies() {
+              var hostname = window.location.hostname;
+              var cookieDomain = null;
+              if (hostname !== 'localhost' && !/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
+                var parts = hostname.split('.');
+                cookieDomain = parts.length <= 2 ? '.' + hostname : '.' + parts.slice(-2).join('.');
+              }
+              document.cookie = 'googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+              document.cookie = 'googtrans=; path=/; domain=' + hostname + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+              if (cookieDomain) {
+                document.cookie = 'googtrans=; path=/; domain=' + cookieDomain + '; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+              }
+            }
+
+            function isolateTranslateClick(event) {
+              if (event.massThemeTranslateClickRedispatched) {
+                return;
+              }
+              var target = event.target;
+              if (!target || !target.closest || !isTranslateUi(target)) {
+                return;
+              }
+
+              var resetButton = target.closest('#ma__translate-reset, .ma__translate-reset-button');
+              if (resetButton) {
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                clearGoogtransCookies();
+                window.location.reload();
+                return;
+              }
+
+              if (target.closest('select, option, input, label')) {
+                return;
+              }
+
+              event.preventDefault();
+              event.stopPropagation();
+              event.stopImmediatePropagation();
+
+              var trigger = target.closest('[data-modal-trigger]');
+              if (trigger && !target.closest('.ma__modal--translate.ma__active')) {
+                var modalId = trigger.getAttribute('data-modal-trigger');
+                if (modalId && window.modals && window.modals[modalId]) {
+                  window.modals[modalId].open(trigger);
+                  return;
+                }
+              }
+
+              var dispatchTarget = target.closest(
+                'button, select, [data-modal-trigger], .ma__modal-close, a[href]'
+              ) || target;
+              var redispatched = new MouseEvent('click', {
+                bubbles: false,
+                cancelable: true,
+                view: window
+              });
+              redispatched.massThemeTranslateClickRedispatched = true;
+              dispatchTarget.dispatchEvent(redispatched);
+            }
+
+            document.addEventListener('click', isolateTranslateClick, true);
+          })();
+        }
+      })();
       function googleTranslateElementInit() {
         new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: '{{ languages }}', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
         document.querySelector('#google_translate_element') !== null ? document.querySelector('#google_translate_element').classList.add('has-rendered') : '';
@@ -145,7 +230,7 @@
         var script = document.createElement('script');
         script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
         script.async = true;
-        element = document.getElementsByTagName('head')[0];
+        var element = document.getElementsByTagName('head')[0];
         element.appendChild(script);
       })();
     </script>

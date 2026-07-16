@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.news.field_author
     - field.field.node.news.field_collections
+    - field.field.node.news.field_content_organization
     - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
     - field.field.node.news.field_glossaries
@@ -25,6 +26,7 @@ dependencies:
     - field.field.node.news.field_news_video
     - field.field.node.news.field_organizations
     - field.field.node.news.field_primary_parent
+    - field.field.node.news.field_related_service
     - field.field.node.news.field_reusable_label
     - image.style.thumbnail
     - node.type.news
@@ -55,6 +57,7 @@ third_party_settings:
         - field_news_summary
         - field_primary_parent
         - field_organizations
+        - field_related_service
         - langcode
         - field_english_version
         - field_reusable_label
@@ -153,6 +156,7 @@ third_party_settings:
         direction: horizontal
     group_page_info:
       children:
+        - field_content_organization
         - field_news_metatags
         - url_redirects
         - simple_sitemap
@@ -206,7 +210,7 @@ content:
             selector: ''
   field_collections:
     type: entity_reference_tree
-    weight: 14
+    weight: 15
     region: content
     settings:
       theme: default
@@ -222,6 +226,28 @@ content:
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
     third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 1
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
+    third_party_settings: {  }
   field_date_published:
     type: datetime_default
     weight: 5
@@ -230,7 +256,7 @@ content:
     third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 11
+    weight: 12
     region: content
     settings:
       match_operator: CONTAINS
@@ -258,7 +284,7 @@ content:
             selector: ''
   field_glossaries:
     type: entity_reference_autocomplete
-    weight: 15
+    weight: 16
     region: content
     settings:
       match_operator: CONTAINS
@@ -276,7 +302,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 13
+    weight: 14
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -473,9 +499,19 @@ content:
       placeholder: ''
       hide_weight: false
     third_party_settings: {  }
+  field_related_service:
+    type: entity_reference_autocomplete
+    weight: 10
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 12
+    weight: 13
     region: content
     settings:
       match_operator: CONTAINS
@@ -485,7 +521,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 10
+    weight: 11
     region: content
     settings:
       include_locked: false

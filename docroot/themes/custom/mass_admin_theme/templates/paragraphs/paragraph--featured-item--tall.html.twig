@@ -41,12 +41,12 @@
  */
 #}
 
-{% include "@molecules/featured-item.twig" with {
-  "featuredItem": {
-    "variation": "tall",
-    "content": content.field_featured_item_image,
-    "featuredContent": content.field_featured_item_highlight,
-    "href": content.field_featured_item_link[0]['#url_title'],
-    "text": content.field_featured_item_link[0]['#title']
-  }
-} %}
+{{ include('@molecules/featured-item.twig', {
+  featuredItem: {
+    variation: 'tall',
+    content: content.field_featured_item_image,
+    featuredContent: content.field_featured_item_highlight,
+    href: content.field_featured_item_link[0]['#url_title'],
+    text: content.field_featured_item_link[0]['#title'],
+  },
+}) }}

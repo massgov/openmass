@@ -40,42 +40,42 @@
 #}
 {% if content.field_listitemlink_item[0]['#url'] and paragraph.field_listitemlink_item.computed_title is not empty %}
   {% set desc = '' %}
-  {% if paragraph.field_listitemlink_desc_type.value == "linked" %}
+  {% if paragraph.field_listitemlink_desc_type.value == 'linked' %}
     {% set desc = {
-      "rteElements": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": paragraph.field_listitemlink_item.computed_description
-          }
-        }
-      }]
+      rteElements: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: paragraph.field_listitemlink_item.computed_description,
+          },
+        },
+      }],
     } %}
-  {% elseif paragraph.field_listitemlink_desc_type.value == "manual" %}
+  {% elseif paragraph.field_listitemlink_desc_type.value == 'manual' %}
     {% set desc = {
-      "rteElements": [{
-        "path": "@atoms/11-text/paragraph.twig",
-        "data": {
-          "paragraph": {
-            "text": paragraph.field_listitemlink_desc_manual.value
-          }
-        }
-      }]
+      rteElements: [{
+        path: '@atoms/11-text/paragraph.twig',
+        data: {
+          paragraph: {
+            text: paragraph.field_listitemlink_desc_manual.value,
+          },
+        },
+      }],
     } %}
   {% endif %}
-  {% include "@molecules/download-link.twig" with {
-    "downloadLink": {
-      "iconSize": "",
-      "icon": "",
-      "decorativeLink": {
-        "text": paragraph.field_listitemlink_item.computed_title,
-        "href": content.field_listitemlink_item[0]['#url'],
-        "info": "",
-        "property": ""
+  {{ include('@molecules/download-link.twig', {
+    downloadLink: {
+      iconSize: '',
+      icon: '',
+      decorativeLink: {
+        text: paragraph.field_listitemlink_item.computed_title,
+        href: content.field_listitemlink_item[0]['#url'],
+        info: '',
+        property: '',
       },
-      "size": "",
-      "format": "form",
-      "description": desc
-    }
-  } %}
+      size: '',
+      format: 'form',
+      description: desc,
+    },
+  }) }}
 {% endif %}

@@ -19,7 +19,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   /**
    * Returns selectors of locked fields on topic pages.
    */
-  private function lockedFields() {
+  private static function lockedFields(): array {
     return [
       '#edit-title-0-value',
       '#edit-field-topic-lede-0-value',
@@ -30,7 +30,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   /**
    * Returns selectors of unlocked fields on topic pages.
    */
-  private function unlockedFields() {
+  private static function unlockedFields(): array {
     return [
       '#edit-field-organizations-0-target-id',
       '#edit-field-intended-audience-none',
@@ -42,26 +42,26 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   /**
    * Provides data to test with testTopicPageEditForm.
    */
-  public function provider() {
+  public static function provider(): array {
 
     $editor = [
       'role' => 'editor',
-      'unlocked_fields' => $this->unlockedFields(),
-      'locked_fields' => $this->lockedFields(),
+      'unlocked_fields' => self::unlockedFields(),
+      'locked_fields' => self::lockedFields(),
       'available_states' => ['draft', 'needs_review', 'published'],
     ];
 
     $author = [
       'role' => 'author',
-      'unlocked_fields' => $this->unlockedFields(),
-      'locked_fields' => $this->lockedFields(),
+      'unlocked_fields' => self::unlockedFields(),
+      'locked_fields' => self::lockedFields(),
       'available_states' => ['draft', 'needs_review'],
     ];
 
     $content_administrator = [
       'role' => 'content_team',
       // This role hasn't any locked fields.
-      'unlocked_fields' => array_merge($this->unlockedFields(), $this->lockedFields()),
+      'unlocked_fields' => array_merge(self::unlockedFields(), self::lockedFields()),
       'locked_fields' => [],
       'available_states' => [
         'draft',
@@ -242,8 +242,9 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    */
   public function testTopicPageEditForm($data) {
 
-    // Create user.
-    $user = $this->createUser();
+    // Create user. Bypass mass_org_access to keep the test focused on
+    // topic_page restriction behavior independent of org assignment.
+    $user = $this->createUser(['bypass org access']);
     $user->addRole($data['role']);
     // Content administrators also require permissions from the editor role.
     if ($data['role'] == 'content_team') {
@@ -342,7 +343,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    */
   public function testTopicPageOrganizationFieldAccess(array $role_data) {
     // Create user.
-    $user = $this->createUser();
+    $user = $this->createUser(['bypass org access']);
     $role = $role_data['role'];
 
     $user->addRole($role);
@@ -398,7 +399,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   public function testTopicPageOrganizationFieldControlsVisibility(array $role_data) {
     // Create user.
     $role = $role_data['role'];
-    $user = $this->createUser();
+    $user = $this->createUser(['bypass org access']);
     $user->addRole($role);
     $user->activate();
     $user->save();

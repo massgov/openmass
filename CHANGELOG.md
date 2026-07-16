@@ -1,12 +1,369 @@
 
 
+## [0.486.0] - July 14, 2026
+
+### Fixed
+  - DP-47774: Investigate 500 error caused by redirect normalization job.
+  - DP-47923: Remove breadcrumb text from See all news and announcements link accessible name.
+  - DP-47970: Editoria11y no longer flags Related Organizations logos as missing alt text.
+  - DP-47847: Fixed usages reported for detached paragraphs.
+  - DP-47638: Fixed Google Translate modal translation of disclaimer and button text.
+  - DP-47763: Editoria11y Incorrectly Flags Heading Level Skip on Pages Using Glossary Component.
+  - DP-47818: Style issue with error in CMS.
+  - DP-47906: Use publish and event dates when sorting news and event items in automatic lists.
+
+### Changed
+  - DP-47265: Reduce spacing after pre-media on info details page.
+  - DP-48017: Updated editoria11y accessibility csv report to eliminate duplicate node ids
+
+### Added
+  - DP-47686: Added some additional filters to editoria11y dismissal report
+  - DP-47148: Enable and configure the Admin Audit Trail module.
+
+
+
+## [0.485.1] - July 1, 2026
+
+### Fixed
+  - DP-46854: Fixed issue causing Url purges to be marked as still processing.
+
+
+## [0.485.0] - June 30, 2026
+
+### Added
+  - DP-46819: Added stepper component.
+  - DP-46854: Added Akamai cache tag invalidation.
+
+### Fixed
+  - DP-47668: CSV table search box is right-aligned when no results are displayed.
+  - DP-47759: Editoria11y incorrectly flags news and announcements arrow icon as a manual check.
+
+### Security
+  - DP-47903: Drupal core, Ai and Paragraphs update.
+
+
+
+## [0.484.0] - June 24, 2026
+
+### Fixed
+  - DP-41032: Pin mayflower artifact to add vertical spacing for Highlight and callout components in rich text.
+  - DP-47635: Resolve inline message warning message icon color contrast issue and match font styles to design.
+  - DP-47707: Stop collection_all View from spamming the watchdog log.
+
+### Added
+  - DP-43727: Tests for Bulk document import enhancements to validation/verification.
+  - DP-45788: Create mass_org_access module — restricts node/media UPDATE and DELETE to users within their assigned organization via hook_node_access/hook_media_access.
+  - DP-46788: Add user profile Default organizations and Default labels fields; pre-fill new node and document forms from profile defaults; deploy hook migrates default orgs from permission groups for active users.
+  - DP-47685: Added last revised by field to editoria11y csv export.
+
+### Changed
+  - DP-44915: Added views for viewing accessibility information by top-level organization.
+  - DP-44915: Upgraded Editoria11y to the latest version.
+  - DP-44915: Added last revised by to editoria11y report.
+  - DP-47028: Clean calculation logic for Related Organizations to avoid log noise.
+  - DP-47145: Add Toolbar (Hidden, Bottom, Top), Data details and Share options settings to the Tableau embed paragraph for "Connected Apps" embeds, so these are no longer hardcoded. Toolbar defaults to hidden.
+  - DP-47675: Require image in the image paragraph for header image.
+
+
+## [0.483.1] - June 18, 2026
+
+### Security
+- DP-47680: Drupal core update 11.3.12.
+
+
+## [0.483.0] - June 16, 2026
+
+### Added
+  - DP-46864: Adds a Message box toolbar button to Basic HTML CKEditor for informational and alert inline messages rendered with Mayflower inline-message.
+
+### Fixed
+  - DP-47109: Fix JS error with mobile translate component.
+
+
+
+## [0.482.0] - June 9, 2026
+
+### Added
+  - DP-43633: Warn authors when unpublishing or trashing a document that has published pages linking here.
+
+### Changed
+  - DP-45831: Update internal links on mass.gov that are redirects.
+  - DP-46121: Include the nearest microsite name in the HTML meta title for pages within a microsite.
+  - DP-46592: CSV Table / Datatables changes - round 3.
+
+### Fixed
+  - DP-47343: Prevent ordered list numbers from being clipped for leading-zero styles and lists with a start attribute, including on info-details pages.
+  - DP-47348: Remove green decorative underline from H3 and H4 in the rich text editor so editor preview matches the published page.
+
+
+
+## [0.481.0] - June 2, 2026
+
+### Changed
+  - DP-44689: Use the info icon and standard callout spacing for the decision tree disclaimer.
+  - DP-46912: Enable item count selection in all content and advanced content reports.
+  - DP-46922: Small updates to purge oversized header logger.
+
+### Fixed
+  - DP-45426: Fixed bullet list alignment issues.
+  - DP-47000: Fix csv export for all documents to respect value of accessibility status filter
+  - DP-47095: Restrict user approval fields to users with administer users permission and normalize editor profile form spacing after the fields are hidden.
+
+### Added
+  - DP-45952: Added top down org hierarchy view report.
+
+
+
+## [0.480.1] - May 20, 2026
+
+### Security
+  - DP-47058: Drupal security update 11.3.10
+
+## [0.480.0] - May 19, 2026
+
+### Fixed
+  - DP-45871: Glossary Terms Double-Defining Content and Not Recognizing Full-Term Matches.
+  - DP-46593: Improve keyboard focus visibility on the dark site header, brand banner, and utility navigation.
+  - DP-46594: Updates Mayflower artifacts to fix the global menu drawer edge showing through the translate modal on Android.
+  - DP-46676: Keyboard navigation focus not trapped within global navigation menu.
+  - DP-46853: CSV export from advanced search no longer times out with 503 errors for large organization filters.
+
+### Added
+  - DP-46855: Added a handler to more broadly purge by URL on saves to published content and when unpublishing content.
+
+### Changed
+  - DP-46954: Remove green decorative underline from H3 and H4 in rich text and component headings, and remove extra spacing reserved for that line.
+
+
+
+## [0.479.0] - May 12, 2026
+
+### Added
+  - DP-43779: Add tests for author created friendly URLs (redirects).
+  - DP-46580: Help text to feedback manager.
+  - DP-46681: Added logger for capturing oversized purger headers.
+
+### Fixed
+  - DP-46457: Fix Offered by tab order when show more/less is present.
+  - DP-46555: Fix org past-events pagination and initial results range; DP-39285 regression revert only affects events-page template changes, not the full PR.
+  - DP-46838: Bug - unable to add a new field to a new paragraph.
+
+
+
+## [0.478.0] - May 5, 2026
+
+### Removed
+  - DP-44256: Removed Percy/Browserstack.
+
+### Fixed
+  - DP-45856: Hide metadata related to robots noindex on the form.
+  - DP-46633: Ensure Threads social media icons render for both threads.com and threads.net URLs on organization pages.
+
+### Changed
+  - DP-45941: Allow Editors to Reference Blocked Users in “Authored By” Field for all report filters.
+
+### Security
+  - DP-46553: Document upload incorrectly flagged as virus: patch drupal/clamav to be more axplanatory why file cannot be uploaded
+
+
+
+## [0.477.0] - April 28, 2026
+
+### Added
+  - DP-45023: Added accessible translation widget.
+
+### Fixed
+  - DP-46271: Fix press release city injection to use the first paragraph even when the first p tag has attributes like lang.
+  - DP-46385: Fix icon duplicate id by cleaning up clipPath.
+  - DP-46544: Fixed issue with keyboard navigation getting trapped on global nav menu close button.
+
+### Changed
+  - DP-46332: Updated log processing class to address issues with missing and broken logs.
+
+### Security
+  - DP-46568: Drupal security update 11.3.8.
+
+
+
+## [0.476.0] - April 21, 2026
+
+### Changed
+  - DP-45228: CSV Table / Datatables changes
+
+### Fixed
+  - DP-46272: Fix missing tag number in environment indicator after D11 upgrade.
+  - DP-46444: After regenerate entity usage, many documents not showing actual relationships.
+
+### Security
+  - DP-46359: Updates Drupal core to 11.3.7 to address security advisories.
+
+
+## [0.475.1] - April 15, 2026
+
+### Fixed:
+- DP-46328: Restore asset_cache_bust module.
+
+
+## [0.475.0] - April 14, 2026
+
+### Removed
+  - DP-35638: Removed code and field storage related to Computed Related To fields.
+
+### Added
+  - DP-46226: Adds ExistingSite test after a bug where news releases could not be created due to a validation error about missing state organization.
+
+### Fixed
+  - DP-46263: Fix cell alignment when a CSV table has row headings.
+
+
+
+## [0.474.6] - April 13, 2026
+
+### Fixed:
+- DP-46254: Conditional fields fix.
+
+
+
+## [0.474.5] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.5] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.4] - April 9, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.3] - April 8, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.2] - April 8, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.1] - April 8, 2026
+
+### Fixed:
+- DP-44741: Hotfix to address Fiber-related issues.
+
+
+
+## [0.474.0] - April 7, 2026
+
+### Changed
+  - DP-44741: Upgrade to Drupal 11.3.x.
+
+### Added
+  - DP-45805: Add Entity IDs filter to advanced search for pages and documents allowing bulk ID lookup via popup textarea.
+  - DP-46088: Added service news more page to backstop.
+
+### Fixed
+  - DP-46079: Fix Gravity Forms iframe not rendering on non-production environments by replacing hardcoded hostname check with config-driven allowed hostnames list.
+
+
+
+## [0.473.0] - March 31, 2026
+
+### Changed
+  - DP-45201: API Service Card changes per request
+  - DP-45633: Update datatables libraries used with CSV tables module.
+
+### Fixed
+  - DP-45454: Prevented empty contact email/online links from rendering and required the online email field in contact information.
+  - DP-45686: A11Y Fix form validation errors for screen reader.
+  - DP-45780: Related links on News pages now show up even if no media contact is added.
+  - DP-45855: Fixed footer link to eliminate redirect for A11Y link.
+
+### Added
+  - DP-45721: Added news component to service pages.
+
+
+
+## [0.472.0] - March 24, 2026
+
+### Fixed
+  - DP-39488: Improved print styles with better spacing and left alignment.
+  - DP-45563: Fixing report of documents without files
+  - DP-45715: Edit page header problem on pages in microsite.
+  - DP-45783: Fix TBD option visibility and file change reset for accessibility status field on inline entity forms.
+
+### Changed
+  - DP-44787: Updated footer to align with latest design iteration.
+  - DP-45720: Removed character limit on rich text component in service section on service page
+
+### Removed
+  - DP-45679: Removed unused field on info details page to pass params to querystring.
+
+
+
+## [0.471.0] - March 17, 2026
+
+### Fixed
+  - DP-39767: A11y - Mass.gov main navigation ARIA cleanup.
+  - DP-44764: Issue with orphan document view.
+
+### Added
+  - DP-41606: Allow custom section headers on location pages for Facilities, Services, Accessibility, Restrictions, and More Info sections.
+  - DP-44225: Field to Document media entity for authors to select accessibility state designation.
+
+### Changed
+  - DP-45371: Prevent authors from saving pages with broken pasted image tags in rich text.
+
+### Security
+  - DP-45618: Update Drupal AI module.
+
+
+
+## [0.470.0] - March 10, 2026
+
+### Changed
+  - DP-45250: Don't render Contact twice on mobile view of how-to pages.
+  - DP-45428: Advanced search for docs - fixed file type filter, added authored by filter, reordered some fields and filters.
+
+### Fixed
+  - DP-45259: Fix microsite detection on node listing pages (e.g. locations, events) so microsite menu, styles, and page templates are applied correctly.
+  - DP-45363: Social media icons on org pages and allow threads.com and tiktok.com in validation. Add TikTok to social links help text.
+
+### Added
+  - DP-45377: Add bulk edit to advanced search for documents view
+
+
+
+## [0.469.0] - March 3, 2026
+
+### Fixed
+  - DP-43651: Fix accessibility issue where sitewide alerts were not in an aria landmark.
+  - DP-44544: Fix bug in advanced search for documents view.
+  - DP-45168: LANG attribute not rendering on P tags in rich text editor.
+  - DP-45325: Fixes Tugboat CLI download URL used in ddev web image.
+
+
+
 ## [0.468.0] - February 24, 2026
 
 ### Changed
   - DP-44722: For collection pages, include the org search in the top search bar.
   - DP-44755: Upgrade ClamAv module to latest 2.1.x branch and enable debug mode.
   - DP-45085: Revert DP-42778 and restore the document start date field. The field is now visible in the document form and the help text indicates it is used only for sorting automatic curated lists.
-  
+
 
 
 ## [0.467.0] - February 17, 2026
@@ -15,28 +372,28 @@
   - DP-41803: A11Y datatable uses duplicate table tag.
   - DP-44176: Change MySQL version in Tugboat and CircleCI to match Acquia db version
   - DP-44947: Disable jQuery modules used by better exposed filters.
-  
+
 
 
 ## [0.466.0] - February 10, 2026
 
 ### Changed
   - DP-44710: Fix campaign video heading level skip accessibility issue on promo page section videos without titles by using H2 instead of H3 to maintain proper heading hierarchy
-  
+
 
 
 ## [0.465.0] - February 3, 2026
 
 ### Security
   - DP-44147: Address issues flagged by nightly_pending_security workflow.
-  
+
 ### Fixed
   - DP-44415: Remove redundant directions link context to prevent duplicate title attributes on address contact items.
   - DP-44561: Filter out login links that reference deleted or unpublished nodes. The LogInLinksBuilder now validates that target nodes exist and are published before including them in the login links list.
-  
+
 ### Changed
   - DP-44729: Updated help text for microsite banner image size.
-  
+
 
 
 ## [0.464.0] - January 27, 2026
@@ -44,13 +401,13 @@
 ### Changed
   - DP-39285: Update all icons on the site to use the new icon set with updated sizes and weight options.
   - DP-44560: Updated Mayflower artifacts to dev-patternlab/DP-44560-A11Y-dont-put-link-to-person-if-they-have-no-page branch for testing purposes.
-  
+
 ### Added
   - DP-42935: Pass data on referring pages to form pages.
-  
+
 ### Fixed
   - DP-44414: Fix duplicate HTML IDs on featured content cards in campaign features paragraphs. Each card now uses its own unique paragraph entity ID instead of sharing the parent paragraph's ID or having empty IDs. Added null checks and refactored small card processing logic.
-  
+
 
 
 ## [0.463.0] - January 20, 2026
@@ -59,10 +416,10 @@
   - DP-43066: Updates to Drupal UI (API Service Cards) to support Agency Profile Collection (Part 2).
   - DP-44436: empty span tags that have spaces are no longer removed from rich text fields. This prevents some user reported issues.
   - DP-44496: empty span tags that have spaces are no longer removed from rich text fields on rules of court. This prevents some user reported issues.
-  
+
 ### Added
   - DP-44028: Added a possibility to have multiple CSV columns as URL.
-  
+
 
 
 ## [0.462.0] - January 13, 2026
@@ -70,11 +427,11 @@
 ### Added
   - DP-44410: Add filter for collection to the advanced search for pages view and bulk edit labels view, added collections metadata to pages
   - DP-43938: Author report for editors.
-  
+
 ### Changed
   - DP-42825: Change MySQL version in Tugboat and CircleCI to match Acquia db version
   - DP-42778: Disable Start date field for documents by hiding it from the document form display, removing it from all views, and marking it as deprecated.
-  
+
 ### Fixed
   - DP-44226: Added several missing content types to trash and my content views.
   - DP-43883: Refactored the Close message handler to not overlap with tabs and work also for admin theme.
@@ -85,27 +442,27 @@
 
 ### Security
   - DP-43782: Drupal AI module update.
-  
+
 ### Changed
   - DP-43955: Add header help text to a11y report.
-  
+
 ### Added
   - DP-43985: Help text for exclude from search and sitewide alert config page.
-  
+
 
 
 ## [0.460.0] - December 9, 2025
 
 ### Added
   - DP-42374: Add author created friendly URLs.
-  
+
 ### Changed
   - DP-43205: Pass parent heading level + 1 to video atoms on service and news pages so hidden video titles stop appearing in tables of contents.
   - DP-43854: Updated Akamai configuration.
-  
+
 ### Fixed
   - DP-43756: Bulk upload uses wrong revision date.
-  
+
 
 
 ## [0.459.0] - December 2, 2025
@@ -116,14 +473,14 @@
   - DP-43451: Bulk document import enhancements to validation/verification.
   - DP-43523: BACKPORT undo changes that make parent page not required.
   - DP-43647: Removing empty tags in rich text editor fields which cause accessibliity issues.
-  
+
 ### Fixed
   - DP-43215: Glossary causes a line break in short description.
   - DP-43650: Add title attribute to iframe elements on location pages using the "Title for Accessibility" field value for screen reader accessibility.
-  
+
 ### Removed
   - DP-43577: Removed the DBAL module.
-  
+
 
 
 ## [0.458.2] - November 20, 2025

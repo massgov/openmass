@@ -46,25 +46,25 @@
 {% set titleContext = 'for ' ~ content.field_guide_section_name[0]['#context']['value'] %}
 
   {% block content %}
-    {% embed "@organisms/by-author/stacked-row-section.twig" with {
-      "stackedRowSection": {
-        "title": content.field_guide_section_name,
-        "id": "",
-        "pageContent": {
-          "path": "@organisms/by-author/rich-text.twig",
-          "data": ""
+    {% embed '@organisms/by-author/stacked-row-section.twig' with {
+      stackedRowSection: {
+        title: content.field_guide_section_name,
+        id: '',
+        pageContent: {
+          path: '@organisms/by-author/rich-text.twig',
+          data: '',
         },
-        "sideBar": null
-      }
+        sideBar: null,
+      },
     } %}
       {% block stackedRowContentOverride %}
         {# Callout Time #}
         {% if content.field_guide_section_time|render is not empty %}
-            {% include "@organisms/by-author/callout-time.twig" with {
-              "calloutTime": {
-                "text": content.field_guide_section_time
-              }
-            } %}
+            {{ include('@organisms/by-author/callout-time.twig', {
+              calloutTime: {
+                text: content.field_guide_section_time,
+              },
+            }) }}
         {% endif %}
 
         {# 3 columns #}
@@ -72,13 +72,13 @@
           <div class="ma__split-columns__container">
               {# Column 1 #}
               <div class="ma__split-columns__column">
-                {% include "@atoms/04-headings/column-heading.twig" with {
-                  "columnHeading": {
-                    "text": content.field_guide_section_heading_1[0]
-                  }
-                } %}
-                {% embed "@organisms/by-author/rich-text.twig" with {
-                  "richText": {}
+                {{ include('@atoms/04-headings/column-heading.twig', {
+                  columnHeading: {
+                    text: content.field_guide_section_heading_1[0],
+                  },
+                }) }}
+                {% embed '@organisms/by-author/rich-text.twig' with {
+                  richText: {},
                 } %}
                   {% block rteElements %}
                     {{ content.field_guide_section_body_first[0] }}
@@ -87,13 +87,13 @@
               </div>
               {# Column 2 #}
               <div class="ma__split-columns__column">
-                {% include "@atoms/04-headings/column-heading.twig" with {
-                  "columnHeading": {
-                    "text": content.field_guide_section_heading_2[0]
-                  }
-                } %}
-                {% embed "@organisms/by-author/rich-text.twig" with {
-                  "richText": {}
+                {{ include('@atoms/04-headings/column-heading.twig', {
+                  columnHeading: {
+                    text: content.field_guide_section_heading_2[0],
+                  },
+                }) }}
+                {% embed '@organisms/by-author/rich-text.twig' with {
+                  richText: {},
                 } %}
                   {% block rteElements %}
                     {{ content.field_guide_section_body_second[0] }}
@@ -102,13 +102,13 @@
               </div>
               {# Column 3 #}
               <div class="ma__split-columns__column">
-                {% include "@atoms/04-headings/column-heading.twig" with {
-                  "columnHeading": {
-                    "text": content.field_guide_section_heading_3[0]
-                  }
-                } %}
-                {% embed "@organisms/by-author/rich-text.twig" with {
-                  "richText": {}
+                {{ include('@atoms/04-headings/column-heading.twig', {
+                  columnHeading: {
+                    text: content.field_guide_section_heading_3[0],
+                  },
+                }) }}
+                {% embed '@organisms/by-author/rich-text.twig' with {
+                  richText: {},
                 } %}
                   {% block rteElements %}
                     {{ content.field_guide_section_body_third[0] }}
@@ -120,12 +120,12 @@
 
         {# Alert #}
         {% if content.field_guide_section_alert_text|render is not empty %}
-          {% include "@organisms/by-author/callout-alert.twig" with {
-            "calloutAlert": {
-              "text": content.field_guide_section_alert_text,
-              "href": ""
-            }
-          } %}
+          {{ include('@organisms/by-author/callout-alert.twig', {
+            calloutAlert: {
+              text: content.field_guide_section_alert_text,
+              href: '',
+            },
+          }) }}
         {% endif %}
 
         {# Key Actions #}
@@ -142,39 +142,39 @@
                   : content.field_guide_section_links_4[i]['#title'] %}
                 {# Array element set for key action links. #}
                 {% set actionLinks = actionLinks|merge({(i): {
-                  "text": linkText,
-                  "type": content.field_guide_section_links_4[i]['#type'],
-                  "href": content.field_guide_section_links_4[i]['#url']
-                  }
+                  text: linkText,
+                  type: content.field_guide_section_links_4[i]['#type'],
+                  href: content.field_guide_section_links_4[i]['#url'],
+                  },
                 }) %}
               {% endif %}
           {% endfor %}
-          {% include "@organisms/by-author/key-actions.twig" with {
-            "keyActions": {
-              "compHeading": {
-                "title": "Key Actions",
-                "titleContext": titleContext,
-                "sub": true,
-                "level": level,
-                "id": ""
+          {{ include('@organisms/by-author/key-actions.twig', {
+            keyActions: {
+              compHeading: {
+                title: 'Key Actions',
+                titleContext: titleContext,
+                sub: true,
+                level: level,
+                id: '',
               },
-              "links": actionLinks
-            }
-          } %}
+              links: actionLinks,
+            },
+          }) }}
         {% endif %}
 
         {# Downloads/Section Links #}
         {% if (content.field_guide_section_downloads|render is not empty)
           or (content.field_guide_section_link|render is not empty) %}
-          {% embed "@organisms/by-author/form-downloads.twig" with {
-          "formDownloads": {
-            "compHeading": {
-              "title": "Additional Resources",
-              "level": level,
-              "titleContext": titleContext,
-              "sub": true,
-              }
-            }
+          {% embed '@organisms/by-author/form-downloads.twig' with {
+          formDownloads: {
+            compHeading: {
+              title: 'Additional Resources',
+              level: level,
+              titleContext: titleContext,
+              sub: true,
+              },
+            },
           } %}
             {% block formDownloadLinks %}
               {% if content.field_guide_section_link|render is not empty %}

@@ -15,6 +15,8 @@ class DuplicateReferenceConstraintValidator extends ConstraintValidator {
    * {@inheritdoc}
    */
   public function validate($value, Constraint $constraint) {
+    $target_type = $value->getFieldDefinition()
+      ->getSetting('target_type');
     $values = array_map(function ($item) {
       return $item['target_id'];
     }, $value->filterEmptyItems()->getValue());

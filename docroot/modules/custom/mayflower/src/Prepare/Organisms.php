@@ -10,11 +10,34 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
+use Drupal\paragraphs\ParagraphInterface;
 
 /**
  * Provides variable structure for mayflower organisms using prepare functions.
  */
 class Organisms {
+
+  /**
+   * Safely returns referenced entities from an entity reference field.
+   *
+   * @param object $entity
+   *   The parent entity object.
+   * @param string $field_name
+   *   The field machine name.
+   *
+   * @return array
+   *   Referenced entities, or an empty array when field is unavailable.
+   */
+  protected static function getReferencedEntities($entity, $field_name) {
+    if (empty($field_name) || !method_exists($entity, 'hasField') || !$entity->hasField($field_name)) {
+      return [];
+    }
+    $items = $entity->get($field_name);
+    if (!method_exists($items, 'referencedEntities')) {
+      return [];
+    }
+    return $items->referencedEntities();
+  }
 
   /**
    * Returns the variables structure required to render a page header.
@@ -293,7 +316,7 @@ class Organisms {
 
     $now = new DrupalDateTime();
 
-    foreach ($entity->{$field}->referencedEntities() as $eventEntity) {
+    foreach (self::getReferencedEntities($entity, $field) as $eventEntity) {
       if ($eventEntity->isPublished()) {
         $has_past = $has_past || $eventEntity->field_event_date->end_value < $now;
         $has_upcoming = $has_upcoming || $eventEntity->field_event_date->end_value > $now;
@@ -489,7 +512,7 @@ class Organisms {
           'href' => UrlHelper::filterBadProtocol($node->toUrl()->toString() . '/news'),
           'text' => t('See all news and announcements'),
           'chevron' => TRUE,
-          'labelContext' => t('for the @label', ['@label' => $entity->label()]),
+          'labelContext' => t('for the @label', ['@label' => $node->label()]),
         ];
         $moreLink = Molecules::prepareMoreLink($entity, $moreOptions);
       }
@@ -1178,7 +1201,7 @@ class Organisms {
     }
 
     if (!empty($fields['downloads']) && Helper::isFieldPopulated($entity, $fields['downloads'])) {
-      foreach ($entity->{$fields['downloads']}->referencedEntities() as $downloadEntity) {
+      foreach (self::getReferencedEntities($entity, $fields['downloads']) as $downloadEntity) {
         if (($options['maxItems'] != NULL) && ($num_items >= $options['maxItems'])) {
           break;
         }
@@ -1254,7 +1277,7 @@ class Organisms {
       ];
     }
 
-    foreach ($entity->get($fields['fees'])->referencedEntities() as $index => $feeEntity) {
+    foreach (self::getReferencedEntities($entity, $fields['fees']) as $index => $feeEntity) {
       $cache_tags = array_merge($cache_tags, $feeEntity->getCacheTags());
 
       // Determines which fieldnames to use from the map.
@@ -1376,6 +1399,37 @@ class Organisms {
     }
 
     return ['items' => $items];
+  }
+
+  public static function prepareNumberedSteps(ParagraphInterface $entity, array $options = [], array &$cache_tags = []) {
+    $map = [
+      'reference' => ['field_step'],
+    ];
+
+    $fields = Helper::getMappedFields($entity, $map);
+    if (empty($fields['reference'])) {
+      return [];
+    }
+
+    $items = Helper::getReferencedEntitiesFromField($entity, $fields['reference']);
+
+    $referenced_field_map = [
+      'title' => ['field_next_step_title'],
+      'richText' => ['field_next_step_details'],
+      'documents' => ['field_step_documents'],
+      'more_link' => ['field_next_step_link'],
+    ];
+
+    $referenced_fields = Helper::getMappedReferenceFields($items, $referenced_field_map);
+
+    $steps = [];
+    if (!empty($items)) {
+      foreach ($items as $item) {
+        $steps[] = Molecules::prepareNumberedStep($item, $referenced_fields, $cache_tags);
+      }
+    }
+
+    return $steps;
   }
 
   /**

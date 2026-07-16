@@ -197,8 +197,10 @@ function mass_scheduled_transitions_validate_parent(array $form, FormStateInterf
     $message = TRUE;
   }
   else {
-    $refs = $parentList->referencedEntities();
-    $parent = $refs[0] ?? FALSE;
+    $parent_id = $parentList->target_id;
+    $parent = $parent_id ? \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->load($parent_id) : FALSE;
     if (!$parent) {
       $message = TRUE;
     }

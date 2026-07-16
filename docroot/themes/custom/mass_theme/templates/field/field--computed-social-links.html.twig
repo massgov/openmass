@@ -37,30 +37,30 @@
  *
  */
 #}
-{% embed "@molecules/icon-links.twig" with {
-  "iconLinks": {
-    "compHeading": {
-      "title": "Social:",
-      "sub": "",
-      "color": "green",
-      "id": "",
-      "centered": ""
-    }
-  }
+{% embed '@molecules/icon-links.twig' with {
+  iconLinks: {
+    compHeading: {
+      title: 'Social:',
+      sub: '',
+      color: 'green',
+      id: '',
+      centered: '',
+    },
+  },
 } %}
   {% block iconLinkItems %}
     {% for key, item in items %}
       <li class="ma__icon-links__item">
-        {% include "@molecules/icon-link-item.twig" with {
-          "item": {
-            "icon": element['#items'][key].icon,
-            "link": {
-              "href": item.content['#url'],
-              "text": item.content['#title'],
-              "info": ""
-            }
-          }
-        } %}
+        {{ include('@molecules/icon-link-item.twig', {
+          item: {
+            icon: element['#items'][key].icon,
+            link: {
+              href: item.content['#url'],
+              text: item.content['#title'],
+              info: '',
+            },
+          },
+        }) }}
       </li>
     {% endfor %}
   {% endblock %}

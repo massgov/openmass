@@ -3,8 +3,10 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.media.document.field_accessibility_self_rpt
     - field.field.media.document.field_category
     - field.field.media.document.field_collections
+    - field.field.media.document.field_content_organization
     - field.field.media.document.field_description
     - field.field.media.document.field_document_label
     - field.field.media.document.field_document_listing_desc
@@ -26,6 +28,7 @@ dependencies:
     - entity_reference_tree
     - field_group
     - file
+    - mass_fields
     - path
 third_party_settings:
   field_group:
@@ -35,7 +38,7 @@ third_party_settings:
       label: Timeframe
       region: content
       parent_name: group_basic
-      weight: 15
+      weight: 14
       format_type: fieldset
       format_settings:
         classes: ''
@@ -74,14 +77,16 @@ third_party_settings:
         - field_description
         - field_document_listing_desc
         - field_upload_file
+        - field_accessibility_self_rpt
         - field_category
         - field_organizations
         - langcode
         - field_media_english_version
-        - group_timeframe
         - field_document_label
         - field_collections
         - field_internal_notes
+        - group_timeframe
+        - field_content_organization
       label: Basic
       region: content
       parent_name: group_form
@@ -99,18 +104,27 @@ targetEntityType: media
 bundle: document
 mode: default
 content:
+  field_accessibility_self_rpt:
+    type: list_long_label_document_self_reported_accessibility_status_widget
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_category:
     type: options_select
-    weight: 6
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   field_collections:
     type: entity_reference_tree
-    weight: 18
+    weight: 12
     region: content
     settings:
       theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
       dots: 0
       size: 60
       placeholder: ''
@@ -122,6 +136,29 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+      autocomplete_maxlength: 1024
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 15
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_description:
     type: string_textarea
@@ -133,7 +170,7 @@ content:
     third_party_settings: {  }
   field_document_label:
     type: entity_reference_autocomplete
-    weight: 17
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -151,7 +188,7 @@ content:
     third_party_settings: {  }
   field_internal_notes:
     type: string_textarea
-    weight: 20
+    weight: 13
     region: content
     settings:
       rows: 1
@@ -159,7 +196,7 @@ content:
     third_party_settings: {  }
   field_media_english_version:
     type: entity_reference_autocomplete
-    weight: 9
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS
@@ -187,7 +224,7 @@ content:
             selector: ''
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 7
+    weight: 8
     region: content
     settings:
       match_operator: CONTAINS
@@ -218,7 +255,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 8
+    weight: 9
     region: content
     settings:
       include_locked: false
@@ -249,14 +286,14 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
     display_label: true
   simple_sitemap:
-    weight: 5
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }

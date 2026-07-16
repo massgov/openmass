@@ -7,6 +7,7 @@ dependencies:
     - entity_embed
     - linkit
     - mass_fields
+    - mass_inline_message
     - pathologic
 _core:
   default_config_hash: hewPmBgni9jlDK_IjLxUx1HsTbinK-hdl0lOwjbteIY
@@ -59,6 +60,12 @@ filters:
     status: true
     weight: 10
     settings: {  }
+  filter_mass_inline_message:
+    id: filter_mass_inline_message
+    provider: mass_inline_message
+    status: true
+    weight: 5
+    settings: {  }
   filter_pathologic:
     id: filter_pathologic
     provider: pathologic
@@ -69,6 +76,7 @@ filters:
       local_settings:
         protocol_style: full
         local_paths: ''
+        keep_language_prefix: false
   filter_richtext:
     id: filter_richtext
     provider: mass_fields
@@ -88,3 +96,4 @@ filters:
     weight: -11
     settings:
       title: false
+      media_substitution: metadata

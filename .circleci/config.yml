@@ -21,12 +21,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v16-{{ checksum "composer.lock" }}
+        - site-composer-v20-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v16-{{ checksum "composer.lock" }}
+      key: site-composer-v20-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -273,7 +273,7 @@ jobs:
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
       # Lint Twig
-      - run: composer twigcs -- --no-interaction
+      - run: vendor/bin/twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction
 
   test:
     parameters:
@@ -297,6 +297,9 @@ jobs:
       - run:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Ensure files and DTT directories are writable by www-data
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run drush updatedb and cim.
       - run: drush deploy
       # Get an overview
@@ -308,21 +311,21 @@ jobs:
           name: Ensure no differences between between config on disk and config in Drupal.
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
-      # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run:
+          name: Generate PHPUnit test inventory
+          command: php scripts/list-tests.php
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-#            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --testdox --log-junit /tmp/test-results/dtt/junit.xml"'
             - run:
                 # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
                 name: Run functional tests
                 command: |
-                  TESTS_TO_RUN=$(phpunit-finder --config-file /var/www/code/phpunit.xml.dist --bootstrap-file /var/www/code/vendor/weitzman/drupal-test-traits/src/bootstrap.php)
-                  echo "$TESTS_TO_RUN" | circleci tests run --command="xargs -I{} -d\" \" phpunit {} --log-junit /tmp/test-results/dtt/$(basename {}).xml" --verbose --split-by=timings
+                  TESTS_TO_RUN=$(phpunit -c /var/www/code/phpunit.xml.dist --list-test-files --colors=never | sed -n 's/^ - //p')
+                  echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -I{} sh -c 'f=\"\$1\"; phpunit \"\$f\" --log-junit \"/tmp/test-results/dtt/\${f##*/}.xml\"' _ {}" --verbose --split-by=timings
+                no_output_timeout: 20m
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -454,55 +457,6 @@ jobs:
           name: Nightcrawler
           command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=<< parameters.target >> --samples=<< parameters.samples >>
           no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
-  browserstack_percy_test:
-    parameters:
-      target:
-        type: string
-        default: test
-      list:
-        type: string
-        default: post-release
-      tugboat:
-        type: string
-        default: ""
-    working_directory: /tmp/code/browserstack
-    docker:
-      - image: cimg/php:8.3-node
-        environment:
-          BROWSERSTACK_USERNAME: $BROWSERSTACK_USERNAME
-          BROWSERSTACK_ACCESS_KEY: $BROWSERSTACK_ACCESS_KEY
-          BROWSERSTACK_LOCAL: false
-          BROWSERSTACK_LOCAL_IDENTIFIER: "identifier"
-          MASS_BYPASS_RATE_LIMIT: $MASS_BYPASS_RATE_LIMIT
-          PERCY_TOKEN: $PERCY_TOKEN
-          PERCY_TARGET: << parameters.target >>
-          PERCY_LIST: << parameters.list >>
-          PERCY_DO_NOT_CAPTURE_RESPONSIVE_ASSETS: true
-          PERCY_CLIENT_ERROR_LOGS: false
-    steps:
-      - attach_workspace: {at: /tmp}
-      - *vendor_bin_add_path
-      - *no_host_check
-      - *no_ssh_timeout
-      - *yarn_install
-      - when:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Percy on BrowserStack Automate test (Tugboat target)
-                command: PERCY_TARGET=tugboat PERCY_TUGBOAT=<< parameters.tugboat >> npm run percy-snapshots-test || true
-      - unless:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Percy on BrowserStack Automate test (non Tugboat target)
-                command: npm run percy-snapshots-test || true
-                no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
@@ -717,8 +671,14 @@ jobs:
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
-      - run: docker push << parameters.instance >>
+      - run:
+          name: Commit mysql image
+          command: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
+          no_output_timeout: 60m
+      - run:
+          name: Push mysql image
+          command: docker push << parameters.instance >>
+          no_output_timeout: 60m
 
   pending_security:
     working_directory: /tmp/code
@@ -822,14 +782,6 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [deploy-test-refresh-db]
-          target: test
-          list: all
-          filters:
-            branches:
-              only: /^release\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
           requires: [deploy-test-refresh-db]
@@ -886,14 +838,6 @@ workflows:
             requires: [deploy-test-no-refresh-db]
             target: test
             reference: prod
-            filters:
-              branches:
-                only: /^hotfix\/.*$/
-      - browserstack_percy_test:
-            name: browserstack-percy-test
-            requires: [deploy-test-no-refresh-db]
-            target: test
-            list: all
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -965,14 +909,6 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
-          filters:
-            branches:
-              only: /^mayflower\/.*$/
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [deploy-test-refresh-db]
-          target: test
-          list: all
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -1259,20 +1195,6 @@ workflows:
           tugboat: << pipeline.parameters.tugboat >>
           cachebuster: << pipeline.parameters.cachebuster >>
 
-  browserstack_percy_compare:
-    when:
-      and:
-        - not:
-            equal: [ webhook, << pipeline.trigger_source >> ]
-        - equal: [ browserstack_percy_compare, << pipeline.parameters.trigger_workflow >> ]
-    jobs:
-      - build
-      - browserstack_percy_test:
-          requires: [ build ]
-          target: << pipeline.parameters.target >>
-          list: << pipeline.parameters.list >>
-          tugboat: << pipeline.parameters.tugboat >>
-
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
   deploy_cd:
@@ -1291,11 +1213,6 @@ workflows:
           requires: [ deploy-cd-refresh-db ]
           reference: prod
           target: cd
-      - browserstack_percy_test:
-          name: browserstack-percy-test
-          requires: [ deploy-cd-refresh-db ]
-          target: cd
-          list: all
       - crawl:
           name: crawl-deploy-450
           requires: [ deploy-cd-refresh-db ]

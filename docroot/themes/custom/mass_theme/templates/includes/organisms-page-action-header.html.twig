@@ -5,7 +5,7 @@
  */
 #}
 {% if content.field_header_cta|render|trim is not empty %}
-  {% set widgetsClass = "ma__page-header--has-widgets" %}
+  {% set widgetsClass = 'ma__page-header--has-widgets' %}
 {% endif %}
 
 <section class="ma__page-header {{ widgetsClass }}">
@@ -29,7 +29,7 @@
   {% endif %}
   {% if actionHeader.divider %}
     <div class="ma__page-header__divider">
-      {% include "@atoms/divider.twig" %}
+      {{ include('@atoms/divider.twig') }}
     </div>
   {% endif %}
 </section>

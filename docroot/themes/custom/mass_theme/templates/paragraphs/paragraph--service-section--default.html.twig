@@ -3,7 +3,7 @@
   'paragraph',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
-  not paragraph.isPublished() ? 'paragraph--unpublished'
+  not paragraph.isPublished() ? 'paragraph--unpublished',
 ]
 %}
 {% block paragraph %}
@@ -13,15 +13,15 @@
         {% set heading = {} %}
         {% if (content.field_service_section_heading|field_value) is not empty %}
           {% set heading = {
-            "title": (content.field_service_section_heading|field_value),
-            "id": "",
-            "borderless": true
+            title: (content.field_service_section_heading|field_value),
+            id: '',
+            borderless: true,
           } %}
         {% endif %}
 
         {# // @TODO hide the title, overflow hidden to service section #}
 
-        {% set get_section_style = content.field_section_style.0['#markup']|replace({'_': '-'}) %}
+        {% set get_section_style = content.field_section_style.0['#markup']|replace({_: '-'}) %}
         {% set two_column_check = content.field_two_column['#items'].value %}
 
         {% set is_enhanced = get_section_style == 'enhanced' %}
@@ -29,9 +29,9 @@
         {% set show_heading = is_enhanced or (get_section_style == 'simple' and is_two_column) %}
 
         {% if two_column_check %}
-          {% set two_column_class = "-two-column" %}
+          {% set two_column_class = '-two-column' %}
         {% else %}
-          {% set two_column_class = "" %}
+          {% set two_column_class = '' %}
         {% endif %}
         {% set section_style_class = 'service-section--' ~ get_section_style ~ two_column_class %}
         {% set hide_title_class = (content.field_service_section_heading|field_value) is empty ? 'service-section--hidden-title' : '' %}
@@ -41,25 +41,25 @@
 
         <div class="service-section {{ section_style_class }} {{ hide_title_class }}">
 
-          {% embed "@organisms/by-author/stacked-row-section.twig" with {
-            "stackedRowSection": heading,
-            "stackedRow": {
-              "borderless": true,
-              "modifier": "no-sidebar"
+          {% embed '@organisms/by-author/stacked-row-section.twig' with {
+            stackedRowSection: heading,
+            stackedRow: {
+              borderless: true,
+              modifier: 'no-sidebar',
             },
-            "externalSidebar": true
+            externalSidebar: true,
           } %}
 
             {% block stackRowTitle %}
               {% if heading %}
                 {% if section_style == 'enhanced' and two_column_class != '-two-column' %}
                   {% if (content.field_service_section_heading|field_value) is not empty %}
-                    {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
-                      "coloredHeadingFromLeft": {
-                        "bgColor": "blue",
-                        "title": (content.field_service_section_heading|field_value)
-                      }}
-                    %}
+                    {{ include('@atoms/04-headings/colored-heading-from-left.twig', {
+                      coloredHeadingFromLeft: {
+                        bgColor: 'blue',
+                        title: (content.field_service_section_heading|field_value),
+                      }},
+                    ) }}
                   {% endif %}
                   {# Subtitle and CTA Link #}
                   {% if (section_style_link or section_style_subtitle) and is_two_column %}
@@ -89,13 +89,13 @@
                     {% if stackedRowSection.title and show_heading %}
                       <div class="ma__stacked-row__title">
                         {% set compHeading = {
-                          "title": stackedRowSection.title,
-                          "sub": "",
-                          "color": "",
-                          "id": stackedRowSection.id
+                          title: stackedRowSection.title,
+                          sub: '',
+                          color: '',
+                          id: stackedRowSection.id,
                         }
                         %}
-                        {% include "@atoms/04-headings/comp-heading.twig" %}
+                        {{ include('@atoms/04-headings/comp-heading.twig') }}
                       </div>
                     {% endif %}
 
@@ -132,7 +132,7 @@
                 <div class="layout__region layout__region--content">
                   {% for service_component in service_components %}
                     {% if service_component.group == 'default' %}
-                      {% embed "@organisms/by-author/rich-text.twig" %}
+                      {% embed '@organisms/by-author/rich-text.twig' %}
                         {% block rteElements %}
                           {% for c in service_component.items %}
                             {{ c|view }}
@@ -140,13 +140,13 @@
                         {% endblock %}
                       {% endembed %}
                     {% elseif service_component.group == 'self' %}
-                      {% embed "@organisms/by-author/rich-text.twig" %}
+                      {% embed '@organisms/by-author/rich-text.twig' %}
                         {% block rteElements %}
                           {{ service_component.items|view }}
                         {% endblock %}
                       {% endembed %}
                     {% elseif service_component.group == 'contained' %}
-                      {% embed "@organisms/by-author/rich-text.twig" with {'headerIndent': 'om__contained-component'} %}
+                      {% embed '@organisms/by-author/rich-text.twig' with {headerIndent: 'om__contained-component'} %}
                         {% block rteElements %}
                           {{ service_component.items|view }}
                         {% endblock %}

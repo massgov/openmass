@@ -52,24 +52,24 @@
       {% set secondaryIndicators = false %}
       {% if organizations is not empty %}
         {% set secondaryIndicators = {
-          "icon": "building",
-          "label": "offered by",
-          "groupAfter": 3
+          icon: 'building',
+          label: 'offered by',
+          groupAfter: 3,
         } %}
       {% endif %}
-      {% embed "@molecules/relationship-indicators.twig" with {
-        "relationshipIndicators": {
-          "pageTitle": pageHeader.title,
-          "primary": null,
-          "secondary": secondaryIndicators
-        }
+      {% embed '@molecules/relationship-indicators.twig' with {
+        relationshipIndicators: {
+          pageTitle: pageHeader.title,
+          primary: null,
+          secondary: secondaryIndicators,
+        },
       } %}
         {% block secondaryRelationship %}
           {{ organizations }}
         {% endblock %}
       {% endembed %}
-      {% set pageHeader = pageHeader|merge({'headerTags': null}) %}
-      {% include "@organisms/page-header/page-header.twig" %}
+      {% set pageHeader = pageHeader|merge({headerTags: null}) %}
+      {{ include('@organisms/page-header/page-header.twig') }}
     {% endblock %}
   {% endif %}
   <div class="main-content main-content--full">
@@ -134,7 +134,7 @@
               <a href="#location-listing-results">skip to the location listing</a>
               <div class="ma__location-listing__sticky js-location-listing-map">
                 {% set leafletMap = leafletMap %}
-                {% include "@molecules/map-leaflet.twig" %}
+                {{ include('@molecules/map-leaflet.twig') }}
               </div>
             </div>
             <div class="ma__location-listing__results js-location-listing-results">

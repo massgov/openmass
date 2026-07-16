@@ -4,11 +4,13 @@ status: true
 dependencies:
   config:
     - field.storage.node.field_collections
+    - field.storage.node.field_content_organization
     - field.storage.node.field_organizations
     - field.storage.node.field_primary_parent
     - field.storage.node.field_reusable_label
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
+    - taxonomy.vocabulary.user_organization
   module:
     - content_moderation
     - csv_serialization
@@ -835,21 +837,84 @@ display:
           field: nos_per_1000_cleaned
           relationship: nid
           plugin_id: numeric
+        field_content_organization:
+          id: field_content_organization
+          table: node__field_content_organization
+          field: field_content_organization
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Permission Groups'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: true
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       pager:
         type: mini
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 50
+          items_per_page: 25
           total_pages: null
           id: 0
           tags:
             next: Next
             previous: Previous
           expose:
-            items_per_page: false
+            items_per_page: true
             items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options: '25, 50, 100, 250'
             items_per_page_options_all: false
             items_per_page_options_all_label: '- All -'
             offset: false
@@ -927,6 +992,45 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        node_revision_entity_ids_filter:
+          id: node_revision_entity_ids_filter
+          table: node_field_revision
+          field: node_revision_entity_ids_filter
+          relationship: none
+          group_type: group
+          admin_label: 'Entity IDs'
+          plugin_id: mass_views_entity_ids_filter
+          operator: in
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: 'Paste Page IDs'
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: entity_ids
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          filter_description: 'Paste in up to 300 Content IDs to filter for those pages only.'
         title:
           id: title
           table: node_field_revision
@@ -968,22 +1072,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -1045,22 +1133,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -1085,7 +1157,7 @@ display:
           id: status
           table: node_field_revision
           field: status
-          relationship: none
+          relationship: nid
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1159,22 +1231,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1215,23 +1271,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1271,23 +1310,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1326,20 +1348,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1387,22 +1395,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1444,22 +1436,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1514,22 +1490,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             min_placeholder: 'CCYY-MM-DD HH:MM:SS'
             max_placeholder: 'CCYY-MM-DD HH:MM:SS'
             placeholder: 'CCYY-MM-DD HH:MM:SS'
@@ -1586,22 +1546,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             min_placeholder: 'CCYY-MM-DD HH:MM:SS'
             max_placeholder: 'CCYY-MM-DD HH:MM:SS'
             placeholder: 'CCYY-MM-DD HH:MM:SS'
@@ -1646,22 +1590,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1702,20 +1630,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1755,20 +1669,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1809,20 +1709,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1861,24 +1747,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-              prototype_design_access: '0'
-              mmg_editor: '0'
-              viewer: '0'
-              bulk_edit: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -1894,6 +1762,65 @@ display:
             group_items: {  }
           reduce_duplicates: false
           vid: collections
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+        node_entity_ids_filter:
+          id: node_entity_ids_filter
+          table: node_field_data
+          field: node_entity_ids_filter
+          relationship: nid
+          entity_type: node
+          plugin_id: mass_views_entity_ids_filter
+        node_entity_ids_filter_1:
+          id: node_entity_ids_filter_1
+          table: node_field_data
+          field: node_entity_ids_filter
+          relationship: nid
+          entity_type: node
+          plugin_id: mass_views_entity_ids_filter
+        field_content_organization_target_id:
+          id: field_content_organization_target_id
+          table: node__field_content_organization
+          field: field_content_organization_target_id
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_content_organization_target_id_op
+            label: 'Permission Groups'
+            description: ''
+            use_operator: true
+            operator: field_content_organization_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_content_organization_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: user_organization
           type: textfield
           hierarchy: false
           limit: true
@@ -2108,6 +2035,7 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
+        - 'config:field.storage.node.field_content_organization'
         - 'config:field.storage.node.field_organizations'
         - 'config:field.storage.node.field_primary_parent'
         - 'config:workflow_list'
@@ -3279,6 +3207,69 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+        field_content_organization:
+          id: field_content_organization
+          table: node__field_content_organization
+          field: field_content_organization
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Permission Groups'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
       style:
         type: data_export
         options:
@@ -3306,7 +3297,7 @@ display:
       filename: 'massgov-advanced-export-[date:html_datetime].csv'
       automatic_download: false
       export_method: batch
-      export_batch_size: 1000
+      export_batch_size: 100
       store_in_public_file_directory: false
       custom_redirect_path: false
       redirect_to_display: page_1
@@ -3322,6 +3313,7 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.field_collections'
+        - 'config:field.storage.node.field_content_organization'
         - 'config:field.storage.node.field_organizations'
         - 'config:field.storage.node.field_primary_parent'
         - 'config:field.storage.node.field_reusable_label'

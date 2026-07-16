@@ -1,12 +1,12 @@
 {% if paragraph.field_links_downloads_link.uri or paragraph.field_links_downloads_down.target_id or paragraph.field_links_downloads_header.value %}
   {% if paragraph.field_links_downloads_header.value %}
-    {% embed "@organisms/by-author/form-downloads.twig" with {
-      "formDownloads": {
-        "compHeading": {
-          "title": content.field_links_downloads_header,
-          "sub": true
-        }
-      }
+    {% embed '@organisms/by-author/form-downloads.twig' with {
+      formDownloads: {
+        compHeading: {
+          title: content.field_links_downloads_header,
+          sub: true,
+        },
+      },
     } %}
 
       {% block formDownloadLinks %}
@@ -17,7 +17,7 @@
     {% endembed %}
   {% else %}
 
-    {% embed "@organisms/by-author/form-downloads.twig" %}
+    {% embed '@organisms/by-author/form-downloads.twig' %}
 
       {% block formDownloadLinks %}
         {{ content.field_links_downloads_link }}
