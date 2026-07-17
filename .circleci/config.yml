@@ -49,7 +49,7 @@ executors:
     parameters:
       instance:
         type: string
-        default: massgov/mysql-sanitized:latest
+        default: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
     working_directory: /var/www/code
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
@@ -68,9 +68,8 @@ executors:
           DTT_API_URL: http://mass.local:9222
           BROWSERTEST_OUTPUT_DIRECTORY: /tmp
       - image: << parameters.instance >>
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_API_KEY
+        aws_auth:
+          oidc_role_arn: $MYSQL_REBUILD_AWS_ROLE_TO_ASSUME
         environment:
           MYSQL_USER: circle
           MYSQL_PASSWORD: circle
@@ -280,7 +279,7 @@ jobs:
     parameters:
       instance:
         type: string
-        default: massgov/mysql-sanitized:latest
+        default: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
       command:
         type: enum
         enum: ['phpunit']
@@ -1112,7 +1111,7 @@ workflows:
       - test:
           name: test-phpunit-super
           command: phpunit
-          instance: massgov/mysql-sanitized:super
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
           requires: [build]
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
