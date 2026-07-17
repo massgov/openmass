@@ -14,7 +14,7 @@ use MassGov\Dtt\MassExistingSiteBase;
 class EventOrgEventsComponentValidationTest extends MassExistingSiteBase {
 
   /**
-   * field_service_sections can hold org_events directly, and that is detected.
+   * Direct org_events on field_service_sections is detected.
    */
   public function testLayoutParagraphsOrgEventsDetectedOnServicePage() {
     $org_events = Paragraph::create(['type' => 'org_events']);
