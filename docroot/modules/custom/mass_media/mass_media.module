@@ -62,12 +62,12 @@ function mass_media_media_update(EntityInterface $entity) {
 
   $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
   $file_destination = 'private://' . $file_uri_target;
+  if (mass_media_skip_directory_file_move($file, $file_system, 'media update')) {
+    return;
+  }
   $dirname = $file_system->dirname($file_destination);
   if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
     throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
-  }
-  if (mass_media_skip_directory_file_move($file, $file_system, 'media update')) {
-    return;
   }
   if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
     throw new \RuntimeException("Unable to move file to '$file_destination'");
@@ -286,12 +286,12 @@ function mass_media_media_presave(MediaInterface $entity) {
       }
 
       if (!empty($file_destination)) {
+        if (mass_media_skip_directory_file_move($file, $file_system, 'media presave')) {
+          return;
+        }
         $dirname = $file_system->dirname($file_destination);
         if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
           throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
-        }
-        if (mass_media_skip_directory_file_move($file, $file_system, 'media presave')) {
-          return;
         }
         if (!\Drupal::service('file.repository')->move($file, $file_destination)) {
           throw new \RuntimeException("Unable to move file to '$file_destination'");

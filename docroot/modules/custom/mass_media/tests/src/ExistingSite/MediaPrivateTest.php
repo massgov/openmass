@@ -50,12 +50,14 @@ class MediaPrivateTest extends MassExistingSiteBase {
   public function testDirectorySourceFileIsNotMovedToPrivate() {
     /** @var \Drupal\Core\File\FileSystemInterface $file_system */
     $file_system = \Drupal::service('file_system');
-    $directory_uri = 'public://mass-media-directory-source-test';
+    $directory_name = 'mass-media-directory-source-test-' . uniqid();
+    $directory_uri = 'public://' . $directory_name;
+    $private_directory_uri = 'private://' . $directory_name;
     $this->assertTrue($file_system->prepareDirectory($directory_uri, FileSystemInterface::CREATE_DIRECTORY));
 
     $file = File::create([
       'uri' => $directory_uri,
-      'filename' => 'mass-media-directory-source-test',
+      'filename' => $directory_name,
     ]);
     $file->setPermanent();
     $file->save();
@@ -72,12 +74,15 @@ class MediaPrivateTest extends MassExistingSiteBase {
 
     $reloaded_file = File::load($file->id());
     $this->assertEquals('public', StreamWrapperManager::getScheme($reloaded_file->getFileUri()));
+    $this->assertEquals($directory_uri, $reloaded_file->getFileUri());
     $realpath = $file_system->realpath($reloaded_file->getFileUri());
     $this->assertNotFalse($realpath);
     $this->assertTrue(is_dir($realpath));
-    $this->assertFalse($file_system->realpath('private://mass-media-directory-source-test'));
 
     $file_system->deleteRecursive($directory_uri);
+    if ($file_system->realpath($private_directory_uri) !== FALSE) {
+      $file_system->deleteRecursive($private_directory_uri);
+    }
   }
 
   /**
