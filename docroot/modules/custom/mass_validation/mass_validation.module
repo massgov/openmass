@@ -1072,8 +1072,8 @@ function _mass_validation_check_paragraph_bundle($node, $bundle): bool {
     $p_sections = Helper::getReferencedEntitiesFromField($node, $section_field_label);
     if ($p_sections) {
       foreach ($p_sections as $p_section) {
-        // Layout Paragraphs stores components (e.g. org_events) directly on
-        // field_service_sections after migration, not only nested in sections.
+        // field_service_sections allows org_events directly (not only nested
+        // inside service_section content), so check top-level paragraphs too.
         if ($p_section->bundle() == $bundle) {
           return TRUE;
         }

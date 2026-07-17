@@ -14,7 +14,7 @@ use MassGov\Dtt\MassExistingSiteBase;
 class EventOrgEventsComponentValidationTest extends MassExistingSiteBase {
 
   /**
-   * Layout Paragraphs stores org_events directly on field_service_sections.
+   * field_service_sections can hold org_events directly, and that is detected.
    */
   public function testLayoutParagraphsOrgEventsDetectedOnServicePage() {
     $org_events = Paragraph::create(['type' => 'org_events']);
@@ -44,6 +44,25 @@ class EventOrgEventsComponentValidationTest extends MassExistingSiteBase {
     ]);
 
     $this->assertTrue(_mass_validation_check_paragraph_bundle($service_page, 'org_events'));
+  }
+
+  /**
+   * Service pages without org_events still report the component as missing.
+   */
+  public function testMissingOrgEventsStillReportedOnServicePage() {
+    $service_section = Paragraph::create(['type' => 'service_section']);
+    $service_section->save();
+    $this->markEntityForCleanup($service_section);
+
+    $service_page = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Test Service Page Without Events',
+      'field_service_lede' => 'Test lede.',
+      'field_service_sections' => [['entity' => $service_section]],
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->assertFalse(_mass_validation_check_paragraph_bundle($service_page, 'org_events'));
   }
 
 }
