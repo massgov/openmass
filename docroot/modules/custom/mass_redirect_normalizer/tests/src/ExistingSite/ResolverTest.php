@@ -527,9 +527,9 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
-   * Tests redirected document links are rewritten in link fields.
+   * Tests redirected document links are left unchanged in link fields.
    */
-  public function testDocumentRedirectIsNormalizedInLinkField(): void {
+  public function testDocumentRedirectIsIgnoredInLinkField(): void {
     $source = 'doc-link-source-' . $this->randomMachineName();
     $target = '/sites/default/files/documents/example-2.pdf';
 
@@ -543,10 +543,56 @@ class ResolverTest extends MassExistingSiteBase {
 
     /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
     $service = \Drupal::service('mass_redirect_normalizer.resolver');
-    $normalized = $service->normalizeRedirectLinkUri('internal:/' . $source . '?download=1#part');
+    $original = 'internal:/' . $source . '?download=1#part';
+    $normalized = $service->normalizeRedirectLinkUri($original);
 
-    $this->assertTrue($normalized['changed']);
-    $this->assertSame('internal:' . $target . '?download=1#part', $normalized['uri']);
+    $this->assertFalse($normalized['changed']);
+    $this->assertSame($original, $normalized['uri']);
+  }
+
+  /**
+   * Tests collection View redirects are not rewritten in link fields.
+   *
+   * Untitled card links rely on ComputedLinkTitle, which cannot resolve
+   * /collections/* routes (route param "collection" is not an entity type).
+   */
+  public function testCollectionRedirectIsIgnoredInLinkField(): void {
+    $collectionPath = '/collections/massachusetts-labor-and-workforce-blog';
+    $source = 'collection-link-source-' . $this->randomMachineName();
+
+    $redirect = Redirect::create();
+    $redirect->setSource($source);
+    $redirect->setRedirect('https://www.mass.gov' . $collectionPath);
+    $redirect->setLanguage('en');
+    $redirect->setStatusCode(301);
+    $redirect->save();
+    $this->cleanupEntities[] = $redirect;
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $original = 'http://mass.gov/' . $source;
+
+    $resolved = $service->resolveRedirectTarget($original);
+    $this->assertTrue($resolved['changed']);
+    $this->assertSame($collectionPath, $resolved['target_path']);
+    $this->assertNull($resolved['entity']);
+
+    $normalized = $service->normalizeRedirectLinkUri($original);
+    $this->assertFalse($normalized['changed']);
+    $this->assertSame($original, $normalized['uri']);
+
+    $text = '<p><a href="' . $original . '">Labor blog</a></p>';
+    $textNormalized = $service->normalizeRedirectLinksInText($text);
+    $this->assertTrue($textNormalized['changed']);
+    $this->assertStringContainsString($collectionPath, $textNormalized['text']);
+  }
+
+  /**
+   * Tests entityFromUrl safely ignores non-entity collection routes.
+   */
+  public function testEntityFromUrlIgnoresCollectionRoute(): void {
+    $url = \Drupal\Core\Url::fromUri('internal:/collections/massachusetts-labor-and-workforce-blog');
+    $this->assertNull(\Drupal\mayflower\Helper::entityFromUrl($url));
   }
 
   /**
