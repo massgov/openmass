@@ -2,14 +2,17 @@
 
 namespace Drupal\Tests\mass_validation\ExistingSite;
 
-use Drupal\Core\Form\FormState;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\NodeInterface;
+use Drupal\paragraphs\Entity\Paragraph;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**
- * Tests validation for the Map field on Organization and Service pages.
+ * Tests Map field reference validation on Organization pages.
  */
 class LocationReferenceValidationTest extends MassExistingSiteBase {
+
+  private const INVALID_REFERENCE_PATTERN = '/This entity \(node: .*\) cannot be referenced\.|The referenced entity \(node: .*\) does not exist\./';
 
   /**
    * The user to log in and test the functionality.
@@ -32,7 +35,7 @@ class LocationReferenceValidationTest extends MassExistingSiteBase {
   }
 
   /**
-   * Assert that non-location nodes cannot be saved in the Map field.
+   * Tests that non-location nodes are rejected in the Map field.
    */
   public function testOrgPageMapFieldRejectsNonLocationReference(): void {
     $contact = $this->createNode([
@@ -41,13 +44,46 @@ class LocationReferenceValidationTest extends MassExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $org_node = $this->createNode([
+    $org_node = $this->createOrgPageForMapValidation();
+    $page = $this->openOrgPageMapField($org_node);
+
+    $page->fillField('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-org-ref-locations-0-target-id', $contact->label() . ' (' . $contact->id() . ')');
+    $page->pressButton('edit-submit');
+
+    $this->assertSession()->pageTextMatches(self::INVALID_REFERENCE_PATTERN);
+  }
+
+  /**
+   * Tests that valid location references are accepted in the Map field.
+   */
+  public function testOrgPageMapFieldAcceptsValidLocationReference(): void {
+    $location = $this->createLocationWithAddress('Test Location for Map Validation');
+
+    $org_node = $this->createOrgPageForMapValidation();
+    $page = $this->openOrgPageMapField($org_node);
+
+    $page->fillField('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-org-ref-locations-0-target-id', $location->label() . ' (' . $location->id() . ')');
+    $page->pressButton('edit-submit');
+
+    $this->assertSession()->pageTextNotMatches(self::INVALID_REFERENCE_PATTERN);
+  }
+
+  /**
+   * Creates an org page for Map field validation tests.
+   */
+  private function createOrgPageForMapValidation(): NodeInterface {
+    return $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Organization for Map Validation',
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+  }
 
+  /**
+   * Opens the org page edit form with an org_locations paragraph.
+   */
+  private function openOrgPageMapField(NodeInterface $org_node) {
     $this->drupalLogin($this->user);
 
     $this->visit($org_node->toUrl()->toString() . '/edit');
@@ -56,45 +92,40 @@ class LocationReferenceValidationTest extends MassExistingSiteBase {
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('edit-field-organization-sections-add-more-add-more-button-org-section-long-form');
     $page->pressButton('edit-field-organization-sections-0-subform-field-section-long-form-content-add-more-add-more-button-org-locations');
-    $page->fillField('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-org-ref-locations-0-target-id', $contact->label() . ' (' . $contact->id() . ')');
-    $page->pressButton('edit-submit');
 
-    $validation_text = 'Only location pages can be referenced in this field.';
-    $this->assertStringContainsString($validation_text, $page->getContent(), 'Validation message for the Map field not found.');
+    return $page;
   }
 
   /**
-   * Assert the service page Layout Paragraphs path rejects non-locations.
-   *
-   * Service pages edit the Map field through the Layout Paragraphs component
-   * form, whose #validate handler calls validateLayoutParagraphForm(). This
-   * exercises that path directly with both invalid and valid references.
+   * Location eligible for the location_pages_with_addresses selection handler.
    */
-  public function testServicePageLayoutParagraphsPathRejectsNonLocationReference(): void {
+  private function createLocationWithAddress(string $title): NodeInterface {
     $contact = $this->createNode([
       'type' => 'contact_information',
-      'title' => 'Test Contact for Service Page Map Validation',
+      'title' => $title . ' Contact',
+      'field_display_title' => $title . ' Contact',
+      'field_ref_address' => [
+        Paragraph::create([
+          'type' => 'address',
+          'field_label' => 'Address 1',
+          'field_address_address' => [
+            'address_line1' => '123 Test Way',
+            'locality' => 'Boston',
+            'administrative_area' => 'MA',
+            'postal_code' => '12345',
+            'country_code' => 'US',
+          ],
+        ]),
+      ],
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    $location = $this->createNode([
+
+    return $this->createNode([
       'type' => 'location',
-      'title' => 'Test Location for Service Page Map Validation',
+      'title' => $title,
+      'field_ref_contact_info_1' => [$contact],
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-
-    $validator = \Drupal::service('mass_validation.location_reference_validator');
-
-    $form_state = new FormState();
-    $form_state->setValue('field_org_ref_locations', [['target_id' => $contact->id()]]);
-    $validator->validateLayoutParagraphForm($form_state);
-    $errors = $form_state->getErrors();
-    $this->assertCount(1, $errors, 'A non-location reference must be rejected on the service page path.');
-    $this->assertStringContainsString('Only location pages can be referenced in this field.', (string) reset($errors));
-
-    $form_state = new FormState();
-    $form_state->setValue('field_org_ref_locations', [['target_id' => $location->id()]]);
-    $validator->validateLayoutParagraphForm($form_state);
-    $this->assertCount(0, $form_state->getErrors(), 'A location reference must be accepted.');
   }
 
 }

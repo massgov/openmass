@@ -1,4 +1,5 @@
 services:
-  mass_validation.location_reference_validator:
-    class: Drupal\mass_validation\Validation\LocationReferenceValidator
-    arguments: ['@entity_type.manager']
+  mass_validation.widget_hooks:
+    class: Drupal\mass_validation\Hook\MassValidationWidgetHooks
+    tags:
+      - { name: drupal.hook }

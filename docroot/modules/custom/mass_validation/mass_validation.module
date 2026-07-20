@@ -315,13 +315,6 @@ function _mass_validation_field_organizations_validate(array &$form, FormStateIn
 }
 
 /**
- * Validates Map field references on layout paragraph component forms.
- */
-function _mass_validation_validate_location_references_layout_paragraphs(array &$form, FormStateInterface $form_state): void {
-  \Drupal::service('mass_validation.location_reference_validator')->validateLayoutParagraphForm($form_state);
-}
-
-/**
  * Implements hook_entity_presave().
  */
 function mass_validation_entity_presave(EntityInterface $entity) {
@@ -504,7 +497,6 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
       _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
-      \Drupal::service('mass_validation.location_reference_validator')->validateParagraphSubform($form_state, $paragraph, $paragraph_error_string);
     }
   }
 }
@@ -1627,9 +1619,6 @@ function mass_validation_form_layout_paragraphs_component_form_alter(array &$for
     case 'featured_item_mosaic':
       $form['#validate'][] = '_mass_validation_validate_layout_paragraphs_mosaic_items';
       break;
-    case 'org_locations':
-      $form['#validate'][] = '_mass_validation_validate_location_references_layout_paragraphs';
-      break;
   }
 }
 
@@ -1739,7 +1728,6 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
           _mass_validation_validate_custom_iframe($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
           _mass_validation_validate_custom_flexible_links($form_state, $paragraph, $paragraph_error_string);
-          \Drupal::service('mass_validation.location_reference_validator')->validateParagraphSubform($form_state, $paragraph, $paragraph_error_string);
         }
       }
     }
