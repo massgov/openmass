@@ -17,8 +17,10 @@ class MassAnalyticsHooks {
   ) {}
 
   /**
-   * Point the "Analytics" local task on nodes directly at the Power BI report
-   * and open it in a new tab, so users skip the intermediate Drupal page.
+   * Redirects the Analytics local task straight to the Power BI report.
+   *
+   * The tab bypasses the intermediate Drupal page and opens the report
+   * in a new browser tab.
    */
   #[Hook('menu_local_tasks_alter')]
   public function menuLocalTasksAlter(array &$data, $route_name): void {
