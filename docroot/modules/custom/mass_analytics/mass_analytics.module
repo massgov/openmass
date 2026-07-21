@@ -1,17 +1,28 @@
 <?php
 
+use Drupal\Core\Url;
+use Drupal\mass_analytics\Controller\MassAnalyticsController;
+use Drupal\node\NodeInterface;
+
 /**
- * Implements hook_theme().
+ * Implements hook_menu_local_tasks_alter().
+ *
+ * Point the "Analytics" local task on nodes directly at the Power BI report
+ * and open it in a new tab, so users skip the intermediate Drupal page.
  */
-function mass_analytics_theme() {
-  return [
-    'mass_analytics_iframe' => [
-      'variables' => [
-        'config' => '',
-        'iframe_height' => 5800,
-        'node_title' => '',
-      ],
-      'template' => 'mass-analytics-iframes',
-    ],
-  ];
+function mass_analytics_menu_local_tasks_alter(array &$data, $route_name) {
+  if (!isset($data['tabs'][0]['mass_analytics.analytics'])) {
+    return;
+  }
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (!$node instanceof NodeInterface) {
+    return;
+  }
+  if (!in_array($node->bundle(), MassAnalyticsController::BUNDLES, TRUE)) {
+    return;
+  }
+  $data['tabs'][0]['mass_analytics.analytics']['#link']['url'] = Url::fromUri(
+    MassAnalyticsController::reportUrl($node),
+    ['attributes' => ['target' => '_blank', 'rel' => 'noopener']]
+  );
 }
