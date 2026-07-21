@@ -1,5 +1,19 @@
 
 
+## [0.487.0] - July 21, 2026
+
+### Fixed
+  - DP-38034: Update Mandrill Email Timezone from UTC to EST for Scheduled Unpublished Alerts.
+  - DP-46833: Fix false warning that the Events component is missing on associated service pages after publishing an event.
+  - DP-47869: Fix Guide Page Linkit autocomplete by using a CSS-only Mayflower library for Message box editor previews.
+  - DP-48069: Redirect normalization no longer rewrites links or entity references to unpublished pages or documents.
+  
+### Added
+  - DP-46465: Add confirmation to entity usage regenerate so that it will confirm before starting a new run.
+  - DP-46465: Add regression tests for the usage-regenerate decision tree and the batch worker resume logic.
+  
+
+
 ## [0.486.0] - July 14, 2026
 
 ### Fixed
